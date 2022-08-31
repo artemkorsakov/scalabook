@@ -8,11 +8,11 @@
   * [Semigroup](typeclass/monoid/semigroup.md)
   * [Monoid](typeclass/monoid/monoid.md)
 * [Monad's group](typeclass/monad.md)
-  * [Functor](typeclass/monoid/functor.md)
-  * [Foldable](typeclass/monoid/foldable.md)
-  * [Traverse](typeclass/monoid/traverse.md)
-  * [Applicative](typeclass/monoid/applicative.md)
-  * [Monad](typeclass/monoid/monad.md)
+  * [Functor](typeclass/monad/functor.md)
+  * [Foldable](typeclass/monad/foldable.md)
+  * [Traverse](typeclass/monad/traverse.md)
+  * [Applicative](typeclass/monad/applicative.md)
+  * [Monad](typeclass/monad/monad.md)
 
 ## Дополнительные материалы
 * [Дополнительные материалы](extra.md)

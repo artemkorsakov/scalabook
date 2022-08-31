@@ -14,11 +14,6 @@
 
 ---
 
-<div class="edit-button" style="display: flex; justify-content: space-between;">
-    {% if page.prev %}
-    <a href="/scalaworkbook/typeclass/{{ page.prev }}" class="btn-sm btn-info btn-left">&#8678; Предыдущая</a>
-    {% endif %}
-    {% if page.next %}
-    <a href="/scalaworkbook/typeclass/{{ page.next }}" class="btn-sm btn-info btn-right">Следующая &#8680;</a>
-    {% endif %}
+<div style="display: flex; justify-content: space-between;">
+    <a href="typeclass/monoid">Следующая &#8680;</a>
 </div>

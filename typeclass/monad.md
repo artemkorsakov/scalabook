@@ -1,4 +1,4 @@
-# Monad's group
+# Группа Monad
 
 ---
 

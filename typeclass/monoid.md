@@ -1,4 +1,4 @@
-# Monoid's group
+# Группа Monoid
 
 ---
 

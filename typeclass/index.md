@@ -15,5 +15,5 @@
 ---
 
 <div style="display: flex; justify-content: space-between;">
-    <a href="typeclass/monoid">Следующая &#8680;</a>
+    <a href="monoid">Следующая &#8680;</a>
 </div>

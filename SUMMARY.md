@@ -3,16 +3,16 @@
 * [Домашняя](README.md)
 
 ## Теория категорий в Scala
-* [Type class](index.md)
-* [Monoid's group](monoid.md)
-    * [Semigroup](monoid/semigroup.md)
-    * [Monoid](monoid/monoid.md)
-* [Monad's group](monad.md)
-  * [Functor](monoid/functor.md)
-  * [Foldable](monoid/foldable.md)
-  * [Traverse](monoid/traverse.md)
-  * [Applicative](monoid/applicative.md)
-  * [Monad](monoid/monad.md)
+* [Type class](typeclass/index.md)
+* [Monoid's group](typeclass/monoid.md)
+    * [Semigroup](typeclass/monoid/semigroup.md)
+    * [Monoid](typeclass/monoid/monoid.md)
+* [Monad's group](typeclass/monad.md)
+  * [Functor](typeclass/monoid/functor.md)
+  * [Foldable](typeclass/monoid/foldable.md)
+  * [Traverse](typeclass/monoid/traverse.md)
+  * [Applicative](typeclass/monoid/applicative.md)
+  * [Monad](typeclass/monoid/monad.md)
 
 ## Дополнительные материалы
 

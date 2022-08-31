@@ -5,15 +5,15 @@
 
 Код написан на версии Scala - 3.1.3.
 
-[Домашняя страница](README.md)
+[Домашняя страница](README)
 
-[Обзор Scala](scala/index.md)
+[Обзор Scala](scala/index)
 
-[Функциональная разработка на Scala](fp/index.md)
+[Функциональная разработка на Scala](fp/index)
 
-[Теория категорий в Scala](typeclass/index.md)
+[Теория категорий в Scala](typeclass/index)
 
-[Паттерны проектирования на Scala](design-patterns/index.md)
+[Паттерны проектирования на Scala](design-patterns/index)
 
-[Scala Puzzlers](puzzlers/index.md)
+[Scala Puzzlers](puzzlers/index)
 

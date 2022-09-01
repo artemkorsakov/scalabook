@@ -23,6 +23,16 @@
   - [Кейс классы](scala/modeling/case-class.md)
   - [Моделирование ООП](scala/modeling/oop.md)
   - [Моделирование ФП](scala/modeling/fp.md)
+- [Методы](scala/methods.md)
+  - [Определение методов](scala/methods/method-features.md)
+  - [Параметры по умолчанию](scala/methods/default-parameters.md)
+  - [Именованные параметры](scala/methods/named-parameters.md)
+  - [Параметры по имени](scala/methods/by-name-parameter.md)
+  - [Каррирование](scala/methods/partially-applied-functions.md)
+  - [Variable Arguments](scala/methods/vararg-parameters.md)
+  - [Generic параметры](scala/methods/generic-parameter.md)
+  - [Методы расширения](scala/methods/extension-methods.md)
+  - [main методы](scala/methods/main-methods.md)
 
 
 ## Теория категорий в Scala

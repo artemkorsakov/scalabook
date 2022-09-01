@@ -14,6 +14,16 @@
   - [match expressions](scala/structures/match.md)
   - [while and try](scala/structures/others.md)
 - [Моделирование данных](scala/modeling.md)
+  - [Классы](scala/modeling/classes.md)
+  - [Объекты](scala/modeling/objects.md)
+  - [Сопутствующие объекты](scala/modeling/companion-objects.md)
+  - [Трейты](scala/modeling/traits.md)
+  - [Абстрактные классы](scala/modeling/abstract-class.md)
+  - [Перечисления](scala/modeling/enums.md)
+  - [Кейс классы](scala/modeling/case-class.md)
+  - [Моделирование ООП](scala/modeling/oop.md)
+  - [Моделирование ФП](scala/modeling/fp.md)
+
 
 ## Теория категорий в Scala
 - [Класс типов](typeclass/index.md)

@@ -4,8 +4,6 @@
 
 ```scala
 val x = 1
-```
-```scala
 if x == 1 then println(x)
 // 1
 ```

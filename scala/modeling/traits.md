@@ -70,9 +70,7 @@ class C extends Greeting("Bob"):
 class D extends C, Greeting("Bill") 
 // error:
 // trait Greeting is already implemented by superclass C,
-// its constructor cannot be called again
-// class E extends Greeting("Bob"), FormalGreeting
-//   
+// its constructor cannot be called again 
 ```
 
 На самом деле эта программа не скомпилируется, потому что она нарушает второе правило для параметров `trait`:

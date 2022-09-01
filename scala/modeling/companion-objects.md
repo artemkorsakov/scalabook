@@ -47,8 +47,8 @@ class Person:
   var name = ""
   var age = 0
   override def toString = s"$name is $age years old"
-object Person:
 
+object Person:
   def apply(name: String): Person = // a one-arg factory method
     val p = new Person
     p.name = name
@@ -60,6 +60,7 @@ object Person:
     p.age = age
     p
 end Person
+
 val joe = Person("Joe")
 // joe: Person = Joe is 0 years old
 val fred = Person("Fred", 29)

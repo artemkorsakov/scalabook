@@ -1,14 +1,14 @@
 # Структуры управления
 
 В Scala есть все ожидаемые структуры управления, в том числе:
-- [`if`/`then`/`else`](scala/structures/ifelse)
-- [циклы `for`](scala/structures/for)
-- [циклы `while`](scala/structures/others)
-- [`try`/`catch`/`finally`](scala/structures/others)
+- [`if`/`then`/`else`](structures/ifelse)
+- [циклы `for`](structures/for)
+- [циклы `while`](structures/others)
+- [`try`/`catch`/`finally`](structures/others)
 
 Здесь также есть две другие мощные конструкции, присутствующие не во всех языках программирования:
-- [`for` выражения (также известные как _for comprehensions_)](scala/structures/for)
-- [`match` выражения](scala/structures/match)
+- [`for` выражения (также известные как _for comprehensions_)](structures/for)
+- [`match` выражения](structures/match)
 
 
 ---

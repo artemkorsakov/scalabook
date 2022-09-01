@@ -94,7 +94,6 @@ class E extends Greeting("Bob"), FormalGreeting
 
 ```scala
 (new C).msg
-// How are you, Bob
 // res1: String = "How are you, Bob"
 (new E).msg
 // res2: String = "How do you do, Bob"

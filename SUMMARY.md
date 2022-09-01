@@ -2,6 +2,19 @@
 
 - [Домашняя](README.md)
 
+## Обзор Scala
+- [Обзор Scala](scala/index.md)
+- [С чего начать?](scala/getting-started.md)
+- [Hello, world!](scala/hello_world.md)
+- [REPL](scala/repl.md)
+- [Типы данных](scala/types.md)
+- [Структуры управления](scala/structures.md)
+  - [if else](scala/structures/ifelse.md)
+  - [for](scala/structures/for.md)
+  - [match expressions](scala/structures/match.md)
+  - [while and try](scala/structures/others.md)
+- [Моделирование данных](scala/modeling.md)
+
 ## Теория категорий в Scala
 - [Класс типов](typeclass/index.md)
 - [Группа Monoid](typeclass/monoid.md)

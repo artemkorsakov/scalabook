@@ -6,7 +6,6 @@
 
 ```scala
 var x = 1
-// x: Int = 1
 while
   x < 3
 do

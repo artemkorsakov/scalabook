@@ -5,19 +5,14 @@
 
 Код написан на версии Scala - 3.1.3.
 
-[Домашняя страница](README)
+[Домашняя страница](https://scalabook.gitflic.space/README)
 
-[Обзор Scala](scala/index)
+[Обзор Scala](https://scalabook.gitflic.space/scala/index)
 
-[Функциональная разработка на Scala](fp/index)
+[Функциональная разработка на Scala](https://scalabook.gitflic.space/fp/index)
 
-[Теория категорий в Scala](typeclass/index)
+[Теория категорий в Scala](https://scalabook.gitflic.space/typeclass/index)
 
-[Паттерны проектирования на Scala](design-patterns/index)
+[Паттерны проектирования на Scala](https://scalabook.gitflic.space/design-patterns/index)
 
-[Scala Puzzlers](puzzlers/index)
-
-<div>
-    <a href="extra">&#8678; Предыдущая</a>
-    <a href="extra">Следующая &#8680;</a>
-</div>
+[Scala Puzzlers](https://scalabook.gitflic.space/puzzlers/index)

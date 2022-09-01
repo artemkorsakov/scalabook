@@ -62,7 +62,6 @@ val john = Person("John", "Doe")
 // initialization begins
 // John Doe
 // initialization ends
-// john: Person = repl.MdocSession$App4$Person@7058cf27
 john.printFullName
 // John Doe
 ```

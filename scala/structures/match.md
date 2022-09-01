@@ -10,7 +10,6 @@ Scala включает в себя pattern matching, обладающий мно
 ```scala
 import scala.annotation.switch
 val i = 6
-// i: Int = 6
 val day = (i: @switch) match
   case 0 => "Sunday"
   case 1 => "Monday"

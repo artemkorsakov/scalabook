@@ -17,3 +17,7 @@
 
 [Scala Puzzlers](puzzlers/index)
 
+<div>
+    <a href="extra">&#8678; Предыдущая</a>
+    <a href="extra">Следующая &#8680;</a>
+</div>

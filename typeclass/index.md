@@ -13,7 +13,3 @@
 - [Type classes in Algebird](https://twitter.github.io/algebird/typeclasses.html)
 
 ---
-
-<div>
-    <a href="monoid">Следующая &#8680;</a>
-</div>

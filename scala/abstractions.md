@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Абстракции"
-section: scala
-prev: type-system/types-others
-next: abstractions/ca-given
----
-
-## Контекстуальные абстракции
+# Контекстуальные абстракции
 
 ### Background
 

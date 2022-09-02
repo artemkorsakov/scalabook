@@ -61,9 +61,20 @@
   - [Чистые функции](scala/fp/pure-functions.md)
   - [Функции - это значения](scala/fp/functions-are-values.md)
   - [Обработка ошибок](scala/fp/functional-error-handling.md)
-
-
-
+- [Система типов](scala/type-system.md)
+  - [Определение типов](scala/type-system/types-inferred.md)
+  - [Generics типы](scala/type-system/types-generics.md)
+  - [Пересечение типов](scala/type-system/types-intersection.md)
+  - [Объединение типов](scala/type-system/types-union.md)
+  - [Алгебр. типы данных](scala/type-system/types-adts.md)
+  - [Ковариантность](scala/type-system/types-variance.md)
+  - [Непрозрачные типы](scala/type-system/types-opaque.md)
+  - [Структурные типы](scala/type-system/types-structural.md)
+  - [Зависимые типы функций](scala/type-system/types-dependent-function.md)
+  - [Type Lambdas](scala/type-system/type-lambdas.md)
+  - [Match Types](scala/type-system/match-types.md)
+  - [Полимор. типы функций](scala/type-system/polymorphic-function-types.md)
+  - [Другие типы](scala/type-system/types-others.md)
 
 
 ## Теория категорий в Scala

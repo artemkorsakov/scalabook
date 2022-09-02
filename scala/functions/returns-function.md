@@ -85,9 +85,10 @@ sayHello("Joe")
 
 ```scala
 val sayCiao = greet("Ciao")
-val sayHola = greet("Hola")
 sayCiao("Isabella")
 // Ciao, Isabella
+
+val sayHola = greet("Hola")
 sayHola("Carlos")
 // Hola, Carlos
 ```

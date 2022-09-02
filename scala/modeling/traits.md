@@ -131,9 +131,9 @@ class F(using iname: ImpliedName) extends
 которая не упоминалась явно.
 
 ```scala
-given ImpliedName: ImpliedName("Bob")
+given ImpliedName = ImpliedName("Bob")
 (new F).msg
-// res3: String = "How do you do, ImpliedName"
+// res3: String = "How do you do, Bob"
 ```
 
 

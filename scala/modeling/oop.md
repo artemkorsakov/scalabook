@@ -240,21 +240,19 @@ c1.count
 
 ```scala
 trait SubjectObserver:
-
   type S <: Subject
   type O <: Observer
-
+  
   trait Subject { self: S =>
     private var observers: List[O] = List()
     def subscribe(obs: O): Unit =
       observers = obs :: observers
-    def publish() =
+    def publish(): Unit =
       for obs <- observers do obs.notify(this)
   }
-
-  trait Observer {
+  
+  trait Observer:
     def notify(sub: S): Unit
-  }
 ```
 
 Есть несколько вещей, которые нуждаются в объяснении.
@@ -299,12 +297,12 @@ object SensorReader extends SubjectObserver:
   class Sensor(val label: String) extends Subject:
     private var currentValue = 0.0
     def value = currentValue
-    def changeValue(v: Double) =
+    def changeValue(v: Double): Unit =
       currentValue = v
       publish()
 
   class Display extends Observer:
-    def notify(sub: Sensor) =
+    def notify(sub: Sensor): Unit =
       println(s"${sub.label} has value ${sub.value}")
 ```
 

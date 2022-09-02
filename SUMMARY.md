@@ -55,6 +55,15 @@
   - [Tuple](scala/collections/tuple.md)
   - [Queue](scala/collections/queue.md)
   - [Методы в коллекциях](scala/collections/methods.md)
+- [Функц. программирование](scala/fp.md)
+  - [Что такое ФП?](scala/fp/what-is-fp.md)
+  - [Неизменяемые значения](scala/fp/immutable-values.md)
+  - [Чистые функции](scala/fp/pure-functions.md)
+  - [Функции - это значения](scala/fp/functions-are-values.md)
+  - [Обработка ошибок](scala/fp/functional-error-handling.md)
+
+
+
 
 
 ## Теория категорий в Scala

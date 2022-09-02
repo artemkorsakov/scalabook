@@ -149,8 +149,6 @@ def createGreetingFunction(desiredLanguage: String): String => Unit =
 
 ```scala
 val greetInFrench = createGreetingFunction("french")
-```
-```scala
 greetInFrench("Jonathan")
 // Bonjour, Jonathan
 ```
@@ -159,8 +157,6 @@ greetInFrench("Jonathan")
 
 ```scala
 val greetInEnglish = createGreetingFunction("english")
-```
-```scala
 greetInEnglish("Joe")
 // Hello, Joe
 ```

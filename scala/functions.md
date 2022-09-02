@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Функции"
-section: scala
-prev: methods/main-methods
-next: functions/anonymous
----
-
-## {{page.title}}
+# Функции
 
 В этой главе представлены функции Scala. 
 Рассматриваемые темы включают в себя анонимные функции (лямбды), переменные в функциях

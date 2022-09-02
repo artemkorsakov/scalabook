@@ -6,14 +6,14 @@ Scala `classes`, `case classes`, `case objects`, `traits`, `enums`, и `objects`
 Проще говоря, методы теперь могут быть определены где угодно.
 
 В Scala методы обладают множеством особенностей, в том числе:
-- [Несколько групп параметров (partially-applied functions)](@DOC@methods/partially-applied-functions)
-- [Методы с неопределенным количеством параметров (vararg parameters)](@DOC@methods/vararg-parameters)
-- [Параметры по имени (by-name parameters)](@DOC@methods/by-name-parameter)
-- [Функция в качестве параметра](@DOC@functions)
-- [Generic параметры](@DOC@methods/generic-parameter)
-- [Значения параметров по умолчанию](@DOC@methods/default-parameters)
-- [Контекстные параметры](@DOC@abstractions/ca-using)
-- [inline методы](@DOC@metaprogramming/inline)
+- [Несколько групп параметров (partially-applied functions)](methods/partially-applied-functions)
+- [Методы с неопределенным количеством параметров (vararg parameters)](methods/vararg-parameters)
+- [Параметры по имени (by-name parameters)](methods/by-name-parameter)
+- [Функция в качестве параметра](functions)
+- [Generic параметры](methods/generic-parameter)
+- [Значения параметров по умолчанию](methods/default-parameters)
+- [Контекстные параметры](abstractions/ca-using)
+- [inline методы](metaprogramming/inline)
 - и многое другое
 
 ---

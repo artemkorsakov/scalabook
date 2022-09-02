@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Ковариантность"
-section: scala
-prev: type-system/types-adts
-next: type-system/types-opaque
----
-
-## Ковариантность типов
+# Ковариантность типов
 
 Вариантность параметра типа управляет подтипом параметризованных типов (таких, как классы или trait-ы).
 

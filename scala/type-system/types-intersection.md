@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Пересечение типов"
-section: scala
-prev: type-system/types-generics
-next: type-system/types-union
----
-
-## {{page.title}}
+# Пересечение типов
 
 Используемый для типов оператор `&` создает так называемый тип пересечения (_intersection type_). 
 Тип `A & B` представляет собой значения, которые одновременно относятся как к типу `A`, так и к типу `B`. 
@@ -76,7 +68,7 @@ class C extends A, B:
 
 #### Пример
 
-```scala mdoc:silent
+```scala
 trait Book:
   def title: String
 
@@ -104,15 +96,35 @@ class AudiobookLibrary(titles: String*) extends Library, Album:
 val al = AudiobookLibrary("Пушкин", "Толстой", "Достоевский")
 ```
 
-```scala mdoc:width=120
+```scala
 val book: Book = al.first
+// book: Book = AudioBook(title = "Пушкин", track = "empty")
 println(book.title)
+// Пушкин
 val books: List[Book] = al.items
+// books: List[Book] = List(
+//   BookAudio(title = "empty", track = "Пушкин"),
+//   BookAudio(title = "empty", track = "Толстой"),
+//   BookAudio(title = "empty", track = "Достоевский")
+// )
 books.foreach(b => println(b.title))
+// empty
+// empty
+// empty
 val audio: Audio = al.first
+// audio: Audio = AudioBook(title = "Пушкин", track = "empty")
 println(audio.track)
+// empty
 val audios: List[Audio] = al.items
+// audios: List[Audio] = List(
+//   BookAudio(title = "empty", track = "Пушкин"),
+//   BookAudio(title = "empty", track = "Толстой"),
+//   BookAudio(title = "empty", track = "Достоевский")
+// )
 audios.foreach(a => println(a.track))
+// Пушкин
+// Толстой
+// Достоевский
 ```
 
 ### Детали

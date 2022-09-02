@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Структурные типы"
-section: scala
-prev: type-system/types-opaque
-next: type-system/types-dependent-function
----
-
-## {{page.title}}
+# Структурные типы
 
 Некоторые варианты использования, такие как моделирование доступа к базе данных, 
 более удобны в динамически типизированных языках, чем в статически типизированных языках. 

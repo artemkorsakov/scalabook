@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Алгебр. типы данных"
-section: scala
-prev: type-system/types-union
-next: type-system/types-variance
----
-
-## Алгебраические типы данных (ADT)
+# Алгебраические типы данных (ADT)
 
 Алгебраические типы данных (_ADT_) могут быть созданы с помощью [конструкции `enum`](@DOC@modeling/enums).
 
@@ -27,7 +19,7 @@ enum Option[+T]:
 
 Предложения `extends`, которые были опущены в предыдущем примере, также могут быть указаны явно:
 
-```scala mdoc:silent
+```scala
 enum Option[+T]:
   case Some(x: T) extends Option[T]
   case None       extends Option[Nothing]
@@ -36,9 +28,11 @@ enum Option[+T]:
 Как и в случае с обычными значениями `enum`, `case` `enum` определяются в сопутствующем объекте перечисления, 
 поэтому они называются `Option.Some` и `Option.None` (если только определения не "вытягиваются" при импорте):
 
-```scala mdoc
+```scala
 Option.Some("hello")
+// res0: Option[String] = Some(x = "hello")
 Option.None
+// res1: Option[Nothing] = None
 ```
 
 Обратите внимание, что тип приведенных выше выражений всегда `Option`. 
@@ -47,9 +41,11 @@ Option.None
 Классы, составляющие case enum, существуют, и их можно использовать, 
 либо создав их непосредственно с помощью `new`, либо явно указав ожидаемый тип.
 
-```scala mdoc
+```scala
 new Option.Some(2)
+// res2: Some[Int] = Some(x = 2)
 val x: Option.Some[Int] = Option.Some(3)
+// x: Some[Int] = Some(x = 3)
 ```
 
 Как и в других случаях использования перечисления, 

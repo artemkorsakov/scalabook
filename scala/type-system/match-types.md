@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Match Types"
-section: scala
-prev: type-system/type-lambdas
-next: type-system/polymorphic-function-types
----
-
-## Типы match
+# Типы match
 
 Тип match сводится к одной из его правых частей, в зависимости от проверяемого типа. 
 Например:
@@ -41,7 +33,7 @@ S match { P1 => T1 ... Pn => Tn }
 Типы match могут составлять часть определений рекурсивных типов. 
 Пример:
 
-```scala mdoc:silent
+```scala
 type LeafElem[X] = X match
   case String => Char
   case Array[t] => LeafElem[t]
@@ -66,7 +58,7 @@ type Concat[Xs <: Tuple, +Ys <: Tuple] <: Tuple = Xs match
 Типы match можно использовать для определения методов с зависимыми типами. 
 Например:
 
-```scala mdoc:silent
+```scala
 def leafElem[X](x: X): LeafElem[X] = x match
   case x: String      => x.charAt(0)
   case x: Array[t]    => leafElem(x(0))
@@ -76,8 +68,9 @@ def leafElem[X](x: X): LeafElem[X] = x match
 
 Результат:
 
-```scala mdoc
+```scala
 leafElem(Array(List("abc")))
+// res0: Char = 'a'
 ```
 
 Этот специальный режим ввода выражений match используется только при выполнении следующих условий:

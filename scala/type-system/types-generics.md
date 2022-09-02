@@ -1,19 +1,11 @@
----
-layout: docsplus
-title: "Generics типы"
-section: scala
-prev: type-system/types-inferred
-next: type-system/types-intersection
----
-
-## {{page.title}}
+# Generics типы
 
 Универсальные (generic) классы (или trait-ы) принимают тип в качестве параметра в квадратных скобках `[...]`.
 Для обозначения параметров типа согласно конвенции Scala используется одна заглавная буква (например, `A`). 
 Затем этот тип можно использовать внутри класса по мере необходимости 
 для параметров экземпляра метода или для возвращаемых типов:
 
-```scala mdoc:silent
+```scala
 // здесь мы объявляем параметр типа A
 //          v
 class Stack[A]:
@@ -35,14 +27,16 @@ class Stack[A]:
 
 Пример создания и использования `Stack[Int]`:
 
-```scala mdoc:silent
+```scala
 val stack = Stack[Int]
 stack.push(1)
 stack.push(2)
 ```
-```scala mdoc
+```scala
 println(stack.pop())
+// 2
 println(stack.pop())
+// 1
 ```
 
 > Подробности о том, как выразить ковариантность с помощью универсальных типов, см. в разделе ["Ковариантность"](types-variance).
@@ -56,7 +50,7 @@ println(stack.pop())
 Верхнее ограничение типа `T <: A` указывает на то что тип `T` относится к подтипу типа `A`. 
 Приведем пример, демонстрирующий верхнее ограничение для типа класса `PetContainer`:
 
-```scala mdoc:silent:reset
+```scala
 abstract class Animal:
   def name: String
 
@@ -82,8 +76,12 @@ val catContainer = PetContainer[Cat](Cat())
 `Dog` и `Cat` - это подтипы `Pet`, поэтому можно создать новые `PetContainer[Dog]` и `PetContainer[Cat]`. 
 Однако, если попытаться создать `PetContainer[Lion]`, то получим следующую ошибку:
 
-```scala mdoc:fail
+```scala
 val lionContainer = PetContainer[Lion](Lion())
+// error:
+// Type argument App0.this.Lion does not conform to upper bound App0.this.Pet
+// val lionContainer = PetContainer[Lion](Lion())
+//   
 ```
 
 Это потому, что `Lion` не является подтипом `Pet`.
@@ -124,7 +122,7 @@ case class Nil[+B]() extends Node[B]:
 Чтобы исправить это, необходимо перевернуть вариантность типа параметра `elem` в `prepend`. 
 Для этого вводится новый тип для параметра `U`, у которого тип `B` указан в качестве нижней границы типа.
 
-```scala mdoc:reset
+```scala
 trait Node[+B]:
   def prepend[U >: B](elem: U): Node[U]
 case class ListNode[+B](h: B, t: Node[B]) extends Node[B]:
@@ -137,13 +135,22 @@ case class Nil[+B]() extends Node[B]:
 
 Теперь можно сделать следующее:
 
-```scala mdoc
+```scala
 trait Bird
 case class AfricanSwallow() extends Bird
 case class EuropeanSwallow() extends Bird
 val africanSwallowList = ListNode[AfricanSwallow](AfricanSwallow(), Nil())
+// africanSwallowList: ListNode[AfricanSwallow] = ListNode(
+//   h = AfricanSwallow(),
+//   t = Nil()
+// )
 val birdList: Node[Bird] = africanSwallowList
+// birdList: Node[Bird] = ListNode(h = AfricanSwallow(), t = Nil())
 birdList.prepend(EuropeanSwallow())
+// res7: Node[Bird] = ListNode(
+//   h = EuropeanSwallow(),
+//   t = ListNode(h = AfricanSwallow(), t = Nil())
+// )
 ```
 
 Переменной с типом `Node[Bird]` можно присвоить значение `africanSwallowList`, а затем добавить и `EuropeanSwallow`.

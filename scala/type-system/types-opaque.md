@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Непрозрачные типы"
-section: scala
-prev: type-system/types-variance
-next: type-system/types-structural
----
-
-## {{page.title}}
+# Непрозрачные типы
 
 Непрозрачные (**opaque**) псевдонимы типов Scala 3 обеспечивают абстракции типов без каких-либо накладных расходов.
 
@@ -18,7 +10,7 @@ next: type-system/types-structural
 
 Поскольку важно отличать "обычные" двойные значения от чисел, хранящихся в виде их логарифмов, введем класс `Logarithm`:
 
-```scala mdoc:silent
+```scala
 class Logarithm(protected val underlying: Double):
   def toDouble: Double = math.exp(underlying)
   def + (that: Logarithm): Logarithm =
@@ -34,13 +26,15 @@ object Logarithm:
 Метод `apply` сопутствующего объекта позволяет создавать значения типа `Logarithm`, 
 которые можно использовать следующим образом:
 
-```scala mdoc:silent
+```scala
 val l2 = Logarithm(2.0)
 val l3 = Logarithm(3.0)
 ```
-```scala mdoc
+```scala
 println((l2 * l3).toDouble)
+// 6.0
 println((l2 + l3).toDouble)
+// 4.999999999999999
 ```
 
 В то время как класс `Logarithm` предлагает хорошую абстракцию для значений `Double`, 
@@ -56,7 +50,7 @@ println((l2 + l3).toDouble)
 На этот раз вместо того, чтобы определять `Logarithm` как класс, определяем его с помощью псевдонима типа. 
 Во-первых, зададим абстрактный интерфейс модуля:
 
-```scala mdoc:silent:reset
+```scala
 trait Logarithms:
 
   type Logarithm
@@ -78,7 +72,7 @@ trait Logarithms:
 
 Теперь давайте реализуем этот абстрактный интерфейс, задав тип `Logarithm` равным `Double`:
 
-```scala mdoc
+```scala
 object LogarithmsImpl extends Logarithms:
 
   type Logarithm = Double
@@ -131,7 +125,7 @@ def someComputation(L: Logarithms)(init: L.Logarithm): L.Logarithm = ...
 Вместо того, чтобы вручную разбивать компонент `Logarithms` на абстрактную часть и на конкретную реализацию, 
 можно просто использовать opaque типы для достижения аналогичного эффекта:
 
-```scala mdoc:silent:reset
+```scala
 object MyMath:
   // !!!
   opaque type Logarithm = Double
@@ -167,12 +161,16 @@ end MyMath
 и операции `+` и `*` определяются как методы расширения над значениями `Logarithm`. 
 Следующие операции допустимы, поскольку они используют функциональные возможности, реализованные в объекте `MyMath`.
 
-```scala mdoc
+```scala
 import MyMath.Logarithm
 val l = Logarithm(1.0)
+// l: Logarithm = 0.0
 val l2 = Logarithm(2.0)
+// l2: Logarithm = 0.6931471805599453
 val l3 = l * l2
+// l3: Logarithm = 0.6931471805599453
 val l4 = l + l2
+// l4: Logarithm = 1.0986122886681098
 ```
 
 Но следующие операции приведут к ошибкам типа:
@@ -192,7 +190,7 @@ l / l2                  // error: `/` is not a member of Logarithm
 
 Псевдонимы непрозрачных типов также могут иметь ограничения. Пример:
 
-```scala mdoc:reset:silent
+```scala
 object Access:
 
   opaque type Permissions = Int
@@ -240,7 +238,7 @@ end Access
 Это дает понять за пределами объекта `Access`, что `Permission` является подтипом двух других типов.
 Следовательно, следующий сценарий использования проходит type-checks.
 
-```scala mdoc
+```scala
 object User:
   import Access.*
 
@@ -316,7 +314,7 @@ l1.mul(x, z) // error: found l2.Logarithm, required l1.Logarithm
 
 Непрозрачные типы предлагают надежную абстракцию над деталями реализации, не накладывая расходов на производительность. 
 Как показано выше, непрозрачные типы удобны в использовании и очень хорошо интегрируются с 
-[функцией методов расширения](@DOC@methods/extension-methods).
+[функцией методов расширения](../methods/extension-methods).
 
 Подробнее об opaque type:
 - [Мотивация](https://docs.scala-lang.org/sips/opaque-types.html)

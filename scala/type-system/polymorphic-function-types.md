@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Полимор. типы функций"
-section: scala
-prev: type-system/match-types
-next: type-system/types-others
----
-
-## Полиморфные типы функций
+# Полиморфные типы функций
 
 Полиморфный тип функции — это тип функции, который принимает параметры типа. 
 
@@ -43,7 +35,7 @@ val bar: [A] => List[A] => List[A]
 Например, рассмотрим ситуацию, когда есть тип данных для представления выражений простого языка 
 (состоящего только из переменных и приложений функций) в строго типизированном виде:
 
-```scala mdoc:silent
+```scala
 enum Expr[A]:
   case Var(name: String)
   case Apply[A, B](fun: Expr[B => A], arg: Expr[B]) extends Expr[A]
@@ -53,10 +45,7 @@ enum Expr[A]:
 Это требует, чтобы данная функция была полиморфной, поскольку каждое подвыражение может иметь свой тип. 
 Вот как это реализовать с помощью полиморфных типов функций:
 
-```scala mdoc:invisible
-import Expr.*
-```
-```scala mdoc:silent
+```scala
 def mapSubexpressions[A](e: Expr[A])(f: [B] => Expr[B] => Expr[B]): Expr[A] =
   e match
     case Apply(fun, arg) => Apply(f(fun), f(arg))
@@ -66,12 +55,13 @@ def mapSubexpressions[A](e: Expr[A])(f: [B] => Expr[B] => Expr[B]): Expr[A] =
 А вот как использовать эту функцию для переноса каждого подвыражения 
 в данное выражение с вызовом некоторой функции `wrap`, определенной как переменная:
 
-```scala mdoc:silent
+```scala
 val e0 = Apply(Var("f"), Var("a"))
 val e1 = mapSubexpressions(e0)([B] => (se: Expr[B]) => Apply(Var[B => B]("wrap"), se))
 ```
-```scala mdoc
+```scala
 println(e1)
+// Apply(Apply(Var(wrap),Var(f)),Apply(Var(wrap),Var(a)))
 ```
 
 #### Связь с лямбда-выражениями типа

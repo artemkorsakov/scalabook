@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Зависимые типы функций"
-section: scala
-prev: type-system/types-structural
-next: type-system/type-lambdas
----
-
-## {{page.title}}
+# Зависимые типы функций
 
 Зависимый тип функции (_dependent function type_) описывает типы функций, 
 где тип результата может зависеть от значений параметров функции. 
@@ -200,7 +192,7 @@ derivative { x => x * x + const(2.0) }
 В приведенном ниже примере определяется trait `C` и два зависимых типа функций `DF` и `IDF`, 
 а также выводятся результаты вызовов соответствующих функций:
 
-```scala mdoc:silent
+```scala
 trait C { type M; val m: M }
 
 type DF = (x: C) => x.M
@@ -214,14 +206,16 @@ val depfun: DF = (x: C) => x.m
 val idepfun: IDF = summon[C].m
 ```
 
-```scala mdoc
+```scala
 val t = depfun(c)
+// t: Int = 3
 val u = idepfun(using c)
+// u: Int = 3
 ```
 
 В следующем примере тип зависимости `f.Eff` относится к типу `CanThrow`:
 
-```scala mdoc:silent
+```scala
 trait Effect
 
 // Type X => Y
@@ -263,9 +257,11 @@ val i2s = new I2S
 val s2i = new S2I
 ```
 
-```scala mdoc
+```scala
 mapFn(i2s)(List(1, 2, 3)).mkString
+// res0: String = "123"
 composeFn(i2s)(s2i)(22)
+// res1: Int = 2
 ```
 
 

@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Type Lambdas"
-section: scala
-prev: type-system/types-dependent-function
-next: type-system/match-types
----
-
-## Лямбда-типы
+# Лямбда-типы
 
 Лямбда-тип позволяет выразить тип более высокого типа напрямую, без определения.
 
@@ -20,10 +12,12 @@ next: type-system/match-types
 
 Пример:
 
-```scala mdoc
+```scala
 type XY = [X, Y] =>> Map[Y, X]
 val numbers: XY[String, Int] = Map(1 -> "first", 2 -> "second")
+// numbers: Map[Int, String] = Map(1 -> "first", 2 -> "second")
 numbers(1)
+// res0: String = "first"
 ```
 
 #### Проверка типа

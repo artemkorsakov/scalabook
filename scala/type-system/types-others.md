@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Другие типы"
-section: scala
-prev: type-system/polymorphic-function-types
-next: abstractions
----
-
-## {{page.title}}
+# Другие типы
 
 В Scala есть несколько других расширенных типов, в том числе: 
 - existential types

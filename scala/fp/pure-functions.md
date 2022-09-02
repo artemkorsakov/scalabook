@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Чистые функции"
-section: scala
-prev: fp/immutable-values
-next: fp/functions-are-values
----
-
-## {{page.title}}
+# Чистые функции
 
 Еще одна концепция, которую Scala предлагает для помощи в написании функционального кода, — 
 это возможность писать чистые функции. 

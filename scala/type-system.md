@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Система типов"
-section: scala
-prev: fp/functional-error-handling
-next: type-system/types-inferred
----
-
-## {{page.title}}
+# Система типов
 
 Scala — уникальный язык, поскольку он статически типизирован, но часто кажется гибким и динамичным. 
 Например, благодаря выводу типов можно писать код без явного указания типов переменных:

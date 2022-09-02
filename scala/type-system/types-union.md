@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Объединение типов"
-section: scala
-prev: type-system/types-intersection
-next: type-system/types-adts
----
-
-## {{page.title}}
+# Объединение типов
 
 Используемый для типов `|` оператор создает так называемый тип объединения (_union type_). 
 Тип `А | B` представляет значения, которые относятся **либо** к типу `A`, **либо** к типу `B`.
@@ -81,20 +73,20 @@ enum UsernameOrPassword:
 Компилятор присваивает типу объединения выражение, только если такой тип явно задан. 
 Например, рассмотрим такие значения:
 
-```scala mdoc:invisible
-case class Username(name: String)
-case class Password(hash: Int)
-```
-```scala mdoc
+```scala
 val name = Username("Eve")   
+// name: Username = Username(name = "Eve")   
 val password = Password(123) 
+// password: Password = Password(hash = 123)
 ```
 
 В этом примере показано, как можно использовать тип объединения при привязке переменной к результату выражения `if`/`else`:
 
-```scala mdoc
+```scala
 val a = if (true) name else password
+// a: Object = Username(name = "Eve")
 val b: Password | Username = if (true) name else password
+// b: Password | Username = Username(name = "Eve")
 ```
 
 Типом `a` является `Object`, который является супертипом `Username` и `Password`, 
@@ -208,7 +200,7 @@ def test(x: A | B) = x.hello // error: value `hello` is not a member of A | B
 
 С другой стороны, допускается следующее:
 
-```scala mdoc:silent:reset
+```scala
 trait D
 trait E
 trait C { def hello: String }
@@ -221,22 +213,29 @@ def test(x: A | B) = x.hello // ok, т.к. `hello` - элемент объеди
 При этом необходимо отметить, что в метод `test` нельзя передать экземпляр `С`, 
 потому что `A | B` - подтип `C`, но не наоборот:
 
-```scala mdoc:silent
+```scala
 val a: A = new A:
   def hello = "Hello, A!"
 val b: B = new B:
   def hello = "Hello, B!"
 ```
 
-```scala mdoc
+```scala
 test(a)
+// res1: String = "Hello, A!"
 test(b)
+// res2: String = "Hello, B!"
 ```
 
-```scala mdoc:fail
+```scala
 val c: C = new C:
   def hello = "Hello, C!"
 test(c)
+// error:
+// Found:    (App0.this.c : App0.this.C)
+// Required: App0.this.A | App0.this.B
+// test(c)
+//      ^
 ```
 
 #### Проверка полноты в сопоставлении с образцом

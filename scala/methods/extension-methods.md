@@ -36,7 +36,7 @@ aCircle.area
 ```
 
 Более подробно методы расширения раскрыты 
-[в соответствующей главе раздела "Абстракции"](@DOC@abstractions/ca-extension-methods).
+[в соответствующей главе раздела "Абстракции"](../abstractions/ca-extension-methods).
 
 
 ---

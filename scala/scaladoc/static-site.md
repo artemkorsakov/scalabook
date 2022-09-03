@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Статика"
-section: scala
-prev: scaladoc/linking
-next: scaladoc/blog
----
-
-## Статическая документация
+# Статическая документация
 
 Scaladoc умеет генерировать статические сайты, известные 
 по [Jekyll](http://jekyllrb.com/) или [Docusaurus](https://docusaurus.io/).

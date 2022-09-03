@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Scaladoc"
-section: scala
-prev: soft-keywords
-next: scaladoc/docstrings
----
-
-## {{page.title}}
+# Scaladoc
 
 Scaladoc — это инструмент для создания API документации проектов Scala 3. 
 Он предоставляет функции, аналогичные `javadoc`, а также `jekyll` или `docusaurus`.

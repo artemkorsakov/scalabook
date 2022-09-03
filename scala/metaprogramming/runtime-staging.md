@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Runtime Staging"
-section: scala
-prev: metaprogramming/quoted-code
-next: metaprogramming/reflection
----
-
-## {{page.title}}
+# Runtime Staging
 
 Фреймворк одновременно выражает метапрограммирование времени компиляции и многоэтапное программирование. 
 Можно думать о метапрограммировании во время компиляции как о двухэтапном процессе компиляции: 

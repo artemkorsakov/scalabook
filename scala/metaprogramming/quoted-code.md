@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Quoted Code"
-section: scala
-prev: metaprogramming/macros
-next: metaprogramming/runtime-staging
----
-
-## {{page.title}}
+# Quoted Code
 
 ### Кодовые блоки
 

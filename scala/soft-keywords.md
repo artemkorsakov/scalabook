@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Soft Keywords"
-section: scala
-prev: metaprogramming/tasty-inspection
-next: scaladoc
----
-
-## {{page.title}}
+# Soft Keywords
 
 Мягкий модификатор (_soft modifier_) — это один из идентификаторов `infix`, `inline`, `opaque`, `open` и `transparent`.
 

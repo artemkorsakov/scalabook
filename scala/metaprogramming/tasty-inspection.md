@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "TASTy Inspection"
-section: scala
-prev: metaprogramming/reflection
-next: soft-keywords
----
-
-## {{page.title}}
+# TASTy Inspection
 
 ```sbt
 libraryDependencies += "org.scala-lang" %% "scala3-tasty-inspector" % scalaVersion.value

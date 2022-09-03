@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Поиск по типу"
-section: scala
-prev: scaladoc/site-versioning
-next: scaladoc/snippet-compiler
----
-
-## {{page.title}}
+# Поиск по типу
 
 Поиск функций по их символическим именам может занять много времени. 
 Именно поэтому новый scaladoc позволяет искать методы и поля по их типам.

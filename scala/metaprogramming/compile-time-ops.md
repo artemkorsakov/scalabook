@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Compile-time ops"
-section: scala
-prev: metaprogramming/inline
-next: metaprogramming/macros
----
-
-## Операции во время компиляции
+# Операции во время компиляции
 
 ### Пакет scala.compiletime
 
@@ -26,7 +18,7 @@ inline def error(inline msg: String): Nothing
 Если встроенное расширение приводит к вызову `error(msgStr)`,
 компилятор выдает сообщение об ошибке, содержащее заданный `msgStr`.
 
-```scala mdoc:silent
+```scala
 import scala.compiletime.error
 
 inline def doSomething(inline mode: Boolean): Unit =
@@ -35,14 +27,18 @@ inline def doSomething(inline mode: Boolean): Unit =
   else error("Mode must be a known value")
 ```
 
-```scala mdoc
+```scala
 doSomething(true)
+// true
 doSomething(false)
+// false
 ```
 
-```scala mdoc:fail
+```scala
 val bool: Boolean = true
 doSomething(bool)
+// error: 
+// Mode must be a known value
 ```
 
 Если `error` вызывается вне `inline` метода, при компиляции этого вызова будет выдаваться ошибка.
@@ -243,7 +239,7 @@ def erasedValue[T]: T
 
 Используя `erasedValue`, можно определить `defaultValue` следующим образом:
 
-```scala mdoc:silent
+```scala
 import scala.compiletime.erasedValue
 
 transparent inline def defaultValue[T] =
@@ -262,11 +258,15 @@ transparent inline def defaultValue[T] =
 
 Затем:
 
-```scala mdoc
+```scala
 val dInt: Some[Int] = defaultValue[Int]
+// dInt: Some[Int] = Some(value = 0)
 val dDouble: Some[Double] = defaultValue[Double]
+// dDouble: Some[Double] = Some(value = 0.0)
 val dBoolean: Some[Boolean] = defaultValue[Boolean]
+// dBoolean: Some[Boolean] = Some(value = false)
 val dAny: None.type = defaultValue[Any]
+// dAny: None = None
 ```
 
 В качестве другого примера рассмотрим приведенную ниже версию на уровне типов `toInt`: 

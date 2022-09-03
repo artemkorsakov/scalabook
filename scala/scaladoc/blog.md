@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Блог"
-section: scala
-prev: scaladoc/static-site
-next: scaladoc/site-versioning
----
-
-## Встроенный блог
+# Встроенный блог
 
 Scaladoc позволяет включить в документацию простой блог. 
 

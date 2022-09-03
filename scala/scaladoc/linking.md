@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Ссылки"
-section: scala
-prev: scaladoc/docstrings
-next: scaladoc/static-site
----
-
-## Связующая документация
+# Связующая документация
 
 ### Основной синтаксис
 

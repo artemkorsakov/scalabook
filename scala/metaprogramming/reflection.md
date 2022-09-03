@@ -1,18 +1,10 @@
----
-layout: docsplus
-title: "Reflection"
-section: scala
-prev: metaprogramming/runtime-staging
-next: metaprogramming/tasty-inspection
----
-
-## {{page.title}}
+# Reflection
 
 API отражения обеспечивает более сложное и полное представление о структуре кода. 
 Оно обеспечивает представление типизированных абстрактных синтаксических деревьев и их свойств, 
 таких как типы, символы, позиции и комментарии.
 
-API можно использовать в макросах, а также для проверки [файлов TASTy](@DOC@metaprogramming/tasty-inspection).
+API можно использовать в макросах, а также для проверки [файлов TASTy](tasty-inspection).
 
 ### Как использовать API
 

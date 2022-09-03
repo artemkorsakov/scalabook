@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Structural Patterns"
-section: dp
-prev: creational/singleton
-next: structural/adapter
----
-
-## {{page.title}}
+# Структурные шаблоны
 
 [Структурные шаблоны][Wikipedia] (_structural patterns_) имеют дело с составом классов или объектов. 
 

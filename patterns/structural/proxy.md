@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Proxy"
-section: dp
-prev: structural/flyweight
-next: behavioral
----
-
-## {{page.title}}
+# Заместитель
 
 #### Назначение
 

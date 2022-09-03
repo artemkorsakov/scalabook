@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Flyweight"
-section: dp
-prev: structural/facade
-next: structural/proxy
----
-
-## {{page.title}}
+# Приспособленец
 
 #### Назначение
 

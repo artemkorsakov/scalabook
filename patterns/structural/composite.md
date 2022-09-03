@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Composite"
-section: dp
-prev: structural/bridge
-next: structural/decorator
----
-
-## {{page.title}}
+# Компоновщик
 
 #### Назначение
 

@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Facade"
-section: dp
-prev: structural/decorator
-next: structural/flyweight
----
-
-## {{page.title}}
+# Фасад
 
 #### Назначение
 

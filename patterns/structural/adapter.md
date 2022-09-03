@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Adapter"
-section: dp
-prev: structural
-next: structural/bridge
----
-
-## {{page.title}}
+# Адаптер
 
 #### Назначение
 

@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Decorator"
-section: dp
-prev: structural/composite
-next: structural/facade
----
-
-## {{page.title}}
+# Декоратор
 
 #### Назначение
 

@@ -148,44 +148,16 @@
     - [Строитель](patterns/creational/builder.md)
     - [Прототип](patterns/creational/prototype.md)
     - [Одиночка](patterns/creational/singleton.md)
-  - [Группа Monad](patterns/monad.md)
-    - [Functor](patterns/monad/functor.md)
-    - [Foldable](patterns/monad/foldable.md)
-    - [Traverse](patterns/monad/traverse.md)
-    - [Applicative](patterns/monad/applicative.md)
-    - [Monad](patterns/monad/monad.md)
+  - [Структурные шаблоны](patterns/structural.md)
+    - [Адаптер](patterns/structural/adapter.md)
+    - [Мост](patterns/structural/bridge.md)
+    - [Компоновщик](patterns/structural/composite.md)
+    - [Декоратор](patterns/structural/decorator.md)
+    - [Фасад](patterns/structural/facade.md)
+    - [Приспособленец](patterns/structural/flyweight.md)
+    - [Заместитель](patterns/structural/proxy.md)
+  
 
-
-
-
-
-
-
-- title: Structural Patterns
-  url: design-patterns/structural
-  menu_type: dp
-
-  nested_options:
-  - title: Adapter
-    url: design-patterns/structural/adapter
-
-  - title: Bridge
-    url: design-patterns/structural/bridge
-
-  - title: Composite
-    url: design-patterns/structural/composite
-
-  - title: Decorator
-    url: design-patterns/structural/decorator
-
-  - title: Facade
-    url: design-patterns/structural/facade
-
-  - title: Flyweight
-    url: design-patterns/structural/flyweight
-
-  - title: Proxy
-    url: design-patterns/structural/proxy
 
 - title: Behavioral Patterns
   url: design-patterns/behavioral

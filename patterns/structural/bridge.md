@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Bridge"
-section: dp
-prev: structural/adapter
-next: structural/composite
----
-
-## {{page.title}}
+# Мост
 
 #### Назначение
 

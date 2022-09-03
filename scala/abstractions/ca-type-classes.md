@@ -203,7 +203,7 @@ assertTransformation(List("a1", "b1"), List("a", "b"), elt => s"${elt}1")
 
 Это первый шаг, но на практике желательно, чтобы функция `map` была методом, доступным непосредственно для типа `F`. 
 Чтобы можно было экземплярам `F` напрямую обращаться к `map` и избавиться от части `summon[Functor[F]]`. 
-Как и в предыдущем примере моноидов, в этом помогают [extension методы](@DOC@abstractions/ca-extension-methods). 
+Как и в предыдущем примере моноидов, в этом помогают [extension методы](ca-extension-methods). 
 Переопределим класс типов `Functor` с помощью методов расширения.
 
 ```scala
@@ -345,7 +345,7 @@ given configDependentMonad: Monad[ConfigDependent] with
 end configDependentMonad
 ```
 
-Тип `ConfigDependent` может быть записан с использованием [лямбда-выражений типа](@DOC@type-system/type-lambdas):
+Тип `ConfigDependent` может быть записан с использованием [лямбда-выражений типа](../type-system/type-lambdas):
 
 ```scala
 type ConfigDependent = [Result] =>> Config => Result

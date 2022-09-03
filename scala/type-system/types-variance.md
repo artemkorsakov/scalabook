@@ -5,9 +5,14 @@
 Чтобы разобраться в вариантности, рассмотрим следующий пример типов:
 
 ```scala
-trait Item { def productNumber: String }
-trait Buyable extends Item { def price: Int }
-trait Book extends Buyable { def isbn: String }
+trait Item:
+  def productNumber: String
+
+trait Buyable extends Item:
+  def price: Int
+
+trait Book extends Buyable:
+  def isbn: String
 ```
 
 Предположим также следующие параметризованные типы:

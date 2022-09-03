@@ -168,8 +168,8 @@
     - [Стратегия](patterns/behavioral/strategy.md)
     - [Посетитель](patterns/behavioral/visitor.md)
 
-## Scala puzzlers
-- [Scala Puzzlers](puzzlers/index.md)
+## Головоломки на Scala
+- [Головоломки на Scala](puzzlers/index.md)
   - [Hi There!](puzzlers/hi-there.md)
   - [UPSTAIRS downstairs](puzzlers/upstairs.md)
   - [Location, Location, Location](puzzlers/location.md)

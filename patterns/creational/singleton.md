@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Singleton"
-section: dp
-prev: creational/prototype
-next: structural
----
-
-## {{page.title}}
+# Одиночка
 
 #### Назначение
 

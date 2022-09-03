@@ -143,11 +143,11 @@
 
 - [Паттерны проектирования](patterns/index.md)
   - [Порождающие шаблоны](patterns/creational.md)
-    - [Semigroup](patterns/monoid/semigroup.md)
-    - [Monoid](patterns/monoid/monoid.md)
-    - [Semigroup](patterns/monoid/semigroup.md)
-    - [Monoid](patterns/monoid/monoid.md)
-    - [Monoid](patterns/monoid/monoid.md)
+    - [Фабричный метод](patterns/creational/factory-method.md)
+    - [Абстрактная фабрика](patterns/creational/abstract-factory.md)
+    - [Строитель](patterns/creational/builder.md)
+    - [Прототип](patterns/creational/prototype.md)
+    - [Одиночка](patterns/creational/singleton.md)
   - [Группа Monad](patterns/monad.md)
     - [Functor](patterns/monad/functor.md)
     - [Foldable](patterns/monad/foldable.md)
@@ -157,21 +157,6 @@
 
 
 
-  nested_options:
-  - title: Factory Method
-    url: design-patterns/creational/factory-method
-
-  - title: Abstract Factory
-    url: design-patterns/creational/abstract-factory
-
-  - title: Builder
-    url: design-patterns/creational/builder
-
-  - title: Prototype
-    url: design-patterns/creational/prototype
-
-  - title: Singleton
-    url: design-patterns/creational/singleton
 
 
 

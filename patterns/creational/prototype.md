@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Prototype"
-section: dp
-prev: creational/builder
-next: creational/singleton
----
-
-## {{page.title}}
+# Прототип
 
 #### Назначение
 

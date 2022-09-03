@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Abstract Factory"
-section: dp
-prev: creational/factory-method
-next: creational/builder
----
-
-## {{page.title}}
+# Абстрактная фабрика
 
 #### Назначение
 

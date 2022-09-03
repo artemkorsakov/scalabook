@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Factory Method"
-section: dp
-prev: creational
-next: creational/abstract-factory
----
-
-## {{page.title}}
+# Фабричный метод
 
 #### Назначение
 

@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Builder"
-section: dp
-prev: creational/abstract-factory
-next: creational/prototype
----
-
-## {{page.title}}
+# Строитель
 
 #### Назначение
 

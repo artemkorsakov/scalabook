@@ -252,11 +252,6 @@ subsection:
 а исходная страница `foo/page2.md` - `custom-directory/page2.html`.
 
 
-### Пример
-
-[Пример сгенеренного с помощью Scaladoc статического сайта](@API@)
-
-
 ---
 
 **References:**

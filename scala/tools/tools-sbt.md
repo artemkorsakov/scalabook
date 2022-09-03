@@ -76,7 +76,7 @@ $ sbt run
 [info] welcome to sbt 1.6.1 (AdoptOpenJDK Java 11.x)
 [info] loading project definition from project ...
 [info] loading settings for project from build.sbt ...
-[info] compiling 1 Scala source to target/scala-@SCALA@/classes ...
+[info] compiling 1 Scala source to target/scala-3.1.3/classes ...
 [info] running helloWorld
 Hello, world
 [success] Total time: 2 s
@@ -183,7 +183,7 @@ $ find .
 ```
 name := "HelloWorld"
 version := "0.1"
-scalaVersion := "@SCALA@"
+scalaVersion := "3.1.3"
 ```
 
 Поскольку проекты sbt используют стандартную структуру каталогов, sbt может найти все, что ему нужно. 
@@ -342,7 +342,7 @@ $ mkdir project
 Затем создаем файл _build.properties_ в подкаталоге _project/_ проекта с такой строкой:
 
 ```
-sbt.version=@SBT_VERSION@
+sbt.version=1.6.2
 ```
 
 Создаем файл `build.sbt` в корневом каталоге проекта со следующим содержимым:
@@ -350,7 +350,7 @@ sbt.version=@SBT_VERSION@
 ```
 name := "HelloScalaTest"
 version := "0.1"
-scalaVersion := "@SCALA@"
+scalaVersion := "3.1.3"
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.9" % Test

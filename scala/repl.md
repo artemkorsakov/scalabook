@@ -8,7 +8,7 @@ Scala REPL ("Read-Evaluate-Print-Loop") - это интерпретатор ко
 
 ```
 $ scala
-Welcome to Scala @SCALA@ (OpenJDK 64-Bit Server VM, Java 11.0.9).
+Welcome to Scala 3.1.3 (OpenJDK 64-Bit Server VM, Java 11.0.9).
 Type in expressions for evaluation.
 Or try :help.
 

@@ -35,13 +35,13 @@ $ mkdir project
 Создайте файл с именем _build.properties_ в каталоге `project` со следующим содержимым:
 
 ```
-sbt.version=@SBT_VERSION@
+sbt.version=1.6.2
 ```
 
 Затем создайте файл с именем _build.sbt_ в корневом каталоге проекта (`hello`), содержащий следующую строку:
 
 ```
-scalaVersion := "@SCALA@"
+scalaVersion := "3.1.3"
 ```
 
 Теперь создайте файл с именем _Hello.scala_ в корневом каталоге проекта с таким содержимым:

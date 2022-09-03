@@ -43,13 +43,13 @@ a.headOption
 // res4: Option[Int] = Some(value = 10)                      
 a.init                       
 // res5: List[Int] = List(10, 20, 30, 40)                       
-a.intersect(List(19,20,21))  
+a.intersect(List(19, 20, 21))  
 // res6: List[Int] = List(20)  
 a.last                       
 // res7: Int = 10                       
 a.lastOption                 
 // res8: Option[Int] = Some(value = 10)                 
-a.slice(2,4)                 
+a.slice(2, 4)                 
 // res9: List[Int] = List(30, 40)                 
 a.tail                       
 // res10: List[Int] = List(20, 30, 40, 10)                       

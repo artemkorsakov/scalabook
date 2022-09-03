@@ -202,7 +202,8 @@ oneToTen.filter(_ < 4).map(_ * 10)
 ```
 
 > Если `filter` используется перед `map`, `flatMap` или `foreach`, 
-> то для лучшей производительности он заменяется на `withFilter`, например, `oneToTen.withFilter(_ < 4).map(_ * 10)`
+> то для лучшей производительности вместо него должен использоваться `withFilter`, 
+> например, `oneToTen.withFilter(_ < 4).map(_ * 10)`
 
 ### foreach
 

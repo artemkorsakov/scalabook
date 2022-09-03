@@ -1,22 +1,34 @@
----
-layout: puzzlers
-title: "UPSTAIRS downstairs"
-section: puzzlers
-prev: hi-there
-next: location
----
+# UPSTAIRS downstairs
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 val ij: (Int, Int) = (3, 4)
+// ij: Tuple2[Int, Int] = (3, 4)
 val (i, j): (Int, Int) = (3, 4)
+// i: Int = 3
+// j: Int = 4
 val IJ: (Int, Int) = (3, 4)
+// IJ: Tuple2[Int, Int] = (3, 4)
 ```
 
-```scala mdoc:reset:fail
+```scala
 val (I, J): (Int, Int) = (3, 4)
 val (`i`, `j`): (Int, Int) = (3, 4)
+// error:
+// Not found: I
+// val (I, J): (Int, Int) = (3, 4)
+//      ^
+// error:
+// Not found: J
+// val (I, J): (Int, Int) = (3, 4)
+//         ^
+// error:
+// Not found: i
+// val (`i`, `j`): (Int, Int) = (3, 4)
+//      ^^^
+// error:
+// Not found: j
+// val (`i`, `j`): (Int, Int) = (3, 4)
+//           ^^^
 ```
 
 Первые три случая - это присвоение переменным значений кортежа. 

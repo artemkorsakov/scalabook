@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Неявные преобр."
-section: scala
-prev: abstractions/context-functions
-next: abstractions/ca-by-name-parameters
----
-
-## Неявные преобразования типов
+# Неявные преобразования типов
 
 Неявные преобразования определяются экземплярами `given` класса `scala.Conversion`.
 Этот класс определен в пакете `scala` следующим образом:

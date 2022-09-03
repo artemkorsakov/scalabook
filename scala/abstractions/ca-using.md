@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Using"
-section: scala
-prev: abstractions/ca-given
-next: abstractions/type-classes
----
-
-## Предложения using
+# Предложения using
 
 Функциональное программирование имеет тенденцию выражать большинство зависимостей в виде простой параметризации функций. 
 Это чисто и мощно, но иногда это приводит к функциям, которые принимают много параметров, 
@@ -17,28 +9,7 @@ next: abstractions/type-classes
 Например, с [экземплярами given intOrd и listOrd](@DOC@abstractions/ca-given) функция `max`, 
 которая работает для любых аргументов с возможностью упорядочивания, может быть определена следующим образом:
 
-```scala mdoc:invisible
-trait Ord[T]:
-  def compare(x: T, y: T): Int
-  extension (x: T) def < (y: T) = compare(x, y) < 0
-  extension (x: T) def > (y: T) = compare(x, y) > 0
-
-given intOrd: Ord[Int] with
-  def compare(x: Int, y: Int) =
-    if x < y then -1 else if x > y then +1 else 0
-
-given listOrd[T](using ord: Ord[T]): Ord[List[T]] with
-
-  def compare(xs: List[T], ys: List[T]): Int = (xs, ys) match
-    case (Nil, Nil) => 0
-    case (Nil, _) => -1
-    case (_, Nil) => +1
-    case (x :: xs1, y :: ys1) =>
-      val fst = ord.compare(x, y)
-      if fst != 0 then fst else compare(xs1, ys1)    
-```
-
-```scala mdoc:silent
+```scala
 def max[T](x: T, y: T)(using ord: Ord[T]): T =
   if ord.compare(x, y) < 0 then y else x
 ```
@@ -49,17 +20,20 @@ def max[T](x: T, y: T)(using ord: Ord[T]): T =
 Таким образом, компилятор Scala выполняет вывод терминов (**term inference**).
 Функцию `max` можно применить следующим образом:
 
-```scala mdoc
+```scala
 max(2, 3)(using intOrd)
+// res0: Int = 3
 ```
 
 Часть `(using intOrd)` передает `intOrd` как аргумент для параметра `ord`. 
 Но смысл параметров контекста в том, что этот аргумент также можно опустить (и это обычно так и есть).
 Таким образом, следующие выражения валидны:
 
-```scala mdoc
+```scala
 max(2, 3)
+// res1: Int = 3
 max(List(1, 2, 3), Nil)
+// res2: List[Int] = List(1, 2, 3)
 ```
 
 В вызове `max(2, 3)` компилятор Scala видит, что в области действия есть терм типа `Ord[Int]`,
@@ -71,7 +45,7 @@ max(List(1, 2, 3), Nil)
 поскольку оно используется только в синтезированных аргументах для других параметров контекста. 
 В этом случае можно не задавать имя параметра и указать только его тип. Например:
 
-```scala mdoc:silent
+```scala
 //                  не нужно придумывать имя параметра
 //                          vvvvvvvvvvvv
 def maximum[T](xs: List[T])(using Ord[T]): T =
@@ -82,8 +56,9 @@ def maximum[T](xs: List[T])(using Ord[T]): T =
 чтобы передать его в качестве предполагаемого аргумента в `max`. 
 Имя параметра опущено.
 
-```scala mdoc
+```scala
 maximum(List(1, 2, 3))
+// res3: Int = 3
 ```
 
 Как правило, параметры контекста могут быть определены 
@@ -96,8 +71,9 @@ maximum(List(1, 2, 3))
 Подобно тому, как задается раздел параметров с `using`,
 контекстные аргументы можно указать явно с помощью того же `using`:
 
-```scala mdoc
+```scala
 maximum(List(1, 2, 3))(using intOrd)
+// res4: Int = 3
 ```
 
 Явное предоставление контекстных параметров может быть полезно,
@@ -111,7 +87,7 @@ maximum(List(1, 2, 3))(using intOrd)
 
 Сравните следующие примеры, в которых попытка указать явный элемент given приводит к двусмысленности:
 
-```scala mdoc:silent
+```scala
 class GivenIntBox(using val givenInt: Int):
   def n = summon[Int]
 
@@ -135,7 +111,7 @@ import b.*
 
 Вот два других метода, которые используют контекстный параметр типа `Ord[T]`:
 
-```scala mdoc:silent
+```scala
 def descending[T](using asc: Ord[T]): Ord[T] = new Ord[T]:
   def compare(x: T, y: T) = asc.compare(y, x)
 
@@ -146,12 +122,17 @@ def minimum[T](xs: List[T])(using Ord[T]) =
 Тело метода `minimum` передает `descending` как явный аргумент в `maximum(xs)`. 
 С этой настройкой все следующие вызовы нормализуются так:
 
-```scala mdoc
+```scala
 val xs = List(List(1,2,3), Nil)
+// xs: List[List[Int]] = List(List(1, 2, 3), List())
 minimum(xs)
+// res5: List[Int] = List()
 maximum(xs)(using descending)
+// res6: List[Int] = List()
 maximum(xs)(using descending(using listOrd))
+// res7: List[Int] = List()
 maximum(xs)(using descending(using listOrd(using intOrd)))
+// res8: List[Int] = List()
 ```
 
 ### Несколько using

@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Параллелизм"
-section: scala
-prev: details/pattern-matching
-next: tools
----
-
-## {{page.title}}
+# Параллелизм
 
 Для написания параллельных приложений на Scala, можно использовать нативный поток Java, 
 но Scala [Future](https://scala-lang.org/api/3.x/scala/concurrent/Future.html) 

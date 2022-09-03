@@ -1,18 +1,10 @@
----
-layout: docsplus
-title: "Предложения export"
-section: scala
-prev: details
-next: details/parameter-untupling
----
-
-## {{page.title}}
+# Предложения export
 
 Предложение `export` определяет псевдонимы для выбранных членов объекта. 
 
 Например:
 
-```scala mdoc:silent
+```scala
 class BitMap
 class InkJet
 
@@ -47,9 +39,11 @@ final type PrinterType              = printUnit.PrinterType
 
 Доступ к ним возможен как изнутри `Copier`, так и снаружи:
 
-```scala mdoc
+```scala
 val copier = new Copier
 copier.print(copier.scan())
+// Scanner.scan()
+// Printer.print()
 ```
 
 Предложение `export` имеет тот же формат, что и предложение импорта. Его общая форма:

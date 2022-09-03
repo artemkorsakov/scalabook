@@ -1,18 +1,10 @@
----
-layout: docsplus
-title: "Конт. пар. по имени"
-section: scala
-prev: abstractions/ca-implicit-conversions
-next: details
----
-
-## Контекстные параметры по имени
+# Контекстные параметры по имени
 
 Контекстные параметры также могут быть объявлены по имени, 
 чтобы избежать использования предполагаемого расширения. 
 Пример:
 
-```scala mdoc
+```scala
 trait Codec[T]:
   def write(x: T): Unit
 
@@ -27,6 +19,7 @@ given optionCodec[T](using ev: => Codec[T]): Codec[Option[T]] with
 val s = summon[Codec[Option[Int]]]
 
 s.write(Some(33))
+// 33 has been written
 s.write(None)
 ```
 

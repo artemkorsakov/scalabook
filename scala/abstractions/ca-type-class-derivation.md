@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Type Class Derivation"
-section: scala
-prev: abstractions/ca-type-classes
-next: abstractions/ca-multiversal-equality
----
-
-## {{page.title}}
+# Type Class Derivation
 
 Type class derivation - это способ автоматического создания экземпляров `given` классов типов, 
 которые удовлетворяют некоторым простым условиям. 

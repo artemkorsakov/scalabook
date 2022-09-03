@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Given imports"
-section: scala
-prev: abstractions/ca-context-bounds
-next: abstractions/ca-extension-methods
----
-
-## {{page.title}}
+# Given imports
 
 Для большей ясности, откуда берутся данные в текущей области видимости, 
 для импорта экземпляров `given` используется специальная форма оператора `import`. 

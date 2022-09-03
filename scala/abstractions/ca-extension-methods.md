@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Методы расш. - детали"
-section: scala
-prev: abstractions/ca-given-imports
-next: abstractions/ca-type-classes
----
-
-## Методы расширения
+# Методы расширения - детали
 
 Методы расширения (_extension methods_) позволяют добавлять методы к типу после его определения, 
 т.е. позволяют добавлять новые методы в закрытые классы. 
@@ -188,7 +180,7 @@ extension [T](xs: List[T])(using Ordering[T])
 
 Вот пример первого правила:
 
-```scala mdoc:silent
+```scala
 trait IntOps:
   extension (i: Int) def isZero: Boolean = i == 0
 
@@ -216,7 +208,7 @@ trait SafeDiv:
 Согласно второму правилу, метод расширения можно сделать доступным, 
 определив экземпляр `given`, содержащий его, например так:
 
-```scala mdoc:silent
+```scala
 given ops1: IntOps()  // приносит safeMod в область видимости 
 
 1.safeMod(2)

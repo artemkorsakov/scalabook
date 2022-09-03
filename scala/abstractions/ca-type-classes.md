@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Импл. type классов"
-section: scala
-prev: abstractions/ca-extension-methods
-next: abstractions/ca-type-class-derivation
----
-
-## Имплементация type классов
+# Имплементация type классов
 
 Класс типов — это абстрактный параметризованный тип, 
 который позволяет добавлять новое поведение к любому закрытому типу данных без использования подтипов. 
@@ -32,7 +24,7 @@ next: abstractions/ca-type-class-derivation
 который имеет один или несколько абстрактных методов. 
 Поскольку у `Showable` есть только один метод с именем `show`, он написан так:
 
-```scala mdoc:silent
+```scala
 // Класс типа
 trait Showable[A]:
   extension(a: A) def show: String
@@ -61,14 +53,14 @@ trait Show:
 Следующий шаг — определить, для каких классов должен работать `Showable`, а затем реализовать это поведение. 
 Например, чтобы реализовать `Showable` для данного класса `Person`:
 
-```scala mdoc:silent
+```scala
 case class Person(firstName: String, lastName: String)
 ```
 
 нужно определить `given` значение для `Showable[Person]`. 
 Этот код предоставляет конкретный экземпляр `Showable` для класса `Person`:
 
-```scala mdoc:silent
+```scala
 given Showable[Person] with
   extension(p: Person) def show: String =
     s"${p.firstName} ${p.lastName}"
@@ -81,9 +73,11 @@ given Showable[Person] with
 
 Этот класс типа можно использовать следующим образом:
 
-```scala mdoc
+```scala
 val person = Person("John", "Doe")
+// person: Person = Person(firstName = "John", lastName = "Doe")
 println(person.show)
+// John Doe
 ```
 
 Опять же, если бы в Scala не было метода `toString`, доступного для каждого класса, 
@@ -94,10 +88,12 @@ println(person.show)
 
 Как и в случае с наследованием, можно определить методы, использующие `Showable` в качестве параметра типа:
 
-```scala mdoc
+```scala
 def showAll[S: Showable](xs: List[S]): Unit =
   xs.foreach(x => println(x.show))
 showAll(List(Person("Jane", "Jackson"), Person("Mary", "Jameson")))
+// Jane Jackson
+// Mary Jameson
 ```
 
 #### Класс типов с несколькими методами
@@ -117,7 +113,7 @@ trait HasLegs[A]:
 
 Вот определение класса типа `Monoid`:
 
-```scala mdoc:silent
+```scala
 trait SemiGroup[T]:
   extension (x: T) def combine (y: T): T
 
@@ -127,7 +123,7 @@ trait Monoid[T] extends SemiGroup[T]:
 
 Реализация класса типа `Monoid` для типа `String` может быть следующей:
 
-```scala mdoc:silent
+```scala
 given Monoid[String] with
   extension (x: String) def combine (y: String): String = x.concat(y)
   def unit: String = ""
@@ -135,7 +131,7 @@ given Monoid[String] with
 
 Тогда как для типа `Int` можно было бы написать следующее:
 
-```scala mdoc:silent
+```scala
 given Monoid[Int] with
   extension (x: Int) def combine (y: Int): Int = x + y
   def unit: Int = 0
@@ -143,7 +139,7 @@ given Monoid[Int] with
 
 Этот моноид теперь можно использовать в качестве привязки к контексту в следующем методе `combineAll`:
 
-```scala mdoc:silent
+```scala
 def combineAll[T: Monoid](xs: List[T]): T =
   xs.foldLeft(summon[Monoid[T]].unit)(_.combine(_))
 ```

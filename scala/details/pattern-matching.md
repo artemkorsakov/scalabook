@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Экстракторы"
-section: scala
-prev: details/type-test
-next: concurrency
----
-
-## Сопоставление с образцом
+# Сопоставление с образцом
 
 ### Экстракторы
 
@@ -58,19 +50,20 @@ type R = {
 
 Пример:
 
-```scala mdoc
+```scala
 object Even:
   def unapply(s: String): Boolean = s.size % 2 == 0
 "even" match
   case s @ Even() => println(s"$s has an even number of characters")
   case s          => println(s"$s has an odd number of characters")
+// even has an even number of characters
 ```
 
 #### Соответствие продукта
 
 Пример:
 
-```scala mdoc
+```scala
 class FirstChars(s: String) extends Product:
   def _1 = s.charAt(0)
   def _2 = s.charAt(1)
@@ -85,13 +78,14 @@ object FirstChars:
 "Hi!" match
   case FirstChars(char1, char2) =>
     println(s"First: $char1; Second: $char2")
+// First: H; Second: i    
 ```
 
 #### Одиночное совпадение
 
 Пример:
 
-```scala mdoc
+```scala
 class Nat(val x: Int):
   def get: Int = x
   def isEmpty = x < 0
@@ -100,13 +94,14 @@ object Nat:
 5 match
   case Nat(n) => println(s"$n is a natural number")
   case _      => ()
+// 5 is a natural number  
 ```
 
 #### Совпадение по имени
 
 Пример:
 
-```scala mdoc
+```scala
 object ProdEmpty:
   def _1: Int = ???
   def _2: String = ???
@@ -116,6 +111,7 @@ object ProdEmpty:
 "" match
   case ProdEmpty(_, _) => ???
   case _ => println("not ProdEmpty")
+// not ProdEmpty  
 ```
 
 
@@ -153,7 +149,7 @@ type R = {
 
 Пример:
 
-```scala mdoc
+```scala
 object CharList:
   def unapplySeq(s: String): Option[Seq[Char]] = Some(s.toList)
 "example" match
@@ -161,13 +157,14 @@ object CharList:
     println(s"$c1,$c2,$c3,$c4")
   case _ =>
     println("Expected *exactly* 7 characters!")
+// e,x,a,m    
 ```
 
 #### Соответствие последовательности продуктов
 
 Пример:
 
-```scala mdoc
+```scala
 class Foo(val name: String, val children: Int*)
 object Foo:
   def unapplySeq(f: Foo): Option[(String, Seq[Int])] =
@@ -178,8 +175,11 @@ def foo(f: Foo): Unit = f match
   case Foo(name, ns*) =>
     println(s"name = $name, ns = $ns")
 foo(new Foo("first", 2))
+// name = first, ns = ArraySeq(2)
 foo(new Foo("first", 2, 3))
+// name = first, x = 2, y = 3, ns = ArraySeq()
 foo(new Foo("first", 2, 3, 4))
+// name = first, x = 2, y = 3, ns = ArraySeq(4)
 ```
 
 

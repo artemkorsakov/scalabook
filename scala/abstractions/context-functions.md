@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Контекстные функции"
-section: scala
-prev: abstractions/ca-multiversal-equality
-next: abstractions/ca-implicit-conversions
----
-
-## {{page.title}}
+# Контекстные функции
 
 _Контекстные функции_ — это функции с параметрами контекста. 
 Их типы являются типами контекстных функций. 
@@ -138,7 +130,7 @@ table { ($t: Table) ?=>
 В примере сочетаются непрозрачные псевдонимы типов, типы контекстных функций и методы расширения, 
 чтобы обеспечить абстракцию с нулевыми издержками.
 
-```scala mdoc
+```scala
 object PostConditions:
   opaque type WrappedResult[T] = T
 
@@ -152,6 +144,7 @@ end PostConditions
 import PostConditions.{ensuring, result}
 
 val s = List(1, 2, 3).sum.ensuring(result == 6)
+// s: Int = 6
 ```
 
 Пояснения: тип контекстной функции `WrappedResult[T] ?=> Boolean` используется в качестве типа условия `ensuring`. 

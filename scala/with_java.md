@@ -1,12 +1,4 @@
----
-layout: docsplus
-title: "Взаимодействие с Java"
-section: scala
-prev: tools/tools-worksheets
-next: metaprogramming
----
-
-## {{page.title}}
+# Взаимодействие с Java
 
 ### Введение
 

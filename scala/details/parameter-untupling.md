@@ -1,16 +1,8 @@
----
-layout: docsplus
-title: "Распаковка параметров"
-section: scala
-prev: details/export-causes
-next: details/type-test
----
-
-## {{page.title}}
+# Распаковка параметров
 
 Допустим есть список кортежей, например:
 
-```scala mdoc:silent
+```scala
 val xs: List[(Int, Int)] = List((1, 2), (3, 4))
 ```
 
@@ -27,23 +19,26 @@ xs map {
 что сопоставление с образцом может завершиться ошибкой. 
 Как более короткая и понятная альтернатива, Scala 3 теперь позволяет
 
-```scala mdoc
+```scala
 xs.map {
   (x, y) => x + y
 }
+// res0: List[Int] = List(3, 7)
 ```
 
 или, что то же самое:
 
-```scala mdoc
+```scala
 xs.map(_ + _)
+// res1: List[Int] = List(3, 7)
 ```
 
 а также
 
-```scala mdoc
+```scala
 def combine(i: Int, j: Int) = i + j
 xs.map(combine)
+// res2: List[Int] = List(3, 7)
 ```
 
 Как правило, значение функции с `n > 1` параметрами упаковывается в функциональный тип 
@@ -54,18 +49,24 @@ xs.map(combine)
 В частности, адаптация не является преобразованием между типами функций. 
 Поэтому не принимается:
 
-```scala mdoc:silent
+```scala
 val combiner: (Int, Int) => Int = _ + _
 ```
 
-```scala mdoc:fail
+```scala
 xs.map(combiner)
+// error:
+// Found:    (repl.MdocSession.App.combiner : (Int, Int) => Int)
+// Required: ((Int, Int)) => Nothing
+// xs.map(combiner)
+//        ^^^^^^^^
 ```
 
 Значение функции должно быть явно сложены:
 
-```scala mdoc
+```scala
 xs.map(combiner.tupled)
+// res4: List[Int] = List(3, 7)
 ```
 
 Преобразование может быть предусмотрено в пользовательском коде:

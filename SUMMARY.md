@@ -120,6 +120,15 @@
 ## Доп. материалы
 - [Доп. материалы](extra.md)
 
+## Функц. программирование
+- [Функц программирование](fp/index.md)
+  - [Функц. структура данных](fp/data-structures.md)
+  - [Обработка ошибок](fp/handling-errors.md)
+  - [Ленивые вычисления](fp/laziness.md)
+  - [Функциональное состояние](fp/state.md)
+  - [Monoids](fp/monoids.md)
+  - [Monads](fp/monads.md)
+
 ## Теория категорий
 - [Класс типов](typeclass/index.md)
 - [Группа Monoid](typeclass/monoid.md)

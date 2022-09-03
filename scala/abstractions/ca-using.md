@@ -171,7 +171,7 @@ f(global)(using ctx)(using sym, kind)
 Например, вот как можно вызвать given экземпляр для `Ord[List[Int]]`:
 
 ```
-summon[Ord[List[Int]]]  // reduces to listOrd(using intOrd)
+summon[Ord[List[Int]]]  // сводится к listOrd(using intOrd)
 ```
 
 Метод `summon` определяется как (нерасширяющая) функция идентификации по параметру контекста.

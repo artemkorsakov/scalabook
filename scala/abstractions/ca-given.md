@@ -117,7 +117,7 @@ inline given Show[Foo] with {
 }
 
 def app =
-  // inlines `show` method call and removes the call to `given Show[Foo]`
+  // встраивает вызов метода `show` и удаляет вызов `given Show[Foo]`
   summon[Show[Foo]].show(foo)
 ```
 

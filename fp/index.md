@@ -66,7 +66,7 @@ sum(List(1, 2, 3))
 Рассмотрим пример: допустим, необходимо написать функцию `formatResult`, 
 вычисляющую модуль числа или его факториал и выводящую результат.
 
-```scala mdoc:silent
+```scala
 def abs(n: Int): Int =
   if n < 0 then -n
   else n
@@ -92,9 +92,11 @@ def formatResult(name: String, n: Int, f: Int => Int): String =
 Точно так же `factorial` соответствует типу `Int => Int`. 
 Поэтому можно передать `abs` или `factorial` в качестве аргумента `f` в `formatResult`:
 
-```scala mdoc
+```scala
 formatResult("absolute value", -42, abs)
+// res3: String = "The absolute value of -42 is 42."
 formatResult("factorial", 7, factorial)  
+// res4: String = "The factorial of 7 is 5040."
 ```
 
 #### Анонимная функция
@@ -109,7 +111,7 @@ formatResult("factorial", 7, factorial)
 
 Пример использования анонимных функций:
 
-```scala mdoc
+```scala
 def findFirst[A](as: Array[A], p: A => Boolean): Int =
   @annotation.tailrec
   def loop(n: Int): Int =
@@ -120,6 +122,7 @@ def findFirst[A](as: Array[A], p: A => Boolean): Int =
   loop(0)
 
 findFirst(Array(7, 9, 13), (x: Int) => x == 9)
+// res5: Int = 1
 ```
 
 Синтаксис `(x: Int) => x == 9` представляет собой литерал функции или анонимную функцию.
@@ -131,7 +134,7 @@ findFirst(Array(7, 9, 13), (x: Int) => x == 9)
 
 Примеры каррирования, раскаррирования и композиции:
 
-```scala mdoc:silent
+```scala
 def curry[A, B, C](f: (A, B) => C): A => (B => C) =
   a => b => f(a, b)
 

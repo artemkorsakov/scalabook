@@ -1,21 +1,13 @@
----
-layout: fp
-title: "Monads"
-section: fp
-prev: monoids
-next: ???
----
-
-## {{page.title}}
+# Monads
 
 ### Functor
 
-[Функтор](@TC@monad/functor) — это преобразование из категории `A` в категорию `B`.
+[Функтор](../typeclass/monad/functor) — это преобразование из категории `A` в категорию `B`.
 Такие преобразования часто изображаются стрелкой: `A -> B` (или через метод `map`).
 
 Функтор можно описать с помощью `trait`:
 
-```scala mdoc:silent
+```scala
 trait Functor[F[_]]:
   extension [A](fa: F[A])
     def map[B](f: A => B): F[B]
@@ -45,7 +37,7 @@ trait Functor[F[_]]:
 
 ### Applicative
 
-[Applicative](@TC@monad/applicative) расширяет `Functor` и позволяет работать с несколькими «ящиками».
+[Applicative](../typeclass/monad/applicative) расширяет `Functor` и позволяет работать с несколькими «ящиками».
 В аппликативных функторах примитивами являются `unit` и `map2`.
 
 ```scala
@@ -126,7 +118,7 @@ def product[A, B](fa: F[A], fb: F[A]): F[(A,B)] =
 
 ### Monad
 
-[Монада](@TC@monad/monad) - это [Applicative](@TC@monad/applicative) (а значит и [Functor](@TC@monad/functor))
+[Монада](../typeclass/monad/monad) - это [Applicative](../typeclass/monad/applicative) (а значит и [Functor](../typeclass/monad/functor))
 с дополнительной функцией: `flatten` (сведение: `F[F[A]] -> F[A]`).
 Что позволяет определить `flatMap` — `map`, за которой следует `flatten`.
 
@@ -146,7 +138,7 @@ def product[A, B](fa: F[A], fb: F[A]): F[(A,B)] =
 Монада может быть определена с помощью `flatMap` и `unit`.
 В этом случае `map` и `map2` будут определяться так:
 
-```scala mdoc:silent
+```scala
 trait Monad[F[_]] extends Functor[F]:
   def unit[A](a: => A): F[A]
 

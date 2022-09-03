@@ -1,12 +1,4 @@
----
-layout: fp
-title: "Ленивые вычисления"
-section: fp
-prev: handling-errors
-next: state
----
-
-## {{page.title}}
+# Ленивые вычисления
 
 Нестрогость (или ленивое вычисление) — это свойство функции. 
 Сказать, что функция не является строгой, просто означает, 
@@ -26,14 +18,16 @@ def square(x: Double): Double = x * x
 встречающиеся во многих языках программирования, включая Scala, не являются строгими.
 Функция `&&` принимает два логических аргумента, но оценивает второй аргумент только в том случае, если первый истинен:
 
-```scala mdoc
+```scala 
 false && { println("!!"); true }
+// res0: Boolean = false
 ```
 
 Аналогично `||` оценивает свой второй аргумент, только если первый `false`:
 
-```scala mdoc
+```scala 
 true || { println("!!"); false }
+// res1: Boolean = true
 ```
 
 Еще одним примером нестрогости является управляющая конструкция `if` в Scala:
@@ -44,9 +38,12 @@ val result = if input.isEmpty then sys.error("empty input") else input
 
 Нестрогие вычисления не кэшируются и вычисляются каждый раз при вызове:
 
-```scala mdoc
+```scala
 def maybeTwice(b: Boolean, i: => Int) = if b then i + i else 0
 val x = maybeTwice(true, { println("hi"); 1 + 41 })
+// hi
+// hi
+// x: Int = 84
 ```
 
 ### Lazy List
@@ -113,12 +110,12 @@ def exists(p: A => Boolean): Boolean = this match
 Поскольку преобразования являются инкрементальными, написанные функции также работают с бесконечными `LazyList`. 
 Вот пример бесконечного `LazyList` из единиц:
 
-```scala mdoc:silent
-val ones: LazyList[Int] = LazyList.cons(1, ones)        
-```
-```scala mdoc
+```scala
+val ones: LazyList[Int] = LazyList.cons(1, ones)
 ones.take(5).toList
+// res2: List[Int] = List(1, 1, 1, 1, 1)
 ones.exists(_ % 2 != 0)
+// res3: Boolean = true
 ```
 
 ### Корекурсия

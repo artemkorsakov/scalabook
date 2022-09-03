@@ -1,12 +1,4 @@
----
-layout: fp
-title: "Функциональное состояние"
-section: fp
-prev: laziness
-next: monoids
----
-
-## {{page.title}}
+# Функциональное состояние
 
 Базовый шаблон, как сделать любой API с отслеживанием состояния чисто функциональным, выглядит так:
 
@@ -60,44 +52,12 @@ object State:
 
 Пример:
 
-```scala mdoc:invisible
-object StateSpace:
-  opaque type State[S, +A] = S => (A, S)
-
-  object State:
-    extension [S, A](underlying: State[S, A])
-      def run(s: S): (A, S) = underlying(s)
-
-      def map[B](f: A => B): State[S, B] =
-        s1 =>
-          val (a, s2) = underlying(s1)
-          (f(a), s2)
-
-      def map2[B, C](sb: State[S, B])(f: (A, B) => C): State[S, C] =
-        for
-          a <- underlying
-          b <- sb
-        yield f(a, b)
-
-      def flatMap[B](f: A => State[S, B]): State[S, B] =
-        s1 =>
-          val (a, s2) = underlying(s1)
-          f(a)(s2)
-
-    def apply[S, A](f: S => (A, S)): State[S, A] = f
-
-    def unit[S, A](a: A): State[S, A] = s => (a, s)
-
-    def sequence[S, A](actions: List[State[S, A]]): State[S, List[A]] =
-      actions.foldRight(unit[S, List[A]](Nil))((f, acc) => f.map2(acc)(_ :: _))
-
-import StateSpace.State
-import StateSpace.State.*
-```
-```scala mdoc
+```scala
 unit[String, Int](42).run("state")
+// res0: Tuple2[Int, String] = (42, "state")
 val state = State[Int, String](i => (i.toString, i + 1))
 state.map(str => s"Number: $str").run(5)
+// res1: Tuple2[String, Int] = ("Number: 5", 6)
 ```
 
 ### Резюме

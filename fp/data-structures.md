@@ -1,12 +1,4 @@
----
-layout: fp
-title: "Функц. структура данных"
-section: fp
-prev: index
-next: handling-errors
----
-
-## Функциональная структура данных
+# Функциональная структура данных
 
 Функциональная структура данных (_functional data structures_) работает с использованием только чистых функций. 
 Напомним, что чистая функция не должна изменять данные или выполнять другие побочные эффекты. 
@@ -18,11 +10,7 @@ next: handling-errors
 
 Односвязный список можно определить так:
 
-```scala mdoc:invisible
-import scala.{List as _, Nil as _}
-import scala.collection.immutable.{List as _, Nil as _}
-```
-```scala mdoc:silent
+```scala
 enum List[+A]:
   case Nil
   case Cons(head: A, tail: List[A])
@@ -45,11 +33,15 @@ object List:
 
 Создать список можно следующим образом:
 
-```scala mdoc
+```scala
 val ex1: List[Double] = Nil
+// ex1: List[Double] = Nil
 val ex2: List[Int] = Cons(1, Nil)
+// ex2: List[Int] = Cons(head = 1, tail = Nil)
 val ex3: List[String] = Cons("a", Cons("b", Nil))
+// ex3: List[String] = Cons(head = "a", tail = Cons(head = "b", tail = Nil))
 val ex4: List[String] = List.apply("a", "b")
+// ex4: List[String] = Cons(head = "a", tail = Cons(head = "b", tail = Nil))
 ```
 
 #### Операции над односвязным списком

@@ -55,15 +55,15 @@ trait Logarithms:
 
   type Logarithm
 
-  // operations on Logarithm
+  // операции на Logarithm
   def add(x: Logarithm, y: Logarithm): Logarithm
   def mul(x: Logarithm, y: Logarithm): Logarithm
 
-  // functions to convert between Double and Logarithm
+  // функции конвертации между Double и Logarithm
   def make(d: Double): Logarithm
   def extract(x: Logarithm): Double
 
-  // extension methods to use `add` and `mul` as "methods" on Logarithm
+  // методы расширения, для вызова `add` и `mul` в качестве "методов" на Logarithm
   extension (x: Logarithm)
     def toDouble: Double = extract(x)
     def + (y: Logarithm): Logarithm = add(x, y)
@@ -77,11 +77,11 @@ object LogarithmsImpl extends Logarithms:
 
   type Logarithm = Double
 
-  // operations on Logarithm
+  // операции на Logarithm
   def add(x: Logarithm, y: Logarithm): Logarithm = make(x.toDouble + y.toDouble)
   def mul(x: Logarithm, y: Logarithm): Logarithm = x + y
 
-  // functions to convert between Double and Logarithm
+  // функции конвертации между Double и Logarithm
   def make(d: Double): Logarithm = math.log(d)
   def extract(x: Logarithm): Double = math.exp(x)
 ```

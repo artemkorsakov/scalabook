@@ -64,6 +64,7 @@
 - [Система типов](scala/type-system.md)
   - [Определение типов](scala/type-system/types-inferred.md)
   - [Generics типы](scala/type-system/types-generics.md)
+    - [Верхнее ограничение типа](scala/type-system/upper-type-bounds.md)
     - [Нижнее ограничение типа](scala/type-system/lower-type-bounds.md)
   - [Пересечение типов](scala/type-system/types-intersection.md)
   - [Объединение типов](scala/type-system/types-union.md)

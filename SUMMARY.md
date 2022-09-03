@@ -1,6 +1,6 @@
 - [Домашняя](README.md)
 
-## Обзор Scala
+## Scala
 - [Обзор Scala](scala/index.md)
 - [С чего начать?](scala/getting-started.md)
 - [Hello, world!](scala/hello_world.md)
@@ -120,7 +120,7 @@
 ## Доп. материалы
 - [Доп. материалы](extra.md)
 
-## ФП
+## Функц. программ.
 - [Функц программирование](fp/index.md)
   - [Функц. структура данных](fp/data-structures.md)
   - [Обработка ошибок](fp/handling-errors.md)
@@ -141,6 +141,6 @@
     - [Applicative](typeclass/monad/applicative.md)
     - [Monad](typeclass/monad/monad.md)
 
-## Паттерны проектирования
+## Паттерны
 
 ## Scala puzzlers

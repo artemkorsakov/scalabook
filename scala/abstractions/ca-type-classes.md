@@ -111,7 +111,7 @@ trait HasLegs[A]:
 
 #### Полугруппы и моноиды
 
-Вот определение класса типа `Monoid`:
+Вот определение [класса типа `Monoid`](../../typeclass/monoid):
 
 ```scala
 trait SemiGroup[T]:

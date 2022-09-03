@@ -1,5 +1,3 @@
-# Документация
-
 - [Домашняя](README.md)
 
 ## Обзор Scala
@@ -119,6 +117,9 @@
   - [Проверка фрагмента](scala/scaladoc/snippet-compiler.md)
   - [Настройки](scala/scaladoc/settings.md)
 
+## Доп. материалы
+- [Доп. материалы](extra.md)
+
 ## Теория категорий в Scala
 - [Класс типов](typeclass/index.md)
 - [Группа Monoid](typeclass/monoid.md)
@@ -130,6 +131,3 @@
   - [Traverse](typeclass/monad/traverse.md)
   - [Applicative](typeclass/monad/applicative.md)
   - [Monad](typeclass/monad/monad.md)
-
-## Дополнительные материалы
-- [Дополнительные материалы](extra.md)

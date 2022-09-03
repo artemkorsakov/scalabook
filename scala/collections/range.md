@@ -53,7 +53,7 @@ val odds = (1 to 10 by 2).toList
 // odds: List[Int] = List(1, 3, 5, 7, 9)
 val doubles = (1 to 5).map(_ * 2.0)
 // doubles: IndexedSeq[Double] = Vector(2.0, 4.0, 6.0, 8.0, 10.0)
-val map = (1 to 3).map(e => (e,s"$e")).toMap
+val map = (1 to 3).map(e => (e, e.toString)).toMap
 // map: Map[Int, String] = Map(1 -> "1", 2 -> "2", 3 -> "3")
 ```
 

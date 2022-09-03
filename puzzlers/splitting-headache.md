@@ -1,6 +1,6 @@
 # Splitting Headache
 
-```scala mdoc
+```scala
 def validDna(maybeDna: String) = {
   def containsOnly(s: String, chars: Array[Char]) =
     s.split(chars).isEmpty

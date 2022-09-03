@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "Inference Hindrance"
-section: puzzlers
-prev: a-matter-of-context
-next: for-each-step
----
+# Inference Hindrance
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 case object Completed
 given Conversion[Any, Completed.type] = _ => Completed
 def log[T](t: T): T =
@@ -20,7 +12,11 @@ def duplicate1(s: String): Completed.type =
 def duplicate2(s: String): Completed.type =
   log(s + s)
 duplicate1("Hello")
+// Log: HelloHello
+// res0: Completed = Completed
 duplicate2("world")
+// Log: Completed
+// res1: Completed = Completed
 ```
 
 В методе `duplicate1` тип значения `res` не указан и подразумевается как `String`. 

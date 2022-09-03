@@ -1,6 +1,6 @@
 # Now You See Me, Now You Don't
 
-```scala mdoc
+```scala
 trait A:
   val foo: Int
   val bar = 10

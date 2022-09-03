@@ -35,7 +35,7 @@ trait ScrollDecorator extends Component:
   def scrollTo(): Unit = println("Scrolling..")
 ```
 
-```scala mdoc
+```scala
 val tw = new TextView("foo")
 val etw1 = new EncapsulateTextView(tw) with BorderDecorator with ScrollDecorator
 // etw1: EncapsulateTextView & BorderDecorator & ScrollDecorator = repl.MdocSession$$anon$2@7d6a5d30

@@ -1,6 +1,6 @@
 # A Result, Finally!
 
-```scala mdoc
+```scala
 var errCount: Int = 0
 def incErrs(): Int = { errCount += 1; errCount }
 

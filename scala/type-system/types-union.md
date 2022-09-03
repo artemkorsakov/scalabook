@@ -83,9 +83,9 @@ val password = Password(123)
 В этом примере показано, как можно использовать тип объединения при привязке переменной к результату выражения `if`/`else`:
 
 ```scala
-val a = if (true) name else password
+val a = if true then name else password
 // a: Object = Username(name = "Eve")
-val b: Password | Username = if (true) name else password
+val b: Password | Username = if true then name else password
 // b: Password | Username = Username(name = "Eve")
 ```
 

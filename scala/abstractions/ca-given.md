@@ -91,7 +91,7 @@ given (using config: Config): Factory = MemoizingFactory(config)
 
 ### Given макросы
 
-Псевдонимы given могут иметь [модификаторы `inline` и `transparent`](@DOC@metaprogramming/inline).
+Псевдонимы given могут иметь [модификаторы `inline` и `transparent`](../metaprogramming/inline).
 Пример:
 
 ```scala

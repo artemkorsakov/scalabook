@@ -1,24 +1,21 @@
----
-layout: puzzlers
-title: "One Bound, Two to Go"
-section: puzzlers
-prev: implicitly-surprising
-next: count-me-now-count-me-later
----
+# One Bound, Two to Go
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 def invert(v3: Int)(v2: Int = 2, v1: Int = 1): Unit =
   println(s"$v1, $v2, $v3")
   
 def invert3 = invert(3) _
 
 invert3(v1 = 2, v2 = 1)
+// 1, 2, 3
 ```
 
-```scala mdoc:fail
+```scala
 invert3(v1 = 2)
+// error:
+// missing argument for parameter v2 of method apply in trait Function2: (v1: Int, v2: Int): Unit
+// invert3(v1 = 2)
+// ^^^^^^^^^^^^^^^
 ```
 
 Тип `invert3` после eta-расширения (SLS §6.26.5) больше не метод, 

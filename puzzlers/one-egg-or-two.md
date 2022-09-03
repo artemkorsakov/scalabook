@@ -1,19 +1,13 @@
----
-layout: puzzlers
-title: "One Egg or Two..?"
-section: puzzlers
-prev: self-see-self
-next: return-to-me
----
-
-## {{page.title}}
+# One Egg or Two..?
 
 ```scala mdoc
 class C
 val x1, x2 = new C
 val y1 @ y2 = new C
 println(x1 == x2)
+// false
 println(y1 == y2)
+// true
 ```
 
 Согласно SLS (§4.1), определение значения `val p1, . . . , pn : T = e` — 

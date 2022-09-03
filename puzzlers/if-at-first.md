@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "If At First..."
-section: puzzlers
-prev: a-case-of-equality
-next: to-map-or-not-to-map
----
+# If At First You Don't Succeed...
 
-## If At First You Don't Succeed...
-
-```scala mdoc
+```scala
 var x = 0
 lazy val y = 1 / x
 
@@ -17,6 +9,7 @@ catch
   case _: Throwable =>
     x = 1
     println(y)
+// 1    
 ```
 
 Одна из самых интересных особенностей ленивых значений (кроме того, что они откладывают фактическое вычисление) 

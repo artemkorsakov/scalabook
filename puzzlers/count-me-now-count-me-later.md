@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "Count Me Now"
-section: puzzlers
-prev: one-bound-two-to-go
-next: whats-in-a-name
----
-
 ## Count Me Now, Count Me Later
 
-```scala mdoc
+```scala
 var x = 0
 def counter = 
   x += 1
@@ -17,10 +9,15 @@ def add(a: Int)(b: Int) = a + b
 val adder1 = add(counter)(_)
 val adder2 = add(counter) _
 println("x = " + x)
+// x = 1
 println(adder1(10))
+// 12
 println("x = " + x)
+// x = 2
 println(adder2(10))
+// 11
 println("x = " + x)
+// x = 2
 ```
 
 `f(a) _` и `f(a)(_)` имеют разные значения, регулируемые разными разделами спецификации языка Scala. 

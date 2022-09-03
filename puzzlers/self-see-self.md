@@ -1,12 +1,4 @@
----
-layout: puzzlers
-title: "Self - See 'Self'"
-section: puzzlers
-prev: private-lives
-next: one-egg-or-two
----
-
-## {{page.title}}
+# Self - See 'Self'
 
 ```scala
 val s1: String = s1

@@ -1,20 +1,13 @@
----
-layout: puzzlers
-title: "Return to Me!"
-section: puzzlers
-prev: one-egg-or-two
-next: implicitly-surprising
----
+# Return to Me!
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 def value: Int = 
   def one(x: Int): Int = { return x; 1 }
   val two = (x: Int) => { return x; 2 }
   1 + one(2) + two(3)
 
 println(value)
+// 3
 ```
 
 Scala не жалуется на _unreachable code_, поэтому код компилируется нормально. 

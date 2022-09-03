@@ -1,12 +1,4 @@
----
-layout: puzzlers
-title: "Implicitly Surprising"
-section: puzzlers
-prev: return-to-me
-next: one-bound-two-to-go
----
-
-## {{page.title}}
+# Implicitly Surprising
 
 ```scala
 given z1: Int = 2

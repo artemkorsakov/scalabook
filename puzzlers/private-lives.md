@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "Private Lives"
-section: puzzlers
-prev: to-map-or-not-to-map
-next: self-see-self
----
+# Private Lives
 
-## {{page.title}}
-
-```scala mdoc:fail
+```scala
 object Lives:
   class Private:
     def foo1: Any = new Private.C1
@@ -17,6 +9,10 @@ object Lives:
   object Private:
     class C1 private {}
     private class C2 {}
+// error:
+// constructor C1 cannot be accessed as a member of repl.MdocSession.App.Lives.Private.C1 from class Private.
+//     def foo1: Any = new Private.C1
+//                         ^^^^^^^^^^
 ```
 
 Сопутствующий объект `Private` определяет два класса `C1` и `C2`. 

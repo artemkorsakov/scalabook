@@ -1,6 +1,6 @@
 - [Домашняя](README.md)
 
-### Обзор Scala
+## Обзор Scala
 - [Обзор Scala](scala/index.md)
 - [С чего начать?](scala/getting-started.md)
 - [Hello, world!](scala/hello_world.md)
@@ -117,10 +117,10 @@
   - [Проверка фрагмента](scala/scaladoc/snippet-compiler.md)
   - [Настройки](scala/scaladoc/settings.md)
 
-### Доп. материалы
+## Доп. материалы
 - [Доп. материалы](extra.md)
 
-### Теория категорий в Scala
+## Теория категорий
 - [Класс типов](typeclass/index.md)
 - [Группа Monoid](typeclass/monoid.md)
   - [Semigroup](typeclass/monoid/semigroup.md)

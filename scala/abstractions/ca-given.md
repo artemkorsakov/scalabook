@@ -96,7 +96,7 @@ given (using config: Config): Factory = MemoizingFactory(config)
 
 ```scala
 transparent inline given mkAnnotations[A, T]: Annotations[A, T] = ${
-  // code producing a value of a subtype of Annotations
+  // код, создающий экземпляр подтипа Annotations
 }
 ```
 

@@ -21,7 +21,6 @@ object CircleHelpers:
 
 ```scala
 val aCircle = Circle(2, 3, 5)
-
 CircleHelpers.circumference(aCircle)
 ```
 
@@ -48,7 +47,6 @@ aCircle.circumference
 
 ```scala
 import lib.circumference
-
 aCircle.circumference
 ```
 
@@ -209,8 +207,7 @@ trait SafeDiv:
 определив экземпляр `given`, содержащий его, например так:
 
 ```scala
-given ops1: IntOps()  // приносит safeMod в область видимости 
-
+given ops1: IntOps()  // приносит safeMod в область видимости
 1.safeMod(2)
 ```
 

@@ -86,7 +86,7 @@ given Position = enclosingTree.position
 given (using config: Config): Factory = MemoizingFactory(config)
 ```
 
-Псевдоним given может иметь параметры типа и параметры контекста, как и любой другой given, 
+Псевдоним `given` может иметь параметры типа и параметры контекста, как и любой другой `given`, 
 но он может реализовывать только один тип.
 
 ### Given макросы

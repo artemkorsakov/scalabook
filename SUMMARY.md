@@ -140,3 +140,7 @@
   - [Traverse](typeclass/monad/traverse.md)
   - [Applicative](typeclass/monad/applicative.md)
   - [Monad](typeclass/monad/monad.md)
+
+## Паттерны проектирования
+
+## Scala puzzlers

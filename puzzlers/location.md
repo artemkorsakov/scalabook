@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "Location, Location, Location"
-section: puzzlers
-prev: upstairs
-next: now-you-see-me
----
+# Location, Location, Location
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 trait A:
   val audience: String
   println(s"Hello $audience")
@@ -21,7 +13,11 @@ class BConstructor(val audience: String = "World") extends A:
   println(s"I repeat: Hello $audience")
 
 BMember("Readers")
+// Hello null
+// I repeat: Hello Readers
 BConstructor("Readers")
+// Hello Readers
+// I repeat: Hello Readers
 ```
 
 При создании экземпляров суперклассов или трейтов 

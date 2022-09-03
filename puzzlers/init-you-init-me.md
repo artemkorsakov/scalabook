@@ -1,12 +1,4 @@
----
-layout: puzzlers
-title: "Init You, Init Me"
-section: puzzlers
-prev: map-comprehension
-next: a-case-of-equality
----
-
-## {{page.title}}
+# Init You, Init Me
 
 ```scala
 object XY:

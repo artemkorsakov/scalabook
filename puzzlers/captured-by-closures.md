@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "Captured by Closures"
-section: puzzlers
-prev: arg-arrgh
-next: map-comprehension
----
+# Captured by Closures
 
-## {{page.title}}
-
-```scala mdoc:silent
+```scala
 val funcs1 = collection.mutable.Buffer[() => Int]()
 val funcs2 = collection.mutable.Buffer[() => Int]()
 
@@ -23,12 +15,15 @@ val funcs2 = collection.mutable.Buffer[() => Int]()
 }
 ```
 
-```scala mdoc:silent
+```scala
 funcs1 foreach { f1 => println(f1()) }
 ```
 
-```scala mdoc:crash
+```scala
 funcs2 foreach { f2 => println(f2()) }
+// java.lang.IndexOutOfBoundsException: 3
+// 	at scala.collection.LinearSeqOps.apply(LinearSeq.scala:117)
+//  ...
 ```
 
 Когда `var` используется вместо `val`, функции закрываются по переменной, а не по значению. 
@@ -47,7 +42,7 @@ funcs2 foreach { f2 => println(f2()) }
 
 Исключения можно избежать, «зафиксировав» возвращаемое значение:
 
-```scala mdoc:reset:silent
+```scala
 val funcs1 = collection.mutable.Buffer[() => Int]()
 val funcs2 = collection.mutable.Buffer[() => Int]()
 
@@ -63,9 +58,15 @@ val funcs2 = collection.mutable.Buffer[() => Int]()
 }
 ```
 
-```scala mdoc
+```scala
 funcs1 foreach { f1 => println(f1()) }
+// 100
+// 110
+// 120
 funcs2 foreach { f2 => println(f2()) }
+// 100
+// 110
+// 120
 ```
 
 Присвоение значения выполняется немедленно и, таким образом, «захватывает» предполагаемый элемент значений.

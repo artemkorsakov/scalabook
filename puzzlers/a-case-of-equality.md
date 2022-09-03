@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "A Case of Equality"
-section: puzzlers
-prev: init-you-init-me
-next: if-at-first
----
+# A Case of Equality
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 trait SpyOnEquals:
   override def equals(x: Any) =
     println("DEBUG: In equals")
@@ -23,9 +15,15 @@ val ccspy1 = CCSpy()
 val ccspy2 = CCSpy()
 
 println(cc1 == cc2)
+// DEBUG: In equals
+// true
 println(cc1.## == cc2.##) // null-safe hashCode()
+// true // null-safe hashCode()
 println(ccspy1 == ccspy2)
+// DEBUG: In equals
+// false
 println(ccspy1.## == ccspy2.##)
+// true
 ```
 
 Для case классов генерируются методы `equals`, `hashCode` и `toString`, 

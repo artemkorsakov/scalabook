@@ -1,12 +1,4 @@
----
-layout: puzzlers
-title: "Now You See Me..."
-section: puzzlers
-prev: location
-next: the-missing-list
----
-
-## Now You See Me, Now You Don't
+# Now You See Me, Now You Don't
 
 ```scala mdoc
 trait A:
@@ -23,6 +15,9 @@ class C extends B:
   println(s"In C: foo: $foo, bar: $bar")
 
 new C
+// In A: foo: 0, bar: 0
+// In B: foo: 25, bar: 0
+// In C: foo: 25, bar: 99
 ```
 
 Обратите внимание, что `bar` — это `val`, переопределяемый в `C`. 

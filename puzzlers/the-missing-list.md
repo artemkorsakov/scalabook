@@ -1,19 +1,13 @@
----
-layout: puzzlers
-title: "The Missing List"
-section: puzzlers
-prev: now-you-see-me
-next: arg-arrgh
----
+# The Missing List
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 def sumSizes(collections: Iterable[Iterable[_]]): Int = 
   collections.map(_.iterator.size).sum
 
 sumSizes(List(Set(1, 2), List(3, 4)))
+// res0: Int = 4
 sumSizes(Set(List(1, 2), Set(3, 4)))
+// res1: Int = 2
 ```
 
 Несмотря на то, что `collections.map` может сопоставлять итерируемый объект с другим «хорошим» итерируемым объектом, 

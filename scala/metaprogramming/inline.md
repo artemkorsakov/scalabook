@@ -737,7 +737,7 @@ val intTwo: 2 = natTwo
 
 ### scala.compiletime
 
-[Пакет scala.compiletime](@DOC@metaprogramming/compile-time-ops) 
+[Пакет scala.compiletime](compile-time-ops) 
 предоставляет полезные абстракции метапрограммирования, 
 которые можно использовать в `inline` методах для обеспечения пользовательской семантики.
 
@@ -745,7 +745,7 @@ val intTwo: 2 = natTwo
 ### Макросы
 
 Встраивание также является основным механизмом, используемым для написания макросов. 
-[Макросы](@DOC@metaprogramming/macros) позволяют управлять генерацией и анализом кода после встроенного вызова.
+[Макросы](macros) позволяют управлять генерацией и анализом кода после встроенного вызова.
 
 ```scala
 inline def power(x: Double, inline n: Int) =

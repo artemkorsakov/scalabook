@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "Heads You Win..."
-section: puzzlers
-prev: a-result-finally
-next: ex-stream-surprise
----
+# Heads You Win...
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 import java.util.{List as JList, LinkedList}
 import scala.jdk.CollectionConverters.*
 
@@ -24,7 +16,9 @@ def printHeadOrEmpty(s: collection.Seq[_]): Unit =
     case _       => println("Empty :-(")
 
 printHeadOrEmpty(listFromJava.asScala)
+// Empty :-(
 printHeadOrEmpty(listFromJava.asScala.toSeq)
+// 1
 ```
 
 Scala `CollectionConverters` превращает списки Java 

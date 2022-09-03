@@ -1,12 +1,4 @@
----
-layout: puzzlers
-title: "Splitting Headache"
-section: puzzlers
-prev: oddly-enough
-next: a-result-finally
----
-
-## {{page.title}}
+# Splitting Headache
 
 ```scala mdoc
 def validDna(maybeDna: String) = {
@@ -17,9 +9,13 @@ def validDna(maybeDna: String) = {
 }
 
 println(validDna("SAT"))
+// false
 println(validDna("AT"))
+// true
 println(validDna("A"))
+// true
 println(validDna(""))
+// false
 ```
 
 Метод `split(separators: Array[Char])` предоставляется `StringOps` и

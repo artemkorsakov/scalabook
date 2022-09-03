@@ -1,23 +1,21 @@
----
-layout: puzzlers
-title: "One, Two, Skip a Few"
-section: puzzlers
-prev: the-devil-is-in-the-defaults
-next: oddly-enough
----
+# One, Two, Skip a Few
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 val oneTwo = Seq(1, 2).permutations
+// oneTwo: Iterator[Seq[Int]] = empty iterator
 if oneTwo.length > 0 then
   println("Permutations of 1 and 2:")
   oneTwo foreach println
+// Permutations of 1 and 2:
 
 val threeFour = Seq(3, 4).permutations
+// threeFour: Iterator[Seq[Int]] = empty iterator
 if threeFour.nonEmpty then
   println("Permutations of 3 and 4:")
   threeFour foreach println
+// Permutations of 3 and 4:
+// List(3, 4)
+// List(4, 3)
 ```
 
 

@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "Pick an Int, Any Int!"
-section: puzzlers
-prev: cast-away
-next: a-case-of-string
----
+# Pick an Int, Any Int!
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 class A:
   type X // equivalent to X <: Any
   var x: X = _
@@ -18,8 +10,10 @@ class B extends A:
   
 val b = new B
 println(b.x)
+// null
 val bX = b.x
 println(bX)
+// 0
 ```
 
 Поле `x` на уровне байт-кода является объектом (оно было объявлено в `A` и унаследовано). 

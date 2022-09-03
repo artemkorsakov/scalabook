@@ -1,24 +1,15 @@
----
-layout: puzzlers
-title: "Oddly Enough"
-section: puzzlers
-prev: one-two-skip-a-few
-next: splitting-headache
----
+# Oddly Enough
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 var mkEven: Int => Int = _
 def initMkEven(): Unit = 
   mkEven = (n: Int) => if n % 2 == 0 then n else return n + 1
 initMkEven()
 
 println(mkEven(2))
-```
-
-```scala mdoc:crash
+// 2
 println(mkEven(3))
+// scala.runtime.NonLocalReturnControl
 ```
 
 Согласно SLS (§6.20), выражение `return` должно находиться 

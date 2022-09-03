@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "What's in a Name?"
-section: puzzlers
-prev: count-me-now-count-me-later
-next: i-can-has-padding
----
+# What's in a Name?
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 class C:
   def sum(x: Int = 1, y: Int = 2): Int = x + y
   
@@ -18,7 +10,9 @@ class D extends C:
 val d: D = new D
 val c: C = d
 c.sum(x = 0)
+// res0: Int = 4
 d.sum(x = 0)
+// res1: Int = 3
 ```
 
 Scala использует статический тип переменной для привязки имен параметров, 

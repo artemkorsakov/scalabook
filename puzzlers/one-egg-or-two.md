@@ -1,6 +1,6 @@
 # One Egg or Two..?
 
-```scala mdoc
+```scala
 class C
 val x1, x2 = new C
 val y1 @ y2 = new C

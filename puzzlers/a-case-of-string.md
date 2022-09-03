@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "A Case of Strings"
-section: puzzlers
-prev: pick-an-int-any-int
-next: a-view-to-a-shill
----
+# A Case of Strings
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 def objFromJava: Object = "string"
 def stringFromJava: String = null
 
@@ -18,7 +10,9 @@ def printLengthIfString(a: AnyRef): Unit =
     case _ => println("Not a string")
 
 printLengthIfString(objFromJava)
+// String of length 6
 printLengthIfString(stringFromJava)
+// Not a string
 ```
 
 Scala наследует от Java следующее поведение:
@@ -43,11 +37,12 @@ a match
 поэтому первый пример соответствует случаю `s: String`, даже если тип времени компиляции — `java.lang.Object`. 
 Хорошая идиома Scala состоит в том, чтобы преобразовать «может быть-нуль» из Java API в параметр:
 
-```scala mdoc
+```scala
 val str: Option[String] = Option(stringFromJava)
 str match
   case Some(s: String) => println("String of length " + s.length)
   case None => println("stringFromJava was null")
+// stringFromJava was null  
 ```
 
 

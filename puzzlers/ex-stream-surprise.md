@@ -1,24 +1,19 @@
----
-layout: puzzlers
-title: "(Ex)Stream Surprise"
-section: puzzlers
-prev: heads-you-win
-next: a-matter-of-context
----
+# (Ex)Stream Surprise
 
-## {{page.title}}
-
-```scala mdoc:silent
+```scala
 val nats: LazyList[Int] = 1 #:: (nats map { _ + 1 })
 val odds: LazyList[Int] = 1 #:: (odds map { _ + 1 } filter { _ % 2 != 0 })
 ```
 
-```scala mdoc
+```scala
 nats filter { _ % 2 != 0 } take 2 foreach println
+// 1
+// 3
 ```
 
-```scala mdoc:crash
+```scala
 odds take 2 foreach println
+// java.lang.RuntimeException: self-referential LazyList or a derivation thereof has no more elements
 ```
 
 Выражение `nats filter { _ % 2 != 0 }` создает новый ленивый список, 

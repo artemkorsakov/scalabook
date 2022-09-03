@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "Cast Away"
-section: puzzlers
-prev: i-can-has-padding
-next: pick-an-int-any-int
----
+# Cast Away
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 import scala.jdk.CollectionConverters.*
 def fromJava: java.util.Map[String, java.lang.Integer] = 
   val map = new java.util.HashMap[String, java.lang.Integer]()
@@ -18,10 +10,15 @@ def fromJava: java.util.Map[String, java.lang.Integer] =
 // watch out here...Integer is not Int!
 val map = fromJava.asScala.asInstanceOf[scala.collection.Map[String, Int]]
 println(map("key") == 0)
+// true
 ```
 
-```scala mdoc:fail
+```scala
 println(map("key") == null)
+// error:
+// Values of types Int and Null cannot be compared with == or !=
+// println(map("key") == null)
+//         ^^^^^^^^^^^^^^^^^^
 ```
 
 Мотивация для этой головоломки связана с взаимодействием с библиотеками Java, 

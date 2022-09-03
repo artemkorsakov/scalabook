@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "The Devil is in the Defaults"
-section: puzzlers
-prev: accepts-any-args
-next: one-two-skip-a-few
----
+# The Devil is in the Defaults
 
-## {{page.title}}
-
-```scala mdoc
+```scala
 import collection.mutable
 
 val goodies: Map[String, mutable.Queue[String]] =
@@ -16,12 +8,13 @@ val goodies: Map[String, mutable.Queue[String]] =
 val baddies: Map[String, mutable.Queue[String]] = Map().withDefaultValue(mutable.Queue("No monsters here. Lucky you."))
 
 println(goodies("kitchen").dequeue)
+// No superheros here. Keep looking.
 println(baddies("in attic").dequeue)
+// No monsters here. Lucky you.
 println(goodies("dining room").dequeue)
-```
-
-```scala mdoc:crash
+// No superheros here. Keep looking.
 println(baddies("under bed").dequeue)
+// java.util.NoSuchElementException: empty collection
 ```
 
 Увидев `withDefault`, может возникнуть соблазн подумать, 

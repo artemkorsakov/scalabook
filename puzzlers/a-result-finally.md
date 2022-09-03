@@ -1,12 +1,4 @@
----
-layout: puzzlers
-title: "A Result, Finally!"
-section: puzzlers
-prev: splitting-headache
-next: heads-you-win
----
-
-## {{page.title}}
+# A Result, Finally!
 
 ```scala mdoc
 var errCount: Int = 0
@@ -19,7 +11,9 @@ def tryEval(expr: => Double) =
   finally res
 
 println(tryEval(10 / 4))
+// ()
 println(tryEval(10 / 0))
+// 1
 ```
 
 В Scala, если функция не завершается с помощью явного возвращаемого выражения, 

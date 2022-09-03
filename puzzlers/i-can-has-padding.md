@@ -1,14 +1,6 @@
----
-layout: puzzlers
-title: "I Can Has Padding?"
-section: puzzlers
-prev: whats-in-a-name
-next: cast-away
----
+# I Can Has Padding?
 
-## {{page.title}}
-
-```scala mdoc:silent
+```scala
 import scala.StringBuilder
 
 extension (sb: StringBuilder)
@@ -22,12 +14,14 @@ val greeting = new StringBuilder("Hello, kitteh!")
 val farewell = new StringBuilder("U go now.")  // I hate long bye-bye.
 ```
 
-```scala mdoc
+```scala
 println(greeting pad2 20)
+// Hello, kitteh!*
 ```
 
-```scala mdoc:crash
+```scala
 println(farewell pad2 20)
+// java.lang.StringIndexOutOfBoundsException: index 10,length 10
 ```
 
 Вспомните, что в Scala есть `StringBuilder`, который скрывает `java.lang.StringBuilder`, и у него есть метод `apply`. 
@@ -65,7 +59,7 @@ def pad2(width: Int) =
 
 Можно получить ожидаемое поведение, явно указав литерал функции, который будет использоваться:
 
-```scala mdoc:reset:silent
+```scala
 import scala.StringBuilder
 
 extension (sb: StringBuilder)
@@ -80,9 +74,11 @@ val greeting = new StringBuilder("Hello, kitteh!")
 val farewell = new StringBuilder("U go now.")  // I hate long bye-bye.
 ```
 
-```scala mdoc
+```scala
 println(greeting pad2 20)
+// Hello, kitteh!******
 println(farewell pad2 20)
+// U go now.***********
 ```
 
 

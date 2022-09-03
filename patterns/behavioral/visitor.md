@@ -1,11 +1,4 @@
----
-layout: dp
-title: "Visitor"
-section: dp
-prev: behavioral/strategy
----
-
-## {{page.title}}
+# Посетитель
 
 #### Назначение
 

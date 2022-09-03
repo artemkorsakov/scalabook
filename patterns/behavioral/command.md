@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Command"
-section: dp
-prev: behavioral/chain-of-responsibility
-next: behavioral/iterator
----
-
-## {{page.title}}
+# Команда
 
 #### Назначение
 

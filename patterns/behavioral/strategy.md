@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Strategy"
-section: dp
-prev: behavioral/state
-next: behavioral/visitor
----
-
-## {{page.title}}
+# Стратегия
 
 #### Назначение
 

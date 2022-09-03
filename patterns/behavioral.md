@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Behavioral Patterns"
-section: dp
-prev: structural/proxy
-next: behavioral/interpreter
----
-
-## {{page.title}}
+# Поведенческие шаблоны
 
 [Поведенческие шаблоны][Wikipedia] (_behavioral patterns_) описывают взаимодействие объектов
 и часто распределение ответственности между объектами. 

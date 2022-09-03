@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Chain of Responsibility"
-section: dp
-prev: behavioral/template-method
-next: behavioral/command
----
-
-## {{page.title}}
+# Цепочка обязанностей
 
 #### Назначение
 

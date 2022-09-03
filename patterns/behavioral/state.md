@@ -1,12 +1,4 @@
----
-layout: dp
-title: "State"
-section: dp
-prev: behavioral/observer
-next: behavioral/strategy
----
-
-## {{page.title}}
+# Состояние
 
 #### Назначение
 

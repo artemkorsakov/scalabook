@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Template Method"
-section: dp
-prev: behavioral/interpreter
-next: behavioral/chain-of-responsibility
----
-
-## {{page.title}}
+# Шаблонный метод
 
 #### Назначение
 

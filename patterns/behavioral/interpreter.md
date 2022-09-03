@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Interpreter"
-section: dp
-prev: behavioral
-next: behavioral/template-method
----
-
-## {{page.title}}
+# Интерпретатор
 
 #### Назначение
 

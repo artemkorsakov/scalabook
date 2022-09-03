@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Iterator"
-section: dp
-prev: behavioral/command
-next: behavioral/mediator
----
-
-## {{page.title}}
+# Итератор
 
 #### Назначение
 

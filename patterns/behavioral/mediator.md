@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Mediator"
-section: dp
-prev: behavioral/iterator
-next: behavioral/memento
----
-
-## {{page.title}}
+# Посредник
 
 #### Назначение
 

@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Memento"
-section: dp
-prev: behavioral/mediator
-next: behavioral/observer
----
-
-## {{page.title}}
+# Хранитель
 
 #### Назначение
 

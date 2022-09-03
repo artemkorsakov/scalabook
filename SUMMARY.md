@@ -140,7 +140,6 @@
     - [Monad](typeclass/monad/monad.md)
 
 ## Паттерны
-
 - [Паттерны проектирования](patterns/index.md)
   - [Порождающие шаблоны](patterns/creational.md)
     - [Фабричный метод](patterns/creational/factory-method.md)
@@ -156,48 +155,17 @@
     - [Фасад](patterns/structural/facade.md)
     - [Приспособленец](patterns/structural/flyweight.md)
     - [Заместитель](patterns/structural/proxy.md)
-  
-
-
-- title: Behavioral Patterns
-  url: design-patterns/behavioral
-  menu_type: dp
-
-  nested_options:
-  - title: Interpreter
-    url: design-patterns/behavioral/interpreter
-
-  - title: Template Method
-    url: design-patterns/behavioral/template-method
-
-  - title: Chain of Responsibility
-    url: design-patterns/behavioral/chain-of-responsibility
-
-  - title: Command
-    url: design-patterns/behavioral/command
-
-  - title: Iterator
-    url: design-patterns/behavioral/iterator
-
-  - title: Mediator
-    url: design-patterns/behavioral/mediator
-
-  - title: Memento
-    url: design-patterns/behavioral/memento
-
-  - title: Observer
-    url: design-patterns/behavioral/observer
-
-  - title: State
-    url: design-patterns/behavioral/state
-
-  - title: Strategy
-    url: design-patterns/behavioral/strategy
-
-  - title: Visitor
-    url: design-patterns/behavioral/visitor
-
-
-
+  - [Поведенческие шаблоны](patterns/behavioral.md)
+    - [Интерпретатор](patterns/behavioral/interpreter.md)
+    - [Шаблонный метод](patterns/behavioral/template-method.md)
+    - [Цепочка обязанностей](patterns/behavioral/chain-of-responsibility.md)
+    - [Команда](patterns/behavioral/command.md)
+    - [Итератор](patterns/behavioral/iterator.md)
+    - [Посредник](patterns/behavioral/mediator.md)
+    - [Хранитель](patterns/behavioral/memento.md) 
+    - [Наблюдатель](patterns/behavioral/observer.md)
+    - [Состояние](patterns/behavioral/state.md)
+    - [Стратегия](patterns/behavioral/strategy.md)
+    - [Посетитель](patterns/behavioral/visitor.md)
 
 ## Scala puzzlers

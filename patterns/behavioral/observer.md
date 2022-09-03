@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Observer"
-section: dp
-prev: behavioral/memento
-next: behavioral/state
----
-
-## {{page.title}}
+# Наблюдатель
 
 #### Назначение
 

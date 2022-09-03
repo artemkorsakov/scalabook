@@ -101,11 +101,6 @@ val states = Map(
   "AL" -> "Alabama",
   "AZ" -> "Arizona"
 )
-// states: Map[String, String] = Map(
-//   "AK" -> "Alaska",
-//   "AL" -> "Alabama",
-//   "AZ" -> "Arizona"
-// )
 for (k, v) <- states do println(s"key: $k, value: $v")
 // key: AK, value: Alaska
 // key: AL, value: Alabama

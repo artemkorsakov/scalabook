@@ -116,9 +116,7 @@
     - [Поиск по типу](scala/scaladoc/search-engine.md)
     - [Проверка фрагмента](scala/scaladoc/snippet-compiler.md)
     - [Настройки](scala/scaladoc/settings.md)
-
-## Доп. материалы
-- [Доп. материалы](extra.md)
+  - [Доп. материалы](extra.md)
 
 ## Функц. программ.
 - [Функц программирование](fp/index.md)

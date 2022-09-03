@@ -141,4 +141,106 @@
 
 ## Паттерны
 
+- [Паттерны проектирования](patterns/index.md)
+  - [Порождающие шаблоны](patterns/creational.md)
+    - [Semigroup](patterns/monoid/semigroup.md)
+    - [Monoid](patterns/monoid/monoid.md)
+    - [Semigroup](patterns/monoid/semigroup.md)
+    - [Monoid](patterns/monoid/monoid.md)
+    - [Monoid](patterns/monoid/monoid.md)
+  - [Группа Monad](patterns/monad.md)
+    - [Functor](patterns/monad/functor.md)
+    - [Foldable](patterns/monad/foldable.md)
+    - [Traverse](patterns/monad/traverse.md)
+    - [Applicative](patterns/monad/applicative.md)
+    - [Monad](patterns/monad/monad.md)
+
+
+
+  nested_options:
+  - title: Factory Method
+    url: design-patterns/creational/factory-method
+
+  - title: Abstract Factory
+    url: design-patterns/creational/abstract-factory
+
+  - title: Builder
+    url: design-patterns/creational/builder
+
+  - title: Prototype
+    url: design-patterns/creational/prototype
+
+  - title: Singleton
+    url: design-patterns/creational/singleton
+
+
+
+
+- title: Structural Patterns
+  url: design-patterns/structural
+  menu_type: dp
+
+  nested_options:
+  - title: Adapter
+    url: design-patterns/structural/adapter
+
+  - title: Bridge
+    url: design-patterns/structural/bridge
+
+  - title: Composite
+    url: design-patterns/structural/composite
+
+  - title: Decorator
+    url: design-patterns/structural/decorator
+
+  - title: Facade
+    url: design-patterns/structural/facade
+
+  - title: Flyweight
+    url: design-patterns/structural/flyweight
+
+  - title: Proxy
+    url: design-patterns/structural/proxy
+
+- title: Behavioral Patterns
+  url: design-patterns/behavioral
+  menu_type: dp
+
+  nested_options:
+  - title: Interpreter
+    url: design-patterns/behavioral/interpreter
+
+  - title: Template Method
+    url: design-patterns/behavioral/template-method
+
+  - title: Chain of Responsibility
+    url: design-patterns/behavioral/chain-of-responsibility
+
+  - title: Command
+    url: design-patterns/behavioral/command
+
+  - title: Iterator
+    url: design-patterns/behavioral/iterator
+
+  - title: Mediator
+    url: design-patterns/behavioral/mediator
+
+  - title: Memento
+    url: design-patterns/behavioral/memento
+
+  - title: Observer
+    url: design-patterns/behavioral/observer
+
+  - title: State
+    url: design-patterns/behavioral/state
+
+  - title: Strategy
+    url: design-patterns/behavioral/strategy
+
+  - title: Visitor
+    url: design-patterns/behavioral/visitor
+
+
+
+
 ## Scala puzzlers

@@ -1,12 +1,4 @@
----
-layout: dp
-title: "Creational Patterns"
-section: dp
-prev: index
-next: creational/factory-method
----
-
-## {{page.title}}
+# Порождающие шаблоны
 
 [Порождающие шаблоны][Wikipedia] (_creational patterns_) имеют дело с созданием объектов. 
 

@@ -11,11 +11,11 @@
 Ключ содержит информацию о типе соответствующего значения:
 
 ```scala
-trait Key { type Value }
+trait Key:
+  type Value
 
-trait DB {
+trait DB:
   def get(k: Key): Option[k.Value] // зависимый метод
-}
 ```
 
 Получив ключ, метод `get` предоставляет доступ к карте и потенциально возвращает сохраненное значение типа `k.Value`. 
@@ -25,8 +25,11 @@ trait DB {
 Например, у нас могут быть следующие ключи:
 
 ```scala
-object Name extends Key { type Value = String }
-object Age extends Key { type Value = Int }
+object Name extends Key:
+  type Value = String
+
+object Age extends Key:
+  type Value = Int
 ```
 
 Вызовы метода `get` теперь будут возвращать такие типы:

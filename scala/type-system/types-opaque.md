@@ -100,7 +100,7 @@ object LogarithmsImpl extends Logarithms:
 ```scala
 import LogarithmsImpl.*
 val l: Logarithm = make(1.0)
-val d: Double = l // type checks AND leaks the equality!
+val d: Double = l // проверка типов ДОЗВОЛЯЕТ равенство!
 ```
 
 Необходимость разделения модуля на абстрактный интерфейс и реализацию может быть полезной, 

@@ -130,7 +130,7 @@
   - [Monads](fp/monads.md)
 
 ## Теория категорий
-- [Класс типов](typeclass/index.md)
+- [Теория категорий](typeclass/index.md)
   - [Группа Monoid](typeclass/monoid.md)
     - [Semigroup](typeclass/monoid/semigroup.md)
     - [Monoid](typeclass/monoid/monoid.md)

@@ -19,7 +19,7 @@ Composite позволяет клиентам единообразно обра�
 или выполняют ли они другие роли в нашем дизайне или нет, 
 мы можем сделать дочерние переменные как неизменяемыми, так и изменяемыми.
 
-```scala mdoc:silent
+```scala
 trait Component:
   def display(): Unit
 
@@ -33,15 +33,19 @@ case class Composite(children: List[Component]) extends Component:
   def display(): Unit = children.foreach(_.display())
 ```
 
-```scala mdoc
+```scala
 val tree = Composite(List(Composite(List(Text("text1"), Picture("picture1"))), Text("text2")))
 tree.display()
+// text1
+// picture1
+// text2
 tree.children(1).display()
+// text2
 ```
 
 Ниже показан пример метода, который обходит составную структуру и изменяет все узлы `Text` на месте.
 
-```scala mdoc
+```scala
 def changeAllText(c: Component, s: String): Component =
   c match
     case _: Text    => Text(s)
@@ -50,6 +54,9 @@ def changeAllText(c: Component, s: String): Component =
       val newChildren = children.map(changeAllText(_, s))
       Composite(newChildren)
 changeAllText(tree, "text3").display()
+// text3
+// picture1
+// text3
 ```
 
 

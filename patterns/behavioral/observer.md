@@ -18,7 +18,7 @@
 
 #### Пример
 
-```scala mdoc:silent
+```scala
 trait Subject[T] { self: T =>
   import scala.collection.mutable
   private val observers: mutable.ListBuffer[T => Unit] =
@@ -34,7 +34,7 @@ trait Subject[T] { self: T =>
 }
 ```
 
-```scala mdoc:silent
+```scala
 trait Sensor(val label: String):
   var value: Double = _
   def changeValue(v: Double): Unit = value = v
@@ -50,13 +50,15 @@ class Display(label: String):
     println(s"$label ${s.label} ${s.value}")
 ```
 
-```scala mdoc
+```scala
 val s1: SensorSubject = new Sensor("s1") with SensorSubject
 val d1: Display = new Display("d1")
 val d2: Display = new Display("d2")
 s1.subscribe(d1.notify)
 s1.subscribe(d2.notify)
 s1.changeValue(10)
+// d1 s1 10.0
+// d2 s1 10.0
 ```
 
 

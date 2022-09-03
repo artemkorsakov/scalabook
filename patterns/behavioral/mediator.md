@@ -19,7 +19,7 @@
 Обратите внимание, что коллеги совершенно не знают о посреднике и, следовательно, о самой схеме.
 
 
-```scala mdoc:silent
+```scala
 // Widgets
 class ListBox:
   def getSelection: String = "selected"
@@ -47,11 +47,12 @@ class DialogDirector:
 end DialogDirector
 ```
 
-```scala mdoc
+```scala
 val dialog = new DialogDirector
 val listBox = dialog.listBox
 val entryField = dialog.entryField
 listBox.click()
+// selected
 ```
 
 

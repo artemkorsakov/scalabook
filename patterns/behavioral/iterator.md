@@ -11,7 +11,7 @@
 
 #### Пример
 
-```scala mdoc
+```scala
 trait Iterator[A]:
   def first: A
 

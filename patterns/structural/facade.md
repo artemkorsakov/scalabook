@@ -11,7 +11,7 @@
 
 #### Пример
 
-```scala mdoc:silent
+```scala
 trait Facade:
   type A <: SubSystemA
   type B <: SubSystemB
@@ -31,8 +31,9 @@ object FacadeA extends Facade:
 end FacadeA
 ```
 
-```scala mdoc
+```scala
 FacadeA.foo()
+// Calling foo
 ```
 
 

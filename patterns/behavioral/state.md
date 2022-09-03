@@ -11,7 +11,7 @@
 
 #### Пример
 
-```scala mdoc:silent
+```scala
 class Context:
   private var currentState: State = State1
 
@@ -33,11 +33,14 @@ class Context:
 end Context
 ```
 
-```scala mdoc
+```scala
 val c = new Context
 c.operation()
+// State1
 c.operation()
+// State2
 c.operation()
+// State1
 ```
 
 

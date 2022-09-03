@@ -16,7 +16,7 @@
 
 #### Пример
 
-```scala mdoc:silent
+```scala
 trait Handler[T]:
   var successor: Option[Handler[T]] = None
 
@@ -30,7 +30,7 @@ trait Handler[T]:
 end Handler
 ```
 
-```scala mdoc:silent
+```scala
 class Sensor extends Handler[Int]:
   var value = 0
   def changeValue(v: Int): Unit =
@@ -45,7 +45,7 @@ class Display1 extends Handler[Int]:
 
 Другое решение, специфичный для шаблона код хранится в отдельном trait.
 
-```scala mdoc:silent
+```scala
 class Display2:
   def show(v: Int): Unit = println(s"Display2 prints $v")
 
@@ -54,14 +54,16 @@ trait Display2Handler extends Display2 with Handler[Int]:
   override def handlingCriteria(v: Int): Boolean = v >= 4
 ```
 
-```scala mdoc
+```scala
 val sensor = new Sensor
 val display1 = new Display1
 val display2 = new Display2 with Display2Handler
 sensor.successor = Some(display1)
 display1.successor = Some(display2)
 sensor.changeValue(2)
+// Display1 prints 2
 sensor.changeValue(4)
+// Display2 prints 4
 ```
 
 

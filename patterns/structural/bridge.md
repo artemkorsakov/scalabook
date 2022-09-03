@@ -24,7 +24,7 @@
 Корень иерархии абстракций с именем `Window` имеет тип `self`, 
 который ссылается на корень иерархии реализации, `WindowImp`.
 
-```scala mdoc:silent
+```scala
 // common interface for all implementors
 trait WindowImp:
   def drawLine(x: Int, y: Int): Unit
@@ -47,7 +47,7 @@ trait IconWindow { self: Window with WindowImp =>
 }
 ```
 
-```scala mdoc:silent
+```scala
 // implementors
 trait WindowOSX extends WindowImp:
   def drawLine(x: Int, y: Int): Unit = println("drawing line in OSX")
@@ -56,9 +56,13 @@ trait WindowVista extends WindowImp:
   def drawLine(x: Int, y: Int): Unit = println("drawing line in Vista")
 ```
 
-```scala mdoc
+```scala
 val windowOSX: Window = new Window with WindowOSX
 windowOSX.drawRect(1, 2, 3, 4)
+// drawing line in OSX
+// drawing line in OSX
+// drawing line in OSX
+// drawing line in OSX
 ```
 
 

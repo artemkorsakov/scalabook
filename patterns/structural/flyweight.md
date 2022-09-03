@@ -21,7 +21,7 @@ Flyweight дополняет шаблон Factory Method таким образо
 ищет уже созданный объект с такими же параметрами, что и у требуемого, и возвращает его клиенту. 
 Если такого объекта нет, то фабрика создаст новый.
 
-```scala mdoc:silent
+```scala
 trait FlyWeightFactory[T1, T2] extends Function[T1, T2]:
   import scala.collection.mutable
   private val pool = mutable.Map.empty[T1, T2]
@@ -37,7 +37,7 @@ trait FlyWeightFactory[T1, T2] extends Function[T1, T2]:
 end FlyWeightFactory
 ```
 
-```scala mdoc:silent
+```scala
 class Character(char: Char):
   import scala.util.Random
   private lazy val state = Random.nextInt()
@@ -48,15 +48,19 @@ object CharacterFactory extends FlyWeightFactory[Char, Character]:
   def createFlyWeight(c: Char) = new Character(c)
 ```
 
-```scala mdoc
+```scala
 val f1 = CharacterFactory('a')
 val f2 = CharacterFactory('b')
 val f3 = CharacterFactory('a')
 val f4 = new Character('a')
 f1.draw()
+// drawing character - a, state - -273066214
 f2.draw()
+// drawing character - b, state - -9042767
 f3.draw()
+// drawing character - a, state - -273066214
 f4.draw()
+// drawing character - a, state - 139024107
 ```
 
 Обратите внимание, что `f1` и `f3` указывают на один и тот же общий объект-приспособленец.

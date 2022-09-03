@@ -11,7 +11,7 @@
 
 #### Пример
 
-```scala mdoc
+```scala
 trait Originator:
   def createMemento: Memento
 

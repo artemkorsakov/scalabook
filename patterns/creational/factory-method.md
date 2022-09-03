@@ -12,7 +12,7 @@
 
 #### Пример
 
-```scala mdoc
+```scala
 trait Document:
   def open(): Unit
   def close(): Unit
@@ -24,7 +24,7 @@ trait Application:
 
 Использование паттерна фабричный метод:
 
-```scala mdoc
+```scala
 class ElectronicDocument extends Document:
   def open(): Unit = println("Open an e-doc")
   def close(): Unit = println("Close an e-doc")
@@ -34,6 +34,7 @@ object ElectronicApplication extends Application:
   def createDocument: D = new ElectronicDocument
 
 ElectronicApplication.createDocument.open()
+// Open an e-doc
 ```
 
 

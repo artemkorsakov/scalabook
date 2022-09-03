@@ -13,7 +13,7 @@
 
 Решение Scala сочетает в себе большинство преимуществ адаптера класса и адаптера объекта в одном решении.
 
-```scala mdoc:silent
+```scala
 trait Target:
   def f(): Unit
 
@@ -25,10 +25,12 @@ trait Adapter { self: Target with Adaptee =>
 }
 ```
 
-```scala mdoc
+```scala
 val adapter = new Adaptee with Adapter with Target
 adapter.f()
+// g
 adapter.g()
+// g
 ```
 
 

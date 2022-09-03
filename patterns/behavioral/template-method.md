@@ -11,7 +11,7 @@
 
 #### Пример
 
-```scala mdoc
+```scala
 trait Template extends (Unit => Int):
   def subStepA(): Unit
   def subStepB: Int

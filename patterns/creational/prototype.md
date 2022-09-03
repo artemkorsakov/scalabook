@@ -34,18 +34,20 @@
 
 #### Пример
 
-```scala mdoc
+```scala
 class A(var state: Int)
 extension (a: A) def copy = new A(a.state)
 ```
 
 Использование паттерна фабричный метод:
 
-```scala mdoc
+```scala
 def a = new A(2)
 println(a.state)
+// 2
 def aCopy = a.copy
 println(a.state)
+// 2
 ```
 
 

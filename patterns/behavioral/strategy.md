@@ -14,7 +14,7 @@
 `Strategy` определяет интерфейс алгоритма. 
 `Context` поддерживает ссылку на текущий объект `Strategy` и перенаправляет запросы от клиентов конкретному алгоритму.
 
-```scala mdoc:silent
+```scala
 object FileMatcher:
   private val filesHere: Seq[String] =
     Seq(
@@ -48,11 +48,14 @@ object FileMatcher:
     def matchEnding(s: String): Boolean = s.endsWith(query)
 ```
 
-```scala mdoc
+```scala
 val query = ".txt"
 FileMatcher.filesContaining(query)
+// res0: Seq[String] = List("example.txt", "file.txt.png")
 FileMatcher.filesRegex(query)
+// res1: Seq[String] = List("1txt")
 FileMatcher.filesEnding(query)
+// res2: Seq[String] = List("example.txt")
 ```
 
 

@@ -11,7 +11,7 @@
 
 #### Пример
 
-```scala mdoc
+```scala
 class Pizza(var dough: String = "", var sauce: String = "", var topping: String = ""):
   def outputReceipt(): Unit =
     println(s"Dough: $dough\nSauce: $sauce\nTopping: $topping")
@@ -36,7 +36,7 @@ end PizzaBuilder
 
 Использование паттерна строитель:
 
-```scala mdoc
+```scala
 object HawaiianPizzaBuilder extends PizzaBuilder:
   def createHawaiianPizza(): Pizza =
     createPizza()
@@ -52,7 +52,13 @@ object SpicyPizzaBuilder extends PizzaBuilder:
     buildTopping("pepperoni+salami")
     getPizza
 HawaiianPizzaBuilder.createHawaiianPizza().outputReceipt()
+// Dough: cross
+// Sauce: mild
+// Topping: ham+pineapple
 SpicyPizzaBuilder.createSpicyPizza().outputReceipt()
+// Dough: pan baked
+// Sauce: hot
+// Topping: pepperoni+salami
 ```
 
 

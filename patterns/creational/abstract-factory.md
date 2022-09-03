@@ -36,7 +36,7 @@
 Абстрактные фабричные методы `createWindow` и `createScrollbar` 
 скрывают фактический код создания экземпляра от клиентов.
 
-```scala mdoc
+```scala
 trait WindowFactory:
   type aWindow <: Window
   type aScrollbar <: Scrollbar
@@ -52,7 +52,7 @@ trait WindowFactory:
 Конкретная фабрика в данном примере - это объект singleton, содержащий protected nested классы. 
 Это конкретная реализация. Поскольку они protected, они скрыты от клиентов.
 
-```scala mdoc
+```scala
 object VistaFactory extends WindowFactory:
   type aWindow = VistaWindow
   type aScrollbar = VistaScrollbar
@@ -74,7 +74,7 @@ object VistaFactory extends WindowFactory:
 Это позволяет расширить `Window` и `Scrollbar` в модуле, 
 где в противном случае они не были бы видны в области видимости.
 
-```scala mdoc
+```scala
 trait VistaWidgets { self: WindowFactory =>
   protected class VistaWindow(s: aScrollbar) extends Window(s)
   protected class VistaScrollbar extends Scrollbar

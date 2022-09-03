@@ -13,10 +13,11 @@
 
 Класс `Button` ожидает функцию обратного вызова, которую он будет выполнять при вызове метода `click`.
 
-```scala mdoc
+```scala
 class Button(val click: () => Unit)
 val button = new Button(() => println("click!"))
 button.click()
+// click!
 ```
 
 

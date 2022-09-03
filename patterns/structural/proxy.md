@@ -38,7 +38,7 @@
 
 ![Proxy](https://upload.wikimedia.org/wikipedia/ru/0/08/Proxy_patt.gif)
 
-```scala mdoc:silent
+```scala
 // "Subject"
 trait IMath:
   def add(x: Double, y: Double): Double
@@ -54,9 +54,10 @@ class MathProxy extends IMath:
   def add(x: Double, y: Double) = math.add(x, y)
 ```
 
-```scala mdoc
+```scala
 val p: IMath = new MathProxy
 p.add(4, 2)
+// res0: Double = 6.0
 ```
 
 #### Примеры
@@ -69,7 +70,7 @@ p.add(4, 2)
 
 Отложенное вычисление Scala обеспечивает прямую языковую поддержку некоторых аспектов шаблона Proxy.
 
-```scala mdoc
+```scala
 class VirtualProxy:
   lazy val expensiveOperation = List (1 to 1000000000)
 ```

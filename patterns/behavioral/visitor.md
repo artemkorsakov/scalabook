@@ -11,7 +11,7 @@ Visitor позволяет определить новую операцию бе
 
 #### Пример
 
-```scala mdoc:silent
+```scala
 trait Expr
 case class Num(n: Int) extends Expr
 case class Sum(l: Expr, r: Expr) extends Expr
@@ -30,10 +30,12 @@ def eval(e: Expr): Int =
     case Sum(l, r) => eval(l) + eval(r)
 ```
 
-```scala mdoc
+```scala
 val e1 = Sum(Sum(Num(1), Num(2)), Num(3))
 prettyPrint(e1)
+// 1 + 2 + 3
 print(eval(e1))
+// 6
 ```
 
 

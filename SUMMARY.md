@@ -1,4 +1,4 @@
-- [Домашняя](https://scalabook.gitflic.space)
+- [Домашняя](.)
 
 ## Scala
 - [Scala](scala/index.md)

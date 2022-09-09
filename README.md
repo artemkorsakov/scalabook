@@ -13,6 +13,6 @@
 
 [Теория категорий в Scala](https://scalabook.gitflic.space/typeclass/index)
 
-[Паттерны проектирования на Scala](https://scalabook.gitflic.space/design-patterns/index)
+[Паттерны проектирования на Scala](https://scalabook.gitflic.space/patterns/index)
 
 [Scala Puzzlers](https://scalabook.gitflic.space/puzzlers/index)

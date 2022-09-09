@@ -5,7 +5,7 @@
 
 Код написан на версии Scala - 3.1.3.
 
-[Домашняя страница](https://scalabook.gitflic.space/README)
+[Домашняя страница](https://scalabook.gitflic.space)
 
 [Обзор Scala](https://scalabook.gitflic.space/scala/index)
 

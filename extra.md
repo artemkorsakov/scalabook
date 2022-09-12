@@ -49,6 +49,7 @@
 - &#10031; &#10031; &#10031;
   - [Scala puzzlers](https://scalapuzzlers.com/index.html) - **Scala 2**
     - [Scala puzzlers - book](https://www.artima.com/shop/scala_puzzlers) - **Scala 2**
+  - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) - **Scala 2**
 - &#10031; &#10031; &#10031; &#10031; &#10031;
   - ...
   

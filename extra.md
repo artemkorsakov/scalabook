@@ -47,8 +47,7 @@
   - [A Tour of Scala](http://scalatutorials.com/tour/) - **Scala 2**
   - [scala-exercises](https://www.scala-exercises.org/) - **Scala 2**
 - &#10031; &#10031; &#10031;
-  - [Scala puzzlers](https://scalapuzzlers.com/index.html) - **Scala 2**
-    - [Scala puzzlers - book](https://www.artima.com/shop/scala_puzzlers) - **Scala 2**
+  - [Scala puzzlers](https://scalapuzzlers.com/index.html), на основе упражнений [написана книга](https://www.artima.com/shop/scala_puzzlers) - **Scala 2**
   - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) - **Scala 2**
 - &#10031; &#10031; &#10031; &#10031; &#10031;
   - ...

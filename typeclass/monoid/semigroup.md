@@ -23,7 +23,7 @@
 
 - Числа образуют полугруппу относительно умножения
   ```scala
-  given productSemigroupInstance: Semigroup[BigInt] = (x: BigInt, y: BigInt) => x * y
+  given productSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x * y
   ```
   
 - Строки образуют полугруппу при конкатенации

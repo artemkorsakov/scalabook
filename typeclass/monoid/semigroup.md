@@ -16,17 +16,17 @@
     def combine(x: A, y: A): A
   ```
 
-- Числа образуют полугруппу относительно сложения
+- Натуральные числа N образуют полугруппу относительно сложения
   ```scala
   given sumSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x + y
   ```
 
-- Числа образуют полугруппу относительно умножения
+- Натуральные числа N образуют полугруппу относительно умножения
   ```scala
   given productSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x * y
   ```
   
-- Строки образуют полугруппу при конкатенации
+- Строки образуют полугруппу относительно конкатенации
   ```scala
   given stringSemigroupInstance: Semigroup[String] = (x: String, y: String) => x + y
   ```
@@ -37,7 +37,7 @@
     (x: List[T], y: List[T]) => x ++ y
   ```
 
-- [Кортеж](../../scala/collections/tuple.md) от двух и более полугрупп также является полугруппой
+- [Кортеж](../../scala/collections/tuple) от двух и более полугрупп также является полугруппой
   ```scala
   given nestedSemigroupInstance[A, B](using aSemigroup: Semigroup[A], bSemigroup: Semigroup[B]): Semigroup[(A, B)] =
     (x: (A, B), y: (A, B)) => (aSemigroup.combine(x._1, y._1), bSemigroup.combine(x._2, y._2))

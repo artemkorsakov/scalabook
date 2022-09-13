@@ -10,10 +10,11 @@
 
 ### Примеры полугрупп
 
-```scala
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
-```
+- Описание полугруппы
+  ```scala
+  trait Semigroup[A]:
+    def combine(x: A, y: A): A
+  ```
 
 - Числа образуют полугруппу относительно сложения
   ```scala

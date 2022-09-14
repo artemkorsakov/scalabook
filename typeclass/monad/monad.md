@@ -22,3 +22,4 @@
 **References:**
 - [Tour of Scala](https://tourofscala.com/scala/monad)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monad.html)
+- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 

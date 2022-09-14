@@ -14,6 +14,74 @@ _Fold_ может использоваться для реализации `redu
 
 ### Примеры Foldable
 
+##### Описание Foldable
+
+```scala
+trait Foldable[F[_]]:
+  extension[A] (fa: F[A])
+    def foldRight[B](init: B)(f: (A, B) => B): B
+```
+
+##### "Обертка"
+
+```scala
+case class Id[A](value: A)
+
+given idFoldable: Foldable[Id] with
+  extension [A](fa: Id[A])
+    override def foldRight[B](init: B)(f: (A, B) => B): B =
+      f(fa.value, init)
+```
+
+##### [Option](../../scala/fp/functional-error-handling)
+
+```scala
+given optionFoldable: Foldable[Option] with
+  extension [A](fa: Option[A])
+    override def foldRight[B](init: B)(f: (A, B) => B): B =
+      fa match
+        case Some(a) => f(a, init)
+        case None    => init
+```
+
+##### Последовательность
+
+```scala
+given listFoldable: Foldable[List] with
+  extension [A](as: List[A])
+    override def foldRight[B](init: B)(f: (A, B) => B): B =
+      as.foldRight(init)(f)
+```
+
+##### [Кортеж](../../scala/collections/tuple) от двух и более элементов
+
+```scala
+given tuple2Foldable: Foldable[[X] =>> (X, X)] with
+  extension [A](fa: (A, A))
+    override def foldRight[B](init: B)(f: (A, B) => B): B =
+      val (a0, a1) = fa
+      val b = f(a1, init)
+      f(a0, b)
+
+given tuple3Foldable: Foldable[[X] =>> (X, X, X)] with
+  extension [A](fa: (A, A, A))
+    override def foldRight[B](init: B)(f: (A, B) => B): B =
+      val (a0, a1, a2) = fa
+      val b0 = f(a2, init)
+      val b1 = f(a1, b0)
+      f(a0, b1)
+```
+
+##### [Either](../../fp/handling-errors)
+
+```scala
+given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
+  extension [A](fa: Either[E, A])
+    override def foldRight[B](init: B)(f: (A, B) => B): B =
+      fa match
+        case Right(a) => f(a, init)
+        case Left(_)  => init
+```
 
 ### Реализации Foldable в различных библиотеках
 
@@ -22,3 +90,4 @@ _Fold_ может использоваться для реализации `redu
 
 **References:**
 - [Tour of Scala](https://tourofscala.com/scala/foldable)
+- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)

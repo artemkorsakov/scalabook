@@ -20,3 +20,4 @@
 **References:**
 - [Tour of Scala](https://tourofscala.com/scala/applicative)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/applicative.html)
+- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)

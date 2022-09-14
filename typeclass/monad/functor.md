@@ -13,11 +13,11 @@
 ### Примеры функторов
 
 - Описание функтора
-  ```scala
-  trait Functor[F[_]]:
-    extension [A](fa: F[A])
-      def map[B](f: A => B): F[B]
-  ```
+```scala
+trait Functor[F[_]]:
+  extension [A](fa: F[A])
+    def map[B](f: A => B): F[B]
+```
 
 - "Обертка" является функтором
   ```scala

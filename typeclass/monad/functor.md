@@ -41,7 +41,8 @@ given optionFunctor: Functor[Option] with
 ##### Последовательность
 ```scala
 given listFunctor: Functor[List] with
-  extension [A](as: List[A]) override def map[B](f: A => B): List[B] = as.map(f)
+  extension [A](as: List[A]) 
+    override def map[B](f: A => B): List[B] = as.map(f)
 ```
 
 ##### [Either](../../fp/handling-errors)

@@ -16,6 +16,8 @@ _Fold_ может использоваться для реализации `redu
 
 ##### Описание Foldable
 
+Пример агрегации справа налево.
+
 ```scala
 trait Foldable[F[_]]:
   extension[A] (fa: F[A])

@@ -12,6 +12,71 @@
 
 ### Примеры функторов
 
+- Описание функтора
+  ```scala
+  trait Functor[F[_]]:
+    extension [A](fa: F[A])
+      def map[B](f: A => B): F[B]
+  ```
+
+- "Обертка" является функтором
+  ```scala
+  case class Id[A](value: A)
+
+  given idFunctor: Functor[Id] with
+    extension [A](as: Id[A]) 
+      override def map[B](f: A => B): Id[B] = Id(f(as.value))
+  ```
+
+- [Option](../../scala/fp/functional-error-handling)
+  ```scala
+  given optionFunctor: Functor[Option] with
+    extension [A](optA: Option[A])
+      override def map[B](f: A => B): Option[B] =
+        optA match
+          case Some(a) => Some(f(a))
+          case None    => None
+  ```
+
+- Последовательность
+  ```scala
+  given listFunctor: Functor[List] with
+    extension [A](as: List[A]) override def map[B](f: A => B): List[B] = as.map(f)
+  ```
+
+- [Either](../../fp/handling-errors)
+  ```scala
+  given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
+    extension [A](fa: Either[E, A])
+      override def map[B](f: A => B): Either[E, B] =
+        fa match
+          case Right(a) => Right(f(a))
+          case Left(e)  => Left(e)
+  ```
+
+- Writer
+  ```scala
+  case class Writer[W, A](run: () => (W, A))
+  
+  given writerFunctor[W]: Functor[[x] =>> Writer[W, x]] with
+    extension [A](fa: Writer[W, A])
+      override def map[B](f: A => B): Writer[W, B] =
+        val (w, a) = fa.run()
+        Writer[W, B](() => (w, f(a)))
+  ```
+
+- [State](../../fp/state) - функциональное состояние
+  ```scala
+  case class State[S, +A](run: S => (S, A))
+  
+  given stateFunctor[S]: Functor[[x] =>> State[S, x]] with
+    extension [A](fa: State[S, A])
+      override def map[B](f: A => B): State[S, B] =
+        State[S, B] { s =>
+          val (s1, a) = fa.run(s)
+          (s1, f(a))
+        }
+  ```
 
 ### Реализации функторов в различных библиотеках
 
@@ -21,3 +86,4 @@
 **References:**
 - [Tour of Scala](https://tourofscala.com/scala/functor)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/functor.html)
+- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)

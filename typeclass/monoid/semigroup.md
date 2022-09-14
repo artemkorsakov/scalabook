@@ -51,3 +51,4 @@
 
 **References:**
 - [Algebird](https://twitter.github.io/algebird/typeclasses/semigroup.html)
+- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)

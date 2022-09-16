@@ -13,6 +13,7 @@
 ### Примеры функторов
 
 ##### Описание функтора
+
 ```scala
 trait Functor[F[_]]:
   extension [A](fa: F[A])
@@ -20,6 +21,7 @@ trait Functor[F[_]]:
 ```
 
 ##### "Обертка" является функтором
+
 ```scala
 case class Id[A](value: A)
 
@@ -29,6 +31,7 @@ given idFunctor: Functor[Id] with
 ```
 
 ##### [Option](../../scala/fp/functional-error-handling)
+
 ```scala
 given optionFunctor: Functor[Option] with
   extension [A](optA: Option[A])
@@ -39,6 +42,7 @@ given optionFunctor: Functor[Option] with
 ```
 
 ##### Последовательность
+
 ```scala
 given listFunctor: Functor[List] with
   extension [A](as: List[A]) 
@@ -46,6 +50,7 @@ given listFunctor: Functor[List] with
 ```
 
 ##### [Either](../../fp/handling-errors)
+
 ```scala
 given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
   extension [A](fa: Either[E, A])
@@ -56,6 +61,7 @@ given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
 ```
 
 ##### Writer
+
 ```scala
 case class Writer[W, A](run: () => (W, A))
 
@@ -67,6 +73,7 @@ given writerFunctor[W]: Functor[[x] =>> Writer[W, x]] with
 ```
 
 ##### [State](../../fp/state) - функциональное состояние
+
 ```scala
 case class State[S, +A](run: S => (S, A))
 

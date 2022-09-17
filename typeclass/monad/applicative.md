@@ -50,7 +50,7 @@ given optionApplicative: Applicative[Option] with
       case _                     => None
 ```
 
-##### Последовательность
+##### [Последовательность](../../scala/collections)
 
 ```scala
 given listApplicative: Applicative[List] with

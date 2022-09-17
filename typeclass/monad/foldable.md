@@ -46,7 +46,7 @@ given optionFoldable: Foldable[Option] with
         case None    => init
 ```
 
-##### Последовательность
+##### [Последовательность](../../scala/collections)
 
 ```scala
 given listFoldable: Foldable[List] with

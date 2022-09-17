@@ -41,7 +41,7 @@ given optionFunctor: Functor[Option] with
         case None    => None
 ```
 
-##### Последовательность
+##### [Последовательность](../../scala/collections)
 
 ```scala
 given listFunctor: Functor[List] with

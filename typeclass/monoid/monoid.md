@@ -41,7 +41,7 @@ given stringMonoidInstance: Monoid[String] = new Monoid[String]:
   def combine(x: String, y: String) = x + y
 ```
 
-##### Последовательность образует моноид относительно операции объединения (пустая последовательность является identity элементом)
+##### [Последовательность](../../scala/collections) образует моноид относительно операции объединения (пустая последовательность является identity элементом)
 ```scala
 given listMonoidInstance[T]: Monoid[List[T]] = new Monoid[List[T]]:
   def empty = List.empty[T]

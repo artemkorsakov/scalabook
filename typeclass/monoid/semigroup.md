@@ -31,7 +31,7 @@ given productSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x * y
 given stringSemigroupInstance: Semigroup[String] = (x: String, y: String) => x + y
 ```
 
-##### Последовательность образует полугруппу относительно операции объединения
+##### [Последовательность](../../scala/collections) образует полугруппу относительно операции объединения
 ```scala
 given listSemigroupInstance[T]: Semigroup[List[T]] =
   (x: List[T], y: List[T]) => x ++ y

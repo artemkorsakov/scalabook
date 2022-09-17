@@ -7,7 +7,7 @@
 
 ### Примеры traversable
 
-##### Описание Applicative
+##### Описание Traverse
 
 ```scala
 trait Functor[F[_]]:

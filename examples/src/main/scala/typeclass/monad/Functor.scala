@@ -39,3 +39,6 @@ object Functor:
           val (s1, a) = fa.run(s)
           (s1, f(a))
         }
+
+  def map[F[_], A, B](fa: F[A], f: A => B)(using functor: Functor[F]): F[B] =
+    functor.map(fa)(f)

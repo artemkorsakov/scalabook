@@ -159,6 +159,10 @@ given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
       }
 ```
 
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FTraverse.scala&plain=1)
+
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FTraverseSuite.scala)
+
 
 ### Реализации traversable в различных библиотеках
 

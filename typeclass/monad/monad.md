@@ -116,6 +116,10 @@ given stateMonad[S]: Monad[[x] =>> State[S, x]] with
       }
 ```
 
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FMonad.scala&plain=1)
+
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FMonadSuite.scala)
+
 
 ### Реализации монад в различных библиотеках
 

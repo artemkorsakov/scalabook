@@ -113,6 +113,10 @@ given stateApplicative[S]: Applicative[[x] =>> State[S, x]] with
     }
 ```
 
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FApplicative.scala&plain=1)
+
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FApplicativeSuite.scala)
+
 
 ### Реализации Applicative в различных библиотеках
 

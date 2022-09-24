@@ -3,7 +3,7 @@ package typeclass.monoid
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.monoid.Semigroup
-import typeclass.monoid.Semigroup.{*, given}
+import typeclass.monoid.Semigroup.{combine, given}
 
 class SemigroupSuite extends ScalaCheckSuite:
   property("Int образуют полугруппу относительно сложения") {
@@ -38,4 +38,4 @@ class SemigroupSuite extends ScalaCheckSuite:
   }
 
   private def checkAssociativity[A](x: A, y: A, z: A)(using Semigroup[A]): Unit =
-    assertEquals(combine(combine(x, y), z), combine(x, combine(y, z)))
+    assertEquals(combine(combine(x, y), z), combine(x, combine(y, z)), "Associativity")

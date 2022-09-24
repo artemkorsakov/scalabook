@@ -21,39 +21,48 @@ trait Monoid[A] extends Semigroup[A]:
 ```
 
 ##### Натуральные числа N являются моноидами относительно сложения (`0` является identity элементом)
+
 ```scala
-given sumMonoidInstance: Monoid[Int] = new Monoid[Int]:
-  def empty = 0
-  def combine(x: Int, y: Int) = x + y
+given sumMonoidInstance: Monoid[Int] with
+  val empty = 0
+  def combine(x: Int, y: Int): Int = x + y
 ```
 
 ##### Натуральные числа N являются моноидами относительно умножения (`1` является identity элементом)
+
 ```scala
-given productMonoidInstance: Monoid[Int] = new Monoid[Int]:
-  def empty = 1
-  def combine(x: Int, y: Int) = x * y
+given productMonoidInstance: Monoid[Int] with
+  val empty = 1
+  def combine(x: Int, y: Int): Int = x * y
 ```
 
 ##### Строки образуют моноид относительно конкатенации (`""` является identity элементом)
+
 ```scala
-given stringMonoidInstance: Monoid[String] = new Monoid[String]:
-  def empty = ""
-  def combine(x: String, y: String) = x + y
+given stringMonoidInstance: Monoid[String] with
+  val empty = ""
+  def combine(x: String, y: String): String = x + y
 ```
 
 ##### [Последовательность](../../scala/collections) образует моноид относительно операции объединения (пустая последовательность является identity элементом)
+
 ```scala
-given listMonoidInstance[T]: Monoid[List[T]] = new Monoid[List[T]]:
-  def empty = List.empty[T]
-  def combine(x: List[T], y: List[T]) = x ++ y
+given listMonoidInstance[T]: Monoid[List[T]] with
+  val empty = List.empty[T]
+  def combine(x: List[T], y: List[T]): List[T] = x ++ y
 ```
 
 ##### [Кортеж](../../scala/collections/tuple) от двух и более моноидов также является моноидом
+
 ```scala
-given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): Monoid[(A, B)] = new Monoid[(A, B)]:
-  def empty = (aMonoid.empty, bMonoid.empty)
-  def combine(x: (A, B), y: (A, B)) = (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
+given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): Monoid[(A, B)] with
+  lazy val empty: (A, B) = (aMonoid.empty, bMonoid.empty)
+  def combine(x: (A, B), y: (A, B)): (A, B) = (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
 ```
+
+[Пример кода](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FSemigroup.scala&plain=1)
+
+[Пример кода проверки полугруппы](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FSemigroupSuite.scala)
 
 
 ### Реализации моноидов в различных библиотеках

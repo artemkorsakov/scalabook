@@ -2,11 +2,11 @@ import Dependencies.Version._
 
 ThisBuild / organization := "ru.gitflic.artemkorsakov"
 ThisBuild / version := "0.1.0-SNAPSHOT"
-ThisBuild / scalaVersion := Scala3
+ThisBuild / scalaVersion := Scala
 
 lazy val examples = (project in file("examples"))
   .settings(
-    name := "examples",
+    name := "scalabook-examples",
     libraryDependencies ++= Dependencies.examples
   )
 

@@ -167,3 +167,4 @@ given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
 
 **References:**
 - [Tour of Scala](https://tourofscala.com/scala/traversable)
+- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)

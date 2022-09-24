@@ -60,9 +60,9 @@ given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): 
   def combine(x: (A, B), y: (A, B)): (A, B) = (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
 ```
 
-[Пример кода](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FSemigroup.scala&plain=1)
+[Пример кода](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FMonoid.scala&plain=1)
 
-[Пример кода проверки полугруппы](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FSemigroupSuite.scala)
+[Пример кода проверки полугруппы](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FMonoidSuite.scala)
 
 
 ### Реализации моноидов в различных библиотеках

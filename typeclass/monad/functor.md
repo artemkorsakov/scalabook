@@ -86,6 +86,11 @@ given stateFunctor[S]: Functor[[x] =>> State[S, x]] with
       }
 ```
 
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FMonoid.scala&plain=1)
+
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FMonoidSuite.scala)
+
+
 ### Реализации функторов в различных библиотеках
 
 

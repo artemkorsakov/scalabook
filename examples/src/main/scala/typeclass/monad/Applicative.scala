@@ -12,6 +12,9 @@ trait Applicative[F[_]] extends Functor[F]:
     def map[B](f: A => B): F[B] =
       apply(unit(f))(fa)
 
+    def map2[B, C](fb: F[B])(f: (A, B) => C): F[C] =
+      apply(apply(unit(f.curried))(fa))(fb)
+
 object Applicative:
   given idApplicative: Applicative[Id] with
     override def unit[A](a: => A): Id[A] = Id(a)

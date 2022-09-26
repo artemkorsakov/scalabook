@@ -6,8 +6,8 @@
 которая объединяет `F[A => B]` и `F[A]` в `F[B]`.
 
 Для `Applicative` должны соблюдаться следующие законы:
-- `map(apply(x))(f) == apply(f(x))`
-- `join(apply(x), apply(y)) == apply((x, y))`
+- `map(unit(x))(f) == unit(f(x))`
+- `join(unit(x), unit(y)) == unit((x, y))`
 
 ### Примеры Applicative
 

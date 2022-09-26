@@ -6,13 +6,13 @@ import typeclass.common.*
 import typeclass.monad.Foldable.{foldRight, given}
 
 class FoldableSuite extends ScalaCheckSuite:
-  property("'Обертку' можно агрегировать") {
+  property("idFoldable должен 'сворачиваться'") {
     forAll { (x: Int) =>
       assertEquals(foldRight(Id(x))(100)(_ + _), 100 + x)
     }
   }
 
-  property("'Option' можно агрегировать") {
+  property("optionFoldable должен 'сворачиваться'") {
     forAll { (maybeInt: Option[Int]) =>
       val expected = maybeInt match
         case Some(a) => a + 100
@@ -21,27 +21,27 @@ class FoldableSuite extends ScalaCheckSuite:
     }
   }
 
-  property("'List' можно агрегировать") {
+  property("listFoldable должен 'сворачиваться'") {
     forAll { (list: List[Int]) =>
       assertEquals(foldRight(list)(100)(_ + _), list.sum + 100)
     }
   }
 
-  property("'Tuple2' можно агрегировать") {
+  property("tuple2Foldable должен 'сворачиваться'") {
     forAll { (x: Int, y: Int) =>
       val actual = foldRight[[X] =>> (X, X), Int, Int]((x, y))(100)(_ + _)
       assertEquals(actual, x + y + 100)
     }
   }
 
-  property("'Tuple3' можно агрегировать") {
+  property("tuple3Foldable должен 'сворачиваться'") {
     forAll { (x: Int, y: Int, z: Int) =>
       val actual = foldRight[[X] =>> (X, X, X), Int, Int]((x, y, z))(100)(_ + _)
       assertEquals(actual, x + y + z + 100)
     }
   }
 
-  property("'Either' можно агрегировать") {
+  property("eitherFoldable должен 'сворачиваться'") {
     forAll { (either: Either[String, Int]) =>
       val expected = either match
         case Right(a) => a + 100

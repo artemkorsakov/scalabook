@@ -5,33 +5,31 @@ import org.scalacheck.Prop.*
 import typeclass.monoid.Monoid.{combine, empty, given}
 
 class MonoidSuite extends ScalaCheckSuite:
-  property("Int являются моноидами относительно сложения (`0` является identity элементом)") {
+  property("sumMonoidInstance должен удовлетворять законам функтора") {
     forAll { (x: Int, y: Int, z: Int) =>
       checkMonoid(x, y, z)(using sumMonoidInstance)
     }
   }
 
-  property("Int являются моноидами относительно умножения (`1` является identity элементом)") {
+  property("productMonoidInstance должен удовлетворять законам функтора") {
     forAll { (x: Int, y: Int, z: Int) =>
       checkMonoid(x, y, z)(using productMonoidInstance)
     }
   }
 
-  property("Строки образуют моноид относительно конкатенации (пустая строка является identity элементом)") {
+  property("stringMonoidInstance должен удовлетворять законам функтора") {
     forAll { (x: String, y: String, z: String) =>
       checkMonoid(x, y, z)
     }
   }
 
-  property(
-    "List образует моноид относительно операции объединения (пустая последовательность является identity элементом)"
-  ) {
+  property("listMonoidInstance должен удовлетворять законам функтора") {
     forAll { (x: List[Int], y: List[Int], z: List[Int]) =>
       checkMonoid(x, y, z)
     }
   }
 
-  property("Кортеж от двух и более моноидов также является моноидом") {
+  property("nestedMonoidInstance должен удовлетворять законам функтора") {
     forAll { (x0: String, y0: String, z0: String, x1: List[Int], y1: List[Int], z1: List[Int]) =>
       assertEquals(combine((x0, x1), (y0, y1)), (s"$x0$y0", x1 ++ y1))
       checkMonoid((x0, x1), (y0, y1), (z0, z1))

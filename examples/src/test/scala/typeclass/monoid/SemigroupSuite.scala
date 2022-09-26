@@ -6,31 +6,31 @@ import typeclass.monoid.Semigroup
 import typeclass.monoid.Semigroup.{combine, given}
 
 class SemigroupSuite extends ScalaCheckSuite:
-  property("Int образуют полугруппу относительно сложения") {
+  property("sumSemigroupInstance должен удовлетворять законам полугруппы") {
     forAll { (x: Int, y: Int, z: Int) =>
       checkAssociativity(x, y, z)(using sumSemigroupInstance)
     }
   }
 
-  property("Int образуют полугруппу относительно умножения") {
+  property("productSemigroupInstance должен удовлетворять законам полугруппы") {
     forAll { (x: Int, y: Int, z: Int) =>
       checkAssociativity(x, y, z)(using productSemigroupInstance)
     }
   }
 
-  property("Строки образуют полугруппу относительно конкатенации") {
+  property("stringSemigroupInstance должен удовлетворять законам полугруппы") {
     forAll { (x: String, y: String, z: String) =>
       checkAssociativity(x, y, z)
     }
   }
 
-  property("List образует полугруппу относительно операции объединения") {
+  property("listSemigroupInstance должен удовлетворять законам полугруппы") {
     forAll { (x: List[Int], y: List[Int], z: List[Int]) =>
       checkAssociativity(x, y, z)
     }
   }
 
-  property("Кортеж от двух и более полугрупп также является полугруппой") {
+  property("nestedSemigroupInstance должен удовлетворять законам полугруппы") {
     forAll { (x0: String, y0: String, z0: String, x1: List[Int], y1: List[Int], z1: List[Int]) =>
       assertEquals(combine((x0, x1), (y0, y1)), (s"$x0$y0", x1 ++ y1))
       checkAssociativity((x0, x1), (y0, y1), (z0, z1))

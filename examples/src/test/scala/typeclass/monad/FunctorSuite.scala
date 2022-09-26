@@ -4,7 +4,7 @@ import munit.{Assertions, ScalaCheckSuite}
 import org.scalacheck.Prop.*
 import typeclass.common.*
 import typeclass.monad.Functor.{map, given}
-import typeclass.monad.FunctorSuite.checkFunctor
+import typeclass.monad.FunctorSuite.{checkFunctor, checkStateFunctor}
 
 class FunctorSuite extends ScalaCheckSuite:
   private val f: Int => String = _.toString
@@ -44,8 +44,8 @@ class FunctorSuite extends ScalaCheckSuite:
 
   property("stateFunctor должен удовлетворять законам функтора") {
     forAll { (x: Int) =>
-      val state = State(s => (s, x))
-      checkFunctor(state, f, g)
+      val state = State[String, Int](s => (s, x))
+      checkStateFunctor(state, f, g)
     }
   }
 
@@ -53,3 +53,9 @@ object FunctorSuite extends Assertions:
   def checkFunctor[F[_], A, B, C](fa: F[A], f: A => B, g: B => C)(using Functor[F]): Unit =
     assertEquals(map(fa, identity), fa, "check identity")
     assertEquals(map(map(fa, f), g), map(fa, f.andThen(g)), "check composition")
+
+  def checkStateFunctor[A, B, C](fa: State[String, A], f: A => B, g: B => C)(using
+      Functor[[x] =>> State[String, x]]
+  ): Unit =
+    assertEquals(map(fa, identity).run("state"), fa.run("state"), "check identity")
+    assertEquals(map(map(fa, f), g).run("state"), map(fa, f.andThen(g)).run("state"), "check composition")

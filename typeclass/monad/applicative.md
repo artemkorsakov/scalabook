@@ -7,7 +7,7 @@
 
 Для `Applicative` должны соблюдаться следующие законы:
 - `map(unit(x))(f) == unit(f(x))`
-- `join(unit(x), unit(y)) == unit((x, y))`
+- `apply(unit(f), unit(x)) == unit(f(x))`
 
 ### Примеры Applicative
 

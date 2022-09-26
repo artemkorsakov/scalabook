@@ -96,7 +96,7 @@ object Traverse:
         m.foldLeft(summon[Applicative[G]].unit(Map.empty[K, B])) { case (acc, (k, a)) =>
           acc.map2(f(a))((m, b) => m + (k -> b))
         }
-        
+
   def traverse[F[_], G[_]: Applicative, A, B](fa: F[A], f: A => G[B])(using traversable: Traverse[F]): G[F[B]] =
     traversable.traverse(fa)(f)
-   
+

@@ -1,6 +1,7 @@
 package typeclass.monad
 
 import munit.ScalaCheckSuite
+import org.scalacheck.Gen
 import org.scalacheck.Prop.*
 import typeclass.common.*
 import typeclass.monad.Traverse.{traverse, given}
@@ -38,28 +39,26 @@ class TraverseSuite extends ScalaCheckSuite:
     }
   }
 
-  /*
   property("listTraverse должен менять местами 'обертку'") {
-    forAll { (x: Int) =>
-      val actual = traverse[Id, Id, Int, Char](Id(x), f)
-      val expected = x.toString.toList.map(Id(_))
-      assertEquals(actual, expected)
+    forAll { (x: List[Int]) =>
+      val actual = traverse[List, Id, Int, String](x, f)
+      assertEquals(actual, Id(x.map(_.toString)))
     }
   }
 
   property("treeTraverse должен менять местами 'обертку'") {
-    forAll { (x: Int) =>
-      val actual = traverse[Id, Id, Int, Char](Id(x), f)
-      val expected = x.toString.toList.map(Id(_))
-      assertEquals(actual, expected)
+    forAll { (x: Int, list: List[Int]) =>
+      val tree = Tree(x, list.map(a => Tree(a, Nil)))
+      val actual = traverse[Tree, Id, Int, String](tree, f)
+      val expected = Tree(x.toString, list.map(a => Tree(a.toString, Nil)))
+      assertEquals(actual, Id(expected))
     }
   }
 
   property("mapTraverse должен менять местами 'обертку'") {
-    forAll { (x: Int) =>
-      val actual = traverse[Id, Id, Int, Char](Id(x), f)
-      val expected = x.toString.toList.map(Id(_))
-      assertEquals(actual, expected)
+    forAll { (map: Map[String, Int]) =>
+      val actual = traverse[[X] =>> Map[String, X], Id, Int, String](map, f)
+      val expected = map.view.mapValues(_.toString).toMap
+      assertEquals(actual, Id(expected))
     }
   }
-   */

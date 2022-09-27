@@ -116,6 +116,18 @@ given stateMonad[S]: Monad[[x] =>> State[S, x]] with
       }
 ```
 
+##### IO
+
+```scala
+final case class IO[R](run: () => R)
+
+given ioMonad: Monad[IO] with
+  override def unit[A](a: => A): IO[A] = IO(() => a)
+
+  extension [A](fa: IO[A]) override def flatMap[B](f: A => IO[B]): IO[B] = f(fa.run())
+```
+
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FMonad.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FMonadSuite.scala)

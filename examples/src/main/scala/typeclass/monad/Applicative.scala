@@ -80,6 +80,11 @@ object Applicative:
       val fgb: F[G[B]] = applF.apply(fGaToGb)(fga)
       Nested(fgb)
 
+  given ioApplicative: Applicative[IO] with
+    override def unit[A](a: => A): IO[A] = IO(() => a)
+
+    override def apply[A, B](fab: IO[A => B])(fa: IO[A]): IO[B] = IO(() => fab.run()(fa.run()))
+
   def unit[F[_], A](a: => A)(using applicative: Applicative[F]): F[A] = applicative.unit(a)
 
   def apply[F[_], A, B](fab: F[A => B])(fa: F[A])(using applicative: Applicative[F]): F[B] =

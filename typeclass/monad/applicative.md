@@ -134,6 +134,16 @@ given nestedApplicative[F[_], G[_]](using
     Nested(fgb)
 ```
 
+##### IO
+
+```scala
+final case class IO[R](run: () => R)
+
+given ioApplicative: Applicative[IO] with
+  override def unit[A](a: => A): IO[A] = IO(() => a)
+  override def apply[A, B](fab: IO[A => B])(fa: IO[A]): IO[B] = IO(() => fab.run()(fa.run()))
+```
+
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FApplicative.scala&plain=1)
 

@@ -61,6 +61,12 @@ class ApplicativeSuite extends ScalaCheckSuite:
     }
   }
 
+  property("ioApplicative должен удовлетворять законам Applicative") {
+    forAll { (x: Int) =>
+      checkApplicative[IO, Int, String, Boolean](x, f, g)
+    }
+  }
+
   private def checkApplicative[F[_], A, B, C](x: A, f: A => B, g: B => C)(using applicative: Applicative[F]): Unit =
     assertEquals(map(unit(x), f), unit(f(x)))
     assertEquals(apply(unit(f))(unit(x)), unit(f(x)))

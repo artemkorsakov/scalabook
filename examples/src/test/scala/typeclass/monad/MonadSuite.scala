@@ -80,6 +80,12 @@ class MonadSuite extends ScalaCheckSuite:
     }
   }
 
+  property("ioMonad должен удовлетворять законам монады") {
+    forAll { (x: Int) =>
+      checkMonad[IO, Int, String, Boolean](x, IO(() => x), i => IO(() => f(i)), s => IO(() => g(s)))
+    }
+  }
+
   private def checkMonad[F[_], A, B, C](x: A, fa: F[A], f: A => F[B], g: B => F[C])(using Monad[F]): Unit =
     assertEquals(flatMap(unit(x), f), f(x))
     assertEquals(flatMap(fa, unit _), fa)

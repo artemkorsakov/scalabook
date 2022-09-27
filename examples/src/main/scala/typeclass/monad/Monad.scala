@@ -63,6 +63,11 @@ object Monad:
           f(a).run(s1)
         }
 
+  given ioMonad: Monad[IO] with
+    override def unit[A](a: => A): IO[A] = IO(() => a)
+
+    extension [A](fa: IO[A]) override def flatMap[B](f: A => IO[B]): IO[B] = f(fa.run())
+
   def unit[F[_], A](a: => A)(using monad: Monad[F]): F[A] =
     monad.unit(a)
 

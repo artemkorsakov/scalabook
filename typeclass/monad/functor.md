@@ -100,6 +100,16 @@ given nestedFunctor[F[_], G[_]](using functorF: Functor[F], functorG: Functor[G]
       }
 ```
 
+##### IO
+
+```scala
+final case class IO[R](run: () => R)
+
+given ioFunctor: Functor[IO] with
+  extension [A](as: IO[A]) override def map[B](f: A => B): IO[B] = IO { () => f(as.run()) }
+```
+
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FFunctor.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFunctorSuite.scala)

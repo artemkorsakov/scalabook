@@ -56,6 +56,12 @@ class FunctorSuite extends ScalaCheckSuite:
     }
   }
 
+  property("ioFunctor должен удовлетворять законам функтора") {
+    forAll { (x: Int) =>
+      checkFunctor(IO(() => x), f, g)
+    }
+  }
+
 object FunctorSuite extends Assertions:
   def checkFunctor[F[_], A, B, C](fa: F[A], f: A => B, g: B => C)(using Functor[F]): Unit =
     assertEquals(map(fa, identity), fa, "check identity")

@@ -4,6 +4,7 @@ import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.common.*
 import typeclass.monad.Applicative.{apply, map, unit, given}
+import typeclass.monad.Functor.given
 import typeclass.monad.FunctorSuite.{checkFunctor, checkStateFunctor}
 
 class ApplicativeSuite extends ScalaCheckSuite:
@@ -51,6 +52,12 @@ class ApplicativeSuite extends ScalaCheckSuite:
         unit[[x] =>> State[String, x], String](f(x)).run("state")
       )
       checkStateFunctor(unit(x), f, g)(using stateApplicative[String])
+    }
+  }
+
+  property("nestedApplicative должен удовлетворять законам Applicative") {
+    forAll { (x: Int) =>
+      checkApplicative[[X] =>> Nested[Id, Option, X], Int, String, Boolean](x, f, g)
     }
   }
 

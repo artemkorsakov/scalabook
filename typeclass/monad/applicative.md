@@ -113,6 +113,28 @@ given stateApplicative[S]: Applicative[[x] =>> State[S, x]] with
     }
 ```
 
+##### Nested
+
+```scala
+final case class Nested[F[_], G[_], A](value: F[G[A]])
+
+given nestedApplicative[F[_], G[_]](using
+    applF: Applicative[F],
+    applG: Applicative[G],
+    functorF: Functor[F]
+): Applicative[[X] =>> Nested[F, G, X]] with
+  override def unit[A](a: => A): Nested[F, G, A] = Nested(applF.unit(applG.unit(a)))
+
+  override def apply[A, B](fab: Nested[F, G, A => B])(fa: Nested[F, G, A]): Nested[F, G, B] =
+    val curriedFuncs: G[A => B] => G[A] => G[B] = gaTob => ga => applG.apply(gaTob)(ga)
+    val fgaToB: F[G[A => B]] = fab.value
+    val fGaToGb: F[G[A] => G[B]] = functorF.map(fgaToB)(curriedFuncs)
+    val fga: F[G[A]] = fa.value
+    val fgb: F[G[B]] = applF.apply(fGaToGb)(fga)
+    Nested(fgb)
+```
+
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FApplicative.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FApplicativeSuite.scala)

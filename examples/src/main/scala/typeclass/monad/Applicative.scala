@@ -65,6 +65,21 @@ object Applicative:
         (s1, aToB(a))
       }
 
+  given nestedApplicative[F[_], G[_]](using
+      applF: Applicative[F],
+      applG: Applicative[G],
+      functorF: Functor[F]
+  ): Applicative[[X] =>> Nested[F, G, X]] with
+    override def unit[A](a: => A): Nested[F, G, A] = Nested(applF.unit(applG.unit(a)))
+
+    override def apply[A, B](fab: Nested[F, G, A => B])(fa: Nested[F, G, A]): Nested[F, G, B] =
+      val curriedFuncs: G[A => B] => G[A] => G[B] = gaTob => ga => applG.apply(gaTob)(ga)
+      val fgaToB: F[G[A => B]] = fab.value
+      val fGaToGb: F[G[A] => G[B]] = functorF.map(fgaToB)(curriedFuncs)
+      val fga: F[G[A]] = fa.value
+      val fgb: F[G[B]] = applF.apply(fGaToGb)(fga)
+      Nested(fgb)
+
   def unit[F[_], A](a: => A)(using applicative: Applicative[F]): F[A] = applicative.unit(a)
 
   def apply[F[_], A, B](fab: F[A => B])(fa: F[A])(using applicative: Applicative[F]): F[B] =

@@ -49,6 +49,13 @@ class FunctorSuite extends ScalaCheckSuite:
     }
   }
 
+  property("nestedFunctor должен удовлетворять законам функтора") {
+    forAll { (maybeInt: Option[Int]) =>
+      val nested = Nested[Id, Option, Int](Id(maybeInt))
+      checkFunctor[[X] =>> Nested[Id, Option, X], Int, String, Boolean](nested, f, g)
+    }
+  }
+
 object FunctorSuite extends Assertions:
   def checkFunctor[F[_], A, B, C](fa: F[A], f: A => B, g: B => C)(using Functor[F]): Unit =
     assertEquals(map(fa, identity), fa, "check identity")

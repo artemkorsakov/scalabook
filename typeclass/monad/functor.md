@@ -86,6 +86,20 @@ given stateFunctor[S]: Functor[[x] =>> State[S, x]] with
       }
 ```
 
+##### Nested - два вложенных функтора образуют новый функтор
+
+```scala
+final case class Nested[F[_], G[_], A](value: F[G[A]])
+
+given nestedFunctor[F[_], G[_]](using functorF: Functor[F], functorG: Functor[G]): Functor[[X] =>> Nested[F, G, X]]
+  with
+  extension [A](fga: Nested[F, G, A])
+    override def map[B](f: A => B): Nested[F, G, B] =
+      Nested[F, G, B] {
+        functorF.map(fga.value)(ga => functorG.map(ga)(f))
+      }
+```
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FFunctor.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFunctorSuite.scala)

@@ -1,6 +1,6 @@
 package typeclass.monad
 
-import typeclass.common.{Id, State, Writer}
+import typeclass.common.{Id, Nested, State, Writer}
 
 trait Functor[F[_]]:
   extension [A](fa: F[A]) def map[B](f: A => B): F[B]
@@ -38,6 +38,14 @@ object Functor:
         State[S, B] { s =>
           val (s1, a) = fa.run(s)
           (s1, f(a))
+        }
+
+  given nestedFunctor[F[_], G[_]](using functorF: Functor[F], functorG: Functor[G]): Functor[[X] =>> Nested[F, G, X]]
+    with
+    extension [A](fga: Nested[F, G, A])
+      override def map[B](f: A => B): Nested[F, G, B] =
+        Nested[F, G, B] {
+          functorF.map(fga.value)(ga => functorG.map(ga)(f))
         }
 
   def map[F[_], A, B](fa: F[A], f: A => B)(using functor: Functor[F]): F[B] =

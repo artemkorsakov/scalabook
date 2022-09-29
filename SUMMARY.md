@@ -140,6 +140,8 @@
     - [Monad](typeclass/monad/monad.md)
     - [Monad Transformer](typeclass/monad/monad-transformer.md)
     - [Free Monad](typeclass/monad/free-monads.md)
+    - [Contravariant functor](typeclass/monad/contravariant-functor.md)
+    - [CoMonads](typeclass/monad/co-monads.md)
 
 ## Паттерны
 - [Паттерны проектирования](patterns/index.md)

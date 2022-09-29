@@ -29,3 +29,12 @@ class MonadTransformerSuite extends ScalaCheckSuite:
       assertEquals(monadIdA.run(), ("", x))
     }
   }
+
+  property("stateTMonadTransformer должен прокидывать State внутрь монады") {
+    forAll { (x: Int) =>
+      val monadA = IO(() => x)
+      val monadIdA: IO[(String, Int)] =
+        lift[({ type E[Y[_], X] = StateT[Y, String, X] })#E, IO, Int](monadA).run("state")
+      assertEquals(monadIdA.run(), ("state", x))
+    }
+  }

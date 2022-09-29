@@ -25,7 +25,7 @@ class MonadTransformerSuite extends ScalaCheckSuite:
   property("writerTMonadTransformer должен прокидывать Writer внутрь монады") {
     forAll { (x: Int) =>
       val monadA = IO(() => x)
-      val monadIdA: IO[(String, Int)] = lift[({ type E[Y[_], X] = WriterT[Y, String, X] })#E, IO, Int](monadA).run()
+      val monadIdA: IO[(String, Int)] = lift[[Y[_], X] =>> WriterT[Y, String, X], IO, Int](monadA).run()
       assertEquals(monadIdA.run(), ("", x))
     }
   }
@@ -34,7 +34,7 @@ class MonadTransformerSuite extends ScalaCheckSuite:
     forAll { (x: Int) =>
       val monadA = IO(() => x)
       val monadIdA: IO[(String, Int)] =
-        lift[({ type E[Y[_], X] = StateT[Y, String, X] })#E, IO, Int](monadA).run("state")
+        lift[[Y[_], X] =>> StateT[Y, String, X], IO, Int](monadA).run("state")
       assertEquals(monadIdA.run(), ("state", x))
     }
   }

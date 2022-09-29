@@ -14,10 +14,6 @@ object MonadTransformer:
       override def flatMap[B](f: A => IdT[M, B]): IdT[M, B] =
         IdT[M, B](fa.run.flatMap(ida => f(ida.value).run))
 
-  given idtMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransformer[IdT, M] with
-    override def lift[A](ma: M[A]): IdT[M, A] =
-      IdT[M, A](ma.map(a => Id(a)))
-
   given optionTMonad[M[_]](using outerMonad: Monad[M]): Monad[[X] =>> OptionT[M, X]] with
     override def unit[A](a: => A): OptionT[M, A] =
       OptionT[M, A](outerMonad.unit(Some(a)))
@@ -31,10 +27,6 @@ object MonadTransformer:
           }
         )
 
-  given optionTMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransformer[OptionT, M] with
-    override def lift[A](ma: M[A]): OptionT[M, A] =
-      OptionT[M, A](ma.map(a => Some(a)))
-
   given writerTMonad[M[_], W](using outerMonad: Monad[M], outerMonoid: Monoid[W]): Monad[[X] =>> WriterT[M, W, X]] with
     override def unit[A](a: => A): WriterT[M, W, A] =
       WriterT[M, W, A](() => outerMonad.unit((outerMonoid.empty, a)))
@@ -42,17 +34,10 @@ object MonadTransformer:
     extension [A](fa: WriterT[M, W, A])
       override def flatMap[B](f: A => WriterT[M, W, B]): WriterT[M, W, B] =
         WriterT[M, W, B] { () =>
-          outerMonad.flatMap(fa.run()) { case (wa, a) =>
+          fa.run().flatMap { case (wa, a) =>
             f(a).run().map { case (wb, b) => (outerMonoid.combine(wa, wb), b) }
           }
         }
-
-  given writerTMonadTransformer[M[_], W](using
-      outerMonad: Monad[M],
-      outerMonoid: Monoid[W]
-  ): MonadTransformer[({ type E[Y[_], X] = WriterT[Y, W, X] })#E, M] with
-    override def lift[A](ma: M[A]): WriterT[M, W, A] =
-      WriterT[M, W, A](() => ma.map(a => (outerMonoid.empty, a)))
 
   given stateTMonad[M[_], S](using outerMonad: Monad[M]): Monad[[X] =>> StateT[M, S, X]] with
     override def unit[A](a: => A): StateT[M, S, A] =
@@ -64,9 +49,24 @@ object MonadTransformer:
           fa.run(s).flatMap { case (s1, a) => f(a).run(s1) }
         }
 
+  given idtMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransformer[IdT, M] with
+    override def lift[A](ma: M[A]): IdT[M, A] =
+      IdT[M, A](ma.map(Id(_)))
+
+  given optionTMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransformer[OptionT, M] with
+    override def lift[A](ma: M[A]): OptionT[M, A] =
+      OptionT[M, A](ma.map(Some(_)))
+
+  given writerTMonadTransformer[M[_], W](using
+      outerMonad: Monad[M],
+      outerMonoid: Monoid[W]
+  ): MonadTransformer[[Y[_], X] =>> WriterT[Y, W, X], M] with
+    override def lift[A](ma: M[A]): WriterT[M, W, A] =
+      WriterT[M, W, A](() => ma.map(a => (outerMonoid.empty, a)))
+
   given stateTMonadTransformer[M[_], S](using
       outerMonad: Monad[M]
-  ): MonadTransformer[({ type E[Y[_], X] = StateT[Y, S, X] })#E, M] with
+  ): MonadTransformer[[Y[_], X] =>> StateT[Y, S, X], M] with
     override def lift[A](ma: M[A]): StateT[M, S, A] =
       StateT[M, S, A](s => ma.map(a => (s, a)))
 

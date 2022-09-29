@@ -1,33 +1,42 @@
-# Free Monad
+# Co-Monad
 
-Свободная монада обеспечивает:
-- абстрактное синтаксическое дерево (AST - _abstract syntax tree_) для выражения монадических операций
-- API для написания интерпретаторов, которые придают значение этому AST
+Комонада реализует противоположные для монады операции.
 
 
-### Примеры свободных монад
+### Примеры комонады
 
-##### Описание свободной монады
+##### Описание комонады
 
 ```scala
-sealed trait Free[F[_], A]
-final case class Unit[F[_], A](a: A) extends Free[F, A]
-final case class FlatMap[F[_], A, B](a: Free[F, A], fx: A => Free[F, B]) extends Free[F, B]
-
-given freeFunctor[F[_]]: Functor[[X] =>> Free[F, X]] with
-  extension [A](as: Free[F, A])
-    override def map[B](f: A => B): Free[F, B] =
-      FlatMap(as, a => Unit(f(a)))
-
-given freeMonad[F[_]]: Monad[[X] =>> Free[F, X]] with
-  override def unit[A](a: => A): Free[F, A] = Unit(a)
-
-  extension [A](fa: Free[F, A]) override def flatMap[B](f: A => Free[F, B]): Free[F, B] = FlatMap(fa, f)
+trait CoMonad[F[_]]:
+  def coUnit[A](fa: F[A]): A
+  def coFlatMap[A, B](fa: F[A])(f: F[A] => B): F[B]
 ```
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FFree.scala&plain=1)
+##### "Обертка"
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFreeSuite.scala)
+```scala
+case class Id[A](value: A)
+
+given CoMonad[Id] with
+  override def coUnit[A](fa: Id[A]): A = fa.value
+  override def coFlatMap[A, B](fa: Id[A])(f: Id[A] => B): Id[B] = Id(f(fa))
+```
+
+##### Переменные окружения
+
+```scala
+final case class Env[A, R](a: A, r: R)
+
+given envCoMonad[R]: CoMonad[[X] =>> Env[X, R]] with
+  override def coUnit[A](fa: Env[A, R]): A = fa.a
+  override def coFlatMap[A, B](fa: Env[A, R])(f: Env[A, R] => B): Env[B, R] = Env(f(fa), fa.r)
+```
+
+
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FCoMonad.scala&plain=1)
+
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FCoMonadSuite.scala)
 
 
 ---

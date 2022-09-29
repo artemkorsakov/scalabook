@@ -139,6 +139,7 @@
     - [Traverse](typeclass/monad/traverse.md)
     - [Monad](typeclass/monad/monad.md)
     - [Monad Transformer](typeclass/monad/monad-transformer.md)
+    - [Free Monad](typeclass/monad/free-monads.md)
 
 ## Паттерны
 - [Паттерны проектирования](patterns/index.md)

@@ -1,3 +1,3 @@
 package typeclass.common
 
-final case class IdT[A, F[_]](run: F[Id[A]])
+final case class IdT[M[_], A](run: M[Id[A]])

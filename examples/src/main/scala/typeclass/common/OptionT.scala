@@ -1,3 +1,3 @@
 package typeclass.common
 
-final case class OptionT[A, M[_]](run: M[Option[A]])
+final case class OptionT[M[_], A](run: M[Option[A]])

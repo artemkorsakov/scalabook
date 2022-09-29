@@ -20,6 +20,7 @@
   - [Learning Scala by Jason Swartz](https://www.oreilly.com/library/view/learning-scala/9781449368814/) - **Scala 2**
   - [Programming Scala by Venkat Subramanian](https://books.google.ru/books/about/Programming_Scala.html?id=Jq2EOwAACAAJ&redir_esc=y) - **Scala 2**
   - [Scala in Depth by Joshua Suereth](https://www.manning.com/books/scala-in-depth) - **Scala 2**
+  - [All about Scala](https://allaboutscala.com/) - **Scala 2**
 - &#10031; &#10031; &#10031;
   - [Programming Scala, 3rd Edition by Dean Wampler](https://deanwampler.github.io/books/programmingscala.html)
   - [Scala & Design Patterns: Exploring Language Expressivity by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf) - **Scala 2**

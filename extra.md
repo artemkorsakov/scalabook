@@ -57,7 +57,7 @@
 
 ### Курсы
 - &#10031;
-  - ...
+  - [Effective Programming in Scala by EPFL](https://www.coursera.org/learn/effective-scala)
 - &#10031; &#10031; &#10031;
   - ...
 - &#10031; &#10031; &#10031; &#10031; &#10031;

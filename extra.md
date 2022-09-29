@@ -35,6 +35,7 @@
   - [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)
   - [Scala - Your First Programming Language](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu) - **Scala 2**
   - [Scala Collections](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE) - **Scala 2**
+  - [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) - **Scala 2**
 - &#10031; &#10031; &#10031;
   - ...
 - &#10031; &#10031; &#10031; &#10031; &#10031;

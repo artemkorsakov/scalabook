@@ -15,12 +15,11 @@
   - [Hello Scala by Alexander Alvin](https://alvinalexander.com/photos/hello-scala-free-pdf-preview/) - **Scala 2**
   - [Functional Programming by Alexander Alvin](https://alvinalexander.com/photos/functional-programming-simplied-free-pdf-preview/) - **Scala 2**
   - [Scala Cookbook by Alexander Alvin](https://www.amazon.com/Scala-Cookbook-Object-Oriented-Functional-Programming-dp-1492051543/dp/1492051543?&linkCode=sl1&tag=devdaily-20&linkId=d089a7152c070d0ae50814301bb12d21&language=en_US&ref_=as_li_ss_tl) - **Scala 2**
-  - [Scala for the Impatient by Cay Horstmann](https://horstmann.com/scala/) - **Scala 2**
+  - [All about Scala](https://allaboutscala.com/) - **Scala 2**
   - [Beginning Scala by Vishal Layka, David Pollak](https://link.springer.com/book/10.1007/978-1-4842-0232-6) - **Scala 2**
   - [Learning Scala by Jason Swartz](https://www.oreilly.com/library/view/learning-scala/9781449368814/) - **Scala 2**
   - [Programming Scala by Venkat Subramanian](https://books.google.ru/books/about/Programming_Scala.html?id=Jq2EOwAACAAJ&redir_esc=y) - **Scala 2**
   - [Scala in Depth by Joshua Suereth](https://www.manning.com/books/scala-in-depth) - **Scala 2**
-  - [All about Scala](https://allaboutscala.com/) - **Scala 2**
 - &#10031; &#10031; &#10031;
   - [Programming Scala, 3rd Edition by Dean Wampler](https://deanwampler.github.io/books/programmingscala.html)
   - [Scala & Design Patterns: Exploring Language Expressivity by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf) - **Scala 2**

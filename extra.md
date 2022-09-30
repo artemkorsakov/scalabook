@@ -27,6 +27,7 @@
   - [Functional Program Design in Scala by EPFL](https://www.coursera.org/learn/scala-functional-program-design)
   - [Параллельное программирование by EPFL](https://www.coursera.org/learn/scala-parallel-programming)
   - [Effective Programming in Scala by EPFL](https://www.coursera.org/learn/effective-scala)
+  - [Введение в Scala](https://stepik.org/course/16243/promo) - **Scala 2**
 - &#10031; &#10031; &#10031;
   - [Big Data Analysis with Scala and Spark](https://www.coursera.org/learn/scala-spark-big-data)
   - [Functional Programming in Scala Capstone](https://www.coursera.org/learn/scala-capstone)

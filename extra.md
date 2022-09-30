@@ -8,6 +8,33 @@
 
 ---
 
+### Видео лекции
+- &#10031;
+  - [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)
+  - [Scala - Your First Programming Language](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu) - **Scala 2**
+  - [Scala Collections](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE) - **Scala 2**
+  - [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) - **Scala 2**
+- &#10031; &#10031; &#10031;
+  - ...
+- &#10031; &#10031; &#10031; &#10031; &#10031;
+  - ...
+
+--- 
+
+### Курсы
+- &#10031;
+  - [Принципы функционального программирования в Scala by EPFL](https://www.coursera.org/learn/scala-functional-programming)
+  - [Functional Program Design in Scala by EPFL](https://www.coursera.org/learn/scala-functional-program-design)
+  - [Параллельное программирование by EPFL](https://www.coursera.org/learn/scala-parallel-programming)
+  - [Effective Programming in Scala by EPFL](https://www.coursera.org/learn/effective-scala)
+- &#10031; &#10031; &#10031;
+  - [Big Data Analysis with Scala and Spark](https://www.coursera.org/learn/scala-spark-big-data)
+  - [Functional Programming in Scala Capstone](https://www.coursera.org/learn/scala-capstone)
+- &#10031; &#10031; &#10031; &#10031; &#10031;
+  - ...
+  - 
+---
+
 ### Книги
 - &#10031;
   - [Programming in Scala, Fifth Edition by Martin Odersky, Lex Spoon, Bill Venners, and Frank Sommers](https://www.artima.com/shop/programming_in_scala_5ed)
@@ -26,20 +53,6 @@
 - &#10031; &#10031; &#10031; &#10031; &#10031;
   - [Functional Programming in Scala, Second Edition by Michael Pilquist, Rúnar Bjarnason, and Paul Chiusano](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 
-
----
-
-### Видео лекции
-- &#10031;
-  - [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)
-  - [Scala - Your First Programming Language](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu) - **Scala 2**
-  - [Scala Collections](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE) - **Scala 2**
-  - [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) - **Scala 2**
-- &#10031; &#10031; &#10031;
-  - ...
-- &#10031; &#10031; &#10031; &#10031; &#10031;
-  - ...
-
 ---
 
 ### Упражнения
@@ -53,24 +66,10 @@
   - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) - **Scala 2**
 - &#10031; &#10031; &#10031; &#10031; &#10031;
   - ...
-  
---- 
-
-### Курсы
-- &#10031;
-  - [Принципы функционального программирования в Scala by EPFL](https://www.coursera.org/learn/scala-functional-programming)
-  - [Functional Program Design in Scala by EPFL](https://www.coursera.org/learn/scala-functional-program-design)
-  - [Параллельное программирование by EPFL](https://www.coursera.org/learn/scala-parallel-programming)
-  - [Effective Programming in Scala by EPFL](https://www.coursera.org/learn/effective-scala)
-- &#10031; &#10031; &#10031;
-  - [Big Data Analysis with Scala and Spark](https://www.coursera.org/learn/scala-spark-big-data)
-  - [Functional Programming in Scala Capstone](https://www.coursera.org/learn/scala-capstone)
-- &#10031; &#10031; &#10031; &#10031; &#10031;
-  - ...
 
 ---
 
-### Статьи
+### Статьи и другие ресурсы
 - &#10031;
   - ...
 - &#10031; &#10031; &#10031;

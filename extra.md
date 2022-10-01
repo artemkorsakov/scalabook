@@ -6,10 +6,8 @@
 - [Scala 3, официальная документация](https://docs.scala-lang.org/scala3/book/introduction.html)
 - [Community](https://scala-lang.org/community/)
 
----
-
-Материалы отсортированы следующим образом:
-- Версия: Scala 3 / Общее / Scala 2 / Scala 2 Old (слишком устарело)
+Материалы в сводной таблице отсортированы следующим образом:
+- Версия: Scala 3 / Scala 2 / Устарело
 - Сложность: &#10031; / &#10031;&#10031; / &#10031;&#10031;&#10031; / &#10031;&#10031;&#10031;&#10031; / &#10031;&#10031;&#10031;&#10031;&#10031;
 - Язык: Русский / English
 - по алфавиту
@@ -29,7 +27,6 @@
 | [Functional Programming in Scala - 5 Functional Programming in Scala Capstone](https://www.coursera.org/learn/scala-capstone)                                                                                                                       | Scala 3  | &#10031;&#10031;                 |  En  | Курсы  |             |
 | [Programming Scala, 3rd Edition by Dean Wampler](https://deanwampler.github.io/books/programmingscala.html)                                                                                                                                         | Scala 3  | &#10031;&#10031;                 |  En  | Книги  |             |
 | [Functional Programming in Scala, Second Edition (The Red book)](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)                                      | Scala 3  | &#10031;&#10031;&#10031;&#10031; |  En  | Книги  |             |
-| [Роберт Мартин - Чистый код: создание, анализ и рефакторинг](https://www.chitai-gorod.ru/catalog/book/312177/)                                                                                                                                      | Общее    | &#10031;                         |  Ру  | Книги  |             |
 | [Введение в Scala](https://stepik.org/course/16243/promo)                                                                                                                                                                                           | Scala 2  | &#10031;                         |  Ру  | Курсы  |             |
 | [Основы Scala](https://stepik.org/course/89974/promo)                                                                                                                                                                                               | Scala 2  | &#10031;                         |  Ру  | Курсы  |             |
 | [All about Scala](https://allaboutscala.com/)                                                                                                                                                                                                       | Scala 2  | &#10031;                         |  En  | Книги  |             |
@@ -53,6 +50,21 @@
 | [Beginning Scala by Vishal Layka, David Pollak](https://link.springer.com/book/10.1007/978-1-4842-0232-6)                                                                                                                                           | Устарело | &#10031;                         |  En  | Книги  |             |
 | [Scala for the Impatient by Cay Horstmann](https://horstmann.com/scala/)                                                                                                                                                                            | Устарело | &#10031;                         |  En  | Книги  |             |
 
+--- 
+
+### Общее
+
+Материалы отсортированы следующим образом:
+- Сложность: &#10031; / &#10031;&#10031; / &#10031;&#10031;&#10031; / &#10031;&#10031;&#10031;&#10031; / &#10031;&#10031;&#10031;&#10031;&#10031;
+- Язык: Русский / English
+- по алфавиту
+
+
+| Название                                                                                                       | Сложность  | Язык | Тип    | Комментарий |
+|----------------------------------------------------------------------------------------------------------------|------------|:----:|--------|-------------|
+| [Роберт Мартин - Чистый код: создание, анализ и рефакторинг](https://www.chitai-gorod.ru/catalog/book/312177/) | &#10031;   |  Ру  | Книги  |             |
+
+---
 
 <div>
     <a href="extra">&#8678; Предыдущая</a>

@@ -116,7 +116,6 @@
     - [Поиск по типу](scala/scaladoc/search-engine.md)
     - [Проверка фрагмента](scala/scaladoc/snippet-compiler.md)
     - [Настройки](scala/scaladoc/settings.md)
-  - [Доп. материалы](extra.md)
 
 ## Функц. программ.
 - [Функц программирование](fp/index.md)
@@ -142,6 +141,9 @@
     - [Free Monad](typeclass/monad/free-monads.md)
     - [Contravariant functor](typeclass/monad/contravariant-functor.md)
     - [CoMonads](typeclass/monad/co-monads.md)
+
+## Структуры данных и алгоритмы 
+- [Введение](algorithms/index.md)
 
 ## Паттерны
 - [Паттерны проектирования](patterns/index.md)
@@ -211,3 +213,5 @@
   - [Inference Hindrance](puzzlers/inference.md)
   - [For Each Step...](puzzlers/for-each-step.md)
   - [Beep Beep...Reversing](puzzlers/beep-beep-reversing.md)
+
+## [Доп. материалы](extra.md)

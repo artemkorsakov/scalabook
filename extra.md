@@ -94,9 +94,9 @@
 
 ###### &#10031; &#10031; &#10031; &#10031; &#10031;
 
-| Название                                                                                                                                                                                        |   Версия    | Язык | Комментарий |
-|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|:----:|-------------|
-| [Functional Programming in Scala, Second Edition](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition) | **Scala 3** |  En  |             |
+| Название                                                                                                                                                                                                       |   Версия    | Язык | Комментарий |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|:----:|-------------|
+| [Functional Programming in Scala, Second Edition (The Red book)](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition) | **Scala 3** |  En  |             |
 
 
 ---

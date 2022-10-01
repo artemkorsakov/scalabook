@@ -142,7 +142,7 @@
     - [Contravariant functor](typeclass/monad/contravariant-functor.md)
     - [CoMonads](typeclass/monad/co-monads.md)
 
-## Структуры данных и алгоритмы 
+## Алгоритмы 
 - [Введение](algorithms/index.md)
 
 ## Паттерны

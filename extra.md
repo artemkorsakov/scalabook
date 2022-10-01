@@ -42,14 +42,14 @@
 
 ###### &#10031;
 
-| Название                                                                                                                                                     |   Версия    | Язык | Комментарий |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|:----:|-------------|
-| [Effective Programming in Scala by EPFL](https://www.coursera.org/learn/effective-scala)                                                                     | **Scala 3** |  En  |             |
-| [Functional Programming in Scala - 1 Принципы функционального программирования в Scala by EPFL](https://www.coursera.org/learn/scala-functional-programming) | **Scala 3** |  En  |             |
-| [Functional Programming in Scala - 2 Functional Program Design in Scala by EPFL](https://www.coursera.org/learn/scala-functional-program-design)             | **Scala 3** |  En  |             |
-| [Functional Programming in Scala - 3 Параллельное программирование by EPFL](https://www.coursera.org/learn/scala-parallel-programming)                       | **Scala 3** |  En  |             |
-| [Введение в Scala](https://stepik.org/course/16243/promo)                                                                                                    | **Scala 2** | Рус  |             |
-| [Основы Scala](https://stepik.org/course/89974/promo)                                                                                                        | **Scala 2** | Рус  |             |
+| Название                                                                                                                                             |   Версия    | Язык | Комментарий |
+|------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|:----:|-------------|
+| [Effective Programming in Scala](https://www.coursera.org/learn/effective-scala)                                                                     | **Scala 3** |  En  |             |
+| [Functional Programming in Scala - 1 Принципы функционального программирования в Scala](https://www.coursera.org/learn/scala-functional-programming) | **Scala 3** |  En  |             |
+| [Functional Programming in Scala - 2 Functional Program Design in Scala](https://www.coursera.org/learn/scala-functional-program-design)             | **Scala 3** |  En  |             |
+| [Functional Programming in Scala - 3 Параллельное программирование](https://www.coursera.org/learn/scala-parallel-programming)                       | **Scala 3** |  En  |             |
+| [Введение в Scala](https://stepik.org/course/16243/promo)                                                                                            | **Scala 2** | Рус  |             |
+| [Основы Scala](https://stepik.org/course/89974/promo)                                                                                                | **Scala 2** | Рус  |             |
 
 ###### &#10031; &#10031; &#10031;
 

@@ -8,6 +8,14 @@
 
 ---
 
+Материалы отсортированы следующим образом:
+- Сложность
+- Scala 3/2
+- Язык (русский/English)
+- по алфавиту
+
+---
+
 ### Видео лекции
 - &#10031;
   - [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)
@@ -55,6 +63,9 @@
 - &#10031; &#10031; &#10031; &#10031; &#10031;
   - [Functional Programming in Scala, Second Edition by Michael Pilquist, Rúnar Bjarnason, and Paul Chiusano](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 
+- [Scala for the Impatient by Cay Horstmann](https://horstmann.com/scala/) - **Scala 2**
+
+
 ---
 
 ### Упражнения
@@ -73,11 +84,38 @@
 
 ### Статьи и другие ресурсы
 - &#10031;
-  - ...
+  - Scala 3
+    - на русском 
+      - ...
+    - English
+      - ...
+  - Scala 2
+    - на русском
+      - ...
+    - English
+      - ...
 - &#10031; &#10031; &#10031;
-  - ...
+  - Scala 3
+    - на русском
+      - ...
+    - English
+      - ...
+  - Scala 2
+    - на русском
+      - ...
+    - English
+      - ...
 - &#10031; &#10031; &#10031; &#10031; &#10031;
-  - ...
+  - Scala 3
+    - на русском
+      - ...
+    - English
+      - ...
+  - Scala 2
+    - на русском
+      - ...
+    - English
+      - ...
 
 <div>
     <a href="extra">&#8678; Предыдущая</a>

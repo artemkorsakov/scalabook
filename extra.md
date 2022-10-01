@@ -15,41 +15,22 @@
 - по алфавиту
 
 
-| Название                                                                                                                                           | Версия  | Сложность | Язык | Тип   | Комментарий |
-|----------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|-----------|:----:|-------|-------------|
-| [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)                                        | Scala 3 | &#10031;  |  En  | Видео |             | 
-| [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) | Scala 2 | &#10031;  |  En  | Видео |             |
-| [Scala - Your First Programming Language](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                                | Scala 2 | &#10031;  |  En  | Видео |             |
-| [Scala Collections](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE)                                                      | Scala 2 | &#10031;  |  En  | Видео |             |
+| Название                                                                                                                                             | Версия  | Сложность        | Язык | Тип   | Комментарий |
+|------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|------------------|:----:|-------|-------------|
+| [Effective Programming in Scala](https://www.coursera.org/learn/effective-scala)                                                                     | Scala 3 | &#10031;         |  En  | Курсы |             |
+| [Functional Programming in Scala - 1 Принципы функционального программирования в Scala](https://www.coursera.org/learn/scala-functional-programming) | Scala 3 | &#10031;         |  En  | Курсы |             |
+| [Functional Programming in Scala - 2 Functional Program Design in Scala](https://www.coursera.org/learn/scala-functional-program-design)             | Scala 3 | &#10031;         |  En  | Курсы |             |
+| [Functional Programming in Scala - 3 Параллельное программирование](https://www.coursera.org/learn/scala-parallel-programming)                       | Scala 3 | &#10031;         |  En  | Курсы |             |
+| [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)                                          | Scala 3 | &#10031;         |  En  | Видео |             | 
+| [Functional Programming in Scala - 4 Big Data Analysis with Scala and Spark](https://www.coursera.org/learn/scala-spark-big-data)                    | Scala 3 | &#10031;&#10031; |  En  | Курсы | Spark       |
+| [Functional Programming in Scala - 5 Functional Programming in Scala Capstone](https://www.coursera.org/learn/scala-capstone)                        | Scala 3 | &#10031;&#10031; |  En  | Курсы |             |
+| [Введение в Scala](https://stepik.org/course/16243/promo)                                                                                            | Scala 2 | &#10031;         |  Ру  | Курсы |             |
+| [Основы Scala](https://stepik.org/course/89974/promo)                                                                                                | Scala 2 | &#10031;         |  Ру  | Курсы |             |
+| [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF)   | Scala 2 | &#10031;         |  En  | Видео |             |
+| [Scala - Your First Programming Language](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                                  | Scala 2 | &#10031;         |  En  | Видео |             |
+| [Scala Collections](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE)                                                        | Scala 2 | &#10031;         |  En  | Видео |             |
 
 
-
---- 
-
-### Курсы
-
-###### &#10031;
-
-| Название                                                                                                                                             |   Версия    | Язык | Комментарий |
-|------------------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|:----:|-------------|
-| [Effective Programming in Scala](https://www.coursera.org/learn/effective-scala)                                                                     | **Scala 3** |  En  |             |
-| [Functional Programming in Scala - 1 Принципы функционального программирования в Scala](https://www.coursera.org/learn/scala-functional-programming) | **Scala 3** |  En  |             |
-| [Functional Programming in Scala - 2 Functional Program Design in Scala](https://www.coursera.org/learn/scala-functional-program-design)             | **Scala 3** |  En  |             |
-| [Functional Programming in Scala - 3 Параллельное программирование](https://www.coursera.org/learn/scala-parallel-programming)                       | **Scala 3** |  En  |             |
-| [Введение в Scala](https://stepik.org/course/16243/promo)                                                                                            | **Scala 2** |  Ру  |             |
-| [Основы Scala](https://stepik.org/course/89974/promo)                                                                                                | **Scala 2** |  Ру  |             |
-
-###### &#10031; &#10031; &#10031;
-
-| Название                                                                                                                          |   Версия    | Язык | Комментарий |
-|-----------------------------------------------------------------------------------------------------------------------------------|:-----------:|:----:|-------------|
-| [Functional Programming in Scala - 4 Big Data Analysis with Scala and Spark](https://www.coursera.org/learn/scala-spark-big-data) | **Scala 3** |  En  | Spark       |
-| [Functional Programming in Scala - 5 Functional Programming in Scala Capstone](https://www.coursera.org/learn/scala-capstone)     | **Scala 3** |  En  |             |
-
-
-###### &#10031; &#10031; &#10031; &#10031; &#10031;
-
-...
 
 ---
 

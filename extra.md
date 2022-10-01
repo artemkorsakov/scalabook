@@ -66,6 +66,25 @@
 ---
 
 ### Книги
+
+###### &#10031;
+
+| Название                                                                                                                                           |   Версия    | Язык | Комментарий |
+|----------------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|:----:|-------------|
+| [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)                                        | **Scala 3** |  En  |             |
+| [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) | **Scala 2** |  En  |             |
+| [Scala - Your First Programming Language](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                                | **Scala 2** |  En  |             |
+| [Scala Collections](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE)                                                      | **Scala 2** |  En  |             |
+
+
+###### &#10031; &#10031; &#10031;
+
+...
+
+###### &#10031; &#10031; &#10031; &#10031; &#10031;
+
+...
+
 - &#10031;
   - [Programming in Scala, Fifth Edition by Martin Odersky, Lex Spoon, Bill Venners, and Frank Sommers](https://www.artima.com/shop/programming_in_scala_5ed)
   - [Creative Scala](https://www.creativescala.org/creative-scala.html#foreword)
@@ -89,16 +108,27 @@
 ---
 
 ### Упражнения
-- &#10031;
-  - [exercism.org](https://exercism.org/tracks/scala) - **Scala 2**
-  - [Tour of Scala](https://tourofscala.com/) - **Scala 2**
-  - [A Tour of Scala](http://scalatutorials.com/tour/) - **Scala 2**
-  - [scala-exercises](https://www.scala-exercises.org/) - **Scala 2**
-- &#10031; &#10031; &#10031;
-  - [Scala puzzlers](https://scalapuzzlers.com/index.html), на основе упражнений [написана книга](https://www.artima.com/shop/scala_puzzlers) - **Scala 2**
-  - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) - **Scala 2**
-- &#10031; &#10031; &#10031; &#10031; &#10031;
-  - ...
+
+###### &#10031;
+
+| Название                                                    |   Версия    | Язык | Комментарий |
+|-------------------------------------------------------------|:-----------:|:----:|-------------|
+| [Exercism - Scala track](https://exercism.org/tracks/scala) | **Scala 2** |  En  |             |
+| [Scala exercises](https://www.scala-exercises.org/)         | **Scala 2** |  En  |             |
+| [Scala tutorials](http://scalatutorials.com/tour/)          | **Scala 2** |  En  |             |
+| [Tour of Scala](https://tourofscala.com/)                   | **Scala 2** |  En  |             |
+
+###### &#10031; &#10031; &#10031;
+
+| Название                                                                                                                                  |   Версия    | Язык | Комментарий |
+|-------------------------------------------------------------------------------------------------------------------------------------------|:-----------:|:----:|-------------|
+| [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)                                                | **Scala 2** |  En  |             |
+| [Scala puzzlers](https://scalapuzzlers.com/index.html), на основе упражнений [написана книга](https://www.artima.com/shop/scala_puzzlers) | **Scala 2** |  En  |             |
+
+###### &#10031; &#10031; &#10031; &#10031; &#10031;
+
+...
+
 
 ---
 

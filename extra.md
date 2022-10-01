@@ -9,10 +9,10 @@
 ---
 
 Материалы отсортированы следующим образом:
-- Сложность
-- Scala 3/2
-- Язык (русский/English)
-- по алфавиту
+- Сложность: &#10031; / &#10031;&#10031;&#10031; / &#10031;&#10031;&#10031;&#10031;&#10031;
+- Версия: Scala 3 / Scala 2 / Общее
+- Язык: Русский / English
+- по алфавиту (если это не часть связанного блока)
 
 ---
 
@@ -39,19 +39,30 @@
 --- 
 
 ### Курсы
-- &#10031;
-  - [Принципы функционального программирования в Scala by EPFL](https://www.coursera.org/learn/scala-functional-programming)
-  - [Functional Program Design in Scala by EPFL](https://www.coursera.org/learn/scala-functional-program-design)
-  - [Параллельное программирование by EPFL](https://www.coursera.org/learn/scala-parallel-programming)
-  - [Effective Programming in Scala by EPFL](https://www.coursera.org/learn/effective-scala)
-  -  _на русском_: [Введение в Scala](https://stepik.org/course/16243/promo) - **Scala 2**
-  -  _на русском_: [Основы Scala](https://stepik.org/course/89974/promo) - **Scala 2**
-- &#10031; &#10031; &#10031;
-  - [Big Data Analysis with Scala and Spark](https://www.coursera.org/learn/scala-spark-big-data)
-  - [Functional Programming in Scala Capstone](https://www.coursera.org/learn/scala-capstone)
-- &#10031; &#10031; &#10031; &#10031; &#10031;
-  - ...
-  - 
+
+###### &#10031;
+
+| Название                                                                                                                 |   Версия    | Язык | Комментарий |
+|--------------------------------------------------------------------------------------------------------------------------|:-----------:|:----:|-------------|
+| [Принципы функционального программирования в Scala by EPFL](https://www.coursera.org/learn/scala-functional-programming) | **Scala 3** |  En  |             |
+| [Functional Program Design in Scala by EPFL](https://www.coursera.org/learn/scala-functional-program-design)             | **Scala 3** |  En  |             |
+| [Параллельное программирование by EPFL](https://www.coursera.org/learn/scala-parallel-programming)                       | **Scala 3** |  En  |             |
+| [Effective Programming in Scala by EPFL](https://www.coursera.org/learn/effective-scala)                                 | **Scala 3** |  En  |             |
+| [Введение в Scala](https://stepik.org/course/16243/promo)                                                                | **Scala 2** | Рус  |             |
+| [Основы Scala](https://stepik.org/course/89974/promo)                                                                    | **Scala 2** | Рус  |             |
+
+###### &#10031; &#10031; &#10031;
+
+| Название                                                                                       |   Версия    | Язык | Комментарий |
+|------------------------------------------------------------------------------------------------|:-----------:|:----:|-------------|
+| [Big Data Analysis with Scala and Spark](https://www.coursera.org/learn/scala-spark-big-data)  | **Scala 3** |  En  | Spark       |
+| [Functional Programming in Scala Capstone](https://www.coursera.org/learn/scala-capstone)      | **Scala 3** |  En  |             |
+
+
+###### &#10031; &#10031; &#10031; &#10031; &#10031;
+
+...
+
 ---
 
 ### Книги
@@ -92,39 +103,19 @@
 ---
 
 ### Статьи и другие ресурсы
-- &#10031;
-  - Scala 3
-    - на русском 
-      - ...
-    - English
-      - ...
-  - Scala 2
-    - на русском
-      - ...
-    - English
-      - ...
-- &#10031; &#10031; &#10031;
-  - Scala 3
-    - на русском
-      - ...
-    - English
-      - ...
-  - Scala 2
-    - на русском
-      - ...
-    - English
-      - ...
-- &#10031; &#10031; &#10031; &#10031; &#10031;
-  - Scala 3
-    - на русском
-      - ...
-    - English
-      - ...
-  - Scala 2
-    - на русском
-      - ...
-    - English
-      - ...
+
+###### &#10031;
+
+...
+
+###### &#10031; &#10031; &#10031;
+
+...
+
+###### &#10031; &#10031; &#10031; &#10031; &#10031;
+
+...
+
 
 <div>
     <a href="extra">&#8678; Предыдущая</a>

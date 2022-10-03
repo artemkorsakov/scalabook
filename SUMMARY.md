@@ -143,7 +143,9 @@
     - [CoMonads](typeclass/monad/co-monads.md)
 
 ## Алгоритмы 
-- [Введение](algorithms/index.md)
+- [Алгоритмы](algorithms/index.md)
+  - [Фундаментальные](algorithms/fundamental.md)
+    - [Простые числа](algorithms/fundamental/primes.md)
 
 ## Паттерны
 - [Паттерны проектирования](patterns/index.md)

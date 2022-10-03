@@ -146,7 +146,8 @@
 - [Алгоритмы](algorithms/index.md)
   - [Фундаментальные](algorithms/fundamental.md)
     - [Простые числа](algorithms/fundamental/primes.md)
-
+    - [Преобразования](algorithms/fundamental/conversion.md)
+    
 ## Паттерны
 - [Паттерны проектирования](patterns/index.md)
   - [Порождающие шаблоны](patterns/creational.md)

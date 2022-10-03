@@ -78,6 +78,9 @@ def sieveOfEratosthenes(n: Int): Array[Boolean] =
     j <- i to n / i
   do result(j * i) = false
   result
+
+sieveOfEratosthenes(10)
+// val res0: Array[Boolean] = Array(false, false, true, true, false, true, false, true, false, false, false)
 ```
 
 

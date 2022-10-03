@@ -64,7 +64,7 @@ isPrime(999_999_000_001L)
 
 ### Решето Эратосфена
 
-Решето Эратосфена на Scala можно реализовать следующим образом:
+[Решето Эратосфена][sieve] на Scala можно реализовать следующим образом:
 
 ```scala
 def sieveOfEratosthenes(n: Int): Array[Boolean] =
@@ -93,5 +93,7 @@ sieveOfEratosthenes(10)
 
 **References:**
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
-- [Решето Эратосфена](https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D1%88%D0%B5%D1%82%D0%BE_%D0%AD%D1%80%D0%B0%D1%82%D0%BE%D1%81%D1%84%D0%B5%D0%BD%D0%B0)
+- [Решето Эратосфена][sieve]
 - [Project Euler, Problem 7](https://projecteuler.net/problem=7)
+
+[sieve]:https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D1%88%D0%B5%D1%82%D0%BE_%D0%AD%D1%80%D0%B0%D1%82%D0%BE%D1%81%D1%84%D0%B5%D0%BD%D0%B0

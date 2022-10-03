@@ -26,15 +26,9 @@ class PrimesSuite extends ScalaCheckSuite:
   }
 
   property("isPrimeArray") {
-    forAll(Gen.choose(0, theHundredthPrimeValue)) { n =>
-      isPrimeArray(n).zipWithIndex.forall{ case (actual, i) =>
+    forAll(Gen.choose(1, theHundredthPrimeValue)) { n =>
+      sieveOfEratosthenes(n).zipWithIndex.forall { case (actual, i) =>
         first100Primes.contains(i) == actual
       }
-    }
-  }
-
-  property("isPrime2") {
-    forAll { (_: Int) =>
-      isPrimeArray(1_000_000).length == 1_000_001
     }
   }

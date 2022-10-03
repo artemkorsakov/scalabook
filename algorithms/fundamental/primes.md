@@ -62,6 +62,23 @@ isPrime(999_999_000_001L)
 // true
 ```
 
+### Решето Эратосфена
+
+Решето Эратосфена на Scala можно реализовать следующим образом:
+
+```scala
+def sieveOfEratosthenes(n: Int): Array[Boolean] =
+  val result = Array.fill(n + 1)(true)
+  result(0) = false
+  result(1) = false
+  (4 to n by 2).foreach(j => result(j) = false)
+  for
+    i <- 3 to math.sqrt(n).toInt by 2
+    if result(i)
+    j <- i to n / i
+  do result(j * i) = false
+  result
+```
 
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ffundamental%2FPrimes.scala&plain=1)

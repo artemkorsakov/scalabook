@@ -26,12 +26,14 @@ object Primes:
 
       loop(5)
 
-  def isPrimeArray(n: Int): Array[Boolean] =
+  def sieveOfEratosthenes(n: Int): Array[Boolean] =
     val result = Array.fill(n + 1)(true)
     result(0) = false
     result(1) = false
-    var i = 2
-    while i * i <= n do
-      if result(i) then (i * i to n by i).foreach(j => result(j) = false)
-      i += 1
+    (4 to n by 2).foreach(j => result(j) = false)
+    for
+      i <- 3 to math.sqrt(n).toInt by 2
+      if result(i)
+      j <- i to n / i
+    do result(j * i) = false
     result

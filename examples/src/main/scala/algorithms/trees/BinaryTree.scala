@@ -4,11 +4,11 @@ enum BinaryTree[+A]:
   case Leaf
   case Branch(value: A, left: BinaryTree[A], right: BinaryTree[A])
 
-  def size: Int = this match
+  lazy val size: Int = this match
     case Leaf            => 0
     case Branch(_, l, r) => 1 + l.size + r.size
 
-  def depth: Int = this match
+  lazy val depth: Int = this match
     case Leaf            => 0
     case Branch(_, l, r) => 1 + l.depth.max(r.depth)
 

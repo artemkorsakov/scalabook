@@ -31,26 +31,6 @@
 - уровень (_level_): это набор всех узлов на заданной глубине
 - размер (_size_): определяется как количество неконечных узлов
 
-### Алгоритмы обхода дерева
-
-###### Preorder 
-
-1. Посетить корень 
-2. Выполнить preorder обход левого поддерева, если оно не пустое 
-3. Выполнить preorder обход правого поддерева, если оно не пустое
-
-###### Inorder 
-
-1. Выполнить inorder обход левого поддерева, если оно не пустое 
-2. Посетить корень 
-3. Произвести inorder обход правого поддерева, если оно не пустое 
-
-###### Postorder
-
-1. Выполнить postorder обход левого поддерева, если оно не пустое
-2. Выполнить postorder обход правого поддерева, если оно не пустое 
-3. Посетить корень
-
 ### Возможная реализация в Scala
 
 ```scala
@@ -58,11 +38,11 @@ enum BinaryTree[+A]:
   case Leaf
   case Branch(value: A, left: BinaryTree[A], right: BinaryTree[A])
 
-  def size: Int = this match
+  lazy val size: Int = this match
     case Leaf            => 0
     case Branch(_, l, r) => 1 + l.size + r.size
 
-  def depth: Int = this match
+  lazy val depth: Int = this match
     case Leaf            => 0
     case Branch(_, l, r) => 1 + l.depth.max(r.depth)
 
@@ -75,6 +55,25 @@ object BinaryTree:
         Branch(x, BinaryTree(leftList), BinaryTree(rightList))
 ```
 
+### Алгоритмы обхода дерева
+
+###### Preorder
+
+1. Посетить корень
+2. Выполнить preorder обход левого поддерева, если оно не пустое
+3. Выполнить preorder обход правого поддерева, если оно не пустое
+
+###### Inorder
+
+1. Выполнить inorder обход левого поддерева, если оно не пустое
+2. Посетить корень
+3. Произвести inorder обход правого поддерева, если оно не пустое
+
+###### Postorder
+
+1. Выполнить postorder обход левого поддерева, если оно не пустое
+2. Выполнить postorder обход правого поддерева, если оно не пустое
+3. Посетить корень
 
 
 

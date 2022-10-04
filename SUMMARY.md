@@ -147,7 +147,9 @@
   - [Фундаментальные](algorithms/fundamental.md)
     - [Простые числа](algorithms/fundamental/primes.md)
     - [Преобразования](algorithms/fundamental/conversion.md)
-    
+  - [Деревья](algorithms/trees.md)
+    - [Двоичное дерево](algorithms/trees/binary-tree.md)
+
 ## Паттерны
 - [Паттерны проектирования](patterns/index.md)
   - [Порождающие шаблоны](patterns/creational.md)

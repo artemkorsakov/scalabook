@@ -75,7 +75,23 @@ object BinaryTree:
 2. Выполнить postorder обход правого поддерева, если оно не пустое
 3. Посетить корень
 
+```scala
+def preorder[A](binTree: BinaryTree[A]): IndexedSeq[A] =
+  binTree match
+    case Leaf                       => IndexedSeq.empty
+    case Branch(value, left, right) => IndexedSeq(value) ++ preorder(left) ++ preorder(right)
 
+def inorder[A](binTree: BinaryTree[A]): IndexedSeq[A] =
+  binTree match
+    case Leaf                                   => IndexedSeq.empty
+    case Branch(value, leftBranch, rightBranch) => inorder(leftBranch) ++ IndexedSeq(value) ++ inorder(rightBranch)
+
+def postorder[A](binTree: BinaryTree[A]): IndexedSeq[A] =
+  binTree match
+    case Leaf => IndexedSeq.empty
+    case Branch(value, leftBranch, rightBranch) =>
+      postorder(leftBranch) ++ postorder(rightBranch) ++ IndexedSeq(value)
+```
 
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ftrees%2FBinaryTree.scala&plain=1)

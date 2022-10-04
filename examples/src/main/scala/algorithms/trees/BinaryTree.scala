@@ -19,3 +19,19 @@ object BinaryTree:
       case x :: xs =>
         val (leftList, rightList) = xs.splitAt(xs.length / 2)
         Branch(x, BinaryTree(leftList), BinaryTree(rightList))
+
+  def preorder[A](binTree: BinaryTree[A]): IndexedSeq[A] =
+    binTree match
+      case Leaf                       => IndexedSeq.empty
+      case Branch(value, left, right) => IndexedSeq(value) ++ preorder(left) ++ preorder(right)
+
+  def inorder[A](binTree: BinaryTree[A]): IndexedSeq[A] =
+    binTree match
+      case Leaf                                   => IndexedSeq.empty
+      case Branch(value, leftBranch, rightBranch) => inorder(leftBranch) ++ IndexedSeq(value) ++ inorder(rightBranch)
+
+  def postorder[A](binTree: BinaryTree[A]): IndexedSeq[A] =
+    binTree match
+      case Leaf => IndexedSeq.empty
+      case Branch(value, leftBranch, rightBranch) =>
+        postorder(leftBranch) ++ postorder(rightBranch) ++ IndexedSeq(value)

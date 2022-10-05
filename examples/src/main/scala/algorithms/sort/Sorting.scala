@@ -1,6 +1,7 @@
 package algorithms.sort
 
 import scala.reflect.ClassTag
+import scala.runtime.stdLibPatches.Predef.summon
 
 object Sorting:
   def bubbleSort[T: Ordering](array: Array[T]): Unit =
@@ -33,6 +34,16 @@ object Sorting:
 
   def mergeSort[T: ClassTag: Ordering](array: Array[T]): Unit =
     mergeSort(array, 0, array.length - 1)
+
+  def quickSort[T: Ordering](list: List[T]): List[T] =
+    list match
+      case Nil      => list
+      case _ :: Nil => list
+      case h :: tail =>
+        val (p1, p2) = tail.partition(el => summon[Ordering[T]].lteq(el, h))
+        val leftToPivot = quickSort(p1)
+        val rightToPivot = quickSort(p2)
+        leftToPivot ++ (h :: rightToPivot)
 
   private def mergeSort[T: ClassTag: Ordering](array: Array[T], first: Int, last: Int): Unit =
     if last <= first then ()

@@ -131,6 +131,28 @@ private def mergeParts[T: ClassTag: Ordering](array: Array[T], first: Int, last:
       i += 1
 ```
 
+### Быстрая сортировка (quicksort)
+
+Общая идея [алгоритма быстрой сортировки](https://ru.wikipedia.org/wiki/%D0%91%D1%8B%D1%81%D1%82%D1%80%D0%B0%D1%8F_%D1%81%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0) состоит в следующем:
+- выбрать из массива элемент, называемый опорным. Это может быть любой из элементов массива. 
+  От выбора опорного элемента не зависит корректность алгоритма, но в отдельных случаях может сильно зависеть его эффективность.
+- сравнить все остальные элементы с опорным и переставить их в массиве так, чтобы разбить массив на три непрерывных отрезка, 
+  следующих друг за другом: «элементы меньшие опорного», «равные» и «большие».
+- для отрезков «меньших» и «больших» значений выполнить рекурсивно ту же последовательность операций, если длина отрезка больше единицы
+
+Возможная реализация алгоритма такая:
+
+```scala
+def quickSort[T: Ordering](list: List[T]): List[T] =
+  list match
+    case Nil      => list
+    case _ :: Nil => list
+    case h :: tail =>
+      val (p1, p2) = tail.partition(el => summon[Ordering[T]].lteq(el, h))
+      val leftToPivot = quickSort(p1)
+      val rightToPivot = quickSort(p2)
+      leftToPivot ++ (h :: rightToPivot)
+```
 
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fsort%2FSorting.scala&plain=1)

@@ -33,3 +33,9 @@ class SortingSuite extends ScalaCheckSuite:
       assert((1 until array.length).forall(i => array(i - 1) <= array(i)))
     }
   }
+
+  property("quickSort") {
+    forAll { (list: List[Int]) =>
+      assertEquals(quickSort(list), list.sorted)
+    }
+  }

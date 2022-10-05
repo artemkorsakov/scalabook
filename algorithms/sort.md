@@ -63,9 +63,9 @@ def selectionSort[T: Ordering](array: Array[T]): Unit =
 
 
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ftrees%2FBinaryTree.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fsort%2FSorting.scala&plain=1)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Ftrees%2FBinaryTreeSuite.scala)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Fsort%2FSortingSuite.scala)
 
 ---
 

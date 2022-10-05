@@ -16,7 +16,7 @@
 как a<sub>n</sub> ≥ a<sub>n−1</sub> ≥ a<sub>n−2</sub> ≥ a<sub>2</sub> ≥ a<sub>1</sub>.
 
 
-### Сортировка пузырьком (Bubble Sort)
+### Сортировка пузырьком (bubble sort)
 
 Алгоритм [сортировки пузырьком](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0_%D0%BF%D1%83%D0%B7%D1%8B%D1%80%D1%8C%D0%BA%D0%BE%D0%BC) 
 состоит из повторяющихся проходов по сортируемому массиву. 
@@ -43,7 +43,7 @@ def bubbleSort[T: Ordering](array: Array[T]): Unit =
   ()
 ```
 
-### Сортировка выбором
+### Сортировка выбором (selection sort)
 
 Шаги [алгоритма сортировки выбором](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0_%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%D0%BE%D0%BC):
 - находим номер минимального значения в текущем списке
@@ -60,6 +60,71 @@ def selectionSort[T: Ordering](array: Array[T]): Unit =
   }
 ```
 
+### Сортировка вставками (insertion sort)
+
+В начальный момент отсортированная последовательность пуста. 
+На каждом шаге [алгоритма сортировки вставками](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0_%D0%B2%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D0%B0%D0%BC%D0%B8)
+выбирается один из элементов входных данных и помещается на нужную позицию в уже отсортированной последовательности до тех пор, 
+пока набор входных данных не будет исчерпан. 
+В любой момент времени в отсортированной последовательности элементы удовлетворяют требованиям к выходным данным алгоритма.
+
+Возможная реализация алгоритма такая:
+
+```scala
+def insertionSort[T: Ordering](array: Array[T]): Unit =
+  val ord = summon[Ordering[T]]
+  (1 until array.length).foreach { j =>
+    val key = array(j)
+    var i = j - 1
+    while i >= 0 && ord.gt(array(i), key)
+    do
+      array(i + 1) = array(i)
+      i -= 1
+    array(i + 1) = key
+  }
+```
+
+### Сортировка слиянием (merge sort)
+
+[Алгоритм сортировки слиянием](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0_%D1%81%D0%BB%D0%B8%D1%8F%D0%BD%D0%B8%D0%B5%D0%BC) выглядят так:
+- сортируемый массив разбивается на две части примерно одинакового размера
+- каждая из получившихся частей сортируется отдельно, например — тем же самым алгоритмом
+- два упорядоченных массива половинного размера соединяются в один
+
+Возможная реализация алгоритма такая:
+
+```scala
+def mergeSort[T: ClassTag: Ordering](array: Array[T]): Unit =
+  mergeSort(array, 0, array.length - 1)
+
+private def mergeSort[T: ClassTag: Ordering](array: Array[T], first: Int, last: Int): Unit =
+  if last <= first then ()
+  else
+    val mid = first + (last - first) / 2
+    mergeSort(array, first, mid)
+    mergeSort(array, mid + 1, last)
+    mergeParts(array, first, last, mid)
+
+private def mergeParts[T: ClassTag: Ordering](array: Array[T], first: Int, last: Int, mid: Int): Unit =
+  val buf = new Array[T](array.length)
+  array.copyToArray(buf)
+
+  var i = first
+  var j = mid + 1
+  for (k <- first to last)
+    if i > mid then
+      array(k) = buf(j)
+      j += 1
+    else if j > last then
+      array(k) = buf(i)
+      i += 1
+    else if summon[Ordering[T]].lt(buf(j), buf(i)) then
+      array(k) = buf(j)
+      j += 1
+    else
+      array(k) = buf(i)
+      i += 1
+```
 
 
 

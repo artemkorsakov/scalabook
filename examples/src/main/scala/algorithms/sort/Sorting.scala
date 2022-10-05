@@ -1,5 +1,7 @@
 package algorithms.sort
 
+import scala.reflect.ClassTag
+
 object Sorting:
   def bubbleSort[T: Ordering](array: Array[T]): Unit =
     val ord = summon[Ordering[T]]
@@ -17,54 +19,48 @@ object Sorting:
       swap(array, i, j)
     }
 
-  def insertionSort(array: Array[Int]): Unit =
-    for (j <- 1 until array.length) do
+  def insertionSort[T: Ordering](array: Array[T]): Unit =
+    val ord = summon[Ordering[T]]
+    (1 until array.length).foreach { j =>
       val key = array(j)
       var i = j - 1
-      while i >= 0 && array(i) > key
+      while i >= 0 && ord.gt(array(i), key)
       do
         array(i + 1) = array(i)
         i -= 1
       array(i + 1) = key
+    }
 
-  def insertionSortReverse(array: Array[Int]): Unit =
-    for (j <- 1 until array.length) do
-      val key = array(j)
-      var i = j - 1
-      while i >= 0 && array(i) < key
-      do
-        array(i + 1) = array(i)
-        i -= 1
-      array(i + 1) = key
-
-  def mergeSort(array: Array[Int]): Unit =
+  def mergeSort[T: ClassTag: Ordering](array: Array[T]): Unit =
     mergeSort(array, 0, array.length - 1)
 
-  private def mergeSort(array: Array[Int], first: Int, last: Int): Unit =
-    if last > first then
+  private def mergeSort[T: ClassTag: Ordering](array: Array[T], first: Int, last: Int): Unit =
+    if last <= first then ()
+    else
       val mid = first + (last - first) / 2
       mergeSort(array, first, mid)
       mergeSort(array, mid + 1, last)
+      mergeParts(array, first, last, mid)
 
-      val buf = new Array[Int](array.length)
-      array.copyToArray(buf)
-      if last + 1 - first >= 0 then System.arraycopy(array, first, buf, first, last + 1 - first)
+  private def mergeParts[T: ClassTag: Ordering](array: Array[T], first: Int, last: Int, mid: Int): Unit =
+    val buf = new Array[T](array.length)
+    array.copyToArray(buf)
 
-      var i = first
-      var j = mid + 1
-      for (k <- first to last)
-        if i > mid then
-          array(k) = buf(j)
-          j += 1
-        else if j > last then
-          array(k) = buf(i)
-          i += 1
-        else if buf(j) < buf(i) then
-          array(k) = buf(j)
-          j += 1
-        else
-          array(k) = buf(i)
-          i += 1
+    var i = first
+    var j = mid + 1
+    for (k <- first to last)
+      if i > mid then
+        array(k) = buf(j)
+        j += 1
+      else if j > last then
+        array(k) = buf(i)
+        i += 1
+      else if summon[Ordering[T]].lt(buf(j), buf(i)) then
+        array(k) = buf(j)
+        j += 1
+      else
+        array(k) = buf(i)
+        i += 1
 
   private def swap[T](array: Array[T], i: Int, j: Int): Unit =
     val temp = array(j)

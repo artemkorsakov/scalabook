@@ -1,6 +1,6 @@
 package algorithms.search
 
-import algorithms.search.Search.naiveSubstringSearch
+import algorithms.search.Search.{kmpSubstringSearch, naiveSubstringSearch}
 import munit.FunSuite
 
 class SearchSuite extends FunSuite:
@@ -10,4 +10,9 @@ class SearchSuite extends FunSuite:
   test("naiveSubstringSearch") {
     assertEquals(naiveSubstringSearch(search, text), 10)
     assertEquals(naiveSubstringSearch("search", text), -1)
+  }
+
+  test("kmpSubstringSearch") {
+    assertEquals(kmpSubstringSearch(search, text), 10)
+    assertEquals(kmpSubstringSearch("search", text), -1)
   }

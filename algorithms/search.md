@@ -117,12 +117,14 @@ def naiveSubstringSearch(searchWord: String, source: String): Int =
 | P | x | y | x | y | x | z | x |
 | T | 0 | 0 |   |   |   |   |   |
 
+
 **Шаг 2**: `l = 3`, `k = 0`, `T[3] = 1`
 
 | l | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |---|---|---|---|---|---|---|---|
 | P | x | y | x | y | x | z | x |
 | T | 0 | 0 | 1 |   |   |   |   |
+
 
 **Шаг 3**: `l = 4`, `k = 1`, `T[4] = 2`
 
@@ -131,6 +133,7 @@ def naiveSubstringSearch(searchWord: String, source: String): Int =
 | P | x | y | x | y | x | z | x |
 | T | 0 | 0 | 1 | 2 |   |   |   |
 
+
 **Шаг 4**: `l = 5`, `k = 2`, `T[5] = 3`
 
 | l | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
@@ -138,12 +141,14 @@ def naiveSubstringSearch(searchWord: String, source: String): Int =
 | P | x | y | x | y | x | z | x |
 | T | 0 | 0 | 1 | 2 | 3 |   |   |
 
+
 **Шаг 5**: `l = 6`, `k = 3`, `T[6] = 1`
 
 | l | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |---|---|---|---|---|---|---|---|
 | P | x | y | x | y | x | z | x |
 | T | 0 | 0 | 1 | 2 | 3 | 1 |   |
+
 
 **Шаг 6**: `l = 7`, `k = 1`, `T[7] = 1`
 
@@ -156,6 +161,7 @@ def naiveSubstringSearch(searchWord: String, source: String): Int =
 У нас есть `P = {xyxyxzx}` из приведенного выше анализа. Предположим, что `S = {yxzyxyxyxyxzxxy}`. 
 Теперь давайте пройдемся по алгоритму KMP, чтобы проверить, встречается ли `P` в `S`.
 
+
 **Шаг 1**: `j = 1`, `i = 0`, сравниваем `P[1]` с `S[1]`. 
 Т.к. `P[1]` не совпадает с `S[1]`, `P` сдвигается на одну позицию вправо.
 
@@ -163,11 +169,13 @@ def naiveSubstringSearch(searchWord: String, source: String): Int =
 
 Шаблон ~~x~~ y x y x z x
 
+
 **Шаг 2**: `j = 2`, `i = 0`, сравниваем `P[1]` с `S[2]`, есть совпадение.
 
 Текст y **x** z y x y x y x y x z x x y
 
 Шаблон **x** y x y x z x
+
 
 **Шаг 3**: `j = 3`, `i = 1`, сравниваем `P[2]` с `S[3]`, нет совпадения.
 Теперь, возвращаясь к `P` и сравнивая `P[1]` с `S[3]`, это не совпадение. 
@@ -177,12 +185,14 @@ def naiveSubstringSearch(searchWord: String, source: String): Int =
 
 Шаблон x ~~y~~ x y x z x
 
+
 **Шаг 4**: `j = 4`, `i = 0`, сравниваем `P[1]` с `S[4]`, нет совпадения. 
 Затем двигаемся к следующему индексу `S`.
 
 Текст y x z ~~y~~ x y x y x y x z x x y
 
 Шаблон ~~x~~ y x y x z x
+
 
 **Шаг 5**: `j = 5`, `i = 0`, сравниваем `P[1]` с `S[5]`, есть совпадение. 
 Т.к. есть совпадение, то увеличиваем индекс `P` для следующего шага.
@@ -191,12 +201,14 @@ def naiveSubstringSearch(searchWord: String, source: String): Int =
 
 Шаблон **x** y x y x z x
 
+
 **Шаг 6**: `j = 6`, `i = 1`, сравниваем `P[2]` с `S[6]`, есть совпадение. 
 Для следующего шага увеличиваем индекс `P`.
 
 Текст y x z y **x** **y** x y x y x z x x y
 
 Шаблон **x** **y** x y x z x
+
 
 **Шаг 7**: `j = 7`, `i = 2`, сравниваем `P[3]` с `S[7]`, есть совпадение.
 Для следующего шага увеличиваем индекс `P`.
@@ -205,12 +217,14 @@ def naiveSubstringSearch(searchWord: String, source: String): Int =
 
 Шаблон **x** **y** **x** y x z x
 
+
 **Шаг 8**: `j = 8`, `i = 3`, сравниваем `P[4]` с `S[8]`, есть совпадение.
 Для следующего шага увеличиваем индекс `P`.
 
 Текст y x z y **x** **y** **x** **y** x y x z x x y
 
 Шаблон **x** **y** **x** **y** x z x
+
 
 **Шаг 9**: `j = 9`, `i = 4`, сравниваем `P[5]` с `S[9]`, есть совпадение.
 Для следующего шага увеличиваем индекс `P`.
@@ -220,6 +234,81 @@ def naiveSubstringSearch(searchWord: String, source: String): Int =
 Шаблон **x** **y** **x** **y** **x** z x
 
 
+**Шаг 10**: `j = 10`, `i = 5`, сравниваем `P[6]` с `S[10]`, совпадений нет. 
+Поэтому возвращаемся к `P` и сравниваем `P[4]` с `S[10]`, так как несоответствие привело к `i = prefixValue[5] = 3`. 
+См. этапы вычисления префикса выше. 
+Поскольку есть совпадение, также увеличиваем индекс P для следующего шага.
+
+Текст y x z y **x** **y** **x** **y** **x** ~~y~~ x z x x y
+
+Шаблон **x** **y** **x** **y** **x** ~~z~~ x
+
+
+**Шаг 11**: `j = 11`, `i = 4`, сравниваем `P[5]` с `S[11]`, есть совпадение. 
+Поскольку совпадение есть, увеличиваем индекс `P` для следующего шага. 
+
+Текст y x z y x y **x** **y** **x** **y** **x** z x x y
+
+Шаблон **x** **y** **x** **y** **x** z x 
+
+
+**Шаг 12**: `j = 12`, `i = 5`, сравниваем `P[6]` с `S[12]`, есть совпадение. 
+Увеличиваем индекс `P` для следующего шага. 
+
+Текст y x z y x y **x** **y** **x** **y** **x** **z** x x y
+
+Шаблон **x** **y** **x** **y** **x** **z** x
+
+
+**Шаг 13**: `j = 13`, `i = 6`, сравниваем `P[7]` с `S[13]`. Есть совпадение. 
+Поскольку у нас больше не осталось символов в `P`, это завершает процесс, 
+и мы можем вернуть значение индекса, `value = currentIndex(S) + 1 − length(P) = 14 − 7 = 7`. 
+
+В этом примере общее количество сдвигов = `i − m = 13 − 7 = 6`. 
+
+Текст y x z y x y **x** **y** **x** **y** **x** **z** **x** x y
+
+Шаблон **x** **y** **x** **y** **x** **z** **x**
+
+
+Возможная реализация алгоритма:
+
+```scala
+def kmpSubstringSearch(searchWord: String, source: String): Int = {
+  val prefixTab = prefixTable(searchWord)
+  source.indices
+    .foldLeft((-1, 0)) {
+      case ((foundIndex, _), _) if foundIndex > 0 => (foundIndex, 0)
+      case ((_, x), i) =>
+        val stepsX = LazyList.iterate(x)(x => prefixTab(x - 1))
+        val lowerX =
+          stepsX
+            .find(x => x == 0 || searchWord(x) == source(i))
+            .getOrElse(0)
+        val newX =
+          if searchWord(lowerX) == source(i) then lowerX + 1
+          else lowerX
+        if newX == searchWord.length then (i - newX + 1, 0)
+        else (-1, newX)
+    }
+    ._1
+}
+
+private def prefixTable(searchString: String): Vector[Int] =
+  searchString.tail
+    .foldLeft((0, Vector(0))) { case ((initialValue, prefixT), currentCharacter) =>
+      val lowerValue =
+        LazyList
+          .iterate(initialValue)(initialValue => prefixT(initialValue - 1))
+          .find(initialValue => initialValue == 0 || searchString(initialValue) == currentCharacter)
+          .getOrElse(0)
+      val newValue =
+        if searchString(lowerValue) == currentCharacter then lowerValue + 1
+        else lowerValue
+      (newValue, prefixT :+ newValue)
+    }
+    ._2
+```
 
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fsearch%2FSearch.scala&plain=1)

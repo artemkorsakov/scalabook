@@ -150,6 +150,7 @@
   - [Деревья](algorithms/trees.md)
     - [Двоичное дерево](algorithms/trees/binary-tree.md)
   - [Сортировка](algorithms/sort.md)
+  - [Поиск](algorithms/search.md)
 
 ## Паттерны
 - [Паттерны проектирования](patterns/index.md)

@@ -91,7 +91,7 @@ def naiveSubstringSearch(searchWord: String, source: String): Int =
   e. for j ← 1 to n do
        while i > 0 and P[i + 1] != S[j] do
          i ← T[i]
-         if P[i+1] = S[ j] then
+         if P[i + 1] = S[j] then
            i ← i + 1
          end if
          if i = m then

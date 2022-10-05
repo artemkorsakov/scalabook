@@ -144,7 +144,7 @@
 
 ## Алгоритмы 
 - [Алгоритмы](algorithms/index.md)
-  - [Фундаментальные](algorithms/fundamental.md)
+  - [Фундамент алгоритмы](algorithms/fundamental.md)
     - [Простые числа](algorithms/fundamental/primes.md)
     - [Преобразования](algorithms/fundamental/conversion.md)
   - [Деревья](algorithms/trees.md)

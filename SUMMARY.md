@@ -149,6 +149,7 @@
     - [Преобразования](algorithms/fundamental/conversion.md)
   - [Деревья](algorithms/trees.md)
     - [Двоичное дерево](algorithms/trees/binary-tree.md)
+  - [Сортировка](algorithms/sort.md)
 
 ## Паттерны
 - [Паттерны проектирования](patterns/index.md)

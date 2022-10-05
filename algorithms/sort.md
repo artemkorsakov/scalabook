@@ -41,6 +41,11 @@ def bubbleSort[T: Ordering](array: Array[T]): Unit =
       .nonEmpty
   (1 until array.length).takeWhile(loop)
   ()
+
+private def swap[T](array: Array[T], i: Int, j: Int): Unit =
+  val temp = array(j)
+  array(j) = array(i)
+  array(i) = temp
 ```
 
 ### Сортировка выбором (selection sort)

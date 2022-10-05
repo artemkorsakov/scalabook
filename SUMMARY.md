@@ -147,10 +147,16 @@
   - [Фундамент алгоритмы](algorithms/fundamental.md)
     - [Простые числа](algorithms/fundamental/primes.md)
     - [Преобразования](algorithms/fundamental/conversion.md)
+  - [Связанные списки](algorithms/lists.md)
+  - [Массивы](algorithms/arrays.md)
+  - [Стеки](algorithms/stacks.md)
+  - [Очереди](algorithms/queues.md)
   - [Деревья](algorithms/trees.md)
     - [Двоичное дерево](algorithms/trees/binary-tree.md)
+  - [Хеш-таблицы](algorithms/hash-tables.md)
   - [Сортировка](algorithms/sort.md)
   - [Поиск](algorithms/search.md)
+  - [Графы](algorithms/graphs.md)
 
 ## Паттерны
 - [Паттерны проектирования](patterns/index.md)

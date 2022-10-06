@@ -49,13 +49,33 @@ class ImperativeStack[A: ClassTag](maxSize: Int):
 
 Возможная реализация стека переменной длины в функциональном стиле:
 
-```scala123
+```scala
+enum Stack[+A]:
+  case EmptyStack
+  case NonEmptyStack(value: A, tail: Stack[A])
 
+  lazy val isEmpty: Boolean = this match
+    case EmptyStack          => true
+    case NonEmptyStack(_, _) => false
+
+object Stack:
+  def empty[A]: Stack[A] = EmptyStack
+
+  extension [A](stack: Stack[A])
+    def push[B <: A](value: B): Stack[A] = NonEmptyStack(value, stack)
+
+    def peek(): Option[(A, Stack[A])] = stack match
+      case EmptyStack              => None
+      case NonEmptyStack(value, _) => Some((value, stack))
+
+    def pop(): Option[(A, Stack[A])] = stack match
+      case EmptyStack                 => None
+      case NonEmptyStack(value, tail) => Some((value, tail))
 ```
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fsearch%2FSearch.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fstructures%2FStack.scala&plain=1)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Fsearch%2FSearchSuite.scala&plain=1)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Fstructures%2FStackSuite.scala&plain=1)
 
 
 ---

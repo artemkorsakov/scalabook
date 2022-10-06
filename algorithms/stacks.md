@@ -15,13 +15,36 @@
 
 Возможная реализация стека заданной длины в императивном стиле:
 
-```scala123
+```scala
+class ImperativeStack[A: ClassTag](maxSize: Int):
+  private val stackBox = new Array[A](maxSize)
+  private var top = -1
 
+  def push(data: A): Unit =
+    if isFull then throw new IllegalArgumentException("Can't add element to full stack")
+    else
+      top += 1
+      stackBox(top) = data
+
+  def pop(): A =
+    val popData = peek()
+    top -= 1
+    popData
+
+  def peek(): A =
+    if isEmpty then throw new IllegalArgumentException("Can't get element to empty stack")
+    else stackBox(top)
+
+  def isEmpty: Boolean =
+    top == -1
+
+  def isFull: Boolean =
+    top == maxSize - 1
 ```
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fsearch%2FSearch.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fstructures%2FImperativeStack.scala&plain=1)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Fsearch%2FSearchSuite.scala&plain=1)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Fstructures%2FImperativeStackSuite.scala&plain=1)
 
 
 Возможная реализация стека переменной длины в функциональном стиле:

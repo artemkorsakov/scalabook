@@ -7,7 +7,7 @@ class ImperativeStack[A: ClassTag](maxSize: Int):
   private var top = -1
 
   def push(data: A): Unit =
-    if isFull then throw new IllegalArgumentException("Can't push to the full stack")
+    if isFull then throw new IllegalArgumentException("Can't add element to full stack")
     else
       top += 1
       stackBox(top) = data
@@ -18,7 +18,8 @@ class ImperativeStack[A: ClassTag](maxSize: Int):
     popData
 
   def peek(): A =
-    stackBox(top)
+    if isEmpty then throw new IllegalArgumentException("Can't get element to empty stack")
+    else stackBox(top)
 
   def isEmpty: Boolean =
     top == -1

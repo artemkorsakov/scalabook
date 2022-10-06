@@ -17,11 +17,18 @@
 - Симметричность: `x == y` тогда и только тогда, когда `y == x`
 - Транзитивность: если `x == y` и `y == z`, тогда `x == z`
 
+Если есть преобразование `f: G => F`, то из `Equal[F]` можно получить `Equal[G]`.
+
 ##### Описание
 
 ```scala
-trait Equal[A]:
-  def equal(a1: A, a2: A): Boolean
+trait Equal[F]:
+  self =>
+  
+  def equal(a1: F, a2: F): Boolean
+
+  def contramap[G](f: G => F): Equal[G] =
+    (a1: G, a2: G) => self.equal(f(a1), f(a2))
 ```
 
 ### Реализация в ScalaZ

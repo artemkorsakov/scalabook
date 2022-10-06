@@ -7,7 +7,8 @@ ThisBuild / scalaVersion := Scala
 lazy val examples = (project in file("examples"))
   .settings(
     name := "scalabook-examples",
-    libraryDependencies ++= Dependencies.examples
+    libraryDependencies ++= Dependencies.examples,
+    libraryDependencies ++= Dependencies.examplesTests
   )
 
 lazy val root = (project in file("."))

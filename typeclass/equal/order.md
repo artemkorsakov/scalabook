@@ -51,15 +51,16 @@ trait Order[F] extends Equal[F]:
 ```scala
 import scalaz._
 import Scalaz._
-List(1, 2, 3) === List(1, 2, 3) // true
-List(1, 2, 3) =/= List(1, 2, 4) // true
+1.0 ?|? 2.0 // Ordering.LT
+1.0 lt 2.0 // true
+2.0 gt 1.0 // true
+1.0 lte 2.0 // true
+2.0 gte 1.0 // true
+1 max 2 // 2
+1 min 2 // 1
 ```
 
-Order enables ?|? syntax which returns Ordering: LT, GT, and EQ. 
-It also enables lt, gt, lte, gte, min, and max operators by declaring order method. 
-Similar to Equal, comparing Int and Doubl fails compilation.
-
-
+Метод `?|?` в ScalaZ возвращает результат сравнения `Ordering: LT, GT или EQ`. 
 
 
 ---

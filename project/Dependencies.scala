@@ -19,7 +19,8 @@ object Dependencies {
 
   val examplesTests: Seq[ModuleID] = Seq(
     "org.scalameta" %% "munit" % munit,
-    "org.scalameta" %% "munit-scalacheck" % munit
+    "org.scalameta" %% "munit-scalacheck" % munit,
+    "org.scalaz" %% "scalaz-scalacheck-binding" % scalaz
   ).map(_ % Test)
 
 }

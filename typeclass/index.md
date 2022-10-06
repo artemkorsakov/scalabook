@@ -8,12 +8,15 @@
 Подробнее о классах типов [описано в основной документации](../scala/abstractions/type-classes).
 
 В данном разделе будут собраны основные классы типов, а также примеры реализации этих классов типов на Scala, 
-в том числе из таких семейств библиотек, как Scalaz, Algebird, Cats.
+в том числе из таких семейств библиотек, как 
+[Scalaz](https://scalaz.github.io/7/), 
+[Algebird](https://twitter.github.io/algebird/), 
+[Cats](http://typelevel.org/cats/).
 
-Классы типов сгруппированы так:
+Классы типов сгруппированы по "семействам":
 
-- [Группа Monoid](monoid.md)
-- [Группа Monad](monad.md)
+- [Группа Monoid](monoid)
+- [Группа Monad](monad)
 
 
 ---

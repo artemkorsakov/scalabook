@@ -7,7 +7,7 @@
 ### Использование
 
 Моноиды обычно используются для сворачивания последовательностей. 
-Например, вот как можно посчитать сумму чисел:
+Например, вот как можно посчитать произведение чисел:
 
 ```scala
 trait Semigroup[A]:
@@ -16,17 +16,34 @@ trait Semigroup[A]:
 trait Monoid[A] extends Semigroup[A]:
   def empty: A
 
-given sumMonoidInstance: Monoid[Int] with
-  val empty = 0
-  def combine(x: Int, y: Int): Int = x + y
+given Monoid[Int] with
+  val empty = 1
+  def combine(x: Int, y: Int): Int = x * y
 
-def sum[A: Monoid](xs: List[A]): A =
+def fold[A: Monoid](xs: List[A]): A =
   val m = summon[Monoid[A]]
   xs.foldLeft(m.empty)(m.combine)
 
-sum(List(2, 6, 3, 17)) 
-// val res0: Int = 28
+fold(List(1, 2, 3, 4, 5))
+// val res0: Int = 120
 ```
+
+Обычно библиотеки определяют "свой" оператор для моноидальной операции `combine`, например:
+
+```scala
+trait Semigroup[A]:
+  def combine(x: A, y: A): A
+  
+  extension (x: A)
+    def |+|(y: A) = combine(x, y)
+
+...
+
+3 |+| 4
+// val res1: Int = 12
+```
+
+
 
 ### Исходный код группы
 

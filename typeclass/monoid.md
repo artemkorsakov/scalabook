@@ -2,7 +2,9 @@
 
 ### Схема
 
-![monoid](https://viewer.diagrams.net/?tags=%7B%7D&highlight=0000ff&edit=_blank&layers=1&nav=1&title=monoid.png#R3VVNc5swEP01HDNjEKHJMXZj123caQc3PnZUpIAagYgQBvvXd7EksIyn%2Bbg005Okp9XT7r6H8NAsbxcSl9lKEMq9YEJaD330gsCfoCsYOmSnkUsUaSCVjJigAYjZntqTBq0ZoZUTqITgipUumIiioIlyMCylaNywB8HdW0uc0hEQJ5iP0Q0jKtPoVfBhwD9Rlmb2Zj%2B61js5tsGmkirDRDRHELr10EwKofQsb2eUd82zfdksdxt%2B9xgtPn%2BvnvCP6Zf11%2FsLTTZ%2FzZG%2BBEkL9Wbq5Xq%2F%2FJXX8d3vxc9UrsV%2Bu5xb6i3mtemXF0QcLpk%2BCLgL%2Bo0TvRE91V2h05nIWQIbMS4qGFbxsNX1SO24G9%2FxXFQHW9xAgB%2BW7SF0OBSl3RjTnKVS1KVNACrROeh9o0HPHzQZUzQudX4NmBeCMpVzWPkwBaqCUGJW1SNVSWYWpmYqFW1PTPJMh%2F1edvheqMipkjs4Z1iQdYr5VEKzbAbf%2BTYkO%2FJcZDBsrJ72zIOcMDGKvkLd4N2ouxKFgFT%2FG2n9f64tOqPtSRtpQW66FxRWCcdVBco6few0mOOc8a6osfI6wLzofviSxlMyeoxf0nbIWtTSWPGvVlZYplQ996CNZTyS6fKMShaTlGPFtm4N56QzN3wT7PAdWZdcuy5BkxP1dZnm1PFbfUIUhi5Rn6Al0n0YER2c1Jd9zlywHP5YOnz476PbPw%3D%3D)
+![monoid](https://gitflic.ru/project/artemkorsakov/scalabook/blob/raw?file=images%2Fmonoid.png&commit=49443b1e0cdcfd8ed3c1ed480bdd142245d579aa)
+
+### Исходный код группы
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid&plain=1)
 

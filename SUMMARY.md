@@ -128,6 +128,10 @@
 
 ## Теория категорий
 - [Теория категорий](typeclass/index.md)
+  - [Группа Equal](typeclass/equal.md)
+    - [Equal](typeclass/equal/equal.md)
+    - [Order](typeclass/equal/order.md)
+    - [Enum](typeclass/equal/enum.md)
   - [Группа Monoid](typeclass/monoid.md)
     - [Semigroup](typeclass/monoid/semigroup.md)
     - [Monoid](typeclass/monoid/monoid.md)

@@ -15,7 +15,7 @@ trait Apply[F[_]] extends Functor[F]:
     apply2(_, _)(f)
 
 object Apply:
-  given idApply: Apply[Id] with
+  given Apply[Id] with
     override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab.value(fa.value))
 
     extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as.value))

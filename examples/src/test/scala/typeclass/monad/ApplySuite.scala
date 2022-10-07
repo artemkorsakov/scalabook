@@ -9,7 +9,7 @@ class ApplySuite extends ScalaCheckSuite:
   private val f: Int => String = _.toString
   private val g: String => Boolean = _.startsWith("1")
 
-  property("idApplicative должен удовлетворять законам Applicative") {
+  property("idApply должен удовлетворять законам Apply") {
     forAll { (x: Int) =>
       checkApply[Id, Int, String, Boolean](Id(x), Id(f), Id(g))
     }

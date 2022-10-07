@@ -159,3 +159,5 @@ given ioApplicative: Applicative[IO] with
 - [Tour of Scala](https://tourofscala.com/scala/applicative)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/applicative.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Applicative.html)
+- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Applicative.html)

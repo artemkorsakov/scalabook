@@ -18,7 +18,7 @@
 - [Группа Equal](equal)
 - [Группа Monoid](monoid)
 - [Группа Monad](monad)
-- Вне группы
+- [Вне группы](other)
 
 ---
 

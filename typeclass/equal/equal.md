@@ -46,4 +46,5 @@ List(1, 2, 3) =/= List(1, 2, 4) // true
 **References:**
 
 - [Scalaz](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Equal.html)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Equal.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Equal.html)

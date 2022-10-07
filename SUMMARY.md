@@ -145,7 +145,7 @@
     - [Free Monad](typeclass/monad/free-monads.md)
     - [Contravariant functor](typeclass/monad/contravariant-functor.md)
     - [CoMonads](typeclass/monad/co-monads.md)
-  - Вне группы
+  - [Вне группы](typeclass/other.md)
     - [Show](typeclass/other/show.md)
 
 ## Алгоритмы 

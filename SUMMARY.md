@@ -137,6 +137,7 @@
     - [Semigroup](typeclass/monoid/semigroup.md)
     - [Monoid](typeclass/monoid/monoid.md)
   - [Группа Monad](typeclass/monad.md)
+    - [Invariant Functor](typeclass/monad/invariant-functor.md) 
     - [Functor](typeclass/monad/functor.md)
     - [Foldable](typeclass/monad/foldable.md)
     - [Applicative](typeclass/monad/applicative.md)

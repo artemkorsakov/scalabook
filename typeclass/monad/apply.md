@@ -66,14 +66,20 @@ given idApply: Apply[Id] with
 import scalaz._
 import Scalaz._
 
-val len: String => Int = _.length
-Functor[Option].map(Some("adsf"))(len)             // Some(4)
-Functor[Option].map(None)(len)                     // None
-Functor[List].map(List("qwer", "adsfg"))(len)      // List(4, 5)
-// или через вызов метода на типе
-List(1, 2, 3) map {_ + 1}                          // List(2, 3, 4)
-List(1, 2, 3) ∘ {_ + 1}                            // List(2, 3, 4)
+// Наследуются операции от функтора
+...
 
+val intToString: Int => String = _.toString
+val double: Int => Int = _ * 2
+val addTwo: Int => Int = _ + 2
+Apply[Option].ap(1.some)(some(intToString))           // Some(1)
+Apply[Option].ap(none)(some(double))                  // None
+Apply[List].ap(List(1,2,3))(List(double, addTwo))     // List(2, 4, 6, 3, 4, 5)
+
+val add2 = ((_:Int) + (_:Int))
+Apply[Option].apply2(some(1), some(2))(add2)          // Some(3)
+
+Apply[List].tuple2(List(1,2,3), List("a", "b"))       // List((1,a), (1,b), (2,a), (2,b), (3,a), (3,b))
 ```
 
 

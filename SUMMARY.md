@@ -132,6 +132,7 @@
     - [Equal](typeclass/equal/equal.md)
     - [Order](typeclass/equal/order.md)
     - [Enum](typeclass/equal/enum.md)
+    - [Bounded](typeclass/equal/bounded.md)
   - [Группа Monoid](typeclass/monoid.md)
     - [Semigroup](typeclass/monoid/semigroup.md)
     - [Monoid](typeclass/monoid/monoid.md)

@@ -4,7 +4,7 @@
 
 ### Схема
 
-![monoid](https://gitflic.ru/project/artemkorsakov/scalabook/blob/raw?file=images%2Fequal.png&commit=ad284b5870ff21f93b13cba910f3c91bcabcdc5b)
+![monoid](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=images%2Fequal.png&plain=1)
 
 
 ---

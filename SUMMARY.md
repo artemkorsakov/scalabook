@@ -147,7 +147,8 @@
     - [CoMonads](typeclass/monad/co-monads.md)
   - [Вне группы](typeclass/other.md)
     - [Show](typeclass/other/show.md)
-
+    - [Read](typeclass/other/read.md)
+    
 ## Алгоритмы 
 - [Алгоритмы](algorithms/index.md)
   - [Фундамент алгоритмы](algorithms/fundamental.md)

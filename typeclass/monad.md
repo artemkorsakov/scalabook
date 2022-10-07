@@ -2,7 +2,7 @@
 
 ### Схема
 
-![monad](https://gitflic.ru/project/artemkorsakov/scalabook/blob/raw?file=images%2Fmonad.png&commit=f48304a96e7013ba17c8335df8b7dd3b28db16da)
+![monad](https://gitflic.ru/project/artemkorsakov/scalabook/blob/raw?file=images%2Fmonad.png&commit=1bb4ba820fa5c36373e6564256ed16187e4f75e1)
 
 ### Исходный код группы
 

@@ -115,7 +115,46 @@ given ioFunctor: Functor[IO] with
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFunctorSuite.scala)
 
 
-### Реализации функторов в различных библиотеках
+### Реализация в ScalaZ
+
+```scala
+import scalaz._
+import Scalaz._
+
+val len: String => Int = _.length
+Functor[Option].map(Some("adsf"))(len)             // Some(4)
+Functor[Option].map(None)(len)                     // None
+Functor[List].map(List("qwer", "adsfg"))(len)      // List(4, 5)
+// или через вызов метода на типе
+List(1, 2, 3) map {_ + 1}                          // List(2, 3, 4)
+List(1, 2, 3) ∘ {_ + 1}                            // List(2, 3, 4)
+
+// В ScalaZ есть метод fpair, дублирующий значение в функторе 
+List(1, 2, 3).fpair                                // List((1,1), (2,2), (3,3))
+
+// Используя Functor можно «поднять» функцию для работы с типом Functor. Пример на Functor[Option]:
+val lenOption: Option[String] => Option[Int] = Functor[Option].lift(len)
+lenOption(Some("abcd"))                            // Some(4)
+Functor[List].lift {(_: Int) * 2} (List(1, 2, 3))  // List(2, 4, 6)
+
+// В ScalaZ есть методы strength, позволяющие "прокидывать" значение, создавая коллекцию tuple-ов
+List(1,2,3).strengthL("a")                         // List("a" -> 1, "a" -> 2, "a" -> 3)
+List(1,2,3).strengthR("a")                         // List(1 -> "a", 2 -> "a", 3 -> "a")
+
+// Functor предоставляет функцию fproduct, которая сопоставляет значение с результатом применения функции к этому значению.
+List("a", "aa", "b", "ccccc").fproduct(len)        // List((a,1), (aa,2), (b,1), (ccccc,5))
+
+// Метод void «аннулирует» функтор, заменяя любой F[A] на F[Unit]
+Functor[Option].void(Some(1))                      // Some(())
+
+// Также в ScalaZ есть метод "принудительно" выставляющий заданное значение
+List(1, 2, 3) >| "x"                               // List(x, x, x)
+List(1, 2, 3) as "x"                               // List(x, x, x)
+
+// Компоновка функторов
+val listOpt = Functor[List] compose Functor[Option]
+listOpt.map(List(Some(1), None, Some(3)))(_ + 1)   // List(Some(2), None, Some(4))
+```
 
 
 ---
@@ -124,3 +163,6 @@ given ioFunctor: Functor[IO] with
 - [Tour of Scala](https://tourofscala.com/scala/functor)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/functor.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Functor.html)
+- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Functor.html)
+

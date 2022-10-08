@@ -2,7 +2,6 @@ package typeclass.monoid
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
-import typeclass.laws.MonoidLaw
 import typeclass.monoid.Monoid.{combine, given}
 
 class MonoidSuite extends ScalaCheckSuite, MonoidLaw:

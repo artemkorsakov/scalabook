@@ -1,11 +1,11 @@
 package typeclass.monad
 
-import munit.{Assertions, ScalaCheckSuite}
+import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.common.*
-import typeclass.monad.InvariantFunctor.{xmap, given}
+import typeclass.monad.InvariantFunctor.given
 
-class InvariantFunctorSuite extends ScalaCheckSuite:
+class InvariantFunctorSuite extends ScalaCheckSuite, InvariantFunctorLaw:
   private val f1: Int => String = _.toString
   private val g1: String => Int = _.toInt
   private val f2: String => Boolean = _.startsWith("1")
@@ -13,12 +13,6 @@ class InvariantFunctorSuite extends ScalaCheckSuite:
 
   property("idFunctor должен удовлетворять законам инвариантного функтора") {
     forAll { (x: Int) =>
-      checkInvariantFunctor(Id(x), f1, g1, f2, g2)
+      checkInvariantFunctorLaw(Id(x), f1, g1, f2, g2)
     }
   }
-
-  private def checkInvariantFunctor[F[_], A, B, C](fa: F[A], f1: A => B, g1: B => A, f2: B => C, g2: C => B)(using
-      InvariantFunctor[F]
-  ): Unit =
-    assertEquals(xmap(fa, identity, identity), fa, "check identity")
-    assertEquals(xmap(xmap(fa, f1, g1), f2, g2), xmap(fa, f2 compose f1, g1 compose g2), "check composition")

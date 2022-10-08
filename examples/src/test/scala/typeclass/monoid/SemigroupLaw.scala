@@ -1,7 +1,6 @@
-package typeclass.laws
+package typeclass.monoid
 
 import munit.Assertions
-import typeclass.monoid.Semigroup
 import typeclass.monoid.Semigroup.combine
 
 trait SemigroupLaw extends Assertions:

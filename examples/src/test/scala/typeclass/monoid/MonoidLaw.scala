@@ -1,6 +1,5 @@
-package typeclass.laws
+package typeclass.monoid
 
-import typeclass.monoid.Monoid
 import typeclass.monoid.Monoid.{combine, empty}
 
 trait MonoidLaw extends SemigroupLaw:

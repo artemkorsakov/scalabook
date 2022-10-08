@@ -40,7 +40,7 @@ class ApplicativeSuite extends ScalaCheckSuite, ApplicativeLaw:
 
   property("stateApplicative[S] должен удовлетворять законам Applicative") {
     forAll { (x: Int, s: String) =>
-      checkApplicativeLawForState[Int, String, Boolean](x, s)
+      checkApplicativeLaw[[x] =>> State[String, x], Int, String, Boolean](x, _.run(s)._2)
     }
   }
 

@@ -1,6 +1,6 @@
 package typeclass.monad
 
-import typeclass.monad.Apply.{apply, map}
+import typeclass.monad.Apply.apply
 
 trait ApplyLaw extends FunctorLaw:
   def checkApplyLaw[F[_], A, B, C](fa: F[A], fab: F[A => B], fbc: F[B => C])(using

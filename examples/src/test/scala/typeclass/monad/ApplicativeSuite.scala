@@ -28,19 +28,19 @@ class ApplicativeSuite extends ScalaCheckSuite, ApplicativeLaw:
 
   property("eitherApplicative[E] должен удовлетворять законам Applicative") {
     forAll { (x: Int) =>
-      checkApplicativeLaw[[x] =>> Either[String, x], Int, String, Boolean](x)
+      checkApplicativeLaw[[X] =>> Either[String, X], Int, String, Boolean](x)
     }
   }
 
   property("writerApplicative[W] должен удовлетворять законам Applicative") {
     forAll { (x: Int) =>
-      checkApplicativeLaw[[x] =>> Writer[String, x], Int, String, Boolean](x)
+      checkApplicativeLaw[[X] =>> Writer[String, X], Int, String, Boolean](x)
     }
   }
 
   property("stateApplicative[S] должен удовлетворять законам Applicative") {
     forAll { (x: Int, s: String) =>
-      checkApplicativeLaw[[x] =>> State[String, x], Int, String, Boolean](x, _.run(s)._2)
+      checkApplicativeLaw[[X] =>> State[String, X], Int, String, Boolean](x, _.run(s)._2)
     }
   }
 

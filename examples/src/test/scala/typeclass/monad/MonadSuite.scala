@@ -41,7 +41,7 @@ class MonadSuite extends ScalaCheckSuite, MonadLaw:
 
   property("eitherMonad должен удовлетворять законам монады") {
     forAll { (x: Int, fa: Either[String, Int], fb: Either[String, String], fc: Either[String, Boolean]) =>
-      checkMonadLaw[[x] =>> Either[String, x], Int, String, Boolean](
+      checkMonadLaw[[X] =>> Either[String, X], Int, String, Boolean](
         x,
         fa,
         i => if i % 2 == 0 then Right(f(i)) else fb,
@@ -56,7 +56,7 @@ class MonadSuite extends ScalaCheckSuite, MonadLaw:
       val writerB = Writer(() => ("state", b))
       val writerC = Writer(() => ("state", c))
 
-      checkMonadLaw[[x] =>> Writer[String, x], Int, String, Boolean](
+      checkMonadLaw[[X] =>> Writer[String, X], Int, String, Boolean](
         x,
         writerA,
         i => if i % 2 == 0 then Writer(() => ("state", f(i))) else writerB,
@@ -71,7 +71,7 @@ class MonadSuite extends ScalaCheckSuite, MonadLaw:
       val stateB = State[String, String](s => (s, b))
       val stateC = State[String, Boolean](s => (s, c))
 
-      checkMonadLaw[[x] =>> State[String, x], Int, String, Boolean](
+      checkMonadLaw[[X] =>> State[String, X], Int, String, Boolean](
         x,
         stateA,
         i => if i % 2 == 0 then State(s => (s, f(i))) else stateB,

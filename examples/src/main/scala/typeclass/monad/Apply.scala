@@ -20,6 +20,18 @@ object Apply:
 
     extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as.value))
 
+  given Apply[Option] with
+    override def apply[A, B](fab: Option[A => B])(fa: Option[A]): Option[B] =
+      (fab, fa) match
+        case (Some(aToB), Some(a)) => Some(aToB(a))
+        case _                     => None
+
+    extension [A](as: Option[A])
+      override def map[B](f: A => B): Option[B] =
+        as match
+          case Some(a) => Some(f(a))
+          case None    => None
+
   def apply[F[_], A, B](fab: F[A => B])(fa: F[A])(using app: Apply[F]): F[B] =
     app.apply(fab)(fa)
 

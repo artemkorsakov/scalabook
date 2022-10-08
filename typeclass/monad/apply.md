@@ -56,6 +56,22 @@ given idApply: Apply[Id] with
   extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as.value))
 ```
 
+##### [Option](../../scala/fp/functional-error-handling)
+
+```scala
+given Apply[Option] with
+  override def apply[A, B](fab: Option[A => B])(fa: Option[A]): Option[B] =
+    (fab, fa) match
+      case (Some(aToB), Some(a)) => Some(aToB(a))
+      case _                     => None
+
+  extension [A](as: Option[A])
+    override def map[B](f: A => B): Option[B] =
+      as match
+        case Some(a) => Some(f(a))
+        case None    => None
+```
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FApply.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FApplySuite.scala)

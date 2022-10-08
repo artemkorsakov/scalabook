@@ -15,3 +15,9 @@ class ApplySuite extends ScalaCheckSuite, ApplyLaw:
       checkApplyLaw[Id, Int, String, Boolean](Id(x), Id(f), Id(g))
     }
   }
+
+  property("optionApply должен удовлетворять законам Apply") {
+    forAll { (x: Int) =>
+      checkApplyLaw[Option, Int, String, Boolean](Some(x), Some(f), Some(g))
+    }
+  }

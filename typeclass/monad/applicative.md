@@ -163,19 +163,8 @@ import Scalaz._
 // Все операции родителей
 ...
 
-val intToString: Int => String = _.toString
-val double: Int => Int = _ * 2
-val addTwo: Int => Int = _ + 2
-Apply[Option].ap(1.some)(some(intToString))           // Some(1)
-Apply[Option].ap(none)(some(double))                  // None
-Apply[List].ap(List(1,2,3))(List(double, addTwo))     // List(2, 4, 6, 3, 4, 5)
+1.point[List]                                         // List(1)
 
-val add2 = ((_:Int) + (_:Int))
-Apply[Option].apply2(some(1), some(2))(add2)          // Some(3)
-
-Apply[List].tuple2(List(1,2,3), List("a", "b"))       // List((1,a), (1,b), (2,a), (2,b), (3,a), (3,b))
-
-Apply[List].lift2 {(_: Int) * (_: Int)} (List(1, 2), List(3, 4)) // List(3, 4, 6, 8)
 ```
 
 

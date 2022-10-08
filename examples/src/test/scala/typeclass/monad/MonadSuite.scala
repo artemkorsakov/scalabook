@@ -3,7 +3,6 @@ package typeclass.monad
 import munit.{Assertions, ScalaCheckSuite}
 import org.scalacheck.Prop.*
 import typeclass.common.*
-import typeclass.monad.FunctorSuite.{checkFunctor, checkStateFunctor}
 import typeclass.monad.Monad.{flatMap, map, unit, given}
 
 class MonadSuite extends ScalaCheckSuite:

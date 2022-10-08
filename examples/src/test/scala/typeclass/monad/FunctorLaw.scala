@@ -8,8 +8,8 @@ trait FunctorLaw extends InvariantFunctorLaw:
       Functor[F]
   ): Unit =
     checkInvariantFunctorLaw[F, A, B, C](fa)
-    assertEquals(map(fa, identity), fa, "check identity")
-    assertEquals(map(map(fa, f), g), map(fa, f.andThen(g)), "check composition")
+    assertEquals(map(fa, identity), fa, "identity")
+    assertEquals(map(map(fa, f), g), map(fa, f.andThen(g)), "composition")
 
   def checkFunctorLawForState[A, B, C](fa: State[String, A], s: String)(using
       f: A => B,
@@ -20,5 +20,5 @@ trait FunctorLaw extends InvariantFunctorLaw:
       Functor[[x] =>> State[String, x]]
   ): Unit =
     checkInvariantFunctorLawForState[A, B, C](fa, s)
-    assertEquals(map(fa, identity).run(s), fa.run(s), "check identity")
-    assertEquals(map(map(fa, f), g).run(s), map(fa, f.andThen(g)).run(s), "check composition")
+    assertEquals(map(fa, identity).run(s), fa.run(s), "identity")
+    assertEquals(map(map(fa, f), g).run(s), map(fa, f.andThen(g)).run(s), "composition")

@@ -99,7 +99,6 @@ Apply[List].tuple2(List(1,2,3), List("a", "b"))       // List((1,a), (1,b), (2,a
 
 Apply[List].lift2 {(_: Int) * (_: Int)} (List(1, 2), List(3, 4)) // List(3, 4, 6, 8)
 
-(3.some |@| 5.some) {_ + _}                                      // Some(8)
 1.some <*> {(_: Int) + 2}.some                                   // Some(3)
 1.some <*> { 2.some <*> {(_: Int) + (_: Int)}.curried.some }     // Some(3)
 1.some <* 2.some                                                 // Some(1)

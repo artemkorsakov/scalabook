@@ -4,6 +4,7 @@ import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.common.*
 import typeclass.monad.Apply.{apply, map, given}
+import typeclass.monad.FunctorSuite.checkFunctor
 
 class ApplySuite extends ScalaCheckSuite:
   private val f: Int => String = _.toString
@@ -11,12 +12,15 @@ class ApplySuite extends ScalaCheckSuite:
 
   property("idApply должен удовлетворять законам Apply") {
     forAll { (x: Int) =>
-      checkApply[Id, Int, String, Boolean](Id(x), Id(f), Id(g))
+      checkApply[Id, Int, String, Boolean](Id(x), f, g, Id(f), Id(g))
     }
   }
 
-  private def checkApply[F[_], A, B, C](fa: F[A], fab: F[A => B], fbc: F[B => C])(using Apply[F]): Unit =
+  private def checkApply[F[_], A, B, C](fa: F[A], ab: A => B, bc: B => C, fab: F[A => B], fbc: F[B => C])(using
+      Apply[F]
+  ): Unit =
     assertEquals(
       apply(fbc)(apply(fab)(fa)),
       apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)
     )
+    checkFunctor(fa, ab, bc)

@@ -4,9 +4,13 @@
 `Applicative`, дополнительно к операциям `Apply`, реализует операцию `unit` (другие названия: `point`, `pure`),
 оборачивающую значение произвольного типа `A` в `Applicative`.
 
-Для `Applicative` должны соблюдаться следующие законы:
+Для `Applicative` должны соблюдаться следующие законы (помимо законов родительских типовых классов):
+- Identity: `apply(unit(identity))(fa) == fa`
 - `unit(x).map(f) == unit(f(x))`
-- `apply(unit(f), unit(x)) == unit(f(x))`
+- `fa.map(f) == apply(unit(f))(fa)`
+- Homomorphism: `apply(unit(f))(unit(x)) == unit(f(x))`
+- Interchange: `apply(f)(unit(a)) == apply(unit((f: A => B) => f(a)))(f)`
+
 
 ### Примеры Applicative
 
@@ -150,7 +154,29 @@ given ioApplicative: Applicative[IO] with
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FApplicativeSuite.scala)
 
 
-### Реализации Applicative в различных библиотеках
+### Реализация в ScalaZ
+
+```scala
+import scalaz._
+import Scalaz._
+
+// Все операции родителей
+...
+
+val intToString: Int => String = _.toString
+val double: Int => Int = _ * 2
+val addTwo: Int => Int = _ + 2
+Apply[Option].ap(1.some)(some(intToString))           // Some(1)
+Apply[Option].ap(none)(some(double))                  // None
+Apply[List].ap(List(1,2,3))(List(double, addTwo))     // List(2, 4, 6, 3, 4, 5)
+
+val add2 = ((_:Int) + (_:Int))
+Apply[Option].apply2(some(1), some(2))(add2)          // Some(3)
+
+Apply[List].tuple2(List(1,2,3), List("a", "b"))       // List((1,a), (1,b), (2,a), (2,b), (3,a), (3,b))
+
+Apply[List].lift2 {(_: Int) * (_: Int)} (List(1, 2), List(3, 4)) // List(3, 4, 6, 8)
+```
 
 
 ---

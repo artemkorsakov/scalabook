@@ -71,3 +71,11 @@ class ApplicativeSuite extends ScalaCheckSuite:
     assertEquals(map(unit(x), f), unit(f(x)))
     assertEquals(apply(unit(f))(unit(x)), unit(f(x)))
     checkFunctor(unit(x), f, g)(using applicative)
+    
+    /*
+    - Identity: `apply(unit(identity))(fa) == fa`
+    - `unit(x).map(f) == unit(f(x))`
+    - `fa.map(f) == apply(unit(f))(fa)`
+    - Homomorphism: `apply(unit(f))(unit(x)) == unit(f(x))`
+    - Interchange: `apply(f)(unit(a)) == apply(unit((f: A => B) => f(a)))(f)`
+    */

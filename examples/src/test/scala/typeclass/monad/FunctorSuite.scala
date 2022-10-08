@@ -2,9 +2,9 @@ package typeclass.monad
 
 import munit.{Assertions, ScalaCheckSuite}
 import org.scalacheck.Prop.*
+import typeclass.Functions.given
 import typeclass.common.*
 import typeclass.monad.Functor.{map, given}
-import typeclass.Functions.given
 
 class FunctorSuite extends ScalaCheckSuite, FunctorLaw:
   property("idFunctor должен удовлетворять законам функтора") {
@@ -42,7 +42,7 @@ class FunctorSuite extends ScalaCheckSuite, FunctorLaw:
   property("stateFunctor должен удовлетворять законам функтора") {
     forAll { (x: Int, s: String) =>
       val state = State[String, Int](s => (s, x))
-      checkFunctorLawForState[Int, String, Boolean](state, s)
+      checkFunctorLaw[[X] =>> State[String, X], Int, String, Boolean](state, _.run(s)._2)
     }
   }
 

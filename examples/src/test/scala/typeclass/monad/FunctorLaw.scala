@@ -11,14 +11,12 @@ trait FunctorLaw extends InvariantFunctorLaw:
     assertEquals(map(fa, identity), fa, "identity")
     assertEquals(map(map(fa, f), g), map(fa, f.andThen(g)), "composition")
 
-  def checkFunctorLawForState[A, B, C](fa: State[String, A], s: String)(using
-      f: A => B,
-      fReverse: B => A,
-      g: B => C,
-      gReverse: C => B
-  )(using
-      Functor[[x] =>> State[String, x]]
+  def checkFunctorLaw[F[_], A, B, C](
+      fa: F[A],
+      run: F[A] | F[B] | F[C] => A | B | C
+  )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B)(using
+      Functor[F]
   ): Unit =
-    checkInvariantFunctorLawForState[A, B, C](fa, s)
-    assertEquals(map(fa, identity).run(s), fa.run(s), "identity")
-    assertEquals(map(map(fa, f), g).run(s), map(fa, f.andThen(g)).run(s), "composition")
+    checkInvariantFunctorLaw[F, A, B, C](fa, run)
+    assertEquals(run(map(fa, identity)), run(fa), "identity")
+    assertEquals(run(map(map(fa, f), g)), run(map(fa, f.andThen(g))), "composition")

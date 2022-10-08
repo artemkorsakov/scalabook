@@ -164,7 +164,7 @@ import Scalaz._
 ...
 
 1.point[List]                                         // List(1)
-(3.some |@| 5.some) {_ + _}                           // Some(8)
+1.η[List]                                             // List(1)
 ```
 
 

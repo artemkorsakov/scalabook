@@ -1,6 +1,5 @@
 package typeclass.monad
 
-import typeclass.common.State
 import typeclass.monad.Apply.{apply, map}
 
 trait ApplyLaw extends FunctorLaw:

@@ -1,6 +1,5 @@
 package typeclass.monad
 
-import typeclass.common.State
 import typeclass.monad.Applicative.{apply, map, unit}
 
 trait ApplicativeLaw extends ApplyLaw:

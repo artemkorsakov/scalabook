@@ -4,7 +4,7 @@ import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.Functions.given
 import typeclass.common.*
-import typeclass.monad.Applicative.{apply, map, unit, given}
+import typeclass.monad.Applicative.given
 import typeclass.monad.Functor.given
 
 class ApplicativeSuite extends ScalaCheckSuite, ApplicativeLaw:
@@ -16,7 +16,7 @@ class ApplicativeSuite extends ScalaCheckSuite, ApplicativeLaw:
 
   property("optionApplicative должен удовлетворять законам Applicative") {
     forAll { (x: Int) =>
-      checkApplicativeLaw[Id, Int, String, Boolean](x)
+      checkApplicativeLaw[Option, Int, String, Boolean](x)
     }
   }
 

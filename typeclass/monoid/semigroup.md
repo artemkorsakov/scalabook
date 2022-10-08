@@ -54,8 +54,16 @@ given nestedSemigroupInstance[A, B](using aSemigroup: Semigroup[A], bSemigroup: 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FSemigroupSuite.scala)
 
 
-### Реализации полугрупп в различных библиотеках
+### Реализация в ScalaZ
 
+```scala
+import scalaz._
+import Scalaz._
+
+List(1, 2) |+| List(3)      // List(1, 2, 3)
+List(1, 2) mappend List(3)  // List(1, 2, 3)
+1 |+| 2                     // 3
+```
 
 
 ---
@@ -63,3 +71,5 @@ given nestedSemigroupInstance[A, B](using aSemigroup: Semigroup[A], bSemigroup: 
 **References:**
 - [Algebird](https://twitter.github.io/algebird/typeclasses/semigroup.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Semigroup.html)
+- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monoid.html#Monoid) 

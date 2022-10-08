@@ -136,6 +136,7 @@
   - [Группа Monoid](typeclass/monoid.md)
     - [Semigroup](typeclass/monoid/semigroup.md)
     - [Monoid](typeclass/monoid/monoid.md)
+    - [Band](typeclass/monoid/band.md)
   - [Группа Monad](typeclass/monad.md)
     - [Invariant Functor](typeclass/monad/invariant-functor.md) 
     - [Functor](typeclass/monad/functor.md)

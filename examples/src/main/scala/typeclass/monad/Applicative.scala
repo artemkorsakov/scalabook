@@ -3,8 +3,9 @@ package typeclass.monad
 import typeclass.common.*
 import typeclass.monoid.Monoid
 
-trait Applicative[F[_]] extends Functor[F]:
+trait Applicative[F[_]] extends Apply[F] with InvariantApplicative[F] :
   def unit[A](a: => A): F[A]
+  override def xunit0[A](a: => A): F[A] = unit(a)
 
   def apply[A, B](fab: F[A => B])(fa: F[A]): F[B]
 

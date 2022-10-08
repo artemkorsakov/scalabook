@@ -1,12 +1,11 @@
 # Applicative
 
-`Applicative` расширяет `Functor` и позволяет работать с несколькими «ящиками».
-Он реализует операцию `apply` 
-(также встречаются названия `join`, `sequence`, `joinWith`, `ap`, `applicate` - названия взаимозаменяемы), 
-которая объединяет `F[A => B]` и `F[A]` в `F[B]`.
+`Applicative` расширяет `Apply` (и `InvariantApplicative`) и позволяет работать с несколькими «ящиками».
+`Applicative`, дополнительно к операциям `Apply`, реализует операцию `unit` (другие названия: `point`, `pure`),
+оборачивающую значение произвольного типа `A` в `Applicative`.
 
 Для `Applicative` должны соблюдаться следующие законы:
-- `map(unit(x))(f) == unit(f(x))`
+- `unit(x).map(f) == unit(f(x))`
 - `apply(unit(f), unit(x)) == unit(f(x))`
 
 ### Примеры Applicative
@@ -14,17 +13,18 @@
 ##### Описание Applicative
 
 ```scala
-trait Functor[F[_]]:
-  extension [A](fa: F[A]) def map[B](f: A => B): F[B]
-
-trait Applicative[F[_]] extends Functor[F]:
+trait Applicative[F[_]] extends Apply[F] with InvariantApplicative[F] :
   def unit[A](a: => A): F[A]
+  override def xunit0[A](a: => A): F[A] = unit(a)
 
   def apply[A, B](fab: F[A => B])(fa: F[A]): F[B]
 
   extension [A](fa: F[A])
     def map[B](f: A => B): F[B] =
       apply(unit(f))(fa)
+
+    def map2[B, C](fb: F[B])(f: (A, B) => C): F[C] =
+      apply(apply(unit(f.curried))(fa))(fb)
 ```
 
 ##### "Обертка"
@@ -161,3 +161,4 @@ given ioApplicative: Applicative[IO] with
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Applicative.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Applicative.html)
+- [Applicative Programming with Effects](https://www.staff.city.ac.uk/~ross/papers/Applicative.html)

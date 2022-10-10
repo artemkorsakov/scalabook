@@ -2,7 +2,7 @@
 
 ### Схема
 
-![monoid](https://gitflic.ru/project/artemkorsakov/scalabook/blob/raw?file=images%2Fmonoid.png&commit=3dc3f31a18306cbadb9e88a2ba336c6cff6cb92f)
+![monoid](https://gitflic.ru/project/artemkorsakov/scalabook/blob/raw?file=images%2Fmonoid.png&commit=6f2b45d150b726462e97c7f2f09813bed28adf7e)
 
 ### Использование
 

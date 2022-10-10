@@ -34,6 +34,16 @@ object Monoid:
       val (w1, a1) = y.run()
       Writer(() => (monoidW.combine(w0, w1), monoidA.combine(a0, a1)))
 
+  given optionMonoidInstance[A: Semigroup]: Monoid[Option[A]] with
+    val empty: Option[A] = None
+
+    def combine(x: Option[A], y: Option[A]): Option[A] =
+      (x, y) match
+        case (Some(a1), Some(a2)) => Some(summon[Semigroup[A]].combine(a1, a2))
+        case (Some(_), None)      => x
+        case (None, Some(_))      => y
+        case (None, None)         => None
+
   def combine[A](x: A, y: A)(using m: Monoid[A]): A = m.combine(x, y)
 
   def empty[A](using m: Monoid[A]): A = m.empty

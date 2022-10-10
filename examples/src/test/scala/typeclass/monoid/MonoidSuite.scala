@@ -35,3 +35,9 @@ class MonoidSuite extends ScalaCheckSuite, MonoidLaw:
       checkMonoidLaw((x0, x1), (y0, y1), (z0, z1))
     }
   }
+
+  property("optionMonoidInstance должен удовлетворять законам моноида") {
+    forAll { (x: Option[String], y: Option[String], z: Option[String]) =>
+      checkMonoidLaw[Option[String]](x, y, z)
+    }
+  }

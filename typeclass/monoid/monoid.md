@@ -60,6 +60,23 @@ given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): 
   def combine(x: (A, B), y: (A, B)): (A, B) = (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
 ```
 
+##### [Option](../../scala/fp/functional-error-handling)
+
+`Option` является моноидом, если его параметр типа - полугруппа, например:
+
+```scala
+given optionMonoidInstance[A: Semigroup]: Monoid[Option[A]] with
+  val empty: Option[A] = None
+
+  def combine(x: Option[A], y: Option[A]): Option[A] =
+    (x, y) match
+      case (Some(a1), Some(a2)) => Some(summon[Semigroup[A]].combine(a1, a2))
+      case (Some(_), None)      => x
+      case (None, Some(_))      => y
+      case (None, None)         => None
+```
+
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FMonoid.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FMonoidSuite.scala)

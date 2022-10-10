@@ -1,5 +1,7 @@
 # Foldable
 
+Класс типов Foldable предназначен для структур, которые можно свернуть (_things that can be **folded** up_).
+
 Операция _fold_ позволяет агрегировать. 
 Она берет начальный элемент и объединяет его с типом _Foldable_, следуя способу, предоставленному методом `f`.
 _Fold_ может использоваться для реализации `reduce`. 
@@ -12,16 +14,29 @@ _Fold_ может использоваться для реализации `redu
 если есть доступ, например, к функции `head`. 
 
 
-### Примеры Foldable
+### Примеры
 
-##### Описание Foldable
+##### Описание
 
 Пример агрегации справа налево.
 
 ```scala
 trait Foldable[F[_]]:
-  extension[A] (fa: F[A])
-    def foldRight[B](init: B)(f: (A, B) => B): B
+  extension [A](fa: F[A])
+    def foldRight[B](init: B)(f: (A, B) => B): B =
+      fa.foldMap(f.curried)(using endoMonoid[B])(init)
+
+    def foldLeft[B](acc: B)(f: (B, A) => B): B =
+      fa.foldMap(a => b => f(b, a))(using dual(endoMonoid[B]))(acc)
+
+    def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
+      fa.foldRight(mb.empty)((a, b) => mb.combine(f(a), b))
+
+    def combineAll(using ma: Monoid[A]): A =
+      fa.foldLeft(ma.empty)(ma.combine)
+
+    def toList: List[A] =
+      fa.foldRight(List.empty[A])(_ :: _)
 ```
 
 ##### "Обертка"
@@ -38,21 +53,30 @@ given idFoldable: Foldable[Id] with
 ##### [Option](../../scala/fp/functional-error-handling)
 
 ```scala
-given optionFoldable: Foldable[Option] with
-  extension [A](fa: Option[A])
-    override def foldRight[B](init: B)(f: (A, B) => B): B =
-      fa match
-        case Some(a) => f(a, init)
-        case None    => init
+given Foldable[Option] with
+  extension[A] (as: Option[A])
+    override def foldRight[B](acc: B)(f: (A, B) => B) = as match
+      case None => acc
+      case Some(a) => f(a, acc)
+    override def foldLeft[B](acc: B)(f: (B, A) => B) = as match
+      case None => acc
+      case Some(a) => f(acc, a)
+    override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
+      as match
+        case None => mb.empty
+        case Some(a) => f(a)
 ```
 
 ##### [Последовательность](../../scala/collections)
 
 ```scala
-given listFoldable: Foldable[List] with
-  extension [A](as: List[A])
-    override def foldRight[B](init: B)(f: (A, B) => B): B =
-      as.foldRight(init)(f)
+given Foldable[List] with
+  extension[A] (as: List[A])
+    override def foldRight[B](acc: B)(f: (A, B) => B) =
+      as.foldRight(acc)(f)
+    override def foldLeft[B](acc: B)(f: (B, A) => B) =
+      as.foldLeft(acc)(f)
+    override def toList: List[A] = as
 ```
 
 ##### [Кортеж](../../scala/collections/tuple) от двух и более элементов
@@ -90,7 +114,12 @@ given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFoldableSuite.scala)
 
 
-### Реализации Foldable в различных библиотеках
+### Реализация в ScalaZ
+
+```scala
+import scalaz._
+import Scalaz._
+```
 
 
 ---
@@ -98,3 +127,5 @@ given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
 **References:**
 - [Tour of Scala](https://tourofscala.com/scala/foldable)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Foldable.html)
+- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Foldable.html)

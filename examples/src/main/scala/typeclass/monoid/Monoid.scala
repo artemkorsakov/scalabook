@@ -44,6 +44,15 @@ object Monoid:
         case (None, Some(_))      => y
         case (None, None)         => None
 
+  // Можно получить двойник любого моноида, просто перевернув `combine`.
+  def dual[A](m: Monoid[A]): Monoid[A] = new:
+    def combine(x: A, y: A): A = m.combine(y, x)
+    val empty: A = m.empty
+
+  def endoMonoid[A]: Monoid[A => A] = new:
+    def combine(f: A => A, g: A => A): A => A = f andThen g
+    val empty: A => A = identity
+
   def combine[A](x: A, y: A)(using m: Monoid[A]): A = m.combine(x, y)
 
   def empty[A](using m: Monoid[A]): A = m.empty

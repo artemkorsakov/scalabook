@@ -44,6 +44,10 @@ object Monoid:
         case (None, Some(_))      => y
         case (None, None)         => None
 
+  given vectorMonoidInstance[T]: Monoid[Vector[T]] with
+    val empty = Vector.empty[T]
+    def combine(x: Vector[T], y: Vector[T]): Vector[T] = x ++ y
+
   // Можно получить двойник любого моноида, просто перевернув `combine`.
   def dual[A](m: Monoid[A]): Monoid[A] = new:
     def combine(x: A, y: A): A = m.combine(y, x)

@@ -13,12 +13,19 @@ _Fold_ может использоваться для реализации `redu
 это просто первый элемент, который будет объединен в _fold_, 
 если есть доступ, например, к функции `head`. 
 
+Операции агрегации справа налево (`foldRight`), слева направо (`foldLeft`), используя моноид (`foldMap`),
+свертывание `Foldable` (`combineAll`) и преобразование в связанный список (`toList`) можно выразить друг через друга.
+Поэтому достаточно реализовать только `foldRight` или `foldMap`, но для лучшей производительности иногда
+необходимо реализовать несколько операций напрямую.
+
+Связь между операциями должна удовлетворять следующим законам:
+- `foldLeft` соответствует `foldMap`: `fa.foldMap(Vector(_)) == fa.foldLeft(Vector.empty[A])(_ :+ _)`
+- `foldRight` соответствует `foldMap`: `fa.foldMap(Vector(_)) == fa.foldRight(Vector.empty[A])(_ +: _)`
+
 
 ### Примеры
 
 ##### Описание
-
-Пример агрегации справа налево.
 
 ```scala
 trait Foldable[F[_]]:
@@ -119,6 +126,16 @@ given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
 ```scala
 import scalaz._
 import Scalaz._
+
+List(1, 2, 3).foldRight (0) {_ - _}                        // 2
+List(1, 2, 3).foldLeft (0) {_ - _}                         // -6
+
+val trues: LazyList[Boolean] = LazyList.continually(true)
+def lazyOr(x: Boolean)(y: => Boolean) = x || y
+Foldable[LazyList].foldr(trues, false)(lazyOr)             // true
+
+val digits = List(0,1,2,3,4,5,6,7,8,9)
+Foldable[List].fold(digits)                                // 45
 ```
 
 

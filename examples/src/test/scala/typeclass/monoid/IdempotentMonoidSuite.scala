@@ -1,4 +1,4 @@
-package typeclass.monad
+package typeclass.monoid
 
 class IdempotentMonoidSuite {
 

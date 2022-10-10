@@ -2,7 +2,7 @@ package typeclass.monoid
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
-import typeclass.monoid.Band.{combine, given}
+import typeclass.monoid.Band.given
 
 class BandSuite extends ScalaCheckSuite, BandLaw:
   property("setBandInstance должен удовлетворять законам идемпотентной полугруппы") {

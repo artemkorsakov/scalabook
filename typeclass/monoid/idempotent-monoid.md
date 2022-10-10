@@ -5,9 +5,9 @@ _IdempotentMonoid_ — это моноид, который также являе
 
 `IdempotentMonoid` должен удовлетворять законам своих "родителей": `Monoid`, `Band`, `Semigroup`.
 
-### Примеры моноидов
+### Примеры
 
-##### Описание моноида
+##### Описание
 ```scala
 trait Semigroup[A]:
   def combine(x: A, y: A): A

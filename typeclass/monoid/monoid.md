@@ -9,9 +9,10 @@
 
 Также говорится, что _M — моноид относительно +_.
 
-### Примеры моноидов
+### Примеры
 
-##### Описание моноида
+##### Описание 
+
 ```scala
 trait Semigroup[A]:
   def combine(x: A, y: A): A
@@ -20,7 +21,7 @@ trait Monoid[A] extends Semigroup[A]:
   def empty: A
 ```
 
-##### Натуральные числа N являются моноидами относительно сложения (`0` является identity элементом)
+##### Числа относительно сложения с 0
 
 ```scala
 given sumMonoidInstance: Monoid[Int] with
@@ -28,7 +29,7 @@ given sumMonoidInstance: Monoid[Int] with
   def combine(x: Int, y: Int): Int = x + y
 ```
 
-##### Натуральные числа N являются моноидами относительно умножения (`1` является identity элементом)
+##### Числа относительно умножения с 1
 
 ```scala
 given productMonoidInstance: Monoid[Int] with
@@ -36,7 +37,7 @@ given productMonoidInstance: Monoid[Int] with
   def combine(x: Int, y: Int): Int = x * y
 ```
 
-##### Строки образуют моноид относительно конкатенации (`""` является identity элементом)
+##### Строки
 
 ```scala
 given stringMonoidInstance: Monoid[String] with
@@ -44,7 +45,7 @@ given stringMonoidInstance: Monoid[String] with
   def combine(x: String, y: String): String = x + y
 ```
 
-##### [Последовательность](../../scala/collections) образует моноид относительно операции объединения (пустая последовательность является identity элементом)
+##### [Последовательность](../../scala/collections)
 
 ```scala
 given listMonoidInstance[T]: Monoid[List[T]] with
@@ -52,7 +53,7 @@ given listMonoidInstance[T]: Monoid[List[T]] with
   def combine(x: List[T], y: List[T]): List[T] = x ++ y
 ```
 
-##### [Кортеж](../../scala/collections/tuple) от двух и более моноидов также является моноидом
+##### [Кортеж](../../scala/collections/tuple) от двух и более моноидов
 
 ```scala
 given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): Monoid[(A, B)] with

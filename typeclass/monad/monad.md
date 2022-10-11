@@ -22,7 +22,10 @@
 ##### Описание
 
 ```scala
-trait Monad[F[_]] extends Applicative[F], Bind[F]
+trait Monad[F[_]] extends Applicative[F], Bind[F]:
+  extension [A](fa: F[A])
+    override def map[B](f: A => B): F[B] =
+      fa.flatMap(a => unit(f(a)))
 ```
 
 ##### "Обертка"

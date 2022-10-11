@@ -3,13 +3,15 @@ package typeclass.monad
 import typeclass.common.*
 import typeclass.monoid.Monoid
 
-trait Monad[F[_]] extends Applicative[F], Bind[F]
+trait Monad[F[_]] extends Applicative[F], Bind[F]:
+  extension [A](fa: F[A])
+    override def map[B](f: A => B): F[B] =
+      fa.flatMap(a => unit(f(a)))
 
 object Monad:
   given Monad[Id] with
     override def unit[A](a: => A): Id[A] = Id(a)
-    extension [A](fa: Id[A]) 
-      override def flatMap[B](f: A => Id[B]): Id[B] = f(fa.value)
+    extension [A](fa: Id[A]) override def flatMap[B](f: A => Id[B]): Id[B] = f(fa.value)
 
   given Monad[Option] with
     override def unit[A](a: => A): Option[A] = Some(a)

@@ -11,6 +11,7 @@
   - `fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) }`
 
 Функция `flatMap` позволяет нам определить операцию `join[A](ffa: F[F[A]]): F[A]`, "схлопывающую" слои функтора.
+Синоним `join` - это `flatten`.
 
 
 ### Примеры

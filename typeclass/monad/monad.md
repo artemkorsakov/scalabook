@@ -1,36 +1,28 @@
 # Monad
 
-Монада (_monad_) - это `Functor` и `Applicative` с дополнительной функцией: `flatten` (сведение: `F[F[A]] -> F[A]`). 
-Что позволяет определить `flatMap` — `map`, за которой следует `flatten`.
+Монада (_monad_) - это `Applicative`, который также поддерживает `Bind`, ограниченный законами монады.
 
 Монады являются естественным расширением аппликативных функторов, они обеспечивают решение следующей проблемы: 
 если у нас есть значение с контекстом, `m a`, как нам применить его к функции, 
 которая принимает нормальное значение `a` и возвращает значение с контекстом.
 
-Для `Monad` должны соблюдаться следующие законы:
+Для `Monad` должны соблюдаться следующие законы (+ все законы родителей: `Applicative`, `Bind` и т.д.):
 - identities:
-  - `flatMap(apply(x))(fn) == fn(x)`
-  - `flatMap(m)(apply _) == m`
-- associativity на flatMap:
-  - `flatMap(flatMap(m)(f))(g) == flatMap(m) { x => flatMap(f(x))(g) }`
+  - leftIdentity: `unit(x).flatMap(f) == f(x)`
+  - rightIdentity: `fa.flatMap(unit _) == fa`
+- associativity на `flatMap`
+- законы `Applicative`
+- законы `Bind`
+- законы `Apply`
+- законы `Functor`
+- законы `Invariant Functor`
 
+### Примеры
 
-### Примеры монад
-
-##### Описание монады
+##### Описание
 
 ```scala
-trait Functor[F[_]]:
-  extension [A](fa: F[A]) def map[B](f: A => B): F[B]
-
-trait Monad[F[_]] extends Functor[F]:
-  def unit[A](a: => A): F[A]
-
-  extension [A](fa: F[A])
-    def flatMap[B](f: A => F[B]): F[B]
-
-    def map[B](f: A => B): F[B] =
-      fa.flatMap(a => unit(f(a)))
+trait Monad[F[_]] extends Applicative[F], Bind[F]
 ```
 
 ##### "Обертка"
@@ -137,7 +129,18 @@ given ioMonad: Monad[IO] with
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FMonadSuite.scala)
 
 
-### Реализации монад в различных библиотеках
+### Реализация в ScalaZ
+
+```scala
+import scalaz._
+import Scalaz._
+
+// ... Все операции родителей
+
+for { n <- List(1, 2); ch <- List('a', 'b') } yield (n, ch)     // List((1,a), (1,b), (2,a), (2,b))
+(for { a <- (_: Int) * 2; b <- (_: Int) + 10 } yield a + b)(3)  // 19
+List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 2), List(1), List(2), List())
+```
 
 
 ---
@@ -146,3 +149,5 @@ given ioMonad: Monad[IO] with
 - [Tour of Scala](https://tourofscala.com/scala/monad)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monad.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monad.html)
+- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad.html)

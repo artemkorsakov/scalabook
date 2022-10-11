@@ -3,21 +3,15 @@ package typeclass.monad
 import typeclass.common.*
 import typeclass.monoid.Monoid
 
-trait Monad[F[_]] extends Functor[F]:
-  def unit[A](a: => A): F[A]
-
-  extension [A](fa: F[A])
-    def flatMap[B](f: A => F[B]): F[B]
-
-    def map[B](f: A => B): F[B] =
-      fa.flatMap(a => unit(f(a)))
+trait Monad[F[_]] extends Applicative[F], Bind[F]
 
 object Monad:
-  given idMonad: Monad[Id] with
+  given Monad[Id] with
     override def unit[A](a: => A): Id[A] = Id(a)
-    extension [A](fa: Id[A]) override def flatMap[B](f: A => Id[B]): Id[B] = f(fa.value)
+    extension [A](fa: Id[A]) 
+      override def flatMap[B](f: A => Id[B]): Id[B] = f(fa.value)
 
-  given optionMonad: Monad[Option] with
+  given Monad[Option] with
     override def unit[A](a: => A): Option[A] = Some(a)
 
     extension [A](fa: Option[A])
@@ -26,7 +20,7 @@ object Monad:
           case Some(a) => f(a)
           case None    => None
 
-  given listMonad: Monad[List] with
+  given Monad[List] with
     override def unit[A](a: => A): List[A] = List(a)
 
     extension [A](fa: List[A]) override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
@@ -63,7 +57,7 @@ object Monad:
           f(a).run(s1)
         }
 
-  given ioMonad: Monad[IO] with
+  given Monad[IO] with
     override def unit[A](a: => A): IO[A] = IO(() => a)
 
     extension [A](fa: IO[A]) override def flatMap[B](f: A => IO[B]): IO[B] = f(fa.run())

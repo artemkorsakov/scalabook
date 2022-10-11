@@ -160,8 +160,7 @@ given ioApplicative: Applicative[IO] with
 import scalaz._
 import Scalaz._
 
-// Все операции родителей
-...
+// ... Все операции родителей
 
 1.point[List]                                         // List(1)
 1.η[List]                                             // List(1)

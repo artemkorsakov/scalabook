@@ -6,16 +6,11 @@
 если у нас есть значение с контекстом, `m a`, как нам применить его к функции, 
 которая принимает нормальное значение `a` и возвращает значение с контекстом.
 
-Для `Monad` должны соблюдаться следующие законы (+ все законы родителей: `Applicative`, `Bind` и т.д.):
+Для `Monad` должны соблюдаться следующие законы (+ все законы родителей: `Applicative`, `Bind`, `Apply`, `Functor` и т.д.):
 - identities:
   - leftIdentity: `unit(x).flatMap(f) == f(x)`
   - rightIdentity: `fa.flatMap(unit _) == fa`
-- associativity на `flatMap`
-- законы `Applicative`
-- законы `Bind`
-- законы `Apply`
-- законы `Functor`
-- законы `Invariant Functor`
+- ...
 
 ### Примеры
 

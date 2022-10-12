@@ -1,8 +1,8 @@
 package typeclass.monad
 
-import munit.Assertions
-import typeclass.monad.Plus.plus
+import typeclass.monoid.SemigroupLaw
 
-trait PlusLaw extends Assertions:
-  def checkPlusLaw[F[_], A](f1: F[A], f2: F[A], f3: F[A])(using Plus[F]): Unit =
-    assertEquals(plus(plus(f1, f2), f3), plus(f1, plus(f2, f3)), "Associativity")
+trait PlusLaw extends SemigroupLaw:
+  def checkPlusLaw[F[_], A](f1: F[A], f2: F[A], f3: F[A])(using p: Plus[F]): Unit =
+    assertEquals(p.plus(p.plus(f1, f2), f3), p.plus(f1, p.plus(f2, f3)), "Associativity")
+    checkSemigroupLaw[F[A]](f1: F[A], f2: F[A], f3: F[A])(using p.semigroup)

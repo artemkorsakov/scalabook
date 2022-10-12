@@ -1,19 +1,14 @@
 package typeclass.monad
 
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
+import typeclass.monoid.Semigroup
 
-object Semigroup:
-  given sumSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x + y
+trait Plus[F[_]]:
+  def plus[A](fa1: F[A], fa2: => F[A]): F[A]
 
-  given productSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x * y
+  def semigroup[A]: Semigroup[F[A]] = (f1: F[A], f2: F[A]) => plus(f1, f2)
 
-  given stringSemigroupInstance: Semigroup[String] = (x: String, y: String) => x + y
+object Plus:
+  given Plus[List] = new Plus[List]:
+    def plus[A](fa1: List[A], fa2: => List[A]): List[A] = fa1 ++ fa2
 
-  given listSemigroupInstance[T]: Semigroup[List[T]] =
-    (x: List[T], y: List[T]) => x ++ y
-
-  given nestedSemigroupInstance[A, B](using aSemigroup: Semigroup[A], bSemigroup: Semigroup[B]): Semigroup[(A, B)] =
-    (x: (A, B), y: (A, B)) => (aSemigroup.combine(x._1, y._1), bSemigroup.combine(x._2, y._2))
-
-  def combine[A](x: A, y: A)(using s: Semigroup[A]): A = s.combine(x, y)
+  def plus[F[_], A](fa1: F[A], fa2: => F[A])(using p: Plus[F]): F[A] = p.plus(fa1, fa2)

@@ -1,37 +1,47 @@
 # MonadPlus
 
-Инвариантный функтор поддерживает операцию `xmap`, которая преобразует `F[A]` в `F[B]` с учетом двух функций: `A => B` и `B => A`. 
+Класс типов `MonadPlus` предназначен для [монад](monad), которые также могут действовать как [моноиды](../monoid/monoid).
 
-Инвариантный функтор должен удовлетворять двум законам: 
-- Identity (тождественность): Если определен метод идентификации `identity` такой, что: `identity(a) == a`,
-  тогда `xmap(ma)(identity, identity) == ma`.
-- Composition (композиция) - `xmap(xmap(ma, f1, g1), f2, g2) == xmap(ma, f2 compose f1, g1, compose g2)`
+`MonadPlus` должен удовлетворять законам монад и моноидов.
 
-Также известен как экспоненциальный функтор.
+### Примеры
 
-### Примеры инвариантных функторов
-
-##### Описание инвариантного функтора
+##### Описание
 
 ```scala
-trait InvariantFunctor[F[_]]:
-  extension [A](fa: F[A]) 
-    def xmap[B](f: A => B, g: B => A): F[B]
+trait MonadPlus[F[_]] extends Monad[F] with ApplicativePlus[F]:
+  def filter[A](fa: F[A])(f: A => Boolean): F[A] =
+    fa.flatMap(a => if f(a) then unit(a) else empty[A])
+
+  def unite[T[_], A](value: F[T[A]])(using T: Foldable[T]): F[A] =
+    value.flatMap(ta => T.foldMap(ta)(a => unit(a))(using monoid[A]))
 ```
 
-##### "Обертка"
+`MonadPlus` позволяет определить операцию `filter`, позволяющую фильтровать по предикату элементы монады.
+
+А также операцию `unite`, позволяющую "схлопывать" `F[T[A]]` при наличии `Foldable[T]`.
+Например, список `List(Some(785727510), Some(0), Some(1), None, None, Some(1))` "схлопывается" до
+`List(785727510, 0, 1, 1)`.
+
+##### Связанный список
 
 ```scala
-case class Id[A](value: A)
+given MonadPlus[List] with
+  override def unit[A](a: => A): List[A] = List(a)
 
-given idInvariantFunctor: InvariantFunctor[Id] with
-  extension [A](fa: Id[A]) 
-    override def xmap[B](f: A => B, g: B => A): Id[B] = Id(f(fa.value))
+  override def apply[A, B](fab: List[A => B])(fa: List[A]): List[B] =
+    fab.flatMap { aToB => fa.map(aToB) }
+
+  override def plus[A](fa1: List[A], fa2: => List[A]): List[A] = fa1 ++ fa2
+
+  override def empty[A]: List[A] = List.empty[A]
+
+  extension [A](fa: List[A]) override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
 ```
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FInvariantFunctor.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FMonadPlus.scala&plain=1)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FInvariantFunctorSuite.scala)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FMonadPlusSuite.scala)
 
 
 ### Реализация в ScalaZ
@@ -42,14 +52,13 @@ import Scalaz._
 
 // ... Все операции родителей
 
-for { n <- List(1, 2); ch <- List('a', 'b') } yield (n, ch)     // List((1,a), (1,b), (2,a), (2,b))
-(for { a <- (_: Int) * 2; b <- (_: Int) + 10 } yield a + b)(3)  // 19
-List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 2), List(1), List(2), List())
+List(1, 2, 3) filter {_ > 2}                     // List(3)
+(1 |-> 50) filter { x => x.shows contains '7' }  // [7,17,27,37,47]
 ```
 
 
 ---
 
 **References:**
-- [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/InvariantFunctor.html)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/MonadPlus.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/MonadPlus.html)

@@ -2,12 +2,11 @@ package typeclass.monad
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
-import typeclass.monad.Plus
-import typeclass.monad.Plus.given
+import typeclass.monad.PlusEmpty.given
 
-class PlusSuite extends ScalaCheckSuite, PlusLaw:
+class PlusEmptySuite extends ScalaCheckSuite, PlusEmptyLaw:
   property("listPlusInstance должен удовлетворять законам полугруппы") {
     forAll { (x: List[Int], y: List[Int], z: List[Int]) =>
-      checkPlusLaw(x, y, z)
+      checkPlusEmptyLaw(x, y, z)
     }
   }

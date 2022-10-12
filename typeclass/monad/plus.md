@@ -20,7 +20,7 @@ trait Plus[F[_]]:
 ##### Связанный список
 
 ```scala
-given Plus[List] = new Plus[List]:
+given Plus[List] with
   def plus[A](fa1: List[A], fa2: => List[A]): List[A] = fa1 ++ fa2
 ```
 

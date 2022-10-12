@@ -1,37 +1,39 @@
 # PlusEmpty
 
-Инвариантный функтор поддерживает операцию `xmap`, которая преобразует `F[A]` в `F[B]` с учетом двух функций: `A => B` и `B => A`. 
+Универсальный количественный [моноид](../monoid/monoid).
 
-Инвариантный функтор должен удовлетворять двум законам: 
-- Identity (тождественность): Если определен метод идентификации `identity` такой, что: `identity(a) == a`,
-  тогда `xmap(ma)(identity, identity) == ma`.
-- Composition (композиция) - `xmap(xmap(ma, f1, g1), f2, g2) == xmap(ma, f2 compose f1, g1, compose g2)`
+`PlusEmpty` должен удовлетворять законам моноида:
+- Associativity (ассоциативность): `(x + y) + z = x + (y + z)`
+- Identity (тождественность): существует `e ∈ M` такое, что `e + x = x + e = x`
 
-Также известен как экспоненциальный функтор.
 
-### Примеры инвариантных функторов
+### Примеры
 
-##### Описание инвариантного функтора
+##### Описание
 
 ```scala
-trait InvariantFunctor[F[_]]:
-  extension [A](fa: F[A]) 
-    def xmap[B](f: A => B, g: B => A): F[B]
+trait PlusEmpty[F[_]] extends Plus[F]:
+  self =>
+
+  def empty[A]: F[A]
+
+  def monoid[A]: Monoid[F[A]] =
+    new Monoid[F[A]]:
+      override def combine(f1: F[A], f2: F[A]): F[A] = plus(f1, f2)
+      override def empty: F[A] = self.empty[A]
 ```
 
-##### "Обертка"
+##### Связанный список
 
 ```scala
-case class Id[A](value: A)
-
-given idInvariantFunctor: InvariantFunctor[Id] with
-  extension [A](fa: Id[A]) 
-    override def xmap[B](f: A => B, g: B => A): Id[B] = Id(f(fa.value))
+given PlusEmpty[List] with
+  def plus[A](fa1: List[A], fa2: => List[A]): List[A] = fa1 ++ fa2
+  def empty[A]: List[A] = List.empty[A]
 ```
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FInvariantFunctor.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FPlusEmpty.scala&plain=1)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FInvariantFunctorSuite.scala)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FPlusEmptySuite.scala)
 
 
 ### Реализация в ScalaZ
@@ -42,14 +44,12 @@ import Scalaz._
 
 // ... Все операции родителей
 
-for { n <- List(1, 2); ch <- List('a', 'b') } yield (n, ch)     // List((1,a), (1,b), (2,a), (2,b))
-(for { a <- (_: Int) * 2; b <- (_: Int) + 10 } yield a + b)(3)  // 19
-List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 2), List(1), List(2), List())
+(PlusEmpty[List].empty: List[Int])                  // List()
 ```
 
 
 ---
 
 **References:**
-- [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/InvariantFunctor.html)
-- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad.html)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/PlusEmpty.html)
+- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/MonadPlus.html)

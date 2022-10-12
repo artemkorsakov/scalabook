@@ -8,5 +8,5 @@ trait Plus[F[_]]:
   def semigroup[A]: Semigroup[F[A]] = (f1: F[A], f2: F[A]) => plus(f1, f2)
 
 object Plus:
-  given Plus[List] = new Plus[List]:
+  given Plus[List] with
     def plus[A](fa1: List[A], fa2: => List[A]): List[A] = fa1 ++ fa2

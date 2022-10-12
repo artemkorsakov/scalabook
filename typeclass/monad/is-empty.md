@@ -52,4 +52,4 @@ List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 
 
 **References:**
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/InvariantFunctor.html)
-- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad.html)
+- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/MonadPlus.html)

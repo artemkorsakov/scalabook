@@ -77,7 +77,7 @@ given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
         case Left(e)  => Left(e)
 ```
 
-##### Writer
+##### [Writer](../../fp/writer) - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))

@@ -77,7 +77,7 @@ given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
       case (_, Left(l))          => Left(l)
 ```
 
-##### Writer
+##### [Writer](../../fp/writer) - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))

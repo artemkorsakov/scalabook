@@ -52,7 +52,7 @@ given optionTMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransforme
     OptionT[M, A](ma.map(Some(_)))      
 ```
 
-##### Writer
+##### [Writer](../../fp/writer) - функциональный журнал
 
 ```scala
 final case class WriterT[M[_], W, A](run: () => M[(W, A)])

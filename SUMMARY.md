@@ -125,6 +125,7 @@
   - [Функциональное состояние](fp/state.md)
   - [Monoids](fp/monoids.md)
   - [Monads](fp/monads.md)
+  - [Функциональный журнал](fp/writer.md)
 
 ## Теория категорий
 - [Теория категорий](typeclass/index.md)

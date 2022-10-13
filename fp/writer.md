@@ -1,63 +1,36 @@
 # Функциональный журнал
 
-Базовый шаблон, как сделать любой API с отслеживанием состояния чисто функциональным, выглядит так:
+`Writer` предназначена для значений, к которым присоединено другое значение, действующее как своего рода значение журнала.
 
 ```scala
-opaque type State[S, +A] = S => (A, S)
-
-object State:
-  extension [S, A](underlying: State[S, A])
-    def run(s: S): (A, S) = underlying(s)
-
-  def apply[S, A](f: S => (A, S)): State[S, A] = f
+final case class Writer[W, A](run: () => (W, A))
 ```
 
-Здесь `State` — это сокращение от вычисления, которое переносит какое-то состояние, действие состояния, 
-переход состояния или даже оператор. 
-
-Помимо определения [непрозрачного типа](../scala/type-system/types-opaque), 
-предоставляется метод расширения `run`, позволяющий вызывать базовую функцию, 
-а также метод `apply` для сопутствующего объекта, позволяющий создавать значение `State` из функции. 
-В обоих случаях известен тот факт, что `State[S, A]` эквивалентно `S ⇒ (A, S)`, 
-что делает эти две операции простыми и кажущимися избыточными. 
-Однако за пределами определяющей области видимости — например, в другом пакете — эта эквивалентность неизвестна, 
-и, следовательно, нужны такие преобразования. 
-
-### Функции общего назначения, описывающие шаблоны программ с отслеживанием состояния
+### Функции общего назначения, описывающие шаблоны программ с ведением журнала
 
 ```scala
-object State:
-  extension [S, A](underlying: State[S, A])
-    def map[B](f: A => B): State[S, B] =
-      s1 =>
-        val (a, s2) = underlying(s1)
-        (f(a), s2)
+object Writer:
+  extension [W, A](underlying: Writer[W, A])
+    def map[B](f: A => B): Writer[W, B] =
+      val (w, a) = underlying.run()
+      Writer[W, B](() => (w, f(a)))
 
-    def map2[B, C](sb: State[S, B])(f: (A, B) => C): State[S, C] =
-      for
-        a <- underlying
-        b <- sb
-      yield f(a, b)
+    def flatMap[B](f: A => Writer[W, B])(using monoid: Monoid[W]): Writer[W, B] =
+      Writer[W, B] { () =>
+        val (w1, a) = underlying.run()
+        val (w2, b) = f(a).run()
+        (monoid.combine(w1, w2), b)
+      }
 
-    def flatMap[B](f: A => State[S, B]): State[S, B] =
-      s1 =>
-        val (a, s2) = underlying(s1)
-        f(a)(s2)
-
-  def unit[S, A](a: A): State[S, A] = s => (a, s)
-
-  def sequence[S, A](actions: List[State[S, A]]): State[S, List[A]] =
-    actions.foldRight(unit[S, List[A]](Nil))((f, acc) => f.map2(acc)(_ :: _))
+  def unit[W, A](a: => A)(using monoid: Monoid[W]): Writer[W, A] =
+    Writer[W, A](() => (monoid.empty, a))
 ```
 
 Пример:
 
 ```scala
-unit[String, Int](42).run("state")
-// res0: Tuple2[Int, String] = (42, "state")
-val state = State[Int, String](i => (i.toString, i + 1))
-state.map(str => s"Number: $str").run(5)
-// res1: Tuple2[String, Int] = ("Number: 5", 6)
+unit[String, Int](42).run()
+// res0: Tuple2[String, Int] = ("", 42)
 ```
 
 ### Резюме

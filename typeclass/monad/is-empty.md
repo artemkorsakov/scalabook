@@ -1,37 +1,35 @@
 # IsEmpty
 
-Инвариантный функтор поддерживает операцию `xmap`, которая преобразует `F[A]` в `F[B]` с учетом двух функций: `A => B` и `B => A`. 
+`IsEmpty` - класс типов, позволяющий проверить, действительно ли какой-либо тип с пустым представлением является пустым.
+Расширяет `PlusEmpty`.
 
-Инвариантный функтор должен удовлетворять двум законам: 
-- Identity (тождественность): Если определен метод идентификации `identity` такой, что: `identity(a) == a`,
-  тогда `xmap(ma)(identity, identity) == ma`.
-- Composition (композиция) - `xmap(xmap(ma, f1, g1), f2, g2) == xmap(ma, f2 compose f1, g1, compose g2)`
+`IsEmpty` должен удовлетворять следующим законам (помимо законов родителей): 
+- `isEmpty` с параметром `empty` должно возвращать `true`: `isEmpty(empty[A]) == true`.
+- `isEmpty` от композиции двух функторов равно `true` тогда и только тогда, когда `isEmpty` от каждого функтора - `true`: 
+  `isEmpty(f1) && isEmpty(f2) == isEmpty(plus(f1, f2))`
 
-Также известен как экспоненциальный функтор.
 
-### Примеры инвариантных функторов
+### Примеры
 
-##### Описание инвариантного функтора
-
-```scala
-trait InvariantFunctor[F[_]]:
-  extension [A](fa: F[A]) 
-    def xmap[B](f: A => B, g: B => A): F[B]
-```
-
-##### "Обертка"
+##### Описание
 
 ```scala
-case class Id[A](value: A)
-
-given idInvariantFunctor: InvariantFunctor[Id] with
-  extension [A](fa: Id[A]) 
-    override def xmap[B](f: A => B, g: B => A): Id[B] = Id(f(fa.value))
+trait IsEmpty[F[_]] extends PlusEmpty[F]:
+  def isEmpty[A](fa: F[A]): Boolean
 ```
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FInvariantFunctor.scala&plain=1)
+##### Связанный список
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FInvariantFunctorSuite.scala)
+```scala
+given IsEmpty[List] with
+  override def isEmpty[A](fa: List[A]): Boolean = fa.isEmpty
+  override def plus[A](fa1: List[A], fa2: => List[A]): List[A] = fa1 ++ fa2
+  override def empty[A]: List[A] = List.empty[A]
+```
+
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FIsEmpty.scala&plain=1)
+
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FIsEmptySuite.scala)
 
 
 ### Реализация в ScalaZ
@@ -42,14 +40,12 @@ import Scalaz._
 
 // ... Все операции родителей
 
-for { n <- List(1, 2); ch <- List('a', 'b') } yield (n, ch)     // List((1,a), (1,b), (2,a), (2,b))
-(for { a <- (_: Int) * 2; b <- (_: Int) + 10 } yield a + b)(3)  // 19
-List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 2), List(1), List(2), List())
+summon[IsEmpty[List]].isEmpty(List.empty[Int]) // true
 ```
 
 
 ---
 
 **References:**
-- [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/InvariantFunctor.html)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/IsEmpty.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/MonadPlus.html)

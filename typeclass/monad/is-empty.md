@@ -4,7 +4,7 @@
 Расширяет `PlusEmpty`.
 
 `IsEmpty` должен удовлетворять следующим законам (помимо законов родителей): 
-- `isEmpty` с параметром `empty` должно возвращать `true`: `isEmpty(empty[A]) == true`.
+- `isEmpty` с параметром `empty` должен возвращать `true`: `isEmpty(empty[A]) == true`.
 - `isEmpty` от композиции двух функторов равно `true` тогда и только тогда, когда `isEmpty` от каждого функтора - `true`: 
   `isEmpty(f1) && isEmpty(f2) == isEmpty(plus(f1, f2))`
 

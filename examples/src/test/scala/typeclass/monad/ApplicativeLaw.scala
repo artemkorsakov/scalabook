@@ -3,12 +3,12 @@ package typeclass.monad
 import typeclass.monad.Applicative.{apply, map, unit}
 
 trait ApplicativeLaw extends ApplyLaw:
-  def checkApplicativeLaw[F[_], A, B, C](x: A)(using
+  def checkApplicativeLaw[F[_]: Applicative, A, B, C](x: A)(using
       f: A => B,
       fReverse: B => A,
       g: B => C,
       gReverse: C => B
-  )(using Applicative[F]): Unit =
+  ): Unit =
     val fa = unit(x)
     checkApplyLaw[F, A, B, C](fa, unit(f), unit(g))
     assertEquals(apply[F, A, A](unit(identity))(fa), fa, "identity")
@@ -21,12 +21,12 @@ trait ApplicativeLaw extends ApplyLaw:
     assertEquals(map(unit(x), f), unit(f(x)))
     assertEquals(map(unit(x), f), apply(unit(f))(fa))
 
-  def checkApplicativeLaw[F[_], A, B, C](x: A, run: F[A] | F[B] | F[C] => A | B | C)(using
+  def checkApplicativeLaw[F[_]: Applicative, A, B, C](x: A, run: F[A] | F[B] | F[C] => A | B | C)(using
       f: A => B,
       fReverse: B => A,
       g: B => C,
       gReverse: C => B
-  )(using Applicative[F]): Unit =
+  ): Unit =
     val fa = unit(x)
     checkApplyLaw[F, A, B, C](fa, unit(f), unit(g), run)
     assertEquals(run(apply[F, A, A](unit(identity))(fa)), run(fa), "identity")

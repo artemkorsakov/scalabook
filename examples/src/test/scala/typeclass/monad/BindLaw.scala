@@ -1,12 +1,12 @@
 package typeclass.monad
 
 trait BindLaw extends ApplyLaw:
-  def checkBindLaw[F[_], A, B, C](fa: F[A], fab: F[A => B], fbc: F[B => C], afb: A => F[B], bfc: B => F[C])(using
+  def checkBindLaw[F[_]: Bind, A, B, C](fa: F[A], fab: F[A => B], fbc: F[B => C], afb: A => F[B], bfc: B => F[C])(using
       f: A => B,
       fReverse: B => A,
       g: B => C,
       gReverse: C => B
-  )(using Bind[F]): Unit =
+  ): Unit =
     checkApplyLaw(fa, fab, fbc)
     assertEquals(
       fa.flatMap(afb).flatMap(bfc),
@@ -29,7 +29,7 @@ trait BindLaw extends ApplyLaw:
       "`ap` is consistent with `bind`"
     )
 
-  def checkBindLaw[F[_], A, B, C](
+  def checkBindLaw[F[_]: Bind, A, B, C](
       fa: F[A],
       fab: F[A => B],
       fbc: F[B => C],
@@ -41,7 +41,7 @@ trait BindLaw extends ApplyLaw:
       fReverse: B => A,
       g: B => C,
       gReverse: C => B
-  )(using Bind[F]): Unit =
+  ): Unit =
     checkApplyLaw(fa, fab, fbc, run)
     assertEquals(
       run(fa.flatMap(afb).flatMap(bfc)),

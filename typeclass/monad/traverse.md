@@ -2,38 +2,23 @@
 
 Предположим, что есть два функтора `F` и `G`.
 `Traversable` позволяет менять местами "обертку" функторов между собой, 
-т.е. реализует операцию `traverse` = `F[G[A]] -> G[F[A]]`
+т.е. реализует операции `traverse` = `(F[A], A => G[B]) -> G[F[B]]` и `sequence` = `F[G[A]] -> G[F[A]]`
+
+`Traversable` должен удовлетворять следующим законам:
 
 
-### Примеры traversable
+### Примеры
 
-##### Описание Traverse
+##### Описание 
 
 ```scala
-trait Functor[F[_]]:
-  extension [A](fa: F[A]) def map[B](f: A => B): F[B]
-
-trait Foldable[F[_]]:
-  extension [A](fa: F[A]) 
-    def foldRight[B](init: B)(f: (A, B) => B): B
-
-trait Applicative[F[_]] extends Functor[F]:
-  def unit[A](a: => A): F[A]
-
-  def apply[A, B](fab: F[A => B])(fa: F[A]): F[B]
-
-  extension [A](fa: F[A])
-    def map[B](f: A => B): F[B] =
-      apply(unit(f))(fa)
-      
-    def map2[B, C](fb: F[B])(f: (A, B) => C): F[C] =
-      apply(apply(unit(f.curried))(fa))(fb)  
-
 trait Traverse[F[_]] extends Functor[F], Foldable[F]:
   self =>
 
-  extension [A](fa: F[A])
-    def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[B]]
+  extension [A](fa: F[A]) def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[B]]
+
+  def sequence[G[_]: Applicative, A](fga: F[G[A]]): G[F[A]] =
+    fga.traverse(ga => ga)
 ```
 
 ##### "Обертка"
@@ -164,7 +149,22 @@ given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FTraverseSuite.scala)
 
 
-### Реализации traversable в различных библиотеках
+### Реализация в ScalaZ
+
+```scala
+import scalaz._
+import Scalaz._
+
+List(1, 2, 3).foldRight (0) {_ - _}                        // 2
+List(1, 2, 3).foldLeft (0) {_ - _}                         // -6
+
+val trues: LazyList[Boolean] = LazyList.continually(true)
+def lazyOr(x: Boolean)(y: => Boolean) = x || y
+Foldable[LazyList].foldr(trues, false)(lazyOr)             // true
+
+val digits = List(0,1,2,3,4,5,6,7,8,9)
+Foldable[List].fold(digits)                                // 45
+```
 
 
 ---
@@ -172,3 +172,4 @@ given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
 **References:**
 - [Tour of Scala](https://tourofscala.com/scala/traversable)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Traverse.html)

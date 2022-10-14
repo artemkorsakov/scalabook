@@ -117,6 +117,19 @@ given stateApplicative[S]: Applicative[[x] =>> State[S, x]] with
     }
 ```
 
+##### Composite Applicative
+
+```scala
+given compositeApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>> F[G[X]]] with
+  override def unit[A](a: => A): F[G[A]] = summon[Applicative[F]].unit(summon[Applicative[G]].unit(a))
+
+  override def apply[A, B](fab: F[G[A => B]])(fa: F[G[A]]): F[G[B]] =
+    val applicativeF = summon[Applicative[F]]
+    val applicativeG = summon[Applicative[G]]
+    val tmp: F[G[A] => G[B]] = applicativeF.map(fab)(ga2b => applicativeG.apply(ga2b))
+    applicativeF.apply(tmp)(fa)
+```
+
 ##### Nested
 
 ```scala

@@ -2,13 +2,13 @@ package typeclass.monad
 
 import munit.Assertions
 import typeclass.common.Id
-import typeclass.monad.Applicative.given
+import typeclass.monad.Applicative.{unit, given}
 import typeclass.monad.Functor.{map, given}
 import typeclass.monad.Traverse.traverse
 import typeclass.monoid.Monoid
 
 trait TraverseLaw extends FoldableLaw, FunctorLaw:
-  def checkTraverseLaw[F[_]: Traverse, A, B, C](
+  def checkTraverseLaw[F[_]: Traverse, G[_]: Applicative, H[_]: Applicative, A, B, C](
       fa: F[A]
   )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B)(using Monoid[Vector[A]]): Unit =
     checkFoldableLaw[F, A](fa)
@@ -20,12 +20,11 @@ trait TraverseLaw extends FoldableLaw, FunctorLaw:
 
     // Два последовательно зависимых эффекта могут быть объединены в один, их композицию
     // Two sequentially dependent effects can be fused into one, their composition
-    type MN[A] = Option[List[A]]
-    val optFb: Option[F[B]] = traverse[F, Option, A, B](fa, a => Some(f(a)))
-    val optListFc1: Option[List[F[C]]] =
-      map[Option, F[B], List[F[C]]](optFb, fb => traverse[F, List, B, C](fb, b => List(g(b))))
-    val optListFc2: Option[List[F[C]]] =
-      traverse[F, MN, A, C](fa, a => map[Option, B, List[C]](Some(f(a)), b => List(g(b))))
+    val optFb: G[F[B]] = traverse[F, G, A, B](fa, a => unit(f(a)))
+    val optListFc1: G[H[F[C]]] =
+      map[G, F[B], H[F[C]]](optFb, fb => traverse[F, H, B, C](fb, b => unit(g(b))))
+    val optListFc2: G[H[F[C]]] =
+      traverse[F, [X] =>> G[H[X]], A, C](fa, a => map[G, B, H[C]](unit(f(a)), b => unit(g(b))))
     assertEquals(optListFc1, optListFc2)
 
 /*

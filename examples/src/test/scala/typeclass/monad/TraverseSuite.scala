@@ -12,7 +12,7 @@ class TraverseSuite extends ScalaCheckSuite, TraverseLaw:
 
   property("idTraverse должен удовлетворять законам Traverse") {
     forAll { (x: Int) =>
-      checkTraverseLaw[Id, Int, String, Boolean](Id(x))
+      checkTraverseLaw[Id, Option, List, Int, String, Boolean](Id(x))
     }
   }
 

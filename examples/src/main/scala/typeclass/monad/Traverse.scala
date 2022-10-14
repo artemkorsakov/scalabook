@@ -17,39 +17,39 @@ trait Traverse[F[_]] extends Functor[F], Foldable[F]:
     fga.traverse(ga => ga)
 
 object Traverse:
-  given idTraverse: Traverse[Id] with
+  given Traverse[Id] with
     extension [A](fa: Id[A])
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Id[B]] =
         f(fa.value).map(b => Id(b))
 
-  given tuple2Traverse: Traverse[[X] =>> (X, X)] with
+  given Traverse[[X] =>> (X, X)] with
     extension [A](fa: (A, A))
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[(B, B)] =
         val g = summon[Applicative[G]]
         val func: G[B => B => (B, B)] = g.unit(b1 => b2 => (b1, b2))
         g.apply(g.apply(func)(f(fa._1)))(f(fa._2))
 
-  given tuple3Traverse: Traverse[[X] =>> (X, X, X)] with
+  given Traverse[[X] =>> (X, X, X)] with
     extension [A](fa: (A, A, A))
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[(B, B, B)] =
         val g = summon[Applicative[G]]
         val func: G[B => B => B => (B, B, B)] = g.unit(b1 => b2 => b3 => (b1, b2, b3))
         g.apply(g.apply(g.apply(func)(f(fa._1)))(f(fa._2)))(f(fa._3))
 
-  given optionTraverse: Traverse[Option] with
+  given Traverse[Option] with
     extension [A](fa: Option[A])
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Option[B]] =
         fa match
           case Some(a) => f(a).map(Some(_))
           case None    => summon[Applicative[G]].unit(None)
 
-  given listTraverse: Traverse[List] with
+  given Traverse[List] with
     extension [A](fa: List[A])
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[List[B]] =
         val g = summon[Applicative[G]]
         fa.foldRight(g.unit(List[B]()))((a, acc) => f(a).map2(acc)(_ :: _))
 
-  given treeTraverse: Traverse[Tree] with
+  given Traverse[Tree] with
     extension [A](ta: Tree[A])
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Tree[B]] =
         f(ta.head).map2(ta.tail.traverse(a => a.traverse(f)))(Tree(_, _))
@@ -61,5 +61,5 @@ object Traverse:
           acc.map2(f(a))((m, b) => m + (k -> b))
         }
 
-  def traverse[F[_], G[_]: Applicative, A, B](fa: F[A], f: A => G[B])(using traversable: Traverse[F]): G[F[B]] =
-    traversable.traverse(fa)(f)
+  def traverse[F[_]: Traverse, G[_]: Applicative, A, B](fa: F[A], f: A => G[B]): G[F[B]] =
+    summon[Traverse[F]].traverse(fa)(f)

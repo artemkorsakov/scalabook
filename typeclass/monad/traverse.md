@@ -155,15 +155,9 @@ given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
 import scalaz._
 import Scalaz._
 
-List(1, 2, 3).foldRight (0) {_ - _}                        // 2
-List(1, 2, 3).foldLeft (0) {_ - _}                         // -6
-
-val trues: LazyList[Boolean] = LazyList.continually(true)
-def lazyOr(x: Boolean)(y: => Boolean) = x || y
-Foldable[LazyList].foldr(trues, false)(lazyOr)             // true
-
-val digits = List(0,1,2,3,4,5,6,7,8,9)
-Foldable[List].fold(digits)                                // 45
+List(1, 2, 3) traverse { x => (x > 0) option (x + 1) }  // Some(List(2, 3, 4))
+List(1.some, 2.some).sequence                           // Some(List(1, 2))
+1.success[String].leaf.sequenceU map {_.drawTree}       // Success(1)
 ```
 
 

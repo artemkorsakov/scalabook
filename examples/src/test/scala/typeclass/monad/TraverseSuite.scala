@@ -8,7 +8,11 @@ import typeclass.common.*
 import typeclass.monad.Traverse.{traverse, given}
 
 class TraverseSuite extends ScalaCheckSuite, TraverseLaw:
-  private val f: Int => Id[String] = i => Id(i.toString)
+  property("Проверка sequence") {
+    forAll { (x: Option[Int]) =>
+      assertEquals(summon[Traverse[Id]].sequence[Option, Int](Id(x)), x.map(Id(_)))
+    }
+  }
 
   property("idTraverse должен удовлетворять законам Traverse") {
     forAll { (x: Int) =>
@@ -18,45 +22,37 @@ class TraverseSuite extends ScalaCheckSuite, TraverseLaw:
 
   property("tuple2Traverse должен удовлетворять законам Traverse") {
     forAll { (x: Int) =>
-      val actual = traverse[[X] =>> (X, X), Id, Int, String]((x, x), f)
-      assertEquals(actual, Id(x.toString, x.toString))
+      checkTraverseLaw[[X] =>> (X, X), Option, List, Int, String, Boolean]((x, x))
     }
   }
 
   property("tuple3Traverse должен удовлетворять законам Traverse") {
     forAll { (x: Int) =>
-      val actual = traverse[[X] =>> (X, X, X), Id, Int, String]((x, x, x), f)
-      assertEquals(actual, Id(x.toString, x.toString, x.toString))
+      checkTraverseLaw[[X] =>> (X, X, X), Option, List, Int, String, Boolean]((x, x, x))
     }
   }
 
   property("optionTraverse должен удовлетворять законам Traverse") {
     forAll { (x: Option[Int]) =>
-      val actual = traverse[Option, Id, Int, String](x, f)
-      assertEquals(actual, Id(x.map(_.toString)))
+      checkTraverseLaw[Option, Id, List, Int, String, Boolean](x)
     }
   }
 
   property("listTraverse должен удовлетворять законам Traverse") {
     forAll { (x: List[Int]) =>
-      val actual = traverse[List, Id, Int, String](x, f)
-      assertEquals(actual, Id(x.map(_.toString)))
+      checkTraverseLaw[List, Id, Option, Int, String, Boolean](x)
     }
   }
 
   property("treeTraverse должен удовлетворять законам Traverse") {
     forAll { (x: Int, list: List[Int]) =>
       val tree = Tree(x, list.map(a => Tree(a, Nil)))
-      val actual = traverse[Tree, Id, Int, String](tree, f)
-      val expected = Tree(x.toString, list.map(a => Tree(a.toString, Nil)))
-      assertEquals(actual, Id(expected))
+      checkTraverseLaw[Tree, Option, List, Int, String, Boolean](tree)
     }
   }
 
   property("mapTraverse должен удовлетворять законам Traverse") {
     forAll { (map: Map[String, Int]) =>
-      val actual = traverse[[X] =>> Map[String, X], Id, Int, String](map, f)
-      val expected = map.view.mapValues(_.toString).toMap
-      assertEquals(actual, Id(expected))
+      checkTraverseLaw[[X] =>> Map[String, X], Option, List, Int, String, Boolean](map)
     }
   }

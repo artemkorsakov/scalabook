@@ -7,23 +7,20 @@ import typeclass.monad.Functor.{map, given}
 import typeclass.monad.Traverse.traverse
 import typeclass.monoid.Monoid
 
-trait TraverseLaw extends FoldableLaw, FunctorLaw:
+trait TraverseLaw extends FunctorLaw:
   def checkTraverseLaw[F[_]: Traverse, G[_]: Applicative, H[_]: Applicative, A, B, C](
       fa: F[A]
   )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B)(using Monoid[Vector[A]]): Unit =
-    checkFoldableLaw[F, A](fa)
     checkFunctorLaw[F, A, B, C](fa)
 
     val a2GB: A => G[B] = a => unit(f(a))
     val a2HB: A => H[B] = a => unit(f(a))
     val b2HC: B => H[C] = b => unit(g(b))
 
-    // Обход эффекта [[scalaz.Id]] эквивалентен `Functor#map`
-    // Traversal through the [[scalaz.Id]] effect is equivalent to `Functor#map`
+    // Обход Id эквивалентен `Functor#map`
     assertEquals(traverse[F, Id, A, B](fa, a => Id(f(a))).value, fa.map(f))
 
     // Два последовательно зависимых эффекта могут быть объединены в один, их композицию
-    // Two sequentially dependent effects can be fused into one, their composition
     val optFb: G[F[B]] = traverse[F, G, A, B](fa, a2GB)
     val optListFc1: G[H[F[C]]] =
       map[G, F[B], H[F[C]]](optFb, fb => traverse[F, H, B, C](fb, b2HC))
@@ -31,12 +28,10 @@ trait TraverseLaw extends FoldableLaw, FunctorLaw:
       traverse[F, [X] =>> G[H[X]], A, C](fa, a => map[G, B, H[C]](unit(f(a)), b2HC))
     assertEquals(optListFc1, optListFc2)
 
-    // Обход с помощью функции «точка» аналогичен прямому применению функции «точка».
-    // Traversal with the `point` function is the same as applying the `point` function directly
+    // Обход с помощью функции unit аналогичен прямому применению функции unit
     assertEquals(traverse[F, G, A, A](fa, a => unit(a)), unit[G, F[A]](fa))
 
-    // Два независимых эффекта могут быть объединены в один эффект, их произведение.
-    // Two independent effects can be fused into a single effect, their product.
+    // Два независимых эффекта могут быть объединены в один эффект, их произведение
     type GH[A] = (G[A], H[A])
     val t1: GH[F[B]] = (traverse[F, G, A, B](fa, a2GB), traverse[F, H, A, B](fa, a2HB))
     val t2: GH[F[B]] = traverse[F, GH, A, B](fa, a => (a2GB(a), a2HB(a)))

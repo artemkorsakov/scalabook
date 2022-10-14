@@ -47,12 +47,12 @@ class TraverseSuite extends ScalaCheckSuite, TraverseLaw:
   property("treeTraverse должен удовлетворять законам Traverse") {
     forAll { (x: Int, list: List[Int]) =>
       val tree = Tree(x, list.map(a => Tree(a, Nil)))
-      checkTraverseLaw[Tree, Option, List, Int, String, Boolean](tree)
+      checkTraverseLaw[Tree, Id, Option, Int, String, Boolean](tree)
     }
   }
 
   property("mapTraverse должен удовлетворять законам Traverse") {
     forAll { (map: Map[String, Int]) =>
-      checkTraverseLaw[[X] =>> Map[String, X], Option, List, Int, String, Boolean](map)
+      checkTraverseLaw[[X] =>> Map[String, X], Id, Option, Int, String, Boolean](map)
     }
   }

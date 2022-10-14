@@ -6,7 +6,10 @@
 
 `Traversable` должен удовлетворять следующим законам:
 
-- Обход Id эквивалентен `Functor#map`: `traverse[F, Id, A, B](fa, a => Id(f(a))).value == fa.map(f)`
+- Обход Id эквивалентен `Functor#map`:
+  ```scala
+  traverse[F, Id, A, B](fa, a => Id(f(a))).value == fa.map(f)
+  ```
 - Два последовательно зависимых эффекта могут быть объединены в один, их композицию:
   ```scala
   val optFb: G[F[B]] = traverse[F, G, A, B](fa, a => unit(f(a)))
@@ -17,7 +20,9 @@
   optListFc1 == optListFc2
   ```
 - Обход с помощью функции `unit` аналогичен прямому применению функции `unit`:
-  `traverse[F, G, A, A](fa, a => unit(a)) == unit[G, F[A]](fa)`
+  ```scala
+  traverse[F, G, A, A](fa, a => unit(a)) == unit[G, F[A]](fa)
+  ```
 - Два независимых эффекта могут быть объединены в один эффект, их произведение
   ```scala
   type GH[A] = (G[A], H[A])

@@ -6,6 +6,26 @@
 
 `Traversable` должен удовлетворять следующим законам:
 
+- Обход Id эквивалентен `Functor#map`: `traverse[F, Id, A, B](fa, a => Id(f(a))).value == fa.map(f)`
+- Два последовательно зависимых эффекта могут быть объединены в один, их композицию:
+  ```scala
+  val optFb: G[F[B]] = traverse[F, G, A, B](fa, a => unit(f(a)))
+  val optListFc1: G[H[F[C]]] =
+    map[G, F[B], H[F[C]]](optFb, fb => traverse[F, H, B, C](fb, b => unit(g(b))))
+  val optListFc2: G[H[F[C]]] =
+    traverse[F, [X] =>> G[H[X]], A, C](fa, a => map[G, B, H[C]](unit(f(a)), b => unit(g(b))))
+  optListFc1 == optListFc2
+  ```
+- Обход с помощью функции `unit` аналогичен прямому применению функции `unit`:
+  `traverse[F, G, A, A](fa, a => unit(a)) == unit[G, F[A]](fa)`
+- Два независимых эффекта могут быть объединены в один эффект, их произведение
+  ```scala
+  type GH[A] = (G[A], H[A])
+  val t1: GH[F[B]] = (traverse[F, G, A, B](fa, a => unit(f(a))), traverse[F, H, A, B](fa, a => unit(f(a))))
+  val t2: GH[F[B]] = traverse[F, GH, A, B](fa, a => (unit(f(a)), unit(f(a))))
+  t1 == t2
+  ```
+
 
 ### Примеры
 
@@ -15,7 +35,13 @@
 trait Traverse[F[_]] extends Functor[F], Foldable[F]:
   self =>
 
-  extension [A](fa: F[A]) def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[B]]
+  extension [A](fa: F[A])
+    def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[B]]
+
+    override def map[B](f: A => B): F[B] = traverse(a => Id(f(a))).value
+
+    override def foldRight[B](init: B)(f: (A, B) => B): B =
+      traverse(a => State[B, A]((b: B) => (f(a, b), a))).run(init)._1
 
   def sequence[G[_]: Applicative, A](fga: F[G[A]]): G[F[A]] =
     fga.traverse(ga => ga)
@@ -26,13 +52,8 @@ trait Traverse[F[_]] extends Functor[F], Foldable[F]:
 ```scala
 case class Id[A](value: A)
 
-given idTraverse: Traverse[Id] with
+given Traverse[Id] with
   extension [A](fa: Id[A])
-    override def map[B](f: A => B): Id[B] = Id(f(fa.value))
-
-    override def foldRight[B](init: B)(f: (A, B) => B): B =
-      f(fa.value, init)
-
     override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Id[B]] =
       f(fa.value).map(b => Id(b))
 ```
@@ -40,28 +61,15 @@ given idTraverse: Traverse[Id] with
 ##### [Кортеж](../../scala/collections/tuple) от двух и более элементов
 
 ```scala
-given tuple2Traverse: Traverse[[X] =>> (X, X)] with
+given Traverse[[X] =>> (X, X)] with
   extension [A](fa: (A, A))
-    override def map[B](f: A => B): (B, B) = (f(fa._1), f(fa._2))
-
-    override def foldRight[B](init: B)(f: (A, B) => B): B =
-      f(fa._1, f(fa._2, init))
-
     override def traverse[G[_]: Applicative, B](f: A => G[B]): G[(B, B)] =
       val g = summon[Applicative[G]]
       val func: G[B => B => (B, B)] = g.unit(b1 => b2 => (b1, b2))
       g.apply(g.apply(func)(f(fa._1)))(f(fa._2))
-      
-given tuple3Traverse: Traverse[[X] =>> (X, X, X)] with
+
+given Traverse[[X] =>> (X, X, X)] with
   extension [A](fa: (A, A, A))
-    override def map[B](f: A => B): (B, B, B) = (f(fa._1), f(fa._2), f(fa._3))
-
-    override def foldRight[B](init: B)(f: (A, B) => B): B =
-      val (a0, a1, a2) = fa
-      val b0 = f(a2, init)
-      val b1 = f(a1, b0)
-      f(a0, b1)
-
     override def traverse[G[_]: Applicative, B](f: A => G[B]): G[(B, B, B)] =
       val g = summon[Applicative[G]]
       val func: G[B => B => B => (B, B, B)] = g.unit(b1 => b2 => b3 => (b1, b2, b3))
@@ -71,18 +79,8 @@ given tuple3Traverse: Traverse[[X] =>> (X, X, X)] with
 ##### [Option](../../scala/fp/functional-error-handling)
 
 ```scala
-given optionTraverse: Traverse[Option] with
+given Traverse[Option] with
   extension [A](fa: Option[A])
-    override def map[B](f: A => B): Option[B] =
-      fa match
-        case Some(a) => Some(f(a))
-        case None    => None
-
-    override def foldRight[B](init: B)(f: (A, B) => B): B =
-      fa match
-        case Some(a) => f(a, init)
-        case None    => init
-
     override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Option[B]] =
       fa match
         case Some(a) => f(a).map(Some(_))
@@ -92,13 +90,8 @@ given optionTraverse: Traverse[Option] with
 ##### [Последовательность](../../scala/collections)
 
 ```scala
-given listTraverse: Traverse[List] with
+given Traverse[List] with
   extension [A](fa: List[A])
-    override def map[B](f: A => B): List[B] = fa.map(f)
-
-    override def foldRight[B](init: B)(f: (A, B) => B): B =
-      fa.foldRight(init)(f)
-      
     override def traverse[G[_]: Applicative, B](f: A => G[B]): G[List[B]] =
       val g = summon[Applicative[G]]
       fa.foldRight(g.unit(List[B]()))((a, acc) => f(a).map2(acc)(_ :: _))
@@ -111,14 +104,8 @@ given listTraverse: Traverse[List] with
 ```scala
 case class Tree[+A](head: A, tail: List[Tree[A]])
 
-given treeTraverse: Traverse[Tree] with
+given Traverse[Tree] with
   extension [A](ta: Tree[A])
-    override def map[B](f: A => B): Tree[B] =
-      Tree(f(ta.head), ta.tail.map(tailTree => tailTree.map(f)))
-
-    override def foldRight[B](init: B)(f: (A, B) => B): B =
-      ta.tail.foldRight(f(ta.head, init))((treeA, b) => treeA.foldRight(b)(f))
-
     override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Tree[B]] =
       f(ta.head).map2(ta.tail.traverse(a => a.traverse(f)))(Tree(_, _))
 
@@ -132,12 +119,6 @@ tree.traverse(a => Id(a + 1))
 ```scala
 given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
   extension [A](m: Map[K, A])
-    override def map[B](f: A => B): Map[K, B] =
-      m.view.mapValues(f).toMap
-
-    override def foldRight[B](init: B)(f: (A, B) => B): B =
-      m.foldRight(init) { case ((_, a), b) => f(a, b) }
-
     override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Map[K, B]] =
       m.foldLeft(summon[Applicative[G]].unit(Map.empty[K, B])) { case (acc, (k, a)) =>
         acc.map2(f(a))((m, b) => m + (k -> b))

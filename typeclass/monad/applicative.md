@@ -12,9 +12,9 @@
 - Interchange: `apply(f)(unit(a)) == apply(unit((f: A => B) => f(a)))(f)`
 
 
-### Примеры
+## Примеры
 
-#### Описание 
+### Описание 
 
 ```scala
 trait Applicative[F[_]] extends Apply[F] with InvariantApplicative[F] :
@@ -32,7 +32,7 @@ trait Applicative[F[_]] extends Apply[F] with InvariantApplicative[F] :
 ```
 
 
-#### Tuple applicative
+### Tuple applicative
 
 Как и монады, аппликативные функторы замкнуты относительно произведений;
 поэтому два независимых аппликативных эффекта обычно могут быть слиты в один, их продукт.
@@ -47,7 +47,7 @@ given tupleApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>
     (summon[Applicative[F]].apply(fab._1)(fa._1), summon[Applicative[G]].apply(fab._2)(fa._2))
 ```
 
-#### Composite Applicative
+### Composite Applicative
 
 В отличие от монад, аппликативные функторы также закрыты по композиции;
 поэтому два последовательно зависимых аппликативных эффекта обычно могут быть объединены в один.
@@ -69,7 +69,7 @@ given compositeApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X
 Тот факт, что можно составлять аппликативы, и они остаются аппликативными, очень полезен.
 
 
-#### "Обертка"
+### "Обертка"
 
 ```scala
 case class Id[A](value: A)
@@ -80,7 +80,7 @@ given idApplicative: Applicative[Id] with
   override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab.value(fa.value))
 ```
 
-#### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../scala/fp/functional-error-handling)
 
 ```scala
 given optionApplicative: Applicative[Option] with
@@ -92,7 +92,7 @@ given optionApplicative: Applicative[Option] with
       case _                     => None
 ```
 
-#### [Последовательность](../../scala/collections)
+### [Последовательность](../../scala/collections)
 
 ```scala
 given listApplicative: Applicative[List] with
@@ -102,7 +102,7 @@ given listApplicative: Applicative[List] with
     fab.flatMap { aToB => fa.map(aToB) }
 ```
 
-#### [Either](../../fp/handling-errors)
+### [Either](../../fp/handling-errors)
 
 ```scala
 given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
@@ -115,7 +115,7 @@ given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
       case (_, Left(l))          => Left(l)
 ```
 
-#### [Writer](../../fp/writer) - функциональный журнал
+### [Writer](../../fp/writer) - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))
@@ -138,7 +138,7 @@ given writerApplicative[W](using monoid: Monoid[W]): Applicative[[x] =>> Writer[
     }
 ```
 
-#### [State](../../fp/state) - функциональное состояние
+### [State](../../fp/state) - функциональное состояние
 
 ```scala
 case class State[S, +A](run: S => (S, A))
@@ -155,7 +155,7 @@ given stateApplicative[S]: Applicative[[x] =>> State[S, x]] with
     }
 ```
 
-#### Nested
+### Nested
 
 ```scala
 final case class Nested[F[_], G[_], A](value: F[G[A]])
@@ -176,7 +176,7 @@ given nestedApplicative[F[_], G[_]](using
     Nested(fgb)
 ```
 
-#### IO
+### IO
 
 ```scala
 final case class IO[R](run: () => R)
@@ -192,7 +192,7 @@ given ioApplicative: Applicative[IO] with
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FApplicativeSuite.scala)
 
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._

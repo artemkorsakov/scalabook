@@ -136,8 +136,8 @@ given tupleApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>
 #### Composite Applicative
 
 В отличие от монад, аппликативные функторы также закрыты по композиции; 
-поэтому два последовательно зависимых аппликативных эффекта обычно могут быть объединены в один, их состав. 
-Это называется композицией в `Applicative`:
+поэтому два последовательно зависимых аппликативных эффекта обычно могут быть объединены в один. 
+Это называется композицией над `Applicative`:
 
 ```scala
 given compositeApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>> F[G[X]]] with

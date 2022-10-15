@@ -15,3 +15,4 @@ final case class NonEmptyList[+A](head: A, tail: List[A])
 
 **References:**
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Validation.html#NonEmptyList)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/NonEmptyList.html)

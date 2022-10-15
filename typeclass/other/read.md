@@ -3,7 +3,7 @@
 `Read` — это класс типов, противоположный `Show`. 
 Функция `read` принимает строку и возвращает тип, который является членом `Read`.
 
-##### Описание
+## Описание
 
 ```scala
 trait Read[F]:
@@ -13,5 +13,6 @@ trait Read[F]:
 
 ---
 
-**References:**
+## References
+
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Read.html)

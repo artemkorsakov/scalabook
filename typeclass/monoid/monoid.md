@@ -9,9 +9,7 @@
 
 Также говорится, что _M — моноид относительно +_.
 
-### Примеры
-
-##### Описание 
+## Описание 
 
 ```scala
 trait Semigroup[A]:
@@ -21,7 +19,9 @@ trait Monoid[A] extends Semigroup[A]:
   def empty: A
 ```
 
-##### Числа относительно сложения с 0
+## Примеры
+
+### Числа относительно сложения с 0
 
 ```scala
 given sumMonoidInstance: Monoid[Int] with
@@ -29,7 +29,7 @@ given sumMonoidInstance: Monoid[Int] with
   def combine(x: Int, y: Int): Int = x + y
 ```
 
-##### Числа относительно умножения с 1
+### Числа относительно умножения с 1
 
 ```scala
 given productMonoidInstance: Monoid[Int] with
@@ -37,7 +37,7 @@ given productMonoidInstance: Monoid[Int] with
   def combine(x: Int, y: Int): Int = x * y
 ```
 
-##### Строки
+### Строки
 
 ```scala
 given stringMonoidInstance: Monoid[String] with
@@ -45,7 +45,7 @@ given stringMonoidInstance: Monoid[String] with
   def combine(x: String, y: String): String = x + y
 ```
 
-##### [Последовательность](../../scala/collections)
+### [Последовательность](../../scala/collections)
 
 ```scala
 given listMonoidInstance[T]: Monoid[List[T]] with
@@ -53,7 +53,7 @@ given listMonoidInstance[T]: Monoid[List[T]] with
   def combine(x: List[T], y: List[T]): List[T] = x ++ y
 ```
 
-##### [Кортеж](../../scala/collections/tuple) от двух и более моноидов
+### [Кортеж](../../scala/collections/tuple) от двух и более моноидов
 
 ```scala
 given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): Monoid[(A, B)] with
@@ -61,7 +61,7 @@ given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): 
   def combine(x: (A, B), y: (A, B)): (A, B) = (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
 ```
 
-##### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../scala/fp/functional-error-handling)
 
 `Option` является моноидом, если его параметр типа - полугруппа, например:
 
@@ -77,13 +77,14 @@ given optionMonoidInstance[A: Semigroup]: Monoid[Option[A]] with
       case (None, None)         => None
 ```
 
+## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FMonoid.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FMonoidSuite.scala)
 
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._
@@ -95,7 +96,8 @@ mzero[List[Int]]             // List()
 
 ---
 
-**References:**
+## References
+
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monoid.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monoid.html)

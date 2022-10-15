@@ -1,10 +1,10 @@
 # Группа Monoid
 
-### Схема
+## Схема
 
 ![monoid](https://gitflic.ru/project/artemkorsakov/scalabook/blob/raw?file=images%2Fmonoid.png&commit=6f2b45d150b726462e97c7f2f09813bed28adf7e)
 
-### Использование
+## Использование
 
 Моноиды обычно используются для сворачивания последовательностей. 
 Например, вот как можно посчитать произведение чисел:
@@ -44,8 +44,7 @@ trait Semigroup[A]:
 ```
 
 
-
-### Исходный код группы
+## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid&plain=1)
 
@@ -53,5 +52,6 @@ trait Semigroup[A]:
 
 ---
 
-**References:**
+## References
+
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/sum+function.html)

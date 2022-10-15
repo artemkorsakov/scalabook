@@ -4,6 +4,6 @@
 
 ---
 
-**References:**
+## References
 
 - [Scalaz](https://scalaz.github.io/7/)

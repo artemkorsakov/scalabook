@@ -7,9 +7,7 @@ _Band_ — это полугруппа, которая также являетс
 - Associativity (ассоциативность): `(x + y) + z = x + (y + z)`
 - Idempotency (идемпотентность): для любых `a ∈ M` такое, что `a + a = a`
 
-### Примеры
-
-##### Описание
+## Описание
 
 ```scala
 trait Semigroup[A]:
@@ -18,7 +16,9 @@ trait Semigroup[A]:
 trait Band[A] extends Semigroup[A]
 ```
 
-##### Множества
+## Примеры
+
+### Множества
 
 Некоторые операции над множествами являются идемпотентными: объединение, пересечение и т.п.
 Например, объединение множеств образуют `Band`:
@@ -28,6 +28,7 @@ given setBandInstance[A]: Band[Set[A]] =
   (x: Set[A], y: Set[A]) => x ++ y
 ```
 
+## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FBand.scala&plain=1)
 
@@ -36,5 +37,6 @@ given setBandInstance[A]: Band[Set[A]] =
 
 ---
 
-**References:**
+## References
+
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Band.html)

@@ -5,9 +5,7 @@ _IdempotentMonoid_ — это моноид, который также являе
 
 `IdempotentMonoid` должен удовлетворять законам своих "родителей": `Monoid`, `Band`, `Semigroup`.
 
-### Примеры
-
-##### Описание
+## Описание
 ```scala
 trait Semigroup[A]:
   def combine(x: A, y: A): A
@@ -20,7 +18,9 @@ trait Band[A] extends Semigroup[A]
 trait IdempotentMonoid[A] extends Monoid[A], Band[A]
 ```
 
-##### Множества
+## Примеры
+
+### Множества
 
 Некоторые операции над множествами являются идемпотентными: объединение, пересечение и т.п.
 Например, объединение множеств образуют `IdempotentMonoid`:
@@ -31,6 +31,7 @@ given setIdempotentMonoidInstance[A]: IdempotentMonoid[Set[A]] with
   override def combine(x: Set[A], y: Set[A]): Set[A] = x ++ y
 ```
 
+## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FIdempotentMonoid.scala&plain=1)
 
@@ -39,4 +40,4 @@ given setIdempotentMonoidInstance[A]: IdempotentMonoid[Set[A]] with
 
 ---
 
-**References:**
+## References

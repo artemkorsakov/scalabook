@@ -1,6 +1,6 @@
 # Monads
 
-### Functor
+## Functor
 
 [Функтор](../typeclass/monad/functor) — это преобразование из категории `A` в категорию `B`.
 Такие преобразования часто изображаются стрелкой: `A -> B` (или через метод `map`).
@@ -13,13 +13,13 @@ trait Functor[F[_]]:
     def map[B](f: A => B): F[B]
 ```
 
-#### Законы функтора
+### Законы функтора
 
 Функтор должен следовать нескольким законам:
 - Identity (тождественность): `x.map(a => a) == x`.
 - Composition (композиция): `x.map(f).map(g) == x.map(g(f(_)))`.
 
-#### Свойства функтора
+### Свойства функтора
 
 Функтор `F[(A, B)]` можно «распределить» по паре, чтобы получить `(F[A], F[B])`:
 
@@ -35,7 +35,7 @@ trait Functor[F[_]]:
 Эта универсальная функция распаковки работает с любым функтором! 
 
 
-### Applicative
+## Applicative
 
 [Applicative](../typeclass/monad/applicative) расширяет `Functor` и позволяет работать с несколькими «ящиками».
 В аппликативных функторах примитивами являются `unit` и `map2`.
@@ -53,15 +53,15 @@ trait Applicative[F[_]] extends Functor[F]:
 
 `map` можно реализовать с помощью `unit` и `map2`, что говорит о том, что все `Applicative` являются функторами.
 
-#### Законы Applicative
+### Законы Applicative
 
 Для `Applicative` должны соблюдаться следующие законы:
 - `map(apply(x))(f) == apply(f(x))`
 - `map2(apply(x), apply(y)) == apply((x, y))`
 
-#### Виды Applicative
+### Виды Applicative
 
-##### Applicative с `unit` и `map2`
+#### Applicative с `unit` и `map2`
 
 `apply` и `map` могут быть выражены так:
 
@@ -79,7 +79,7 @@ trait Applicative[F[_]] extends Functor[F]:
     fab.map2(fa)((f, a) => f(a))
 ```
 
-##### Applicative с `unit` и `apply`
+#### Applicative с `unit` и `apply`
 
 `map2` и `map` могут быть выражены так:
 
@@ -97,7 +97,7 @@ trait Applicative[F[_]] extends Functor[F]:
       apply(unit(f))(fa)
 ```
 
-#### Комбинаторы Applicative
+### Комбинаторы Applicative
 
 `Applicative` определяет некоторые комбинаторы:
 
@@ -116,13 +116,13 @@ def product[A, B](fa: F[A], fb: F[A]): F[(A,B)] =
 ```
 
 
-### Monad
+## Monad
 
 [Монада](../typeclass/monad/monad) - это [Applicative](../typeclass/monad/applicative) (а значит и [Functor](../typeclass/monad/functor))
 с дополнительной функцией: `flatten` (сведение: `F[F[A]] -> F[A]`).
 Что позволяет определить `flatMap` — `map`, за которой следует `flatten`.
 
-#### Законы монады
+### Законы монады
 
 Для `Monad` должны соблюдаться следующие законы (помимо законов Функтора):
 - identities:
@@ -131,9 +131,9 @@ def product[A, B](fa: F[A], fb: F[A]): F[(A,B)] =
 - associativity на flatMap:
     - `flatMap(flatMap(m)(f))(g) == flatMap(m) { x => flatMap(f(x))(g) }`
 
-#### Виды монад
+### Виды монад
 
-##### Monad с `flatMap` и `unit`
+#### Monad с `flatMap` и `unit`
 
 Монада может быть определена с помощью `flatMap` и `unit`.
 В этом случае `map` и `map2` будут определяться так:
@@ -152,7 +152,7 @@ trait Monad[F[_]] extends Functor[F]:
       fa.flatMap(a => fb.map(b => f(a, b)))
 ```
 
-##### Monad с `compose` и `unit`
+#### Monad с `compose` и `unit`
 
 Монада может быть определена с помощью `compose` и `unit`.
 В этом случае `flatMap` (и через неё остальные операции) будет определяться так:
@@ -175,7 +175,7 @@ trait Monad[F[_]] extends Functor[F]:
 - associativity:
   - `compose(compose(f, g), h) == compose(f, compose(g, h))`
 
-##### Monad с `map`, `join` и `unit`
+#### Monad с `map`, `join` и `unit`
 
 Монада может быть определена с помощью `map`, `join` и `unit`.
 В этом случае `flatMap` и `compose` могут быть определены так:
@@ -199,9 +199,9 @@ trait Monad[F[_]] extends Functor[F]:
     a => f(a).map(g).join      
 ```
 
-#### Примеры монад
+### Примеры монад
 
-##### Option
+#### Option
 
 ```scala
 given optionMonad: Monad[Option] with
@@ -213,7 +213,7 @@ given optionMonad: Monad[Option] with
       case None => None
 ```
 
-##### List
+#### List
 
 ```scala
 given listMonad: Monad[List] with
@@ -224,7 +224,7 @@ given listMonad: Monad[List] with
       fa.flatMap(f)
 ```
 
-#### Комбинаторы монад
+### Комбинаторы монад
 
 Монада определяет некоторые комбинаторы:
 
@@ -246,5 +246,6 @@ def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
 
 ---
 
-**References:**
+## References
+
 - [Functional Programming in Scala, Second Edition, Chapter 11](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)

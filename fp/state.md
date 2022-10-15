@@ -23,7 +23,7 @@ object State:
 Однако за пределами определяющей области видимости — например, в другом пакете — эта эквивалентность неизвестна, 
 и, следовательно, нужны такие преобразования. 
 
-### Функции общего назначения, описывающие шаблоны программ с отслеживанием состояния
+## Функции общего назначения, описывающие шаблоны программ с отслеживанием состояния
 
 ```scala
 object State:
@@ -60,7 +60,7 @@ state.map(str => s"Number: $str").run(5)
 // res1: Tuple2[String, Int] = ("Number: 5", 6)
 ```
 
-### Резюме
+## Резюме
 
 - API с отслеживанием состояния можно смоделировать как чистые функции, 
 которые преобразуют входное состояние в выходное при вычислении значения.
@@ -70,5 +70,6 @@ state.map(str => s"Number: $str").run(5)
 
 ---
 
-**References:**
+## References
+
 - [Functional Programming in Scala, Second Edition, Chapter 6](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)

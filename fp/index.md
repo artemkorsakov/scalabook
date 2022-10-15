@@ -56,7 +56,7 @@ sum(List(1, 2, 3))
 которое определено исключительно по значению `a`. 
 Любое изменение состояния внутреннего или внешнего процесса не имеет отношения к вычислению результата `f(a)`.
 
-#### Функция высшего порядка
+## Функция высшего порядка
 
 [Функция высшего порядка (_Higher-Order Function_ - HOF)](../scala/functions/hofs)
 часто определяется как функция, которая
@@ -99,7 +99,7 @@ formatResult("factorial", 7, factorial)
 // res4: String = "The factorial of 7 is 5040."
 ```
 
-#### Анонимная функция
+## Анонимная функция
 
 При использовании HOF часто удобно иметь возможность вызывать эти функции 
 с помощью [анонимных функций](../scala/functions/anonymous) или функциональных литералов, 
@@ -127,7 +127,7 @@ findFirst(Array(7, 9, 13), (x: Int) => x == 9)
 
 Синтаксис `(x: Int) => x == 9` представляет собой литерал функции или анонимную функцию.
 
-#### Каррирование
+## Каррирование
 
 [Каррированием](https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%80%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5) 
 называется преобразование функции от многих аргументов в набор функций, каждая из которых является функцией от одного аргумента.
@@ -148,6 +148,7 @@ def compose[A, B, C](f: B => C, g: A => B): A => C =
 
 ---
 
-**References:**
+## References
+
 - [Functional Programming by Alexander Alvin](https://alvinalexander.com/photos/functional-programming-simplied-free-pdf-preview/)
 - [Functional Programming in Scala, Second Edition, Chapter 1-2](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)

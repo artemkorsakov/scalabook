@@ -22,9 +22,9 @@ trait Monoid[A]:
 - _associativity_: `combine(combine(x, y), z) == combine(x, combine(y, z))`
 - _identity_: существует `e ∈ M` такое, что `combine(x, empty) == combine(empty, x) == x`
 
-### Примеры моноидов
+## Примеры моноидов
 
-##### Множество - `String`, операция - конкатенация, пустой элемент - пустая строка
+### Множество - `String`, операция - конкатенация, пустой элемент - пустая строка
 
 ```scala
 val stringMonoid: Monoid[String] = new:
@@ -34,7 +34,7 @@ stringMonoid.combine("ab", "cd")
 // res0: String = "abcd"
 ```
 
-##### Множество - `List`, операция - конкатенация, пустой элемент - `Nil`
+### Множество - `List`, операция - конкатенация, пустой элемент - `Nil`
 
 ```scala
 def listMonoid[A]: Monoid[List[A]] = new:
@@ -44,7 +44,7 @@ listMonoid.combine(List(1, 2), List(3, 4))
 // res1: List[Int] = List(1, 2, 3, 4)
 ```
 
-##### Множество - `Int`, операция - умножение, пустой элемент - 1
+### Множество - `Int`, операция - умножение, пустой элемент - 1
 
 ```scala
 val intMultiplication: Monoid[Int] = new:
@@ -54,7 +54,7 @@ intMultiplication.combine(5, 6)
 // res2: Int = 30 
 ```
 
-##### Множество - `Boolean`, операция - логическое И (`&&`), пустой элемент - `true`
+### Множество - `Boolean`, операция - логическое И (`&&`), пустой элемент - `true`
 
 ```scala
 val booleanAnd: Monoid[Boolean] = new:
@@ -64,7 +64,7 @@ booleanAnd.combine(true, false)
 // res3: Boolean = false
 ```
 
-### Использование моноидов
+## Использование моноидов
 
 Моноиды тесно связаны со списками.
 Например, вот как можно свернуть список, используя моноид:
@@ -122,7 +122,7 @@ List().foldLeft("loremipsumdolorsit")(_ + _)
 что называется сбалансированным сворачиванием (_balanced fold_) — 
 сначала строятся `"loremipsum"` и `"dolorsit"`, а затем они складываются вместе.
 
-### Foldable
+## Foldable
 
 Операция _fold_ позволяет агрегировать.
 Она берет начальный элемент и объединяет его с типом [_Foldable_](../typeclass/monad/foldable), 
@@ -174,7 +174,7 @@ trait Foldable[F[_]]:
 
 Поэтому при реализации `Foldable` достаточно переопределить, как минимум, один метод.
 
-### Операции с моноидами
+## Операции с моноидами
 
 Моноиды можно объединять: 
 если `A` и `B` - это моноиды, то кортеж `(A, B)` также является моноидом (и называется _продуктом_)
@@ -222,5 +222,6 @@ val mean = p(0) / p(1).toDouble
 
 ---
 
-**References:**
+## References
+
 - [Functional Programming in Scala, Second Edition, Chapter 10](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)

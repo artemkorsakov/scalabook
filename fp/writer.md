@@ -6,7 +6,7 @@
 final case class Writer[W, A](run: () => (W, A))
 ```
 
-### Функции общего назначения, описывающие шаблоны программ с ведением журнала
+## Функции общего назначения, описывающие шаблоны программ с ведением журнала
 
 ```scala
 object Writer:
@@ -36,5 +36,6 @@ unit[String, Int](42).run()
 
 ---
 
-**References:**
+## References
+
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Writer.html)

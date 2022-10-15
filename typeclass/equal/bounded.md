@@ -10,7 +10,7 @@
 - любой `x` из множества не превышает `max`: `x <= max`
 - любой `x` из множества не меньше `min`: `x >= min`
 
-##### Описание
+## Описание
 
 ```scala
 trait Equal[F]:
@@ -32,5 +32,6 @@ trait Bounded[F] extends Order[F]:
 
 ---
 
-**References:**
+## References
+
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Bounded.html)

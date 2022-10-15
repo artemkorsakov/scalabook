@@ -17,7 +17,7 @@
 - для любого x, не равного `min`, его предыдущий элемент меньше или равен `x`: `x == min || pred(x) <= x`
 
 
-##### Описание
+## Описание
 
 ```scala
 trait Equal[F]:
@@ -38,7 +38,7 @@ trait Enum[F] extends Order[F]:
   def max: Option[F]
 ```
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._
@@ -56,7 +56,7 @@ Enum[Int].max  // Some(2147483647)
 
 ---
 
-**References:**
+## References
 
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Enum.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Enum.html)

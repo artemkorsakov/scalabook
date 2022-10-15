@@ -19,7 +19,7 @@
 
 Если есть преобразование `f: G => F`, то из `Equal[F]` можно получить `Equal[G]`.
 
-##### Описание
+## Описание
 
 ```scala
 trait Equal[F]:
@@ -31,7 +31,7 @@ trait Equal[F]:
     (a1: G, a2: G) => self.equal(f(a1), f(a2))
 ```
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._
@@ -43,7 +43,7 @@ List(1, 2, 3) =/= List(1, 2, 4) // true
 
 ---
 
-**References:**
+## References
 
 - [Scalaz](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Equal.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Equal.html)

@@ -19,7 +19,7 @@
   - `equal(f1, f2)` равно `true` тогда и только тогда, когда `order(f1, f2)` равно `Ordering.EQ`
 
 
-##### Описание
+## Описание
 
 ```scala
 trait Equal[F]: 
@@ -57,7 +57,7 @@ trait Order[F] extends Equal[F]:
     override def reverseOrder = self
 ```
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._
@@ -76,7 +76,7 @@ import Scalaz._
 
 ---
 
-**References:**
+## References
 
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Order.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Order.html)

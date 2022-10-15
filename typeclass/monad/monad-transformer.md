@@ -103,10 +103,8 @@ given stateTMonadTransformer[M[_], S](using outerMonad: Monad[M]): MonadTransfor
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FMonadTransformerSuite.scala)
 
 
-### Реализации трансформеров в различных библиотеках
-
-
 ---
 
 **References:**
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
+- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad+transformers.html)

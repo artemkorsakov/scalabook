@@ -15,7 +15,7 @@ trait MonadTransformer[T[_[_], _], M[_]](using mMonad: Monad[M], tMonad: Monad[[
 ##### "Обертка"
 
 ```scala
-final case class IdT[A, F[_]](runIdT: F[Id[A]])
+final case class IdT[M[_], A](run: M[Id[A]])
 
 given idtMonad[M[_]](using outerMonad: Monad[M]): Monad[[X] =>> IdT[M, X]] with
   override def unit[A](a: => A): IdT[M, A] =

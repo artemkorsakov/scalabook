@@ -50,6 +50,12 @@ class ApplicativeSuite extends ScalaCheckSuite, ApplicativeLaw:
     }
   }
 
+  property("tupleApplicative должен удовлетворять законам Applicative") {
+    forAll { (x: Int) =>
+      checkApplicativeLaw[[X] =>> (Option[X], List[X]), Int, String, Boolean](x)
+    }
+  }
+
   property("nestedApplicative должен удовлетворять законам Applicative") {
     forAll { (x: Int) =>
       checkApplicativeLaw[[X] =>> Nested[Id, Option, X], Int, String, Boolean](x)

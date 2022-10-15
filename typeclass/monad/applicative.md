@@ -117,6 +117,22 @@ given stateApplicative[S]: Applicative[[x] =>> State[S, x]] with
     }
 ```
 
+##### Tuple applicative
+
+Как и монады, аппликативные функторы замкнуты относительно произведений; 
+поэтому два независимых идиоматических эффекта обычно могут быть слиты в один, их продукт.
+
+```scala
+given tupleApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>> (F[X], G[X])] with
+  type FG[A] = (F[A], G[A])
+
+  override def unit[A](a: => A): FG[A] = (summon[Applicative[F]].unit(a), summon[Applicative[G]].unit(a))
+
+  override def apply[A, B](fab: FG[A => B])(fa: FG[A]): FG[B] =
+    (summon[Applicative[F]].apply(fab._1)(fa._1), summon[Applicative[G]].apply(fab._2)(fa._2))
+```
+
+
 ##### Composite Applicative
 
 ```scala

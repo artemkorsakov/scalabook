@@ -1,6 +1,7 @@
 # ApplicativePlus
 
-`ApplicativePlus` - это [`Applicative`](applicative) комбинированный с [`PlusEmpty`](plus-empty).
+`ApplicativePlus` - это моноидальный аппликативный функтор, 
+[`Applicative`](applicative) комбинированный с [`PlusEmpty`](plus-empty).
 
 `ApplicativePlus` должен удовлетворять законам своих родителей.
 

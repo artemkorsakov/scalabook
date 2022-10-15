@@ -31,6 +31,44 @@ trait Applicative[F[_]] extends Apply[F] with InvariantApplicative[F] :
       apply(apply(unit(f.curried))(fa))(fb)
 ```
 
+
+#### Tuple applicative
+
+Как и монады, аппликативные функторы замкнуты относительно произведений;
+поэтому два независимых аппликативных эффекта обычно могут быть слиты в один, их продукт.
+
+```scala
+given tupleApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>> (F[X], G[X])] with
+  type FG[A] = (F[A], G[A])
+
+  override def unit[A](a: => A): FG[A] = (summon[Applicative[F]].unit(a), summon[Applicative[G]].unit(a))
+
+  override def apply[A, B](fab: FG[A => B])(fa: FG[A]): FG[B] =
+    (summon[Applicative[F]].apply(fab._1)(fa._1), summon[Applicative[G]].apply(fab._2)(fa._2))
+```
+
+#### Composite Applicative
+
+В отличие от монад, аппликативные функторы также закрыты по композиции;
+поэтому два последовательно зависимых аппликативных эффекта обычно могут быть объединены в один.
+Это называется композицией над `Applicative`:
+
+```scala
+given compositeApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>> F[G[X]]] with
+  override def unit[A](a: => A): F[G[A]] = summon[Applicative[F]].unit(summon[Applicative[G]].unit(a))
+
+  override def apply[A, B](fab: F[G[A => B]])(fa: F[G[A]]): F[G[B]] =
+    val applicativeF = summon[Applicative[F]]
+    val applicativeG = summon[Applicative[G]]
+    val tmp: F[G[A] => G[B]] = applicativeF.map(fab)(ga2b => applicativeG.apply(ga2b))
+    applicativeF.apply(tmp)(fa)
+```
+
+Произведение и композиция позволяют комбинировать идиоматические (аппликативные) вычисления двумя разными способами; 
+Обычно они называются параллельной и последовательной композицией соответственно. 
+Тот факт, что можно составлять аппликативы, и они остаются аппликативными, очень полезен.
+
+
 #### "Обертка"
 
 ```scala
@@ -115,39 +153,6 @@ given stateApplicative[S]: Applicative[[x] =>> State[S, x]] with
       val (s1, a) = fa.run(s0)
       (s1, aToB(a))
     }
-```
-
-#### Tuple applicative
-
-Как и монады, аппликативные функторы замкнуты относительно произведений; 
-поэтому два независимых идиоматических эффекта обычно могут быть слиты в один, их продукт.
-
-```scala
-given tupleApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>> (F[X], G[X])] with
-  type FG[A] = (F[A], G[A])
-
-  override def unit[A](a: => A): FG[A] = (summon[Applicative[F]].unit(a), summon[Applicative[G]].unit(a))
-
-  override def apply[A, B](fab: FG[A => B])(fa: FG[A]): FG[B] =
-    (summon[Applicative[F]].apply(fab._1)(fa._1), summon[Applicative[G]].apply(fab._2)(fa._2))
-```
-
-
-#### Composite Applicative
-
-В отличие от монад, аппликативные функторы также закрыты по композиции; 
-поэтому два последовательно зависимых аппликативных эффекта обычно могут быть объединены в один. 
-Это называется композицией над `Applicative`:
-
-```scala
-given compositeApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>> F[G[X]]] with
-  override def unit[A](a: => A): F[G[A]] = summon[Applicative[F]].unit(summon[Applicative[G]].unit(a))
-
-  override def apply[A, B](fab: F[G[A => B]])(fa: F[G[A]]): F[G[B]] =
-    val applicativeF = summon[Applicative[F]]
-    val applicativeG = summon[Applicative[G]]
-    val tmp: F[G[A] => G[B]] = applicativeF.map(fab)(ga2b => applicativeG.apply(ga2b))
-    applicativeF.apply(tmp)(fa)
 ```
 
 #### Nested

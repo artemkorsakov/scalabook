@@ -8,17 +8,17 @@
 - `isEmpty` от композиции двух функторов равно `true` тогда и только тогда, когда `isEmpty` от каждого функтора - `true`: 
   `isEmpty(f1) && isEmpty(f2) == isEmpty(plus(f1, f2))`
 
-
-### Примеры
-
-##### Описание
+  
+## Описание
 
 ```scala
 trait IsEmpty[F[_]] extends PlusEmpty[F]:
   def isEmpty[A](fa: F[A]): Boolean
 ```
 
-##### Связанный список
+## Примеры
+
+### Связанный список
 
 ```scala
 given IsEmpty[List] with
@@ -27,12 +27,14 @@ given IsEmpty[List] with
   override def empty[A]: List[A] = List.empty[A]
 ```
 
+## Исходный код
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FIsEmpty.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FIsEmptySuite.scala)
 
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._
@@ -46,6 +48,7 @@ summon[IsEmpty[List]].isEmpty(List.empty[Int]) // true
 
 ---
 
-**References:**
+## References
+
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/IsEmpty.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/MonadPlus.html)

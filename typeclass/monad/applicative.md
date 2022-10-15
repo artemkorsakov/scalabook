@@ -12,9 +12,7 @@
 - Interchange: `apply(f)(unit(a)) == apply(unit((f: A => B) => f(a)))(f)`
 
 
-## Примеры
-
-### Описание 
+## Описание 
 
 ```scala
 trait Applicative[F[_]] extends Apply[F] with InvariantApplicative[F] :
@@ -31,6 +29,7 @@ trait Applicative[F[_]] extends Apply[F] with InvariantApplicative[F] :
       apply(apply(unit(f.curried))(fa))(fb)
 ```
 
+## Примеры
 
 ### Tuple applicative
 
@@ -186,6 +185,7 @@ given ioApplicative: Applicative[IO] with
   override def apply[A, B](fab: IO[A => B])(fa: IO[A]): IO[B] = IO(() => fab.run()(fa.run()))
 ```
 
+## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FApplicative.scala&plain=1)
 

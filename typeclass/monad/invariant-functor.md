@@ -9,9 +9,8 @@
 
 Также известен как экспоненциальный функтор.
 
-### Примеры инвариантных функторов
 
-##### Описание инвариантного функтора
+## Описание инвариантного функтора
 
 ```scala
 trait InvariantFunctor[F[_]]:
@@ -19,7 +18,9 @@ trait InvariantFunctor[F[_]]:
     def xmap[B](f: A => B, g: B => A): F[B]
 ```
 
-##### "Обертка"
+## Примеры
+
+### "Обертка"
 
 ```scala
 case class Id[A](value: A)
@@ -29,6 +30,8 @@ given idInvariantFunctor: InvariantFunctor[Id] with
     override def xmap[B](f: A => B, g: B => A): Id[B] = Id(f(fa.value))
 ```
 
+## Исходный код
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FInvariantFunctor.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FInvariantFunctorSuite.scala)
@@ -36,5 +39,6 @@ given idInvariantFunctor: InvariantFunctor[Id] with
 
 ---
 
-**References:**
+## References
+
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/InvariantFunctor.html)

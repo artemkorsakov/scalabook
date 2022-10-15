@@ -14,9 +14,7 @@
 Синоним `join` - это `flatten`.
 
 
-### Примеры
-
-##### Описание
+## Описание
 
 ```scala
 trait Bind[F[_]] extends Apply[F]:
@@ -34,7 +32,9 @@ trait Bind[F[_]] extends Apply[F]:
     flatMap(fa)(a => fb.map(b => f(a, b)))
 ```
 
-##### "Обертка"
+## Примеры
+
+### "Обертка"
 
 ```scala
 case class Id[A](value: A)
@@ -48,7 +48,7 @@ given Bind[Id] with
       f(fa.value)
 ```
 
-##### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../scala/fp/functional-error-handling)
 
 ```scala
 given Bind[Option] with
@@ -64,13 +64,14 @@ given Bind[Option] with
         case None    => None
 ```
 
+## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FBind.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FBindSuite.scala)
 
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._
@@ -85,6 +86,7 @@ List(List(1, 2), List(3, 4)).join     // List(1, 2, 3, 4)
 
 ---
 
-**References:**
+## References
+
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bind.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad.html)

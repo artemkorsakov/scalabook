@@ -37,9 +37,7 @@
   ```
 
 
-### Примеры
-
-##### Описание 
+## Описание 
 
 ```scala
 trait Traverse[F[_]] extends Functor[F], Foldable[F]:
@@ -57,7 +55,9 @@ trait Traverse[F[_]] extends Functor[F], Foldable[F]:
     fga.traverse(ga => ga)
 ```
 
-##### "Обертка"
+## Примеры
+
+### "Обертка"
 
 ```scala
 case class Id[A](value: A)
@@ -68,7 +68,7 @@ given Traverse[Id] with
       f(fa.value).map(b => Id(b))
 ```
 
-##### [Кортеж](../../scala/collections/tuple) от двух и более элементов
+### [Кортеж](../../scala/collections/tuple) от двух и более элементов
 
 ```scala
 given Traverse[[X] =>> (X, X)] with
@@ -86,7 +86,7 @@ given Traverse[[X] =>> (X, X, X)] with
       g.apply(g.apply(g.apply(func)(f(fa._1)))(f(fa._2)))(f(fa._3))
 ```
 
-##### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../scala/fp/functional-error-handling)
 
 ```scala
 given Traverse[Option] with
@@ -97,7 +97,7 @@ given Traverse[Option] with
         case None    => summon[Applicative[G]].unit(None)
 ```
 
-##### [Последовательность](../../scala/collections)
+### [Последовательность](../../scala/collections)
 
 ```scala
 given Traverse[List] with
@@ -107,7 +107,7 @@ given Traverse[List] with
       fa.foldRight(g.unit(List[B]()))((a, acc) => f(a).map2(acc)(_ :: _))
 ```
 
-##### Дерево
+### Дерево
 
 В области видимости должны быть доступны `idApplicative` and `listTraverse`
 
@@ -124,7 +124,7 @@ tree.traverse(a => Id(a + 1))
 // val res0: Id[Tree[Int]] = Id(Tree(1,List(Tree(2,List(Tree(3,List()))))))
 ```
 
-##### [Map](../../scala/collections/maps)
+### [Map](../../scala/collections/maps)
 
 ```scala
 given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
@@ -135,12 +135,14 @@ given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
       }
 ```
 
+## Исходный код
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FTraverse.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FTraverseSuite.scala)
 
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._
@@ -154,7 +156,8 @@ List(1.some, 2.some).sequence                           // Some(List(1, 2))
 
 ---
 
-**References:**
+## References
+
 - [Tour of Scala](https://tourofscala.com/scala/traversable)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Traverse.html)

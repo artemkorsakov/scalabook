@@ -6,9 +6,8 @@
 
 Используется для получения класса типов продуктов и типов значений.
 
-### Примеры инвариантных Applicative
 
-##### Описание инвариантного Applicative
+## Описание инвариантного Applicative
 
 ```scala
 trait InvariantFunctor[F[_]]:
@@ -22,9 +21,12 @@ trait InvariantApplicative[F[_]] extends InvariantFunctor[F]:
       fa.xmap(f, g)
 ```
 
+## Исходный код
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FInvariantApplicative.scala&plain=1)
 
 ---
 
-**References:**
+## References
+
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/InvariantApplicative.html)

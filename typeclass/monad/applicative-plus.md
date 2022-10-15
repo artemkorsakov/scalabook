@@ -5,15 +5,16 @@
 
 `ApplicativePlus` должен удовлетворять законам своих родителей.
 
-### Примеры
 
-##### Описание
+## Описание
 
 ```scala
 trait ApplicativePlus[F[_]] extends Applicative[F] with PlusEmpty[F]
 ```
 
-##### Связанный список
+## Примеры
+
+### Связанный список
 
 ```scala
 given ApplicativePlus[List] with
@@ -27,12 +28,14 @@ given ApplicativePlus[List] with
   override def empty[A]: List[A] = List.empty[A]
 ```
 
+## Исходный код
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FApplicativePlus.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FApplicativePlusSuite.scala)
 
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._
@@ -44,6 +47,7 @@ import Scalaz._
 
 ---
 
-**References:**
+## References
+
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/ApplicativePlus.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/MonadPlus.html)

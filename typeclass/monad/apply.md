@@ -13,9 +13,7 @@
 `Apply` должен удовлетворять следующим законам:
 - Composition (композиция) - `apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)`
 
-### Примеры
-
-##### Описание
+## Описание
 
 ```scala
 trait InvariantFunctor[F[_]]:
@@ -45,7 +43,9 @@ trait Apply[F[_]] extends Functor[F]:
 
 Очевидно, эти операции можно дальше расширять на более длинные кортежи: `apply3`, `apply4` и т.д.
 
-##### "Обертка"
+## Примеры
+
+### "Обертка"
 
 ```scala
 case class Id[A](value: A)
@@ -56,7 +56,7 @@ given idApply: Apply[Id] with
   extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as.value))
 ```
 
-##### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../scala/fp/functional-error-handling)
 
 ```scala
 given Apply[Option] with
@@ -72,11 +72,13 @@ given Apply[Option] with
         case None    => None
 ```
 
+## Исходный код
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FApply.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FApplySuite.scala)
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._
@@ -109,6 +111,7 @@ Apply[List].lift2 {(_: Int) * (_: Int)} (List(1, 2), List(3, 4)) // List(3, 4, 6
 
 ---
 
-**References:**
+## References
+
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Apply.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Applicative.html)

@@ -12,10 +12,8 @@
   Другими словами: композиция двух функций и последующее отображение результирующей функции на функтор 
   должно быть таким же, как сначала отображение одной функции на функтор, а затем отображение другой.
 
-
-### Примеры
-
-##### Описание
+  
+## Описание
 
 ```scala
 trait Functor[F[_]] extends InvariantFunctor[F]:
@@ -37,7 +35,9 @@ trait Functor[F[_]] extends InvariantFunctor[F]:
 - по функтору от `A` и функции преобразования из `A` в `B` позволяет получать функтор от кортежа `(A, B)` 
 
 
-##### "Обертка" является функтором
+## Примеры
+
+### "Обертка" является функтором
 
 ```scala
 case class Id[A](value: A)
@@ -47,7 +47,7 @@ given idFunctor: Functor[Id] with
     override def map[B](f: A => B): Id[B] = Id(f(as.value))
 ```
 
-##### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../scala/fp/functional-error-handling)
 
 ```scala
 given optionFunctor: Functor[Option] with
@@ -58,7 +58,7 @@ given optionFunctor: Functor[Option] with
         case None    => None
 ```
 
-##### [Последовательность](../../scala/collections)
+### [Последовательность](../../scala/collections)
 
 ```scala
 given listFunctor: Functor[List] with
@@ -66,7 +66,7 @@ given listFunctor: Functor[List] with
     override def map[B](f: A => B): List[B] = as.map(f)
 ```
 
-##### [Either](../../fp/handling-errors)
+### [Either](../../fp/handling-errors)
 
 ```scala
 given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
@@ -77,7 +77,7 @@ given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
         case Left(e)  => Left(e)
 ```
 
-##### [Writer](../../fp/writer) - функциональный журнал
+### [Writer](../../fp/writer) - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))
@@ -89,7 +89,7 @@ given writerFunctor[W]: Functor[[x] =>> Writer[W, x]] with
       Writer[W, B](() => (w, f(a)))
 ```
 
-##### [State](../../fp/state) - функциональное состояние
+### [State](../../fp/state) - функциональное состояние
 
 ```scala
 case class State[S, +A](run: S => (S, A))
@@ -103,7 +103,7 @@ given stateFunctor[S]: Functor[[x] =>> State[S, x]] with
       }
 ```
 
-##### Nested - два вложенных функтора образуют новый функтор
+### Nested - два вложенных функтора образуют новый функтор
 
 ```scala
 final case class Nested[F[_], G[_], A](value: F[G[A]])
@@ -117,7 +117,7 @@ given nestedFunctor[F[_], G[_]](using functorF: Functor[F], functorG: Functor[G]
       }
 ```
 
-##### IO
+### IO
 
 ```scala
 final case class IO[R](run: () => R)
@@ -126,13 +126,14 @@ given ioFunctor: Functor[IO] with
   extension [A](as: IO[A]) override def map[B](f: A => B): IO[B] = IO { () => f(as.run()) }
 ```
 
+## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FFunctor.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFunctorSuite.scala)
 
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._
@@ -176,10 +177,10 @@ listOpt.map(List(Some(1), None, Some(3)))(_ + 1)   // List(Some(2), None, Some(4
 
 ---
 
-**References:**
+## References
+
 - [Tour of Scala](https://tourofscala.com/scala/functor)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/functor.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Functor.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Functor.html)
-

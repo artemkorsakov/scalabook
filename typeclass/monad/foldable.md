@@ -23,9 +23,7 @@ _Fold_ может использоваться для реализации `redu
 - `foldRight` соответствует `foldMap`: `fa.foldMap(Vector(_)) == fa.foldRight(Vector.empty[A])(_ +: _)`
 
 
-### Примеры
-
-##### Описание
+## Описание
 
 ```scala
 trait Foldable[F[_]]:
@@ -46,7 +44,9 @@ trait Foldable[F[_]]:
       fa.foldRight(List.empty[A])(_ :: _)
 ```
 
-##### "Обертка"
+## Примеры
+
+### "Обертка"
 
 ```scala
 case class Id[A](value: A)
@@ -57,7 +57,7 @@ given idFoldable: Foldable[Id] with
       f(fa.value, init)
 ```
 
-##### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../scala/fp/functional-error-handling)
 
 ```scala
 given Foldable[Option] with
@@ -74,7 +74,7 @@ given Foldable[Option] with
         case Some(a) => f(a)
 ```
 
-##### [Последовательность](../../scala/collections)
+### [Последовательность](../../scala/collections)
 
 ```scala
 given Foldable[List] with
@@ -86,7 +86,7 @@ given Foldable[List] with
     override def toList: List[A] = as
 ```
 
-##### [Кортеж](../../scala/collections/tuple) от двух и более элементов
+### [Кортеж](../../scala/collections/tuple) от двух и более элементов
 
 ```scala
 given tuple2Foldable: Foldable[[X] =>> (X, X)] with
@@ -105,7 +105,7 @@ given tuple3Foldable: Foldable[[X] =>> (X, X, X)] with
       f(a0, b1)
 ```
 
-##### [Either](../../fp/handling-errors)
+### [Either](../../fp/handling-errors)
 
 ```scala
 given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
@@ -116,12 +116,14 @@ given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
         case Left(_)  => init
 ```
 
+## Исходный код
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FFoldable.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFoldableSuite.scala)
 
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._
@@ -141,7 +143,8 @@ Foldable[List].fold(digits)                                // 45
 
 ---
 
-**References:**
+## References
+
 - [Tour of Scala](https://tourofscala.com/scala/foldable)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Foldable.html)

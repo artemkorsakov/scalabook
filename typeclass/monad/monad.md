@@ -16,10 +16,8 @@
 - ассоциативность (наследуется от `Bind`): последний закон монад гласит, что когда у нас есть цепочка приложений 
   монадических функций с `flatMap`, не должно иметь значения, как они вложены: `fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) }`
 
-
-### Примеры
-
-##### Описание
+  
+## Описание
 
 ```scala
 trait Monad[F[_]] extends Applicative[F], Bind[F]:
@@ -28,7 +26,9 @@ trait Monad[F[_]] extends Applicative[F], Bind[F]:
       fa.flatMap(a => unit(f(a)))
 ```
 
-##### "Обертка"
+## Примеры
+
+### "Обертка"
 
 ```scala
 case class Id[A](value: A)
@@ -39,7 +39,7 @@ given idMonad: Monad[Id] with
   extension [A](fa: Id[A]) override def flatMap[B](f: A => Id[B]): Id[B] = f(fa.value)
 ```
 
-##### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../scala/fp/functional-error-handling)
 
 ```scala
 given optionMonad: Monad[Option] with
@@ -52,7 +52,7 @@ given optionMonad: Monad[Option] with
         case None    => None
 ```
 
-##### [Последовательность](../../scala/collections)
+### [Последовательность](../../scala/collections)
 
 ```scala
 given listMonad: Monad[List] with
@@ -61,7 +61,7 @@ given listMonad: Monad[List] with
   extension [A](fa: List[A]) override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
 ```
 
-##### [Either](../../fp/handling-errors)
+### [Either](../../fp/handling-errors)
 
 ```scala
 given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
@@ -74,7 +74,7 @@ given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
         case Left(e)  => Left(e)
 ```
 
-##### [Writer](../../fp/writer) - функциональный журнал
+### [Writer](../../fp/writer) - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))
@@ -98,7 +98,7 @@ given writerMonad[W](using monoid: Monoid[W]): Monad[[x] =>> Writer[W, x]] with
       }
 ```
 
-##### [State](../../fp/state) - функциональное состояние
+### [State](../../fp/state) - функциональное состояние
 
 ```scala
 case class State[S, +A](run: S => (S, A))
@@ -115,7 +115,7 @@ given stateMonad[S]: Monad[[x] =>> State[S, x]] with
       }
 ```
 
-##### IO
+### IO
 
 ```scala
 final case class IO[R](run: () => R)
@@ -126,13 +126,14 @@ given ioMonad: Monad[IO] with
   extension [A](fa: IO[A]) override def flatMap[B](f: A => IO[B]): IO[B] = f(fa.run())
 ```
 
+## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FMonad.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FMonadSuite.scala)
 
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._
@@ -148,7 +149,8 @@ List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 
 
 ---
 
-**References:**
+## References
+
 - [Tour of Scala](https://tourofscala.com/scala/monad)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monad.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 

@@ -9,16 +9,16 @@
 - Composition (композиция): Если определены два метода `f: A => B` и `g: B => C`, тогда `cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))`.
 
 
-### Примеры контравариантных функторов
-
-##### Описание контравариантных функторов
+## Описание
 
 ```scala
 trait ContravariantFunctor[F[_]]:
   def cmap[A, B](b: F[B])(f: A => B): F[A]
 ```
 
-##### Унарная функция является ковариантным функтором
+## Примеры
+
+### Унарная функция является ковариантным функтором
 
 ```scala
 given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X, R]] with
@@ -26,6 +26,7 @@ given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X,
     a => function(f(a))
 ```
 
+## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FContravariantFunctor.scala&plain=1)
 
@@ -34,5 +35,6 @@ given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X,
 
 ---
 
-**References:**
+## References
+
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 

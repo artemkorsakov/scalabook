@@ -4,9 +4,7 @@
 
 `MonadPlus` должен удовлетворять законам монад и моноидов.
 
-### Примеры
-
-##### Описание
+## Описание
 
 ```scala
 trait MonadPlus[F[_]] extends Monad[F] with ApplicativePlus[F]:
@@ -23,7 +21,9 @@ trait MonadPlus[F[_]] extends Monad[F] with ApplicativePlus[F]:
 Например, список `List(Some(785727510), Some(0), Some(1), None, None, Some(1))` "схлопывается" до
 `List(785727510, 0, 1, 1)`.
 
-##### Связанный список
+## Примеры
+
+### Связанный список
 
 ```scala
 given MonadPlus[List] with
@@ -39,12 +39,14 @@ given MonadPlus[List] with
   extension [A](fa: List[A]) override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
 ```
 
+## Исходный код
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FMonadPlus.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FMonadPlusSuite.scala)
 
 
-### Реализация в ScalaZ
+## Реализация в ScalaZ
 
 ```scala
 import scalaz._
@@ -59,6 +61,7 @@ List(1, 2, 3) filter {_ > 2}                     // List(3)
 
 ---
 
-**References:**
+## References
+
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/MonadPlus.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/MonadPlus.html)

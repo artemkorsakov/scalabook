@@ -3,16 +3,16 @@
 Некоторые виды монад можно прокидывать внутрь других монад, тем самым трансформируя их.
 Т.е. для этих видов монад (`F`) доступна операция `lift` - `M[A] -> M[F[A]]`
 
-### Примеры трансформеров
-
-##### Описание трансформера
+## Описание
 
 ```scala
 trait MonadTransformer[T[_[_], _], M[_]](using mMonad: Monad[M], tMonad: Monad[[X] =>> T[M, X]]):
   def lift[A](ma: M[A]): T[M, A]
 ```
 
-##### "Обертка"
+## Примеры
+
+### "Обертка"
 
 ```scala
 final case class IdT[M[_], A](run: M[Id[A]])
@@ -29,7 +29,7 @@ given idtMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransformer[Id
     IdT[M, A](ma.map(Id(_)))
 ```
 
-##### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../scala/fp/functional-error-handling)
 
 ```scala
 final case class OptionT[M[_], A](run: M[Option[A]])
@@ -52,7 +52,7 @@ given optionTMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransforme
     OptionT[M, A](ma.map(Some(_)))      
 ```
 
-##### [Writer](../../fp/writer) - функциональный журнал
+### [Writer](../../fp/writer) - функциональный журнал
 
 ```scala
 final case class WriterT[M[_], W, A](run: () => M[(W, A)])
@@ -77,7 +77,7 @@ given writerTMonadTransformer[M[_], W](using
     WriterT[M, W, A](() => ma.map(a => (outerMonoid.empty, a)))      
 ```
 
-##### [State](../../fp/state) - функциональное состояние
+### [State](../../fp/state) - функциональное состояние
 
 ```scala
 final case class StateT[M[_], S, A](run: S => M[(S, A)])
@@ -97,6 +97,7 @@ given stateTMonadTransformer[M[_], S](using outerMonad: Monad[M]): MonadTransfor
     StateT[M, S, A](s => ma.map(a => (s, a)))      
 ```
 
+## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FMonadTransformer.scala&plain=1)
 
@@ -105,6 +106,7 @@ given stateTMonadTransformer[M[_], S](using outerMonad: Monad[M]): MonadTransfor
 
 ---
 
-**References:**
+## References
+
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad+transformers.html)

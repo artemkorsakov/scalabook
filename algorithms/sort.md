@@ -16,7 +16,7 @@
 как a<sub>n</sub> ≥ a<sub>n−1</sub> ≥ a<sub>n−2</sub> ≥ a<sub>2</sub> ≥ a<sub>1</sub>.
 
 
-### Сортировка пузырьком (bubble sort)
+## Сортировка пузырьком (bubble sort)
 
 Алгоритм [сортировки пузырьком](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0_%D0%BF%D1%83%D0%B7%D1%8B%D1%80%D1%8C%D0%BA%D0%BE%D0%BC) 
 состоит из повторяющихся проходов по сортируемому массиву. 
@@ -48,7 +48,7 @@ private def swap[T](array: Array[T], i: Int, j: Int): Unit =
   array(i) = temp
 ```
 
-### Сортировка выбором (selection sort)
+## Сортировка выбором (selection sort)
 
 Шаги [алгоритма сортировки выбором](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0_%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%D0%BE%D0%BC):
 - находим номер минимального значения в текущем списке
@@ -65,7 +65,7 @@ def selectionSort[T: Ordering](array: Array[T]): Unit =
   }
 ```
 
-### Сортировка вставками (insertion sort)
+## Сортировка вставками (insertion sort)
 
 В начальный момент отсортированная последовательность пуста. 
 На каждом шаге [алгоритма сортировки вставками](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0_%D0%B2%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D0%B0%D0%BC%D0%B8)
@@ -89,7 +89,7 @@ def insertionSort[T: Ordering](array: Array[T]): Unit =
   }
 ```
 
-### Сортировка слиянием (merge sort)
+## Сортировка слиянием (merge sort)
 
 [Алгоритм сортировки слиянием](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0_%D1%81%D0%BB%D0%B8%D1%8F%D0%BD%D0%B8%D0%B5%D0%BC) выглядят так:
 - сортируемый массив разбивается на две части примерно одинакового размера
@@ -131,7 +131,7 @@ private def mergeParts[T: ClassTag: Ordering](array: Array[T], first: Int, last:
       i += 1
 ```
 
-### Быстрая сортировка (quicksort)
+## Быстрая сортировка (quicksort)
 
 Общая идея [алгоритма быстрой сортировки](https://ru.wikipedia.org/wiki/%D0%91%D1%8B%D1%81%D1%82%D1%80%D0%B0%D1%8F_%D1%81%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0) состоит в следующем:
 - выбрать из массива элемент, называемый опорным. Это может быть любой из элементов массива. 
@@ -154,6 +154,7 @@ def quickSort[T: Ordering](list: List[T]): List[T] =
       leftToPivot ++ (h :: rightToPivot)
 ```
 
+## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fsort%2FSorting.scala&plain=1)
 
@@ -161,5 +162,6 @@ def quickSort[T: Ordering](list: List[T]): List[T] =
 
 ---
 
-**References:**
+## References
+
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)

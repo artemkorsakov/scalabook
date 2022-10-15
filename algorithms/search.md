@@ -19,7 +19,7 @@
 Поиск может осуществляться широким спектром алгоритмов. 
 Ниже рассмотрим несколько алгоритмов: алгоритм наивного поиска и алгоритм поиска Кнута-Морриса-Пратта.
 
-### Алгоритм наивного поиска
+## Алгоритм наивного поиска
 
 - Для первого символа в тексте выполните следующий цикл сопоставления.
   - Сопоставьте первый символ искомой подстроки с текущим символом текста
@@ -47,7 +47,7 @@ def naiveSubstringSearch(searchWord: String, source: String): Int =
 ```
 
 
-### Алгоритм поиска Кнута-Морриса-Пратта
+## Алгоритм поиска Кнута-Морриса-Пратта
 
 - Инициализировать переменные. 
   - `m` = длина шаблона (искомая подстрока) 
@@ -310,6 +310,7 @@ private def prefixTable(searchString: String): Vector[Int] =
     ._2
 ```
 
+## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fsearch%2FSearch.scala&plain=1)
 
@@ -318,5 +319,6 @@ private def prefixTable(searchString: String): Vector[Int] =
 
 ---
 
-**References:**
+## References
+
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)

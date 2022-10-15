@@ -42,11 +42,6 @@ class ImperativeStack[A: ClassTag](maxSize: Int):
     top == maxSize - 1
 ```
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fstructures%2FImperativeStack.scala&plain=1)
-
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Fstructures%2FImperativeStackSuite.scala&plain=1)
-
-
 Возможная реализация стека переменной длины в функциональном стиле:
 
 ```scala
@@ -73,12 +68,19 @@ object Stack:
       case NonEmptyStack(value, tail) => Some((value, tail))
 ```
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fstructures%2FStack.scala&plain=1)
+## Исходный код
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Fstructures%2FStackSuite.scala&plain=1)
+[Исходный код ImperativeStack](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fstructures%2FImperativeStack.scala&plain=1)
+
+[Исходный код Stack](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fstructures%2FStack.scala&plain=1)
+
+[Тесты ImperativeStack](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Fstructures%2FImperativeStackSuite.scala&plain=1)
+
+[Тесты Stack](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Fstructures%2FStackSuite.scala&plain=1)
 
 
 ---
 
-**References:**
+## References
+
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)

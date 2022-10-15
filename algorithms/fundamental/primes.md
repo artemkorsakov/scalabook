@@ -9,7 +9,7 @@
 Простые числа также используются в хеш-функциях, чтобы избежать коллизий, 
 в генераторах случайных чисел для равномерного распределения и в коде с исправлением ошибок для устранения шума. 
 
-### Список простых чисел
+## Список простых чисел
 
 "Бесконечный" список простых чисел можно реализовать через `LazyList` по следующему алгоритму:
 
@@ -30,7 +30,7 @@ primes.take(15).toList
 // List(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47)
 ```
 
-### Проверка, простое ли заданное число
+## Проверка, простое ли заданное число
 
 Проверка заданного числа на простоту может происходить по алгоритму, предложенному 
 [в ревью следующей задачи](https://projecteuler.net/problem=7).
@@ -62,7 +62,7 @@ isPrime(999_999_000_001L)
 // true
 ```
 
-### Решето Эратосфена
+## Решето Эратосфена
 
 [Решето Эратосфена][sieve] на Scala можно реализовать следующим образом:
 
@@ -83,6 +83,7 @@ sieveOfEratosthenes(10)
 // val res0: Array[Boolean] = Array(false, false, true, true, false, true, false, true, false, false, false)
 ```
 
+## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ffundamental%2FPrimes.scala&plain=1)
 
@@ -91,7 +92,8 @@ sieveOfEratosthenes(10)
 
 ---
 
-**References:**
+## References
+
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
 - [Решето Эратосфена][sieve]
 - [Project Euler, Problem 7](https://projecteuler.net/problem=7)

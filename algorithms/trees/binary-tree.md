@@ -5,7 +5,7 @@
 Информацию, представленную в виде двоичных деревьев, гораздо удобнее обрабатывать, 
 так как двоичные деревья обладают определенными свойствами. 
 
-### Структура
+## Структура
 
 Формально двоичное дерево может быть представлено тройкой `T = (x, L, R)`, 
 где `x` представляет узел, а `L` и `R` - левую и правую ветви соответственно. 
@@ -31,7 +31,7 @@
 - уровень (_level_): это набор всех узлов на заданной глубине
 - размер (_size_): определяется как количество неконечных узлов
 
-### Возможная реализация в Scala
+## Возможная реализация в Scala
 
 ```scala
 enum BinaryTree[+A]:
@@ -55,21 +55,21 @@ object BinaryTree:
         Branch(x, BinaryTree(leftList), BinaryTree(rightList))
 ```
 
-### Алгоритмы обхода дерева
+## Алгоритмы обхода дерева
 
-###### Preorder
+### Preorder
 
 1. Посетить корень
 2. Выполнить preorder обход левого поддерева, если оно не пустое
 3. Выполнить preorder обход правого поддерева, если оно не пустое
 
-###### Inorder
+### Inorder
 
 1. Выполнить inorder обход левого поддерева, если оно не пустое
 2. Посетить корень
 3. Произвести inorder обход правого поддерева, если оно не пустое
 
-###### Postorder
+### Postorder
 
 1. Выполнить postorder обход левого поддерева, если оно не пустое
 2. Выполнить postorder обход правого поддерева, если оно не пустое
@@ -89,7 +89,7 @@ lazy val postorder: IndexedSeq[A] = this match
   case Branch(value, left, right) => left.postorder ++ right.postorder ++ IndexedSeq(value)
 ```
 
-### Применение
+## Применение
 
 Двоичные деревья имеют множество применений.
 
@@ -103,7 +103,7 @@ lazy val postorder: IndexedSeq[A] = this match
 Также их можно использовать для сжатия данных, таких как деревья кодирования Хаффмана. 
 
 
-###### Двоичное дерево поиска
+### Двоичное дерево поиска
 
 ```scala
 object BinarySearchTree:
@@ -140,6 +140,8 @@ object BinarySearchTree:
           Branch((key, value), lb, rb)
 ```
 
+## Исходный код
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ftrees%2FBinaryTree.scala&plain=1)
 
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Ftrees%2FBinaryTreeSuite.scala)
@@ -147,5 +149,6 @@ object BinarySearchTree:
 
 ---
 
-**References:**
+## References
+
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)

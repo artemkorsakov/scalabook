@@ -126,7 +126,8 @@
   - [Monoids](fp/monoids.md)
   - [Monads](fp/monads.md)
   - [Функциональный журнал](fp/writer.md)
-
+  - [Non empty list](fp/non-empty-list.md)
+  
 ## Теория категорий
 - [Теория категорий](typeclass/index.md)
   - [Группа Equal](typeclass/equal.md)

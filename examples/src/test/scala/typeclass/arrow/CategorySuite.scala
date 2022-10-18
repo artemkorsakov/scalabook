@@ -11,7 +11,7 @@ class CategorySuite extends ScalaCheckSuite, CategoryLaw:
   private val bc: String => Boolean = given_Conversion_String_Boolean
   private val cd: Boolean => Char = given_Conversion_Boolean_Char
 
-  property("given Compose[Function1] должен удовлетворять законам Compose") {
+  property("given Category[Function1] должен удовлетворять законам Category") {
     forAll { (x: Int) =>
       checkCategoryLaw[Function1, Int, String, Boolean, Char](ab, bc, cd, intToInt1, intToInt2, intToInt3)(
         f => f(x),

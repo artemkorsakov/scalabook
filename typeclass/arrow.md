@@ -6,49 +6,14 @@
 
 ## Использование
 
-Моноиды обычно используются для сворачивания последовательностей. 
-Например, вот как можно посчитать произведение чисел:
-
-```scala
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
-
-trait Monoid[A] extends Semigroup[A]:
-  def empty: A
-
-given Monoid[Int] with
-  val empty = 1
-  def combine(x: Int, y: Int): Int = x * y
-
-def fold[A: Monoid](xs: List[A]): A =
-  val m = summon[Monoid[A]]
-  xs.foldLeft(m.empty)(m.combine)
-
-fold(List(1, 2, 3, 4, 5))
-// val res0: Int = 120
-```
-
-Обычно библиотеки определяют "свой" оператор для моноидальной операции `combine`, например:
-
-```scala
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
-  
-  extension (x: A)
-    def |+|(y: A) = combine(x, y)
-
-...
-
-3 |+| 4
-// val res1: Int = 12
-```
+Arrow — это термин, используемый в теории категорий как абстрактное понятие вещи, которая ведет себя как функция.
 
 
 ## Исходный код
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Farrow&plain=1)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow)
 
 ---
 

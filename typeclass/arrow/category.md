@@ -1,6 +1,6 @@
 # Category
 
-`Category` - это `Compose` с операцией `identity`.
+`Category` - это [`Compose`](compose) с операцией `identity`.
 
 `Category` должен удовлетворять следующим законам (помимо законов родительских типовых классов):
 - Identity (тождественность): существует `e ∈ M` такое, что `e + x = x + e = x`

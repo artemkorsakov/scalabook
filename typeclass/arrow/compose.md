@@ -36,6 +36,20 @@ given Compose[Function1] with
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FComposeSuite.scala)
 
 
+## Реализация в ScalaZ
+
+```scala
+import scalaz._
+import Scalaz._
+
+val f1 = (_:Int) + 1
+val f2 = (_:Int) * 100
+
+(f1 >>> f2)(2)   // 300
+(f1 <<< f2)(2)   // 201
+```
+
+
 ---
 
 ## References

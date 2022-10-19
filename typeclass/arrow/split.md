@@ -1,23 +1,15 @@
-# Compose
+# Split
 
-`Compose` объединяет две функции в одну.
-Функция `compose` позволяет реализовать [Semigroup](../monoid/semigroup) и [Plus](../monad/plus) в терминах объединения функций.
+`Split` - полугруппоид ([`Compose`](compose)), допускающий произведения.
 
-`Compose` должен удовлетворять следующим законам:
-- Associativity (ассоциативность): `compose(compose(f, g), h) = compose(f, compose(g, h))`
+`Split` должен удовлетворять законам `Compose`.
 
 
 ## Описание
 
 ```scala
-trait Compose[=>:[_, _]]:
-  /** Ассоциативный `=>:` бинарный оператор. */
-  def compose[A, B, C](f: B =>: C, g: A =>: B): A =>: C
-
-  def plus: Plus[[A] =>> A =>: A] = new Plus[[A] =>> A =>: A]:
-    def plus[A](f1: A =>: A, f2: => A =>: A): A =>: A = compose(f1, f2)
-
-  def semigroup[A]: Semigroup[A =>: A] = (f1: A =>: A, f2: A =>: A) => compose(f1, f2)
+trait Split[=>:[_, _]] extends Compose[=>:]:
+  def split[A, B, C, D](f: A =>: B, g: C =>: D): (A, C) =>: (B, D)
 ```
 
 ## Примеры
@@ -25,15 +17,19 @@ trait Compose[=>:[_, _]]:
 ### Функция от одной переменной
 
 ```scala
-given Compose[Function1] with
-  override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f
+object Split:
+  given Split[Function1] with
+    override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f
+
+    override def split[A, B, C, D](f: A => B, g: C => D): ((A, C)) => (B, D) =
+      (a, c) => (f(a), g(c))
 ```
 
 ## Исходный код
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Farrow%2FCompose.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Farrow%2FSplit.scala&plain=1)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FComposeSuite.scala)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FSplitSuite.scala)
 
 
 ## Реализация в ScalaZ
@@ -42,11 +38,7 @@ given Compose[Function1] with
 import scalaz._
 import Scalaz._
 
-val f1 = (_:Int) + 1
-val f2 = (_:Int) * 100
-
-(f1 >>> f2)(2)   // 300
-(f1 <<< f2)(2)   // 201
+// ... Все операции родителей
 ```
 
 
@@ -54,5 +46,5 @@ val f2 = (_:Int) * 100
 
 ## References
 
-- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Compose.html)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Split.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)

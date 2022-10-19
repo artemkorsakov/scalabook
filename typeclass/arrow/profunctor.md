@@ -15,15 +15,32 @@
   
 ## Описание
 
-```scala
-trait Compose[=>:[_, _]]:
-  /** Ассоциативный `=>:` бинарный оператор. */
-  def compose[A, B, C](f: B =>: C, g: A =>: B): A =>: C
+```scala123
+trait Profunctor[=>:[_, _]]:
+  /** Contramap on `A`. */
+  def mapfst[A, B, C](fab: A =>: B)(f: C => A): C =>: B
 
-  def plus: Plus[[A] =>> A =>: A] = new Plus[[A] =>> A =>: A]:
-    def plus[A](f1: A =>: A, f2: => A =>: A): A =>: A = compose(f1, f2)
+  /** Functor map on `B`. */
+  def mapsnd[A, B, C](fab: A =>: B)(f: B => C): A =>: C
 
-  def semigroup[A]: Semigroup[A =>: A] = (f1: A =>: A, f2: A =>: A) => compose(f1, f2)
+  /** Functor map on `A` and `B`. */
+  def dimap[A, B, C, D](fab: A =>: B)(f: C => A)(g: B => D): C =>: D =
+    mapsnd(mapfst(fab)(f))(g)
+
+  protected[this] trait SndCovariant[C] extends Functor[[X] =>> =>:[C, X]]:
+    extension [A](fa: C =>: A) override def map[B](f: A => B): C =>: B = mapsnd(fa)(f)
+
+  def invariantFunctor: InvariantFunctor[[X] =>> X =>: X] =
+    new InvariantFunctor[[X] =>> X =>: X]:
+      extension [A](fa: A =>: A)
+        override def xmap[B](f: A => B, g: B => A): B =>: B = mapsnd(mapfst(fa)(g))(f)
+
+  def covariantInstance[C]: Functor[[X] =>> =>:[C, X]] =
+    new SndCovariant[C] {}
+
+  def contravariantInstance[C]: ContravariantFunctor[[X] =>> =>:[X, C]] =
+    new ContravariantFunctor[[X] =>> =>:[X, C]]:
+      override def cmap[A, B](fa: B =>: C)(f: A => B): A =>: C = mapfst(fa)(f)
 ```
 
 ## Примеры
@@ -31,8 +48,10 @@ trait Compose[=>:[_, _]]:
 ### Функция от одной переменной
 
 ```scala
-given Compose[Function1] with
-  override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f
+given Profunctor[Function1] with
+  override def mapfst[A, B, C](fab: A => B)(f: C => A): C => B = f andThen fab
+
+  override def mapsnd[A, B, C](fab: A => B)(f: B => C): A => C = fab andThen f
 ```
 
 ## Исходный код

@@ -1,9 +1,10 @@
-# Compose
+# Profunctor
 
-`Compose` объединяет две функции в одну.
-Функция `compose` позволяет реализовать [Semigroup](../monoid/semigroup) и [Plus](../monad/plus) в терминах объединения функций.
+`Profunctor` ковариантен справа и контравариантен слева.
+`Profunctor` позволяет реализовать [InvariantFunctor](../monad/invariant-functor), [Functor](../monad/functor) 
+и [ContravariantFunctor](../monad/contravariant-functor).
 
-`Compose` должен удовлетворять следующим законам:
+`Profunctor` должен удовлетворять следующим законам:
 - Associativity (ассоциативность): `compose(compose(f, g), h) = compose(f, compose(g, h))`
 
 
@@ -31,9 +32,9 @@ given Compose[Function1] with
 
 ## Исходный код
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Farrow%2FCompose.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Farrow%2FProfunctor.scala&plain=1)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FComposeSuite.scala)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FProfunctorSuite.scala)
 
 
 ## Реализация в ScalaZ
@@ -42,11 +43,7 @@ given Compose[Function1] with
 import scalaz._
 import Scalaz._
 
-val f1 = (_:Int) + 1
-val f2 = (_:Int) * 100
-
-(f1 >>> f2)(2)   // 300
-(f1 <<< f2)(2)   // 201
+// ... Все операции родителей
 ```
 
 
@@ -54,5 +51,5 @@ val f2 = (_:Int) * 100
 
 ## References
 
-- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Compose.html)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Profunctor.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)

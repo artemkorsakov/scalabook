@@ -1,4 +1,4 @@
-# Compose
+# Arrow
 
 `Compose` объединяет две функции в одну.
 Функция `compose` позволяет реализовать [Semigroup](../monoid/semigroup) и [Plus](../monad/plus) в терминах объединения функций.

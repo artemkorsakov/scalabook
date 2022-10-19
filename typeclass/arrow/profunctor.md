@@ -5,9 +5,14 @@
 и [ContravariantFunctor](../monad/contravariant-functor).
 
 `Profunctor` должен удовлетворять следующим законам:
-- Associativity (ассоциативность): `compose(compose(f, g), h) = compose(f, compose(g, h))`
+- _identity_: если определен метод идентификации `identity` такой, что: `identity(a) == a`, то при отображении этой функции
+  на профунктор и слева, и справа, то получим тот же профунктор: `dimap(gad)(identity)(identity) == gad`
+- `composite`: при последовательном отображении двух пар функции на профунктор слева и справа - это тоже самое,
+  что отображение профунктора на композицию этих функций:  
+  `dimap(dimap(gad)(fba)(fde))(fcb)(fef) == dimap(gad)(fba compose fcb)(fef compose fde)`, где 
+  `gad: A =>: D, fcb: C => B, fba: B => A, fde: D => E, fef: E => F`
 
-
+  
 ## Описание
 
 ```scala

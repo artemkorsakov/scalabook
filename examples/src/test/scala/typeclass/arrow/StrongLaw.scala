@@ -12,7 +12,9 @@ trait StrongLaw extends ProfunctorLaw:
       runACD: (A, C) =>: D => D,
       runCAD: (C, A) =>: D => D,
       runACBD: (A, C) =>: (B, D) => (B, D),
-      runCADB: (C, A) =>: (D, B) => (D, B)
+      runCADB: (C, A) =>: (D, B) => (D, B),
+      runACDBCD: ((A, C), D) =>: ((B, C), D) => ((B, C), D),
+      runDCADCB: (D, (C, A)) =>: (D, (C, B)) => (D, (C, B))
   )(using
       fcb: C => B,
       fcd: C => D,
@@ -56,33 +58,16 @@ trait StrongLaw extends ProfunctorLaw:
       "lmap (first f) . second == rmap (first f) . second"
     )
 
-    /*
-    /** first' . first' == dimap assoc unassoc . first' where
-     * assoc ((a,b),c) = (a,(b,c))
-     * unassoc (a,(b,c)) = ((a,b),c)
-     */
-    def firstFirstIsDimap[A, B, C, D](fab: A =>: B)(implicit E: Equal[((A, C), D) =>: ((B, C), D)]): Boolean = {
-      val l1: (A, C) =>: (B, C) = first(fab)
-      val l2: ((A, C), D) =>: ((B, C), D) = first(l1)
-
-      val r1: (A, (C, D)) =>: (B, (C, D)) = first(fab)
-      val r2: ((A, C), D) =>: ((B, C), D) = dimap[(A, (C, D)), (B, (C, D)), ((A, C), D), ((B, C), D)](r1)(assoc)(unassoc)
-      E.equal(l2, r2)
-    }
-
-    /** second' . second' == dimap unassoc assoc . second' where
-     * assoc ((a,b),c) = (a,(b,c))
-     * unassoc (a,(b,c)) = ((a,b),c)
-     */
-    def secondSecondIsDimap[A, B, C, D](fab: A =>: B)(implicit E: Equal[(D, (C, A)) =>: (D, (C, B))]): Boolean = {
-      val l1: (C, A) =>: (C, B) = second(fab)
-      val l2: (D, (C, A)) =>: (D, (C, B)) = second(l1)
-
-      val r1: ((D, C), A) =>: ((D, C), B) = second(fab)
-      val r2: (D, (C, A)) =>: (D, (C, B)) = dimap[((D, C), A), ((D, C), B), (D, (C, A)), (D, (C, B))](r1)(unassoc)(assoc)
-      E.equal(l2, r2)
-    }
-     */
+    assertEquals(
+      runACDBCD(first[(A, C), (B, C), D](first[A, B, C](gab))),
+      runACDBCD(dimap[(A, (C, D)), (B, (C, D)), ((A, C), D), ((B, C), D)](first[A, B, (C, D)](gab))(assoc)(unassoc)),
+      "first' . first' == dimap assoc unassoc . first'"
+    )
+    assertEquals(
+      runDCADCB(second[(C, A), (C, B), D](second[A, B, C](gab))),
+      runDCADCB(dimap[((D, C), A), ((D, C), B), (D, (C, A)), (D, (C, B))](second[A, B, (D, C)](gab))(unassoc)(assoc)),
+      "second' . second' == dimap unassoc assoc . second'"
+    )
 
   private def swapTuple[X, Y]: Tuple2[X, Y] => Tuple2[Y, X] = _.swap
 

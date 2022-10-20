@@ -10,7 +10,7 @@ class StrongSuite extends ScalaCheckSuite, StrongLaw:
   private val gad: Boolean => String = given_Conversion_Boolean_String
 
   property("given Strong[Function1] должен удовлетворять законам Strong") {
-    forAll { (a: Boolean, c: Int) =>
+    forAll { (a: Boolean, c: Int, d: String) =>
       checkStrongLaw[Function1, Boolean, String, Int, String, Boolean, Char](gad, gad)(
         f => f(a),
         f => f(c),
@@ -19,7 +19,9 @@ class StrongSuite extends ScalaCheckSuite, StrongLaw:
         f => f(a, c),
         f => f(c, a),
         f => f(a, c),
-        f => f(c, a)
+        f => f(c, a),
+        f => f((a, c), d),
+        f => f(d, (c, a))
       )
     }
   }

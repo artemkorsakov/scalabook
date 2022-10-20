@@ -1,23 +1,28 @@
 # Strong
 
-`Compose` объединяет две функции в одну.
-Функция `compose` позволяет реализовать [Semigroup](../monoid/semigroup) и [Plus](../monad/plus) в терминах объединения функций.
+`Strong` - сила в объединении. `Strong` расширяет `Profunctor` и добавляет операции `first` и `second`,
+добавляющие заданное значение слева или справа от функции 
+`A =>: B => (A, C) =>: (B, C)` или `A =>: B => (C, A) =>: (C, B)`.
 
-`Compose` должен удовлетворять следующим законам:
-- Associativity (ассоциативность): `compose(compose(f, g), h) = compose(f, compose(g, h))`
+`Strong` должен [удовлетворять следующим законам](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FStrongLaw.scala):
+- при отображении функции swap слева и справа на `second` получим `first`: `dimap(second)(_.swap)(_.swap) == first`
+- верно и обратное: `dimap(first)(_.swap)(_.swap) == second`
+- `lmap fst == rmap fst . first'`
+- и `lmap snd == rmap snd . second'`
+- `lmap (second f) . first == rmap (second f) . first`
+- и `lmap (first f) . second == rmap (first f) . second`
+- `first' . first' == dimap assoc unassoc . first'`, где `assoc ((a,b),c) = (a,(b,c))` и `unassoc (a,(b,c)) = ((a,b),c)`
+- и `second' . second' == dimap unassoc assoc . second'`
 
 
 ## Описание
 
 ```scala
-trait Compose[=>:[_, _]]:
-  /** Ассоциативный `=>:` бинарный оператор. */
-  def compose[A, B, C](f: B =>: C, g: A =>: B): A =>: C
+trait Strong[=>:[_, _]] extends Profunctor[=>:]:
+  def first[A, B, C](fa: A =>: B): (A, C) =>: (B, C)
 
-  def plus: Plus[[A] =>> A =>: A] = new Plus[[A] =>> A =>: A]:
-    def plus[A](f1: A =>: A, f2: => A =>: A): A =>: A = compose(f1, f2)
-
-  def semigroup[A]: Semigroup[A =>: A] = (f1: A =>: A, f2: A =>: A) => compose(f1, f2)
+  def second[A, B, C](fa: A =>: B): (C, A) =>: (C, B) =
+    dimap[(A, C), (B, C), (C, A), (C, B)](first(fa))(_.swap)(_.swap)
 ```
 
 ## Примеры
@@ -25,15 +30,21 @@ trait Compose[=>:[_, _]]:
 ### Функция от одной переменной
 
 ```scala
-given Compose[Function1] with
-  override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f
+given Strong[Function1] with
+  override def mapfst[A, B, C](fab: A => B)(f: C => A): C => B = f andThen fab
+
+  override def mapsnd[A, B, C](fab: A => B)(f: B => C): A => C = fab andThen f
+
+  override def first[A, B, C](fa: A => B): ((A, C)) => (B, C) = (a, c) => (fa(a), c)
+
+  override def second[A, B, C](fa: A => B): ((C, A)) => (C, B) = (c, a) => (c, fa(a))
 ```
 
 ## Исходный код
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Farrow%2FCompose.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Farrow%2FStrong.scala&plain=1)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FComposeSuite.scala)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FStrongSuite.scala)
 
 
 ## Реализация в ScalaZ
@@ -42,11 +53,10 @@ given Compose[Function1] with
 import scalaz._
 import Scalaz._
 
-val f1 = (_:Int) + 1
-val f2 = (_:Int) * 100
+val plus1 = (_: Int) + 1
 
-(f1 >>> f2)(2)   // 300
-(f1 <<< f2)(2)   // 201
+plus1.first apply (7 -> "abc")    // (8,abc)
+plus1.second apply ("def" -> 14)  // (def,15)
 ```
 
 
@@ -54,5 +64,5 @@ val f2 = (_:Int) * 100
 
 ## References
 
-- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Compose.html)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Strong.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)

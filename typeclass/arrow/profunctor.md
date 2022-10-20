@@ -15,7 +15,7 @@
   
 ## Описание
 
-```scala123
+```scala
 trait Profunctor[=>:[_, _]]:
   /** Contramap on `A`. */
   def mapfst[A, B, C](fab: A =>: B)(f: C => A): C =>: B

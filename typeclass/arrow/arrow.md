@@ -1,10 +1,11 @@
 # Arrow
 
-`Compose` объединяет две функции в одну.
-Функция `compose` позволяет реализовать [Semigroup](../monoid/semigroup) и [Plus](../monad/plus) в терминах объединения функций.
+`Arrow` - категория [`Category`](category), поддерживающая все обычные функции, а также объединяющая "стрелки" по продуктам. 
+Каждая "стрелка" образует [`Contravariant`](../monad/contravariant-functor) в одном параметре типа 
+и [`Applicative`](../monad/applicative) в другом, как и в случае с обычными функциями.
+`Arrow` расширяет [`Split`](split), [`Strong`](strong) и [`Category`](category).
 
-`Compose` должен удовлетворять следующим законам:
-- Associativity (ассоциативность): `compose(compose(f, g), h) = compose(f, compose(g, h))`
+`Arrow` должен удовлетворять законам расширяемых трейтов.
 
 
 ## Описание
@@ -31,9 +32,9 @@ given Compose[Function1] with
 
 ## Исходный код
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Farrow%2FCompose.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Farrow%2FArrow.scala&plain=1)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FComposeSuite.scala)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FArrowSuite.scala)
 
 
 ## Реализация в ScalaZ
@@ -42,11 +43,15 @@ given Compose[Function1] with
 import scalaz._
 import Scalaz._
 
-val f1 = (_:Int) + 1
-val f2 = (_:Int) * 100
+val plus1 = (_: Int) + 1
+val times2 = (_: Int) * 2
+val rev = (_: String).reverse
 
-(f1 >>> f2)(2)   // 300
-(f1 <<< f2)(2)   // 201
+plus1.first apply (7 -> "abc")     // (8,abc)
+plus1.second apply ("def" -> 14)   // (def,15)
+plus1 *** rev apply (7 -> "abc")   // (8,cba)
+plus1 &&& times2 apply 7           // (8,14)
+plus1.product apply (9 -> 99)      // (10,100)
 ```
 
 

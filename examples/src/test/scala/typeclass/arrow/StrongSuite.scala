@@ -3,8 +3,6 @@ package typeclass.arrow
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.Functions.given
-import typeclass.arrow.Profunctor
-import typeclass.arrow.Profunctor.given
 
 class StrongSuite extends ScalaCheckSuite, StrongLaw:
   private val gad: Boolean => String = given_Conversion_Boolean_String

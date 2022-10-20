@@ -3,8 +3,6 @@ package typeclass.arrow
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.Functions.{*, given}
-import typeclass.arrow.Compose
-import typeclass.arrow.Compose.given
 
 class ComposeSuite extends ScalaCheckSuite, ComposeLaw:
   private val ab: Int => String = given_Conversion_Int_String

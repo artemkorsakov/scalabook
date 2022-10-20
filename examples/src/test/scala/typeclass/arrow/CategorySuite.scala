@@ -3,8 +3,6 @@ package typeclass.arrow
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.Functions.{*, given}
-import typeclass.arrow.Category
-import typeclass.arrow.Category.given
 
 class CategorySuite extends ScalaCheckSuite, CategoryLaw:
   private val ab: Int => String = given_Conversion_Int_String

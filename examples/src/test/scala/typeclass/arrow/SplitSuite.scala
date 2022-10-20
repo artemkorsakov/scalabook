@@ -3,8 +3,6 @@ package typeclass.arrow
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.Functions.{*, given}
-import typeclass.arrow.Split
-import typeclass.arrow.Split.given
 
 class SplitSuite extends ScalaCheckSuite, SplitLaw:
   private val ab: Int => String = given_Conversion_Int_String

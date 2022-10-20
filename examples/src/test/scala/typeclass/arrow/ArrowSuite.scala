@@ -2,15 +2,34 @@ package typeclass.arrow
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
-import typeclass.Functions.given
-import typeclass.arrow.Profunctor
-import typeclass.arrow.Profunctor.given
+import typeclass.Functions.{*, given}
 
-class ArrowSuite extends ScalaCheckSuite, ProfunctorLaw:
-  private val gad: Boolean => String = given_Conversion_Boolean_String
+class ArrowSuite extends ScalaCheckSuite, ArrowLaw:
+  private val gbc: String => Int = given_Conversion_String_Int
+  private val gcd: Int => String = given_Conversion_Int_String
 
-  property("given Profunctor[Function1] должен удовлетворять законам Profunctor") {
-    forAll { (a: Boolean, c: Int) =>
-      checkProfunctorLaw[Function1, Boolean, String, Int, String, Boolean, Char](gad)(f => f(a), f => f(c))
+  property("given Arrow[Function1] должен удовлетворять законам Arrow") {
+    forAll { (a: Int, c: Int, d: String) =>
+      checkArrowLaw[Function1, Int, String, Int, String, Boolean, Char](
+        gcd,
+        gcd,
+        gbc,
+        gcd,
+        intToInt1,
+        intToInt2,
+        intToInt3
+      )(
+        f => f(a),
+        f => f(a),
+        f => f(c),
+        f => f(a, c),
+        f => f(c, a),
+        f => f(a, c),
+        f => f(c, a),
+        f => f(a, c),
+        f => f(c, a),
+        f => f((a, c), d),
+        f => f(d, (c, a))
+      )
     }
   }

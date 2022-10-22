@@ -174,6 +174,7 @@
 - [Алгоритмы](algorithms/index.md)
   - [Фундамент алгоритмы](algorithms/fundamental.md)
     - [Простые числа](algorithms/fundamental/primes.md)
+    - [Числа Фибоначчи](algorithms/fundamental/fibonacci.md)
     - [Преобразования](algorithms/fundamental/conversion.md)
   - [Связанные списки](algorithms/lists.md)
   - [Массивы](algorithms/arrays.md)

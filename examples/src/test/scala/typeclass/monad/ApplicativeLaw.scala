@@ -1,5 +1,7 @@
 package typeclass.monad
 
+import typeclass.common.Runner1
+import typeclass.common.Runner1.run
 import typeclass.monad.Applicative.{apply, map, unit}
 
 trait ApplicativeLaw extends ApplyLaw:
@@ -21,14 +23,14 @@ trait ApplicativeLaw extends ApplyLaw:
     assertEquals(map(unit(x), f), unit(f(x)))
     assertEquals(map(unit(x), f), apply(unit(f))(fa))
 
-  def checkApplicativeLaw[F[_]: Applicative, A, B, C](x: A, run: F[A] | F[B] | F[C] => A | B | C)(using
+  def checkApplicativeLawWithRunner[F[_]: Applicative: Runner1, A, B, C](x: A)(using
       f: A => B,
       fReverse: B => A,
       g: B => C,
       gReverse: C => B
   ): Unit =
     val fa = unit(x)
-    checkApplyLaw[F, A, B, C](fa, unit(f), unit(g), run)
+    checkApplyLawWithRunner[F, A, B, C](fa, unit(f), unit(g))
     assertEquals(run(apply[F, A, A](unit(identity))(fa)), run(fa), "identity")
     assertEquals(run(apply(unit(f))(unit(x))), run(unit(f(x))), "homomorphism")
     assertEquals(

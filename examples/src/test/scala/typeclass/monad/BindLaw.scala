@@ -1,5 +1,8 @@
 package typeclass.monad
 
+import typeclass.common.Runner1
+import typeclass.common.Runner1.run
+
 trait BindLaw extends ApplyLaw:
   def checkBindLaw[F[_]: Bind, A, B, C](fa: F[A], fab: F[A => B], fbc: F[B => C], afb: A => F[B], bfc: B => F[C])(using
       f: A => B,
@@ -29,20 +32,19 @@ trait BindLaw extends ApplyLaw:
       "`ap` is consistent with `bind`"
     )
 
-  def checkBindLaw[F[_]: Bind, A, B, C](
+  def checkBindLawWithRunner[F[_]: Bind: Runner1, A, B, C](
       fa: F[A],
       fab: F[A => B],
       fbc: F[B => C],
       afb: A => F[B],
-      bfc: B => F[C],
-      run: F[A] | F[B] | F[C] => A | B | C
+      bfc: B => F[C]
   )(using
       f: A => B,
       fReverse: B => A,
       g: B => C,
       gReverse: C => B
   ): Unit =
-    checkApplyLaw(fa, fab, fbc, run)
+    checkApplyLawWithRunner(fa, fab, fbc)
     assertEquals(
       run(fa.flatMap(afb).flatMap(bfc)),
       run(fa.flatMap((a: A) => afb(a).flatMap(bfc))),

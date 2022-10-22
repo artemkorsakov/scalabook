@@ -4,6 +4,7 @@ import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.Functions.given
 import typeclass.common.*
+import typeclass.common.Runner1.stateRunner
 import typeclass.monad.Applicative.given
 import typeclass.monad.Functor.given
 
@@ -40,7 +41,8 @@ class ApplicativeSuite extends ScalaCheckSuite, ApplicativeLaw:
 
   property("stateApplicative[S] должен удовлетворять законам Applicative") {
     forAll { (x: Int, s: String) =>
-      checkApplicativeLaw[[X] =>> State[String, X], Int, String, Boolean](x, _.run(s)._2)
+      given Runner1[[X] =>> State[String, X]] = stateRunner[String](s)
+      checkApplicativeLawWithRunner[[X] =>> State[String, X], Int, String, Boolean](x)
     }
   }
 

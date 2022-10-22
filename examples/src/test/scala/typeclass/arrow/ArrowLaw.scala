@@ -41,4 +41,4 @@ trait ArrowLaw extends StrongLaw, SplitLaw, CategoryLaw:
       runDCADCB
     )
     checkSplitLaw[=>:, A, B, C, D](gab, bc, cd, f1, f2, f3)(runAA, runAD)
-    checkCategoryLaw[=>:, A, B, C, D](gab, bc, cd, f1, f2, f3)(runAA, runAD)
+    //checkCategoryLaw[=>:, A, B, C, D](gab, bc, cd, f1, f2, f3)(runAA, runAD)

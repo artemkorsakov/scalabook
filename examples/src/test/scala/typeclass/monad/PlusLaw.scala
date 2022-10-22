@@ -16,4 +16,4 @@ trait PlusLaw extends SemigroupLaw:
     val ins = summon[Plus[F]]
     import ins.plus
     assertEquals(run(plus(plus(f1, f2), f3)), run(plus(f1, plus(f2, f3))), "Associativity")
-    checkSemigroupLaw(f1, f2, f3)(run)(using ins.semigroup)
+    checkSemigroupLawWithRunner(f1, f2, f3)(run)(using ins.semigroup)

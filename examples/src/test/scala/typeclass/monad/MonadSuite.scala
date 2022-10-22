@@ -4,6 +4,7 @@ import munit.{Assertions, ScalaCheckSuite}
 import org.scalacheck.Prop.*
 import typeclass.Functions.given
 import typeclass.common.*
+import typeclass.common.Runner1.stateRunner
 import typeclass.monad.Monad.given
 
 class MonadSuite extends ScalaCheckSuite, MonadLaw:
@@ -39,7 +40,8 @@ class MonadSuite extends ScalaCheckSuite, MonadLaw:
 
   property("stateMonad должен удовлетворять законам монады") {
     forAll { (x: Int, s: String) =>
-      checkMonadLaw[[X] =>> State[String, X], Int, String, Boolean](x, _.run(s)._2)
+      given Runner1[[X] =>> State[String, X]] = stateRunner[String](s)
+      checkMonadLawWithRunner[[X] =>> State[String, X], Int, String, Boolean](x)
     }
   }
 

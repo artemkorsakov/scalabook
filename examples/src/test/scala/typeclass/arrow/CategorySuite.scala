@@ -11,9 +11,6 @@ class CategorySuite extends ScalaCheckSuite, CategoryLaw:
 
   property("given Category[Function1] должен удовлетворять законам Category") {
     forAll { (x: Int) =>
-      checkCategoryLaw[Function1, Int, String, Boolean, Char](ab, bc, cd, intToInt1, intToInt2, intToInt3)(
-        f => f(x),
-        f => f(x)
-      )
+      checkCategoryLaw[Function1, Int, String, Boolean, Char](ab, bc, cd, intToInt1, intToInt2, intToInt3)(x)
     }
   }

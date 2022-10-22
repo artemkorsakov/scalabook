@@ -11,9 +11,6 @@ class SplitSuite extends ScalaCheckSuite, SplitLaw:
 
   property("given Split[Function1] должен удовлетворять законам Split") {
     forAll { (x: Int) =>
-      checkSplitLaw[Function1, Int, String, Boolean, Char](ab, bc, cd, intToInt1, intToInt2, intToInt3)(
-        f => f(x),
-        f => f(x)
-      )
+      checkSplitLaw[Function1, Int, String, Boolean, Char](ab, bc, cd, intToInt1, intToInt2, intToInt3)(x)
     }
   }

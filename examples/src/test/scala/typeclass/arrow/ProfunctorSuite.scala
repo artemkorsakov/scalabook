@@ -9,6 +9,6 @@ class ProfunctorSuite extends ScalaCheckSuite, ProfunctorLaw:
 
   property("given Profunctor[Function1] должен удовлетворять законам Profunctor") {
     forAll { (a: Boolean, c: Int) =>
-      checkProfunctorLaw[Function1, Boolean, String, Int, String, Boolean, Char](gad)(f => f(a), f => f(c))
+      checkProfunctorLaw[Function1, Boolean, String, Int, String, Boolean, Char](gad)(a, c)
     }
   }

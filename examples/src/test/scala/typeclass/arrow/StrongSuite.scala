@@ -9,17 +9,6 @@ class StrongSuite extends ScalaCheckSuite, StrongLaw:
 
   property("given Strong[Function1] должен удовлетворять законам Strong") {
     forAll { (a: Boolean, c: Int, d: String) =>
-      checkStrongLaw[Function1, Boolean, String, Int, String, Boolean, Char](gad, gad)(
-        f => f(a),
-        f => f(c),
-        f => f(a, c),
-        f => f(c, a),
-        f => f(a, c),
-        f => f(c, a),
-        f => f(a, c),
-        f => f(c, a),
-        f => f((a, c), d),
-        f => f(d, (c, a))
-      )
+      checkStrongLaw[Function1, Boolean, String, Int, String, Boolean, Char](gad, gad)(a, c, d)
     }
   }

@@ -10,26 +10,6 @@ class ArrowSuite extends ScalaCheckSuite, ArrowLaw:
 
   property("given Arrow[Function1] должен удовлетворять законам Arrow") {
     forAll { (a: Int, c: Int, d: String) =>
-      checkArrowLaw[Function1, Int, String, Int, String, Boolean, Char](
-        gcd,
-        gcd,
-        gbc,
-        gcd,
-        intToInt1,
-        intToInt2,
-        intToInt3
-      )(
-        f => f(a),
-        f => f(a),
-        f => f(c),
-        f => f(a, c),
-        f => f(c, a),
-        f => f(a, c),
-        f => f(c, a),
-        f => f(a, c),
-        f => f(c, a),
-        f => f((a, c), d),
-        f => f(d, (c, a))
-      )
+      checkArrowLaw[Function1, Int, String, Int, String, Boolean, Char](gcd, gcd, gbc, gcd, intToInt1, intToInt2, intToInt3)(a, c, d)
     }
   }

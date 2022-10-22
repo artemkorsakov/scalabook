@@ -4,6 +4,7 @@ import munit.{Assertions, ScalaCheckSuite}
 import org.scalacheck.Prop.*
 import typeclass.Functions.given
 import typeclass.common.*
+import typeclass.common.Runner1.*
 import typeclass.monad.Functor.{map, given}
 
 class FunctorSuite extends ScalaCheckSuite, FunctorLaw:
@@ -42,7 +43,8 @@ class FunctorSuite extends ScalaCheckSuite, FunctorLaw:
   property("stateFunctor должен удовлетворять законам функтора") {
     forAll { (x: Int, s: String) =>
       val state = State[String, Int](s => (s, x))
-      checkFunctorLaw[[X] =>> State[String, X], Int, String, Boolean](state, _.run(s)._2)
+      given Runner1[[X] =>> State[String, X]] = stateRunner[String](s)
+      checkFunctorLawWithRunner[[X] =>> State[String, X], Int, String, Boolean](state)
     }
   }
 

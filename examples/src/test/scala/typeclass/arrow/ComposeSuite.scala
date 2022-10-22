@@ -11,9 +11,6 @@ class ComposeSuite extends ScalaCheckSuite, ComposeLaw:
 
   property("given Compose[Function1] должен удовлетворять законам Compose") {
     forAll { (x: Int) =>
-      checkComposeLaw[Function1, Int, String, Boolean, Char](ab, bc, cd, intToInt1, intToInt2, intToInt3)(
-        f => f(x),
-        f => f(x)
-      )
+      checkComposeLaw[Function1, Int, String, Boolean, Char](ab, bc, cd, intToInt1, intToInt2, intToInt3)(x)
     }
   }

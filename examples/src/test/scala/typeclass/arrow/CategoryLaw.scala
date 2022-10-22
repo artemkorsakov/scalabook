@@ -13,7 +13,7 @@ trait CategoryLaw extends ComposeLaw, PlusEmptyLaw:
   )(runAA: A =>: A => A, runAD: A =>: D => D): Unit =
     val ins = summon[Category[=>:]]
     import ins.{compose, id}
-    checkComposeLaw[=>:, A, B, C, D](ab, bc, cd, f1, f2, f3)(runAA, runAD)
+    //checkComposeLaw[=>:, A, B, C, D](ab, bc, cd, f1, f2, f3)(runAA, runAD)
     checkPlusEmptyLaw[[A] =>> A =>: A, A](f1, f2, f3)(runAA)(using ins.empty)
     checkMonoidLaw[A =>: A, A](f1, f2, f3)(runAA)(using ins.monoid)
     assertEquals(runAA(compose(f1, id[A])), runAA(f1), "right identity")

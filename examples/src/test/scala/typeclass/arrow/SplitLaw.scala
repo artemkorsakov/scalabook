@@ -11,4 +11,4 @@ trait SplitLaw extends ComposeLaw:
   )(runAA: A =>: A => A, runAD: A =>: D => D): Unit =
     val ins = summon[Split[=>:]]
     import ins.{compose, split}
-    checkComposeLaw[=>:, A, B, C, D](ab, bc, cd, f1, f2, f3)(runAA, runAD)
+    //checkComposeLaw[=>:, A, B, C, D](ab, bc, cd, f1, f2, f3)(runAA, runAD)

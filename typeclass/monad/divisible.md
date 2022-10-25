@@ -1,40 +1,49 @@
 # Divisible
 
-Контравариантный функтор (`F`) похож на функтор, только с противоположной операцией `cmap`:
-- `cmap(b: F[B])(f: A => B): F[A]`.
+`Divisible` - контравариантный аналог [`Applicative`](applicative). 
+Он расширяет [`Divide`](divide) и [`InvariantApplicative`](invariant-applicative).
 
-Законы контравариантного функтора:
-- Identity (тождественность): Если определен метод идентификации `id` такой, что: `id(a) == a`,
-  тогда `cmap(fa)(id) == fa`.
-- Composition (композиция): Если определены два метода `f: A => B` и `g: B => C`, тогда `cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))`.
+Законы `Divisible`:
+- right identity: `divide(fa, conquer)(delta) == fa`, где `delta: A => (A, A) = a => (a, a)`
+- left identity: `divide(conquer, fa)(delta) == fa`
 
 
 ## Описание
 
 ```scala
-trait ContravariantFunctor[F[_]]:
-  def cmap[A, B](b: F[B])(f: A => B): F[A]
+trait Divisible[F[_]] extends Divide[F], InvariantApplicative[F]:
+  def conquer[A]: F[A]
+
+  override def xunit0[A](a: => A): F[A] = conquer
+
+  override def cmap[A, B](fb: F[B])(f: A => B): F[A] =
+    divide(conquer[Unit], fb)(c => ((), f(c)))
 ```
 
 ## Примеры
 
-### Унарная функция является ковариантным функтором
+### Унарная функция
 
 ```scala
-given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X, R]] with
-  def cmap[A, B](function: B => R)(f: A => B): A => R =
-    a => function(f(a))
+given functionDivisible[R: Monoid]: Divisible[[X] =>> Function1[X, R]] with
+  override def divide[A, B, C](fa: => A => R, fb: => B => R)(f: C => (A, B)): C => R =
+    c => {
+      val (a, b) = f(c)
+      summon[Monoid[R]].combine(fa(a), fb(b))
+    }
+
+  override def conquer[A]: A => R = _ => summon[Monoid[R]].empty
 ```
 
 ## Исходный код
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FContravariantFunctor.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FDivisible.scala&plain=1)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FContravariantFunctorSuite.scala)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FDivisibleSuite.scala)
 
 
 ---
 
 ## References
 
-- [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Contravariant.html)
+- [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Divisible.html)

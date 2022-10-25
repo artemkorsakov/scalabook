@@ -1,40 +1,47 @@
 # Divide
 
-Контравариантный функтор (`F`) похож на функтор, только с противоположной операцией `cmap`:
-- `cmap(b: F[B])(f: A => B): F[A]`.
+`Divide` - контравариантный аналог [`Apply`](apply). Он расширяет ковариантный функтор и дополнительно реализует
+операцию `divide`: `def divide[A, B, C](fa: => F[A], fb: => F[B])(f: C => (A, B)): F[C]`
 
-Законы контравариантного функтора:
-- Identity (тождественность): Если определен метод идентификации `id` такой, что: `id(a) == a`,
-  тогда `cmap(fa)(id) == fa`.
-- Composition (композиция): Если определены два метода `f: A => B` и `g: B => C`, тогда `cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))`.
+Законы `Divide`:
+- Composition (композиция): `divide(divide(fa1, fa2)(delta), fa3)(delta) == divide(fa1, divide(fa2, fa3)(delta))(delta)`,
+  где `delta: A => (A, A) = a => (a, a)`
 
 
 ## Описание
 
 ```scala
-trait ContravariantFunctor[F[_]]:
-  def cmap[A, B](b: F[B])(f: A => B): F[A]
+trait Divide[F[_]] extends ContravariantFunctor[F]:
+  def divide[A, B, C](fa: => F[A], fb: => F[B])(f: C => (A, B)): F[C]
+
+  def tuple2[A, B](fa: => F[A], fb: => F[B]): F[(A, B)] = divide(fa, fb)(identity)
 ```
 
 ## Примеры
 
-### Унарная функция является ковариантным функтором
+### Унарная функция
 
 ```scala
-given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X, R]] with
-  def cmap[A, B](function: B => R)(f: A => B): A => R =
+given functionDivide[R: Monoid]: Divide[[X] =>> Function1[X, R]] with
+  override def cmap[A, B](function: B => R)(f: A => B): A => R =
     a => function(f(a))
+
+  override def divide[A, B, C](fa: => A => R, fb: => B => R)(f: C => (A, B)): C => R =
+    c => {
+      val (a, b) = f(c)
+      summon[Monoid[R]].combine(fa(a), fb(b))
+    }
 ```
 
 ## Исходный код
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FContravariantFunctor.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FDivide.scala&plain=1)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FContravariantFunctorSuite.scala)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FDivideSuite.scala)
 
 
 ---
 
 ## References
 
-- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
+- [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Divide.html)

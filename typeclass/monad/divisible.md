@@ -37,4 +37,4 @@ given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X,
 
 ## References
 
-- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
+- [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Contravariant.html)

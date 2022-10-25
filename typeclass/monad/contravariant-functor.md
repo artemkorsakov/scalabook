@@ -43,7 +43,7 @@ trait ContravariantFunctor[F[_]] extends InvariantFunctor[F]:
 
 ## Примеры
 
-### Унарная функция является ковариантным функтором
+### Унарная функция
 
 ```scala
 given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X, R]] with

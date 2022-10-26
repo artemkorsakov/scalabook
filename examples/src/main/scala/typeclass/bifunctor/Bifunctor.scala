@@ -3,63 +3,47 @@ package typeclass.bifunctor
 import typeclass.common.*
 import typeclass.monad.{Functor, InvariantFunctor}
 
-trait Bifunctor[F[_]] extends InvariantFunctor[F]:
-  extension [A](fa: F[A])
-    def map[B](f: A => B): F[B]
+trait Bifunctor[F[_, _]]:
+  /** `map` over both type parameters. */
+  def bimap[A, B, C, D](fab: F[A, B])(f: A => C, g: B => D): F[C, D]
 
-    override def xmap[B](f: A => B, g: B => A): F[B] = fa.map(f)
+  /** Extract the Functor on the first param. */
+  def leftFunctor[R]: Functor[[X] =>> F[X, R]] =
+    new Functor[[X] =>> F[X, R]]:
+      extension [A](fax: F[A, R]) override def map[B](f: A => B): F[B, R] = leftMap(fax)(f)
 
-  def lift[A, B](f: A => B): F[A] => F[B] = _.map(f)
+  def leftMap[A, B, C](fab: F[A, B])(f: A => C): F[C, B] =
+    bimap(fab)(f, identity)
 
-  def mapply[A, B](a: A)(f: F[A => B]): F[B] = map(f)((ff: A => B) => ff(a))
+  /** Extract the Functor on the second param. */
+  def rightFunctor[L]: Functor[[X] =>> F[L, X]] =
+    new Functor[[X] =>> F[L, X]]:
+      extension [A](fax: F[L, A]) override def map[B](f: A => B): F[L, B] = rightMap(fax)(f)
 
-  def fproduct[A, B](fa: F[A])(f: A => B): F[(A, B)] = map(fa)(a => (a, f(a)))
+  def rightMap[A, B, D](fab: F[A, B])(g: B => D): F[A, D] =
+    bimap(fab)(identity, g)
+
+  /** Unify the functor over both params. */
+  def uFunctor: Functor[[X] =>> F[X, X]] =
+    new Functor[[X] =>> F[X, X]]:
+      extension [A](fax: F[A, A]) override def map[B](f: A => B): F[B, B] = umap(fax)(f)
+
+  def umap[A, B](faa: F[A, A])(f: A => B): F[B, B] =
+    bimap(faa)(f, f)
 
 object Bifunctor:
-  given idFunctor: Functor[Id] with
-    extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as.value))
+  given Bifunctor[Either] with
+    override def bimap[A, B, C, D](fab: Either[A, B])(f: A => C, g: B => D): Either[C, D] =
+      fab match
+        case Right(value) => Right(g(value))
+        case Left(value)  => Left(f(value))
 
-  given optionFunctor: Functor[Option] with
-    extension [A](optA: Option[A])
-      override def map[B](f: A => B): Option[B] =
-        optA match
-          case Some(a) => Some(f(a))
-          case None    => None
+  given Bifunctor[Writer] with
+    override def bimap[A, B, C, D](fab: Writer[A, B])(f: A => C, g: B => D): Writer[C, D] =
+      Writer { () =>
+        val (a, b) = fab.run()
+        (f(a), g(b))
+      }
 
-  given listFunctor: Functor[List] with
-    extension [A](as: List[A]) override def map[B](f: A => B): List[B] = as.map(f)
-
-  given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
-    extension [A](fa: Either[E, A])
-      override def map[B](f: A => B): Either[E, B] =
-        fa match
-          case Right(a) => Right(f(a))
-          case Left(e)  => Left(e)
-
-  given writerFunctor[W]: Functor[[x] =>> Writer[W, x]] with
-    extension [A](fa: Writer[W, A])
-      override def map[B](f: A => B): Writer[W, B] =
-        val (w, a) = fa.run()
-        Writer[W, B](() => (w, f(a)))
-
-  given stateFunctor[S]: Functor[[x] =>> State[S, x]] with
-    extension [A](fa: State[S, A])
-      override def map[B](f: A => B): State[S, B] =
-        State[S, B] { s =>
-          val (s1, a) = fa.run(s)
-          (s1, f(a))
-        }
-
-  given nestedFunctor[F[_], G[_]](using functorF: Functor[F], functorG: Functor[G]): Functor[[X] =>> Nested[F, G, X]]
-    with
-    extension [A](fga: Nested[F, G, A])
-      override def map[B](f: A => B): Nested[F, G, B] =
-        Nested[F, G, B] {
-          functorF.map(fga.value)(ga => functorG.map(ga)(f))
-        }
-
-  given ioFunctor: Functor[IO] with
-    extension [A](as: IO[A]) override def map[B](f: A => B): IO[B] = IO { () => f(as.run()) }
-
-  def map[F[_], A, B](fa: F[A], f: A => B)(using functor: Functor[F]): F[B] =
-    functor.map(fa)(f)
+  def bimap[F[_, _], A, B, C, D](fab: F[A, B])(f: A => C, g: B => D)(using bifunctor: Bifunctor[F]): F[C, D] =
+    bifunctor.bimap(fab)(f, g)

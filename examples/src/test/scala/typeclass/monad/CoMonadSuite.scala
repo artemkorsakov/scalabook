@@ -2,8 +2,8 @@ package typeclass.monad
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
-import typeclass.common.Id
-import typeclass.monad.CoMonad.{Env, coFlatMap, coUnit, given}
+import typeclass.common.{Env, Id}
+import typeclass.monad.CoMonad.{coFlatMap, coUnit, given}
 
 class CoMonadSuite extends ScalaCheckSuite:
   property("idCoMonad должен быть комонадой") {

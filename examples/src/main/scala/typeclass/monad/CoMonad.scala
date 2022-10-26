@@ -1,14 +1,12 @@
 package typeclass.monad
 
-import typeclass.common.Id
+import typeclass.common.{Env, Id}
 
 trait CoMonad[F[_]]:
   def coUnit[A](fa: F[A]): A
   def coFlatMap[A, B](fa: F[A])(f: F[A] => B): F[B]
 
 object CoMonad:
-  final case class Env[A, R](a: A, r: R)
-
   given CoMonad[Id] with
     override def coUnit[A](fa: Id[A]): A = fa.value
 

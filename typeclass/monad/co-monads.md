@@ -1,9 +1,9 @@
 # Co-Monad
 
-Комонада реализует противоположные для монады операции.
+Комонада реализует противоположные для [монады](monad) операции.
 
 
-## Описание комонады
+## Описание
 
 ```scala
 trait CoMonad[F[_]]:
@@ -44,4 +44,4 @@ given envCoMonad[R]: CoMonad[[X] =>> Env[X, R]] with
 
 ## References
 
-- [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Contravariant.html)
+- [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Comonad.html)

@@ -1,14 +1,20 @@
 # CoBind
 
-Комонада реализует противоположные для монады операции.
+`CoBind` реализует противоположные для [`Bind`](bind) операции.
 
 
-## Описание комонады
+## Описание
 
 ```scala
-trait CoMonad[F[_]]:
-  def coUnit[A](fa: F[A]): A
-  def coFlatMap[A, B](fa: F[A])(f: F[A] => B): F[B]
+trait CoBind[F[_]] extends Functor[F]:
+  extension [A](fa: F[A])
+    /** Также известно как `extend` */
+    def cobind[B](f: F[A] => B): F[B]
+
+    final def extend[B](f: F[A] => B): F[B] = fa.cobind(f)
+
+    /** Также известно как `duplicate` */
+    final def cojoin: F[F[A]] = fa.cobind(fa => fa)
 ```
 
 ## Примеры
@@ -18,9 +24,11 @@ trait CoMonad[F[_]]:
 ```scala
 case class Id[A](value: A)
 
-given CoMonad[Id] with
-  override def coUnit[A](fa: Id[A]): A = fa.value
-  override def coFlatMap[A, B](fa: Id[A])(f: Id[A] => B): Id[B] = Id(f(fa))
+given CoBind[Id] with
+  extension [A](as: Id[A])
+    override def map[B](f: A => B): Id[B] = Id(f(as.value))
+
+    override def cobind[B](f: Id[A] => B): Id[B] = Id(f(as))
 ```
 
 ### Переменные окружения
@@ -28,20 +36,26 @@ given CoMonad[Id] with
 ```scala
 final case class Env[A, R](a: A, r: R)
 
-given envCoMonad[R]: CoMonad[[X] =>> Env[X, R]] with
-  override def coUnit[A](fa: Env[A, R]): A = fa.a
-  override def coFlatMap[A, B](fa: Env[A, R])(f: Env[A, R] => B): Env[B, R] = Env(f(fa), fa.r)
+given envCoBind[R]: CoBind[[X] =>> Env[X, R]] with
+  extension [A](as: Env[A, R])
+    override def map[B](f: A => B): Env[B, R] =
+      val Env(a, r) = as
+      Env(f(a), r)
+
+    override def cobind[B](f: Env[A, R] => B): Env[B, R] =
+      val Env(_, r) = as
+      Env(f(as), r)
 ```
 
 ## Исходный код
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FCoMonad.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FCoBind.scala&plain=1)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FCoMonadSuite.scala)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FCoBindSuite.scala)
 
 
 ---
 
 ## References
 
-- [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Contravariant.html)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Cobind.html)

@@ -2,7 +2,7 @@
 
 ## Схема
 
-![monad](https://gitflic.ru/project/artemkorsakov/scalabook/blob/raw?file=images%2Fmonad.png&commit=a96e22409b7f14fcf7aed64010a749b3dac4a7c7)
+![bifunctor](https://gitflic.ru/project/artemkorsakov/scalabook/blob/raw?file=images%2Fbifunctor.png&commit=5ddc90d0ec8532f76a51fcff23de9253bcab9fd0)
 
 ## Исходный код
 

@@ -4,7 +4,7 @@ import typeclass.common.{Env, Id}
 
 trait CoBind[F[_]] extends Functor[F]:
   extension [A](fa: F[A])
-    /** Также известно как `extend` */
+    /** Также известно как `extend` и `coFlatMap` */
     def cobind[B](f: F[A] => B): F[B]
 
     final def extend[B](f: F[A] => B): F[B] = fa.cobind(f)

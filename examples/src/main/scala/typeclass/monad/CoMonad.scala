@@ -3,9 +3,9 @@ package typeclass.monad
 import typeclass.common.{Env, Id}
 
 trait CoMonad[F[_]] extends CoBind[F]:
+  /** Также известно как `coPoint` и `coPure` */
   def coUnit[A](fa: F[A]): A
 
-  // Aliases
   final def coPoint[A](p: F[A]): A = coUnit(p)
 
   final def coPure[A](p: F[A]): A = coUnit(p)

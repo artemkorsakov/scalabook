@@ -160,7 +160,6 @@
     - [Divisible](typeclass/monad/divisible.md)
     - [CoBind](typeclass/monad/co-bind.md)
     - [CoMonad](typeclass/monad/co-monads.md)
-    - [Align](typeclass/monad/align.md)
     - [Monad Transformer](typeclass/monad/monad-transformer.md)
     - [Free Monad](typeclass/monad/free-monads.md)
   - [Группа Arrow](typeclass/arrow.md)

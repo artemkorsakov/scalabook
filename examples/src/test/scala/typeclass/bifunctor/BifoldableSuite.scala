@@ -1,9 +1,10 @@
-package typeclass.monad
+package typeclass.bifunctor
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.common.*
 import typeclass.monad.Foldable.{foldRight, given}
+import typeclass.monad.FoldableLaw
 import typeclass.monoid.Monoid.given
 
 class BifoldableSuite extends ScalaCheckSuite, FoldableLaw:

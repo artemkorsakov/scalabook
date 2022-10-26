@@ -1,10 +1,10 @@
-package typeclass.monad
+package typeclass.bifunctor
 
-import munit.Assertions
 import typeclass.common.Id
-import typeclass.monad.Applicative.{unit, given}
-import typeclass.monad.Functor.{map, given}
+import typeclass.monad.Applicative.unit
+import typeclass.monad.Functor.map
 import typeclass.monad.Traverse.traverse
+import typeclass.monad.{Applicative, FunctorLaw, Traverse}
 import typeclass.monoid.Monoid
 
 trait BitraverseLaw extends FunctorLaw:

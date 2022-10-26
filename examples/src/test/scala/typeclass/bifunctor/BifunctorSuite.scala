@@ -1,4 +1,4 @@
-package typeclass.monad
+package typeclass.bifunctor
 
 import munit.{Assertions, ScalaCheckSuite}
 import org.scalacheck.Prop.*
@@ -6,6 +6,7 @@ import typeclass.Functions.given
 import typeclass.common.*
 import typeclass.common.Runner1.*
 import typeclass.monad.Functor.{map, given}
+import typeclass.monad.FunctorLaw
 
 class BifunctorSuite extends ScalaCheckSuite, FunctorLaw:
   property("idFunctor должен удовлетворять законам функтора") {

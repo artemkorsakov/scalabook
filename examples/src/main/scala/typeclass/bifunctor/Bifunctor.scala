@@ -1,6 +1,7 @@
-package typeclass.monad
+package typeclass.bifunctor
 
 import typeclass.common.*
+import typeclass.monad.{Functor, InvariantFunctor}
 
 trait Bifunctor[F[_]] extends InvariantFunctor[F]:
   extension [A](fa: F[A])

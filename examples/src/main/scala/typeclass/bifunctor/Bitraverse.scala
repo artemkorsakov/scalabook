@@ -1,6 +1,7 @@
-package typeclass.monad
+package typeclass.bifunctor
 
 import typeclass.common.*
+import typeclass.monad.{Applicative, Foldable, Functor, Traverse}
 
 trait Bitraverse[F[_]] extends Functor[F], Foldable[F]:
   self =>

@@ -1,8 +1,9 @@
-package typeclass.monad
+package typeclass.bifunctor
 
 import typeclass.common.Runner1
 import typeclass.common.Runner1.run
 import typeclass.monad.Functor.map
+import typeclass.monad.{Functor, InvariantFunctorLaw}
 
 trait BifunctorLaw extends InvariantFunctorLaw:
   def checkFunctorLaw[F[_]: Functor, A, B, C](

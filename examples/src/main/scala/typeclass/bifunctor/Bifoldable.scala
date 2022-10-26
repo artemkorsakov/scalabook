@@ -1,6 +1,7 @@
-package typeclass.monad
+package typeclass.bifunctor
 
 import typeclass.common.*
+import typeclass.monad.Foldable
 import typeclass.monoid.Monoid
 import typeclass.monoid.Monoid.*
 

@@ -1,6 +1,7 @@
-package typeclass.monad
+package typeclass.bifunctor
 
 import munit.Assertions
+import typeclass.monad.Foldable
 import typeclass.monoid.Monoid
 
 trait BifoldableLaw extends Assertions:

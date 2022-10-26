@@ -2,22 +2,26 @@ package typeclass.monad
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
+import typeclass.Functions.given
 import typeclass.common.{Env, Id}
 import typeclass.monad.CoMonad.{coFlatMap, coUnit, given}
 
-class CoMonadSuite extends ScalaCheckSuite:
-  property("idCoMonad должен быть комонадой") {
-    forAll { (x: Int, y: String) =>
-      val fa = Id(x)
-      assertEquals(coUnit(fa), x)
-      assertEquals(coFlatMap(fa)(_.value.toString), Id(x.toString))
+class CoMonadSuite extends ScalaCheckSuite, CoMonadLaw:
+  private val f: Int => String = given_Conversion_Int_String.apply
+  private val g: String => Boolean = given_Conversion_String_Boolean.apply
+
+  property("idCoMonad должен удовлетворять законам CoMonad") {
+    forAll { (x: Int) =>
+      checkCoMonadLaw[Id, Int, String, Boolean](Id(x), idInt => f(idInt.value), idStr => g(idStr.value))
     }
   }
 
-  property("envCoMonad должен быть комонадой") {
+  property("envCoMonad должен удовлетворять законам CoMonad") {
     forAll { (x: Int, y: String) =>
-      val fa = Env(x, y)
-      assertEquals(coUnit[[X] =>> Env[X, String], Int](fa), x)
-      assertEquals(coFlatMap[[X] =>> Env[X, String], Int, String](fa)(_.a.toString), Env(x.toString, y))
+      checkCoMonadLaw[[X] =>> Env[X, String], Int, String, Boolean](
+        Env[Int, String](x, y),
+        fa => f(fa.a),
+        fb => g(fb.a)
+      )
     }
   }

@@ -17,9 +17,9 @@ class CoBindSuite extends ScalaCheckSuite, CoBindLaw:
   }
 
   property("envCoBind должен удовлетворять законам CoBind") {
-    forAll { (x: Int) =>
+    forAll { (x: Int, y: String) =>
       checkCoBindLaw[[X] =>> Env[X, String], Int, String, Boolean](
-        Env[Int, String](x, "key"),
+        Env[Int, String](x, y),
         fa => f(fa.a),
         fb => g(fb.a)
       )

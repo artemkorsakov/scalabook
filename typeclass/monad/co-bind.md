@@ -13,6 +13,8 @@ trait CoBind[F[_]] extends Functor[F]:
 
     final def extend[B](f: F[A] => B): F[B] = fa.cobind(f)
 
+    final def coFlatMap[B](f: F[A] => B): F[B] = fa.cobind(f)
+
     /** Также известно как `duplicate` */
     final def cojoin: F[F[A]] = fa.cobind(fa => fa)
 ```

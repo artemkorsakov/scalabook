@@ -1,21 +1,13 @@
 package typeclass.bifunctor
 
-import typeclass.common.Runner1
-import typeclass.common.Runner1.run
-import typeclass.monad.Functor.map
-import typeclass.monad.{Functor, InvariantFunctorLaw}
+import typeclass.monad.FunctorLaw
 
-trait BifunctorLaw extends InvariantFunctorLaw:
-  def checkFunctorLaw[F[_]: Functor, A, B, C](
-      fa: F[A]
-  )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B): Unit =
-    checkInvariantFunctorLaw[F, A, B, C](fa)
-    assertEquals(map(fa, identity), fa, "identity")
-    assertEquals(map(map(fa, f), g), map(fa, f.andThen(g)), "composition")
-
-  def checkFunctorLawWithRunner[F[_]: Functor: Runner1, A, B, C](
-      fa: F[A]
-  )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B): Unit =
-    checkInvariantFunctorLawWithRunner[F, A, B, C](fa)
-    assertEquals(run(map(fa, identity)), run(fa), "identity")
-    assertEquals(run(map(map(fa, f), g)), run(map(fa, f.andThen(g))), "composition")
+trait BifunctorLaw extends FunctorLaw:
+  def checkBifunctorLaw[F[_, _], L, R, A, B, C](
+      far: F[A, R],
+      fla: F[L, A],
+      faa: F[A, A]
+  )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B)(using bi: Bifunctor[F]): Unit =
+    checkFunctorLaw[[X] =>> F[X, R], A, B, C](far)(using bi.leftFunctor[R], f, fReverse, g, gReverse)
+    checkFunctorLaw[[X] =>> F[L, X], A, B, C](fla)(using bi.rightFunctor[L], f, fReverse, g, gReverse)
+    checkFunctorLaw[[X] =>> F[X, X], A, B, C](faa)(using bi.uFunctor, f, fReverse, g, gReverse)

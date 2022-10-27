@@ -74,39 +74,57 @@ given Bifunctor[Writer] with
 import scalaz._
 import Scalaz._
 
-val len: String => Int = _.length
-Functor[Option].map(Some("adsf"))(len)             // Some(4)
-Functor[Option].map(None)(len)                     // None
-Functor[List].map(List("qwer", "adsfg"))(len)      // List(4, 5)
-// или через вызов метода на типе
-List(1, 2, 3) map {_ + 1}                          // List(2, 3, 4)
-List(1, 2, 3) ∘ {_ + 1}                            // List(2, 3, 4)
+Bifunctor[Tuple2].bimap(("asdf", 1))(_.toUpperCase, _ + 1)                               // ("ASDF",2)
+("asdf", 1).bimap(_.length, _ + 1)                                                       // (4,2)
 
-// В ScalaZ есть метод fpair, дублирующий значение в функторе 
-List(1, 2, 3).fpair                                // List((1,1), (2,2), (3,3))
+// Для суммированных типов, какая функция применяется, зависит от того, какое значение присутствует:
+Bifunctor[Either].bimap(Left("asdf") : Either[String,Int])(_.toUpperCase, _ + 1)         // Left("ASDF")
+Bifunctor[Either].bimap(Right(1): Either[String,Int])(_.toUpperCase, _ + 1)              // Right(2)
 
-// Используя Functor можно «поднять» функцию для работы с типом Functor. Пример на Functor[Option]:
-val lenOption: Option[String] => Option[Int] = Functor[Option].lift(len)
-lenOption(Some("abcd"))                            // Some(4)
-Functor[List].lift {(_: Int) * 2} (List(1, 2, 3))  // List(2, 4, 6)
+//
+// leftMap / rightMap
+//
 
-// В ScalaZ есть методы strength, позволяющие "прокидывать" значение, создавая коллекцию tuple-ов
-List(1,2,3).strengthL("a")                         // List("a" -> 1, "a" -> 2, "a" -> 3)
-List(1,2,3).strengthR("a")                         // List(1 -> "a", 2 -> "a", 3 -> "a")
+// Существуют функции для отображения только «правого» или «левого» значения:
+Bifunctor[Tuple2].leftMap(("asdf", 1))(_.substring(1))                                   // ("sdf" -> 1)
+Bifunctor[Tuple2].rightMap(("asdf", 1))(_ + 3)                                           // ("asdf" -> 4)
 
-// Functor предоставляет функцию fproduct, которая сопоставляет значение с результатом применения функции к этому значению.
-List("a", "aa", "b", "ccccc").fproduct(len)        // List((a,1), (aa,2), (b,1), (ccccc,5))
+// Они идут с таким синтаксисом
+1.success[String].rightMap(_ + 10)                                                       // Success(11)
+("a", 1).rightMap(_ + 10)                                                                // ("a" -> 11)
 
-// Метод void «аннулирует» функтор, заменяя любой F[A] на F[Unit]
-Functor[Option].void(Some(1))                      // Some(())
+// и еще более причудливым
+1.success[String] :-> (_ + 1)                                                            // Success(2)
 
-// Также в ScalaZ есть метод "принудительно" выставляющий заданное значение
-List(1, 2, 3) >| "x"                               // List(x, x, x)
-List(1, 2, 3) as "x"                               // List(x, x, x)
+// С левой стороны вывод типа может быть плохим, так что мы вынуждены явно указывать типы в функции, которую мы оставилиMap.
+val strlen: String => Int = _.length
+(strlen <-: ("asdf", 1))                                                                 // (4 -> 1)
+(((_:String).length) <-: ("asdf", 1))                                                    // (4 -> 1)
 
-// Компоновка функторов
-val listOpt = Functor[List] compose Functor[Option]
-listOpt.map(List(Some(1), None, Some(3)))(_ + 1)   // List(Some(2), None, Some(4))
+strlen <-: ("asdf", 1) :-> (_ + 1)                                                       // (4 -> 2)
+
+//
+// Functor extraction
+//
+
+// Мы можем получить либо левый, либо правый базовые функторы.
+val leftF = Bifunctor[\/].leftFunctor[String]
+leftF.map("asdf".right[Int])(_ + 1)                                                      // "asdf".right[Int]
+leftF.map(1.left)(_ + 1)                                                                 // 2.left[String]
+
+val rightF = Bifunctor[\/].rightFunctor[String]
+rightF.map("asdf".left[Int])(_ + 1)                                                      // "asdf".left[Int]
+rightF.map(1.right)(_ + 1)                                                               // 2.right[String]
+
+//
+// Ufunctor
+//
+
+// Если у нас есть F[A,A] (вместо F[A,B] с разными A и B) мы можем извлечь "унифицированный функтор", который является функтором,
+Bifunctor[Tuple2].uFunctor.map((2,3))(_ * 3)                                             // (6 -> 9)
+
+// или пропустить шаг извлечения единого функтора методом umap.
+Bifunctor[Tuple2].umap((2,3))(_ * 3)                                                     // (6 -> 9)
 ```
 
 

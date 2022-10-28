@@ -3,19 +3,17 @@ package typeclass.bifunctor
 import typeclass.common.*
 import typeclass.monad.{Applicative, Foldable, Functor, Traverse}
 
-trait Bitraverse[F[_]] extends Functor[F], Foldable[F]:
-  self =>
+trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:
 
-  extension [A](fa: F[A])
-    def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[B]]
+  extension [A, B](fab: F[A, B])
+    def bitraverse[G[_]: Applicative, C, D](f: A => G[C], g: B => G[D]): G[F[C, D]]
 
-    override def map[B](f: A => B): F[B] = traverse(a => Id(f(a))).value
+    override def bimap[C, D](f: A => C, g: B => D): F[C, D] =
+      bitraverse[Id, C, D](a => Id(f(a)), b => Id(g(b))).value
 
-    override def foldRight[B](init: B)(f: (A, B) => B): B =
-      traverse(a => State[B, A]((b: B) => (f(a, b), a))).run(init)._1
+    // override def foldRight[B](init: B)(f: (A, B) => B): B = traverse(a => State[B, A]((b: B) => (f(a, b), a))).run(init)._1
 
-  def sequence[G[_]: Applicative, A](fga: F[G[A]]): G[F[A]] =
-    fga.traverse(ga => ga)
+  // def sequence[G[_]: Applicative, A](fga: F[G[A]]): G[F[A]] = fga.traverse(ga => ga)
 
 object Bitraverse:
   given Traverse[Id] with

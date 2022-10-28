@@ -41,9 +41,9 @@ trait Bifoldable[F[_, _]]:
 
 object Bifoldable:
   given eitherBifoldable: Bifoldable[Either] with
-    extension [A, B](fa: Either[A, B])
+    extension [A, B](fab: Either[A, B])
       def bifoldMap[M](f: A => M)(g: B => M)(using ma: Monoid[M]): M =
-        fa match
+        fab match
           case Right(value) => g(value)
           case Left(value)  => f(value)
 

@@ -1,40 +1,6 @@
 # Bitraverse
 
-Предположим, что есть два функтора `F` и `G`.
-`Traversable` позволяет менять местами "обертку" функторов между собой,
-т.е. реализует операции `traverse` = `(F[A], A => G[B]) -> G[F[B]]` и `sequence` = `F[G[A]] -> G[F[A]]`.
-
-`Traversable` включает в себя повторение элементов структуры данных в стиле `map`,
-но интерпретацию определенных функциональных приложений идиоматически.
-
-С помощью `traverse` можно выразить и `map`, и `foldRight`, а также `sequence`, отображающий `F[G[A]]` в `G[F[A]]`.
-
-`Traversable` должен удовлетворять следующим законам:
-
-- Обход Id эквивалентен `Functor#map`:
-  ```scala
-  traverse[F, Id, A, B](fa, a => Id(f(a))).value == fa.map(f)
-  ```
-- Два последовательно зависимых эффекта могут быть объединены в один, их композицию:
-  ```scala
-  val optFb: G[F[B]] = traverse[F, G, A, B](fa, a => unit(f(a)))
-  val optListFc1: G[H[F[C]]] =
-    map[G, F[B], H[F[C]]](optFb, fb => traverse[F, H, B, C](fb, b => unit(g(b))))
-  val optListFc2: G[H[F[C]]] =
-    traverse[F, [X] =>> G[H[X]], A, C](fa, a => map[G, B, H[C]](unit(f(a)), b => unit(g(b))))
-  optListFc1 == optListFc2
-  ```
-- Обход с помощью функции `unit` аналогичен прямому применению функции `unit`:
-  ```scala
-  traverse[F, G, A, A](fa, a => unit(a)) == unit[G, F[A]](fa)
-  ```
-- Два независимых эффекта могут быть объединены в один эффект, их произведение
-  ```scala
-  type GH[A] = (G[A], H[A])
-  val t1: GH[F[B]] = (traverse[F, G, A, B](fa, a => unit(f(a))), traverse[F, H, A, B](fa, a => unit(f(a))))
-  val t2: GH[F[B]] = traverse[F, GH, A, B](fa, a => (unit(f(a)), unit(f(a))))
-  t1 == t2
-  ```
+`Bitraverse` - тип, порождающий два несвязанных [`Traverse`](../monad/traverse).
 
 
 ## Описание

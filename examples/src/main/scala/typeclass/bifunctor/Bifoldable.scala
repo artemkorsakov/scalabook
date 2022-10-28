@@ -5,71 +5,47 @@ import typeclass.monad.Foldable
 import typeclass.monoid.Monoid
 import typeclass.monoid.Monoid.*
 
-trait Bifoldable[F[_]]:
-  extension [A](fa: F[A])
-    def foldRight[B](init: B)(f: (A, B) => B): B =
-      fa.foldMap(f.curried)(using endoMonoid[B])(init)
+trait Bifoldable[F[_, _]]:
+  extension [A, B](fa: F[A, B])
+    /** Аккумулирование всех `A` и `B`. */
+    def bifoldMap[M](f: A => M)(g: B => M)(using ma: Monoid[M]): M
 
-    def foldLeft[B](acc: B)(f: (B, A) => B): B =
-      fa.foldMap(a => b => f(b, a))(using dual(endoMonoid[B]))(acc)
+    /** Аккумулирование до `C`, начиная "справа". */
+    def bifoldRight[C](z: => C)(f: (A, C) => C)(g: (B, C) => C): C =
+      fa.bifoldMap[C => C](f.curried)(g.curried)(using endoMonoid[C])(z)
 
-    def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
-      fa.foldRight(mb.empty)((a, b) => mb.combine(f(a), b))
+    /** Аккумулирование до `C`, начиная "слева". */
+    def bifoldLeft[C](z: C)(f: (C, A) => C)(g: (C, B) => C): C =
+      fa.bifoldMap[C => C](a => c => f(c, a))(b => c => g(c, b))(using dual(endoMonoid[C]))(z)
 
-    def combineAll(using ma: Monoid[A]): A =
-      fa.foldLeft(ma.empty)(ma.combine)
+  /** Выделение Foldable из первого параметра. */
+  def leftFoldable[R]: Foldable[[X] =>> F[X, R]] =
+    new Foldable[[X] =>> F[X, R]]:
+      extension [A](fa: F[A, R])
+        override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
+          fa.bifoldMap[B](f)(_ => mb.empty)
 
-    def toList: List[A] =
-      fa.foldRight(List.empty[A])(_ :: _)
+  /** Выделение Foldable из второго параметра. */
+  def rightFoldable[L]: Foldable[[X] =>> F[L, X]] =
+    new Foldable[[X] =>> F[L, X]]:
+      extension [A](fa: F[L, A])
+        override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
+          fa.bifoldMap[B](_ => mb.empty)(f)
+
+  /** Унифицирование Foldable на обоих параметрах. */
+  def uFoldable: Foldable[[X] =>> F[X, X]] =
+    new Foldable[[X] =>> F[X, X]]:
+      extension [A](fa: F[A, A])
+        override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
+          fa.bifoldMap[B](f)(f)
 
 object Bifoldable:
-  given idFoldable: Foldable[Id] with
-    extension [A](fa: Id[A])
-      override def foldRight[B](init: B)(f: (A, B) => B): B =
-        f(fa.value, init)
-
-  given Foldable[Option] with
-    extension[A] (as: Option[A])
-      override def foldRight[B](acc: B)(f: (A, B) => B) = as match
-        case None => acc
-        case Some(a) => f(a, acc)
-      override def foldLeft[B](acc: B)(f: (B, A) => B) = as match
-        case None => acc
-        case Some(a) => f(acc, a)
-      override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
-        as match
-          case None => mb.empty
-          case Some(a) => f(a)
-
-  given Foldable[List] with
-    extension[A] (as: List[A])
-      override def foldRight[B](acc: B)(f: (A, B) => B) =
-        as.foldRight(acc)(f)
-      override def foldLeft[B](acc: B)(f: (B, A) => B) =
-        as.foldLeft(acc)(f)
-      override def toList: List[A] = as
-
-  given tuple2Foldable: Foldable[[X] =>> (X, X)] with
-    extension [A](fa: (A, A))
-      override def foldRight[B](init: B)(f: (A, B) => B): B =
-        val (a0, a1) = fa
-        val b = f(a1, init)
-        f(a0, b)
-
-  given tuple3Foldable: Foldable[[X] =>> (X, X, X)] with
-    extension [A](fa: (A, A, A))
-      override def foldRight[B](init: B)(f: (A, B) => B): B =
-        val (a0, a1, a2) = fa
-        val b0 = f(a2, init)
-        val b1 = f(a1, b0)
-        f(a0, b1)
-
-  given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
-    extension [A](fa: Either[E, A])
-      override def foldRight[B](init: B)(f: (A, B) => B): B =
+  given eitherBifoldable: Bifoldable[Either] with
+    extension [A, B](fa: Either[A, B])
+      def bifoldMap[M](f: A => M)(g: B => M)(using ma: Monoid[M]): M =
         fa match
-          case Right(a) => f(a, init)
-          case Left(_)  => init
+          case Right(value) => g(value)
+          case Left(value)  => f(value)
 
-  def foldRight[F[_], A, B](fa: F[A])(init: B)(f: (A, B) => B)(using foldable: Foldable[F]): B =
-    foldable.foldRight(fa)(init)(f)
+  def bifoldMap[F[_, _], A, B, C](fab: F[A, B])(f: A => C, g: B => C)(using bi: Bifoldable[F])(using Monoid[C]): C =
+    bi.bifoldMap(fab)(f)(g)

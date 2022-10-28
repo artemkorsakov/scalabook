@@ -142,18 +142,6 @@ given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fbifunctor%2FBitraverseSuite.scala&plain=1)
 
 
-## Реализация в ScalaZ
-
-```scala
-import scalaz._
-import Scalaz._
-
-List(1, 2, 3) traverse { x => (x > 0) option (x + 1) }  // Some(List(2, 3, 4))
-List(1.some, 2.some).sequence                           // Some(List(1, 2))
-1.success[String].leaf.sequenceU map {_.drawTree}       // Success(1)
-```
-
-
 ---
 
 ## References

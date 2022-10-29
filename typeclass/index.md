@@ -7,7 +7,7 @@
 который позволяет добавлять новое поведение к любому закрытому типу данных без использования подтипов.
 Подробнее о классах типов [описано в основной документации](../scala/abstractions/type-classes), 
 а также в главе [1.1 Anatomy of a Type Class](https://www.scalawithcats.com/dist/scala-with-cats.html#anatomy-of-a-type-class)
-книги Scala with Cats by Noel Welsh and Dave Gurnell.
+книги _"Scala with Cats by Noel Welsh and Dave Gurnell"_.
 
 В данном разделе будут собраны основные классы типов, а также примеры реализации этих классов типов на Scala, 
 в том числе из таких семейств библиотек, как 

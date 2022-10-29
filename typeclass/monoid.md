@@ -28,6 +28,8 @@ fold(List(1, 2, 3, 4, 5))
 // val res0: Int = 120
 ```
 
+Более подробно применение моноидов рассматриваться в книге [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#applications-of-monoids).
+
 Обычно библиотеки определяют "свой" оператор для моноидальной операции `combine`, например:
 
 ```scala

@@ -58,11 +58,19 @@ given nestedSemigroupInstance[A, B](using aSemigroup: Semigroup[A], bSemigroup: 
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 
 List(1, 2) |+| List(3)      // List(1, 2, 3)
 List(1, 2) mappend List(3)  // List(1, 2, 3)
+1 |+| 2                     // 3
+```
+
+## Реализация в Cats
+
+```scala
+import cats.implicits.*
+
 1 |+| 2                     // 3
 ```
 
@@ -76,3 +84,5 @@ List(1, 2) mappend List(3)  // List(1, 2, 3)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Semigroup.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monoid.html#Monoid) 
 - [Math world](https://mathworld.wolfram.com/Semigroup.html)
+- [Cats](https://typelevel.org/cats/typeclasses/semigroup.html)
+- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-semigroup)

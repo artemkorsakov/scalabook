@@ -69,9 +69,11 @@ List(1, 2) mappend List(3)  // List(1, 2, 3)
 ## Реализация в Cats
 
 ```scala
+import cats.*
 import cats.implicits.*
 
-1 |+| 2                     // 3
+1 |+| 2                                     // 3
+"Hi " |+| "there" |+| Monoid[String].empty  // Hi there
 ```
 
 

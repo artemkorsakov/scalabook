@@ -18,6 +18,8 @@
 - [Группа Equal](equal)
 - [Группа Monoid](monoid)
 - [Группа Monad](monad)
+- [Группа Arrow](arrow)
+- [Группа Bifunctor](bifunctor)
 - [Вне группы](other)
 
 ---

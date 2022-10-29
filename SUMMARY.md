@@ -263,4 +263,8 @@
   - [For Each Step...](puzzlers/for-each-step.md)
   - [Beep Beep...Reversing](puzzlers/beep-beep-reversing.md)
 
-## [Доп. материалы](extra.md)
+## Доп. материалы
+- [Дополнительные материалы](extra.md)
+  - [Junior](extra/junior.md)
+  - [Middle](extra/middle.md)
+  - [Senior](extra/senior.md)

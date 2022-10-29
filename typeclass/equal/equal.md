@@ -34,10 +34,20 @@ trait Equal[F]:
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 List(1, 2, 3) === List(1, 2, 3) // true
 List(1, 2, 3) =/= List(1, 2, 4) // true
+```
+
+## Реализация в Cats
+
+```scala
+import cats.*
+import cats.implicits.*
+
+1 === 1              // true
+"Hello" =!= "World"  // true
 ```
 
 
@@ -45,6 +55,6 @@ List(1, 2, 3) =/= List(1, 2, 4) // true
 
 ## References
 
-- [Scalaz](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Equal.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Equal.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Equal.html)
+- [Cats](https://typelevel.org/cats/typeclasses/eq.html)

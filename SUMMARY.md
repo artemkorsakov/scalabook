@@ -265,6 +265,6 @@
 
 ## Доп. материалы
 - [Дополнительные материалы](extra.md)
-  - [Junior](extra/junior.md)
-  - [Middle](extra/middle.md)
-  - [Senior](extra/senior.md)
+  - [Junior - &#10031;](extra/junior.md)
+  - [Middle - &#10031;&#10031; --- &#10031;&#10031;&#10031;](extra/middle.md)
+  - [Senior - &#10031;&#10031;&#10031;&#10031; --- &#10031;&#10031;&#10031;&#10031;&#10031;](extra/senior.md)

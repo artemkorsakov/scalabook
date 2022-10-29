@@ -13,6 +13,8 @@
 | [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)                                                                                                                                                          | Scala 2  | &#10031;&#10031;                 |  En  | Задачи     |             |
 | [Scala & Design Patterns: Exploring Language Expressivity by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf)                                                                                           | Scala 2  | &#10031;&#10031;                 |  En  | Книги      |             |
 | [Scala puzzlers](https://scalapuzzlers.com/index.html), на основе упражнений [написана книга](https://www.artima.com/shop/scala_puzzlers)                                                                                                           | Scala 2  | &#10031;&#10031;                 |  En  | Задачи     |             |
+| [Learning Scalaz](http://eed3si9n.com/learning-scalaz/)                                                                                                                                                                                             | Scala 2  | &#10031;&#10031;&#10031;         |  En  | Книги      |             |
+| [ScalaZ](https://scalaz.github.io/7/)                                                                                                                                                                                                               | Scala 2  | &#10031;&#10031;&#10031;         |  En  | Библиотека |             |
 
 --- 
 

@@ -99,10 +99,10 @@ mzero[List[Int]]             // List()
 ## Реализация в Cats
 
 ```scala
-import cats.*
 import cats.implicits.*
-123.show     // 123
-"abc".show   // abc
+import cats.Monoid
+
+Monoid[Int].combine(1, Monoid[Int].empty) // 1
 ```
 
 
@@ -114,4 +114,5 @@ import cats.implicits.*
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monoid.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monoid.html#Monoid) 
-- [Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-monoid)
+- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-monoid)
+- [Cats](https://typelevel.org/cats/typeclasses/monoid.html)

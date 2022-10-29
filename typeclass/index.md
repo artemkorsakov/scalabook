@@ -6,7 +6,7 @@
 **Класс типов** (или **типовой класс**, _type class_) — это абстрактный параметризованный тип, 
 который позволяет добавлять новое поведение к любому закрытому типу данных без использования подтипов.
 Подробнее о классах типов [описано в основной документации](../scala/abstractions/type-classes), 
-а также в главе [1.1 Anatomy of a Type Class](https://www.scalawithcats.com/dist/scala-with-cats.html#anatomy-of-a-type-class)
+а также в главе [1.1 Anatomy of a Type Class][Scala with Cats]
 книги _"Scala with Cats by Noel Welsh and Dave Gurnell"_.
 
 В данном разделе будут собраны основные классы типов, а также примеры реализации этих классов типов на Scala, 
@@ -31,3 +31,6 @@
 - [Type classes in Scalaz](https://scalaz.github.io/7/typeclass/index.html)
 - [Type classes in Cats](https://github.com/tpolecat/cats-infographic)
 - [Type classes in Algebird](https://twitter.github.io/algebird/typeclasses.html)
+- [Scala with Cats][Scala with Cats]
+
+[Scala with Cats]: https://www.scalawithcats.com/dist/scala-with-cats.html#anatomy-of-a-type-class

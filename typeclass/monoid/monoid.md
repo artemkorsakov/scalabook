@@ -99,10 +99,11 @@ mzero[List[Int]]             // List()
 ## Реализация в Cats
 
 ```scala
+import cats.*
 import cats.implicits.*
-import cats.Monoid
 
-Monoid[Int].combine(1, Monoid[Int].empty) // 1
+Monoid[Int].combine(1, Monoid[Int].empty)   // 1
+"Hi " |+| "there" |+| Monoid[String].empty  // Hi there
 ```
 
 

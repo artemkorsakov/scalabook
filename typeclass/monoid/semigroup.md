@@ -73,7 +73,7 @@ import cats.*
 import cats.implicits.*
 
 1 |+| 2                                     // 3
-"Hi " |+| "there" |+| Monoid[String].empty  // Hi there
+("hello", 123) |+| ("world", 321)           // ("helloworld",444)
 ```
 
 

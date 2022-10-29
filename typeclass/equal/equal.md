@@ -49,6 +49,7 @@ import cats.implicits.*
 1 === 1              // true
 "Hello" =!= "World"  // true
 123 === "123"        // Не скомпилируется: Type Mismatch Error
+1.some =!= none[Int] // true
 ```
 
 

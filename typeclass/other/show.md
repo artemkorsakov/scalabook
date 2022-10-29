@@ -5,16 +5,25 @@
 ## Описание
 
 ```scala
-trait Show[F]:
-  def show(f: F): String
+trait Show[A]:
+  def show(a: A): String
 ```
 
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 1.0.shows // "1.0"
+```
+
+## Реализация в Cats
+
+```scala
+import cats.*
+import cats.implicits.*
+123.show     // 123
+"abc".show   // abc
 ```
 
 
@@ -24,3 +33,4 @@ import Scalaz._
 
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Show.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Show.html)
+- [Cats](https://typelevel.org/cats/typeclasses/show.html)

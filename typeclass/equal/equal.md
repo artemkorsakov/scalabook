@@ -48,7 +48,7 @@ import cats.implicits.*
 
 1 === 1              // true
 "Hello" =!= "World"  // true
-123 === "123"        // Type Mismatch Error
+123 === "123"        // Не скомпилируется: Type Mismatch Error
 ```
 
 

@@ -1,11 +1,14 @@
 # Monoid
 
 Моноид (_monoid_) — это полугруппа с единичным элементом.
-Более формально: `(M, +)` является моноидом для заданного множества `M` и операции `+`,
+
+Более формально: `(M, +)` является моноидом для заданного множества `M` и операции `+` (`combine` с типом `(A, A) => A`),
 если удовлетворяет следующим свойствам для любых `x, y, z ∈ M`:
 - Closure (замыкание): `x + y ∈ M`
-- Associativity (ассоциативность): `(x + y) + z = x + (y + z)`
-- Identity (тождественность): существует `e ∈ M` такое, что `e + x = x + e = x`
+- Associativity (ассоциативность): `(x + y) + z = x + (y + z)` или 
+  `m.combine(x, m.combine(y, z)) == m.combine(m.combine(x, y), z)`
+- Identity (тождественность): существует `e ∈ M` (`empty: A`) такой, что `e + x = x + e = x` 
+  или `(m.combine(x, m.empty) == x) && (m.combine(m.empty, x) == x)`
 
 Также говорится, что _M — моноид относительно +_.
 
@@ -87,10 +90,19 @@ given optionMonoidInstance[A: Semigroup]: Monoid[Option[A]] with
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 
 mzero[List[Int]]             // List()
+```
+
+## Реализация в Cats
+
+```scala
+import cats.*
+import cats.implicits.*
+123.show     // 123
+"abc".show   // abc
 ```
 
 
@@ -102,3 +114,4 @@ mzero[List[Int]]             // List()
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monoid.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monoid.html#Monoid) 
+- [Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-monoid)

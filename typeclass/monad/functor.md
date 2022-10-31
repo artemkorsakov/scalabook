@@ -126,6 +126,16 @@ given ioFunctor: Functor[IO] with
   extension [A](as: IO[A]) override def map[B](f: A => B): IO[B] = IO { () => f(as.run()) }
 ```
 
+### [Бинарное дерево](../../algorithms/trees/binary-tree)
+
+```scala
+given Functor[BinaryTree] with
+  extension [A](as: BinaryTree[A])
+    override def map[B](f: A => B): BinaryTree[B] = as match
+      case Leaf                   => Leaf
+      case Branch(a, left, right) => Branch(f(a), left.map(f), right.map(f))
+```
+
 ## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FFunctor.scala&plain=1)

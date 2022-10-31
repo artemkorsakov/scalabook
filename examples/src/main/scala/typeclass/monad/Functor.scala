@@ -1,5 +1,7 @@
 package typeclass.monad
 
+import algorithms.trees.BinaryTree
+import algorithms.trees.BinaryTree.*
 import typeclass.common.*
 
 trait Functor[F[_]] extends InvariantFunctor[F]:
@@ -57,8 +59,14 @@ object Functor:
           functorF.map(fga.value)(ga => functorG.map(ga)(f))
         }
 
-  given ioFunctor: Functor[IO] with
+  given Functor[IO] with
     extension [A](as: IO[A]) override def map[B](f: A => B): IO[B] = IO { () => f(as.run()) }
+
+  given Functor[BinaryTree] with
+    extension [A](as: BinaryTree[A])
+      override def map[B](f: A => B): BinaryTree[B] = as match
+        case Leaf                   => Leaf
+        case Branch(a, left, right) => Branch(f(a), left.map(f), right.map(f))
 
   def map[F[_], A, B](fa: F[A], f: A => B)(using functor: Functor[F]): F[B] =
     functor.map(fa)(f)

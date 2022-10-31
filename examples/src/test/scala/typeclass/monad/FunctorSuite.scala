@@ -1,5 +1,6 @@
 package typeclass.monad
 
+import algorithms.trees.BinaryTree
 import munit.{Assertions, ScalaCheckSuite}
 import org.scalacheck.Prop.*
 import typeclass.Functions.given
@@ -42,7 +43,7 @@ class FunctorSuite extends ScalaCheckSuite, FunctorLaw:
 
   property("stateFunctor должен удовлетворять законам функтора") {
     forAll { (x: Int, s: String) =>
-      val state = State[String, Int](s => (s, x))
+      val state                               = State[String, Int](s => (s, x))
       given Runner1[[X] =>> State[String, X]] = stateRunner[String](s)
       checkFunctorLawWithRunner[[X] =>> State[String, X], Int, String, Boolean](state)
     }
@@ -58,5 +59,11 @@ class FunctorSuite extends ScalaCheckSuite, FunctorLaw:
   property("ioFunctor должен удовлетворять законам функтора") {
     forAll { (x: Int) =>
       checkFunctorLaw[IO, Int, String, Boolean](IO(() => x))
+    }
+  }
+
+  property("Functor[BinaryTree] должен удовлетворять законам функтора") {
+    forAll { (list: List[Int]) =>
+      checkFunctorLaw[BinaryTree, Int, String, Boolean](BinaryTree(list))
     }
   }

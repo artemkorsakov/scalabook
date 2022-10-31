@@ -61,6 +61,20 @@ given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X,
 [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FContravariantFunctorSuite.scala)
 
 
+## Реализация в Cats
+
+```scala
+import cats.syntax.contravariant.*
+import cats.Show
+
+val showString = Show[String]
+showString
+  .contramap[Symbol](sym => s"'${sym.name}")
+  .show(Symbol("dave"))
+// val res0: String = 'dave
+```
+
+
 ---
 
 ## References

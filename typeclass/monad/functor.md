@@ -3,7 +3,7 @@
 Функтор — это преобразование из категории `A` в категорию `B`. 
 Такие преобразования часто изображаются стрелкой: `A -> B` (или через метод `map`).
 
-Функтор (F) расширяет инвариантный функтор и должен следовать следующим законам 
+Функтор (F) расширяет [инвариантный функтор](invariant-functor) и должен следовать следующим законам 
 (помимо законов инвариантного функтора):
 - Identity (тождественность): Если определен метод идентификации `identity` такой, что: `identity(a) == a`, 
   тогда `map(fa)(identity) == fa`. Другими словами: если мы отобразим функцию `identity` на функтор, 
@@ -136,8 +136,8 @@ given ioFunctor: Functor[IO] with
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 
 val len: String => Int = _.length
 Functor[Option].map(Some("adsf"))(len)             // Some(4)
@@ -174,6 +174,20 @@ val listOpt = Functor[List] compose Functor[Option]
 listOpt.map(List(Some(1), None, Some(3)))(_ + 1)   // List(Some(2), None, Some(4))
 ```
 
+## Реализация в Cats
+
+```scala
+import cats.*
+import cats.implicits.*
+
+val list1 = List(1, 2, 3)
+val list2 = Functor[List].map(list1)(_ * 2)  // List(2, 4, 6)
+
+val func = (x: Int) => x + 1
+val liftedFunc = Functor[Option].lift(func)
+liftedFunc(Option(1))                        // Some(2)
+```
+
 
 ---
 
@@ -184,3 +198,5 @@ listOpt.map(List(Some(1), None, Some(3)))(_ + 1)   // List(Some(2), None, Some(4
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Functor.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Functor.html)
+- [Cats](https://typelevel.org/cats/typeclasses/functor.html)
+- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-functor)

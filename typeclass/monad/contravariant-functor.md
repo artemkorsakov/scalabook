@@ -1,7 +1,10 @@
 # Контравариантный функтор
 
-Контравариантный функтор (`F`) похож на функтор, только с противоположной операцией `cmap`:
+Контравариантный функтор (`F`) похож на [функтор](functor), только с противоположной операцией `cmap`:
 - `cmap(b: F[B])(f: A => B): F[A]`.
+
+Контравариантный функтор создает новые экземпляры классов типов, добавляя функцию в начало цепочки преобразований,
+в отличие от функтора, который добавляет её в конец.
 
 Законы контравариантного функтора:
 - Identity (тождественность): Если определен метод идентификации `id` такой, что: `id(a) == a`,
@@ -64,3 +67,5 @@ given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X,
 
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Contravariant.html)
+- [Cats](https://typelevel.org/cats/typeclasses/contravariant.html)
+- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#contravariant)

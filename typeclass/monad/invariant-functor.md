@@ -1,6 +1,11 @@
 # Invariant Functor
 
-Инвариантный функтор поддерживает операцию `xmap`, которая преобразует `F[A]` в `F[B]` с учетом двух функций: `A => B` и `B => A`. 
+Инвариантный функтор поддерживает операцию `xmap` (или `imap`), 
+которая преобразует `F[A]` в `F[B]` с учетом двух функций: `A => B` и `B => A`. 
+
+Если [функтор](functor) создает новые экземпляры класса типов, добавляя функцию в конец цепочки преобразований, 
+а [контравариантный функтор](contravariant-functor) создает их, добавляя функцию в начало цепочки преобразований, 
+то инвариантный функтор создает их с помощью пары двунаправленных преобразований.
 
 Инвариантный функтор должен удовлетворять двум законам: 
 - Identity (тождественность): Если определен метод идентификации `identity` такой, что: `identity(a) == a`,
@@ -42,3 +47,5 @@ given idInvariantFunctor: InvariantFunctor[Id] with
 ## References
 
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/InvariantFunctor.html)
+- [Cats](https://typelevel.org/cats/typeclasses/invariant.html)
+- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#sec:functors:invariant)

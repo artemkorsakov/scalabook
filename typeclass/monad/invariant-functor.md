@@ -28,12 +28,31 @@ trait InvariantFunctor[F[_]]:
 ### "Обертка"
 
 ```scala
-case class Id[A](value: A)
+final case class Id[A](value: A)
 
-given idInvariantFunctor: InvariantFunctor[Id] with
+given InvariantFunctor[Id] with
   extension [A](fa: Id[A]) 
     override def xmap[B](f: A => B, g: B => A): Id[B] = Id(f(fa.value))
 ```
+
+### Codec
+
+Зачастую инвариантный функтор используется в кодеках, кодирование и декодирование сообщений.
+
+```scala
+trait Codec[A]:
+  def encode(value: A): String
+  def decode(value: String): A
+
+given InvariantFunctor[Codec] with
+  extension [A](fa: Codec[A])
+    override def xmap[B](f: A => B, g: B => A): Codec[B] =
+      new Codec[B]:
+        def encode(value: B): String = fa.encode(g(value))
+
+        def decode(value: String): B = f(fa.decode(value))
+```
+
 
 ## Исходный код
 

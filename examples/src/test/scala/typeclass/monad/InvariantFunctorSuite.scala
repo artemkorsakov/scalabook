@@ -7,7 +7,7 @@ import typeclass.common.*
 import typeclass.monad.InvariantFunctor.given
 
 class InvariantFunctorSuite extends ScalaCheckSuite, InvariantFunctorLaw:
-  property("idFunctor должен удовлетворять законам инвариантного функтора") {
+  property("InvariantFunctor[Id] должен удовлетворять законам InvariantFunctor") {
     forAll { (x: Int) =>
       checkInvariantFunctorLaw[Id, Int, String, Boolean](Id(x))
     }

@@ -161,6 +161,9 @@ val opt3 = Monad[Option].map(opt2)(a => 100 * a)                     // Some(500
 val list1 = Monad[List].pure(3)                                      // List(3)
 val list2 = Monad[List].flatMap(List(1, 2, 3))(a => List(a, a * 10)) // List(1, 10, 2, 20, 3, 30)
 val list3 = Monad[List].map(list2)(a => a + 123)                     // List(124, 133, 125, 143, 126, 153)
+
+1.pure[Option]                                                       // Some(1)
+1.pure[List]                                                         // List(1)
 ```
 
 

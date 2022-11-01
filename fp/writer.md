@@ -39,3 +39,4 @@ unit[String, Int](42).run()
 ## References
 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Writer.html)
+- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#writer-monad)

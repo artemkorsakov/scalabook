@@ -1,6 +1,11 @@
 # Функциональный журнал
 
-`Writer` предназначен для значений, к которым присоединено другое значение, действующее как своего рода значение журнала.
+`Writer` предназначен для результатов, к которым присоединено другое значение, действующее как своего рода журнал.
+Одним из распространенных применений для `Writers` является запись последовательностей шагов в многопоточных вычислениях, 
+где стандартные методы императивной регистрации могут привести к чередованию сообщений из разных контекстов. 
+При этом лог для вычислений `Writer` привязан к результату, 
+поэтому можно запускать параллельные вычисления без смешивания логов.
+
 
 ```scala
 final case class Writer[W, A](run: () => (W, A))
@@ -34,9 +39,26 @@ unit[String, Int](42).run()
 ```
 
 
+## Реализация в Cats
+
+```scala
+import cats.data.Writer
+import cats.instances.vector.*
+
+val a = Writer(Vector(
+  "It was the best of times",
+  "it was the worst of times"
+), 1859)
+val (log, result) = a.run
+// val log: Vector[String] = Vector(It was the best of times, it was the worst of times)
+// val result: Int = 1859
+```
+
+
 ---
 
 ## References
 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Writer.html)
+- [Cats](https://typelevel.org/cats/datatypes/writer.html)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#writer-monad)

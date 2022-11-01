@@ -173,3 +173,5 @@ val list3 = Monad[List].map(list2)(a => a + 123)                     // List(124
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monad.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad.html)
+- [Cats](https://typelevel.org/cats/typeclasses/monad.html)
+- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#sec:monads)

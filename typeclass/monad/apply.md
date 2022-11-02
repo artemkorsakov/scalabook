@@ -3,7 +3,7 @@
 `Apply` реализует операцию `apply`
 (также встречаются названия `join`, `sequence`, `joinWith`, `ap`, `applicate` - названия взаимозаменяемы),
 которая объединяет `F[A]` и `F[A => B]` в `F[B]`.
-`Apply` расширяет `Functor`.
+`Apply` расширяет [`Functor`](functor) и [`Semigroupal`](semigroupal).
 
 Об `apply` можно думать как о своего рода усиленной `map`. 
 В то время как `map` берет функцию и функтор и применяет функцию внутри значения функтора,
@@ -16,20 +16,13 @@
 ## Описание
 
 ```scala
-trait InvariantFunctor[F[_]]:
-  extension [A](fa: F[A]) def xmap[B](f: A => B, g: B => A): F[B]
-
-trait Functor[F[_]] extends InvariantFunctor[F]:
-  extension [A](fa: F[A])
-    def map[B](f: A => B): F[B]
-    
-trait Apply[F[_]] extends Functor[F]:
+trait Apply[F[_]] extends Functor[F], Semigroupal[F]:
   def apply[A, B](fab: F[A => B])(fa: F[A]): F[B]
 
   def apply2[A, B, C](fa: => F[A], fb: => F[B])(f: (A, B) => C): F[C] =
     apply(fa.map(f.curried))(fb)
 
-  def tuple2[A, B](fa: => F[A], fb: => F[B]): F[(A, B)] =
+  override def product[A, B](fa: F[A], fb: F[B]): F[(A, B)] =
     apply2(fa, fb)((_, _))
 
   def lift2[A, B, C](f: (A, B) => C): (F[A], F[B]) => F[C] =
@@ -48,7 +41,7 @@ trait Apply[F[_]] extends Functor[F]:
 ### "Обертка"
 
 ```scala
-case class Id[A](value: A)
+final case class Id[A](value: A)
 
 given idApply: Apply[Id] with
   override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab.value(fa.value))
@@ -81,8 +74,8 @@ given Apply[Option] with
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 
 // Наследуются операции от функтора
 ...

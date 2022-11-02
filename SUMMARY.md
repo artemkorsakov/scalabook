@@ -144,6 +144,7 @@
     - [Invariant Functor](typeclass/monad/invariant-functor.md) 
     - [Functor](typeclass/monad/functor.md)
     - [Invariant Applicative](typeclass/monad/invariant-applicative.md)
+    - [Semigroupal](typeclass/monad/semigroupal.md)
     - [Apply](typeclass/monad/apply.md)
     - [Applicative](typeclass/monad/applicative.md)
     - [Bind](typeclass/monad/bind.md)

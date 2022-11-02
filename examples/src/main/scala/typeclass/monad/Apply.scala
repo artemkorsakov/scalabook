@@ -2,13 +2,13 @@ package typeclass.monad
 
 import typeclass.common.*
 
-trait Apply[F[_]] extends Functor[F]:
+trait Apply[F[_]] extends Functor[F], Semigroupal[F]:
   def apply[A, B](fab: F[A => B])(fa: F[A]): F[B]
 
   def apply2[A, B, C](fa: => F[A], fb: => F[B])(f: (A, B) => C): F[C] =
     apply(fa.map(f.curried))(fb)
 
-  def tuple2[A, B](fa: => F[A], fb: => F[B]): F[(A, B)] =
+  override def product[A, B](fa: F[A], fb: F[B]): F[(A, B)] =
     apply2(fa, fb)((_, _))
 
   def lift2[A, B, C](f: (A, B) => C): (F[A], F[B]) => F[C] =

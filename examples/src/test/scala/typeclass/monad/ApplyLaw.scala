@@ -4,7 +4,7 @@ import typeclass.common.Runner1
 import typeclass.common.Runner1.run
 import typeclass.monad.Apply.apply
 
-trait ApplyLaw extends FunctorLaw:
+trait ApplyLaw extends FunctorLaw, SemigroupalLaw:
   def checkApplyLaw[F[_]: Apply, A, B, C](fa: F[A], fab: F[A => B], fbc: F[B => C])(using
       f: A => B,
       fReverse: B => A,
@@ -25,6 +25,9 @@ trait ApplyLaw extends FunctorLaw:
       gReverse: C => B
   ): Unit =
     checkFunctorLawWithRunner[F, A, B, C](fa)
+    val fb = apply(fab)(fa)
+    val fc = apply(fbc)(fb)
+    checkSemigroupalLawWithRunner[F, A, B, C](fa, fb, fc)
     assertEquals(
       run(apply(fbc)(apply(fab)(fa))),
       run(apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)),

@@ -68,8 +68,36 @@ state.map(str => s"Number: $str").run(5)
 устраняя необходимость вручную передавать состояния ввода и вывода во время вычислений.
 
 
+## Реализация в Cats
+
+```scala
+import cats.data.State
+
+val step1 = State[Int, String]{ num =>
+  val ans = num + 1
+  (ans, s"Result of step1: $ans")
+}
+
+val step2 = State[Int, String]{ num =>
+  val ans = num * 2
+  (ans, s"Result of step2: $ans")
+}
+
+val both = for {
+  a <- step1
+  b <- step2
+} yield (a, b)
+
+val (state, result) = both.run(20).value
+// val state: Int = 42
+// val result: (String, String) = (Result of step1: 21,Result of step2: 42)
+```
+
+
 ---
 
 ## References
 
+- [Cats](https://typelevel.org/cats/datatypes/state.html)
 - [Functional Programming in Scala, Second Edition, Chapter 6](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
+- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#the-state-monad)

@@ -1,6 +1,6 @@
 # Enum
 
-Члены типа `Enum`, расширяющего тип `Order`, представляют собой последовательно упорядоченные типы — их можно перечислить.
+Члены типа `Enum`, расширяющего тип [`Order`](order), представляют собой последовательно упорядоченные типы — их можно перечислить.
 
 Основное преимущество класса типов `Enum` заключается в том, что мы можем использовать его типы в диапазонах списков. 
 У них также есть определенные преемники (_successors_) и предшественники (_predecessors_), 
@@ -58,5 +58,5 @@ Enum[Int].max  // Some(2147483647)
 
 ## References
 
-- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Enum.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Enum.html)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Enum.html)

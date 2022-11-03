@@ -1,6 +1,6 @@
 # Order
 
-`Order` предназначен для типов, которые имеют порядок. Он расширяет тип `Equal`.
+`Order` предназначен для типов, которые имеют порядок. Он расширяет тип [`Equal`](equal).
 `Order` охватывает все стандартные функции сравнения, такие как `>`, `<`, `>=` и `<=`, 
 а также с его помощью можно реализовать операции нахождения максимума, минимума, сортировку двух элементов и реверсивный `Order`.
 
@@ -78,5 +78,5 @@ import Scalaz._
 
 ## References
 
-- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Order.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Order.html)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Order.html)

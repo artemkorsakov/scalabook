@@ -1,6 +1,6 @@
 # Strong
 
-`Strong` - сила в объединении. `Strong` расширяет `Profunctor` и добавляет операции `first` и `second`,
+`Strong` - сила в объединении. `Strong` расширяет [`Profunctor`](profunctor) и добавляет операции `first` и `second`,
 добавляющие заданное значение слева или справа от функции 
 `A =>: B => (A, C) =>: (B, C)` или `A =>: B => (C, A) =>: (C, B)`.
 
@@ -64,5 +64,5 @@ plus1.second apply ("def" -> 14)  // (def,15)
 
 ## References
 
-- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Strong.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Strong.html)

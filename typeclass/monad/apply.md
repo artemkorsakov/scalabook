@@ -106,5 +106,6 @@ Apply[List].lift2 {(_: Int) * (_: Int)} (List(1, 2), List(3, 4)) // List(3, 4, 6
 
 ## References
 
-- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Apply.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Applicative.html)
+- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#apply-and-applicative)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Apply.html)

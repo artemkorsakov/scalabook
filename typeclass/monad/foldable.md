@@ -141,11 +141,35 @@ Foldable[List].fold(digits)                                // 45
 ```
 
 
+## Реализация в Cats
+
+```scala
+import cats.Foldable
+import cats.instances.list.*
+import cats.instances.option.*
+import cats.instances.int.*
+import cats.instances.string.*
+
+val ints = List(1, 2, 3)                           // List(1, 2, 3)
+Foldable[List].foldLeft(ints, 0)(_ + _)            // 6
+
+val maybeInt = Option(123)                         // Some(123)
+Foldable[Option].foldLeft(maybeInt, 10)(_ * _)     // 1230
+
+Foldable[Option].nonEmpty(Option(42))              // true
+Foldable[List].find(List(1, 2, 3))(_ % 2 == 0)     // Some(2)
+Foldable[List].combineAll(List(1, 2, 3))           // 6
+Foldable[List].foldMap(List(1, 2, 3))(_.toString)  // 123
+```
+
+
 ---
 
 ## References
 
+- [Cats](https://typelevel.org/cats/typeclasses/foldable.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Foldable.html)
+- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#sec:foldable)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Foldable.html)
 - [Tour of Scala](https://tourofscala.com/scala/foldable)

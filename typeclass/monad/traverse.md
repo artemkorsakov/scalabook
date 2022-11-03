@@ -154,10 +154,35 @@ List(1.some, 2.some).sequence                           // Some(List(1, 2))
 ```
 
 
+## Реализация в Cats
+
+```scala
+import scala.concurrent.*
+import scala.concurrent.duration.*
+import scala.concurrent.ExecutionContext.Implicits.global
+
+val hostnames = List(
+  "alpha.example.com",
+  "beta.example.com",
+  "gamma.demo.com"
+)
+
+def getUptime(hostname: String): Future[Int] =
+  Future(hostname.length * 60)
+
+val allUptimes: Future[List[Int]] =
+  Future.traverse(hostnames)(getUptime)
+
+Await.result(allUptimes, 1.second)  // List(1020, 960, 840)
+```
+
+
 ---
 
 ## References
 
+- [Cats](https://typelevel.org/cats/typeclasses/traverse.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
+- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#sec:traverse)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Traverse.html)
 - [Tour of Scala](https://tourofscala.com/scala/traversable)

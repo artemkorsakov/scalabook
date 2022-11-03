@@ -82,9 +82,9 @@ import cats.implicits.*
 ## References
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/semigroup.html)
-- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
-- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Semigroup.html)
-- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monoid.html#Monoid) 
-- [Math world](https://mathworld.wolfram.com/Semigroup.html)
 - [Cats](https://typelevel.org/cats/typeclasses/semigroup.html)
+- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
+- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monoid.html#Monoid)
+- [Math world](https://mathworld.wolfram.com/Semigroup.html)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-semigroup)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Semigroup.html)

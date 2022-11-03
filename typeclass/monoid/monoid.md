@@ -1,6 +1,6 @@
 # Monoid
 
-Моноид (_monoid_) — это полугруппа с единичным элементом.
+Моноид (_monoid_) — это [полугруппа](semigroup) с единичным элементом.
 
 Более формально: `(M, +)` является моноидом для заданного множества `M` и операции `+` (`combine` с типом `(A, A) => A`),
 если удовлетворяет следующим свойствам для любых `x, y, z ∈ M`:
@@ -112,8 +112,8 @@ Monoid[Int].combine(1, Monoid[Int].empty)   // 1
 ## References
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monoid.html)
-- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
-- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monoid.html)
-- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monoid.html#Monoid) 
-- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-monoid)
 - [Cats](https://typelevel.org/cats/typeclasses/monoid.html)
+- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
+- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monoid.html#Monoid)
+- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-monoid)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monoid.html)

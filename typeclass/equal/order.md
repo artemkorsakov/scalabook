@@ -60,8 +60,8 @@ trait Order[F] extends Equal[F]:
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 1.0 ?|? 2.0 // Ordering.LT
 1.0 lt 2.0 // true
 2.0 gt 1.0 // true

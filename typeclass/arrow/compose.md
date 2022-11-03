@@ -46,8 +46,8 @@ given Compose[Function1] with
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 
 val f1 = (_:Int) + 1
 val f2 = (_:Int) * 100

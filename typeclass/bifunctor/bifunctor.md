@@ -71,8 +71,8 @@ given Bifunctor[Writer] with
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 
 Bifunctor[Tuple2].bimap(("asdf", 1))(_.toUpperCase, _ + 1)                               // ("ASDF",2)
 ("asdf", 1).bimap(_.length, _ + 1)                                                       // (4,2)

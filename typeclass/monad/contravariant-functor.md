@@ -79,7 +79,7 @@ showString
 
 ## References
 
-- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
-- [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Contravariant.html)
 - [Cats](https://typelevel.org/cats/typeclasses/contravariant.html)
+- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#contravariant)
+- [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Contravariant.html)

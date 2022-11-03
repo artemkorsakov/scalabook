@@ -50,8 +50,8 @@ given Strong[Function1] with
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 
 val plus1 = (_: Int) + 1
 

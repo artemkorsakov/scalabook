@@ -205,10 +205,10 @@ liftedFunc(Option(1))                        // Some(2)
 
 ## References
 
-- [Tour of Scala](https://tourofscala.com/scala/functor)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/functor.html)
-- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
-- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Functor.html)
-- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Functor.html)
 - [Cats](https://typelevel.org/cats/typeclasses/functor.html)
+- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
+- [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Functor.html)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-functor)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Functor.html)
+- [Tour of Scala](https://tourofscala.com/scala/functor)

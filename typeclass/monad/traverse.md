@@ -145,8 +145,8 @@ given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 
 List(1, 2, 3) traverse { x => (x > 0) option (x + 1) }  // Some(List(2, 3, 4))
 List(1.some, 2.some).sequence                           // Some(List(1, 2))
@@ -158,6 +158,6 @@ List(1.some, 2.some).sequence                           // Some(List(1, 2))
 
 ## References
 
-- [Tour of Scala](https://tourofscala.com/scala/traversable)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Traverse.html)
+- [Tour of Scala](https://tourofscala.com/scala/traversable)

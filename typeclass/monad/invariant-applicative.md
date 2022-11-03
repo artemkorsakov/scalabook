@@ -2,7 +2,7 @@
 
 Инвариантный Applicative поддерживает операции `xunit0`, `xunit1` и т.д., 
 которые "оборачивают" тип в инвариантный функтор. 
-`InvariantApplicative` расширяет `InvariantFunctor`.
+`InvariantApplicative` расширяет [`InvariantFunctor`](invariant-functor).
 
 Используется для получения класса типов продуктов и типов значений.
 

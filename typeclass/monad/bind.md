@@ -1,6 +1,6 @@
 # Bind
 
-`Bind` - это `Apply` функтор, в котором функция может вводить новые значения и новый контекст функтора, 
+`Bind` - это [`Apply`](apply) функтор, в котором функция может вводить новые значения и новый контекст функтора, 
 включенный в контекст "подъемника". Эта операция называется `flatMap[B](f: A => F[B]): F[B]` (или её синоним - `bind`)
 
 Для `Bind` должны соблюдаться следующие законы:
@@ -74,8 +74,8 @@ given Bind[Option] with
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 
 3.some flatMap { x => (x + 1).some }  // Some(4)
 3.some >>= { x => (x + 1).some }      // Some(4)
@@ -88,5 +88,5 @@ List(List(1, 2), List(3, 4)).join     // List(1, 2, 3, 4)
 
 ## References
 
-- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bind.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad.html)
+- [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bind.html)

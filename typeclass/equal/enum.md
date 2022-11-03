@@ -41,8 +41,8 @@ trait Enum[F] extends Order[F]:
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 1 |-> 2        // [1,2]
 1 |--> (2, 5)  // [1,3,5]
 1.pred         // 0

@@ -34,5 +34,5 @@ given freeMonad[F[_]]: Monad[[X] =>> Free[F, X]] with
 
 ## References
 
-- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
 - [Free Monads Are Simple](https://underscore.io/blog/posts/2015/04/14/free-monads-are-simple.html)
+- [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 

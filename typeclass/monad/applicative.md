@@ -195,8 +195,8 @@ given ioApplicative: Applicative[IO] with
 ## Реализация в ScalaZ
 
 ```scala
-import scalaz._
-import Scalaz._
+import scalaz.*
+import Scalaz.*
 
 // ... Все операции родителей
 

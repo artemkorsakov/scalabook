@@ -28,9 +28,9 @@
 
 ## References
 
-- [Type classes in Scalaz](https://scalaz.github.io/7/typeclass/index.html)
-- [Type classes in Cats](https://github.com/tpolecat/cats-infographic)
-- [Type classes in Algebird](https://twitter.github.io/algebird/typeclasses.html)
 - [Scala with Cats][Scala with Cats]
+- [Type classes in Algebird](https://twitter.github.io/algebird/typeclasses.html)
+- [Type classes in Cats](https://github.com/tpolecat/cats-infographic)
+- [Type classes in Scalaz](https://scalaz.github.io/7/typeclass/index.html)
 
 [Scala with Cats]: https://www.scalawithcats.com/dist/scala-with-cats.html#anatomy-of-a-type-class

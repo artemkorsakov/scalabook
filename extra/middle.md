@@ -24,12 +24,12 @@
 |-----------------------------------------------------------------------------------------------------------------------------------|:--------:|--------------------------|:----:|-------------|
 | [Functional Programming in Scala - 4 Big Data Analysis with Scala and Spark](https://www.coursera.org/learn/scala-spark-big-data) | Scala 3  | &#10031;&#10031;         |  En  | Spark       |
 | [Functional Programming in Scala - 5 Functional Programming in Scala Capstone](https://www.coursera.org/learn/scala-capstone)     | Scala 3  | &#10031;&#10031;         |  En  |             |
+| [Scala - продвинутый уровень](https://stepik.org/course/92864/promo)                                                              | Scala 2  | &#10031;&#10031;         |  Ру  |             |
 
 ### Упражнения
 
 | Название                                                                                                                                  |  Версия  | Сложность                | Язык | Комментарий |
 |-------------------------------------------------------------------------------------------------------------------------------------------|:--------:|--------------------------|:----:|-------------|
-| [Scala - продвинутый уровень](https://stepik.org/course/92864/promo)                                                                      | Scala 2  | &#10031;&#10031;         |  Ру  |             |
 | [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)                                                | Scala 2  | &#10031;&#10031;         |  En  |             |
 | [Scala puzzlers](https://scalapuzzlers.com/index.html), на основе упражнений [написана книга](https://www.artima.com/shop/scala_puzzlers) | Scala 2  | &#10031;&#10031;         |  En  |             |
 

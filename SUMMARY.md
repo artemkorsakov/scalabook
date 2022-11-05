@@ -181,6 +181,7 @@
 ## Алгоритмы 
 - [Алгоритмы](algorithms/index.md)
   - [Фундамент алгоритмы](algorithms/fundamental.md)
+    - [Рандомизация](algorithms/fundamental/random.md) 
     - [Простые числа](algorithms/fundamental/primes.md)
     - [Числа Фибоначчи](algorithms/fundamental/fibonacci.md)
     - [Преобразования](algorithms/fundamental/conversion.md)

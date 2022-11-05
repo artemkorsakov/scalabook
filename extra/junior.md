@@ -50,6 +50,7 @@
 | [Scala exercises](https://www.scala-exercises.org/)          | Scala 2  | &#10031;  |  En  |              |
 | [Scala tutorials](http://scalatutorials.com/tour/)           | Scala 2  | &#10031;  |  En  |              |
 | [Tour of Scala](https://tourofscala.com/)                    | Scala 2  | &#10031;  |  En  |              |
+
 --- 
 
 ## Общее

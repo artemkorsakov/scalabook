@@ -1,10 +1,7 @@
 package algorithms.fundamental
 
 import algorithms.fundamental.Fibonacci.memoizedFib
-import algorithms.fundamental.Primes.*
-import munit.{FunSuite, ScalaCheckSuite}
-import org.scalacheck.Gen
-import org.scalacheck.Prop.*
+import munit.FunSuite
 
 class FibonacciSuite extends FunSuite:
   test("Fibonacci should memorize result") {

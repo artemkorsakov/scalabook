@@ -48,6 +48,13 @@ def decToBinConv(x: Int): String =
 ```
 
 
+## Исходный код
+
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ffundamental%2FNumerical.scala&plain=1)
+
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Ffundamental%2FNumericalSuite.scala)
+
+
 ---
 
 ## References

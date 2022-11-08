@@ -37,3 +37,27 @@ object Primes:
       j <- i to n / i
     do result(j * i) = false
     result
+
+  /** Нахождение простых множителей */
+  def primeFactorsWithPow(n: Long): Map[Long, Long] =
+    var number = n
+
+    // Проверяем делимость на 2
+    var powOfTwo = 0L
+    while number % 2 == 0 do
+      powOfTwo += 1
+      number = number >> 1
+    var map = if powOfTwo > 0 then Map(2L -> powOfTwo) else Map.empty[Long, Long]
+
+    // Ищем нечетные множители
+    var i = 3L
+    while i <= math.sqrt(number) do
+      var pow = 0L
+      while number              % i == 0 do
+        number /= i
+        pow += 1
+      if pow > 0 then map += i -> pow
+      i += 2
+
+    // Если от числа что-то осталось, то остаток тоже множитель
+    if number > 1 then map + (number -> 1) else map

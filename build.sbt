@@ -1,7 +1,7 @@
 import Dependencies.Version._
 
 ThisBuild / organization := "ru.gitflic.artemkorsakov"
-ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / version      := "0.0.0.0.1-SNAPSHOT"
 ThisBuild / scalaVersion := Scala
 
 lazy val examples = (project in file("examples"))
@@ -14,5 +14,6 @@ lazy val examples = (project in file("examples"))
 lazy val root = (project in file("."))
   .aggregate(examples)
   .settings(
-    name := "scalabook"
+    name           := "scalabook",
+    publish / skip := true
   )

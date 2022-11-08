@@ -1,5 +1,8 @@
 package algorithms.fundamental
 
+import scala.annotation.tailrec
+import scala.util.Random
+
 object Primes:
   lazy val primes: LazyList[Int] =
     2 #:: LazyList
@@ -25,6 +28,12 @@ object Primes:
         else loop(f + 6)
 
       loop(5)
+
+  @tailrec
+  def isProbablyPrime(p: Long, max_test: Int): Boolean =
+    (max_test <= 0) || {
+      (BigInt(Random.nextLong(p)).modPow(p - 1, p) == 1) && isProbablyPrime(p, max_test - 1)
+    }
 
   def sieveOfEratosthenes(n: Int): Array[Boolean] =
     val result = Array.fill(n + 1)(true)

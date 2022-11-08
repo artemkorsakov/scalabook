@@ -94,6 +94,29 @@ def decToBinConv(x: Int): String =
 ```
 
 
+## Возведение числа в степень
+
+Возведение числа в степень основывается на двух ключевых формулах:
+- A<sup>2*M</sup> = (A<sup>M</sup>)<sup>2</sup>
+- A<sup>M+N</sup> = A<sup>M</sup>*A<sup>N</sup>
+
+Первая позволяет быстро вычислить степень числа А, возводя в квадрат это же число в исходной степени;
+вторая помогает комбинировать степени любым удобным образом.
+
+Реализация алгоритма:
+
+```scala
+def power(a: Long, n: Long): BigInt =
+  val bin        = n.toBinaryString.reverse
+  val powerArray = new Array[Long](bin.length)
+  powerArray(0) = a
+  (1 until powerArray.length).foreach(i => powerArray(i) = powerArray(i - 1) * powerArray(i - 1))
+  powerArray.indices.foldLeft(BigInt(1)) { (acc, i) =>
+    if bin(i) == '1' then acc * powerArray(i) else acc
+  }
+```
+
+
 ## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ffundamental%2FNumerical.scala&plain=1)

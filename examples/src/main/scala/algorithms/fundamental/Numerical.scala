@@ -30,3 +30,12 @@ object Numerical:
         case (1, 0) => gcd(u >> 1, v)
         case (0, 1) => gcd(u, v >> 1)
         case (_, _) => if (u > v) gcd(u - v, v) else gcd(v - u, u)
+
+  def power(a: Long, n: Long): BigInt =
+    val bin        = n.toBinaryString.reverse
+    val powerArray = new Array[Long](bin.length)
+    powerArray(0) = a
+    (1 until powerArray.length).foreach(i => powerArray(i) = powerArray(i - 1) * powerArray(i - 1))
+    powerArray.indices.foldLeft(BigInt(1)) { (acc, i) =>
+      if bin(i) == '1' then acc * powerArray(i) else acc
+    }

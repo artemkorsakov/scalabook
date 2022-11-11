@@ -264,6 +264,10 @@
   - [For Each Step...](puzzlers/for-each-step.md)
   - [Beep Beep...Reversing](puzzlers/beep-beep-reversing.md)
 
+## Scala библиотеки
+- [Scala библиотеки](libs/index.md)
+  - [Http4s](libs/http4s.md)
+
 ## Доп. материалы
 - [Дополнительные материалы](extra.md)
   - [Junior &#10031;](extra/junior.md)

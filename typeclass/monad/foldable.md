@@ -168,6 +168,7 @@ Foldable[List].foldMap(List(1, 2, 3))(_.toString)  // 123
 ## References
 
 - [Cats](https://typelevel.org/cats/typeclasses/foldable.html)
+- [Herding Cats](http://eed3si9n.com/herding-cats/using-monoids-to-fold.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Foldable.html)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#sec:foldable)

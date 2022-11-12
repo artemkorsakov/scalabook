@@ -88,5 +88,6 @@ List(List(1, 2), List(3, 4)).join     // List(1, 2, 3, 4)
 
 ## References
 
+- [Herding Cats](http://eed3si9n.com/herding-cats/FlatMap.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bind.html)

@@ -204,6 +204,15 @@ import Scalaz.*
 1.η[List]                                             // List(1)
 ```
 
+## Реализация в Cats
+
+```scala
+import cats.*, cats.data.*, cats.syntax.all.*
+
+Applicative[List].pure(1)    // List(1)
+Applicative[Option].pure(1)  // Some(1)
+```
+
 
 ---
 
@@ -212,6 +221,7 @@ import Scalaz.*
 - [Algebird](https://twitter.github.io/algebird/typeclasses/applicative.html)
 - [Applicative Programming with Effects](https://www.staff.city.ac.uk/~ross/papers/Applicative.html)
 - [Cats](https://typelevel.org/cats/typeclasses/applicative.html)
+- [Herding Cats](http://eed3si9n.com/herding-cats/Applicative.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Applicative.html)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#apply-and-applicative)

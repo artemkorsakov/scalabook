@@ -24,8 +24,10 @@
 ```scala
 trait Equal[F]:
   self =>
-  
+
   def equal(a1: F, a2: F): Boolean
+
+  def notEqual(a1: F, a2: F): Boolean = !equal(a1, a2)
 
   def contramap[G](f: G => F): Equal[G] =
     (a1: G, a2: G) => self.equal(f(a1), f(a2))
@@ -71,5 +73,6 @@ cat1 === cat2         // false
 ## References
 
 - [Cats](https://typelevel.org/cats/typeclasses/eq.html)
+- [Herding Cats](http://eed3si9n.com/herding-cats/Eq.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Equal.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Equal.html)

@@ -74,9 +74,24 @@ import Scalaz.*
 Метод `?|?` в ScalaZ возвращает результат сравнения `Ordering: LT, GT или EQ`. 
 
 
+## Реализация в Cats
+
+```scala
+import cats.*
+import cats.implicits.*
+
+1.0 compare 2.0
+// val res0: Int = -1
+1.0 max 2.0
+// val res1: Double = 2.0
+```
+
+
 ---
 
 ## References
 
+- [Cats API](https://www.javadoc.io/doc/org.typelevel/cats-docs_3/latest/cats/kernel/Order.html)
+- [Herding Cats](http://eed3si9n.com/herding-cats/Order.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Order.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Order.html)

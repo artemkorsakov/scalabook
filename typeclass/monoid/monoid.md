@@ -113,6 +113,7 @@ Monoid[Int].combine(1, Monoid[Int].empty)   // 1
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monoid.html)
 - [Cats](https://typelevel.org/cats/typeclasses/monoid.html)
+- [Herding Cats](http://eed3si9n.com/herding-cats/Monoid.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monoid.html#Monoid)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-monoid)

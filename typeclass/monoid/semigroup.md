@@ -83,6 +83,7 @@ import cats.implicits.*
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/semigroup.html)
 - [Cats](https://typelevel.org/cats/typeclasses/semigroup.html)
+- [Herding Cats](http://eed3si9n.com/herding-cats/Semigroup.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monoid.html#Monoid)
 - [Math world](https://mathworld.wolfram.com/Semigroup.html)

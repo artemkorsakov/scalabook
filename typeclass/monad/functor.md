@@ -207,6 +207,7 @@ liftedFunc(Option(1))                        // Some(2)
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/functor.html)
 - [Cats](https://typelevel.org/cats/typeclasses/functor.html)
+- [Herding Cats](http://eed3si9n.com/herding-cats/Functor.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Functor.html)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-functor)

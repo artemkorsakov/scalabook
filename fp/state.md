@@ -99,5 +99,6 @@ val (state, result) = both.run(20).value
 ## References
 
 - [Cats](https://typelevel.org/cats/datatypes/state.html)
+- [Herding Cats](http://eed3si9n.com/herding-cats/State.html)
 - [Functional Programming in Scala, Second Edition, Chapter 6](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#the-state-monad)

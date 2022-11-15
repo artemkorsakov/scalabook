@@ -61,4 +61,6 @@ val (log, result) = a.run
 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Writer.html)
 - [Cats](https://typelevel.org/cats/datatypes/writer.html)
+- [Herding Cats](http://eed3si9n.com/herding-cats/Writer.html)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#writer-monad)
+  

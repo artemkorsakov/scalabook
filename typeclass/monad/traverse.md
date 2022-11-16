@@ -182,6 +182,7 @@ Await.result(allUptimes, 1.second)  // List(1020, 960, 840)
 ## References
 
 - [Cats](https://typelevel.org/cats/typeclasses/traverse.html)
+- [Herding Cats](http://eed3si9n.com/herding-cats/Traverse.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#sec:traverse)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Traverse.html)

@@ -8,7 +8,7 @@
 
 | Название                                                |  Версия  | Сложность                | Язык | Дата публ. | Комментарий |
 |---------------------------------------------------------|:--------:|--------------------------|:----:|------------|-------------|
-| [Herding Cats](https://eed3si9n.com/herding-cats/)      | Scala 2  | &#10031;&#10031;&#10031; |  En  |            |             |
+| [Herding Cats](https://eed3si9n.com/herding-cats/)      | Scala 2  | &#10031;&#10031;&#10031; |  En  | 2016       |             |
 | [Learning Scalaz](http://eed3si9n.com/learning-scalaz/) | Scala 2  | &#10031;&#10031;&#10031; |  En  | 2013       |             |
 | [ScalaZ](https://scalaz.github.io/7/)                   | Scala 2  | &#10031;&#10031;&#10031; |  En  |            |             |
 

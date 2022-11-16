@@ -42,9 +42,23 @@ import Scalaz.*
 ```
 
 
+## Реализация в Cats
+
+```scala
+import cats.*, cats.data.*, cats.syntax.all.*
+
+lazy val f = (_:Int) + 1
+lazy val g = (_:Int) * 100
+
+(f split g)((1, 1))
+// res0: (Int, Int) = (2, 100)
+```
+
+
 ---
 
 ## References
 
+- [Herding Cats](http://eed3si9n.com/herding-cats/Arrow.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Split.html)

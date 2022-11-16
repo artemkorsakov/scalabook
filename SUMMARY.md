@@ -140,6 +140,7 @@
     - [Monoid](typeclass/monoid/monoid.md)
     - [Band](typeclass/monoid/band.md)
     - [Idempotent Monoid](typeclass/monoid/idempotent-monoid.md)
+    - [Group](typeclass/monoid/group.md)
   - [Группа Monad](typeclass/monad.md)
     - [Invariant Functor](typeclass/monad/invariant-functor.md) 
     - [Functor](typeclass/monad/functor.md)

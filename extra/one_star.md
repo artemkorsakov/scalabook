@@ -33,8 +33,6 @@
 | [Scala - Your First Programming Language](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                                 | Scala 2  | &#10031;   |  En  | 2022       |             |
 | [Scala Collections](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE)                                                       | Scala 2  | &#10031;   |  En  | 2020       |             |
 
-
-
 ### Курсы
 
 | Название                                                                                                                                              |  Версия  | Сложность  | Язык | Дата публ. | Комментарий |

@@ -27,10 +27,13 @@
 
 | Название                                                                                                                                            |  Версия  | Сложность  | Язык | Дата публ. | Комментарий |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|------------|:----:|------------|-------------|
+| [Scala 3 - Rock the JVM](https://www.youtube.com/watch?v=orTmm6OMaLw&list=PLmtsMNDRU0BwsVUbhsH2HMqDMPNhQ0HPc)                                       | Scala 3  | &#10031;   |  En  | 2020       |             |
 | [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)                                         | Scala 3  | &#10031;   |  En  | 2021       |             |
 | [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF)  | Scala 2  | &#10031;   |  En  | 2015       |             |
 | [Scala - Your First Programming Language](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                                 | Scala 2  | &#10031;   |  En  | 2022       |             |
 | [Scala Collections](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE)                                                       | Scala 2  | &#10031;   |  En  | 2020       |             |
+
+
 
 ### Курсы
 

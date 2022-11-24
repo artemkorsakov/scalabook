@@ -267,6 +267,7 @@
 
 ## Scala библиотеки
 - [Scala библиотеки](libs/index.md)
+  - [Cats effect](libs/cats-effect.md)
   - [Http4s](libs/http4s.md)
 
 ## Доп. материалы

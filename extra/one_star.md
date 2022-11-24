@@ -35,15 +35,15 @@
 
 ### Курсы
 
-| Название                                                                                                                                              |  Версия  | Сложность  | Язык | Дата публ. | Комментарий |
-|-------------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|------------|:----:|------------|-------------|
-| [Effective Programming in Scala](https://www.coursera.org/learn/effective-scala)                                                                      | Scala 3  | &#10031;   |  En  | 2021       |             |
-| [Functional Programming in Scala - 1 Принципы функционального программирования в Scala](https://www.coursera.org/learn/scala-functional-programming)  | Scala 3  | &#10031;   |  En  | 2021       |             |
-| [Functional Programming in Scala - 2 Functional Program Design in Scala](https://www.coursera.org/learn/scala-functional-program-design)              | Scala 3  | &#10031;   |  En  | 2021       |             |
-| [Functional Programming in Scala - 3 Параллельное программирование](https://www.coursera.org/learn/scala-parallel-programming)                        | Scala 3  | &#10031;   |  En  | 2021       |             |
-| [Scala & Functional Programming Essentials - Rock the JVM](https://www.udemy.com/course/rock-the-jvm-scala-for-beginners/)                            | Scala 3  | &#10031;   |  En  | 2022       |             |
-| [Введение в Scala](https://stepik.org/course/16243/promo)                                                                                             | Scala 2  | &#10031;   |  Ру  | 2019       |             |
-| [Основы Scala](https://stepik.org/course/89974/promo)                                                                                                 | Scala 2  | &#10031;   |  Ру  | 2021       |             |
+| Название                                                                                                                                                                 |  Версия  | Сложность  | Язык | Дата публ. | Комментарий |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|------------|:----:|------------|-------------|
+| [Effective Programming in Scala](https://www.coursera.org/learn/effective-scala)                                                                                         | Scala 3  | &#10031;   |  En  | 2021       |             |
+| [Functional Programming in Scala - 1 Принципы функционального программирования в Scala](https://www.coursera.org/learn/scala-functional-programming)                     | Scala 3  | &#10031;   |  En  | 2021       |             |
+| [Functional Programming in Scala - 2 Functional Program Design in Scala](https://www.coursera.org/learn/scala-functional-program-design)                                 | Scala 3  | &#10031;   |  En  | 2021       |             |
+| [Functional Programming in Scala - 3 Параллельное программирование](https://www.coursera.org/learn/scala-parallel-programming)                                           | Scala 3  | &#10031;   |  En  | 2021       |             |
+| [Scala & Functional Programming Essentials - Rock the JVM](https://rockthejvm.com/p/scala), [udemy link](https://www.udemy.com/course/rock-the-jvm-scala-for-beginners/) | Scala 3  | &#10031;   |  En  | 2022       |             |
+| [Введение в Scala](https://stepik.org/course/16243/promo)                                                                                                                | Scala 2  | &#10031;   |  Ру  | 2019       |             |
+| [Основы Scala](https://stepik.org/course/89974/promo)                                                                                                                    | Scala 2  | &#10031;   |  Ру  | 2021       |             |
 
 ### Упражнения
 

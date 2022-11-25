@@ -205,7 +205,7 @@ def copy(origin: File, destination: File): IO[Long] = {
 
 ## Исходный код
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fhttp4s%2FPingApp.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FCopyingFiles.scala&plain=1)
 
 
 

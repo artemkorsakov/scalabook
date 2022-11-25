@@ -268,6 +268,7 @@
 ## Scala библиотеки
 - [Scala библиотеки](libs/index.md)
   - [Cats effect](libs/cats-effect.md)
+    - [Копирование файлов](libs/cats-effect/copy-files.md) 
   - [Http4s](libs/http4s.md)
 
 ## Доп. материалы

@@ -27,11 +27,189 @@ import java.io.File
 def copy(origin: File, destination: File): IO[Long] = ???
 ```
 
+Функция просто возвращает `IO` экземпляр. При запуске все побочные эффекты будут фактически выполнены, 
+и IO экземпляр вернет байты, скопированные в `Long` 
+(обратите внимание, что `IO` параметризовано типом возвращаемого значения). 
+Теперь приступим к реализации функции. 
+
+Во-первых, нужно открыть два потока, которые будут читать и записывать содержимое файла.
+
+## Получение и освобождение ресурсов
+
+Мы рассматриваем открытие потока как действие с побочным эффектом, 
+поэтому мы должны инкапсулировать эти действия в их собственных `IO` экземплярах. 
+Мы можем просто встроить действия, вызвав `IO(action)`, 
+но при работе с действиями ввода/вывода рекомендуется использовать вместо этого `IO.blocking(action)`. 
+Таким образом, мы помогаем cats-effect лучше спланировать, как назначать потоки действиям. 
+
+Также воспользуемся кошачьим эффектом `Resource`. 
+Это позволяет упорядоченно создавать, использовать, а затем освобождать ресурсы. 
+
+См. код:
+
+```scala
+import cats.effect.{IO, Resource}
+import java.io.*
+
+def inputStream(f: File): Resource[IO, FileInputStream] =
+  Resource.make {
+    IO.blocking(new FileInputStream(f))                         // построение
+  } { inStream =>
+    IO.blocking(inStream.close()).handleErrorWith(_ => IO.unit) // освобождение
+  }
+
+def outputStream(f: File): Resource[IO, FileOutputStream] =
+  Resource.make {
+    IO.blocking(new FileOutputStream(f))                         // построение
+  } { outStream =>
+    IO.blocking(outStream.close()).handleErrorWith(_ => IO.unit) // освобождение
+  }
+
+def inputOutputStreams(in: File, out: File): Resource[IO, (InputStream, OutputStream)] =
+  for {
+    inStream  <- inputStream(in)
+    outStream <- outputStream(out)
+  } yield (inStream, outStream)
+```
+
+Мы хотим гарантировать, что потоки будут закрыты после того, как мы закончим их использовать, несмотря ни на что. 
+Именно поэтому мы используем `Resource` в обоих функциях `inputStream` и `outputStream`, 
+каждая из которых возвращает ту `Resource`, которая инкапсулирует действия по открытию и закрытию каждого потока. 
+`inputOutputStreams` инкапсулирует оба ресурса в один экземпляр `Resource`, 
+который будет доступен после успешного создания обоих потоков и только в этом случае. 
+Как видно из приведенного выше кода, экземпляры `Resource` могут быть объединены в _for-comprehensions_. 
+Также обратите внимание, что при освобождении ресурсов мы должны позаботиться о любой возможной ошибке 
+во время самого выполнения, например, с вызовом `.handleErrorWith`, как мы делаем в приведенном выше коде. 
+В этом случае мы просто игнорируем ошибку, но обычно она должна быть хотя бы запротоколирована. 
+Часто вы увидите, что `.attempt.void` используется для получения того же поведения - «проглотить и игнорировать ошибки».
+
+При желании мы могли бы использовать `Resource.fromAutoCloseable` для определения наших ресурсов, 
+этот метод создает экземпляры объектов Resource, которые реализуют интерфейс `java.lang.AutoCloseable`, 
+без необходимости определять, как освобождается ресурс. 
+Итак, наша функция `inputStream` будет выглядеть так:
+
+```scala
+import cats.effect.{IO, Resource}
+import java.io.{File, FileInputStream}
+
+def inputStream(f: File): Resource[IO, FileInputStream] =
+  Resource.fromAutoCloseable(IO(new FileInputStream(f)))
+```
+
+Этот код намного проще, но с ним мы не можем контролировать, что произойдет, если операция закрытия вызовет исключение. 
+Также может случиться так, что мы хотим знать, когда выполняются операции закрытия, например, используя журналы. 
+Напротив, использование `Resource.make` позволяет легко контролировать действия фазы выпуска.
+
+Вернемся к нашей функции `copy`, которая теперь выглядит так:
+
+```scala
+import cats.effect.{IO, Resource}
+import java.io.*
+
+def inputStream(f: File): Resource[IO, FileInputStream] =
+  Resource.make {
+    IO.blocking(new FileInputStream(f))
+  } { inStream =>
+    IO.blocking(inStream.close()).handleErrorWith(_ => IO.unit)
+  }
+
+def outputStream(f: File): Resource[IO, FileOutputStream] =
+  Resource.make {
+    IO.blocking(new FileOutputStream(f))
+  } { outStream =>
+    IO.blocking(outStream.close()).handleErrorWith(_ => IO.unit)
+  }
+
+def inputOutputStreams(in: File, out: File): Resource[IO, (InputStream, OutputStream)] =
+  for {
+    inStream  <- inputStream(in)
+    outStream <- outputStream(out)
+  } yield (inStream, outStream)
+
+// transfer будет выполнять всю работу
+def transfer(origin: InputStream, destination: OutputStream): IO[Long] = ???
+
+def copy(origin: File, destination: File): IO[Long] =
+  inputOutputStreams(origin, destination).use { case (in, out) =>
+    transfer(in, out)
+  }
+```
+
+Новый метод `transfer` будет выполнять фактическое копирование данных после получения ресурсов (потоков). 
+Когда они больше не нужны, независимо от исхода `transfer` (успеха или неудачи) оба потока будут закрыты. 
+Если какой-то из потоков получить не удалось, то `transfer` запускаться не будет. 
+Еще лучше, из-за семантики `Resource`, если есть какие-либо проблемы с открытием входного файла, 
+выходной файл не будет открыт. 
+С другой стороны, если при открытии выходного файла возникает проблема, входной поток будет закрыт.
+
+## Что насчет `bracket`?
+
+Если вы знакомы с cats effect `Bracket`, вам может быть интересно, почему мы не используем его, 
+поскольку он так похож на `Resource` (и для этого есть веская причина: `Resource` основан на `bracket`). 
+Хорошо, прежде чем двигаться дальше, стоит взглянуть на `bracket`.
+
+При использовании есть три этапа `bracket`: _приобретение ресурсов_, _использование_ и _высвобождение_. 
+Каждый этап определяется `IO` экземпляром. 
+Фундаментальное свойство заключается в том, что этап высвобождения всегда будет выполняться независимо от того, 
+завершился ли этап использования правильно или во время его выполнения возникло исключение. 
+В нашем случае на этапе приобретения мы создадим потоки, затем на этапе использования скопируем содержимое 
+и, наконец, на этапе высвобождения закроем потоки. 
+Таким образом, мы могли бы определить нашу функцию `copy` следующим образом:
+
+```scala
+import cats.effect.IO
+import cats.syntax.all.*
+import java.io.*
+
+// функция inputOutputStreams не нужна
+
+// transfer будет выполнять всю работу
+def transfer(origin: InputStream, destination: OutputStream): IO[Long] = ???
+
+def copy(origin: File, destination: File): IO[Long] = {
+  val inIO: IO[InputStream]   = IO(new FileInputStream(origin))
+  val outIO: IO[OutputStream] = IO(new FileOutputStream(destination))
+
+  (inIO, outIO) // Этап 1: получение ресурсов
+    .tupled     // От (IO[InputStream], IO[OutputStream]) к IO[(InputStream, OutputStream)]
+    .bracket { (in, out) =>
+      transfer(in, out) // Этап 2: использование ресурсов (в данном случае - для копирования данных)
+    } { (in, out) =>                           // Этап 3: высвобождение ресурсов
+      (IO(in.close()), IO(out.close())).tupled // От (IO[Unit], IO[Unit]) к IO[(Unit, Unit)]
+        .void.handleErrorWith(_ => IO.unit)
+    }
+}
+```
+
+Новое определение `copy` более сложное, хотя код в целом намного короче, 
+так как функция `inputOutputStreams` нам не нужна. 
+Но в приведенном выше коде есть нюанс. 
+При использовании `bracket`, если есть проблема с получением ресурсов на первом этапе, 
+то этап высвобождения не запустится. 
+В приведенном выше коде сначала открывается исходный файл, 
+а затем файл назначения (`.tupled` просто реорганизует оба `IO` экземпляра в один). 
+Итак, что произойдет, если мы успешно откроем исходный файл (т.е. при вычислении `inIO`), 
+но затем возникнет исключение при открытии целевого файла (т.е. при вычислении `outIO`)? 
+В этом случае исходный поток не будет закрыт! 
+Чтобы решить эту проблему, мы должны сначала получить первый поток с одним вызовом `bracket`, 
+а затем второй поток с другим вызовом `bracket` внутри первого. 
+Но в каком-то смысле именно это мы и делаем, когда `flatMap`-им экземпляры `Resource`. 
+И код тоже выглядит чище. 
+Таким образом, несмотря на то, что прямое использование `bracket` имеет место, 
+вероятно, `Resource` будет лучшим выбором при работе с несколькими ресурсами одновременно.
+
+## Копирование данных
+
+
 
 
 ## Исходный код
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fhttp4s%2FPingApp.scala&plain=1)
+
+
+
+
 
 ---
 

@@ -1,14 +1,22 @@
 package libs.cats.effect
 
-import cats.effect.{IO, Resource}
+import cats.effect.*
 
 import java.io.*
 
-object CopyingFiles:
-  def copy(origin: File, destination: File): IO[Long] =
-    inputOutputStreams(origin, destination).use { (in, out) =>
-      transfer(in, out)
-    }
+object CopyFiles extends IOApp:
+  override def run(args: List[String]): IO[ExitCode] =
+    for {
+      _     <- if (args.length < 2) IO.raiseError(new IllegalArgumentException("Need origin and destination files"))
+               else IO.unit
+      orig   = new File(args.head)
+      dest   = new File(args(1))
+      count <- copy(orig, dest)
+      _     <- IO.println(s"$count bytes copied from ${orig.getPath} to ${dest.getPath}")
+    } yield ExitCode.Success
+
+  private def copy(origin: File, destination: File): IO[Long] =
+    inputOutputStreams(origin, destination).use { (in, out) => transfer(in, out) }
 
   private def inputOutputStreams(in: File, out: File): Resource[IO, (InputStream, OutputStream)] =
     for {
@@ -39,5 +47,5 @@ object CopyingFiles:
       count  <-
         if (amount > -1)
           IO.blocking(destination.write(buffer, 0, amount)) >> transmit(origin, destination, buffer, acc + amount)
-        else IO.pure(acc) // Достигнут конец потока чтения (по java.io.InputStream), нечего писать
-    } yield count               // Возвращает фактическое количество переданных байтов
+        else IO.pure(acc)
+    } yield count

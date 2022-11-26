@@ -103,7 +103,7 @@ def producer[F[_]: Sync: Console](queueR: Ref[F, Queue[Int]], counter: Int): F[U
 
 ## Исходный код
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FCopyFilesF.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FProducerConsumerProblem.scala&plain=1)
 
 
 ---

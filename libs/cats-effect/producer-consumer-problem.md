@@ -100,10 +100,137 @@ def producer[F[_]: Sync: Console](queueR: Ref[F, Queue[Int]], counter: Int): F[U
   } yield ()
 ```
 
+Первая строка просто печатает какое-то сообщение журнала для каждого 10000-го элемента, поэтому мы знаем, «живой» ли он. 
+Он использует `type class Console[_]`, который дает возможность печатать 
+и читать строки (`IO.println` просто использует внутри `Console[IO].println`).
+
+Затем код вызывает `queueR.getAndUpdate` - добавление данных в очередь. 
+Обратите внимание, что `.getAndUpdate` предоставляется текущая очередь, 
+затем используем ее `.enqueue` для вставки следующего значения `counter + 1`. 
+Этот вызов возвращает новую очередь с добавленным значением, которое хранится в экземпляре `ref`. 
+Если какое-то другое волокно получает доступ к `queueR`, то волокно (семантически) блокируется.
+
+Метод `consumer` немного другой. 
+Он попытается прочитать данные из очереди, но должен знать, что очередь может быть пустой:
+
+```scala
+import cats.effect.*
+import cats.effect.std.Console
+import cats.syntax.all.*
+import collection.immutable.Queue
+
+def consumer[F[_]: Sync: Console](queueR: Ref[F, Queue[Int]]): F[Unit] =
+  for {
+    iO <- queueR.modify { queue =>
+            queue.dequeueOption.fold((queue, Option.empty[Int])) { (i, queue) => (queue, Option(i)) }
+          }
+    _  <- if iO.exists(_ % 10000 == 0) then Console[F].println(s"Consumed ${iO.get} items") else Sync[F].unit
+    _  <- consumer(queueR)
+  } yield ()
+```
+
+Вызов `queueR.modify` позволяет изменить упакованные данные (нашу очередь) и вернуть значение, вычисленное из этих данных. 
+В нашем случае он возвращает `Option[Int]`, что выдало бы `None`, если бы очередь была пустой. 
+Следующая строка используется для регистрации сообщения в консоли о каждом 10000-ом прочитанном элементе. 
+Наконец `consumer` вызывается рекурсивно, чтобы начать снова.
+
+Теперь мы можем создать программу, которая создает экземпляр `queueR` и запускает `producer` и `consumer` параллельно:
+
+```scala
+import cats.effect.*
+import cats.effect.std.Console
+import cats.syntax.all.*
+
+import scala.collection.immutable.Queue
+
+object InefficientProducerConsumer extends IOApp:
+  override def run(args: List[String]): IO[ExitCode] =
+    for {
+      queueR <- Ref.of[IO, Queue[Int]](Queue.empty[Int])
+      res <- (consumer(queueR), producer(queueR, 0))
+        .parMapN((_, _) => ExitCode.Success) // Запуск producer и consumer в параллели до окончания выполнения (до отмены пользователем по CTRL-C)
+        .handleErrorWith { t =>
+          Console[IO].errorln(s"Error caught: ${t.getMessage}").as(ExitCode.Error)
+        }
+    } yield res
+
+  private def producer[F[_]: Sync](queueR: Ref[F, Queue[Int]], counter: Int): F[Unit] = ??? // определено выше
+  private def consumer[F[_]: Sync](queueR: Ref[F, Queue[Int]]): F[Unit] = ???               // определено выше
+```
+
+Полная реализация этого примитивного производителя-потребителя доступна [здесь](https://github.com/lrodero/cats-effect-tutorial/blob/series/3.x/src/main/scala/catseffecttutorial/producerconsumer/InefficientProducerConsumer.scala).
+
+Наша функция `run` создает экземпляр общей очереди, обернутой в `Ref`, 
+и параллельно загружает производителя и потребителя. 
+Для этого используется `parMapN`, который создает и запускает волокна, запускающие `IO`-ы, переданный в качестве параметра. 
+Затем он берет выходные данные каждого волокна и применяет к ним заданную функцию. 
+В нашем случае и производитель, и потребитель будут работать "вечно", 
+пока пользователь не нажмет CTRL-C, что вызовет отмену.
+
+В качестве альтернативы мы могли бы использовать метод `start` для явного создания новых экземпляров `Fiber`, 
+которые будут запускать производителя и потребителя, а затем использовать `join` для ожидания их завершения, 
+например:
+
+```scala
+import cats.effect.*
+import collection.immutable.Queue
+
+object InefficientProducerConsumer extends IOApp:
+  override def run(args: List[String]): IO[ExitCode] =
+    for {
+      queueR        <- Ref.of[IO, Queue[Int]](Queue.empty[Int])
+      producerFiber <- producer(queueR, 0).start
+      consumerFiber <- consumer(queueR).start
+      _             <- producerFiber.join
+      _             <- consumerFiber.join
+    } yield ExitCode.Error
+
+  private def producer[F[_]: Sync](queueR: Ref[F, Queue[Int]], counter: Int): F[Unit] = ??? // определено выше
+  private def consumer[F[_]: Sync](queueR: Ref[F, Queue[Int]]): F[Unit] = ???               // определено выше
+```
+
+Однако в большинстве случаев не рекомендуется обрабатывать волокна вручную, так как с ними не так просто работать. 
+Например, если в волокне есть ошибка, вызов `join` этого волокна не вызовет ее, он вернется в обычном режиме, 
+и вы должны явно проверить экземпляр `Outcome`, возвращенный вызовом `.join`, чтобы увидеть, не возникла ли ошибка. 
+Кроме того, другие волокна будут продолжать работать, не зная о том, что произошло.
+
+Cats Effect предоставляет дополнительные методы `joinWith` или `joinWithNever`, чтобы убедиться, что ошибка вызвана, 
+по крайней мере, обычной семантикой `MonadError` (например, "короткое замыкание"). 
+Теперь, когда мы вызываем ошибку, нам также нужно отменить другие работающие волокна. 
+Мы можем легко попасть в ловушку путаницы волокон, чтобы следить за ней. 
+Кроме того, ошибка, вызванная волокном, не продвигается до тех пор, 
+пока не будет достигнут вызов `joinWith` или `joinWithNever`.
+
+Таким образом, в нашем примере выше, если в `consumerFiber` возникает ошибка, 
+то у нас нет возможности наблюдать это, пока волокно `producer` не завершится. 
+Обратите внимание, что в нашем примере `producer` никогда не завершает работу, 
+и поэтому ошибка никогда не возникает! 
+И даже если бы волокно `producer` закончилось, оно бы потребляло ресурсы впустую.
+
+В отличие от этого, `parMapN` передает вызывающей стороне любую обнаруженную ошибку 
+и заботится об отмене других запущенных волокон. 
+В результате `parMapN` проще в использовании, более лаконичен и о нем легче рассуждать. 
+_Из-за этого, если у вас нет особых и необычных требований, 
+вы должны предпочесть использовать команды высшего уровня, 
+такие как `parMapN` или `parSequence` для работы с волокнами._
+
+Хорошо, мы придерживаемся нашей реализации, основанной на `.parMapN`. 
+Все? Это работает? Что ж, это работает... но далеко от идеала. 
+Если мы запустим его, то обнаружим, что producer работает быстрее, чем consumer, поэтому очередь постоянно растет. 
+И даже если бы это было не так, мы должны понимать, что consumer будет работать постоянно, 
+независимо от наличия элементов в очереди, что далеко не идеально. 
+Мы постараемся улучшить его в следующем разделе, используя [Deferred](https://typelevel.org/cats-effect/docs/std/deferred). 
+Также мы будем использовать несколько потребителей и производителей, 
+чтобы сбалансировать скорость производства и потребления.
+
+## Более надежная реализация проблемы производителя/потребителя
+
+
+
 
 ## Исходный код
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FProducerConsumerProblem.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FProducerConsumer.scala&plain=1)
 
 
 ---

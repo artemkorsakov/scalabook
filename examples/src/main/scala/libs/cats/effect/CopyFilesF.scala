@@ -5,7 +5,7 @@ import cats.syntax.all.*
 
 import java.io.*
 
-object CopyFilesA extends IOApp:
+object CopyFilesF extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =
     for {
       _     <- if (args.length < 2) IO.raiseError(new IllegalArgumentException("Need origin and destination files"))

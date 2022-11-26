@@ -328,14 +328,14 @@ object CopyingFiles extends IOApp:
 Мы могли бы определить полиморфную версию функции `transfer` с таким подходом, 
 просто заменив любое использование `IO` вызовов на методы `delay` и `pure` экземпляра `Sync[F]`.
 
-Только в `main` функции мы будем устанавливать `IO` как `F` для нашей программы. 
+Только в `main` функции будем устанавливать `IO` как `F` для нашей программы. 
 Для этого, конечно, экземпляр `Sync[IO]` должен быть в области видимости, но этот экземпляр передается прозрачно `IOApp`, 
 поэтому нам не нужно беспокоиться об этом.
 
 
 ## Исходный код
 
-[Исходный код с полиморфными методами](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FCopyFilesA.scala&plain=1)
+[Исходный код с полиморфными методами](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FCopyFilesF.scala&plain=1)
 
 
 ---

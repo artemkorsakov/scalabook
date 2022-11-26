@@ -3,7 +3,7 @@
 В справочнике изложены основные принципы разработки на [Scala](https://docs.scala-lang.org/scala3/getting-started.html),
 в том числе с помощью популярных библиотек.
 
-Код написан на версии Scala - 3.1.3.
+Код написан на версии Scala - 3.2.1.
 
 [Домашняя страница](https://scalabook.gitflic.space)
 

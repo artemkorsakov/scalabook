@@ -10,8 +10,6 @@ object CopyingFiles:
       transfer(in, out)
     }
 
-  private def transfer(origin: InputStream, destination: OutputStream): IO[Long] = ???
-
   private def inputOutputStreams(in: File, out: File): Resource[IO, (InputStream, OutputStream)] =
     for {
       inStream  <- inputStream(in)
@@ -31,3 +29,15 @@ object CopyingFiles:
     } { outStream =>
       IO.blocking(outStream.close()).handleErrorWith(_ => IO.unit)
     }
+
+  private def transfer(origin: InputStream, destination: OutputStream): IO[Long] =
+    transmit(origin, destination, new Array[Byte](1024 * 10), 0L)
+
+  private def transmit(origin: InputStream, destination: OutputStream, buffer: Array[Byte], acc: Long): IO[Long] =
+    for {
+      amount <- IO.blocking(origin.read(buffer, 0, buffer.length))
+      count  <-
+        if (amount > -1)
+          IO.blocking(destination.write(buffer, 0, amount)) >> transmit(origin, destination, buffer, acc + amount)
+        else IO.pure(acc) // Достигнут конец потока чтения (по java.io.InputStream), нечего писать
+    } yield count               // Возвращает фактическое количество переданных байтов

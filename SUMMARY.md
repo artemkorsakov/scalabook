@@ -269,7 +269,7 @@
 - [Scala библиотеки](libs/index.md)
   - [Cats effect](libs/cats-effect.md)
     - [Копирование файлов](libs/cats-effect/copy-files.md) 
-    - [Проблема производитель-потребитель](libs/cats-effect/producer-consumer-problem.md) 
+    - [Производитель-потребитель](libs/cats-effect/producer-consumer-problem.md) 
   - [Http4s](libs/http4s.md)
 
 ## Доп. материалы

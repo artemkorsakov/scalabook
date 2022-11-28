@@ -84,7 +84,7 @@ Cats-effect реализует некоторые примитивы парал�
 
 Обертка `Ref` для нашей очереди будет `Ref[F, Queue[Int]]` (для некоторых `F[_]`).
 
-Теперь метод `producer` будет таким:
+Метод `producer` будет таким:
 
 ```scala
 import cats.effect.*
@@ -93,11 +93,11 @@ import cats.syntax.all.*
 import collection.immutable.Queue
 
 def producer[F[_]: Sync: Console](queueR: Ref[F, Queue[Int]], counter: Int): F[Unit] =
-  for {
+  for
     _ <- if counter % 10000 == 0 then Console[F].println(s"Produced $counter items") else Sync[F].unit
     _ <- queueR.getAndUpdate(_.enqueue(counter + 1))
     _ <- producer(queueR, counter + 1)
-  } yield ()
+  yield ()
 ```
 
 Первая строка просто печатает какое-то сообщение журнала для каждого 10000-го элемента, поэтому мы знаем, «живой» ли он. 
@@ -120,13 +120,13 @@ import cats.syntax.all.*
 import collection.immutable.Queue
 
 def consumer[F[_]: Sync: Console](queueR: Ref[F, Queue[Int]]): F[Unit] =
-  for {
+  for
     iO <- queueR.modify { queue =>
             queue.dequeueOption.fold((queue, Option.empty[Int])) { (i, queue) => (queue, Option(i)) }
           }
     _  <- if iO.exists(_ % 10000 == 0) then Console[F].println(s"Consumed ${iO.get} items") else Sync[F].unit
     _  <- consumer(queueR)
-  } yield ()
+  yield ()
 ```
 
 Вызов `queueR.modify` позволяет изменить упакованные данные (нашу очередь) и вернуть значение, вычисленное из этих данных. 
@@ -145,14 +145,14 @@ import scala.collection.immutable.Queue
 
 object InefficientProducerConsumer extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =
-    for {
+    for
       queueR <- Ref.of[IO, Queue[Int]](Queue.empty[Int])
       res <- (consumer(queueR), producer(queueR, 0))
         .parMapN((_, _) => ExitCode.Success) // Запуск producer и consumer в параллели до окончания выполнения (до отмены пользователем по CTRL-C)
         .handleErrorWith { t =>
           Console[IO].errorln(s"Error caught: ${t.getMessage}").as(ExitCode.Error)
         }
-    } yield res
+    yield res
 
   private def producer[F[_]: Sync](queueR: Ref[F, Queue[Int]], counter: Int): F[Unit] = ??? // определено выше
   private def consumer[F[_]: Sync](queueR: Ref[F, Queue[Int]]): F[Unit] = ???               // определено выше
@@ -177,13 +177,13 @@ import collection.immutable.Queue
 
 object InefficientProducerConsumer extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =
-    for {
+    for
       queueR        <- Ref.of[IO, Queue[Int]](Queue.empty[Int])
       producerFiber <- producer(queueR, 0).start
       consumerFiber <- consumer(queueR).start
       _             <- producerFiber.join
       _             <- consumerFiber.join
-    } yield ExitCode.Error
+    yield ExitCode.Error
 
   private def producer[F[_]: Sync](queueR: Ref[F, Queue[Int]], counter: Int): F[Unit] = ??? // определено выше
   private def consumer[F[_]: Sync](queueR: Ref[F, Queue[Int]]): F[Unit] = ???               // определено выше
@@ -216,7 +216,7 @@ _Из-за этого, если у вас нет особых и необычн�
 
 Хорошо, мы придерживаемся нашей реализации, основанной на `.parMapN`. 
 Все? Это работает? Что ж, это работает... но далеко от идеала. 
-Если мы запустим его, то обнаружим, что producer работает быстрее, чем consumer, поэтому очередь постоянно растет. 
+Если мы запустим его, то обнаружим, что `producer` работает быстрее, чем `consumer`, поэтому очередь постоянно растет. 
 И даже если бы это было не так, мы должны понимать, что consumer будет работать постоянно, 
 независимо от наличия элементов в очереди, что далеко не идеально. 
 Мы постараемся улучшить его в следующем разделе, используя [Deferred](https://typelevel.org/cats-effect/docs/std/deferred). 

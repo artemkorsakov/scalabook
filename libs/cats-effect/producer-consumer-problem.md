@@ -567,11 +567,11 @@ object ProducerConsumerBounded extends IOApp:
 import cats.effect.Deferred
 
 def offer[F[_]](i: Int): F[Unit] =
-  for {
+  for
     offerer <- Deferred[F, Int]
     op      <- stateR.modify { ??? } // `op` - это F[] для запуска
     _       <- op
-  } yield ()
+  yield ()
 ```
 
 Теперь отмена вступает в действие в каждом `.flatMap` в `F`, т.е. в каждом шаге нашего _for-comprehension_. 
@@ -585,15 +585,15 @@ def offer[F[_]](i: Int): F[Unit] =
 
 ```scala
 def offer[F[_]](i: Int): F[Unit] =
-  for {
+  for
     offerer <- Deferred[F, Int]
     _       <- F.uncancelable { poll => // `poll` пока игнорируется, мы обсудим его позже
-      for {
+      for
         op <- stateR.modify {???} // `op` - это F[] для запуска
         _  <- op // `taker.complete(i).void`, `Sync[F].unit` или `offerer.get`
-      } yield ()
+      yield ()
     }
-  } yield ()
+  yield ()
 ```
 
 В чем проблема? 
@@ -647,12 +647,12 @@ def producer[F[_]: Async: Console](id: Int, counterR: Ref[F, Int], stateR: Ref[F
       }
     }
 
-  for {
+  for
     i <- counterR.getAndUpdate(_ + 1)
     _ <- offer(i)
     _ <- if i % 10000 == 0 then Console[F].println(s"Producer $id has reached $i items") else Async[F].unit
     _ <- producer(id, counterR, stateR)
-  } yield ()
+  yield ()
 ```
 
 Потребительская часть должна работать с отменой таким же образом. 
@@ -694,11 +694,11 @@ def consumer[F[_]: Async: Console](id: Int, stateR: Ref[F, State[F, Int]]): F[Un
       }
     }
 
-  for {
+  for
     i <- take
     _ <- if i % 10000 == 0 then Console[F].println(s"Consumer $id has reached $i items") else Async[F].unit
     _ <- consumer(id, stateR)
-  } yield ()
+  yield ()
 ```
 
 Мы сделали реализацию производителя-потребителя способной обрабатывать отмену. 

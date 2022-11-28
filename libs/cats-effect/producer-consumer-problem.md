@@ -498,12 +498,12 @@ def producer[F[_]: Async: Console](id: Int, counterR: Ref[F, Int], stateR: Ref[F
       }.flatten
     }
 
-  for {
+  for
     i <- counterR.getAndUpdate(_ + 1)
     _ <- offer(i)
     _ <- if i % 10000 == 0 then Console[F].println(s"Producer $id has reached $i items") else Async[F].unit
     _ <- producer(id, counterR, stateR)
-  } yield ()
+  yield ()
 ```
 
 Как видите, производитель и потребитель закодированы вокруг идеи сохранения и изменения состояния, 
@@ -532,7 +532,7 @@ object ProducerConsumerBounded extends IOApp:
     def empty[F[_], A](capacity: Int): State[F, A] = State(Queue.empty, capacity, Queue.empty, Queue.empty)
 
   override def run(args: List[String]): IO[ExitCode] =
-    for {
+    for
       stateR   <- Ref.of[IO, State[IO, Int]](State.empty[IO, Int](capacity = 100))
       counterR <- Ref.of[IO, Int](1)
       producers = List.range(1, 11).map(producer(_, counterR, stateR)) // 10 производителей
@@ -544,7 +544,7 @@ object ProducerConsumerBounded extends IOApp:
                     .handleErrorWith { t =>
                       Console[IO].errorln(s"Error caught: ${t.getMessage}").as(ExitCode.Error)
                     }
-    } yield res
+    yield res
 
   def producer[F[_]: Async](id: Int, counterR: Ref[F, Int], stateR: Ref[F, State[F, Int]]): F[Unit] =
     ??? // определено выше

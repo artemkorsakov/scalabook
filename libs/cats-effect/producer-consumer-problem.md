@@ -273,7 +273,7 @@ def consumer[F[_]: Async: Console](id: Int, stateR: Ref[F, State[F, Int]]): F[Un
       stateR.modify {
         case State(queue, takers) if queue.nonEmpty =>
           val (i, rest) = queue.dequeue
-          // Получен элемента из очереди, мы можем просто вернуть его
+          // Получен элемент из очереди, мы можем просто вернуть его
           State(rest, takers) -> Async[F].pure(i)
         case State(queue, takers)                   =>
           // Нет элемента в очереди, должны заблокировать вызов пока что-то не получим
@@ -281,11 +281,11 @@ def consumer[F[_]: Async: Console](id: Int, stateR: Ref[F, State[F, Int]]): F[Un
       }.flatten
     }
 
-  for {
+  for
     i <- take
     _ <- if (i % 10000 == 0) Console[F].println(s"Consumer $id has reached $i items") else Async[F].unit
     _ <- consumer(id, stateR)
-  } yield ()
+  yield ()
 end consumer
 ```
 
@@ -296,7 +296,7 @@ end consumer
 
 Производитель, со своей стороны, будет:
 
-- Если есть ожидающие `takers`, он возьмет первый в очереди и предложит ему вновь созданный элемент (`taker.complete`).
+- Если есть ожидающие `takers`, то он возьмет первый в очереди и предложит ему вновь созданный элемент (`taker.complete`).
 - Если нет `takers`, он просто поставит в очередь созданный элемент.
 
 Таким образом производитель будет выглядеть так:
@@ -319,12 +319,12 @@ def producer[F[_]: Sync: Console](id: Int, counterR: Ref[F, Int], stateR: Ref[F,
         State(queue.enqueue(i), takers) -> Sync[F].unit
     }.flatten
 
-  for {
+  for
     i <- counterR.getAndUpdate(_ + 1)
     _ <- offer(i)
     _ <- if i % 10000 == 0 then Console[F].println(s"Producer $id has reached $i items") else Sync[F].unit
     _ <- producer(id, counterR, stateR)
-  } yield ()
+  yield ()
 ```
 
 Наконец, мы модифицируем нашу основную программу, чтобы она создавала счетчик и состояние `Refs`. 
@@ -341,12 +341,11 @@ object ProducerConsumer extends IOApp:
 
   case class State[F[_], A](queue: Queue[A], takers: Queue[Deferred[F, A]])
 
-  object State {
+  object State:
     def empty[F[_], A]: State[F, A] = State(Queue.empty, Queue.empty)
-  }
 
   override def run(args: List[String]): IO[ExitCode] =
-    for {
+    for
       stateR   <- Ref.of[IO, State[IO, Int]](State.empty[IO, Int])
       counterR <- Ref.of[IO, Int](1)
       producers = List.range(1, 11).map(producer(_, counterR, stateR)) // 10 производителей
@@ -358,7 +357,7 @@ object ProducerConsumer extends IOApp:
                     .handleErrorWith { t =>
                       Console[IO].errorln(s"Error caught: ${t.getMessage}").as(ExitCode.Error)
                     }
-    } yield res
+    yield res
 
   private def producer[F[_]: Sync](id: Int, counterR: Ref[F, Int], stateR: Ref[F, State[F, Int]]): F[Unit] =
     ??? // определено выше
@@ -409,7 +408,7 @@ case class State[F[_], A](
 Для каждого сценария потребитель должен:
 
 - Если `queue` не пусто:
-  - Если `offerers` пустой, то он извлечет и вернет `queue` головной элемент.
+  - Если `offerers` пустой, то он извлечет и вернет головной элемент `queue`.
   - Если `offerers` не пустой (есть какой-то производитель), тогда все сложнее. 
     Головной элемент `queue` будет возвращен потребителю. Теперь у нас есть свободная корзина в формате `queue`. 
     Таким образом, первый ожидающий может использовать эту корзину, чтобы добавить предлагаемый им элемент. 
@@ -455,11 +454,11 @@ def consumer[F[_]: Async: Console](id: Int, stateR: Ref[F, State[F, Int]]): F[Un
       }.flatten
     }
 
-  for {
+  for
     i <- take
     _ <- if i % 10000 == 0 then Console[F].println(s"Consumer $id has reached $i items") else Async[F].unit
     _ <- consumer(id, stateR)
-  } yield ()
+  yield ()
 ```
 
 Функциональность продюсера немного проще:

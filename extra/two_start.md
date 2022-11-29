@@ -31,6 +31,13 @@
 | [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)                                                | Scala 2  | &#10031;&#10031;         |  En  | 2017        |             |
 | [Scala puzzlers](https://scalapuzzlers.com/index.html), на основе упражнений [написана книга](https://www.artima.com/shop/scala_puzzlers) | Scala 2  | &#10031;&#10031;         |  En  | ноябрь 2014 |             |
 
+### Статьи
+
+| Название                                                                     | Версия  | Сложность                | Язык | Дата публ. | Комментарий |
+|------------------------------------------------------------------------------|:-------:|--------------------------|:----:|------------|-------------|
+| [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/) | Scala 3 | &#10031;&#10031;         |  En  | июль 2020  | Cats effect |
+
+
 --- 
 
 ## Общее

@@ -54,6 +54,10 @@
 | [Scala tutorials](http://scalatutorials.com/tour/)           | Scala 2  | &#10031;  |  En  |            |             |
 | [Tour of Scala](https://tourofscala.com/)                    | Scala 2  | &#10031;  |  En  |            |             |
 
+### Статьи
+
+...
+
 --- 
 
 ## Общее

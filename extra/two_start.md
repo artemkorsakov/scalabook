@@ -33,13 +33,11 @@
 
 ### Статьи
 
-| Название                                                                                  | Версия  | Сложность        | Язык | Дата публ.  | Комментарий |
-|-------------------------------------------------------------------------------------------|:-------:|------------------|:----:|-------------|-------------|
-| [Cats Effect 3 - Introduction to Fibers](https://blog.rockthejvm.com/cats-effect-fibers/) | Scala 3 | &#10031;&#10031; |  En  | апрель 2021 | Cats effect |
-| [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/)              | Scala 3 | &#10031;&#10031; |  En  | июль 2020   | Cats effect |
-
-
-
+| Название                                                                                                                       | Версия  | Сложность        | Язык | Дата публ.  | Комментарий |
+|--------------------------------------------------------------------------------------------------------------------------------|:-------:|------------------|:----:|-------------|-------------|
+| [Cats Effect 3 - Introduction to Fibers](https://blog.rockthejvm.com/cats-effect-fibers/)                                      | Scala 3 | &#10031;&#10031; |  En  | апрель 2021 | Cats effect |
+| [Time traveling in tests with Cats Effect](https://blog.softwaremill.com/time-traveling-in-tests-with-cats-effect-b22084f6a89) | Scala 3 | &#10031;&#10031; |  En  | май 2020    | Cats effect |
+| [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/)                                                   | Scala 3 | &#10031;&#10031; |  En  | июль 2020   | Cats effect |
 
 --- 
 

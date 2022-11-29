@@ -6,11 +6,11 @@
 
 ### Книги и документация
 
-| Название                                                                                                                                                  |  Версия  | Сложность                | Язык | Дата публ.  | Комментарий |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|--------------------------|:----:|-------------|-------------|
-| [Programming Scala, 3rd Edition by Dean Wampler](https://deanwampler.github.io/books/programmingscala.html)                                               | Scala 3  | &#10031;&#10031;         |  En  | июнь 2021   |             |
-| [Scala & Design Patterns: Exploring Language Expressivity by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf) | Scala 2  | &#10031;&#10031;         |  En  | март 2009   |             |
-| [Scala with Cats](https://www.scalawithcats.com/)                                                                                                         | Scala 2  | &#10031;&#10031;         |  En  | апрель 2020 | Cats        |
+| Название                                                                                                                                                  |  Версия  | Сложность         | Язык | Дата публ.  | Комментарий |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|-------------------|:----:|-------------|-------------|
+| [Programming Scala, 3rd Edition by Dean Wampler](https://deanwampler.github.io/books/programmingscala.html)                                               | Scala 3  | &#10031;&#10031;  |  En  | июнь 2021   |             |
+| [Scala & Design Patterns: Exploring Language Expressivity by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf) | Scala 2  | &#10031;&#10031;  |  En  | март 2009   |             |
+| [Scala with Cats](https://www.scalawithcats.com/)                                                                                                         | Scala 2  | &#10031;&#10031;  |  En  | апрель 2020 | Cats        |
 
 ### Видео
 
@@ -26,16 +26,16 @@
 
 ### Упражнения
 
-| Название                                                                                                                                  |  Версия  | Сложность                | Язык | Дата публ.  | Комментарий |
-|-------------------------------------------------------------------------------------------------------------------------------------------|:--------:|--------------------------|:----:|-------------|-------------|
-| [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)                                                | Scala 2  | &#10031;&#10031;         |  En  | 2017        |             |
-| [Scala puzzlers](https://scalapuzzlers.com/index.html), на основе упражнений [написана книга](https://www.artima.com/shop/scala_puzzlers) | Scala 2  | &#10031;&#10031;         |  En  | ноябрь 2014 |             |
+| Название                                                                                                                                  |  Версия  | Сложность         | Язык | Дата публ.  | Комментарий |
+|-------------------------------------------------------------------------------------------------------------------------------------------|:--------:|-------------------|:----:|-------------|-------------|
+| [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)                                                | Scala 2  | &#10031;&#10031;  |  En  | 2017        |             |
+| [Scala puzzlers](https://scalapuzzlers.com/index.html), на основе упражнений [написана книга](https://www.artima.com/shop/scala_puzzlers) | Scala 2  | &#10031;&#10031;  |  En  | ноябрь 2014 |             |
 
 ### Статьи
 
-| Название                                                                     | Версия  | Сложность                | Язык | Дата публ. | Комментарий |
-|------------------------------------------------------------------------------|:-------:|--------------------------|:----:|------------|-------------|
-| [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/) | Scala 3 | &#10031;&#10031;         |  En  | июль 2020  | Cats effect |
+| Название                                                                     | Версия  | Сложность        | Язык | Дата публ. | Комментарий |
+|------------------------------------------------------------------------------|:-------:|------------------|:----:|------------|-------------|
+| [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/) | Scala 3 | &#10031;&#10031; |  En  | июль 2020  | Cats effect |
 
 
 --- 

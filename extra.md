@@ -17,5 +17,5 @@
 
 <div>
     <a href="extra">&#8678; Предыдущая</a>
-    <a href="extra">Следующая &#8680;</a>
+    <a href="extra/one_star">Следующая &#8680;</a>
 </div>

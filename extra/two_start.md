@@ -1,4 +1,4 @@
-# Middle
+# &#10031;&#10031;
 
 --- 
 
@@ -33,11 +33,12 @@
 
 ### Статьи
 
-| Название                                                                                                                       | Версия  | Сложность        | Язык | Дата публ.  | Комментарий |
-|--------------------------------------------------------------------------------------------------------------------------------|:-------:|------------------|:----:|-------------|-------------|
-| [Cats Effect 3 - Introduction to Fibers](https://blog.rockthejvm.com/cats-effect-fibers/)                                      | Scala 3 | &#10031;&#10031; |  En  | апрель 2021 | Cats effect |
-| [Time traveling in tests with Cats Effect](https://blog.softwaremill.com/time-traveling-in-tests-with-cats-effect-b22084f6a89) | Scala 3 | &#10031;&#10031; |  En  | май 2020    | Cats effect |
-| [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/)                                                   | Scala 3 | &#10031;&#10031; |  En  | июль 2020   | Cats effect |
+| Название                                                                                                                                    | Версия  | Сложность        | Язык | Дата публ.  | Комментарий |
+|---------------------------------------------------------------------------------------------------------------------------------------------|:-------:|------------------|:----:|-------------|-------------|
+| [Cats Effect 3 - Introduction to Fibers](https://blog.rockthejvm.com/cats-effect-fibers/)                                                   | Scala 3 | &#10031;&#10031; |  En  | апрель 2021 | Cats effect |
+| [Higher-kinded types: the difference between giving up, and moving forward](https://typelevel.org/blog/2016/08/21/hkts-moving-forward.html) | Scala 3 | &#10031;&#10031; |  En  | август 2016 |             |
+| [Time traveling in tests with Cats Effect](https://blog.softwaremill.com/time-traveling-in-tests-with-cats-effect-b22084f6a89)              | Scala 3 | &#10031;&#10031; |  En  | май 2020    | Cats effect |
+| [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/)                                                                | Scala 3 | &#10031;&#10031; |  En  | июль 2020   | Cats effect |
 
 --- 
 
@@ -49,3 +50,10 @@
 |--------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|:----:|------------|-------------|
 | [Род Стивенс - Алгоритмы. Теория и практическое применение](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854) | &#10031;&#10031; |  Ru  | 2021       |  Алгоритмы  |
 | [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)                              | &#10031;&#10031; |  En  | 2019       |  Алгоритмы  |
+
+---
+
+<div>
+    <a href="extra/one_star">&#8678; Предыдущая</a>
+    <a href="extra/three_stars">Следующая &#8680;</a>
+</div>

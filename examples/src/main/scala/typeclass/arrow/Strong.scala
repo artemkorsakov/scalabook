@@ -7,6 +7,8 @@ trait Strong[=>:[_, _]] extends Profunctor[=>:]:
     dimap[(A, C), (B, C), (C, A), (C, B)](first(fa))(_.swap)(_.swap)
 
 object Strong:
+  def apply[=>:[_, _]: Strong]: Strong[=>:] = summon[Strong[=>:]]
+
   given Strong[Function1] with
     override def mapfst[A, B, C](fab: A => B)(f: C => A): C => B = f andThen fab
 

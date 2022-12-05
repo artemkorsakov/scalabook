@@ -51,6 +51,8 @@ trait Arrow[=>:[_, _]] extends Split[=>:], Strong[=>:], Category[=>:]:
     split(fab, fab)
 
 object Arrow:
+  def apply[=>:[_, _]: Strong]: Strong[=>:] = summon[Strong[=>:]]
+
   given Arrow[Function1] with
     override def arr[A, B](f: A => B): A => B = f
     override def id[A]: A => A = a => a

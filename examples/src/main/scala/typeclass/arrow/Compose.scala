@@ -17,8 +17,10 @@ trait Compose[=>:[_, _]]:
 
   def plus: Plus[[A] =>> A =>: A] = new ComposePlus {}
 
-  def semigroup[A]: Semigroup[A =>: A] = new ComposeSemigroup {}
+  def semigroup[A]: Semigroup[A =>: A] = new ComposeSemigroup[A] {}
 
 object Compose:
+  def apply[=>:[_, _]: Compose]: Compose[=>:] = summon[Compose[=>:]]
+
   given Compose[Function1] with
     override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f

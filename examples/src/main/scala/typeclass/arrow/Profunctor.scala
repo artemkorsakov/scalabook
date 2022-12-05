@@ -29,6 +29,8 @@ trait Profunctor[=>:[_, _]]:
       override def cmap[A, B](fa: B =>: C)(f: A => B): A =>: C = mapfst(fa)(f)
 
 object Profunctor:
+  def apply[=>:[_, _]: Profunctor]: Profunctor[=>:] = summon[Profunctor[=>:]]
+
   given Profunctor[Function1] with
     override def mapfst[A, B, C](fab: A => B)(f: C => A): C => B = f andThen fab
 

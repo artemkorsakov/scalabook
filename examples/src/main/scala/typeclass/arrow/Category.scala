@@ -13,6 +13,8 @@ trait Category[=>:[_, _]] extends Compose[=>:]:
     def empty: A =>: A = id
 
 object Category:
+  def apply[=>:[_, _]: Category]: Category[=>:] = summon[Category[=>:]]
+
   given Category[Function1] with
     override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f
 

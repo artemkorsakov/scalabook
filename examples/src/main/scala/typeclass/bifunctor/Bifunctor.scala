@@ -31,6 +31,8 @@ trait Bifunctor[F[_, _]]:
     bimap(faa)(f, f)
 
 object Bifunctor:
+  def apply[F[_, _]: Bifunctor]: Bifunctor[F] = summon[Bifunctor[F]]
+
   given Bifunctor[Either] with
     extension [A, B](fab: Either[A, B])
       override def bimap[C, D](f: A => C, g: B => D): Either[C, D] =
@@ -45,6 +47,3 @@ object Bifunctor:
           val (a, b) = fab.run()
           (f(a), g(b))
         }
-
-  def bimap[F[_, _], A, B, C, D](fab: F[A, B])(f: A => C, g: B => D)(using bifunctor: Bifunctor[F]): F[C, D] =
-    bifunctor.bimap(fab)(f, g)

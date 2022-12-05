@@ -8,6 +8,8 @@ trait MonadPlus[F[_]] extends Monad[F] with ApplicativePlus[F]:
     value.flatMap(ta => T.foldMap(ta)(a => unit(a))(using monoid[A]))
 
 object MonadPlus:
+  def apply[F[_]: MonadPlus]: MonadPlus[F] = summon[MonadPlus[F]]
+
   given MonadPlus[List] with
     override def unit[A](a: => A): List[A] = List(a)
 

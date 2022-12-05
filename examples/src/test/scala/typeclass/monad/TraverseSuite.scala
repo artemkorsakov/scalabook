@@ -5,12 +5,12 @@ import org.scalacheck.Gen
 import org.scalacheck.Prop.*
 import typeclass.Functions.given
 import typeclass.common.*
-import typeclass.monad.Traverse.{traverse, given}
+import typeclass.monad.Traverse.given
 
 class TraverseSuite extends ScalaCheckSuite, TraverseLaw:
   property("Проверка sequence") {
     forAll { (x: Option[Int]) =>
-      assertEquals(summon[Traverse[Id]].sequence[Option, Int](Id(x)), x.map(Id(_)))
+      assertEquals(Traverse[Id].sequence[Option, Int](Id(x)), x.map(Id(_)))
     }
   }
 

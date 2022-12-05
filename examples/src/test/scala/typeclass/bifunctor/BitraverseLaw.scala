@@ -3,7 +3,6 @@ package typeclass.bifunctor
 import typeclass.common.Id
 import typeclass.monad.Applicative.unit
 import typeclass.monad.Functor.map
-import typeclass.monad.Traverse.traverse
 import typeclass.monad.{Applicative, FunctorLaw, Traverse, TraverseLaw}
 import typeclass.monoid.Monoid
 

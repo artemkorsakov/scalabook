@@ -5,7 +5,7 @@ import org.scalacheck.Gen
 import org.scalacheck.Prop.*
 import typeclass.Functions.given
 import typeclass.common.*
-import typeclass.monad.Traverse.{traverse, given}
+import typeclass.monad.Traverse.given
 import typeclass.monad.{Traverse, TraverseLaw}
 
 class BitraverseSuite extends ScalaCheckSuite, BitraverseLaw:

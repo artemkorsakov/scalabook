@@ -12,12 +12,10 @@ trait ComposeLaw extends PlusLaw:
       f2: A =>: A,
       f3: A =>: A
   )(a: A): Unit =
-    val ins = summon[Compose[=>:]]
-    import ins.{compose, plus, semigroup}
     assertEquals(
-      Runner2[=>:].run(a)(compose(cd, compose(bc, ab))),
-      Runner2[=>:].run(a)(compose(compose(cd, bc), ab)),
+      Runner2[=>:].run(a)(Compose[=>:].compose(cd, Compose[=>:].compose(bc, ab))),
+      Runner2[=>:].run(a)(Compose[=>:].compose(Compose[=>:].compose(cd, bc), ab)),
       "Associativity"
     )
-    checkPlusLawWithRunner[[X] =>> X =>: X, A](f1, f2, f3)(Runner2[=>:].run(a))(using plus)
-    checkSemigroupLawWithRunner[A =>: A, A](f1, f2, f3)(Runner2[=>:].run(a))(using semigroup)
+    checkPlusLawWithRunner[[X] =>> X =>: X, A](f1, f2, f3)(Runner2[=>:].run(a))(using Compose[=>:].plus)
+    checkSemigroupLawWithRunner[A =>: A, A](f1, f2, f3)(Runner2[=>:].run(a))(using Compose[=>:].semigroup)

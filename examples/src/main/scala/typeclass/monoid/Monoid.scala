@@ -6,6 +6,8 @@ trait Monoid[A] extends Semigroup[A]:
   def empty: A
 
 object Monoid:
+  def apply[A: Monoid]: Monoid[A] = summon[Monoid[A]]
+
   given sumMonoidInstance: Monoid[Int] with
     val empty = 0
     def combine(x: Int, y: Int): Int = x + y
@@ -56,7 +58,3 @@ object Monoid:
   def endoMonoid[A]: Monoid[A => A] = new:
     def combine(f: A => A, g: A => A): A => A = f andThen g
     val empty: A => A = identity
-
-  def combine[A](x: A, y: A)(using m: Monoid[A]): A = m.combine(x, y)
-
-  def empty[A](using m: Monoid[A]): A = m.empty

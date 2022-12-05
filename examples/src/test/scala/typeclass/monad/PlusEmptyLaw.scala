@@ -12,7 +12,7 @@ trait PlusEmptyLaw extends PlusLaw, MonoidLaw:
     checkMonoidLaw(f1, f2, f3)(using ins.monoid)
 
   def checkPlusEmptyLawWithRunner[F[_]: PlusEmpty: Runner1, A](f1: F[A], f2: F[A], f3: F[A]): Unit =
-    checkPlusEmptyLawWithRunner[F, A](f1, f2, f3)(summon[Runner1[F]].run)
+    checkPlusEmptyLawWithRunner[F, A](f1, f2, f3)(Runner1[F].run)
 
   def checkPlusEmptyLawWithRunner[F[_]: PlusEmpty, A](f1: F[A], f2: F[A], f3: F[A])(run: F[A] => A): Unit =
     val ins = summon[PlusEmpty[F]]

@@ -17,6 +17,8 @@ trait Traverse[F[_]] extends Functor[F], Foldable[F]:
     fga.traverse(ga => ga)
 
 object Traverse:
+  def apply[F[_]: Traverse]: Traverse[F] = summon[Traverse[F]]
+
   given Traverse[Id] with
     extension [A](fa: Id[A])
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Id[B]] =
@@ -60,6 +62,3 @@ object Traverse:
         m.foldLeft(summon[Applicative[G]].unit(Map.empty[K, B])) { case (acc, (k, a)) =>
           acc.map2(f(a))((m, b) => m + (k -> b))
         }
-
-  def traverse[F[_]: Traverse, G[_]: Applicative, A, B](fa: F[A], f: A => G[B]): G[F[B]] =
-    summon[Traverse[F]].traverse(fa)(f)

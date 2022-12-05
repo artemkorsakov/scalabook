@@ -1,7 +1,6 @@
 package typeclass.arrow
 
 import typeclass.common.Runner2
-import typeclass.common.Runner2.run
 import typeclass.monad.PlusEmptyLaw
 
 trait CategoryLaw extends ComposeLaw, PlusEmptyLaw:
@@ -16,7 +15,7 @@ trait CategoryLaw extends ComposeLaw, PlusEmptyLaw:
     val ins = summon[Category[=>:]]
     import ins.{compose, id}
     checkComposeLaw[=>:, A, B, C, D](ab, bc, cd, f1, f2, f3)(a)
-    checkPlusEmptyLawWithRunner[[A] =>> A =>: A, A](f1, f2, f3)(run(a))(using ins.empty)
-    checkMonoidLawWithRunner[A =>: A, A](f1, f2, f3)(run(a))(using ins.monoid)
-    assertEquals(run(a)(compose(f1, id[A])), run(a)(f1), "right identity")
-    assertEquals(run(a)(compose(id[A], f1)), run(a)(f1), "left identity")
+    checkPlusEmptyLawWithRunner[[A] =>> A =>: A, A](f1, f2, f3)(Runner2[=>:].run(a))(using ins.empty)
+    checkMonoidLawWithRunner[A =>: A, A](f1, f2, f3)(Runner2[=>:].run(a))(using ins.monoid)
+    assertEquals(Runner2[=>:].run(a)(compose(f1, id[A])), Runner2[=>:].run(a)(f1), "right identity")
+    assertEquals(Runner2[=>:].run(a)(compose(id[A], f1)), Runner2[=>:].run(a)(f1), "left identity")

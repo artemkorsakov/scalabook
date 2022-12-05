@@ -1,7 +1,6 @@
 package typeclass.monad
 
 import typeclass.common.Runner1
-import typeclass.common.Runner1.run
 import typeclass.monad.ContravariantFunctor.cmap
 
 trait ContravariantFunctorLaw extends InvariantFunctorLaw:
@@ -9,5 +8,5 @@ trait ContravariantFunctorLaw extends InvariantFunctorLaw:
       fa: F[A]
   )(using fba: B => A, fcb: C => B, fab: A => B, fbc: B => C): Unit =
     checkInvariantFunctorLawWithRunner[F, A, B, C](fa: F[A])
-    assertEquals(run(cmap[F, A, A](fa)(x => x)), run(fa), "identity")
-    assertEquals(run(cmap(cmap(fa)(fba))(fcb)), run(cmap(fa)(fba compose fcb)), "composition")
+    assertEquals(Runner1[F].run(cmap[F, A, A](fa)(x => x)), Runner1[F].run(fa), "identity")
+    assertEquals(Runner1[F].run(cmap(cmap(fa)(fba))(fcb)), Runner1[F].run(cmap(fa)(fba compose fcb)), "composition")

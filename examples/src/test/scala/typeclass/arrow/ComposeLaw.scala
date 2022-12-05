@@ -1,7 +1,6 @@
 package typeclass.arrow
 
 import typeclass.common.Runner2
-import typeclass.common.Runner2.run
 import typeclass.monad.PlusLaw
 
 trait ComposeLaw extends PlusLaw:
@@ -15,6 +14,10 @@ trait ComposeLaw extends PlusLaw:
   )(a: A): Unit =
     val ins = summon[Compose[=>:]]
     import ins.{compose, plus, semigroup}
-    assertEquals(run(a)(compose(cd, compose(bc, ab))), run(a)(compose(compose(cd, bc), ab)), "Associativity")
-    checkPlusLawWithRunner[[X] =>> X =>: X, A](f1, f2, f3)(run(a))(using plus)
-    checkSemigroupLawWithRunner[A =>: A, A](f1, f2, f3)(run(a))(using semigroup)
+    assertEquals(
+      Runner2[=>:].run(a)(compose(cd, compose(bc, ab))),
+      Runner2[=>:].run(a)(compose(compose(cd, bc), ab)),
+      "Associativity"
+    )
+    checkPlusLawWithRunner[[X] =>> X =>: X, A](f1, f2, f3)(Runner2[=>:].run(a))(using plus)
+    checkSemigroupLawWithRunner[A =>: A, A](f1, f2, f3)(Runner2[=>:].run(a))(using semigroup)

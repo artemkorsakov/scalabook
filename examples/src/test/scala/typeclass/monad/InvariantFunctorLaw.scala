@@ -2,7 +2,6 @@ package typeclass.monad
 
 import munit.Assertions
 import typeclass.common.Runner1
-import typeclass.common.Runner1.run
 import typeclass.monad.InvariantFunctor.xmap
 
 trait InvariantFunctorLaw extends Assertions:
@@ -19,9 +18,9 @@ trait InvariantFunctorLaw extends Assertions:
   def checkInvariantFunctorLawWithRunner[F[_]: InvariantFunctor: Runner1, A, B, C](
       fa: F[A]
   )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B): Unit =
-    assertEquals(run(xmap(fa, identity, identity)), run(fa), "identity")
+    assertEquals(Runner1[F].run(xmap(fa, identity, identity)), Runner1[F].run(fa), "identity")
     assertEquals(
-      run(xmap(xmap(fa, f, fReverse), g, gReverse)),
-      run(xmap(fa, g compose f, fReverse compose gReverse)),
+      Runner1[F].run(xmap(xmap(fa, f, fReverse), g, gReverse)),
+      Runner1[F].run(xmap(fa, g compose f, fReverse compose gReverse)),
       "composition"
     )

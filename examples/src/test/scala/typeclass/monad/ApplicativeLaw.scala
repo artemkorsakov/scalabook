@@ -1,7 +1,6 @@
 package typeclass.monad
 
 import typeclass.common.Runner1
-import typeclass.common.Runner1.run
 import typeclass.monad.Applicative.{apply, map, unit}
 
 trait ApplicativeLaw extends ApplyLaw:
@@ -31,12 +30,12 @@ trait ApplicativeLaw extends ApplyLaw:
   ): Unit =
     val fa = unit(x)
     checkApplyLawWithRunner[F, A, B, C](fa, unit(f), unit(g))
-    assertEquals(run(apply[F, A, A](unit(identity))(fa)), run(fa), "identity")
-    assertEquals(run(apply(unit(f))(unit(x))), run(unit(f(x))), "homomorphism")
+    assertEquals(Runner1[F].run(apply[F, A, A](unit(identity))(fa)), Runner1[F].run(fa), "identity")
+    assertEquals(Runner1[F].run(apply(unit(f))(unit(x))), Runner1[F].run(unit(f(x))), "homomorphism")
     assertEquals(
-      run(apply[F, A, B](unit(f))(unit(x))),
-      run(apply(unit((f: A => B) => f(x)))(unit(f))),
+      Runner1[F].run(apply[F, A, B](unit(f))(unit(x))),
+      Runner1[F].run(apply(unit((f: A => B) => f(x)))(unit(f))),
       "interchange"
     )
-    assertEquals(run(map(unit(x), f)), run(unit(f(x))))
-    assertEquals(run(map(unit(x), f)), run(apply(unit(f))(fa)))
+    assertEquals(Runner1[F].run(map(unit(x), f)), Runner1[F].run(unit(f(x))))
+    assertEquals(Runner1[F].run(map(unit(x), f)), Runner1[F].run(apply(unit(f))(fa)))

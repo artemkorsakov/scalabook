@@ -1,7 +1,6 @@
 package typeclass.monad
 
 import typeclass.common.Runner1
-import typeclass.common.Runner1.run
 import typeclass.monad.Monad.unit
 
 trait MonadLaw extends ApplicativeLaw, BindLaw:
@@ -11,7 +10,7 @@ trait MonadLaw extends ApplicativeLaw, BindLaw:
       g: B => C,
       gReverse: C => B
   ): Unit =
-    val fa = unit(x)
+    val fa             = unit(x)
     val afb: A => F[B] = a => unit(f(a))
     val bfc: B => F[C] = b => unit(g(b))
     checkApplicativeLaw[F, A, B, C](x)
@@ -25,10 +24,10 @@ trait MonadLaw extends ApplicativeLaw, BindLaw:
       g: B => C,
       gReverse: C => B
   ): Unit =
-    val fa = unit(x)
+    val fa             = unit(x)
     val afb: A => F[B] = a => unit(f(a))
     val bfc: B => F[C] = b => unit(g(b))
     checkApplicativeLawWithRunner[F, A, B, C](x)
     checkBindLawWithRunner[F, A, B, C](fa, unit(f), unit(g), afb, bfc)
-    assertEquals(run(unit(x).flatMap(afb)), run(afb(x)))
-    assertEquals(run(fa.flatMap(unit _)), run(fa))
+    assertEquals(Runner1[F].run(unit(x).flatMap(afb)), Runner1[F].run(afb(x)))
+    assertEquals(Runner1[F].run(fa.flatMap(unit _)), Runner1[F].run(fa))

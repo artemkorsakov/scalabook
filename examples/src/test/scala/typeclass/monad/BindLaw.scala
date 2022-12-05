@@ -1,7 +1,6 @@
 package typeclass.monad
 
 import typeclass.common.Runner1
-import typeclass.common.Runner1.run
 
 trait BindLaw extends ApplyLaw:
   def checkBindLaw[F[_]: Bind, A, B, C](fa: F[A], fab: F[A => B], fbc: F[B => C], afb: A => F[B], bfc: B => F[C])(using
@@ -46,22 +45,22 @@ trait BindLaw extends ApplyLaw:
   ): Unit =
     checkApplyLawWithRunner(fa, fab, fbc)
     assertEquals(
-      run(fa.flatMap(afb).flatMap(bfc)),
-      run(fa.flatMap((a: A) => afb(a).flatMap(bfc))),
+      Runner1[F].run(fa.flatMap(afb).flatMap(bfc)),
+      Runner1[F].run(fa.flatMap((a: A) => afb(a).flatMap(bfc))),
       "flatMap associativity"
     )
     assertEquals(
-      run(fa.bind(afb).bind(bfc)),
-      run(fa.bind((a: A) => afb(a).bind(bfc))),
+      Runner1[F].run(fa.bind(afb).bind(bfc)),
+      Runner1[F].run(fa.bind((a: A) => afb(a).bind(bfc))),
       "bind associativity"
     )
     assertEquals(
-      run(summon[Bind[F]].apply(fab)(fa)),
-      run(fab.flatMap(a2b => fa.map(a2b))),
+      Runner1[F].run(summon[Bind[F]].apply(fab)(fa)),
+      Runner1[F].run(fab.flatMap(a2b => fa.map(a2b))),
       "`ap` is consistent with `flatMap`"
     )
     assertEquals(
-      run(summon[Bind[F]].apply(fab)(fa)),
-      run(fab.bind(a2b => fa.map(a2b))),
+      Runner1[F].run(summon[Bind[F]].apply(fab)(fa)),
+      Runner1[F].run(fab.bind(a2b => fa.map(a2b))),
       "`ap` is consistent with `bind`"
     )

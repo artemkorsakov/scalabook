@@ -41,6 +41,6 @@
 ---
 
 <div>
-    <a href="two_start">&#8678; Предыдущая</a>
+    <a href="two_stars">&#8678; Предыдущая</a>
     <a href="four_stars">Следующая &#8680;</a>
 </div>

@@ -72,5 +72,5 @@
 
 <div>
     <a href="../extra">&#8678; Предыдущая</a>
-    <a href="two_start">Следующая &#8680;</a>
+    <a href="two_stars">Следующая &#8680;</a>
 </div>

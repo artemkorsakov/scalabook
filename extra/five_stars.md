@@ -35,5 +35,5 @@
 ---
 
 <div>
-    <a href="extra/four_stars">&#8678; Предыдущая</a>
+    <a href="four_stars">&#8678; Предыдущая</a>
 </div>

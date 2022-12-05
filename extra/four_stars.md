@@ -40,6 +40,6 @@
 ---
 
 <div>
-    <a href="extra/three_stars">&#8678; Предыдущая</a>
-    <a href="extra/five_stars">Следующая &#8680;</a>
+    <a href="three_stars">&#8678; Предыдущая</a>
+    <a href="five_stars">Следующая &#8680;</a>
 </div>

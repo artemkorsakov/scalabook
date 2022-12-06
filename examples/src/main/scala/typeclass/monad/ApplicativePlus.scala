@@ -3,6 +3,8 @@ package typeclass.monad
 trait ApplicativePlus[F[_]] extends Applicative[F] with PlusEmpty[F]
 
 object ApplicativePlus:
+  def apply[F[_]: ApplicativePlus]: ApplicativePlus[F] = summon[ApplicativePlus[F]]
+
   given ApplicativePlus[List] with
     override def unit[A](a: => A): List[A] = List(a)
 

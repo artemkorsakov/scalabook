@@ -17,6 +17,8 @@ trait Functor[F[_]] extends InvariantFunctor[F]:
   def fproduct[A, B](fa: F[A])(f: A => B): F[(A, B)] = map(fa)(a => (a, f(a)))
 
 object Functor:
+  def apply[F[_]: Functor]: Functor[F] = summon[Functor[F]]
+
   given idFunctor: Functor[Id] with
     extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as.value))
 
@@ -67,6 +69,3 @@ object Functor:
       override def map[B](f: A => B): BinaryTree[B] = as match
         case Leaf                   => Leaf
         case Branch(a, left, right) => Branch(f(a), left.map(f), right.map(f))
-
-  def map[F[_], A, B](fa: F[A], f: A => B)(using functor: Functor[F]): F[B] =
-    functor.map(fa)(f)

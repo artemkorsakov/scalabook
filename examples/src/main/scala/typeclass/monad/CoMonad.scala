@@ -11,6 +11,8 @@ trait CoMonad[F[_]] extends CoBind[F]:
   final def coPure[A](p: F[A]): A = coUnit(p)
 
 object CoMonad:
+  def apply[F[_]: CoMonad]: CoMonad[F] = summon[CoMonad[F]]
+
   given CoMonad[Id] with
     override def coUnit[A](fa: Id[A]): A = fa.value
 
@@ -30,7 +32,3 @@ object CoMonad:
       override def cobind[B](f: Env[A, R] => B): Env[B, R] =
         val Env(_, r) = as
         Env(f(as), r)
-
-  def coUnit[F[_], A](fa: F[A])(using cm: CoMonad[F]): A = cm.coUnit(fa)
-
-  def coFlatMap[F[_], A, B](fa: F[A])(f: F[A] => B)(using cm: CoMonad[F]): F[B] = cm.coFlatMap(fa)(f)

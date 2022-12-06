@@ -7,9 +7,12 @@ trait MonadPlusLaw extends MonadLaw, ApplicativePlusLaw:
       g: B => C,
       gReverse: C => B
   ): Unit =
-    val ins = summon[MonadPlus[F]]
     checkMonadLaw[F, A, B, C](x)
     checkApplicativePlusLaw[F, A, B, C](x, f1, f2, f3)
-    assertEquals(ins.empty[A].map(_ => x), ins.empty[A], "`empty[A]` is a polymorphic value over `A`")
-    assertEquals(ins.empty[A].flatMap(_ => f1), ins.empty[A], "`empty` short-circuits its right")
-    assertEquals(f1.flatMap(_ => ins.empty[A]), ins.empty[A], "`empty` short-circuits throughout its `join` tree")
+    assertEquals(MonadPlus[F].empty[A].map(_ => x), MonadPlus[F].empty[A], "`empty[A]` is a polymorphic value over `A`")
+    assertEquals(MonadPlus[F].empty[A].flatMap(_ => f1), MonadPlus[F].empty[A], "`empty` short-circuits its right")
+    assertEquals(
+      f1.flatMap(_ => MonadPlus[F].empty[A]),
+      MonadPlus[F].empty[A],
+      "`empty` short-circuits throughout its `join` tree"
+    )

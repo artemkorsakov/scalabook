@@ -21,12 +21,12 @@ trait BindLaw extends ApplyLaw:
       "bind associativity"
     )
     assertEquals(
-      summon[Bind[F]].apply(fab)(fa),
+      Bind[F].apply(fab)(fa),
       fab.flatMap(a2b => fa.map(a2b)),
       "`ap` is consistent with `flatMap`"
     )
     assertEquals(
-      summon[Bind[F]].apply(fab)(fa),
+      Bind[F].apply(fab)(fa),
       fab.bind(a2b => fa.map(a2b)),
       "`ap` is consistent with `bind`"
     )
@@ -55,12 +55,12 @@ trait BindLaw extends ApplyLaw:
       "bind associativity"
     )
     assertEquals(
-      Runner1[F].run(summon[Bind[F]].apply(fab)(fa)),
+      Runner1[F].run(Bind[F].apply(fab)(fa)),
       Runner1[F].run(fab.flatMap(a2b => fa.map(a2b))),
       "`ap` is consistent with `flatMap`"
     )
     assertEquals(
-      Runner1[F].run(summon[Bind[F]].apply(fab)(fa)),
+      Runner1[F].run(Bind[F].apply(fab)(fa)),
       Runner1[F].run(fab.bind(a2b => fa.map(a2b))),
       "`ap` is consistent with `bind`"
     )

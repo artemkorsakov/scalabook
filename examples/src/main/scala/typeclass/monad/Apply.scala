@@ -15,6 +15,8 @@ trait Apply[F[_]] extends Functor[F], Semigroupal[F]:
     apply2(_, _)(f)
 
 object Apply:
+  def apply[F[_]: Apply]: Apply[F] = summon[Apply[F]]
+
   given Apply[Id] with
     override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab.value(fa.value))
 
@@ -31,9 +33,3 @@ object Apply:
         as match
           case Some(a) => Some(f(a))
           case None    => None
-
-  def apply[F[_], A, B](fab: F[A => B])(fa: F[A])(using app: Apply[F]): F[B] =
-    app.apply(fab)(fa)
-
-  def map[F[_], A, B](fa: F[A], f: A => B)(using app: Apply[F]): F[B] =
-    app.map(fa)(f)

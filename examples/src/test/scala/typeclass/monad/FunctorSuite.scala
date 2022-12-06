@@ -6,12 +6,12 @@ import org.scalacheck.Prop.*
 import typeclass.Functions.given
 import typeclass.common.*
 import typeclass.common.Runner1.*
-import typeclass.monad.Functor.{map, given}
+import typeclass.monad.Functor.given
 
 class FunctorSuite extends ScalaCheckSuite, FunctorLaw:
   property("idFunctor должен удовлетворять законам функтора") {
     forAll { (x: Int) =>
-      assertEquals(map(Id(x), _ * 2), Id(x * 2))
+      assertEquals(Functor[Id].map(Id(x))(_ * 2), Id(x * 2))
       checkFunctorLaw[Id, Int, String, Boolean](Id(x))
     }
   }

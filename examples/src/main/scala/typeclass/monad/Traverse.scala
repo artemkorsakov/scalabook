@@ -27,29 +27,26 @@ object Traverse:
   given Traverse[[X] =>> (X, X)] with
     extension [A](fa: (A, A))
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[(B, B)] =
-        val g = summon[Applicative[G]]
-        val func: G[B => B => (B, B)] = g.unit(b1 => b2 => (b1, b2))
-        g.apply(g.apply(func)(f(fa._1)))(f(fa._2))
+        val func: G[B => B => (B, B)] = Applicative[G].unit(b1 => b2 => (b1, b2))
+        Applicative[G].apply(Applicative[G].apply(func)(f(fa._1)))(f(fa._2))
 
   given Traverse[[X] =>> (X, X, X)] with
     extension [A](fa: (A, A, A))
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[(B, B, B)] =
-        val g = summon[Applicative[G]]
-        val func: G[B => B => B => (B, B, B)] = g.unit(b1 => b2 => b3 => (b1, b2, b3))
-        g.apply(g.apply(g.apply(func)(f(fa._1)))(f(fa._2)))(f(fa._3))
+        val func: G[B => B => B => (B, B, B)] = Applicative[G].unit(b1 => b2 => b3 => (b1, b2, b3))
+        Applicative[G].apply(Applicative[G].apply(Applicative[G].apply(func)(f(fa._1)))(f(fa._2)))(f(fa._3))
 
   given Traverse[Option] with
     extension [A](fa: Option[A])
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Option[B]] =
         fa match
           case Some(a) => f(a).map(Some(_))
-          case None    => summon[Applicative[G]].unit(None)
+          case None    => Applicative[G].unit(None)
 
   given Traverse[List] with
     extension [A](fa: List[A])
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[List[B]] =
-        val g = summon[Applicative[G]]
-        fa.foldRight(g.unit(List[B]()))((a, acc) => f(a).map2(acc)(_ :: _))
+        fa.foldRight(Applicative[G].unit(List[B]()))((a, acc) => f(a).map2(acc)(_ :: _))
 
   given Traverse[Tree] with
     extension [A](ta: Tree[A])
@@ -59,6 +56,6 @@ object Traverse:
   given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
     extension [A](m: Map[K, A])
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Map[K, B]] =
-        m.foldLeft(summon[Applicative[G]].unit(Map.empty[K, B])) { case (acc, (k, a)) =>
+        m.foldLeft(Applicative[G].unit(Map.empty[K, B])) { case (acc, (k, a)) =>
           acc.map2(f(a))((m, b) => m + (k -> b))
         }

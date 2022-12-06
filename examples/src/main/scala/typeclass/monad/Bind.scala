@@ -17,6 +17,8 @@ trait Bind[F[_]] extends Apply[F]:
     flatMap(fa)(a => fb.map(b => f(a, b)))
 
 object Bind:
+  def apply[F[_]: Bind]: Bind[F] = summon[Bind[F]]
+
   given Bind[Id] with
     extension [A](fa: Id[A])
       override def map[B](f: A => B): Id[B] =

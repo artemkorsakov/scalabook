@@ -15,6 +15,8 @@ trait CoBind[F[_]] extends Functor[F]:
     final def cojoin: F[F[A]] = fa.cobind(fa => fa)
 
 object CoBind:
+  def apply[F[_]: CoBind]: CoBind[F] = summon[CoBind[F]]
+
   given CoBind[Id] with
     extension [A](as: Id[A])
       override def map[B](f: A => B): Id[B] = Id(f(as.value))
@@ -30,5 +32,3 @@ object CoBind:
       override def cobind[B](f: Env[A, R] => B): Env[B, R] =
         val Env(_, r) = as
         Env(f(as), r)
-
-  def cobind[F[_], A, B](fa: F[A])(f: F[A] => B)(using cm: CoBind[F]): F[B] = fa.cobind(f)

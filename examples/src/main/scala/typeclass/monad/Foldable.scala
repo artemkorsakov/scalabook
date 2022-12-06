@@ -22,45 +22,47 @@ trait Foldable[F[_]]:
       fa.foldRight(List.empty[A])(_ :: _)
 
 object Foldable:
+  def apply[F[_]: Foldable]: Foldable[F] = summon[Foldable[F]]
+
   given idFoldable: Foldable[Id] with
     extension [A](fa: Id[A])
       override def foldRight[B](init: B)(f: (A, B) => B): B =
         f(fa.value, init)
 
   given Foldable[Option] with
-    extension[A] (as: Option[A])
-      override def foldRight[B](acc: B)(f: (A, B) => B) = as match
-        case None => acc
+    extension [A](as: Option[A])
+      override def foldRight[B](acc: B)(f: (A, B) => B): B       = as match
+        case None    => acc
         case Some(a) => f(a, acc)
-      override def foldLeft[B](acc: B)(f: (B, A) => B) = as match
-        case None => acc
+      override def foldLeft[B](acc: B)(f: (B, A) => B): B        = as match
+        case None    => acc
         case Some(a) => f(acc, a)
       override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
         as match
-          case None => mb.empty
+          case None    => mb.empty
           case Some(a) => f(a)
 
   given Foldable[List] with
-    extension[A] (as: List[A])
-      override def foldRight[B](acc: B)(f: (A, B) => B) =
+    extension [A](as: List[A])
+      override def foldRight[B](acc: B)(f: (A, B) => B): B =
         as.foldRight(acc)(f)
-      override def foldLeft[B](acc: B)(f: (B, A) => B) =
+      override def foldLeft[B](acc: B)(f: (B, A) => B): B  =
         as.foldLeft(acc)(f)
-      override def toList: List[A] = as
+      override def toList: List[A]                         = as
 
   given tuple2Foldable: Foldable[[X] =>> (X, X)] with
     extension [A](fa: (A, A))
       override def foldRight[B](init: B)(f: (A, B) => B): B =
         val (a0, a1) = fa
-        val b = f(a1, init)
+        val b        = f(a1, init)
         f(a0, b)
 
   given tuple3Foldable: Foldable[[X] =>> (X, X, X)] with
     extension [A](fa: (A, A, A))
       override def foldRight[B](init: B)(f: (A, B) => B): B =
         val (a0, a1, a2) = fa
-        val b0 = f(a2, init)
-        val b1 = f(a1, b0)
+        val b0           = f(a2, init)
+        val b1           = f(a1, b0)
         f(a0, b1)
 
   given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
@@ -69,6 +71,3 @@ object Foldable:
         fa match
           case Right(a) => f(a, init)
           case Left(_)  => init
-
-  def foldRight[F[_], A, B](fa: F[A])(init: B)(f: (A, B) => B)(using foldable: Foldable[F]): B =
-    foldable.foldRight(fa)(init)(f)

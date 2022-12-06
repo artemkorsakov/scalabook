@@ -17,8 +17,10 @@ trait Applicative[F[_]] extends Apply[F], InvariantApplicative[F]:
       apply(apply(unit(f.curried))(fa))(fb)
 
 object Applicative:
+  def apply[F[_]: Applicative]: Applicative[F] = summon[Applicative[F]]
+
   given idApplicative: Applicative[Id] with
-    override def unit[A](a: => A): Id[A] = Id(a)
+    override def unit[A](a: => A): Id[A]                        = Id(a)
     override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab.value(fa.value))
 
   given optionApplicative: Applicative[Option] with
@@ -51,7 +53,7 @@ object Applicative:
     override def apply[A, B](fab: Writer[W, A => B])(fa: Writer[W, A]): Writer[W, B] =
       Writer { () =>
         val (w0, aToB) = fab.run()
-        val (w1, a) = fa.run()
+        val (w1, a)    = fa.run()
         (monoid.combine(w0, w1), aToB(a))
       }
 
@@ -62,7 +64,7 @@ object Applicative:
     override def apply[A, B](fab: State[S, A => B])(fa: State[S, A]): State[S, B] =
       State { s =>
         val (s0, aToB) = fab.run(s)
-        val (s1, a) = fa.run(s0)
+        val (s1, a)    = fa.run(s0)
         (s1, aToB(a))
       }
 
@@ -75,10 +77,10 @@ object Applicative:
 
     override def apply[A, B](fab: Nested[F, G, A => B])(fa: Nested[F, G, A]): Nested[F, G, B] =
       val curriedFuncs: G[A => B] => G[A] => G[B] = gaTob => ga => applG.apply(gaTob)(ga)
-      val fgaToB: F[G[A => B]] = fab.value
-      val fGaToGb: F[G[A] => G[B]] = functorF.map(fgaToB)(curriedFuncs)
-      val fga: F[G[A]] = fa.value
-      val fgb: F[G[B]] = applF.apply(fGaToGb)(fga)
+      val fgaToB: F[G[A => B]]                    = fab.value
+      val fGaToGb: F[G[A] => G[B]]                = functorF.map(fgaToB)(curriedFuncs)
+      val fga: F[G[A]]                            = fa.value
+      val fgb: F[G[B]]                            = applF.apply(fGaToGb)(fga)
       Nested(fgb)
 
   given Applicative[IO] with
@@ -87,26 +89,16 @@ object Applicative:
     override def apply[A, B](fab: IO[A => B])(fa: IO[A]): IO[B] = IO(() => fab.run()(fa.run()))
 
   given compositeApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>> F[G[X]]] with
-    override def unit[A](a: => A): F[G[A]] = summon[Applicative[F]].unit(summon[Applicative[G]].unit(a))
+    override def unit[A](a: => A): F[G[A]] = Applicative[F].unit(Applicative[G].unit(a))
 
     override def apply[A, B](fab: F[G[A => B]])(fa: F[G[A]]): F[G[B]] =
-      val applicativeF = summon[Applicative[F]]
-      val applicativeG = summon[Applicative[G]]
-      val tmp: F[G[A] => G[B]] = applicativeF.map(fab)(ga2b => applicativeG.apply(ga2b))
-      applicativeF.apply(tmp)(fa)
+      val tmp: F[G[A] => G[B]] = Applicative[F].map(fab)(ga2b => Applicative[G].apply(ga2b))
+      Applicative[F].apply(tmp)(fa)
 
   given tupleApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>> (F[X], G[X])] with
     type FG[A] = (F[A], G[A])
 
-    override def unit[A](a: => A): FG[A] = (summon[Applicative[F]].unit(a), summon[Applicative[G]].unit(a))
+    override def unit[A](a: => A): FG[A] = (Applicative[F].unit(a), Applicative[G].unit(a))
 
     override def apply[A, B](fab: FG[A => B])(fa: FG[A]): FG[B] =
-      (summon[Applicative[F]].apply(fab._1)(fa._1), summon[Applicative[G]].apply(fab._2)(fa._2))
-
-  def unit[F[_], A](a: => A)(using applicative: Applicative[F]): F[A] = applicative.unit(a)
-
-  def apply[F[_], A, B](fab: F[A => B])(fa: F[A])(using applicative: Applicative[F]): F[B] =
-    applicative.apply(fab)(fa)
-
-  def map[F[_], A, B](fa: F[A], f: A => B)(using applicative: Applicative[F]): F[B] =
-    applicative.map(fa)(f)
+      (Applicative[F].apply(fab._1)(fa._1), Applicative[G].apply(fab._2)(fa._2))

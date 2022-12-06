@@ -12,16 +12,13 @@ trait Divisible[F[_]] extends Divide[F], InvariantApplicative[F]:
     divide(conquer[Unit], fb)(c => ((), f(c)))
 
 object Divisible:
+  def apply[F[_]: Divisible]: Divisible[F] = summon[Divisible[F]]
+
   given functionDivisible[R: Monoid]: Divisible[[X] =>> Function1[X, R]] with
     override def divide[A, B, C](fa: => A => R, fb: => B => R)(f: C => (A, B)): C => R =
       c => {
         val (a, b) = f(c)
-        summon[Monoid[R]].combine(fa(a), fb(b))
+        Monoid[R].combine(fa(a), fb(b))
       }
 
-    override def conquer[A]: A => R = _ => summon[Monoid[R]].empty
-
-  def divide[F[_], A, B, C](fa: => F[A], fb: => F[B])(f: C => (A, B))(using di: Divisible[F]): F[C] =
-    di.divide(fa, fb)(f)
-
-  def conquer[F[_], A](using di: Divisible[F]): F[A] = di.conquer
+    override def conquer[A]: A => R = _ => Monoid[R].empty

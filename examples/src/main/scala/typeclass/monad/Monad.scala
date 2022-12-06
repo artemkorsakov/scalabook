@@ -9,8 +9,10 @@ trait Monad[F[_]] extends Applicative[F], Bind[F]:
       fa.flatMap(a => unit(f(a)))
 
 object Monad:
+  def apply[F[_]: Monad]: Monad[F] = summon[Monad[F]]
+
   given Monad[Id] with
-    override def unit[A](a: => A): Id[A] = Id(a)
+    override def unit[A](a: => A): Id[A]                                   = Id(a)
     extension [A](fa: Id[A]) override def flatMap[B](f: A => Id[B]): Id[B] = f(fa.value)
 
   given Monad[Option] with
@@ -63,12 +65,3 @@ object Monad:
     override def unit[A](a: => A): IO[A] = IO(() => a)
 
     extension [A](fa: IO[A]) override def flatMap[B](f: A => IO[B]): IO[B] = f(fa.run())
-
-  def unit[F[_], A](a: => A)(using monad: Monad[F]): F[A] =
-    monad.unit(a)
-
-  def map[F[_], A, B](fa: F[A], f: A => B)(using monad: Monad[F]): F[B] =
-    monad.map(fa)(f)
-
-  def flatMap[F[_], A, B](fa: F[A], f: A => F[B])(using monad: Monad[F]): F[B] =
-    monad.flatMap(fa)(f)

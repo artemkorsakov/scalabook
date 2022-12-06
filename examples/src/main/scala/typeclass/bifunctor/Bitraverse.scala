@@ -23,14 +23,14 @@ trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:
     new Traverse[[X] =>> F[X, R]]:
       extension [A](fab: F[A, R])
         override def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[B, R]] =
-          fab.bitraverse(f, summon[Applicative[G]].unit)
+          fab.bitraverse(f, Applicative[G].unit)
 
   /** Extract the Traverse on the second param. */
   def rightTraverse[L]: Traverse[[X] =>> F[L, X]] =
     new Traverse[[X] =>> F[L, X]]:
       extension [A](fab: F[L, A])
         override def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[L, B]] =
-          fab.bitraverse(summon[Applicative[G]].unit, f)
+          fab.bitraverse(Applicative[G].unit, f)
 
   /** Unify the traverse over both params. */
   def uTraverse: Traverse[[X] =>> F[X, X]] =

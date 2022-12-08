@@ -1,4 +1,3 @@
-import Dependencies.Version._
 import sbt._
 
 object Dependencies {
@@ -17,25 +16,37 @@ object Dependencies {
     val munitCatsEffect = "1.0.7"
   }
 
-  val examples: Seq[ModuleID] = Seq(
-    "eu.timepit"    %% "refined"             % refined,
-    "org.http4s"    %% "http4s-blaze-server" % http4sBlaze,
-    "org.http4s"    %% "http4s-dsl"          % http4s,
-    "org.scalaz"    %% "scalaz-core"         % scalaz,
-    "org.scalaz"    %% "scalaz-effect"       % scalaz,
-    "org.scalaz"    %% "scalaz-iteratee"     % scalaz,
-    "org.typelevel" %% "cats-core"           % cats,
-    "org.typelevel" %% "cats-effect"         % catsEffect,
-    "org.typelevel" %% "cats-free"           % cats
+  private val refinedStack: Seq[ModuleID] = Seq(
+    "eu.timepit" %% "refined" % Version.refined
   )
+
+  private val http4sStack: Seq[ModuleID] = Seq(
+    "org.http4s" %% "http4s-blaze-server" % Version.http4sBlaze,
+    "org.http4s" %% "http4s-dsl"          % Version.http4s
+  )
+
+  private val scalazStack: Seq[ModuleID] = Seq(
+    "org.scalaz" %% "scalaz-core"     % Version.scalaz,
+    "org.scalaz" %% "scalaz-effect"   % Version.scalaz,
+    "org.scalaz" %% "scalaz-iteratee" % Version.scalaz
+  )
+
+  private val catsStack: Seq[ModuleID] = Seq(
+    "org.typelevel" %% "cats-core"   % Version.cats,
+    "org.typelevel" %% "cats-effect" % Version.catsEffect,
+    "org.typelevel" %% "cats-free"   % Version.cats
+  )
+
+  val examples: Seq[ModuleID] =
+    refinedStack ++ http4sStack ++ scalazStack ++ catsStack
 
   val examplesTests: Seq[ModuleID] =
     Seq(
-      "org.scalameta" %% "munit"                     % munit,
-      "org.scalameta" %% "munit-scalacheck"          % munit,
-      "org.scalaz"    %% "scalaz-scalacheck-binding" % scalaz,
-      "org.typelevel" %% "cats-testkit"              % cats,
-      "org.typelevel" %% "munit-cats-effect-3"       % munitCatsEffect
+      "org.scalameta" %% "munit"                     % Version.munit,
+      "org.scalameta" %% "munit-scalacheck"          % Version.munit,
+      "org.scalaz"    %% "scalaz-scalacheck-binding" % Version.scalaz,
+      "org.typelevel" %% "cats-testkit"              % Version.cats,
+      "org.typelevel" %% "munit-cats-effect-3"       % Version.munitCatsEffect
     ).map(_ % Test)
 
 }

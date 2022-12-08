@@ -9,6 +9,7 @@ object Dependencies {
     val cats       = "2.9.0"
     val catsEffect = "3.4.1"
     val http4s     = "0.23.12"
+    val refined    = "0.10.1"
     val scalaz     = "7.3.6"
 
     val munit           = "0.7.29"
@@ -16,6 +17,7 @@ object Dependencies {
   }
 
   val examples: Seq[ModuleID] = Seq(
+    "eu.timepit"    %% "refined"             % refined,
     "org.http4s"    %% "http4s-blaze-server" % http4s,
     "org.http4s"    %% "http4s-dsl"          % http4s,
     "org.scalaz"    %% "scalaz-core"         % scalaz,

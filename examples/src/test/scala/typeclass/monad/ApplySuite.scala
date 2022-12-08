@@ -4,10 +4,10 @@ import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.Functions.given
 import typeclass.common.*
-import typeclass.monad.Apply.{apply, map, given}
+import typeclass.monad.Apply.given
 
 class ApplySuite extends ScalaCheckSuite, ApplyLaw:
-  private val f: Int => String = given_Conversion_Int_String.apply
+  private val f: Int => String     = given_Conversion_Int_String.apply
   private val g: String => Boolean = given_Conversion_String_Boolean.apply
 
   property("idApply должен удовлетворять законам Apply") {

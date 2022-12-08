@@ -1,2 +1,2 @@
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.6")
-addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.6.1")
+addSbtPlugin("org.scalameta"  % "sbt-scalafmt"           % "2.4.6")
+addSbtPlugin("org.jmotor.sbt" % "sbt-dependency-updates" % "1.2.7")

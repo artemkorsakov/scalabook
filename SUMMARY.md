@@ -267,6 +267,7 @@
 
 ## Scala библиотеки
 - [Scala библиотеки](libs/index.md)
+  - [Refinement types](libs/refined.md)
   - [Cats effect](libs/cats-effect.md)
     - [Копирование файлов](libs/cats-effect/copy-files.md) 
     - [Производитель-потребитель](libs/cats-effect/producer-consumer-problem.md) 

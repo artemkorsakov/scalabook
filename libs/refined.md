@@ -39,13 +39,27 @@ val ageEither1: Either[String, Age] = refineV(userInput)                // Right
 val ageEither2                      = RefType.applyRef[Age](userInput)  // Right(55)
 ```
 
+[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FExamples.sc&plain=1)
 
 
+## Boolean предикаты
 
+Список булевых предикатов следующий:
 
-## Исходный код
+- `True` - постоянный предикат всегда равный `true`
+- `False` - постоянный предикат всегда равный `false`
+- `Not[P]` - отрицание предиката `P`
+- `And[A, B]` - коньюнкция предикатов `A` и `B`
+- `Or[A, B]` - дизъюнкция предикатов `A` и `B`
+- `Xor[A, B]` - исключительная дизъюнкция предикатов A и B
+- `Nand[A, B]` - инвертированная конъюнкция предикатов A и B
+- `Nor[A, B]` - отрицательная дизъюнкция предикатов A и B
+- `AllOf[PS]` - конъюнкция всех предикатов в PS
+- `AnyOf[PS]` - дизъюнкция всех предикатов в PS
+- `OneOf[PS]` - исключительная дизъюнкция всех предикатов в PS
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FExamples.sc&plain=1)
+[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FBooleanExamples.sc&plain=1)
+
 
 
 ---

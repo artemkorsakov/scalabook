@@ -34,13 +34,14 @@
 
 ### Статьи
 
-| Название                                                                                                                                    | Версия  | Сложность        | Язык | Дата публ.  | Комментарий |
-|---------------------------------------------------------------------------------------------------------------------------------------------|:-------:|------------------|:----:|-------------|-------------|
-| [Cats Effect 3 - Introduction to Fibers](https://blog.rockthejvm.com/cats-effect-fibers/)                                                   | Scala 3 | &#10031;&#10031; |  En  | апрель 2021 | Cats effect |
-| [Higher-kinded types: the difference between giving up, and moving forward](https://typelevel.org/blog/2016/08/21/hkts-moving-forward.html) | Scala 3 | &#10031;&#10031; |  En  | август 2016 |             |
-| [Time traveling in tests with Cats Effect](https://blog.softwaremill.com/time-traveling-in-tests-with-cats-effect-b22084f6a89)              | Scala 3 | &#10031;&#10031; |  En  | май 2020    | Cats effect |
-| [Type Classes](https://typelevel.org/cats/typeclasses.html)                                                                                 | Scala 3 | &#10031;&#10031; |  En  |             |             |
-| [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/)                                                                | Scala 3 | &#10031;&#10031; |  En  | июль 2020   | Cats effect |
+| Название                                                                                                                                                                                 | Версия  | Сложность        | Язык | Дата публ.  | Комментарий |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|------------------|:----:|-------------|-------------|
+| [Cats Effect 3 - Introduction to Fibers](https://blog.rockthejvm.com/cats-effect-fibers/)                                                                                                | Scala 3 | &#10031;&#10031; |  En  | апрель 2021 | Cats effect |
+| [Time traveling in tests with Cats Effect](https://blog.softwaremill.com/time-traveling-in-tests-with-cats-effect-b22084f6a89)                                                           | Scala 3 | &#10031;&#10031; |  En  | май 2020    | Cats effect |
+| [Type Classes](https://typelevel.org/cats/typeclasses.html)                                                                                                                              | Scala 3 | &#10031;&#10031; |  En  |             |             |
+| [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/)                                                                                                             | Scala 3 | &#10031;&#10031; |  En  | июль 2020   | Cats effect |
+| [Higher-kinded types: the difference between giving up, and moving forward](https://typelevel.org/blog/2016/08/21/hkts-moving-forward.html)                                              | Scala 2 | &#10031;&#10031; |  En  | август 2016 |             |
+| [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/) | Scala 2 | &#10031;&#10031; |  En  | август 2015 | Refined     |
 
 --- 
 

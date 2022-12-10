@@ -147,7 +147,7 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 
 - `Equal[U]` - проверяет, равно ли значение `U`
 
-
+[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FGenericExamples.sc&plain=1)
 
 
 ---

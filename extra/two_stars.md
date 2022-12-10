@@ -6,11 +6,12 @@
 
 ### Книги и документация
 
-| Название                                                                                                                                                  |  Версия  | Сложность         | Язык | Дата публ.  | Комментарий |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|-------------------|:----:|-------------|-------------|
-| [Programming Scala, 3rd Edition by Dean Wampler](https://deanwampler.github.io/books/programmingscala.html)                                               | Scala 3  | &#10031;&#10031;  |  En  | июнь 2021   |             |
-| [Scala & Design Patterns: Exploring Language Expressivity by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf) | Scala 2  | &#10031;&#10031;  |  En  | март 2009   |             |
-| [Scala with Cats](https://www.scalawithcats.com/)                                                                                                         | Scala 2  | &#10031;&#10031;  |  En  | апрель 2020 | Cats        |
+| Название                                                                                                                                                  | Версия  | Сложность         | Язык | Дата публ.  | Комментарий |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|-------------------|:----:|-------------|-------------|
+| [Programming Scala, 3rd Edition by Dean Wampler](https://deanwampler.github.io/books/programmingscala.html)                                               | Scala 3 | &#10031;&#10031;  |  En  | июнь 2021   |             |
+| [Refinement types for Scala](https://github.com/fthomas/refined)                                                                                          | Scala 3 | &#10031;&#10031;  |  En  |             | Refined     |
+| [Scala & Design Patterns: Exploring Language Expressivity by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf) | Scala 2 | &#10031;&#10031;  |  En  | март 2009   |             |
+| [Scala with Cats](https://www.scalawithcats.com/)                                                                                                         | Scala 2 | &#10031;&#10031;  |  En  | апрель 2020 | Cats        |
 
 ### Видео
 

@@ -149,6 +149,39 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FGenericExamples.sc&plain=1)
 
+## Refined type для произвольного класса
+
+Для произвольного класса `Person(name: String, age: Int)` уточняющий тип можно определить следующим образом:
+
+```scala
+final case class Person(name: String, age: Int)
+
+type Age = Int Refined Interval.ClosedOpen[7, 77]
+
+def isTrimmedStringEmpty(value: String): Boolean = Option(value).exists(_.trim.nonEmpty)
+
+given Validate[Person, NonEmpty] with
+  override type R = NonEmpty
+  override def validate(person: Person): Res    =
+    Result.fromBoolean(
+      isTrimmedStringEmpty(person.name) &&
+        RefType.applyRef[Age](person.age).isRight,
+      Not(Empty())
+    )
+  override def showExpr(person: Person): String = person.toString
+
+refineV[NonEmpty](Person("", 18))       // Left(Predicate failed: Person(,18).)
+refineV[NonEmpty](Person(" ", 18))      // Left(Predicate failed: Person( ,18).)
+refineV[NonEmpty](Person("   ", 18))    // Left(Predicate failed: Person(   ,18).)
+refineV[NonEmpty](Person(null, 18))     // Left(Predicate failed: Person(null,18).)
+refineV[NonEmpty](Person("Ivan", 0))    // Left(Predicate failed: Person(Ivan,0).)
+refineV[NonEmpty](Person("Ivan", 100))  // Left(Predicate failed: Person(Ivan,100).)
+
+refineV[NonEmpty](Person("Ivan", 18))   // Right(Person(Ivan,18))
+```
+
+[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FPersonExamples.sc&plain=1)
+
 
 ---
 

@@ -50,6 +50,7 @@
 | [Higher-kinded types: the difference between giving up, and moving forward](https://typelevel.org/blog/2016/08/21/hkts-moving-forward.html)                                              | Scala 2 | &#10031;&#10031; |  En  | август 2016  |             |
 | [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/) | Scala 2 | &#10031;&#10031; |  En  | август 2015  | Refined     |
 | [Refined types, what are they good for?](https://beyondthelines.net/programming/refined-types/)                                                                                          | Scala 2 | &#10031;&#10031; |  En  | октябрь 2017 | Refined     |
+| [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#117)                                                                                                 | Scala 2 | &#10031;&#10031; |  En  | апрель 2018  | Refined     |
 | [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)                                                       | Scala 2 | &#10031;&#10031; |  En  | март 2017    | Refined     |
 | [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)                                                                    | Scala 2 | &#10031;&#10031; |  En  | апрель 2018  | Refined     |
 

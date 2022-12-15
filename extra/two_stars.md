@@ -15,12 +15,13 @@
 
 ### Видео
 
-| Название                                                                                                                            | Версия  | Сложность         | Язык | Дата публ. | Комментарий |
-|-------------------------------------------------------------------------------------------------------------------------------------|:-------:|-------------------|:----:|------------|-------------|
-| [Defusing the configuration time bomb with PureConfig and Refined - Leif Wickland](https://www.youtube.com/watch?v=NjqRi-cF3-g)     | Scala 2 | &#10031;&#10031;  |  En  | 2017       | Refined     |
-| [How to Build a Functional API - Julien Truffaut](https://www.youtube.com/watch?v=__zuECMFCRc)                                      | Scala 2 | &#10031;&#10031;  |  En  | 2018       | FP          |
-| [Let The Compiler Help You: How To Make The Most Of Scala's Typesystem - Markus Hauck](https://www.youtube.com/watch?v=hhXPeuJohM4) | Scala 2 | &#10031;&#10031;  |  En  | 2017       | Refined     |
-| [Refinement Types - Tipagem ainda mais forte para Scala - Marcelo Gomes](https://www.youtube.com/watch?v=Zq4rkWs_ybA)               | Scala 2 | &#10031;&#10031;  |  En  | 2018       | Refined     |
+| Название                                                                                                                                                                 | Версия  | Сложность         | Язык | Дата публ. | Комментарий |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|-------------------|:----:|------------|-------------|
+| [Defusing the configuration time bomb with PureConfig and Refined - Leif Wickland](https://www.youtube.com/watch?v=NjqRi-cF3-g)                                          | Scala 2 | &#10031;&#10031;  |  En  | 2017       | Refined     |
+| [How to Build a Functional API - Julien Truffaut](https://www.youtube.com/watch?v=__zuECMFCRc)                                                                           | Scala 2 | &#10031;&#10031;  |  En  | 2018       | FP          |
+| [Let The Compiler Help You: How To Make The Most Of Scala's Typesystem - Markus Hauck](https://www.youtube.com/watch?v=hhXPeuJohM4)                                      | Scala 2 | &#10031;&#10031;  |  En  | 2017       | Refined     |
+| [Refinement Types - Tipagem ainda mais forte para Scala - Marcelo Gomes](https://www.youtube.com/watch?v=Zq4rkWs_ybA)                                                    | Scala 2 | &#10031;&#10031;  |  En  | 2018       | Refined     |
+| [Strings are Evil: Methods to hide the use of primitive types - Noel Welsh](https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types) | Scala 2 | &#10031;&#10031;  |  En  | 2018       | Refined     |
 
 ### Курсы
 

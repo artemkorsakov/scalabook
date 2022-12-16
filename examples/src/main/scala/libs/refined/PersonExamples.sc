@@ -33,3 +33,17 @@ refineV[NonEmpty](Person("Ivan", 0))
 refineV[NonEmpty](Person("Ivan", 100))
 
 refineV[NonEmpty](Person("Ivan", 18))
+
+object Age extends RefinedTypeOps[Age, Int]
+
+Age.from(6)
+Age.from(7)
+Age.from(76)
+Age.from(77)
+Age.from(78)
+
+Age.unapply(6)
+Age.unapply(7)
+Age.unapply(76)
+Age.unapply(77)
+Age.unapply(78)

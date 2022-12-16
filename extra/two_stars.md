@@ -55,6 +55,7 @@
 | [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#117)                                                                                                 | Scala 2 | &#10031;&#10031; |  En  | апрель 2018  | Refined     |
 | [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)                                                       | Scala 2 | &#10031;&#10031; |  En  | март 2017    | Refined     |
 | [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)                                                                    | Scala 2 | &#10031;&#10031; |  En  | апрель 2018  | Refined     |
+| [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)                                            | Scala 2 | &#10031;&#10031; |  En  | февраль 2019 | Refined     |
 
 --- 
 

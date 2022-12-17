@@ -79,7 +79,7 @@ Person(Name("Алёна"))    // Person(Name(Алёна))
 final case class Name private (value: String) extends AnyVal
 object Name:
   import scala.util.matching.Regex
-  private val pattern: Regex                = "[А-ЯЁ]{1}[а-яё]+".r
+  private val pattern: Regex                = "[А-ЯЁ][а-яё]+".r
   def fromString(str: String): Option[Name] =
     if pattern.matches(str) then Some(Name(str))
     else None

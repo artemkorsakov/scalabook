@@ -393,17 +393,6 @@ given Validate[Packed, NonEmpty] with
 Тогда можно использовать уточняющий тип следующим образом:
 
 ```scala
-refineV[NonEmpty](Packed(null))    // Left(Predicate failed: Empty packed value: Packed(null).)
-refineV[NonEmpty](Packed(""))      // Left(Predicate failed: Empty packed value: Packed().)
-refineV[NonEmpty](Packed(" "))     // Left(Predicate failed: Empty packed value: Packed( ).)
-refineV[NonEmpty](Packed("   "))   // Left(Predicate failed: Empty packed value: Packed(   ).)
-refineV[NonEmpty](Packed(0))       // Left(Predicate failed: Empty packed value: Packed(0).)
-refineV[NonEmpty](Packed(-42))     // Left(Predicate failed: Empty packed value: Packed(-42).)
-refineV[NonEmpty](Packed(true))    // Left(Predicate failed: Empty packed value: Packed(true).)
-
-refineV[NonEmpty](Packed("value")) // Right(Packed(value))
-refineV[NonEmpty](Packed(42))      // Right(Packed(42))
-
 refineV[NonEmpty](null: Packed)    // Left(Predicate failed: Empty packed value: null.)
 refineV[NonEmpty]("": Packed)      // Left(Predicate failed: Empty packed value: .)
 refineV[NonEmpty](" ": Packed)     // Left(Predicate failed: Empty packed value:  .)

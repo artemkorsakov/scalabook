@@ -53,8 +53,7 @@ Person("Алёна")   // Person(Алёна)
 Ещё одной попыткой добиться желаемого поведения могут служить case классы:
 
 Можно обернуть строку в `case class` 
-и использовать наследование от `AnyVal` 
-[для избежания расходов на упаковку или распаковку типов](https://docs.scala-lang.org/overviews/core/value-classes.html).
+и использовать [классы значений](https://docs.scala-lang.org/overviews/core/value-classes.html).
 
 ```scala
 case class Name(value: String) extends AnyVal

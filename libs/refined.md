@@ -109,7 +109,7 @@ Name.fromString("Алёна").map(_.copy("€‡™µ")).map(Person.apply)     /
 Name.fromString("Алёна").map(_.copy("12345")).map(Person.apply)    // Some(Person(Name(12345)))
 Name.fromString("Алёна").map(_.copy("Alyona")).map(Person.apply)   // Some(Person(Name(Alyona)))
 Name.fromString("Алёна").map(_.copy("Алёна18")).map(Person.apply)  // Some(Person(Name(Алёна18)))
-Name.fromString("Алёна").map(_.copy( "алёна")).map(Person.apply)   // Some(Person(Name(алёна)))
+Name.fromString("Алёна").map(_.copy("алёна")).map(Person.apply)    // Some(Person(Name(алёна)))
 Name.fromString("Алёна").map(_.copy("Алёна")).map(Person.apply)    // Some(Person(Name(Алёна)))
 ```
 

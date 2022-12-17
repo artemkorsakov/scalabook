@@ -124,10 +124,8 @@ sealed abstract case class Name private (value: String) extends AnyVal
 ```
 
 [Scastie](https://scastie.scala-lang.org/tptzXCgMRVy9a7TIgiijeQ)
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivationCCPC.sc&plain=1)
-
-
-
 
 ## Введение в уточняющие типы
 

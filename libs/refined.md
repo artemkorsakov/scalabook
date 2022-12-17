@@ -4,6 +4,133 @@
 
 Библиотека [refined][refined lib] позволяет уточнять типы для отсеивания невалидных значений.
 
+## Зачем уточнять типы?
+
+Рассмотрим стандартный строковый тип в Scala - `String`. 
+Какие с ним могут быть проблемы?
+
+- `String` может представлять и содержать все что угодно - `"€‡™µ"`
+
+Пример, позволительно следующее:
+
+```scala
+val b: String = "€‡™µ"
+```
+
+В абсолютном большинстве случаев такая "свобода" не нужна.
+
+## Какие могут быть варианты ограничения типа?
+
+Представим, что нам нужно создать переменную, которая представляла бы собой имя человека, 
+написанное кириллицей и начинающееся с заглавной буквой.
+Допустим, для использования в классе `Person`.
+
+Например, следующий вариант позволителен - `Алёна`,
+а вот такие варианты - нет: `€‡™µ`, `12345`, `Alyona`, `Алёна18`, `алёна`.
+
+### Type aliases
+
+Одним из способов решения проблемы могут служить псевдонимы типов:
+
+```scala
+type Name = String
+final case class Person(name: Name)
+```
+
+Но псевдонимы типов - это просто псевдонимы и мы по-прежнему можем использовать в качестве имени все что угодно.
+
+```scala
+Person("€‡™µ")    // Person(€‡™µ)
+Person("12345")   // Person(12345)
+Person("Alyona")  // Person(Alyona)
+Person("Алёна18") // Person(Алёна18)
+Person("алёна")   // Person(алёна)
+Person("Алёна")   // Person(Алёна)
+```
+
+Проблема не решена!
+
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivationTypeAlias.sc&plain=1)
+
+### Case class
+
+Ещё одной попыткой добиться желаемого поведения могут служить case классы:
+
+Можно обернуть строку в case class 
+и использовать наследование от AnyVal для избежания расходов на упаковку или распаковку типов.
+
+```scala
+case class Name(value: String) extends AnyVal
+```
+
+Но в этом случае мы по-прежнему можем обернуть в `Name` любую строку:
+
+```scala
+Person(Name("€‡™µ"))     // Person(Name(€‡™µ))
+Person(Name("12345"))    // Person(Name(12345))
+Person(Name("Alyona"))   // Person(Name(Alyona))
+Person(Name("Алёна18"))  // Person(Name(Алёна18))
+Person(Name("алёна"))    // Person(Name(алёна))
+Person(Name("Алёна"))    // Person(Name(Алёна))
+```
+
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivationCaseClass.sc&plain=1)
+
+Конечно, мы можем регулировать создание `Name`, путем ограничения видимости стандартного конструктора 
+и определения метода `apply` в сопутствующем объекте:
+
+```scala
+final case class Name private (value: String) extends AnyVal
+object Name:
+  import scala.util.matching.Regex
+  private val pattern: Regex                = "[А-ЯЁ]{1}[а-яё]+".r
+  def fromString(str: String): Option[Name] =
+    if pattern.matches(str) then Some(Name(str))
+    else None
+```
+
+В этом случае невозможно напрямую создать невалидное имя:
+
+```scala
+Name("€‡™µ")  // не скомпилируется
+```
+
+А создание `Person`, казалось бы, происходит так, как было задумано:
+
+```scala
+Name.fromString("€‡™µ").map(Person.apply)     // None
+Name.fromString("12345").map(Person.apply)    // None
+Name.fromString("Alyona").map(Person.apply)   // None
+Name.fromString("Алёна18").map(Person.apply)  // None
+Name.fromString("алёна").map(Person.apply)    // None
+Name.fromString("Алёна").map(Person.apply)    // Some(Person(Name(Алёна)))
+```
+
+Но и этот способ можно "взломать" через метод `copy` (**только в Scala 2**, в Scala 3 эту лазейку убрали):
+
+```scala
+Name.fromString("Алёна").map(_.copy("€‡™µ")).map(Person.apply)     // Some(Person(Name(€‡™µ)))
+Name.fromString("Алёна").map(_.copy("12345")).map(Person.apply)    // Some(Person(Name(12345)))
+Name.fromString("Алёна").map(_.copy("Alyona")).map(Person.apply)   // Some(Person(Name(Alyona)))
+Name.fromString("Алёна").map(_.copy("Алёна18")).map(Person.apply)  // Some(Person(Name(Алёна18)))
+Name.fromString("Алёна").map(_.copy( "алёна")).map(Person.apply)   // Some(Person(Name(алёна)))
+Name.fromString("Алёна").map(_.copy("Алёна")).map(Person.apply)    // Some(Person(Name(Алёна)))
+```
+
+Для Scala 2 для обхода последней лазейки требовалось объявлять класс как `sealed abstract`, вот так:
+
+```scala
+sealed abstract case class Name private (value: String) extends AnyVal
+```
+
+[Scastie](https://scastie.scala-lang.org/tptzXCgMRVy9a7TIgiijeQ)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivationCCPC.sc&plain=1)
+
+
+
+
+## Введение в уточняющие типы
+
 Пример использования:
 
 ```scala
@@ -199,7 +326,7 @@ refineV[NonEmpty](Person("Ivan", 18))   // Right(Person(Ivan,18))
 - Статьи:
   - [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/)
   - [Refined types, what are they good for?](https://beyondthelines.net/programming/refined-types/)
-  - [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#117) 
+  - [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#1) 
   - [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)
   - [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)
   - [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)

@@ -243,8 +243,11 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FExamples.sc&plain=1)
 
+## Список типов
 
-## Boolean предикаты
+Список предопределенных типов следующий:
+
+### Boolean предикаты
 
 Список булевых предикатов следующий:
 
@@ -263,7 +266,7 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FBooleanExamples.sc&plain=1)
 
 
-## Numeric предикаты
+### Numeric предикаты
 
 - `Less[N]` - проверяет, меньше ли числовое значение `N`
 - `LessEqual[N]` - проверяет, меньше или равно числовое значение `N`
@@ -287,7 +290,7 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNumericExamples.sc&plain=1)
 
 
-## Char предикаты
+### Char предикаты
 
 - `Digit` - проверяет, является ли `Char` цифрой
 - `Letter` - проверяет, является ли `Char` буквой
@@ -299,7 +302,7 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FCharExamples.sc&plain=1)
 
 
-## String предикаты
+### String предикаты
 
 - `EndsWith[S]` - проверяет, заканчивается ли строка суффиксом `S`
 - `StartsWith[S]` - проверяет, начинается ли строка с префикса `S`
@@ -325,7 +328,7 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FStringExamples.sc&plain=1)
 
 
-## Collection предикаты
+### Collection предикаты
 
 - `Contains[U]` - проверяет, содержит ли `Iterable` значение, равное `U`
 - `Count[PA, PC]` - подсчитывает количество элементов в `Iterable`, удовлетворяющих предикату `PA`, и передает результат предикату `PC`
@@ -345,11 +348,12 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FCollectionExamples.sc&plain=1)
 
 
-## Generic предикаты
+### Generic предикаты
 
 - `Equal[U]` - проверяет, равно ли значение `U`
 
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FGenericExamples.sc&plain=1)
+
 
 ## Refined type для произвольного класса
 

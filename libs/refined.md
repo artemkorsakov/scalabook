@@ -125,11 +125,67 @@ sealed abstract case class Name private (value: String) extends AnyVal
 
 ## Введение в уточняющие типы
 
-Ещё одним способом решения заданной проблемы могут стать уточняющие типы из библиотеки [refined][refined lib].
+Ещё одним способом решения заданной проблемы может стать библиотека [refined][refined lib].
+
+[refined][refined lib] — это библиотека Scala для уточнения типов с помощью предикатов уровня типа, 
+ограничивающих набор значений, описываемых уточненным типом. 
+
+Она начиналась как переработка [библиотеки на Haskell Никиты Волкова](http://nikita-volkov.github.io/refined/). 
+
+Самая идея выражения ограничений на уровне типов в виде библиотеки Scala была впервые исследована Flavio W. Brasil
+в библиотеке [bond](https://github.com/fwbrasil/bond).
+
+Давайте рассмотрим решение исходной задачки с помощью `refined`:
+
+```scala
+import eu.timepit.refined.*
+import eu.timepit.refined.api.*
+import eu.timepit.refined.string.*
+
+type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
+final case class Person(name: Name)
+```
+
+В библиотеке `refined` есть класс `RefinedTypeOps`, который определяет метод `upapply`, позволяющий
+в сопутствующем объекте определить создание `Person` с валидными значениями, например так:
+
+```scala
+object Person:
+  object Name extends RefinedTypeOps[Name, String]
+  def fromString(str: String): Option[Person] =
+    str match
+      case Name(name) => Some(Person(name))
+      case _          => None
+```
+
+Тогда создание экземпляров происходит так:
+
+```scala
+Person.fromString("€‡™µ")     // None
+Person.fromString("12345")    // None
+Person.fromString("Alyona")   // None
+Person.fromString("Алёна18")  // None
+Person.fromString("алёна")    // None
+Person.fromString("Алёна")    // Some(Person(Алёна))
+```
+
+Мы добились тех же самых результатов с помощью уточняющих типов.
+
+Тип `Name` можно создать из строки напрямую (точнее `Either[String, Name]`):
+
+```scala
+Name.from("€‡™µ")     // Left(Predicate failed: "€‡™µ".matches("[А-ЯЁ][а-яё]+").)
+Name.from("12345")    // Left(Predicate failed: "12345".matches("[А-ЯЁ][а-яё]+").)
+Name.from("Alyona")   // Left(Predicate failed: "Alyona".matches("[А-ЯЁ][а-яё]+").)
+Name.from("Алёна18")  // Left(Predicate failed: "Алёна18".matches("[А-ЯЁ][а-яё]+").)
+Name.from("алёна")    // Left(Predicate failed: "алёна".matches("[А-ЯЁ][а-яё]+").)
+Name.from("Алёна")    // Right(Алёна)
+```
+
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivation.sc&plain=1)
 
 
-
-Пример использования:
+## Обзор библиотеки
 
 ```scala
 import eu.timepit.refined.*

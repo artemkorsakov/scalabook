@@ -2,8 +2,6 @@
 
 Уточняющие типы для Scala.
 
-Библиотека [refined][refined lib] позволяет уточнять типы для отсеивания невалидных значений.
-
 ## Зачем уточнять типы?
 
 Рассмотрим стандартный строковый тип в Scala - `String`. 
@@ -128,6 +126,10 @@ sealed abstract case class Name private (value: String) extends AnyVal
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivationCCPC.sc&plain=1)
 
 ## Введение в уточняющие типы
+
+Ещё одним способом решения заданной проблемы могут стать уточняющие типы из библиотеки [refined][refined lib].
+
+
 
 Пример использования:
 

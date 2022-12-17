@@ -357,20 +357,20 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 
 ## Refined type для произвольного класса
 
-Уточняющие типы можно определить для любого произвольного типа.
+Уточняющий тип можно создать для любого типа.
 
-Допустим у нас есть класс:
+Допустим у нас есть тип и предикат для заданного типа:
 
 ```scala
-final case class Packed(value: Any):
-  lazy val nonEmpty: Boolean =
-    value match
-      case str: String => Option(str).exists(_.trim.nonEmpty)
-      case num: Int    => num > 0
-      case _           => false
+type Packed = Any
+
+val nonEmpty: Packed => Boolean =
+  case str: String => Option(str).exists(_.trim.nonEmpty)
+  case num: Int    => num > 0
+  case _           => false
 ```
 
-Уточняющий тип для него можно определить следующим образом:
+Уточняющий тип `NonEmpty` для заданного типа можно определить по предикату:
 
 ```scala
 import eu.timepit.refined.*
@@ -381,7 +381,7 @@ import eu.timepit.refined.collection.*
 given Validate[Packed, NonEmpty] with
   override type R = NonEmpty
   override def validate(packed: Packed): Res    =
-    Result.fromBoolean(packed.nonEmpty, Not(Empty()))
+    Result.fromBoolean(nonEmpty(packed), Not(Empty()))
   override def showExpr(packed: Packed): String = s"Empty packed value: $packed"
 ```
 
@@ -402,6 +402,17 @@ refineV[NonEmpty](Packed(true))    // Left(Predicate failed: Empty packed value:
 
 refineV[NonEmpty](Packed("value")) // Right(Packed(value))
 refineV[NonEmpty](Packed(42))      // Right(Packed(42))
+
+refineV[NonEmpty](null: Packed)    // Left(Predicate failed: Empty packed value: null.)
+refineV[NonEmpty]("": Packed)      // Left(Predicate failed: Empty packed value: .)
+refineV[NonEmpty](" ": Packed)     // Left(Predicate failed: Empty packed value:  .)
+refineV[NonEmpty]("   ": Packed)   // Left(Predicate failed: Empty packed value:    .)
+refineV[NonEmpty](0: Packed)       // Left(Predicate failed: Empty packed value: 0.)
+refineV[NonEmpty](-42: Packed)     // Left(Predicate failed: Empty packed value: -42.)
+refineV[NonEmpty](true: Packed)    // Left(Predicate failed: Empty packed value: true.)
+
+refineV[NonEmpty]("value": Packed) // Right(value)
+refineV[NonEmpty](42: Packed)      // Right(42)
 ```
 
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FPersonExamples.sc&plain=1)

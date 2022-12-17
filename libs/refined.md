@@ -133,6 +133,9 @@ sealed abstract case class Name private (value: String) extends AnyVal
 В [теории типов](https://en.wikipedia.org/wiki/Type_theory) 
 [уточняющий тип (refinement type)](https://en.wikipedia.org/wiki/Refinement_type) — 
 это тип, снабженный предикатом, который предполагается верным для любого элемента уточняемого типа. 
+Например:
+
+![](https://wikimedia.org/api/rest_v1/media/math/render/svg/b3771ee3aa45615fadcccdf42d259f5eb61fd0ea)
 
 Концепция уточняющих типов была впервые введена Фриманом и Пфеннингом в работе 1991 года ["Уточняющие типы для ML"](https://www.cs.cmu.edu/~fp/papers/pldi91.pdf), 
 в которой представлена система типов для языка Standard ML.

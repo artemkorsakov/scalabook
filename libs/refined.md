@@ -128,10 +128,16 @@ sealed abstract case class Name private (value: String) extends AnyVal
 
 Ещё одним способом решения заданной проблемы может стать библиотека [refined][refined lib].
 
-[refined][refined lib] — это библиотека Scala для уточнения типов с помощью предикатов уровня типа, 
-ограничивающих набор значений, описываемых уточненным типом. 
+[refined][refined lib] — это библиотека Scala для работы с уточняющими типами.
 
-Она начиналась как переработка [библиотеки на Haskell Никиты Волкова](http://nikita-volkov.github.io/refined/). 
+В [теории типов](https://en.wikipedia.org/wiki/Type_theory) 
+[уточняющий тип (refinement type)](https://en.wikipedia.org/wiki/Refinement_type) — 
+это тип, снабженный предикатом, который предполагается верным для любого элемента уточняемого типа. 
+
+Концепция уточняющих типов была впервые введена Фриманом и Пфеннингом в работе 1991 года ["Уточняющие типы для ML"](https://www.cs.cmu.edu/~fp/papers/pldi91.pdf), 
+в которой представлена система типов для языка Standard ML.
+
+[Библиотека refined][refined lib] начиналась как переработка [библиотеки на Haskell Никиты Волкова](http://nikita-volkov.github.io/refined/). 
 
 Самая идея выражения ограничений на уровне типов в виде библиотеки Scala была впервые исследована Flavio W. Brasil
 в библиотеке [bond](https://github.com/fwbrasil/bond).

@@ -113,7 +113,7 @@ Name.fromString("Алёна").map(_.copy( "алёна")).map(Person.apply)   // 
 Name.fromString("Алёна").map(_.copy("Алёна")).map(Person.apply)    // Some(Person(Name(Алёна)))
 ```
 
-Для Scala 2 для обхода последней лазейки требовалось объявлять класс как `sealed abstract`, вот так:
+Для обхода последней лазейки в Scala 2 требовалось объявлять класс как `sealed abstract`, вот так:
 
 ```scala
 sealed abstract case class Name private (value: String) extends AnyVal

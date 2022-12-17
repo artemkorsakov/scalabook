@@ -357,33 +357,51 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 
 ## Refined type для произвольного класса
 
-Для произвольного класса `Person(name: String, age: Int)` уточняющий тип можно определить следующим образом:
+Уточняющие типы можно определить для любого произвольного типа.
+
+Допустим у нас есть класс:
 
 ```scala
-final case class Person(name: String, age: Int)
+final case class Packed(value: Any):
+  lazy val nonEmpty: Boolean =
+    value match
+      case str: String => Option(str).exists(_.trim.nonEmpty)
+      case num: Int    => num > 0
+      case _           => false
+```
 
-type Age = Int Refined Interval.ClosedOpen[7, 77]
+Уточняющий тип для него можно определить следующим образом:
 
-def isTrimmedStringEmpty(value: String): Boolean = Option(value).exists(_.trim.nonEmpty)
+```scala
+import eu.timepit.refined.*
+import eu.timepit.refined.api.*
+import eu.timepit.refined.boolean.*
+import eu.timepit.refined.collection.*
 
-given Validate[Person, NonEmpty] with
+given Validate[Packed, NonEmpty] with
   override type R = NonEmpty
-  override def validate(person: Person): Res    =
-    Result.fromBoolean(
-      isTrimmedStringEmpty(person.name) &&
-        RefType.applyRef[Age](person.age).isRight,
-      Not(Empty())
-    )
-  override def showExpr(person: Person): String = person.toString
+  override def validate(packed: Packed): Res    =
+    Result.fromBoolean(packed.nonEmpty, Not(Empty()))
+  override def showExpr(packed: Packed): String = s"Empty packed value: $packed"
+```
 
-refineV[NonEmpty](Person("", 18))       // Left(Predicate failed: Person(,18).)
-refineV[NonEmpty](Person(" ", 18))      // Left(Predicate failed: Person( ,18).)
-refineV[NonEmpty](Person("   ", 18))    // Left(Predicate failed: Person(   ,18).)
-refineV[NonEmpty](Person(null, 18))     // Left(Predicate failed: Person(null,18).)
-refineV[NonEmpty](Person("Ivan", 0))    // Left(Predicate failed: Person(Ivan,0).)
-refineV[NonEmpty](Person("Ivan", 100))  // Left(Predicate failed: Person(Ivan,100).)
+Здесь в методе `validate` определяется предикат, по которому определяется, удовлетворяет ли тип заданному уточнению.
 
-refineV[NonEmpty](Person("Ivan", 18))   // Right(Person(Ivan,18))
+Метод `showExpr` определяет сообщение об ошибке.
+
+Тогда можно использовать уточняющий тип следующим образом:
+
+```scala
+refineV[NonEmpty](Packed(null))    // Left(Predicate failed: Empty packed value: Packed(null).)
+refineV[NonEmpty](Packed(""))      // Left(Predicate failed: Empty packed value: Packed().)
+refineV[NonEmpty](Packed(" "))     // Left(Predicate failed: Empty packed value: Packed( ).)
+refineV[NonEmpty](Packed("   "))   // Left(Predicate failed: Empty packed value: Packed(   ).)
+refineV[NonEmpty](Packed(0))       // Left(Predicate failed: Empty packed value: Packed(0).)
+refineV[NonEmpty](Packed(-42))     // Left(Predicate failed: Empty packed value: Packed(-42).)
+refineV[NonEmpty](Packed(true))    // Left(Predicate failed: Empty packed value: Packed(true).)
+
+refineV[NonEmpty](Packed("value")) // Right(Packed(value))
+refineV[NonEmpty](Packed(42))      // Right(Packed(42))
 ```
 
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FPersonExamples.sc&plain=1)

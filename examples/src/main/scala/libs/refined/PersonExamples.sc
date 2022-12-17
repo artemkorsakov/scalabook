@@ -1,49 +1,28 @@
 import eu.timepit.refined.*
 import eu.timepit.refined.api.*
-import eu.timepit.refined.auto.*
 import eu.timepit.refined.boolean.*
-import eu.timepit.refined.char.*
 import eu.timepit.refined.collection.*
-import eu.timepit.refined.generic.*
-import eu.timepit.refined.numeric.*
-import eu.timepit.refined.string.*
-import shapeless.{::, HNil}
 
-final case class Person(name: String, age: Int)
+final case class Packed(value: Any):
+  lazy val nonEmpty: Boolean =
+    value match
+      case str: String => Option(str).exists(_.trim.nonEmpty)
+      case num: Int    => num > 0
+      case _           => false
 
-type Age = Int Refined Interval.ClosedOpen[7, 77]
-
-def isTrimmedStringEmpty(value: String): Boolean = Option(value).exists(_.trim.nonEmpty)
-
-given Validate[Person, NonEmpty] with
+given Validate[Packed, NonEmpty] with
   override type R = NonEmpty
-  override def validate(person: Person): Res    =
-    Result.fromBoolean(
-      isTrimmedStringEmpty(person.name) &&
-        RefType.applyRef[Age](person.age).isRight,
-      Not(Empty())
-    )
-  override def showExpr(person: Person): String = person.toString
+  override def validate(packed: Packed): Res    =
+    Result.fromBoolean(packed.nonEmpty, Not(Empty()))
+  override def showExpr(packed: Packed): String = s"Empty packed value: $packed"
 
-refineV[NonEmpty](Person("", 18))
-refineV[NonEmpty](Person(" ", 18))
-refineV[NonEmpty](Person("   ", 18))
-refineV[NonEmpty](Person(null, 18))
-refineV[NonEmpty](Person("Ivan", 0))
-refineV[NonEmpty](Person("Ivan", 100))
+refineV[NonEmpty](Packed(null))
+refineV[NonEmpty](Packed(""))
+refineV[NonEmpty](Packed(" "))
+refineV[NonEmpty](Packed("   "))
+refineV[NonEmpty](Packed(0))
+refineV[NonEmpty](Packed(-42))
+refineV[NonEmpty](Packed(true))
 
-refineV[NonEmpty](Person("Ivan", 18))
-
-object Age extends RefinedTypeOps[Age, Int]
-
-Age.from(6)
-Age.from(7)
-Age.from(76)
-Age.from(77)
-Age.from(78)
-
-Age.unapply(6)
-Age.unapply(7)
-Age.unapply(76)
-Age.unapply(77)
-Age.unapply(78)
+refineV[NonEmpty](Packed("value"))
+refineV[NonEmpty](Packed(42))

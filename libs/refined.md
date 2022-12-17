@@ -224,10 +224,13 @@ refineV[Positive](-x)        // Left("Predicate failed: (-42 > 0).")
 refineV[NonEmpty]("Hello")   // Right("Hello")
 refineV[NonEmpty]("")        // Left("Predicate isEmpty() did not fail.")
 
+// Уточняющие типы можно между собой комбинировать, создавая более сложные типы
 type ZeroToOne = Not[Less[0.0]] And Not[Greater[1.0]]
+refineV[ZeroToOne](0.8)      // Right(0.8)
 refineV[ZeroToOne](1.8)      
 // Left("Right predicate of (!(1.8 < 0.0) && !(1.8 > 1.0)) failed: Predicate (1.8 > 1.0) did not fail.")
 
+// Или использовать несколько уточняющих типов
 refineV[AnyOf[Digit :: Letter :: Whitespace :: HNil]]('F')   // Right(F)
 
 refineV[MatchesRegex["[0-9]+"]]("123.")                      // Left(Predicate failed: "123.".matches("[0-9]+").)

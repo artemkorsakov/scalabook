@@ -17,6 +17,7 @@ refineV[NonEmpty]("Hello")
 refineV[NonEmpty]("")
 
 type ZeroToOne = Not[Less[0.0]] And Not[Greater[1.0]]
+refineV[ZeroToOne](0.8)
 refineV[ZeroToOne](1.8)
 
 refineV[AnyOf[Digit :: Letter :: Whitespace :: HNil]]('F')

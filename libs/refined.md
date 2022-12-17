@@ -188,35 +188,21 @@ refineV[NonEmpty](Person("Ivan", 18))   // Right(Person(Ivan,18))
 **References:**
 - [Refined lib - Github][refined lib]
 - Видео:
-  - [Better types = fewer tests - Raúl Raja]
-    (https://www.youtube.com/watch?v=TScwxX62uig)
-  - [Defusing the configuration time bomb with PureConfig and Refined - Leif Wickland]
-    (https://www.youtube.com/watch?v=NjqRi-cF3-g)
-  - [How to Build a Functional API - Julien Truffaut]
-    (https://www.youtube.com/watch?v=__zuECMFCRc)
-  - [Let The Compiler Help You: How To Make The Most Of Scala’s Typesystem - Markus Hauck]
-    (https://www.youtube.com/watch?v=hhXPeuJohM4)
-  - [Literal types, what they are good for? - Tamer Abdulradi]
-    (https://slideslive.com/38907881/literal-types-what-they-are-good-for)  
-  - [Refinement Types - Tipagem ainda mais forte para Scala - Marcelo Gomes]
-    (https://www.youtube.com/watch?v=Zq4rkWs_ybA)
-  - [Security with Scala: Refined Types and Object Capabilities - Will Sargent]
-    (https://slideslive.com/38908776/security-with-scala-refined-types-and-object-capabilities) 
-  - [Strings are Evil: Methods to hide the use of primitive types - Noel Welsh]
-    (https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types)
+  - [Better types = fewer tests - Raúl Raja](https://www.youtube.com/watch?v=TScwxX62uig)
+  - [Defusing the configuration time bomb with PureConfig and Refined - Leif Wickland](https://www.youtube.com/watch?v=NjqRi-cF3-g)
+  - [How to Build a Functional API - Julien Truffaut](https://www.youtube.com/watch?v=__zuECMFCRc)
+  - [Let The Compiler Help You: How To Make The Most Of Scala’s Typesystem - Markus Hauck](https://www.youtube.com/watch?v=hhXPeuJohM4)
+  - [Literal types, what they are good for? - Tamer Abdulradi](https://slideslive.com/38907881/literal-types-what-they-are-good-for)  
+  - [Refinement Types - Tipagem ainda mais forte para Scala - Marcelo Gomes](https://www.youtube.com/watch?v=Zq4rkWs_ybA)
+  - [Security with Scala: Refined Types and Object Capabilities - Will Sargent](https://slideslive.com/38908776/security-with-scala-refined-types-and-object-capabilities) 
+  - [Strings are Evil: Methods to hide the use of primitive types - Noel Welsh](https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types)
 - Статьи:
-  - [Lightweight Non-Negative Numerics for Better Scala Type Signatures]
-    (http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/)
-  - [Refined types, what are they good for?]
-    (https://beyondthelines.net/programming/refined-types/)
-  - [Refinement Types In Practice]
-    (https://kwark.github.io/refined-in-practice-bescala/#117) 
-  - [Refining your data from configuration to database]
-    (https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)
-  - [Tests - can we have too many?]
-    (https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)
-  - [Validate Service Configuration in Scala]
-    (https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)
+  - [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/)
+  - [Refined types, what are they good for?](https://beyondthelines.net/programming/refined-types/)
+  - [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#117) 
+  - [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)
+  - [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)
+  - [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)
 
 
 [refined lib]: https://github.com/fthomas/refined

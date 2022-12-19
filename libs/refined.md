@@ -357,6 +357,48 @@ PositiveDivisibleBySixInt.from(6)   // Right(6)
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefineRefinementType.sc&plain=1)
 
 
+## Литеральные типы
+
+Предельным непустым уточненным типом является литеральный тип:
+
+```scala
+var foo: "foo" = "foo"
+foo = "foo" // Позволительно
+foo = "bar"
+// Type Mismatch Error: -------------------------------------------------
+// foo = "bar"
+//       ^^^^^
+//       Found:    ("bar" : String)
+//       Required: ("foo" : String)
+
+var one: 1 = 1
+one = 1 // Позволительно
+one = 2
+// Type Mismatch Error: -------------------------------------------------
+// one = 2
+//       ^
+//       Found:    (2 : Int)
+//       Required: (1 : Int)
+```
+
+Ограничение типа на использование только литеральных типов реализуется так - `T <: Singleton`, например:
+
+```scala1
+case class Narrow[T <: Singleton](var t: T)
+Narrow("foo")  // Позволительно
+Narrow(1)       // Позволительно
+
+// Попытка использования нелитерального типа, например, String приводит к ошибке компиляции
+Narrow("foo": String)
+// Narrow("foo": String)
+//        ^^^^^^^^^^^^^
+//        Found:    String
+//        Required: Singleton
+```
+
+[Scastie](https://scastie.scala-lang.org/JdqGqYyQQneu4N8vfku1Kw)
+[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FLiteralTypes.sc&plain=1)
+
 
 ---
 

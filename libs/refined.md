@@ -386,7 +386,7 @@ one = 2
 ```scala1
 case class Narrow[T <: Singleton](var t: T)
 Narrow("foo")  // Позволительно
-Narrow(1)       // Позволительно
+Narrow(1)      // Позволительно
 
 // Попытка использования нелитерального типа, например, String приводит к ошибке компиляции
 Narrow("foo": String)
@@ -397,6 +397,7 @@ Narrow("foo": String)
 ```
 
 [Scastie](https://scastie.scala-lang.org/JdqGqYyQQneu4N8vfku1Kw)
+
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FLiteralTypes.sc&plain=1)
 
 

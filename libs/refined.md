@@ -308,7 +308,7 @@ refineV[NonEmpty]("value": Packed) // Right(value)
 refineV[NonEmpty](42: Packed)      // Right(42)
 ```
 
-[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FPersonExamples.sc&plain=1)
+[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FPackedExamples.sc&plain=1)
 
 
 ---

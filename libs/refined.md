@@ -256,6 +256,9 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FExamples.sc&plain=1)
 
+[Полный список предопределенных типов](refined/types.md)
+
+
 ## Уточнение произвольного типа
 
 Уточняющий тип можно создать для любого типа.

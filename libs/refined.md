@@ -414,9 +414,9 @@ Narrow("foo": String)
 
 - При использовании нотации инфиксного типа необходимо проявлять осторожность 
   и использовать скобки или неинфиксное определение типа:
-  ~~String Refined XXX And YYY~~
-  String Refined And[XXX, YYY]
-  String Refined (XXX And YYY)
+  - ~~String Refined XXX And YYY~~
+  - String Refined And[XXX, YYY]
+  - String Refined (XXX And YYY)
 - Уточненные примитивы всегда упакованы
 - Сообщения об ошибках проверки не всегда понятны, а порой просто ошибочны: `Empty did not fail`
 

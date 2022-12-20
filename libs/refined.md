@@ -401,6 +401,47 @@ Narrow("foo": String)
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FLiteralTypes.sc&plain=1)
 
 
+## Преимущества библиотеки refined
+
+- Отлов ошибок во время компиляции
+- Единая декларативная валидация
+- Уточнение времени компиляции литеральных значений
+
+
+## Недостатки библиотеки refined
+
+В библиотеке уточненных типов присутствуют следующие ошибки/недостатки:
+
+- При использовании нотации инфиксного типа необходимо проявлять осторожность 
+  и использовать скобки или неинфиксное определение типа:
+  ~~String Refined XXX And YYY~~
+  String Refined And[XXX, YYY]
+  String Refined (XXX And YYY)
+- Уточненные примитивы всегда упакованы
+- Сообщения об ошибках проверки не всегда понятны, а порой просто ошибочны: `Empty did not fail`
+
+
+## Альтернативы библиотеки refined
+
+- [Bond](https://github.com/fwbrasil/bond)
+- [Scalactic](https://www.scalactic.org/)
+
+
+## Интеграция с другими библиотеками
+
+- [Полный список](https://github.com/fthomas/refined#using-refined)
+  - refined-cats
+  - refined-eval
+  - refined-jsonpath
+  - refined-pureconfig
+  - refined-scalacheck
+  - refined-scalaz
+  - refined-scodec
+  - refined-scopt
+  - refined-shapeless
+
+
+
 ---
 
 **References:**

@@ -53,7 +53,8 @@ Person("Алёна")   // Person(Алёна)
 Ещё одной попыткой добиться желаемого поведения могут служить case классы:
 
 Можно обернуть строку в `case class` 
-и использовать [классы значений](https://docs.scala-lang.org/overviews/core/value-classes.html).
+и использовать [классы значений](https://docs.scala-lang.org/overviews/core/value-classes.html)
+для избежания runtime penalty за использование более общего представления.
 
 ```scala
 case class Name(value: String) extends AnyVal
@@ -147,6 +148,19 @@ sealed abstract case class Name private (value: String) extends AnyVal
 
 Самая идея выражения ограничений на уровне типов в виде библиотеки Scala была впервые исследована Flavio W. Brasil
 в библиотеке [bond](https://github.com/fwbrasil/bond).
+
+Уточнение - это достаточно распространенная и естественная процедура в программировании.
+
+Достаточно взглянуть на [примитивные типы в Scala](https://docs.scala-lang.org/scala3/book/first-look-at-types.html#scalas-value-types):
+
+`Long` (от **-2<sup>63</sup>** до **2<sup>63</sup> - 1**) -> 
+`Int` (от **-2<sup>31</sup>** до **2<sup>31</sup> - 1**) -> 
+`Short` (от **-2<sup>15</sup>** до **2<sup>15</sup> - 1**) -> 
+`Byte` (от **-2<sup>7</sup>** до **2<sup>7</sup> - 1**)
+
+Каждый следующий тип в этом списке уточняет предыдущий.
+
+## Знакомство с библиотекой
 
 Давайте рассмотрим решение исходной задачки с помощью `refined`:
 
@@ -441,6 +455,9 @@ Narrow("foo": String)
   - refined-shapeless
 
 
+## Пример взаимодействия с pureconfig
+
+Предположим, что у нас есть конфиг
 
 ---
 

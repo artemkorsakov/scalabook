@@ -278,9 +278,9 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 Здесь может возникнуть резонный вопрос: 
 у нас есть два способа определения уточненного типа:
 
-- "стандартный"
+- "стандартный" ---
   `sealed abstract case class Name private (value: String) extends AnyVal`
-- через библиотеку `refined`
+- через библиотеку `refined` ---
   `type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]`
 
 А в чем принципиальная разница между этими двумя способами? 

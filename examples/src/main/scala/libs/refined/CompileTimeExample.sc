@@ -6,13 +6,11 @@ import scala.language.implicitConversions
 
 type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
 
-given Conversion[String, Name] with
-  def apply(s: String): Name =
-    RefinedTypeOps[Name, String].unsafeFrom(s)
+given Conversion[String, Option[Name]] = RefinedTypeOps[Name, String].unapply(_)
 
-val name0: Name = "€‡™µ"
-val name1: Name = "12345"
-val name2: Name = "Alyona"
-val name3: Name = "Алёна18"
-val name4: Name = "алёна"
-val name5: Name = "Алёна"
+val name0: Option[Name] = "€‡™µ"
+val name1: Option[Name] = "12345"
+val name2: Option[Name] = "Alyona"
+val name3: Option[Name] = "Алёна18"
+val name4: Option[Name] = "алёна"
+val name5: Option[Name] = "Алёна"

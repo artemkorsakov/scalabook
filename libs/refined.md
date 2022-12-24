@@ -311,17 +311,16 @@ object Example {
 
 [Пример на Scastie](https://scastie.scala-lang.org/oqh3jUboQQqf3wKC8A5ZkA)
 
-В Scala 3 не все так просто:
-- в Scala 3 в принципе [нельзя сравнивать и присваивать переменные разных типов](https://scalabook.gitflic.space/scala/abstractions/ca-multiversal-equality).
-  А `String` и `Name` - очевидно, разные типы.
-- а [неявные преобразования типов сильно переработаны](https://scalabook.gitflic.space/scala/abstractions/ca-implicit-conversions)
+В Scala 3 не все так просто: 
+[неявные преобразования типов довольно сильно переработаны](https://scalabook.gitflic.space/scala/abstractions/ca-implicit-conversions)
 
-Поэтому даже валидный пример `val name: Name = "Алёна"` выдаст при компиляции ошибку: `Type Mismatch Error`.
+Поэтому даже "валидный" пример `val name: Name = "Алёна"` при компиляции выдаст ошибку: `Type Mismatch Error`.
 
 Для того чтобы позволить неявное преобразование из `String` в `Name` 
 нужно для начала определить соответствующий `given` экземпляр, [как показано в документации](https://docs.scala-lang.org/scala3/book/ca-implicit-conversions.html)
 
-Аналогичный пример на Scala 3 будет выглядеть так:
+При этом преобразования будут происходить во время выполнения, а не компиляции, поэтому этот способ небезопасен.
+Но можно определить неявное преобразование в Option, что позволяет выполнять такое присваивание:
 
 ```scala
 import eu.timepit.refined.api.{Refined, RefinedTypeOps}
@@ -332,23 +331,21 @@ import scala.language.implicitConversions
 
 type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
 
-given Conversion[String, Name] with
-  def apply(s: String): Name =
-    RefinedTypeOps[Name, String].unsafeFrom(s)
+given Conversion[String, Option[Name]] = RefinedTypeOps[Name, String].unapply(_)
 
-val name0: Name = "€‡™µ"     // Compile error: Predicate failed: "€‡™µ".matches("[А-ЯЁ][а-яё]+").
-val name1: Name = "12345"    // Compile error: Predicate failed: "12345".matches("[А-ЯЁ][а-яё]+").
-val name2: Name = "Alyona"   // Compile error: Predicate failed: "Alyona".matches("[А-ЯЁ][а-яё]+").
-val name3: Name = "Алёна18"  // Compile error: Predicate failed: "Алёна18".matches("[А-ЯЁ][а-яё]+").
-val name4: Name = "алёна"    // Compile error: Predicate failed: "алёна".matches("[А-ЯЁ][а-яё]+").
-val name5: Name = "Алёна"    // Ок
+val name0: Option[Name] = "€‡™µ"    // None 
+val name1: Option[Name] = "12345"   // None
+val name2: Option[Name] = "Alyona"  // None
+val name3: Option[Name] = "Алёна18" // None
+val name4: Option[Name] = "алёна"   // None
+val name5: Option[Name] = "Алёна"   // Some(Алёна)
 ```
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FCompileTimeExample.sc&plain=1)
 
-[Пример на Scastie](https://scastie.scala-lang.org/xLH6aTNOSW6b8baU3hhipw)
-
-Таким образом достигается проверка соответствия уточненным типам в Scala 3 во время компиляции.
+Таким образом проверка соответствия уточненным типам в Scala 3 во время компиляции
+пока ещё не реализована, но это лишь вопрос времени, 
+учитывая богатые возможности [для метапрограммирования в Scala 3](https://docs.scala-lang.org/scala3/reference/metaprogramming/index.html).
 
 Проверка во время компиляции открывает довольно большие возможности: 
 как минимум, значительную часть проверок можно переложить с модульных тестов на компилятор.

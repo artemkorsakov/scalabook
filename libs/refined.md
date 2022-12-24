@@ -121,7 +121,7 @@ Name.fromString("Алёна").map(_.copy("Алёна")).map(Person.apply)    // 
 sealed abstract case class Name private (value: String) extends AnyVal
 ```
 
-[Scastie](https://scastie.scala-lang.org/tptzXCgMRVy9a7TIgiijeQ)
+[Пример на Scastie](https://scastie.scala-lang.org/tptzXCgMRVy9a7TIgiijeQ)
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivationCCPC.sc&plain=1)
 
@@ -273,6 +273,87 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 [Полный список предопределенных типов (69 типов)](refined/types)
 
 
+## А в чем разница?
+
+Здесь может возникнуть резонный вопрос: 
+у нас есть два способа определения уточненного типа:
+
+- "стандартный"
+  `sealed abstract case class Name private (value: String) extends AnyVal`
+- через библиотеку `refined`
+  `type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]`
+
+А в чем принципиальная разница между этими двумя способами? 
+Только лишь в удобстве справочника предопределенных типов?
+Это, конечно, преимущество, но не сказать, чтобы очень уж заметное...
+
+Важным преимуществом библиотеки `refined` является возможность проверки во время компиляции.
+Следующий код на Scala 2 даже не скомпилится:
+
+```scala
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
+import eu.timepit.refined.string._
+
+object Example {
+  type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
+
+  val name0: Name = "€‡™µ"     // Compile error: Predicate failed: "€‡™µ".matches("[А-ЯЁ][а-яё]+").
+  val name1: Name = "12345"    // Compile error: Predicate failed: "12345".matches("[А-ЯЁ][а-яё]+").
+  val name2: Name = "Alyona"   // Compile error: Predicate failed: "Alyona".matches("[А-ЯЁ][а-яё]+").
+  val name3: Name = "Алёна18"  // Compile error: Predicate failed: "Алёна18".matches("[А-ЯЁ][а-яё]+").
+  val name4: Name = "алёна"    // Compile error: Predicate failed: "алёна".matches("[А-ЯЁ][а-яё]+").
+  val name5: Name = "Алёна"    // Ок
+}
+```
+
+Скомпилится только последний вариант, потому что строка `"Алёна"` подходит под уточненный тип.
+
+[Пример на Scastie](https://scastie.scala-lang.org/oqh3jUboQQqf3wKC8A5ZkA)
+
+В Scala 3 не все так просто:
+- в Scala 3 в принципе [нельзя сравнивать и присваивать переменные разных типов](https://scalabook.gitflic.space/scala/abstractions/ca-multiversal-equality).
+- а [неявные преобразования типов сильно переработаны](https://scalabook.gitflic.space/scala/abstractions/ca-implicit-conversions)
+
+Поэтому даже валидный пример `val name: Name = "Алёна"` выдаст при компиляции ошибку `Type Mismatch Error`.
+
+Для того чтобы позволить неявное преобразование из `String` в `Name` 
+нужно для начала определить соответствующий `given` экземпляр, [как показано в документации](https://docs.scala-lang.org/scala3/book/ca-implicit-conversions.html)
+
+Аналогичный пример на Scala 3 будет выглядеть так:
+
+```scala
+import eu.timepit.refined.api.{Refined, RefinedTypeOps}
+import eu.timepit.refined.auto.*
+import eu.timepit.refined.string.*
+
+import scala.language.implicitConversions
+
+type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
+
+given Conversion[String, Name] with
+  def apply(s: String): Name =
+    RefinedTypeOps[Name, String].unsafeFrom(s)
+
+val name0: Name = "€‡™µ"     // Compile error: Predicate failed: "€‡™µ".matches("[А-ЯЁ][а-яё]+").
+val name1: Name = "12345"    // Compile error: Predicate failed: "12345".matches("[А-ЯЁ][а-яё]+").
+val name2: Name = "Alyona"   // Compile error: Predicate failed: "Alyona".matches("[А-ЯЁ][а-яё]+").
+val name3: Name = "Алёна18"  // Compile error: Predicate failed: "Алёна18".matches("[А-ЯЁ][а-яё]+").
+val name4: Name = "алёна"    // Compile error: Predicate failed: "алёна".matches("[А-ЯЁ][а-яё]+").
+val name5: Name = "Алёна"    // Ок
+```
+
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FCompileTimeExample.sc&plain=1)
+
+[Пример на Scastie](https://scastie.scala-lang.org/oqh3jUboQQqf3wKC8A5ZkA)
+
+Таким образом достигается проверка соответствия уточненным типам в Scala 3 во время компиляции.
+
+Проверка во время компиляции открывает довольно большие возможности: 
+как минимум, значительную часть проверок можно переложить с модульных тестов на компилятор.
+Что в свою очередь может сэкономить общее время разработки.
+
+
 ## Уточнение произвольного типа
 
 Уточняющий тип можно создать для любого типа.
@@ -410,7 +491,7 @@ Narrow("foo": String)
 //        Required: Singleton
 ```
 
-[Scastie](https://scastie.scala-lang.org/JdqGqYyQQneu4N8vfku1Kw)
+[Пример на Scastie](https://scastie.scala-lang.org/JdqGqYyQQneu4N8vfku1Kw)
 
 [Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FLiteralTypes.sc&plain=1)
 
@@ -523,7 +604,7 @@ Config(,808)
 ---
 ```
 
-[Scastie](https://scastie.scala-lang.org/vq79scDfRyOA4GoDh1MFnw)
+[Пример на Scastie](https://scastie.scala-lang.org/vq79scDfRyOA4GoDh1MFnw)
 
 Безусловно, ошибка была бы найдена при развертывании на стенде, например, при получении ошибки подключения.
 Но сколько времени ушло бы на поиск опечатки в хосте или порту?
@@ -587,10 +668,25 @@ Config(example.com,8080)
 ---
 ```
 
-[Scastie](https://scastie.scala-lang.org/Lr7fwKLJT7GNZ7TApANjgg)
+[Пример на Scastie](https://scastie.scala-lang.org/Lr7fwKLJT7GNZ7TApANjgg)
 
 В лице уточняющих типов мы можем более четко формулировать, какие значения считаются валидными в конфигах
 и отсеивать явные опечатки.
+
+
+## Заключение
+
+99% ошибок совершают разработчики. Разработчики ошибаются, оставляют опечатки и дыры - баги не появляются из "ничего".
+У них есть конкретный создатель, а зачастую - и не один.
+Пожалуй, это одна из самых серьезных проблем, возникающих при создании программного обеспечения, если не самая серьезная.
+На решение этой проблемы брошены колоссальные ресурсы: пишутся юнит и интеграционные тесты, команда QA
+делает все возможное только лишь бы ошибки не просочились в продуктовую версию продукта.
+Уточненные типы - безусловно не панацея, а ещё один способ уменьшить количество ошибок.
+Если разработчик станет более четко формулировать используемые типы параметров, 
+если ещё и расскажет компилятору, что конкретно позволительно, а что - нет, 
+то количество багов станет уменьшаться.
+
+И судя по списку литературы, уточненные типы - важная часть современного процесса разработки на Scala.
 
 
 ---

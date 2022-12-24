@@ -277,7 +277,7 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 
 Уточняющий тип можно создать для любого типа.
 
-Допустим у нас есть тип и предикат для заданного типа:
+Допустим у нас есть тип и некий предикат для заданного типа:
 
 ```scala
 type Packed = Any
@@ -378,7 +378,7 @@ PositiveDivisibleBySixInt.from(6)   // Right(6)
 ```scala
 var foo: "foo" = "foo"
 foo = "foo" // Позволительно
-foo = "bar"
+foo = "bar" // Ошибка компиляции
 // Type Mismatch Error: -------------------------------------------------
 // foo = "bar"
 //       ^^^^^
@@ -387,7 +387,7 @@ foo = "bar"
 
 var one: 1 = 1
 one = 1 // Позволительно
-one = 2
+one = 2 // Ошибка компиляции
 // Type Mismatch Error: -------------------------------------------------
 // one = 2
 //       ^

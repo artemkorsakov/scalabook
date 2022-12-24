@@ -444,20 +444,155 @@ Narrow("foo": String)
 ## Интеграция с другими библиотеками
 
 - [Полный список](https://github.com/fthomas/refined#using-refined)
-  - refined-cats
-  - refined-eval
-  - refined-jsonpath
-  - refined-pureconfig
-  - refined-scalacheck
-  - refined-scalaz
-  - refined-scodec
-  - refined-scopt
-  - refined-shapeless
+  - refined-cats (Scala 3 + Scala 2)
+  - refined-eval (только Scala 2)
+  - refined-jsonpath (Scala 3 + Scala 2)
+  - refined-pureconfig (только Scala 2)
+  - refined-scalacheck (Scala 3 + Scala 2)
+  - refined-scalaz (только Scala 2)
+  - refined-scodec (только Scala 2)
+  - refined-scopt (Scala 3 + Scala 2)
+  - refined-shapeless (только Scala 2)
+- Релизы на [Scaladex](https://index.scala-lang.org/fthomas/refined)
 
 
 ## Пример взаимодействия с pureconfig
 
-Предположим, что у нас есть конфиг
+Рассмотрим взаимодействие библиотеки refined с pureconfig. 
+На данный момент библиотека [собрана только под Scala 2](https://index.scala-lang.org/fthomas/refined/artifacts/refined-pureconfig?pre-releases=false)
+, поэтому будем рассматривать код на этой версии Scala.
+
+Предположим, что у нас есть некий конфиг с настройками подключения к БД:
+
+```text
+{
+    host: "example.com"
+    port: 8080
+}
+```
+
+Довольно часто в современных проектах используется микросервисная архитектура 
+и конфиги разрастаются до огромных размеров, усложняющих их поддержку и исправление опечаток.
+
+Что если разработчик указал пустой хост 
+(допустим для того, чтобы указать его позже, когда станет известна конфигурация на стенде) 
+и опечатался в порту:
+
+```text
+{
+    host: ""
+    port: 808
+}
+```
+
+Эта конфигурация будет успешно прочитана:
+
+```scala
+import pureconfig._
+import pureconfig.generic.auto._
+
+object Main {
+  private case class Config(host: String, port: Int)
+
+  private def parseConfig(source: String): Unit = {
+    println("---")
+    ConfigSource.string(source).load[Config] match {
+      case Right(config) =>
+        println(s"Configuration loaded successfully:\n$config")
+      case Left(error) =>
+        println(s"Error loading configuration:\n$error")
+    }
+    println("---")
+  }
+
+  def main(args: Array[String]): Unit = {
+    parseConfig("""{
+              host: ""
+              port: 808
+          }""")
+  }
+}
+```
+
+В этом случае будет выдано сообщение о том, что конфиг задан верно:
+
+```text
+---
+Configuration loaded successfully:
+Config(,808)
+---
+```
+
+[Scastie](https://scastie.scala-lang.org/vq79scDfRyOA4GoDh1MFnw)
+
+Безусловно, ошибка была бы найдена при развертывании на стенде.
+Например, что-нибудь вроде ошибки подключения.
+Но сколько времени ушло бы на поиск опечатки в порту.
+
+Здесь нам бы очень помогли уточняющие типы, более детально описывающие, какая конфигурация требуется заданному стенду.
+Уточняющие типы могли бы исключить использование "localhost" на боевом стенде, да и многое другое.
+
+Рассмотрим простой пример, уточняющий хост до непустой строки и порт - как порт, больший 1024:
+
+```scala
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.collection.NonEmpty
+import eu.timepit.refined.numeric.Greater
+import eu.timepit.refined.pureconfig._
+import pureconfig._
+import pureconfig.generic.auto._
+
+object Main {
+  private type NonEmptyString = String Refined NonEmpty
+  private type ServerPort = Int Refined Greater[1024]
+
+  private case class Config(host: NonEmptyString, port: ServerPort)
+
+  private def parseConfig(source: String): Unit = {
+    println("---")
+    ConfigSource.string(source).load[Config] match {
+      case Right(config) =>
+        println(s"Configuration loaded successfully:\n$config")
+      case Left(error) =>
+        println(s"Error loading configuration:\n$error")
+    }
+    println("---")
+  }
+
+  def main(args: Array[String]): Unit = {
+    parseConfig("""{
+              host: ""
+              port: 808
+          }""")
+    parseConfig("""{
+              host: "example.com"
+              port: 8080
+          }""")
+  }
+}
+```
+
+В этом случае успешно распарсился бы только второй конфиг, а в логах было бы выведено следующее:
+
+```text
+---
+Error loading configuration:
+ConfigReaderFailures(
+  ... Predicate isEmpty() did not fail.) ... host),
+  ... Predicate failed: (808 > 1024).) ... port)
+)
+---
+---
+Configuration loaded successfully:
+Config(example.com,8080)
+---
+```
+
+[Scastie](https://scastie.scala-lang.org/Lr7fwKLJT7GNZ7TApANjgg)
+
+В лице уточняющих типов мы можем более четко формулировать, какие значения считаются валидными в конфигах
+и отсеивать явные опечатки.
+
 
 ---
 

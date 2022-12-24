@@ -313,7 +313,7 @@ object Example {
 
 В Scala 3 не все так просто:
 - в Scala 3 в принципе [нельзя сравнивать и присваивать переменные разных типов](https://scalabook.gitflic.space/scala/abstractions/ca-multiversal-equality).
-  а `String` и `Name` - это, очевидно, разные типы.
+  А `String` и `Name` - очевидно, разные типы.
 - а [неявные преобразования типов сильно переработаны](https://scalabook.gitflic.space/scala/abstractions/ca-implicit-conversions)
 
 Поэтому даже валидный пример `val name: Name = "Алёна"` выдаст при компиляции ошибку `Type Mismatch Error`.

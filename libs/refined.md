@@ -312,15 +312,15 @@ object Example {
 [Пример на Scastie](https://scastie.scala-lang.org/oqh3jUboQQqf3wKC8A5ZkA)
 
 В Scala 3 не все так просто: 
-[неявные преобразования типов довольно сильно переработаны](https://scalabook.gitflic.space/scala/abstractions/ca-implicit-conversions)
+[неявные преобразования типов довольно сильно переработаны](https://scalabook.gitflic.space/scala/abstractions/ca-implicit-conversions).
 
 Поэтому даже "валидный" пример `val name: Name = "Алёна"` при компиляции выдаст ошибку: `Type Mismatch Error`.
 
 Для того чтобы позволить неявное преобразование из `String` в `Name` 
 нужно для начала определить соответствующий `given` экземпляр, [как показано в документации](https://docs.scala-lang.org/scala3/book/ca-implicit-conversions.html)
 
-При этом преобразования будут происходить во время выполнения, а не компиляции, поэтому этот способ небезопасен.
-Но можно определить неявное преобразование в Option, что позволяет выполнять такое присваивание:
+При этом преобразования типов будут происходить во время выполнения, а не компиляции, поэтому этот способ небезопасен.
+Но можно определить неявное преобразование в `Option`, что позволяет выполнять такое присваивание:
 
 ```scala
 import eu.timepit.refined.api.{Refined, RefinedTypeOps}

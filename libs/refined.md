@@ -417,7 +417,7 @@ Narrow("foo": String)
 
 ## Преимущества библиотеки refined
 
-- Отлов ошибок во время компиляции
+- Отлов ошибок во время компиляции (только в Scala 2)
 - Единая декларативная валидация
 - Уточнение времени компиляции литеральных значений
 
@@ -609,6 +609,7 @@ Config(example.com,8080)
 - Статьи:
   - [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/)
   - [Refined types, what are they good for?](https://beyondthelines.net/programming/refined-types/)
+  - [Refined типы в Scala](https://habr.com/ru/post/574080)
   - [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#1) 
   - [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)
   - [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)

@@ -316,7 +316,7 @@ object Example {
   А `String` и `Name` - очевидно, разные типы.
 - а [неявные преобразования типов сильно переработаны](https://scalabook.gitflic.space/scala/abstractions/ca-implicit-conversions)
 
-Поэтому даже валидный пример `val name: Name = "Алёна"` выдаст при компиляции ошибку `Type Mismatch Error`.
+Поэтому даже валидный пример `val name: Name = "Алёна"` выдаст при компиляции ошибку: `Type Mismatch Error`.
 
 Для того чтобы позволить неявное преобразование из `String` в `Name` 
 нужно для начала определить соответствующий `given` экземпляр, [как показано в документации](https://docs.scala-lang.org/scala3/book/ca-implicit-conversions.html)
@@ -346,7 +346,7 @@ val name5: Name = "Алёна"    // Ок
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FCompileTimeExample.sc&plain=1)
 
-[Пример на Scastie](https://scastie.scala-lang.org/oqh3jUboQQqf3wKC8A5ZkA)
+[Пример на Scastie](https://scastie.scala-lang.org/xLH6aTNOSW6b8baU3hhipw)
 
 Таким образом достигается проверка соответствия уточненным типам в Scala 3 во время компиляции.
 

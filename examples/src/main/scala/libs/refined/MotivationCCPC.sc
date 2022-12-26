@@ -8,7 +8,7 @@ object Name:
 
 final case class Person(name: Name)
 
-Name("€‡™µ")
+val name: Name = Name("€‡™µ")
 
 Name.fromString("€‡™µ").map(Person.apply)
 Name.fromString("12345").map(Person.apply)

@@ -1,4 +1,7 @@
 final case class Name(value: String) extends AnyVal
+
+val name: Name = Name("€‡™µ")
+
 final case class Person(name: Name)
 
 Person(Name("€‡™µ"))

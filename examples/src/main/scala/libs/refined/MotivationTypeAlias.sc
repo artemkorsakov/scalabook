@@ -1,4 +1,7 @@
 type Name = String
+
+val name: Name = "€‡™µ"
+
 final case class Person(name: Name)
 
 Person("€‡™µ")

@@ -106,7 +106,7 @@ sealed abstract case class Name private (value: String) extends AnyVal
 
 [Пример "взлома" через copy в Scala 2 на Scastie](https://scastie.scala-lang.org/hoWcVSWBRFCI4AwtcY5mMw)
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivationCCPC.sc&plain=1)
+[Разобранный пример в Scala Worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivationCCPC.sc&plain=1)
 
 ## Введение в уточняющие типы
 
@@ -202,7 +202,7 @@ Name.unsafeFrom("Алёна")
 // val res0: Name = Алёна
 ```
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivation.sc&plain=1)
+[Разобранный пример в Scala Worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivation.sc&plain=1)
 
 
 ## Обзор библиотеки
@@ -249,7 +249,7 @@ val ageEither1: Either[String, Age] = refineV(userInput)                // Right
 val ageEither2                      = RefType.applyRef[Age](userInput)  // Right(55)
 ```
 
-[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FExamples.sc&plain=1)
+[Разобранный пример в Scala Worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FExamples.sc&plain=1)
 
 [Полный список предопределенных типов (69 типов)](refined/types)
 
@@ -268,8 +268,8 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 Только лишь в удобстве справочника предопределенных типов?
 Это, конечно, преимущество, но не сказать, чтобы очень уж заметное...
 
-1) Важным преимуществом библиотеки `refined` является возможность проверки во время компиляции.
-Следующий код на Scala 2 даже не скомпилится:
+1) Важным преимуществом библиотеки `refined` является возможность проверки типов во время компиляции.
+Следующий код на Scala 2 даже не скомпилится (кроме последнего варианта):
 
 ```scala
 import eu.timepit.refined.api.Refined

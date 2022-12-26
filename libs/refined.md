@@ -110,9 +110,7 @@ sealed abstract case class Name private (value: String) extends AnyVal
 
 ## Введение в уточняющие типы
 
-Ещё одним способом решения заданной проблемы может стать библиотека [refined][refined lib].
-
-[refined][refined lib] — это библиотека Scala для работы с уточняющими типами.
+Ещё одним способом решения заданной проблемы может стать библиотека для работы с уточняющими типами [refined][refined lib].
 
 В [теории типов](https://en.wikipedia.org/wiki/Type_theory) 
 [уточняющий тип (refinement type)](https://en.wikipedia.org/wiki/Refinement_type) — 

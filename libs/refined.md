@@ -104,7 +104,7 @@ Name.fromString("Алёна").map(_.copy("Алёна")).map(Person.apply)    // 
 sealed abstract case class Name private (value: String) extends AnyVal
 ```
 
-[Пример на Scastie](https://scastie.scala-lang.org/tptzXCgMRVy9a7TIgiijeQ)
+[Пример "взлома" через copy в Scala 2 на Scastie](https://scastie.scala-lang.org/hoWcVSWBRFCI4AwtcY5mMw)
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivationCCPC.sc&plain=1)
 

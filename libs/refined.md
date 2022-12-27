@@ -502,7 +502,7 @@ Narrow("foo": String)
 - Релизы на [Scaladex](https://index.scala-lang.org/fthomas/refined)
 
 
-## Пример взаимодействия с pureconfig
+## Пример взаимодействия с другими библиотеками
 
 Рассмотрим взаимодействие библиотеки **refined** с [**pureconfig**](https://pureconfig.github.io/). 
 На данный момент библиотека [собрана только под Scala 2](https://index.scala-lang.org/fthomas/refined/artifacts/refined-pureconfig?pre-releases=false)

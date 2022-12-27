@@ -1,15 +1,26 @@
 # Неявные преобразования в Scala 3
 
-В Scala 3 не все так просто:
+В Scala 3 
 [неявные преобразования типов довольно сильно переработаны](https://scalabook.gitflic.space/scala/abstractions/ca-implicit-conversions).
 
-Поэтому даже "валидный" пример `val name: Name = "Алёна"` при компиляции выдаст ошибку: `Type Mismatch Error`.
+Поэтому если задан уточняющий тип, расширяющий `String`:
+
+```scala
+import eu.timepit.refined.*
+import eu.timepit.refined.api.*
+import eu.timepit.refined.string.*
+
+type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
+```
+
+то даже "валидное" (с точки зрения Scala 2) неявное преобразование типов `val name: Name = "Алёна"` 
+при компиляции выдаст ошибку: `Type Mismatch Error`.
 
 Для того чтобы позволить неявное преобразование из `String` в `Name`
 нужно для начала определить соответствующий `given` экземпляр, [как показано в документации](https://docs.scala-lang.org/scala3/book/ca-implicit-conversions.html)
 
 При этом преобразования типов будут происходить во время выполнения, а не компиляции, поэтому этот способ небезопасен.
-Но можно определить неявное преобразование в `Option`, что позволяет выполнять такое присваивание:
+Но можно определить неявное преобразование в `Option[Name]`, что позволяет выполнять такое присваивание:
 
 ```scala
 import eu.timepit.refined.api.{Refined, RefinedTypeOps}

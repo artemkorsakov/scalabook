@@ -13,7 +13,7 @@ import eu.timepit.refined.string.*
 type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
 ```
 
-то даже "валидное" (с точки зрения Scala 2) неявное преобразование типов `val name: Name = "Алёна"` 
+то даже "валидное" (с точки зрения работы библиотеки refined в Scala 2) неявное преобразование типов `val name: Name = "Алёна"` 
 при компиляции выдаст ошибку: `Type Mismatch Error`.
 
 Для того чтобы позволить неявное преобразование из `String` в `Name`

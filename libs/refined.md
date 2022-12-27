@@ -539,7 +539,14 @@ import pureconfig.generic.auto._
 
 object Main {
   private case class Config(host: String, port: Int)
-
+  
+  def main(args: Array[String]): Unit = {
+    parseConfig("""{
+              host: ""
+              port: 808
+          }""")
+  }
+  
   private def parseConfig(source: String): Unit = {
     println("---")
     ConfigSource.string(source).load[Config] match {
@@ -549,13 +556,6 @@ object Main {
         println(s"Error loading configuration:\n$error")
     }
     println("---")
-  }
-
-  def main(args: Array[String]): Unit = {
-    parseConfig("""{
-              host: ""
-              port: 808
-          }""")
   }
 }
 ```

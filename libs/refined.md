@@ -504,7 +504,7 @@ Narrow("foo": String)
 
 ## Пример взаимодействия с pureconfig
 
-Рассмотрим взаимодействие библиотеки **refined** с **pureconfig**. 
+Рассмотрим взаимодействие библиотеки **refined** с [**pureconfig**](https://pureconfig.github.io/). 
 На данный момент библиотека [собрана только под Scala 2](https://index.scala-lang.org/fthomas/refined/artifacts/refined-pureconfig?pre-releases=false)
 , поэтому будем рассматривать код на этой версии Scala.
 

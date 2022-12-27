@@ -592,6 +592,17 @@ object Main {
   private type ServerPort = Int Refined Greater[1024]
 
   private case class Config(host: NonEmptyString, port: ServerPort)
+  
+  def main(args: Array[String]): Unit = {
+    parseConfig("""{
+              host: ""
+              port: 808
+          }""")
+    parseConfig("""{
+              host: "example.com"
+              port: 8080
+          }""")
+  }
 
   private def parseConfig(source: String): Unit = {
     println("---")
@@ -602,17 +613,6 @@ object Main {
         println(s"Error loading configuration:\n$error")
     }
     println("---")
-  }
-
-  def main(args: Array[String]): Unit = {
-    parseConfig("""{
-              host: ""
-              port: 808
-          }""")
-    parseConfig("""{
-              host: "example.com"
-              port: 8080
-          }""")
   }
 }
 ```

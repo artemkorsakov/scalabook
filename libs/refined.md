@@ -110,7 +110,7 @@ sealed abstract case class Name private (value: String) extends AnyVal
 
 ## Введение в уточняющие типы
 
-Ещё одним способом решения заданной проблемы может стать библиотека для работы с уточняющими типами [refined][refined lib].
+Ещё одним способом решения заданной проблемы может стать библиотека для работы с уточняющими типами [**refined**][refined lib].
 
 В [теории типов](https://en.wikipedia.org/wiki/Type_theory) 
 [уточняющий тип (refinement type)](https://en.wikipedia.org/wiki/Refinement_type) — 
@@ -125,7 +125,7 @@ sealed abstract case class Name private (value: String) extends AnyVal
 Концепция уточняющих типов была впервые введена Фриманом и Пфеннингом в работе 1991 года ["Уточняющие типы для ML"](https://www.cs.cmu.edu/~fp/papers/pldi91.pdf), 
 в которой представлена система типов для языка Standard ML.
 
-Библиотека refined начиналась как переработка [библиотеки на Haskell Никиты Волкова](http://nikita-volkov.github.io/refined/). 
+Библиотека **refined** начиналась как переработка [библиотеки на Haskell Никиты Волкова](http://nikita-volkov.github.io/refined/). 
 
 Самая идея выражения ограничений на уровне типов в виде библиотеки Scala была впервые исследована Flavio W. Brasil
 в библиотеке [bond](https://github.com/fwbrasil/bond).
@@ -143,7 +143,7 @@ sealed abstract case class Name private (value: String) extends AnyVal
 
 ## Знакомство с библиотекой
 
-Давайте рассмотрим решение исходной задачки с помощью `refined`:
+Давайте рассмотрим решение исходной задачки с помощью **refined**:
 
 ```scala
 import eu.timepit.refined.*
@@ -154,7 +154,7 @@ type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
 final case class Person(name: Name)
 ```
 
-В библиотеке `refined` есть класс `RefinedTypeOps`, который определяет метод `upapply`, позволяющий
+В библиотеке **refined** есть класс `RefinedTypeOps`, который определяет метод `upapply`, позволяющий
 в сопутствующем объекте определить создание `Person` с валидными значениями, например так:
 
 ```scala
@@ -262,14 +262,14 @@ val ageEither2                      = RefType.applyRef[Age](userInput)  // Right
 у нас есть два способа определения уточненного типа:
 
 - "стандартный" ---
-  `sealed abstract case class Name private (value: String) extends AnyVal`
-- через библиотеку `refined` ---
+  `case class Name private (value: String) extends AnyVal`
+- через библиотеку **refined** ---
   `type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]`
 
 А в чем принципиальная разница между этими двумя способами? 
 Только лишь в удобстве справочника предопределенных типов?
 
-1) Важным преимуществом библиотеки `refined` является возможность проверки типов во время компиляции.
+1) Важным преимуществом библиотеки **refined** является возможность проверки типов во время компиляции.
 Следующий код на Scala 2 даже не скомпилится:
 
 ```scala
@@ -504,7 +504,7 @@ Narrow("foo": String)
 
 ## Пример взаимодействия с pureconfig
 
-Рассмотрим взаимодействие библиотеки refined с pureconfig. 
+Рассмотрим взаимодействие библиотеки **refined** с **pureconfig**. 
 На данный момент библиотека [собрана только под Scala 2](https://index.scala-lang.org/fthomas/refined/artifacts/refined-pureconfig?pre-releases=false)
 , поэтому будем рассматривать код на этой версии Scala.
 

@@ -202,6 +202,8 @@ Name.unsafeFrom("Алёна")
 // val res0: Name = Алёна
 ```
 
+[Либо использовать неявные преобразования типов.][conversion]
+
 [Разобранный пример в Scala Worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivation.sc&plain=1)
 
 
@@ -292,7 +294,7 @@ object Example {
 
 [Разобранный пример на Scastie](https://scastie.scala-lang.org/oqh3jUboQQqf3wKC8A5ZkA)
 
-[В Scala 3 не все так просто.](refined/conversionInScala3)
+[В Scala 3 не все так просто.][conversion]
 
 Проверка во время компиляции открывает довольно большие возможности: 
 как минимум, значительную часть проверок можно переложить с модульных тестов на компилятор.
@@ -681,3 +683,4 @@ Config(example.com,8080)
 
 
 [refined lib]: https://github.com/fthomas/refined
+[conversion]: refined/conversionInScala3

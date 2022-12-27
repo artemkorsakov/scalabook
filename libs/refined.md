@@ -371,7 +371,7 @@ refineV[NonEmpty]("value": Packed) // Right(value)
 refineV[NonEmpty](42: Packed)      // Right(42)
 ```
 
-[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FPackedExamples.sc&plain=1)
+[Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FPackedExamples.sc&plain=1)
 
 
 ## Уточнение уточненного типа
@@ -417,7 +417,7 @@ PositiveDivisibleBySixInt.from(4)   // Left(Right predicate of (((4 > 0) && (4 %
 PositiveDivisibleBySixInt.from(6)   // Right(6)
 ```
 
-[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefineRefinementType.sc&plain=1)
+[Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefineRefinementType.sc&plain=1)
 
 
 ## Литеральные типы
@@ -459,9 +459,9 @@ Narrow("foo": String)
 //        Required: Singleton
 ```
 
-[Пример на Scastie](https://scastie.scala-lang.org/JdqGqYyQQneu4N8vfku1Kw)
+[Разобранный пример на Scastie](https://scastie.scala-lang.org/JdqGqYyQQneu4N8vfku1Kw)
 
-[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FLiteralTypes.sc&plain=1)
+[Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FLiteralTypes.sc&plain=1)
 
 
 ## Промежуточные итоги
@@ -569,7 +569,7 @@ Config(,808)
 ---
 ```
 
-[Пример на Scastie](https://scastie.scala-lang.org/vq79scDfRyOA4GoDh1MFnw)
+[Разобранный пример на Scastie](https://scastie.scala-lang.org/vq79scDfRyOA4GoDh1MFnw)
 
 Безусловно, ошибка была бы найдена при развертывании на стенде, например, при получении ошибки подключения.
 Но сколько времени ушло бы на поиск опечатки в хосте или порту?
@@ -633,7 +633,7 @@ Config(example.com,8080)
 ---
 ```
 
-[Пример на Scastie](https://scastie.scala-lang.org/Lr7fwKLJT7GNZ7TApANjgg)
+[Разобранный пример на Scastie](https://scastie.scala-lang.org/Lr7fwKLJT7GNZ7TApANjgg)
 
 В лице уточняющих типов мы можем более четко формулировать, какие значения считаются валидными в конфигах
 и отсеивать явные опечатки.

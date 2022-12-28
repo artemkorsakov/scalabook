@@ -269,6 +269,7 @@
 - [Scala библиотеки](libs/index.md)
   - [Refinement types](libs/refined.md)
     - [Type list](libs/refined/types.md) 
+    - [Conversion in Scala 3](libs/refined/conversionInScala3.md)
   - [Cats effect](libs/cats-effect.md)
     - [Копирование файлов](libs/cats-effect/copy-files.md) 
     - [Производитель-потребитель](libs/cats-effect/producer-consumer-problem.md) 

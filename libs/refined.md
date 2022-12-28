@@ -321,7 +321,7 @@ Name.unsafeFrom("Алёна")
 
 И дальше по коду его можно использовать в качестве именно типа, который в данном случае расширяет `String`.
 
-Есть очень хорошая статья по поводу [важности более четкой системы типов][thetypesystem].
+Есть очень хорошая статья по поводу [важности системы типов][thetypesystem].
 
 ## Уточнение произвольного типа
 
@@ -669,6 +669,7 @@ Config(example.com,8080)
   - [Strings are Evil: Methods to hide the use of primitive types - Noel Welsh](https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types)
 - Статьи:
   - [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/)
+  - [On Eliminating Error in Distributed Software Systems][thetypesystem]
   - [Refined types, what are they good for?](https://beyondthelines.net/programming/refined-types/)
   - [Refined типы в Scala](https://habr.com/ru/post/574080)
   - [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#1) 
@@ -679,5 +680,5 @@ Config(example.com,8080)
 
 [refined lib]: https://github.com/fthomas/refined
 [conversion]: refined/conversionInScala3
-[thetypesystem]: https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems/#thetypesystem
+[thetypesystem]: https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems
 [tests]: https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md

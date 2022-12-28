@@ -298,7 +298,7 @@ object Example {
 Проверка во время компиляции открывает довольно обширные возможности: 
 как минимум, значительную часть проверок можно переложить с модульных тестов на компилятор.
 Что в свою очередь может сэкономить общее время разработки.
-[По этому поводу написана отличная статья](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md).
+[По этому поводу написана отличная статья][tests].
 
 2) Ещё одним значительным преимуществом является то, что "типы врать не могут".
 
@@ -321,6 +321,7 @@ Name.unsafeFrom("Алёна")
 
 И дальше по коду его можно использовать в качестве именно типа, который в данном случае расширяет `String`.
 
+Есть очень хорошая статья по поводу [важности более четкой системы типов][thetypesystem].
 
 ## Уточнение произвольного типа
 
@@ -651,9 +652,6 @@ Config(example.com,8080)
 если ещё и расскажет компилятору, что конкретно позволительно, а что - нет, 
 то багов станет чуточку меньше.
 
-И судя по списку литературы, статьям и докладам на конференциях, 
-уточненные типы - важная часть современного процесса разработки на Scala.
-
 
 ---
 
@@ -675,9 +673,11 @@ Config(example.com,8080)
   - [Refined типы в Scala](https://habr.com/ru/post/574080)
   - [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#1) 
   - [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)
-  - [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)
+  - [Tests - can we have too many?][tests]
   - [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)
 
 
 [refined lib]: https://github.com/fthomas/refined
 [conversion]: refined/conversionInScala3
+[thetypesystem]: https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems/#thetypesystem
+[tests]: https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md

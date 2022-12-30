@@ -785,6 +785,7 @@ Config(example.com,8080)
   - [Tests - can we have too many?][tests]
   - [Type safety with refined](https://blog.michalp.net/posts/scala/refined/)
   - [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)
+  - [Wtf is Refined?](https://medium.com/@Methrat0n/wtf-is-refined-5008eb233194)
 
 
 [refined lib]: https://github.com/fthomas/refined

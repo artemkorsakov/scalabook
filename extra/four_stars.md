@@ -6,10 +6,10 @@
 
 ### Книги и документация
 
-| Название                                                                                                                                                                                                       |  Версия  | Сложность                        | Язык | Дата публ.  | Комментарий |
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|----------------------------------|:----:|-------------|-------------|
-| [Functional Programming in Scala, Second Edition (The Red book)](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition) | Scala 3  | &#10031;&#10031;&#10031;&#10031; |  En  | январь 2023 |             |
-| [Cats effect - tutorial](https://typelevel.org/cats-effect/docs/tutorial)                                                                                                                                      | Scala 3  | &#10031;&#10031;&#10031;&#10031; |  En  |             | Cats effect |
+| Название                                                                                                                                                                                                       |  Версия  | Сложность                        | Язык | Дата публ. | Комментарий |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------:|----------------------------------|:----:|------------|-------------|
+| [Functional Programming in Scala, Second Edition (The Red book)](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition) | Scala 3  | &#10031;&#10031;&#10031;&#10031; |  En  | янв. 2023  |             |
+| [Cats effect - tutorial](https://typelevel.org/cats-effect/docs/tutorial)                                                                                                                                      | Scala 3  | &#10031;&#10031;&#10031;&#10031; |  En  |            | Cats effect |
 
 ### Видео
 

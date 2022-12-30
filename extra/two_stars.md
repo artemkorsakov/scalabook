@@ -6,12 +6,12 @@
 
 ### Книги и документация
 
-| Название                                                                                                                                                  | Версия  | Сложность         | Язык | Дата публ.  | Комментарий |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|-------------------|:----:|-------------|-------------|
-| [Programming Scala, 3rd Edition by Dean Wampler](https://deanwampler.github.io/books/programmingscala.html)                                               | Scala 3 | &#10031;&#10031;  |  En  | июнь 2021   |             |
-| [Refinement types for Scala](https://github.com/fthomas/refined)                                                                                          | Scala 3 | &#10031;&#10031;  |  En  |             | Refined     |
-| [Scala & Design Patterns: Exploring Language Expressivity by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf) | Scala 2 | &#10031;&#10031;  |  En  | март 2009   |             |
-| [Scala with Cats](https://www.scalawithcats.com/)                                                                                                         | Scala 2 | &#10031;&#10031;  |  En  | апрель 2020 | Cats        |
+| Название                                                                                                                                                  | Версия  | Сложность         | Язык | Дата публ. | Комментарий |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|-------------------|:----:|------------|-------------|
+| [Programming Scala, 3rd Edition by Dean Wampler](https://deanwampler.github.io/books/programmingscala.html)                                               | Scala 3 | &#10031;&#10031;  |  En  | июнь 2021  |             |
+| [Refinement types for Scala](https://github.com/fthomas/refined)                                                                                          | Scala 3 | &#10031;&#10031;  |  En  |            | Refined     |
+| [Scala & Design Patterns: Exploring Language Expressivity by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf) | Scala 2 | &#10031;&#10031;  |  En  | март 2009  |             |
+| [Scala with Cats](https://www.scalawithcats.com/)                                                                                                         | Scala 2 | &#10031;&#10031;  |  En  | апр. 2020  | Cats        |
 
 ### Видео
 
@@ -39,33 +39,33 @@
 
 ### Упражнения
 
-| Название                                                                                                                                  |  Версия  | Сложность         | Язык | Дата публ.  | Комментарий |
-|-------------------------------------------------------------------------------------------------------------------------------------------|:--------:|-------------------|:----:|-------------|-------------|
-| [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)                                                | Scala 2  | &#10031;&#10031;  |  En  | 2017        |             |
-| [Scala puzzlers](https://scalapuzzlers.com/index.html), на основе упражнений [написана книга](https://www.artima.com/shop/scala_puzzlers) | Scala 2  | &#10031;&#10031;  |  En  | ноябрь 2014 |             |
+| Название                                                                                                                                  |  Версия  | Сложность         | Язык | Дата публ. | Комментарий |
+|-------------------------------------------------------------------------------------------------------------------------------------------|:--------:|-------------------|:----:|------------|-------------|
+| [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)                                                | Scala 2  | &#10031;&#10031;  |  En  | 2017       |             |
+| [Scala puzzlers](https://scalapuzzlers.com/index.html), на основе упражнений [написана книга](https://www.artima.com/shop/scala_puzzlers) | Scala 2  | &#10031;&#10031;  |  En  | нояб. 2014 |             |
 
 ### Статьи
 
-| Название                                                                                                                                                                                 | Версия  | Сложность        | Язык | Дата публ.    | Комментарий |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|------------------|:----:|---------------|-------------|
-| [Cats Effect 3 - Introduction to Fibers](https://blog.rockthejvm.com/cats-effect-fibers/)                                                                                                | Scala 3 | &#10031;&#10031; |  En  | апрель 2021   | Cats effect |
-| [Time traveling in tests with Cats Effect](https://blog.softwaremill.com/time-traveling-in-tests-with-cats-effect-b22084f6a89)                                                           | Scala 3 | &#10031;&#10031; |  En  | май 2020      | Cats effect |
-| [Type Classes](https://typelevel.org/cats/typeclasses.html)                                                                                                                              | Scala 3 | &#10031;&#10031; |  En  |               |             |
-| [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/)                                                                                                             | Scala 3 | &#10031;&#10031; |  En  | июль 2020     | Cats effect |
-| [Refined типы в Scala](https://habr.com/ru/post/574080)                                                                                                                                  | Scala 2 | &#10031;&#10031; |  Ru  | август 2021   | Refined     |
-| [A simple trick to improve type safety of your Scala code](https://blog.softwaremill.com/a-simple-trick-to-improve-type-safety-of-your-scala-code-ba80559ca092)                          | Scala 2 | &#10031;&#10031; |  En  | апрель 2020   | Refined     |
-| [Higher-kinded types: the difference between giving up, and moving forward](https://typelevel.org/blog/2016/08/21/hkts-moving-forward.html)                                              | Scala 2 | &#10031;&#10031; |  En  | август 2016   |             |
-| [How we used Refined to improve type safety and error reporting in Scala](https://engineering.contentsquare.com/2021/scala-refined-types/)                                               | Scala 2 | &#10031;&#10031; |  En  | апрель 2021   | Refined     |
-| [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/) | Scala 2 | &#10031;&#10031; |  En  | август 2015   | Refined     |
-| [On Eliminating Error in Distributed Software Systems](https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems)                                                 | Scala 2 | &#10031;&#10031; |  En  | сентябрь 2019 | Refined     |
-| [Reduce the domain of your types with Refined](https://medium.com/@Methrat0n/reduce-the-domain-of-your-types-with-refined-63e8e2840b15)                                                  | Scala 2 | &#10031;&#10031; |  En  | январь 2019   | Refined     |
-| [Refined types, what are they good for?](https://beyondthelines.net/programming/refined-types/)                                                                                          | Scala 2 | &#10031;&#10031; |  En  | октябрь 2017  | Refined     |
-| [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#117)                                                                                                 | Scala 2 | &#10031;&#10031; |  En  | апрель 2018   | Refined     |
-| [Refined Types in Scala: the Good, the Bad and the Ugly](https://medium.com/swlh/refined-types-the-good-the-bad-and-the-ugly-ee971e5d9137)                                               | Scala 2 | &#10031;&#10031; |  En  | май 2020      | Refined     |
-| [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)                                                       | Scala 2 | &#10031;&#10031; |  En  | март 2017     | Refined     |
-| [Safe, Expressive Code with Refinement Types](https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/)                                                                    | Scala 2 | &#10031;&#10031; |  En  | сентябрь 2020 | Refined     |
-| [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)                                                                    | Scala 2 | &#10031;&#10031; |  En  | апрель 2018   | Refined     |
-| [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)                                            | Scala 2 | &#10031;&#10031; |  En  | февраль 2019  | Refined     |
+| Название                                                                                                                                                                                 | Версия  | Сложность        | Язык | Дата публ. | Комментарий |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|------------------|:----:|------------|-------------|
+| [Cats Effect 3 - Introduction to Fibers](https://blog.rockthejvm.com/cats-effect-fibers/)                                                                                                | Scala 3 | &#10031;&#10031; |  En  | апр. 2021  | Cats effect |
+| [Time traveling in tests with Cats Effect](https://blog.softwaremill.com/time-traveling-in-tests-with-cats-effect-b22084f6a89)                                                           | Scala 3 | &#10031;&#10031; |  En  | май 2020   | Cats effect |
+| [Type Classes](https://typelevel.org/cats/typeclasses.html)                                                                                                                              | Scala 3 | &#10031;&#10031; |  En  |            |             |
+| [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/)                                                                                                             | Scala 3 | &#10031;&#10031; |  En  | июль 2020  | Cats effect |
+| [Refined типы в Scala](https://habr.com/ru/post/574080)                                                                                                                                  | Scala 2 | &#10031;&#10031; |  Ru  | авг. 2021  | Refined     |
+| [A simple trick to improve type safety of your Scala code](https://blog.softwaremill.com/a-simple-trick-to-improve-type-safety-of-your-scala-code-ba80559ca092)                          | Scala 2 | &#10031;&#10031; |  En  | апр. 2020  | Refined     |
+| [Higher-kinded types: the difference between giving up, and moving forward](https://typelevel.org/blog/2016/08/21/hkts-moving-forward.html)                                              | Scala 2 | &#10031;&#10031; |  En  | авг. 2016  |             |
+| [How we used Refined to improve type safety and error reporting in Scala](https://engineering.contentsquare.com/2021/scala-refined-types/)                                               | Scala 2 | &#10031;&#10031; |  En  | апр. 2021  | Refined     |
+| [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/) | Scala 2 | &#10031;&#10031; |  En  | авг. 2015  | Refined     |
+| [On Eliminating Error in Distributed Software Systems](https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems)                                                 | Scala 2 | &#10031;&#10031; |  En  | сен. 2019  | Refined     |
+| [Reduce the domain of your types with Refined](https://medium.com/@Methrat0n/reduce-the-domain-of-your-types-with-refined-63e8e2840b15)                                                  | Scala 2 | &#10031;&#10031; |  En  | янв. 2019  | Refined     |
+| [Refined types, what are they good for?](https://beyondthelines.net/programming/refined-types/)                                                                                          | Scala 2 | &#10031;&#10031; |  En  | окт. 2017  | Refined     |
+| [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#117)                                                                                                 | Scala 2 | &#10031;&#10031; |  En  | апр. 2018  | Refined     |
+| [Refined Types in Scala: the Good, the Bad and the Ugly](https://medium.com/swlh/refined-types-the-good-the-bad-and-the-ugly-ee971e5d9137)                                               | Scala 2 | &#10031;&#10031; |  En  | май 2020   | Refined     |
+| [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)                                                       | Scala 2 | &#10031;&#10031; |  En  | март 2017  | Refined     |
+| [Safe, Expressive Code with Refinement Types](https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/)                                                                    | Scala 2 | &#10031;&#10031; |  En  | сен. 2020  | Refined     |
+| [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)                                                                    | Scala 2 | &#10031;&#10031; |  En  | апр. 2018  | Refined     |
+| [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)                                            | Scala 2 | &#10031;&#10031; |  En  | фев. 2019  | Refined     |
 
 --- 
 

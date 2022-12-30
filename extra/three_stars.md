@@ -28,9 +28,10 @@
 
 ### Статьи
 
-| Название                                                                                                       | Версия  | Сложность        | Язык | Дата публ. | Комментарий |
-|----------------------------------------------------------------------------------------------------------------|:-------:|------------------|:----:|------------|-------------|
-| [Parse, don’t validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/#footnote-ref-1-1)  | Haskell | &#10031;&#10031; |  En  | нояб. 2019 | Refined     |
+| Название                                                                                                                                 | Версия  | Сложность        | Язык | Дата публ. | Комментарий |
+|------------------------------------------------------------------------------------------------------------------------------------------|:-------:|------------------|:----:|------------|-------------|
+| [On Eliminating Error in Distributed Software Systems](https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems) | Scala 2 | &#10031;&#10031; |  En  | сен. 2019  | Refined     |
+| [Parse, don’t validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/#footnote-ref-1-1)                            | Haskell | &#10031;&#10031; |  En  | нояб. 2019 | Refined     |
 
 --- 
 

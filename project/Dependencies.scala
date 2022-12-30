@@ -17,7 +17,8 @@ object Dependencies {
   }
 
   private val refinedStack: Seq[ModuleID] = Seq(
-    "eu.timepit" %% "refined" % Version.refined
+    "eu.timepit" %% "refined"      % Version.refined,
+    "eu.timepit" %% "refined-cats" % Version.refined
   )
 
   private val http4sStack: Seq[ModuleID] = Seq(

@@ -740,7 +740,7 @@ Config(example.com,8080)
 
 Уточнение во время синтаксического анализа не только гарантирует, что мы не забудем о невалидных данных, 
 но также дает более точные, ограниченные типы для использования во всем нашем коде. 
-По этой идее, можно порекомендовать [вот эту статью](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/).
+Эта идея хорошо разобрана [в следующей статье](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/).
 
 Однако необходимо помнить, что _больше не всегда лучше_, когда дело доходит до набора текста. 
 Иногда лучше оставить универсальный тип или обобщить его до чего-то более простого, 
@@ -771,6 +771,7 @@ Config(example.com,8080)
   - [Strings are Evil: Methods to hide the use of primitive types - Noel Welsh](https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types)
 - Статьи:
   - [A simple trick to improve type safety of your Scala code](https://blog.softwaremill.com/a-simple-trick-to-improve-type-safety-of-your-scala-code-ba80559ca092)
+  - [How we used Refined to improve type safety and error reporting in Scala](https://engineering.contentsquare.com/2021/scala-refined-types/)
   - [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/)
   - [On Eliminating Error in Distributed Software Systems][thetypesystem]
   - [Refined types, what are they good for?](https://beyondthelines.net/programming/refined-types/)

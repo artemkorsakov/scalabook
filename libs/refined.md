@@ -783,6 +783,7 @@ Config(example.com,8080)
   - [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)
   - [Safe, Expressive Code with Refinement Types](https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/)
   - [Tests - can we have too many?][tests]
+  - [Type safety with refined](https://blog.michalp.net/posts/scala/refined/)
   - [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)
 
 

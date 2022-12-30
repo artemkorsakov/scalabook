@@ -58,7 +58,6 @@
 | [How we used Refined to improve type safety and error reporting in Scala](https://engineering.contentsquare.com/2021/scala-refined-types/)                                               | Scala 2 | &#10031;&#10031; |  En  | апр. 2021  | Refined     |
 | [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/) | Scala 2 | &#10031;&#10031; |  En  | авг. 2015  | Refined     |
 | [On Eliminating Error in Distributed Software Systems](https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems)                                                 | Scala 2 | &#10031;&#10031; |  En  | сен. 2019  | Refined     |
-| [Parse, don’t validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/#footnote-ref-1-1)                                                                            | Haskell | &#10031;&#10031; |  En  | нояб. 2019 | Refined     |
 | [Reduce the domain of your types with Refined](https://medium.com/@Methrat0n/reduce-the-domain-of-your-types-with-refined-63e8e2840b15)                                                  | Scala 2 | &#10031;&#10031; |  En  | янв. 2019  | Refined     |
 | [Refined types, what are they good for?](https://beyondthelines.net/programming/refined-types/)                                                                                          | Scala 2 | &#10031;&#10031; |  En  | окт. 2017  | Refined     |
 | [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#117)                                                                                                 | Scala 2 | &#10031;&#10031; |  En  | апр. 2018  | Refined     |
@@ -67,6 +66,7 @@
 | [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)                                                       | Scala 2 | &#10031;&#10031; |  En  | март 2017  | Refined     |
 | [Safe, Expressive Code with Refinement Types](https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/)                                                                    | Scala 2 | &#10031;&#10031; |  En  | сен. 2020  | Refined     |
 | [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)                                                                    | Scala 2 | &#10031;&#10031; |  En  | апр. 2018  | Refined     |
+| [Type safety with refined](https://blog.michalp.net/posts/scala/refined/)                                                                                                                | Scala 2 | &#10031;&#10031; |  En  | июль 2022  | Refined     |
 | [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)                                            | Scala 2 | &#10031;&#10031; |  En  | фев. 2019  | Refined     |
 
 --- 

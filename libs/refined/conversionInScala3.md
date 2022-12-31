@@ -41,7 +41,7 @@ val name4: Option[Name] = "алёна"   // None
 val name5: Option[Name] = "Алёна"   // Some(Алёна)
 ```
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FCompileTimeExample.sc&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FConversionExample.sc&plain=1)
 
 Таким образом проверка соответствия уточненным типам в Scala 3 во время компиляции
 пока ещё не реализована, но это лишь вопрос времени,

@@ -28,6 +28,7 @@
 | [Refinement Types - Tipagem ainda mais forte para Scala - Marcelo Gomes](https://www.youtube.com/watch?v=Zq4rkWs_ybA)                                                    | Scala 2 | &#10031;&#10031;  |  En  | 2018       | Refined     |
 | [Security with Scala: Refined Types and Object Capabilities - Will Sargent](https://slideslive.com/38908776/security-with-scala-refined-types-and-object-capabilities)   | Scala 2 | &#10031;&#10031;  |  En  | 2018       | Refined     |
 | [Strings are Evil: Methods to hide the use of primitive types - Noel Welsh](https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types) | Scala 2 | &#10031;&#10031;  |  En  | 2018       | Refined     |
+| [Why types matter](https://www.youtube.com/watch?v=n1Y2V4zCZdQ)                                                                                                          | Scala 2 | &#10031;&#10031;  |  En  | 2020       | Refined     |
 
 ### Курсы
 

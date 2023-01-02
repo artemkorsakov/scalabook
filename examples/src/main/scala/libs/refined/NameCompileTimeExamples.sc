@@ -6,10 +6,11 @@ import scala.language.implicitConversions
 import scala.quoted.{Expr, Quotes}
 import scala.util.matching.Regex
 
+val namePattern: "[А-ЯЁ][а-яё]+" = "[А-ЯЁ][а-яё]+"
+
 def inspectNameCode(x: Expr[String])(using Quotes): Expr[String] =
   import scala.quoted.quotes.reflect.report
-  val pattern: Regex = "[А-ЯЁ][а-яё]+".r
-  if !pattern.matches(x.valueOrAbort) then report.errorAndAbort("Invalid name")
+  if !namePattern.r.matches(x.valueOrAbort) then report.errorAndAbort("Invalid name")
   x
 
 inline def inspectName(inline str: String): String =
@@ -22,7 +23,7 @@ inspectName("Алёна18")
 inspectName("алёна")
 inspectName("Алёна")
 
-type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
+type Name = String Refined MatchesRegex[namePattern.type]
 
 given Conversion[String, Name] = RefinedTypeOps[Name, String].unsafeFrom(_)
 

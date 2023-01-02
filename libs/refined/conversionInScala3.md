@@ -95,9 +95,9 @@ import scala.util.matching.Regex
 val namePattern: "[А-ЯЁ][а-яё]+" = "[А-ЯЁ][а-яё]+"
 
 def inspectNameCode(x: Expr[String])(using Quotes): Expr[String] =
-import scala.quoted.quotes.reflect.report
-if !namePattern.r.matches(x.valueOrAbort) then report.errorAndAbort("Invalid name")
-x
+  import scala.quoted.quotes.reflect.report
+  if !namePattern.r.matches(x.valueOrAbort) then report.errorAndAbort("Invalid name")
+  x
 
 inline def inspectName(inline str: String): String =
   ${ inspectNameCode('str) }

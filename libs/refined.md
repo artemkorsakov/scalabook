@@ -251,7 +251,7 @@ val ageEither1: Either[String, Age] = refineV(userInput)                // Right
 val ageEither2                      = RefType.applyRef[Age](userInput)  // Right(55)
 ```
 
-[Разобранный пример в Scala Worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FExamples.sc&plain=1)
+[Разобранный пример в Scala Worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefinedExamples.sc&plain=1)
 
 [Полный список предопределенных типов (69 типов)](refined/types)
 
@@ -428,7 +428,7 @@ PositiveDivisibleBySixInt.from(4)   // Left(Right predicate of (((4 > 0) && (4 %
 PositiveDivisibleBySixInt.from(6)   // Right(6)
 ```
 
-[Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefineRefinementType.sc&plain=1)
+[Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefineRefinementTypeExamples.sc&plain=1)
 
 
 ## Литеральные типы
@@ -585,7 +585,7 @@ Person.refine("Андрей", 50, UUID.randomUUID().toString)
 то всегда будут выполняться все этапы "уточнения", 
 и в случае неудачи некоторых из них их ошибки будут накапливаться в `NonEmptyChain`.
 
-[Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefinedWithCats.sc&plain=1)
+[Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefinedWithCatsExamples.sc&plain=1)
 
 
 ## Пример взаимодействия с другими библиотеками

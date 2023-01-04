@@ -41,7 +41,8 @@ class FoldableSuite extends ScalaCheckSuite, FoldableLaw:
 
   property("tuple3Foldable должен 'сворачиваться'") {
     forAll { (x: Int, y: Int, z: Int) =>
-      val actual = Foldable[[X] =>> (X, X, X)].foldRight[Int]((x, y, z))(100)(_ + _)
+      val actual =
+        Foldable[[X] =>> (X, X, X)].foldRight[Int]((x, y, z))(100)(_ + _)
       assertEquals(actual, x + y + z + 100)
       checkFoldableLaw[[X] =>> (X, X, X), Int]((x, x, x))
     }
@@ -52,7 +53,10 @@ class FoldableSuite extends ScalaCheckSuite, FoldableLaw:
       val expected = either match
         case Right(a) => a + 100
         case _        => 100
-      assertEquals(Foldable[[X] =>> Either[String, X]].foldRight(either)(100)(_ + _), expected)
+      assertEquals(
+        Foldable[[X] =>> Either[String, X]].foldRight(either)(100)(_ + _),
+        expected
+      )
       checkFoldableLaw[[X] =>> Either[String, X], Int](either)
     }
   }

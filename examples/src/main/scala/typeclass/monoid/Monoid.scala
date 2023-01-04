@@ -24,11 +24,18 @@ object Monoid:
     val empty                                    = List.empty[T]
     def combine(x: List[T], y: List[T]): List[T] = x ++ y
 
-  given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): Monoid[(A, B)] with
+  given nestedMonoidInstance[A, B](using
+      aMonoid: Monoid[A],
+      bMonoid: Monoid[B]
+  ): Monoid[(A, B)] with
     lazy val empty: (A, B)                    = (aMonoid.empty, bMonoid.empty)
-    def combine(x: (A, B), y: (A, B)): (A, B) = (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
+    def combine(x: (A, B), y: (A, B)): (A, B) =
+      (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
 
-  given writerMonoid[W, A](using monoidW: Monoid[W], monoidA: Monoid[A]): Monoid[Writer[W, A]] with
+  given writerMonoid[W, A](using
+      monoidW: Monoid[W],
+      monoidA: Monoid[A]
+  ): Monoid[Writer[W, A]] with
     val empty: Writer[W, A] = Writer[W, A](() => (monoidW.empty, monoidA.empty))
 
     def combine(x: Writer[W, A], y: Writer[W, A]): Writer[W, A] =

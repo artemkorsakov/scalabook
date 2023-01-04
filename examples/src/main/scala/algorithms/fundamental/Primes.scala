@@ -32,7 +32,10 @@ object Primes:
   @tailrec
   def isProbablyPrime(p: Long, max_test: Int): Boolean =
     (max_test <= 0) || {
-      (BigInt(Random.nextLong(p)).modPow(p - 1, p) == 1) && isProbablyPrime(p, max_test - 1)
+      (BigInt(Random.nextLong(p)).modPow(p - 1, p) == 1) && isProbablyPrime(
+        p,
+        max_test - 1
+      )
     }
 
   def sieveOfEratosthenes(n: Int): Array[Boolean] =
@@ -56,7 +59,8 @@ object Primes:
     while number % 2 == 0 do
       powOfTwo += 1
       number = number >> 1
-    var map = if powOfTwo > 0 then Map(2L -> powOfTwo) else Map.empty[Long, Long]
+    var map =
+      if powOfTwo > 0 then Map(2L -> powOfTwo) else Map.empty[Long, Long]
 
     // Ищем нечетные множители
     var i = 3L

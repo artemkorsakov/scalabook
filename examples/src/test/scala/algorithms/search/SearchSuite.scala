@@ -4,7 +4,7 @@ import algorithms.search.Search.{kmpSubstringSearch, naiveSubstringSearch}
 import munit.FunSuite
 
 class SearchSuite extends FunSuite:
-  private val text = "This is a functional implementation."
+  private val text   = "This is a functional implementation."
   private val search = "functional"
 
   test("naiveSubstringSearch") {

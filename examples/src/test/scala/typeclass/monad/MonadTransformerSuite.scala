@@ -9,7 +9,8 @@ class MonadTransformerSuite extends ScalaCheckSuite:
   property("idtMonadTransformer должен прокидывать Id внутрь монады") {
     forAll { (x: Int) =>
       val monadA                = IO(() => x)
-      val monadIdA: IO[Id[Int]] = MonadTransformer[IdT, IO].lift[Int](monadA).run
+      val monadIdA: IO[Id[Int]] =
+        MonadTransformer[IdT, IO].lift[Int](monadA).run
       assertEquals(monadIdA.run(), Id(x))
     }
   }
@@ -17,7 +18,8 @@ class MonadTransformerSuite extends ScalaCheckSuite:
   property("optionTMonadTransformer должен прокидывать Option внутрь монады") {
     forAll { (x: Int) =>
       val monadA                    = IO(() => x)
-      val monadIdA: IO[Option[Int]] = MonadTransformer[OptionT, IO].lift[Int](monadA).run
+      val monadIdA: IO[Option[Int]] =
+        MonadTransformer[OptionT, IO].lift[Int](monadA).run
       assertEquals(monadIdA.run(), Some(x))
     }
   }
@@ -26,7 +28,9 @@ class MonadTransformerSuite extends ScalaCheckSuite:
     forAll { (x: Int) =>
       val monadA                      = IO(() => x)
       val monadIdA: IO[(String, Int)] =
-        MonadTransformer[[Y[_], X] =>> WriterT[Y, String, X], IO].lift[Int](monadA).run()
+        MonadTransformer[[Y[_], X] =>> WriterT[Y, String, X], IO]
+          .lift[Int](monadA)
+          .run()
       assertEquals(monadIdA.run(), ("", x))
     }
   }
@@ -35,7 +39,9 @@ class MonadTransformerSuite extends ScalaCheckSuite:
     forAll { (x: Int) =>
       val monadA                      = IO(() => x)
       val monadIdA: IO[(String, Int)] =
-        MonadTransformer[[Y[_], X] =>> StateT[Y, String, X], IO].lift[Int](monadA).run("state")
+        MonadTransformer[[Y[_], X] =>> StateT[Y, String, X], IO]
+          .lift[Int](monadA)
+          .run("state")
       assertEquals(monadIdA.run(), ("state", x))
     }
   }

@@ -16,22 +16,34 @@ class DivisibleSuite extends ScalaCheckSuite:
 
       assertEquals(
         (Divisible[[X] =>> X => Int]
-          .divide[Int, Int, Int](Divisible[[X] =>> X => Int].divide[Int, Int, Int](fa1, fa2)(delta), fa3)(delta))(
+          .divide[Int, Int, Int](
+            Divisible[[X] =>> X => Int].divide[Int, Int, Int](fa1, fa2)(delta),
+            fa3
+          )(delta))(
           x
         ),
         (Divisible[[X] =>> X => Int]
-          .divide[Int, Int, Int](fa1, Divisible[[X] =>> X => Int].divide[Int, Int, Int](fa2, fa3)(delta))(delta))(
+          .divide[Int, Int, Int](
+            fa1,
+            Divisible[[X] =>> X => Int].divide[Int, Int, Int](fa2, fa3)(delta)
+          )(delta))(
           x
         ),
         "composition"
       )
       assertEquals(
-        Divisible[[X] =>> X => Int].divide[Int, Int, Int](fa1, Divisible[[X] =>> X => Int].conquer[Int])(delta)(x),
+        Divisible[[X] =>> X => Int].divide[Int, Int, Int](
+          fa1,
+          Divisible[[X] =>> X => Int].conquer[Int]
+        )(delta)(x),
         fa1(x),
         "rightIdentity"
       )
       assertEquals(
-        Divisible[[X] =>> X => Int].divide[Int, Int, Int](Divisible[[X] =>> X => Int].conquer[Int], fa1)(delta)(x),
+        Divisible[[X] =>> X => Int].divide[Int, Int, Int](
+          Divisible[[X] =>> X => Int].conquer[Int],
+          fa1
+        )(delta)(x),
         fa1(x),
         "leftIdentity"
       )

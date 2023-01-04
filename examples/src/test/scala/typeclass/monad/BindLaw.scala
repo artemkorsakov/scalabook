@@ -3,7 +3,13 @@ package typeclass.monad
 import typeclass.common.Runner1
 
 trait BindLaw extends ApplyLaw:
-  def checkBindLaw[F[_]: Bind, A, B, C](fa: F[A], fab: F[A => B], fbc: F[B => C], afb: A => F[B], bfc: B => F[C])(using
+  def checkBindLaw[F[_]: Bind, A, B, C](
+      fa: F[A],
+      fab: F[A => B],
+      fbc: F[B => C],
+      afb: A => F[B],
+      bfc: B => F[C]
+  )(using
       f: A => B,
       fReverse: B => A,
       g: B => C,

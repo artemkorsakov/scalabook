@@ -18,9 +18,12 @@ object Apply:
   def apply[F[_]: Apply]: Apply[F] = summon[Apply[F]]
 
   given Apply[Id] with
-    override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab.value(fa.value))
+    override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(
+      fab.value(fa.value)
+    )
 
-    extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as.value))
+    extension [A](as: Id[A])
+      override def map[B](f: A => B): Id[B] = Id(f(as.value))
 
   given Apply[Option] with
     override def apply[A, B](fab: Option[A => B])(fa: Option[A]): Option[B] =

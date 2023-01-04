@@ -30,9 +30,20 @@ class MonoidSuite extends ScalaCheckSuite, MonoidLaw:
   }
 
   property("nestedMonoidInstance должен удовлетворять законам моноида") {
-    forAll { (x0: String, y0: String, z0: String, x1: List[Int], y1: List[Int], z1: List[Int]) =>
-      assertEquals(Monoid[(String, List[Int])].combine((x0, x1), (y0, y1)), (s"$x0$y0", x1 ++ y1))
-      checkMonoidLaw((x0, x1), (y0, y1), (z0, z1))
+    forAll {
+      (
+          x0: String,
+          y0: String,
+          z0: String,
+          x1: List[Int],
+          y1: List[Int],
+          z1: List[Int]
+      ) =>
+        assertEquals(
+          Monoid[(String, List[Int])].combine((x0, x1), (y0, y1)),
+          (s"$x0$y0", x1 ++ y1)
+        )
+        checkMonoidLaw((x0, x1), (y0, y1), (z0, z1))
     }
   }
 

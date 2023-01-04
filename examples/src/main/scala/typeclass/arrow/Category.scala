@@ -6,7 +6,8 @@ import typeclass.monoid.Monoid
 trait Category[=>:[_, _]] extends Compose[=>:]:
   def id[A]: A =>: A
 
-  def empty: PlusEmpty[[A] =>> A =>: A] = new PlusEmpty[[A] =>> A =>: A] with ComposePlus:
+  def empty: PlusEmpty[[A] =>> A =>: A] = new PlusEmpty[[A] =>> A =>: A]
+    with ComposePlus:
     def empty[A]: A =>: A = id
 
   def monoid[A]: Monoid[A =>: A] = new Monoid[A =>: A] with ComposeSemigroup[A]:

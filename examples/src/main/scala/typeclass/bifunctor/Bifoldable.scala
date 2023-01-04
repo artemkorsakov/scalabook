@@ -16,7 +16,9 @@ trait Bifoldable[F[_, _]]:
 
     /** Аккумулирование до `C`, начиная "слева". */
     def bifoldLeft[C](z: C)(f: (C, A) => C)(g: (C, B) => C): C =
-      fa.bifoldMap[C => C](a => c => f(c, a))(b => c => g(c, b))(using dual(endoMonoid[C]))(z)
+      fa.bifoldMap[C => C](a => c => f(c, a))(b => c => g(c, b))(using
+        dual(endoMonoid[C])
+      )(z)
 
   /** Выделение Foldable из первого параметра. */
   def leftFoldable[R]: Foldable[[X] =>> F[X, R]] =

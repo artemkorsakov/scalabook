@@ -22,13 +22,17 @@ class TraverseSuite extends ScalaCheckSuite, TraverseLaw:
 
   property("tuple2Traverse должен удовлетворять законам Traverse") {
     forAll { (x: Int) =>
-      checkTraverseLaw[[X] =>> (X, X), Option, List, Int, String, Boolean]((x, x))
+      checkTraverseLaw[[X] =>> (X, X), Option, List, Int, String, Boolean](
+        (x, x)
+      )
     }
   }
 
   property("tuple3Traverse должен удовлетворять законам Traverse") {
     forAll { (x: Int) =>
-      checkTraverseLaw[[X] =>> (X, X, X), Option, List, Int, String, Boolean]((x, x, x))
+      checkTraverseLaw[[X] =>> (X, X, X), Option, List, Int, String, Boolean](
+        (x, x, x)
+      )
     }
   }
 
@@ -53,6 +57,9 @@ class TraverseSuite extends ScalaCheckSuite, TraverseLaw:
 
   property("mapTraverse должен удовлетворять законам Traverse") {
     forAll { (map: Map[String, Int]) =>
-      checkTraverseLaw[[X] =>> Map[String, X], Id, Option, Int, String, Boolean](map)
+      checkTraverseLaw[[X] =>> Map[
+        String,
+        X
+      ], Id, Option, Int, String, Boolean](map)
     }
   }

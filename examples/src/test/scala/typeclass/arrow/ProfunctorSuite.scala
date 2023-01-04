@@ -7,8 +7,18 @@ import typeclass.Functions.given
 class ProfunctorSuite extends ScalaCheckSuite, ProfunctorLaw:
   private val gad: Boolean => String = given_Conversion_Boolean_String
 
-  property("given Profunctor[Function1] должен удовлетворять законам Profunctor") {
+  property(
+    "given Profunctor[Function1] должен удовлетворять законам Profunctor"
+  ) {
     forAll { (a: Boolean, c: Int) =>
-      checkProfunctorLaw[Function1, Boolean, String, Int, String, Boolean, Char](gad)(a, c)
+      checkProfunctorLaw[
+        Function1,
+        Boolean,
+        String,
+        Int,
+        String,
+        Boolean,
+        Char
+      ](gad)(a, c)
     }
   }

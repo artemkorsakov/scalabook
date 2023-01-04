@@ -16,11 +16,17 @@ class DivideSuite extends ScalaCheckSuite:
 
       assertEquals(
         (Divide[[X] =>> X => Int]
-          .divide[Int, Int, Int](Divide[[X] =>> X => Int].divide[Int, Int, Int](fa1, fa2)(delta), fa3)(delta))(
+          .divide[Int, Int, Int](
+            Divide[[X] =>> X => Int].divide[Int, Int, Int](fa1, fa2)(delta),
+            fa3
+          )(delta))(
           x
         ),
         (Divide[[X] =>> X => Int]
-          .divide[Int, Int, Int](fa1, Divide[[X] =>> X => Int].divide[Int, Int, Int](fa2, fa3)(delta))(delta))(
+          .divide[Int, Int, Int](
+            fa1,
+            Divide[[X] =>> X => Int].divide[Int, Int, Int](fa2, fa3)(delta)
+          )(delta))(
           x
         ),
         "composition"

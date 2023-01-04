@@ -10,7 +10,9 @@ trait SemigroupLaw extends Assertions:
       "Associativity"
     )
 
-  def checkSemigroupLawWithRunner[A: Semigroup, B](x: A, y: A, z: A)(run: A => B): Unit =
+  def checkSemigroupLawWithRunner[A: Semigroup, B](x: A, y: A, z: A)(
+      run: A => B
+  ): Unit =
     assertEquals(
       run(Semigroup[A].combine(Semigroup[A].combine(x, y), z)),
       run(Semigroup[A].combine(x, Semigroup[A].combine(y, z))),

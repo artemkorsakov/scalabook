@@ -20,7 +20,8 @@ object Functor:
   def apply[F[_]: Functor]: Functor[F] = summon[Functor[F]]
 
   given idFunctor: Functor[Id] with
-    extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as.value))
+    extension [A](as: Id[A])
+      override def map[B](f: A => B): Id[B] = Id(f(as.value))
 
   given optionFunctor: Functor[Option] with
     extension [A](optA: Option[A])
@@ -30,7 +31,8 @@ object Functor:
           case None    => None
 
   given listFunctor: Functor[List] with
-    extension [A](as: List[A]) override def map[B](f: A => B): List[B] = as.map(f)
+    extension [A](as: List[A])
+      override def map[B](f: A => B): List[B] = as.map(f)
 
   given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
     extension [A](fa: Either[E, A])
@@ -53,8 +55,10 @@ object Functor:
           (s1, f(a))
         }
 
-  given nestedFunctor[F[_], G[_]](using functorF: Functor[F], functorG: Functor[G]): Functor[[X] =>> Nested[F, G, X]]
-    with
+  given nestedFunctor[F[_], G[_]](using
+      functorF: Functor[F],
+      functorG: Functor[G]
+  ): Functor[[X] =>> Nested[F, G, X]] with
     extension [A](fga: Nested[F, G, A])
       override def map[B](f: A => B): Nested[F, G, B] =
         Nested[F, G, B] {
@@ -62,7 +66,8 @@ object Functor:
         }
 
   given Functor[IO] with
-    extension [A](as: IO[A]) override def map[B](f: A => B): IO[B] = IO { () => f(as.run()) }
+    extension [A](as: IO[A])
+      override def map[B](f: A => B): IO[B] = IO { () => f(as.run()) }
 
   given Functor[BinaryTree] with
     extension [A](as: BinaryTree[A])

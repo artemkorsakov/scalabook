@@ -45,14 +45,18 @@ class FunctorSuite extends ScalaCheckSuite, FunctorLaw:
     forAll { (x: Int, s: String) =>
       val state                               = State[String, Int](s => (s, x))
       given Runner1[[X] =>> State[String, X]] = stateRunner[String](s)
-      checkFunctorLawWithRunner[[X] =>> State[String, X], Int, String, Boolean](state)
+      checkFunctorLawWithRunner[[X] =>> State[String, X], Int, String, Boolean](
+        state
+      )
     }
   }
 
   property("nestedFunctor должен удовлетворять законам функтора") {
     forAll { (maybeInt: Option[Int]) =>
       val nested = Nested[Id, Option, Int](Id(maybeInt))
-      checkFunctorLaw[[X] =>> Nested[Id, Option, X], Int, String, Boolean](nested)
+      checkFunctorLaw[[X] =>> Nested[Id, Option, X], Int, String, Boolean](
+        nested
+      )
     }
   }
 

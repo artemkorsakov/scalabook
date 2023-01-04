@@ -27,6 +27,18 @@ trait MonadLaw extends ApplicativeLaw, BindLaw:
     val afb: A => F[B] = a => Monad[F].unit(f(a))
     val bfc: B => F[C] = b => Monad[F].unit(g(b))
     checkApplicativeLawWithRunner[F, A, B, C](x)
-    checkBindLawWithRunner[F, A, B, C](fa, Monad[F].unit(f), Monad[F].unit(g), afb, bfc)
-    assertEquals(Runner1[F].run(Monad[F].unit(x).flatMap(afb)), Runner1[F].run(afb(x)))
-    assertEquals(Runner1[F].run(fa.flatMap(Monad[F].unit _)), Runner1[F].run(fa))
+    checkBindLawWithRunner[F, A, B, C](
+      fa,
+      Monad[F].unit(f),
+      Monad[F].unit(g),
+      afb,
+      bfc
+    )
+    assertEquals(
+      Runner1[F].run(Monad[F].unit(x).flatMap(afb)),
+      Runner1[F].run(afb(x))
+    )
+    assertEquals(
+      Runner1[F].run(fa.flatMap(Monad[F].unit _)),
+      Runner1[F].run(fa)
+    )

@@ -14,7 +14,8 @@ class BinaryTreeSuite extends ScalaCheckSuite:
 
   property("BinaryTree.depth") {
     forAll { (list: List[Int]) =>
-      val expected = if list.isEmpty then 0 else list.length.toBinaryString.length
+      val expected =
+        if list.isEmpty then 0 else list.length.toBinaryString.length
       assertEquals(BinaryTree(list).depth, expected)
     }
   }

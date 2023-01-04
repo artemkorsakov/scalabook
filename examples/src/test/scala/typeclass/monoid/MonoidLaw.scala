@@ -6,7 +6,17 @@ trait MonoidLaw extends SemigroupLaw:
     assertEquals(Monoid[A].combine(x, Monoid[A].empty), x, "right identity")
     assertEquals(Monoid[A].combine(Monoid[A].empty, x), x, "left identity")
 
-  def checkMonoidLawWithRunner[A, B](x: A, y: A, z: A)(run: A => B)(using Monoid[A]): Unit =
+  def checkMonoidLawWithRunner[A, B](x: A, y: A, z: A)(run: A => B)(using
+      Monoid[A]
+  ): Unit =
     checkSemigroupLawWithRunner(x, y, z)(run)
-    assertEquals(run(Monoid[A].combine(x, Monoid[A].empty)), run(x), "right identity")
-    assertEquals(run(Monoid[A].combine(Monoid[A].empty, x)), run(x), "left identity")
+    assertEquals(
+      run(Monoid[A].combine(x, Monoid[A].empty)),
+      run(x),
+      "right identity"
+    )
+    assertEquals(
+      run(Monoid[A].combine(Monoid[A].empty, x)),
+      run(x),
+      "left identity"
+    )

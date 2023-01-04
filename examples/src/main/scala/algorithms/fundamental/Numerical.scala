@@ -35,7 +35,9 @@ object Numerical:
     val bin        = n.toBinaryString.reverse
     val powerArray = new Array[Long](bin.length)
     powerArray(0) = a
-    (1 until powerArray.length).foreach(i => powerArray(i) = powerArray(i - 1) * powerArray(i - 1))
+    (1 until powerArray.length).foreach(i =>
+      powerArray(i) = powerArray(i - 1) * powerArray(i - 1)
+    )
     powerArray.indices.foldLeft(BigInt(1)) { (acc, i) =>
       if bin(i) == '1' then acc * powerArray(i) else acc
     }

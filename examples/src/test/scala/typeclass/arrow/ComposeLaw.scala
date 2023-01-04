@@ -13,9 +13,17 @@ trait ComposeLaw extends PlusLaw:
       f3: A =>: A
   )(a: A): Unit =
     assertEquals(
-      Runner2[=>:].run(a)(Compose[=>:].compose(cd, Compose[=>:].compose(bc, ab))),
-      Runner2[=>:].run(a)(Compose[=>:].compose(Compose[=>:].compose(cd, bc), ab)),
+      Runner2[=>:].run(a)(
+        Compose[=>:].compose(cd, Compose[=>:].compose(bc, ab))
+      ),
+      Runner2[=>:].run(a)(
+        Compose[=>:].compose(Compose[=>:].compose(cd, bc), ab)
+      ),
       "Associativity"
     )
-    checkPlusLawWithRunner[[X] =>> X =>: X, A](f1, f2, f3)(Runner2[=>:].run(a))(using Compose[=>:].plus)
-    checkSemigroupLawWithRunner[A =>: A, A](f1, f2, f3)(Runner2[=>:].run(a))(using Compose[=>:].semigroup)
+    checkPlusLawWithRunner[[X] =>> X =>: X, A](f1, f2, f3)(Runner2[=>:].run(a))(
+      using Compose[=>:].plus
+    )
+    checkSemigroupLawWithRunner[A =>: A, A](f1, f2, f3)(Runner2[=>:].run(a))(
+      using Compose[=>:].semigroup
+    )

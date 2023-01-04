@@ -15,7 +15,9 @@ object Divisible:
   def apply[F[_]: Divisible]: Divisible[F] = summon[Divisible[F]]
 
   given functionDivisible[R: Monoid]: Divisible[[X] =>> Function1[X, R]] with
-    override def divide[A, B, C](fa: => A => R, fb: => B => R)(f: C => (A, B)): C => R =
+    override def divide[A, B, C](fa: => A => R, fb: => B => R)(
+        f: C => (A, B)
+    ): C => R =
       c => {
         val (a, b) = f(c)
         Monoid[R].combine(fa(a), fb(b))

@@ -12,8 +12,9 @@ object Monad:
   def apply[F[_]: Monad]: Monad[F] = summon[Monad[F]]
 
   given Monad[Id] with
-    override def unit[A](a: => A): Id[A]                                   = Id(a)
-    extension [A](fa: Id[A]) override def flatMap[B](f: A => Id[B]): Id[B] = f(fa.value)
+    override def unit[A](a: => A): Id[A]            = Id(a)
+    extension [A](fa: Id[A])
+      override def flatMap[B](f: A => Id[B]): Id[B] = f(fa.value)
 
   given Monad[Option] with
     override def unit[A](a: => A): Option[A] = Some(a)
@@ -27,7 +28,8 @@ object Monad:
   given Monad[List] with
     override def unit[A](a: => A): List[A] = List(a)
 
-    extension [A](fa: List[A]) override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
+    extension [A](fa: List[A])
+      override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
 
   given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
     override def unit[A](a: => A): Either[E, A] = Right(a)
@@ -38,7 +40,8 @@ object Monad:
           case Right(a) => f(a)
           case Left(e)  => Left(e)
 
-  given writerMonad[W](using monoid: Monoid[W]): Monad[[x] =>> Writer[W, x]] with
+  given writerMonad[W](using monoid: Monoid[W]): Monad[[x] =>> Writer[W, x]]
+    with
     override def unit[A](a: => A): Writer[W, A] =
       Writer[W, A](() => (monoid.empty, a))
 
@@ -64,4 +67,5 @@ object Monad:
   given Monad[IO] with
     override def unit[A](a: => A): IO[A] = IO(() => a)
 
-    extension [A](fa: IO[A]) override def flatMap[B](f: A => IO[B]): IO[B] = f(fa.run())
+    extension [A](fa: IO[A])
+      override def flatMap[B](f: A => IO[B]): IO[B] = f(fa.run())

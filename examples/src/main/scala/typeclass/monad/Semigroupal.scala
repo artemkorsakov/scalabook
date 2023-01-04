@@ -9,7 +9,9 @@ object Semigroupal:
   def apply[F[_]: Semigroupal]: Semigroupal[F] = summon[Semigroupal[F]]
 
   given Semigroupal[Id] with
-    override def product[A, B](fa: Id[A], fb: Id[B]): Id[(A, B)] = Id((fa.value, fb.value))
+    override def product[A, B](fa: Id[A], fb: Id[B]): Id[(A, B)] = Id(
+      (fa.value, fb.value)
+    )
 
   given Semigroupal[Option] with
     override def product[A, B](fa: Option[A], fb: Option[B]): Option[(A, B)] =

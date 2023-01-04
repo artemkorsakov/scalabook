@@ -9,5 +9,6 @@ object Runner1:
   given Runner1[Id] with
     override def run[A]: Id[A] => A = _.value
 
-  def stateRunner[S](s: S): Runner1[[X] =>> State[S, X]] = new Runner1[[X] =>> State[S, X]]:
-    def run[A]: State[S, A] => A = _.run(s)._2
+  def stateRunner[S](s: S): Runner1[[X] =>> State[S, X]] =
+    new Runner1[[X] =>> State[S, X]]:
+      def run[A]: State[S, A] => A = _.run(s)._2

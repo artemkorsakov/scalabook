@@ -5,11 +5,15 @@ import typeclass.monad.{Applicative, FunctorLaw, Traverse, TraverseLaw}
 import typeclass.monoid.Monoid
 
 trait BitraverseLaw extends TraverseLaw, BifoldableLaw, BifunctorLaw:
-  def checkBitraverseLaw[F[_, _], G[_]: Applicative, H[_]: Applicative, L, R, A, B, C](
+  def checkBitraverseLaw[F[_, _], G[_]: Applicative, H[
+      _
+  ]: Applicative, L, R, A, B, C](
       far: F[A, R],
       fla: F[L, A],
       faa: F[A, A]
-  )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B)(using m: Monoid[Vector[A]])(using
+  )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B)(using
+      m: Monoid[Vector[A]]
+  )(using
       bi: Bitraverse[F]
   ): Unit =
     checkBifoldableLaw[F, L, R, A](far, fla, faa)

@@ -6,7 +6,11 @@ import munit.FunSuite
 class BinaryTreeOperationSuite extends FunSuite:
   private val binaryTree: BinaryTree[Int] = Branch(
     5,
-    Branch(4, Branch(1, Branch(0, Leaf, Leaf), Branch(2, Leaf, Leaf)), Branch(3, Leaf, Leaf)),
+    Branch(
+      4,
+      Branch(1, Branch(0, Leaf, Leaf), Branch(2, Leaf, Leaf)),
+      Branch(3, Leaf, Leaf)
+    ),
     Branch(6, Leaf, Leaf)
   )
 

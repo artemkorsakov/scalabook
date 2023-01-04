@@ -27,14 +27,18 @@ object Traverse:
   given Traverse[[X] =>> (X, X)] with
     extension [A](fa: (A, A))
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[(B, B)] =
-        val func: G[B => B => (B, B)] = Applicative[G].unit(b1 => b2 => (b1, b2))
+        val func: G[B => B => (B, B)] =
+          Applicative[G].unit(b1 => b2 => (b1, b2))
         Applicative[G].apply(Applicative[G].apply(func)(f(fa._1)))(f(fa._2))
 
   given Traverse[[X] =>> (X, X, X)] with
     extension [A](fa: (A, A, A))
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[(B, B, B)] =
-        val func: G[B => B => B => (B, B, B)] = Applicative[G].unit(b1 => b2 => b3 => (b1, b2, b3))
-        Applicative[G].apply(Applicative[G].apply(Applicative[G].apply(func)(f(fa._1)))(f(fa._2)))(f(fa._3))
+        val func: G[B => B => B => (B, B, B)] =
+          Applicative[G].unit(b1 => b2 => b3 => (b1, b2, b3))
+        Applicative[G].apply(
+          Applicative[G].apply(Applicative[G].apply(func)(f(fa._1)))(f(fa._2))
+        )(f(fa._3))
 
   given Traverse[Option] with
     extension [A](fa: Option[A])
@@ -46,7 +50,9 @@ object Traverse:
   given Traverse[List] with
     extension [A](fa: List[A])
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[List[B]] =
-        fa.foldRight(Applicative[G].unit(List[B]()))((a, acc) => f(a).map2(acc)(_ :: _))
+        fa.foldRight(Applicative[G].unit(List[B]()))((a, acc) =>
+          f(a).map2(acc)(_ :: _)
+        )
 
   given Traverse[Tree] with
     extension [A](ta: Tree[A])

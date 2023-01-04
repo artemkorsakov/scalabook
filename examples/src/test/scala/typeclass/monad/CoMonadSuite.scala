@@ -12,7 +12,11 @@ class CoMonadSuite extends ScalaCheckSuite, CoMonadLaw:
 
   property("idCoMonad должен удовлетворять законам CoMonad") {
     forAll { (x: Int) =>
-      checkCoMonadLaw[Id, Int, String, Boolean](Id(x), idInt => f(idInt.value), idStr => g(idStr.value))
+      checkCoMonadLaw[Id, Int, String, Boolean](
+        Id(x),
+        idInt => f(idInt.value),
+        idStr => g(idStr.value)
+      )
     }
   }
 

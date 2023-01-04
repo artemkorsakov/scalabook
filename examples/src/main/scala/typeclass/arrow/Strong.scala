@@ -14,6 +14,8 @@ object Strong:
 
     override def mapsnd[A, B, C](fab: A => B)(f: B => C): A => C = fab andThen f
 
-    override def first[A, B, C](fa: A => B): ((A, C)) => (B, C) = (a, c) => (fa(a), c)
+    override def first[A, B, C](fa: A => B): ((A, C)) => (B, C) = (a, c) =>
+      (fa(a), c)
 
-    override def second[A, B, C](fa: A => B): ((C, A)) => (C, B) = (c, a) => (c, fa(a))
+    override def second[A, B, C](fa: A => B): ((C, A)) => (C, B) = (c, a) =>
+      (c, fa(a))

@@ -5,7 +5,7 @@ import scala.runtime.stdLibPatches.Predef.summon
 
 object Sorting:
   def bubbleSort[T: Ordering](array: Array[T]): Unit =
-    val ord = summon[Ordering[T]]
+    val ord                   = summon[Ordering[T]]
     def loop(j: Int): Boolean =
       (0 to array.length - 1 - j)
         .withFilter(i => ord.gt(array(i), array(i + 1)))
@@ -24,7 +24,7 @@ object Sorting:
     val ord = summon[Ordering[T]]
     (1 until array.length).foreach { j =>
       val key = array(j)
-      var i = j - 1
+      var i   = j - 1
       while i >= 0 && ord.gt(array(i), key)
       do
         array(i + 1) = array(i)
@@ -37,15 +37,19 @@ object Sorting:
 
   def quickSort[T: Ordering](list: List[T]): List[T] =
     list match
-      case Nil      => list
-      case _ :: Nil => list
+      case Nil       => list
+      case _ :: Nil  => list
       case h :: tail =>
-        val (p1, p2) = tail.partition(el => summon[Ordering[T]].lteq(el, h))
-        val leftToPivot = quickSort(p1)
+        val (p1, p2)     = tail.partition(el => summon[Ordering[T]].lteq(el, h))
+        val leftToPivot  = quickSort(p1)
         val rightToPivot = quickSort(p2)
         leftToPivot ++ (h :: rightToPivot)
 
-  private def mergeSort[T: ClassTag: Ordering](array: Array[T], first: Int, last: Int): Unit =
+  private def mergeSort[T: ClassTag: Ordering](
+      array: Array[T],
+      first: Int,
+      last: Int
+  ): Unit =
     if last <= first then ()
     else
       val mid = first + (last - first) / 2
@@ -53,7 +57,12 @@ object Sorting:
       mergeSort(array, mid + 1, last)
       mergeParts(array, first, last, mid)
 
-  private def mergeParts[T: ClassTag: Ordering](array: Array[T], first: Int, last: Int, mid: Int): Unit =
+  private def mergeParts[T: ClassTag: Ordering](
+      array: Array[T],
+      first: Int,
+      last: Int,
+      mid: Int
+  ): Unit =
     val buf = new Array[T](array.length)
     array.copyToArray(buf)
 

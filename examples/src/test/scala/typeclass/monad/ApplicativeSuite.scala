@@ -42,7 +42,10 @@ class ApplicativeSuite extends ScalaCheckSuite, ApplicativeLaw:
   property("stateApplicative[S] должен удовлетворять законам Applicative") {
     forAll { (x: Int, s: String) =>
       given Runner1[[X] =>> State[String, X]] = stateRunner[String](s)
-      checkApplicativeLawWithRunner[[X] =>> State[String, X], Int, String, Boolean](x)
+      checkApplicativeLawWithRunner[[X] =>> State[
+        String,
+        X
+      ], Int, String, Boolean](x)
     }
   }
 
@@ -60,7 +63,9 @@ class ApplicativeSuite extends ScalaCheckSuite, ApplicativeLaw:
 
   property("nestedApplicative должен удовлетворять законам Applicative") {
     forAll { (x: Int) =>
-      checkApplicativeLaw[[X] =>> Nested[Id, Option, X], Int, String, Boolean](x)
+      checkApplicativeLaw[[X] =>> Nested[Id, Option, X], Int, String, Boolean](
+        x
+      )
     }
   }
 

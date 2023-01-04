@@ -17,17 +17,26 @@ trait Arrow[=>:[_, _]] extends Split[=>:], Strong[=>:], Category[=>:]:
     compose(fbc, fab)
 
   /** Меняет пару местами */
-  def swap[X, Y]: (X, Y) =>: (Y, X) = arr[(X, Y), (Y, X)] { case (x, y) => (y, x) }
+  def swap[X, Y]: (X, Y) =>: (Y, X) = arr[(X, Y), (Y, X)] { case (x, y) =>
+    (y, x)
+  }
 
   /** Пропустить `C` нетронутым. */
   override def second[A, B, C](f: A =>: B): (C, A) =>: (C, B) =
     >>>(<<<(first[A, B, C](f), swap), swap)
 
-  /** Запустить `fab` и `fcd` рядом друг с другом. Иногда обозначается как `***`. */
-  override def split[A, B, C, D](fab: A =>: B, fcd: C =>: D): (A, C) =>: (B, D) =
+  /** Запустить `fab` и `fcd` рядом друг с другом. Иногда обозначается как
+    * `***`.
+    */
+  override def split[A, B, C, D](
+      fab: A =>: B,
+      fcd: C =>: D
+  ): (A, C) =>: (B, D) =
     >>>(first[A, B, C](fab), second[C, D, B](fcd))
 
-  /** Запустить `fab` и `fac` на одном и том же `A`. Иногда обозначается как `&&&`. */
+  /** Запустить `fab` и `fac` на одном и том же `A`. Иногда обозначается как
+    * `&&&`.
+    */
   def combine[A, B, C](fab: A =>: B, fac: A =>: C): A =>: (B, C) =
     >>>(arr((a: A) => (a, a)), split(fab, fac))
 
@@ -54,7 +63,8 @@ object Arrow:
   def apply[=>:[_, _]: Strong]: Strong[=>:] = summon[Strong[=>:]]
 
   given Arrow[Function1] with
-    override def arr[A, B](f: A => B): A => B = f
-    override def id[A]: A => A = a => a
+    override def arr[A, B](f: A => B): A => B                   = f
+    override def id[A]: A => A                                  = a => a
     override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f
-    override def first[A, B, C](fa: A => B): ((A, C)) => (B, C) = (a, c) => (fa(a), c)
+    override def first[A, B, C](fa: A => B): ((A, C)) => (B, C) = (a, c) =>
+      (fa(a), c)

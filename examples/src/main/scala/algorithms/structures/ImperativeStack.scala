@@ -4,10 +4,11 @@ import scala.reflect.ClassTag
 
 class ImperativeStack[A: ClassTag](maxSize: Int):
   private val stackBox = new Array[A](maxSize)
-  private var top = -1
+  private var top      = -1
 
   def push(data: A): Unit =
-    if isFull then throw new IllegalArgumentException("Can't add element to full stack")
+    if isFull then
+      throw new IllegalArgumentException("Can't add element to full stack")
     else
       top += 1
       stackBox(top) = data
@@ -18,7 +19,8 @@ class ImperativeStack[A: ClassTag](maxSize: Int):
     popData
 
   def peek(): A =
-    if isEmpty then throw new IllegalArgumentException("Can't get element to empty stack")
+    if isEmpty then
+      throw new IllegalArgumentException("Can't get element to empty stack")
     else stackBox(top)
 
   def isEmpty: Boolean =

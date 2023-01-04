@@ -5,7 +5,11 @@ import typeclass.monad.{Foldable, FoldableLaw}
 import typeclass.monoid.Monoid
 
 trait BifoldableLaw extends FoldableLaw:
-  def checkBifoldableLaw[F[_, _], L, R, A](far: F[A, R], fla: F[L, A], faa: F[A, A])(using bi: Bifoldable[F])(using
+  def checkBifoldableLaw[F[_, _], L, R, A](
+      far: F[A, R],
+      fla: F[L, A],
+      faa: F[A, A]
+  )(using bi: Bifoldable[F])(using
       mv: Monoid[Vector[A]]
   ): Unit =
     checkFoldableLaw[[X] =>> F[X, R], A](far)(using bi.leftFoldable[R], mv)

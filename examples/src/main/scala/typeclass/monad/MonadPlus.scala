@@ -20,4 +20,5 @@ object MonadPlus:
 
     override def empty[A]: List[A] = List.empty[A]
 
-    extension [A](fa: List[A]) override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
+    extension [A](fa: List[A])
+      override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)

@@ -1,7 +1,11 @@
 package typeclass.monad
 
 trait CoBindLaw extends FunctorLaw:
-  def checkCoBindLaw[F[_]: CoBind, A, B, C](fa: F[A], fab: F[A] => B, fbc: F[B] => C)(using
+  def checkCoBindLaw[F[_]: CoBind, A, B, C](
+      fa: F[A],
+      fab: F[A] => B,
+      fbc: F[B] => C
+  )(using
       f: A => B,
       fReverse: B => A,
       g: B => C,

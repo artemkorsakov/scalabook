@@ -1,8 +1,13 @@
 import Dependencies.Version._
 
-ThisBuild / organization := "ru.gitflic.artemkorsakov"
-ThisBuild / version      := "0.0.1-SNAPSHOT"
-ThisBuild / scalaVersion := Scala
+inThisBuild(
+  List(
+    organization      := "ru.gitflic.artemkorsakov",
+    version           := "0.0.1-SNAPSHOT",
+    scalaVersion      := Scala,
+    semanticdbEnabled := true
+  )
+)
 
 lazy val examples = (project in file("examples"))
   .settings(

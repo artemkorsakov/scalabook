@@ -20,6 +20,12 @@ object Sorting:
       swap(array, i, j)
     }
 
+  @SuppressWarnings(
+    Array(
+      "scalafix:DisableSyntax.var",
+      "scalafix:DisableSyntax.while"
+    )
+  )
   def insertionSort[T: Ordering](array: Array[T]): Unit =
     val ord = summon[Ordering[T]]
     (1 until array.length).foreach { j =>
@@ -57,6 +63,7 @@ object Sorting:
       mergeSort(array, mid + 1, last)
       mergeParts(array, first, last, mid)
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private def mergeParts[T: ClassTag: Ordering](
       array: Array[T],
       first: Int,

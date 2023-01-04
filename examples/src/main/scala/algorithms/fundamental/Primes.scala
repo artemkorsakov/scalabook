@@ -51,6 +51,9 @@ object Primes:
     result
 
   /** Нахождение простых множителей */
+  @SuppressWarnings(
+    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
+  )
   def primeFactorsWithPow(n: Long): Map[Long, Long] =
     var number = n
 

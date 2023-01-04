@@ -19,7 +19,7 @@ object Primes:
     else if n < 9 then true // мы уже исключили 4,6 и 8
     else if n % 3 == 0 then false
     else
-      val limit = math.ceil(math.sqrt(n)).toLong
+      val limit = math.ceil(math.sqrt(n.toDouble)).toLong
 
       @annotation.tailrec
       def loop(f: Long): Boolean =
@@ -67,7 +67,7 @@ object Primes:
 
     // Ищем нечетные множители
     var i = 3L
-    while i <= math.sqrt(number) do
+    while i <= math.sqrt(number.toDouble) do
       var pow = 0L
       while number              % i == 0 do
         number /= i

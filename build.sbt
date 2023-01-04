@@ -5,7 +5,8 @@ inThisBuild(
     organization      := "ru.gitflic.artemkorsakov",
     version           := "0.0.1-SNAPSHOT",
     scalaVersion      := Scala,
-    semanticdbEnabled := true
+    semanticdbEnabled := true,
+    scalacOptions ++= Seq("-unchecked", "-deprecation")
   )
 )
 

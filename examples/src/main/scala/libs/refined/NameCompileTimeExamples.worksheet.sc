@@ -3,33 +3,24 @@ import eu.timepit.refined.auto.*
 import eu.timepit.refined.string.*
 
 import scala.language.implicitConversions
-import scala.quoted.{Expr, Quotes}
 import scala.util.matching.Regex
 
-val namePattern: "[А-ЯЁ][а-яё]+" = "[А-ЯЁ][а-яё]+"
+import libs.refined.Name.{toName, pattern}
 
-def inspectNameCode(x: Expr[String])(using Quotes): Expr[String] =
-  import scala.quoted.quotes.reflect.report
-  if !namePattern.r.matches(x.valueOrAbort) then report.errorAndAbort("Invalid name")
-  x
+"€‡™µ".toName
+"12345".toName
+"Alyona".toName
+"Алёна18".toName
+"алёна".toName
+"Алёна".toName
 
-inline def inspectName(inline str: String): String =
-  ${ inspectNameCode('str) }
-
-inspectName("€‡™µ")
-inspectName("12345")
-inspectName("Alyona")
-inspectName("Алёна18")
-inspectName("алёна")
-inspectName("Алёна")
-
-type Name = String Refined MatchesRegex[namePattern.type]
+type Name = String Refined MatchesRegex[pattern.type]
 
 given Conversion[String, Name] = RefinedTypeOps[Name, String].unsafeFrom(_)
 
-val name0: Name = inspectName("€‡™µ")
-val name1: Name = inspectName("12345")
-val name2: Name = inspectName("Alyona")
-val name3: Name = inspectName("Алёна18")
-val name4: Name = inspectName("алёна")
-val name5: Name = inspectName("Алёна")
+val name0: Name = "€‡™µ".toName
+val name1: Name = "12345".toName
+val name2: Name = "Alyona".toName
+val name3: Name = "Алёна18".toName
+val name4: Name = "алёна".toName
+val name5: Name = "Алёна".toName

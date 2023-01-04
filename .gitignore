@@ -1,4 +1,6 @@
 .idea
+.vscode
+
 ### Scala template
 *.class
 *.log
@@ -19,3 +21,9 @@ project/plugins/project/
 .worksheet
 /.bsp/
 /out/
+
+# Metals specific
+.metals/
+.bloop/
+.ammonite/
+metals.sbt

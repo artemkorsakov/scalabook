@@ -8,7 +8,7 @@ object Dependencies {
     val cats        = "2.9.0"
     val catsEffect  = "3.5-639ac01"
     val http4s      = "0.23.16"
-    val http4sBlaze = "0.23.12"
+    val http4sBlaze = "0.23.13"
     val refined     = "0.10.1"
     val scalaz      = "7.3.7"
 

@@ -68,7 +68,9 @@ object ProducerConsumer extends IOApp:
     for
       i <- counterR.getAndUpdate(_ + 1)
       _ <- offer(i)
-      _ <- if i % 10000 == 0 then Console[F].println(s"Producer $id has reached $i items") else Async[F].unit
+      _ <- (if i % 10000 == 0 then
+              Console[F].println(s"Producer $id has reached $i items")
+            else Async[F].unit)
       _ <- producer(id, counterR, stateR)
     yield ()
 
@@ -107,6 +109,8 @@ object ProducerConsumer extends IOApp:
 
     for
       i <- take
-      _ <- if i % 10000 == 0 then Console[F].println(s"Consumer $id has reached $i items") else Async[F].unit
+      _ <- (if i % 10000 == 0 then
+              Console[F].println(s"Consumer $id has reached $i items")
+            else Async[F].unit)
       _ <- consumer(id, stateR)
     yield ()

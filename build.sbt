@@ -1,8 +1,8 @@
-import Dependencies.Version.Scala
+import Dependencies._
 
 ThisBuild / organization      := "ru.gitflic.artemkorsakov"
 ThisBuild / version           := "0.0.1-SNAPSHOT"
-ThisBuild / scalaVersion      := Scala
+ThisBuild / scalaVersion      := Dependencies.Scala
 ThisBuild / semanticdbEnabled := true
 
 ThisBuild / scalacOptions ++=
@@ -27,8 +27,27 @@ lazy val examples = (project in file("examples"))
   .settings(name := "scalabook-examples")
   .settings(commonSettings)
   .settings(
-    libraryDependencies ++= Dependencies.examples,
-    libraryDependencies ++= Dependencies.examplesTests
+    libraryDependencies ++=
+      Seq(
+        cats.core,
+        cats.effect,
+        cats.free,
+        http4s.blaze,
+        http4s.dsl,
+        refined.cats,
+        refined.core,
+        scalaz.core,
+        scalaz.effect,
+        scalaz.iteratee
+      ),
+    libraryDependencies ++=
+      Seq(
+        cats.testkit,
+        munit.core,
+        munit.catsEffect3,
+        munit.scalacheck,
+        scalaz.scalacheck
+      ).map(_ % Test)
   )
 
 lazy val commonSettings =

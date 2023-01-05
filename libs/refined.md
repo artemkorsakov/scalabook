@@ -294,18 +294,18 @@ import scala.compiletime.error
 
 type NonEmptyString = String Refined NonEmpty
 
-inline def refineNonEmptyString(inline str: String): NonEmptyString =
+inline def refineToNonEmptyString(inline str: String): NonEmptyString =
   inline str match
     case null: Null | "" => error("String must be non empty")
     case _               => refineV[NonEmpty].unsafeFrom(str)
 
-refineNonEmptyString("")           // Не компилируется с ошибкой String must be non empty
-refineNonEmptyString(null: String) // Не компилируется с ошибкой String must be non empty
-refineNonEmptyString("Алёна")      // Компилируется успешно!
+refineToNonEmptyString("")           // Не компилируется с ошибкой "String must be non empty"
+refineToNonEmptyString(null: String) // Не компилируется с ошибкой "String must be non empty"
+refineToNonEmptyString("Алёна")      // Компилируется успешно!
 // val res0: NonEmptyString = Алёна
 ```
 
-[Пример в Scastie](https://scastie.scala-lang.org/VY5yHaefRjiWKBdfXEpNbw)
+[Пример в Scastie](https://scastie.scala-lang.org/nBe9eTIHTjqeGzHEMRu8jw)
 
 Уточнение `String` до `Name` (во время компиляции) можно реализовать с [помощью макросов](https://docs.scala-lang.org/scala3/reference/metaprogramming/macros.html):
 

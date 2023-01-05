@@ -253,7 +253,7 @@ printT(name) // Печатает "Алёна"
 Есть очень хорошая статья по поводу [важности системы типов][thetypesystem].
 
 
-2) Ещё одним значительным преимуществом является возможность проверки типов во время компиляции.
+2) Ещё одним значительным преимуществом являлось возможность проверки типов во время компиляции в Scala 2.
 Следующий код на Scala 2 даже не скомпилится:
 
 ```scala
@@ -275,9 +275,98 @@ object Example {
 
 Скомпилится только последний вариант, потому что строка `"Алёна"` подходит под уточненный тип.
 
-[Разобранный пример на Scastie](https://scastie.scala-lang.org/oqh3jUboQQqf3wKC8A5ZkA)
+[Пример в Scastie](https://scastie.scala-lang.org/oqh3jUboQQqf3wKC8A5ZkA)
 
-[В Scala 3 не все так просто.][conversion]
+В Scala 3 не все так просто.
+
+Проверка соответствия уточненным типам в Scala 3 во время компиляции
+пока ещё не реализована, но это лишь вопрос времени,
+учитывая мощную функциональность [метапрограммирования в Scala 3](https://docs.scala-lang.org/scala3/reference/metaprogramming/index.html).
+
+Например, используя [inline методы](https://docs.scala-lang.org/scala3/reference/metaprogramming/inline.html) 
+реализовать уточнение типа `String` до `NonEmptyString` во время компиляции можно, например так:
+
+```scala
+import eu.timepit.refined.refineV
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.collection.NonEmpty
+import scala.compiletime.error
+
+type NonEmptyString = String Refined NonEmpty
+
+inline def refineNonEmptyString(inline str: String): NonEmptyString =
+  inline str match
+    case null: Null | "" => error("String must be non empty")
+    case _               => refineV[NonEmpty].unsafeFrom(str)
+
+refineNonEmptyString("")           // Не компилируется с ошибкой String must be non empty
+refineNonEmptyString(null: String) // Не компилируется с ошибкой String must be non empty
+refineNonEmptyString("Алёна")      // Компилируется успешно!
+// val res0: NonEmptyString = Алёна
+```
+
+[Пример в Scastie](https://scastie.scala-lang.org/VY5yHaefRjiWKBdfXEpNbw)
+
+Уточнение `String` до `Name` (во время компиляции) можно реализовать с [помощью макросов](https://docs.scala-lang.org/scala3/reference/metaprogramming/macros.html):
+
+```scala
+import eu.timepit.refined.api.{Refined, RefinedTypeOps}
+import eu.timepit.refined.auto.*
+import eu.timepit.refined.string.*
+
+import scala.language.implicitConversions
+import scala.quoted.{Expr, Quotes}
+import scala.util.matching.Regex
+
+val namePattern: "[А-ЯЁ][а-яё]+" = "[А-ЯЁ][а-яё]+"
+
+def inspectNameCode(x: Expr[String])(using Quotes): Expr[String] =
+  import scala.quoted.quotes.reflect.report
+  if !namePattern.r.matches(x.valueOrAbort) then report.errorAndAbort("Invalid name")
+  x
+
+inline def inspectName(inline str: String): String =
+  ${ inspectNameCode('str) }
+
+inspectName("€‡™µ")
+// Не компилируется:
+// -- Error: ----------------------------------------------------------------------
+// inspectName("€‡™µ")
+// ^^^^^^^^^^^^^^^^^^^
+// Invalid name
+inspectName("12345")   // Не компилируется с аналогичной ошибкой
+inspectName("Alyona")  // Не компилируется с аналогичной ошибкой
+inspectName("Алёна18") // Не компилируется с аналогичной ошибкой
+inspectName("алёна")   // Не компилируется с аналогичной ошибкой
+
+inspectName("Алёна")
+// Компилируется успешно!
+// val res0: String = Алёна
+
+type Name = String Refined MatchesRegex[namePattern.type]
+
+given Conversion[String, Name] = RefinedTypeOps[Name, String].unsafeFrom(_)
+
+val name0: Name = inspectName("€‡™µ")    // Не компилируется с аналогичной ошибкой
+val name1: Name = inspectName("12345")   // Не компилируется с аналогичной ошибкой
+val name2: Name = inspectName("Alyona")  // Не компилируется с аналогичной ошибкой
+val name3: Name = inspectName("Алёна18") // Не компилируется с аналогичной ошибкой
+val name4: Name = inspectName("алёна")   // Не компилируется с аналогичной ошибкой
+
+val name5: Name = inspectName("Алёна")
+// Компилируется успешно!
+// val name5: Name = Алёна
+```
+
+[Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNameCompileTimeExamples.sc&plain=1)
+
+Таким образом добиться ошибок компиляции в Scala 3 сложнее, но тоже можно.
+Конечно, хотелось бы, чтобы эта функциональность поставлялась "из коробки", но, думаю, это вопрос времени.
+
+
+
+
+
 
 Проверка во время компиляции открывает довольно обширные возможности: 
 как минимум, значительную часть проверок можно переложить с модульных тестов на компилятор.

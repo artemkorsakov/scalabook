@@ -2,7 +2,6 @@ import eu.timepit.refined.api.{Refined, RefinedTypeOps}
 import eu.timepit.refined.auto.*
 import eu.timepit.refined.string.*
 
-import scala.language.implicitConversions
 import scala.util.matching.Regex
 
 import libs.refined.Name.{toName, pattern}

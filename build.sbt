@@ -1,20 +1,19 @@
-import Dependencies.Version._
+import Dependencies.Version.Scala
 
-inThisBuild(
-  List(
-    organization      := "ru.gitflic.artemkorsakov",
-    version           := "0.0.1-SNAPSHOT",
-    scalaVersion      := Scala,
-    semanticdbEnabled := true,
-    scalacOptions ++= Seq("-unchecked", "-deprecation")
-  )
-)
+ThisBuild / organization      := "ru.gitflic.artemkorsakov"
+ThisBuild / version           := "0.0.1-SNAPSHOT"
+ThisBuild / scalaVersion      := Scala
+ThisBuild / semanticdbEnabled := true
 
-lazy val examples = (project in file("examples"))
-  .settings(
-    name := "scalabook-examples",
-    libraryDependencies ++= Dependencies.examples,
-    libraryDependencies ++= Dependencies.examplesTests
+ThisBuild / scalacOptions ++=
+  Seq(
+    "-deprecation",
+    "-explain",
+    "-feature",
+    "-language:implicitConversions",
+    "-unchecked",
+    "-Xfatal-warnings",
+    "-Ykind-projector"
   )
 
 lazy val root = (project in file("."))
@@ -22,4 +21,22 @@ lazy val root = (project in file("."))
   .settings(
     name           := "scalabook",
     publish / skip := true
+  )
+
+lazy val examples = (project in file("examples"))
+  .settings(name := "scalabook-examples")
+  .settings(commonSettings)
+  .settings(
+    libraryDependencies ++= Dependencies.examples,
+    libraryDependencies ++= Dependencies.examplesTests
+  )
+
+lazy val commonSettings =
+  Seq(
+    Compile / console / scalacOptions --= Seq(
+      "-Wunused:_",
+      "-Xfatal-warnings"
+    ),
+    Test / console / scalacOptions :=
+      (Compile / console / scalacOptions).value
   )

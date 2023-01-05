@@ -98,10 +98,8 @@ trait StrongLaw extends ProfunctorLaw:
 
   private def swapTuple[X, Y]: ((X, Y)) => (Y, X) = _.swap
 
-  private def assoc[A, B, C]: (((A, B), C)) => (A, (B, C)) = {
+  private def assoc[A, B, C]: (((A, B), C)) => (A, (B, C)) =
     case ((a, b), c) => (a, (b, c))
-  }
 
-  private def unassoc[A, B, C]: ((A, (B, C))) => ((A, B), C) = {
+  private def unassoc[A, B, C]: ((A, (B, C))) => ((A, B), C) =
     case (a, (b, c)) => ((a, b), c)
-  }

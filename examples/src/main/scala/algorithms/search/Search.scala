@@ -8,7 +8,7 @@ object Search:
       }
       .getOrElse(-1)
 
-  def kmpSubstringSearch(searchWord: String, source: String): Int = {
+  def kmpSubstringSearch(searchWord: String, source: String): Int =
     val prefixTab = prefixTable(searchWord)
     source.indices
       .foldLeft((-1, 0)) {
@@ -26,7 +26,6 @@ object Search:
           else (-1, newX)
       }
       ._1
-  }
 
   private def prefixTable(searchString: String): Vector[Int] =
     searchString.tail

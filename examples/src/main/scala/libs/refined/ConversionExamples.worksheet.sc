@@ -2,8 +2,6 @@ import eu.timepit.refined.api.{Refined, RefinedTypeOps}
 import eu.timepit.refined.auto.*
 import eu.timepit.refined.string.*
 
-import scala.language.implicitConversions
-
 type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
 
 given Conversion[String, Option[Name]] = RefinedTypeOps[Name, String].unapply(_)

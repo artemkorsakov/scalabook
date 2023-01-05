@@ -15,6 +15,9 @@
 Какое множество значений он представляет?
 Да все что угодно: практически все алфавиты мира и всевозможные символы, 
 абсолютное большинство которых никто никогда в процессе разработки не встречает.
+
+> Вспомним фразу [Ken Scambler](https://github.com/kenbot), процитированную [вот в этом видео](https://www.youtube.com/watch?v=zExb9x3fzKs&t=66s) о валидности китайского перевода книг Шекспира в качестве входящего параметра `String`.
+
 Например: `"€‡™µ"`
 
 ```scala
@@ -772,7 +775,7 @@ Config(example.com,8080)
   - [Refined Types in Scala - Rock the JVM](https://www.youtube.com/watch?v=IDrGbsupaok)
   - [Security with Scala: Refined Types and Object Capabilities - Will Sargent](https://slideslive.com/38908776/security-with-scala-refined-types-and-object-capabilities) 
   - [Strings are Evil: Methods to hide the use of primitive types - Noel Welsh](https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types)
-  - [Why types matter](https://www.youtube.com/watch?v=n1Y2V4zCZdQ)
+  - [Why types matter - Gabriel Volpe](https://www.youtube.com/watch?v=n1Y2V4zCZdQ)
 - Статьи:
   - [A simple trick to improve type safety of your Scala code](https://blog.softwaremill.com/a-simple-trick-to-improve-type-safety-of-your-scala-code-ba80559ca092)
   - [How we used Refined to improve type safety and error reporting in Scala](https://engineering.contentsquare.com/2021/scala-refined-types/)

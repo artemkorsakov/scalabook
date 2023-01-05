@@ -23,7 +23,7 @@ val str: String = "€‡™µ"
 В абсолютном большинстве случаев такая "свобода" не нужна.
 
 Давайте, представим, что нам нужно создать множество, которое представляло бы собой всевозможные имена людей, 
-написанные кириллицей и начинающееся с заглавной буквы, 
+написанные кириллицей и начинающиеся с заглавной буквы, 
 для использования в заданном классе `Person` в качестве имени человека.
 
 Например, следующий вариант позволителен - `Алёна`,
@@ -45,15 +45,15 @@ val name: Name = "€‡™µ"
 // val name: Name = €‡™µ
 ```
 
+[Пример в Scastie](https://scastie.scala-lang.org/keYiEtDCQkuOlfzZUVyXjQ)
+
 ```scala
 case class Name(value: String) extends AnyVal
 val name: Name = Name("€‡™µ")
 // val name: Name = Name(€‡™µ)
 ```
 
-[Пример type alias в Scala Worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivationTypeAlias.sc&plain=1)
-
-[Пример case class в Scala Worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivationCaseClass.sc&plain=1)
+[Пример в Scastie](https://scastie.scala-lang.org/CjZpe7ejSwW724prXkQLqg)
 
 Конечно, можно регулировать создание `Name`, путем ограничения видимости стандартного конструктора 
 и определения метода создания экземпляра `Name` в сопутствующем объекте:

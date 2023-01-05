@@ -1,6 +1,5 @@
-import eu.timepit.refined.*
-import eu.timepit.refined.api.*
-import eu.timepit.refined.string.*
+import eu.timepit.refined.api.{Refined, RefinedTypeOps}
+import eu.timepit.refined.string.MatchesRegex
 
 type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
 object Name extends RefinedTypeOps[Name, String]
@@ -27,9 +26,9 @@ Name.from("Алёна18")
 Name.from("алёна")
 Name.from("Алёна")
 
-Name.unsafeFrom("€‡™µ")
-Name.unsafeFrom("12345")
-Name.unsafeFrom("Alyona")
-Name.unsafeFrom("Алёна18")
-Name.unsafeFrom("алёна")
+// Name.unsafeFrom("€‡™µ")
+// Name.unsafeFrom("12345")
+// Name.unsafeFrom("Alyona")
+// Name.unsafeFrom("Алёна18")
+// Name.unsafeFrom("алёна")
 Name.unsafeFrom("Алёна")

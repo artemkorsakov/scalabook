@@ -134,20 +134,22 @@ Name.fromString("Алёна")    // Some(Name(Алёна))
 Давайте рассмотрим решение исходной задачки с помощью **refined**:
 
 ```scala
-import eu.timepit.refined.*
-import eu.timepit.refined.api.*
-import eu.timepit.refined.string.*
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.string.MatchesRegex
 
 type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
-final case class Person(name: Name)
 ```
 
-В библиотеке **refined** есть класс `RefinedTypeOps`, который определяет метод `upapply`, позволяющий
-в сопутствующем объекте определить создание `Person` с валидными значениями, например так:
+Представим, что нам необходимо использовать параметр типа `Name` в произвольном классе `Person`.
+В библиотеке **refined** есть класс `RefinedTypeOps`, который реализует метод `upapply`, позволяющий
+в сопутствующем объекте определить создание `Person` с "валидными" значениями, например так:
 
 ```scala
+object Name extends RefinedTypeOps[Name, String]
+
+final case class Person(name: Name)
+
 object Person:
-  object Name extends RefinedTypeOps[Name, String]
   def fromString(str: String): Option[Person] =
     str match
       case Name(name) => Some(Person(name))

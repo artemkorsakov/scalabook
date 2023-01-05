@@ -55,7 +55,7 @@ val name: Name = Name("€‡™µ")
 
 [Пример в Scastie](https://scastie.scala-lang.org/CjZpe7ejSwW724prXkQLqg)
 
-Конечно, можно регулировать создание `Name`, путем ограничения видимости стандартного конструктора 
+Конечно, можно регулировать создание `Name` путем ограничения видимости стандартного конструктора 
 и определения метода создания экземпляра `Name` в сопутствующем объекте:
 
 ```scala
@@ -74,24 +74,28 @@ object Name:
 val name: Name = Name("€‡™µ") // не скомпилируется
 ```
 
-А создание `Person` (`case class Person(name: Name)`), казалось бы, происходит так, как было задумано:
+А его использование, казалось бы, происходит так, как было задумано:
 
 ```scala
-Name.fromString("€‡™µ").map(Person.apply)     // None
-Name.fromString("12345").map(Person.apply)    // None
-Name.fromString("Alyona").map(Person.apply)   // None
-Name.fromString("Алёна18").map(Person.apply)  // None
-Name.fromString("алёна").map(Person.apply)    // None
-Name.fromString("Алёна").map(Person.apply)    // Some(Person(Name(Алёна)))
+Name.fromString("€‡™µ")     // None
+Name.fromString("12345")    // None
+Name.fromString("Alyona")   // None
+Name.fromString("Алёна18")  // None
+Name.fromString("алёна")    // None
+Name.fromString("Алёна")    // Some(Name(Алёна))
 ```
 
-[Пример в Scastie](https://scastie.scala-lang.org/44opPTWMQ7qPajVrayvk2w)
+[Пример в Scastie](https://scastie.scala-lang.org/HvKxeWpVT22Cv50N8GnbCw)
 
 > В Scala 2 этот способ можно "взломать" через метод `copy` (в Scala 3 эту лазейку убрали): 
+>
 > `Name.fromString("Алёна").map(_.copy("€‡™µ")) // Some(Name(€‡™µ))`
+>
 > Для запрета на использование метода `copy` или переопределения через наследование 
 в Scala 2 требовалось объявлять класс как `sealed abstract`, вот так:
+>
 > `sealed abstract case class Name private (value: String) extends AnyVal`
+>
 > [Пример "взлома" через copy в Scala 2 на Scastie](https://scastie.scala-lang.org/hoWcVSWBRFCI4AwtcY5mMw)
 
 ## Введение в уточняющие типы

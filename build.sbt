@@ -2,7 +2,7 @@ import Dependencies._
 
 ThisBuild / organization      := "ru.gitflic.artemkorsakov"
 ThisBuild / version           := "0.0.1-SNAPSHOT"
-ThisBuild / scalaVersion      := Dependencies.Scala
+ThisBuild / scalaVersion      := Scala
 ThisBuild / semanticdbEnabled := true
 
 ThisBuild / scalacOptions ++=

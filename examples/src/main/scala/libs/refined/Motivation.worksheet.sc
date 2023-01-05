@@ -5,6 +5,7 @@ type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
 
 object Name extends RefinedTypeOps[Name, String]
 
+// to Either
 Name.from("€‡™µ")
 Name.from("12345")
 Name.from("Alyona")
@@ -12,6 +13,7 @@ Name.from("Алёна18")
 Name.from("алёна")
 Name.from("Алёна")
 
+// Небезопасная конвертация
 try Name.unsafeFrom("€‡™µ")
 catch case e: IllegalArgumentException => print(e.getMessage())
 try Name.unsafeFrom("12345")

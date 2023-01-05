@@ -199,61 +199,21 @@ val name5: Option[Name] = "Алёна"   // Some(Алёна)
 
 ## Обзор библиотеки
 
-У библиотеки достаточно большой набор предопределенных типов и есть, например, метод `refineV`,
-возвращающий значение типа `Either[String, T]`, где слева содержится ошибка, если входящее значение 
-не удовлетворяет предикату.
+У библиотеки [достаточно большой набор предопределенных типов (69)](refined/types) 
+и есть, например, метод `refineV`,
+возвращающий значение типа `Either[String, T]`, где, как уже упоминалось для `from`, слева содержится ошибка, 
+если входящее значение не удовлетворяет предикату.
 
-Вот несколько примеров использования библиотеки:
-
-```scala
-import eu.timepit.refined.*
-import eu.timepit.refined.api.{RefType, Refined}
-import eu.timepit.refined.auto.*
-import eu.timepit.refined.boolean.*
-import eu.timepit.refined.char.*
-import eu.timepit.refined.collection.*
-import eu.timepit.refined.generic.*
-import eu.timepit.refined.numeric.*
-import eu.timepit.refined.string.*
-import shapeless.{::, HNil}
-
-val x = 42
-refineV[Positive](x)         // Right(42)
-refineV[Positive](-x)        // Left("Predicate failed: (-42 > 0).")
-
-refineV[NonEmpty]("Hello")   // Right("Hello")
-refineV[NonEmpty]("")        // Left("Predicate isEmpty() did not fail.")
-
-// Уточняющие типы можно между собой комбинировать, создавая более сложные типы
-type ZeroToOne = Not[Less[0.0]] And Not[Greater[1.0]]
-refineV[ZeroToOne](0.8)      // Right(0.8)
-refineV[ZeroToOne](1.8)      
-// Left("Right predicate of (!(1.8 < 0.0) && !(1.8 > 1.0)) failed: Predicate (1.8 > 1.0) did not fail.")
-
-// Или использовать несколько уточняющих типов
-refineV[AnyOf[Digit :: Letter :: Whitespace :: HNil]]('F')   // Right(F)
-
-refineV[MatchesRegex["[0-9]+"]]("123.")                      // Left(Predicate failed: "123.".matches("[0-9]+").)
-
-type Age = Int Refined Interval.ClosedOpen[7, 77]
-val userInput                       = 55
-val ageEither1: Either[String, Age] = refineV(userInput)                // Right(55)
-val ageEither2                      = RefType.applyRef[Age](userInput)  // Right(55)
-```
-
-[Разобранный пример в Scala Worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefinedExamples.sc&plain=1)
-
-[Полный список предопределенных типов (69 типов)](refined/types)
+[Вот несколько примеров использования библиотеки](https://github.com/fthomas/refined#more-examples)
 
 > Примечание для пользователей Scala < 2.13.
 > Некоторые уточненные типы принимают параметр, и если вы используете Scala < 2.13, 
 > то вам нужно будет использовать shapeless 
-> (уже предоставленный усовершенствованной библиотекой в качестве удобного псевдонима `import eu.timepit.refined.W`), 
+> (уже предоставленный библиотекой **refined** в качестве удобного псевдонима `import eu.timepit.refined.W`), 
 > чтобы переправить литералы на уровень типа:
 > вместо `StartsWith["@"]` надо будет использовать ``StartsWith[W.`"@"`.T]``
 > 
 > Первоначально эта проблема была рассмотрена в [SIP-23 «Одиночные типы на основе литералов»](https://docs.scala-lang.org/sips/42.type.html).
-
 
 ## А в чем разница?
 

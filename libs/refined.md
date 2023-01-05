@@ -96,7 +96,7 @@ Name.fromString("Алёна")    // Some(Name(Алёна))
 >
 > `sealed abstract case class Name private (value: String) extends AnyVal`
 >
-> [Пример "взлома" через copy в Scala 2 на Scastie](https://scastie.scala-lang.org/hoWcVSWBRFCI4AwtcY5mMw)
+> [Пример "взлома" через copy в Scala 2 на Scastie](https://scastie.scala-lang.org/9Uzl00WPTs6TJg8jW7GzOg)
 
 ## Введение в уточняющие типы
 

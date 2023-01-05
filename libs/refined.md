@@ -85,27 +85,14 @@ Name.fromString("алёна").map(Person.apply)    // None
 Name.fromString("Алёна").map(Person.apply)    // Some(Person(Name(Алёна)))
 ```
 
-Но в Scala 2 и этот способ можно "взломать" через метод `copy` (в Scala 3 эту лазейку убрали):
+[Пример в Scastie](https://scastie.scala-lang.org/44opPTWMQ7qPajVrayvk2w)
 
-```scala
-Name.fromString("Алёна").map(_.copy("€‡™µ")).map(Person.apply)     // Some(Person(Name(€‡™µ)))
-Name.fromString("Алёна").map(_.copy("12345")).map(Person.apply)    // Some(Person(Name(12345)))
-Name.fromString("Алёна").map(_.copy("Alyona")).map(Person.apply)   // Some(Person(Name(Alyona)))
-Name.fromString("Алёна").map(_.copy("Алёна18")).map(Person.apply)  // Some(Person(Name(Алёна18)))
-Name.fromString("Алёна").map(_.copy("алёна")).map(Person.apply)    // Some(Person(Name(алёна)))
-Name.fromString("Алёна").map(_.copy("Алёна")).map(Person.apply)    // Some(Person(Name(Алёна)))
-```
-
-Для запрета на использование метода `copy` или переопределения через наследование 
+> В Scala 2 этот способ можно "взломать" через метод `copy` (в Scala 3 эту лазейку убрали): 
+> `Name.fromString("Алёна").map(_.copy("€‡™µ")) // Some(Name(€‡™µ))`
+> Для запрета на использование метода `copy` или переопределения через наследование 
 в Scala 2 требовалось объявлять класс как `sealed abstract`, вот так:
-
-```scala
-sealed abstract case class Name private (value: String) extends AnyVal
-```
-
-[Пример "взлома" через copy в Scala 2 на Scastie](https://scastie.scala-lang.org/hoWcVSWBRFCI4AwtcY5mMw)
-
-[Разобранный пример в Scala Worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivationCCPC.sc&plain=1)
+> `sealed abstract case class Name private (value: String) extends AnyVal`
+> [Пример "взлома" через copy в Scala 2 на Scastie](https://scastie.scala-lang.org/hoWcVSWBRFCI4AwtcY5mMw)
 
 ## Введение в уточняющие типы
 

@@ -36,5 +36,6 @@ val name3: Option[Name] = "Алёна18"
 val name4: Option[Name] = "алёна"
 val name5: Option[Name] = "Алёна"
 
+val name = Name.unsafeFrom("Алёна")
 def printT[T >: String](t: T): Unit = println(t)
-printT(name5.get)
+printT(name)

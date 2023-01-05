@@ -1,13 +1,5 @@
-import eu.timepit.refined.*
-import eu.timepit.refined.api.{RefType, Refined}
-import eu.timepit.refined.auto.*
-import eu.timepit.refined.boolean.*
-import eu.timepit.refined.char.*
-import eu.timepit.refined.collection.*
-import eu.timepit.refined.generic.*
+import eu.timepit.refined.refineV
 import eu.timepit.refined.numeric.*
-import eu.timepit.refined.string.*
-import shapeless.{::, HNil}
 
 refineV[Less[0.0]](0.8)
 refineV[Less[0.0]](0.0)

@@ -1,13 +1,6 @@
-import eu.timepit.refined.*
-import eu.timepit.refined.api.*
-import eu.timepit.refined.auto.*
-import eu.timepit.refined.boolean.*
-import eu.timepit.refined.char.*
+import eu.timepit.refined.refineV
 import eu.timepit.refined.collection.*
-import eu.timepit.refined.generic.*
-import eu.timepit.refined.numeric.*
-import eu.timepit.refined.string.*
-import shapeless.{::, HNil}
+import eu.timepit.refined.numeric.Even
 
 refineV[Contains["a"]](Vector("a", "b", "c", "d"))
 refineV[Contains["e"]](Vector("a", "b", "c", "d"))

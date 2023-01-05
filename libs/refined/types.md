@@ -16,7 +16,7 @@
 - `AnyOf[PS]` - дизъюнкция всех предикатов в `PS`
 - `OneOf[PS]` - исключительная дизъюнкция всех предикатов в `PS`
 
-[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FBooleanExamples.sc&plain=1)
+[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FBooleanExamples.worksheet.sc&plain=1)
 
 
 ### Numeric предикаты
@@ -40,7 +40,7 @@
 - `Odd` - проверяет, является ли число нечетным
 - `NonNaN` - проверяет, не является ли число с плавающей запятой `NaN`
 
-[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNumericExamples.sc&plain=1)
+[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNumericExamples.worksheet.sc&plain=1)
 
 
 ### Char предикаты
@@ -52,7 +52,7 @@
 - `UpperCase` - проверяет, является ли `Char` символом верхнего регистра
 - `Whitespace` - проверяет, является ли `Char` пробелом
 
-[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FCharExamples.sc&plain=1)
+[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FCharExamples.worksheet.sc&plain=1)
 
 
 ### String предикаты
@@ -78,7 +78,7 @@
 - `ValidBigInt` - проверяет, является ли значение строки валидным типом `BigInt`
 - `ValidBigDecimal` - проверяет, является ли значение строки валидным типом `BigDecimal`
 
-[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FStringExamples.sc&plain=1)
+[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FStringExamples.worksheet.sc&plain=1)
 
 
 ### Collection предикаты
@@ -98,17 +98,17 @@
 - `MinSize[N]` - проверяет, больше ли размер `Iterable` или равен `N`
 - `MaxSize[N]` - проверяет, меньше ли размер `Iterable` или равен `N`
 
-[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FCollectionExamples.sc&plain=1)
+[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FCollectionExamples.worksheet.sc&plain=1)
 
 
 ### Generic предикаты
 
 - `Equal[U]` - проверяет, равно ли значение `U`
 
-[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FGenericExamples.sc&plain=1)
+[Пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FGenericExamples.worksheet.sc&plain=1)
 
 
 ---
 
-**References:**
-- [Refined lib - Github][refined lib]
+**Ссылки:**
+- [Refined lib - Github](https://github.com/fthomas/refined)

@@ -1,15 +1,8 @@
-import eu.timepit.refined.*
-import eu.timepit.refined.api.{RefType, Refined}
-import eu.timepit.refined.auto.*
-import eu.timepit.refined.boolean.*
-import eu.timepit.refined.char.*
-import eu.timepit.refined.collection.*
-import eu.timepit.refined.generic.*
-import eu.timepit.refined.numeric.*
+import eu.timepit.refined.refineV
 import eu.timepit.refined.string.*
-import shapeless.{::, HNil}
 
 import scala.util.Random
+import java.util.UUID
 
 refineV[EndsWith["ing"]]("String")
 refineV[EndsWith["in"]]("String")
@@ -35,7 +28,7 @@ refineV[Uri]("http   www.ics.uci.edu/pub/ietf/uri/#Related")
 refineV[Url]("http://www.ics.uci.edu")
 refineV[Url]("htp://www.ics.uci.edu")
 
-refineV[Uuid](java.util.UUID.randomUUID().toString)
+refineV[Uuid](UUID.randomUUID().toString)
 refineV[Uuid]("htp://www.ics.uci.edu")
 
 refineV[XPath]("//a[class='active']")

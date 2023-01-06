@@ -447,7 +447,7 @@ refineV[NonEmpty](42: Packed)      // Right(42)
 ## Накопление ошибок валидации
 
 Вариант использования `refineV`, рассмотренный выше, довольно прост, 
-и с ним часто столкнется любой разработчик: получение данных от некоего входящего потока.
+и с ним часто сталкиваются разработчики: получение данных от некоего входящего потока.
 Но прерывание процесса на первой обнаруженной ошибке нежелательно. 
 Ведь на ошибки можно быстро реагировать и решать проблемы входящего потока пачками.
 По этой причине просто монадическая композиция цепочек `Either` не подходит.
@@ -464,7 +464,7 @@ refineV[NonEmpty](42: Packed)      // Right(42)
 
 Это именно то, что можно сделать с `ValidatedNec` из библиотеки [cats](https://typelevel.org/cats/index.html).
 
-К счастью, **refined** предоставляет расширение [**refined-cats**](https://index.scala-lang.org/fthomas/refined/artifacts/refined-cats?pre-releases=false), 
+К счастью, **refined** предоставляет расширение [**refined-cats**][refined cats], 
 которое позволяет возвращать шаги проверки `ValidatedNec[String, A]` вместо `Either[String, A]`:
 
 ```scala
@@ -544,7 +544,7 @@ Person.refine("Andrew", 150, "id")
   - [Bond](https://github.com/fwbrasil/bond)
   - [Scalactic](https://www.scalactic.org/)
 - [Интеграция с другими библиотеками](https://github.com/fthomas/refined#using-refined)
-  - [refined-cats (Scala 3 + Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-cats?pre-releases=false)
+  - [refined-cats (Scala 3 + Scala 2)][refined cats]
   - [refined-eval (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-eval?pre-releases=false)
   - [refined-jsonpath (Scala 3 + Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-jsonpath?pre-releases=false)
   - [refined-pureconfig (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-pureconfig?pre-releases=false)
@@ -624,6 +624,7 @@ Person.refine("Andrew", 150, "id")
 
 
 [refined lib]: https://github.com/fthomas/refined
+[refined cats]: https://index.scala-lang.org/fthomas/refined/artifacts/refined-cats?pre-releases=false
 [conversion]: refined/conversionInScala3
 [thetypesystem]: https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems
 [tests]: https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md

@@ -13,7 +13,7 @@
 val str: String = "€‡™µ"
 ```
 
-> Вспомним фразу [Ken Scambler](https://github.com/kenbot), процитированную [вот в этом видео](https://www.youtube.com/watch?v=zExb9x3fzKs&t=52s): валиден ли китайский перевод книг Шекспира в качестве входящего параметра `String`?!
+> Вспомним фразу [Ken Scambler](https://github.com/kenbot), процитированную [вот в этом видео](https://www.youtube.com/watch?v=zExb9x3fzKs&t=52s): валиден ли китайский перевод книг Шекспира в качестве входящего параметра типа `String`?!
 
 В абсолютном большинстве случаев такая "свобода" не нужна.
 

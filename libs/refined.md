@@ -274,7 +274,7 @@ object Example {
 }
 ```
 
-Скомпилится только последний вариант, потому что строка `"Алёна"` подходит под уточненный тип.
+Скомпилится только последний вариант, потому что строка `"Алёна"` удовлетворяет предикату уточненного типа.
 
 [Пример в Scastie](https://scastie.scala-lang.org/oqh3jUboQQqf3wKC8A5ZkA)
 
@@ -431,9 +431,6 @@ refineV[NonEmpty](42: Packed)      // Right(42)
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FPackedExamples.worksheet.sc&plain=1)
 
-
-## Уточнение уточненного типа
-
 Уточнить можно любой тип, в том числе уточненный - в этом случае он становится базовым для другого типа,
 который будет его "уточнять".
 В библиотеке **refined** уточнение уточненного типа 
@@ -443,7 +440,7 @@ refineV[NonEmpty](42: Packed)      // Right(42)
 
 Предельным непустым уточненным типом [является литеральный тип](https://docs.scala-lang.org/sips/42.type.html).
 
-[Пример в Scastie](https://scastie.scala-lang.org/EqPJmGGNQ4etxbUajGBBWg)
+[Пример в Scastie](https://scastie.scala-lang.org/hEnqG1UxQkGeBpKX8wt40A)
 
 
 ## Накопление ошибок валидации

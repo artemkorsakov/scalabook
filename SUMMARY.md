@@ -269,6 +269,7 @@
 - [Scala библиотеки](libs/index.md)
   - [Refined](libs/refined.md)
     - [Список refined типов](libs/refined/types.md) 
+    - [Refined + pureconfig](libs/refined/pureconfig.md) 
   - [Cats effect](libs/cats-effect.md)
     - [Копирование файлов](libs/cats-effect/copy-files.md) 
     - [Производитель-потребитель](libs/cats-effect/producer-consumer-problem.md) 

@@ -438,7 +438,8 @@ refineV[NonEmpty](42: Packed)      // Right(42)
 
 [Пример в Scastie](https://scastie.scala-lang.org/nfETvR0vSUGv77Fc984icw)
 
-Предельным непустым уточненным типом [является литеральный тип](https://docs.scala-lang.org/sips/42.type.html).
+Предельным непустым уточненным типом [является литеральный тип](https://docs.scala-lang.org/sips/42.type.html),
+добавленный в версии Scala 2.13.
 
 [Пример в Scastie](https://scastie.scala-lang.org/hEnqG1UxQkGeBpKX8wt40A)
 

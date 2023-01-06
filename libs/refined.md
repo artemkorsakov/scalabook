@@ -508,7 +508,7 @@ object Person:
 
 ```scala
 Person.refine("Андрей", 50, UUID.randomUUID().toString)
-// val res1: cats.data.ValidatedNec[String, Person] = Valid(Person(Андрей,50,fccec68b-cefd-45e8-ae57-b8cdd3fa3cb8))
+// Valid(Person(Андрей,50,fccec68b-cefd-45e8-ae57-b8cdd3fa3cb8))
 ```
 
 А так как мы используем [Applicative](https://typelevel.org/cats/typeclasses/applicative.html), 
@@ -517,12 +517,11 @@ Person.refine("Андрей", 50, UUID.randomUUID().toString)
 
 ```scala
 Person.refine("Andrew", 150, "id")
-// val res0: cats.data.ValidatedNec[String, Person] = 
-//   Invalid(Chain(
-//     Predicate failed: "Andrew".matches("[А-ЯЁ][а-яё]+")., 
-//     Right predicate of (!(150 < 7) && (150 < 77)) failed: Predicate failed: (150 < 77)., 
-//     Uuid predicate failed: Invalid UUID string: id
-//   ))
+// Invalid(Chain(
+//   Predicate failed: "Andrew".matches("[А-ЯЁ][а-яё]+")., 
+//   Right predicate of (!(150 < 7) && (150 < 77)) failed: Predicate failed: (150 < 77)., 
+//   Uuid predicate failed: Invalid UUID string: id
+// ))
 ```
 
 [Пример в Scastie](https://scastie.scala-lang.org/ldZp5KvvSHKfieFPCefw7Q)

@@ -65,7 +65,7 @@ Config(,808)
 ---
 ```
 
-[Разобранный пример на Scastie](https://scastie.scala-lang.org/vq79scDfRyOA4GoDh1MFnw)
+[Пример в Scastie](https://scastie.scala-lang.org/vq79scDfRyOA4GoDh1MFnw)
 
 Безусловно, ошибка была бы найдена при развертывании на стенде, например, при получении ошибки подключения.
 Но сколько времени ушло бы на поиск опечатки в хосте или порту?
@@ -129,7 +129,7 @@ Config(example.com,8080)
 ---
 ```
 
-[Разобранный пример на Scastie](https://scastie.scala-lang.org/Lr7fwKLJT7GNZ7TApANjgg)
+[Пример в Scastie](https://scastie.scala-lang.org/Lr7fwKLJT7GNZ7TApANjgg)
 
 В лице уточняющих типов мы можем более четко формулировать, какие значения считаются валидными в конфигах
 и отсеивать явные опечатки.

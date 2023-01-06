@@ -96,7 +96,7 @@ Name.fromString("Алёна")    // Some(Name(Алёна))
 >
 > [Пример "взлома" через copy в Scala 2 на Scastie](https://scastie.scala-lang.org/9Uzl00WPTs6TJg8jW7GzOg)
 
-## Введение в уточняющие типы
+## Уточняющие типы
 
 Ещё одним способом решения заданной проблемы может стать библиотека для работы с уточняющими типами [**refined**][refined lib].
 

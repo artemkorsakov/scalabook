@@ -529,7 +529,7 @@ Person.refine("Andrew", 150, "id")
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefinedWithCatsExamples.worksheet.sc&plain=1)
 
 
-## Резюме
+## Итоги обзора библиотеки refined
 
 Подведем краткие итоги обзора библиотеки **refined**:
 
@@ -561,7 +561,7 @@ Person.refine("Andrew", 150, "id")
   - [refined-shapeless (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-shapeless?pre-releases=false)
 
 
-## Общее заключение об уточняющих типах
+## Заключение
 
 Методов борьбы с ошибками в программном обеспечении очень много ввиду важности проблемы.
 Тестирование программного обеспечения

@@ -312,50 +312,61 @@ refineToNonEmptyString("Алёна")      // Компилируется успе
 ```scala
 import eu.timepit.refined.api.{Refined, RefinedTypeOps}
 import eu.timepit.refined.string.MatchesRegex
-import scala.quoted.{Expr, Quotes}
+import scala.quoted.{Expr, Quotes, ToExpr, quotes}
 
 type Name = String Refined MatchesRegex[Name.pattern.type]
 
 object Name:
-  given Conversion[String, Name] = RefinedTypeOps[Name, String].unsafeFrom(_)
-
   val pattern: "[А-ЯЁ][а-яё]+" = "[А-ЯЁ][а-яё]+"
 
   extension (inline str: String)
-    inline def toName: String = ${ inspectNameCode('str) }
+    inline def toName: Name = ${ inspectNameCode('str) }
 
-  private def inspectNameCode(x: Expr[String])(using Quotes): Expr[String] =
-    import scala.quoted.quotes.reflect.report
-    if !pattern.r.matches(x.valueOrAbort) then
-      report.errorAndAbort(s"Name does not match pattern '$pattern'")
-    x
+  private given NameToExpr: ToExpr[Name] with
+    def apply(x: Name)(using Quotes) =
+      import quotes.reflect.*
+      Literal(StringConstant(x.toString)).asExpr.asInstanceOf[Expr[Name]]
+
+  private def inspectNameCode(x: Expr[String])(using Quotes): Expr[Name] =
+    val str        = x.valueOrAbort
+    if !pattern.r.matches(str) then
+      import quotes.reflect.*
+      report.errorAndAbort(s"'$str' does not match pattern '$pattern'")
+    val name: Name = RefinedTypeOps[Name, String].unsafeFrom(str)
+    Expr(name)
 ```
 
+В `object Name` определяется встроенный (_inline_) метод расширения `toName`, 
+принимающий на вход `String` и возвращающий `Name`.
+Преобразование безопасно, потому что выполняется во время компиляции.
+
+[Исходный код Name](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FName.scala&plain=1)
+
+Попытки вызвать этот метод на невалидных значениях приводят к ошибкам компиляции:
 
 ```scala
-import libs.refined.Name
-import libs.refined.Name.{ *, given }
+import libs.refined.Name.toName
 
 "€‡™µ".toName       // Не компилируется с ошибкой "'€‡™µ' does not match pattern '[А-ЯЁ][а-яё]+'"
 "12345".toName      // Не компилируется с ошибкой "'12345' does not match pattern '[А-ЯЁ][а-яё]+'"
 "Alyona".toName     // Не компилируется с ошибкой "'Alyona' does not match pattern '[А-ЯЁ][а-яё]+'"
 "Алёна18".toName    // Не компилируется с ошибкой "'Алёна18' does not match pattern '[А-ЯЁ][а-яё]+'"
 "алёна".toName      // Не компилируется с ошибкой "'алёна' does not match pattern '[А-ЯЁ][а-яё]+'"
-"Алёна".toName      // Компилируется успешно!
-// val res0: String = Алёна
-
-val name0: Name = "€‡™µ".toName     // Не компилируется с ошибкой "'€‡™µ' does not match pattern '[А-ЯЁ][а-яё]+'"
-val name1: Name = "12345".toName    // Не компилируется с ошибкой "'12345' does not match pattern '[А-ЯЁ][а-яё]+'"
-val name2: Name = "Alyona".toName   // Не компилируется с ошибкой "'Alyona' does not match pattern '[А-ЯЁ][а-яё]+'"
-val name3: Name = "Алёна18".toName  // Не компилируется с ошибкой "'Алёна18' does not match pattern '[А-ЯЁ][а-яё]+'"
-val name4: Name = "алёна".toName    // Не компилируется с ошибкой "'алёна' does not match pattern '[А-ЯЁ][а-яё]+'"
-val name5: Name = "Алёна".toName    // Компилируется успешно!
-// val name5: Name = Алёна
 ```
 
-[Исходный код Name](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FName.scala&plain=1)
+[Исходный код невалидных примеров](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNameCompileErrorExamples.worksheet.sc&plain=1)
 
-[Исходный код примера](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNameExamples.worksheet.sc&plain=1)
+Если же строка удовлетворяет предикату, то тип результата - это уже уточненный тип:
+
+```scala
+import libs.refined.Name.toName
+
+val name = "Алёна".toName
+// val name: Name = Алёна
+```
+
+[Исходный код валидного примера](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNameExamples.worksheet.sc&plain=1)
+
 
 Таким образом добиться ошибок компиляции в Scala 3 сложнее, но тоже можно.
 Конечно, хотелось бы, чтобы эта функциональность поставлялась "из коробки", но, думаю, это вопрос времени.

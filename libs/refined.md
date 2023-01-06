@@ -138,13 +138,16 @@ import eu.timepit.refined.string.MatchesRegex
 type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
 ```
 
-В библиотеке **refined** есть класс `RefinedTypeOps`, реализующий методы конвертации из базового типа в уточненный:
+В библиотеке **refined** есть класс `RefinedTypeOps`, реализующий методы конвертации из базового типа в уточненный.
+Давайте объявим объект `Name` для иссследования доступных методов:
 
 ```scala
 object Name extends RefinedTypeOps[Name, String]
 ```
 
-Метод `from` возвращает `Either[String, Name]`, где слева - ошибка предиката, а справа - уточненный тип:
+Метод `from` возвращает `Either[String, Name]`, 
+где слева - ошибка, если входящее значение не удовлетворяет предикату, 
+а справа - уточненный тип, если удовлетворяет:
 
 ```scala
 Name.from("€‡™µ")     // Left(Predicate failed: "€‡™µ".matches("[А-ЯЁ][а-яё]+").)

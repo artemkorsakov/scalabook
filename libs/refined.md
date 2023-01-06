@@ -435,90 +435,14 @@ refineV[NonEmpty](42: Packed)      // Right(42)
 
 Уточнить можно любой тип, в том числе уточненный - в этом случае он становится базовым для другого типа,
 который будет его "уточнять".
+В библиотеке **refined** уточнение уточненного типа 
+равносильно использованию типа `And[A, B]` - коньюнкции предикатов `A` и `B`.
 
-Рассмотрим следующую цепочку уточнения:
-- Положительные числа
-- Четные положительные числа
-- Четные положительные числа, делящиеся на 3
+[Пример в Scastie](https://scastie.scala-lang.org/nfETvR0vSUGv77Fc984icw)
 
-```scala
-import eu.timepit.refined.api.{Refined, RefinedTypeOps}
-import eu.timepit.refined.boolean.And
-import eu.timepit.refined.numeric.{Divisible, Even, Positive}
+Предельным непустым уточненным типом [является литеральный тип](https://docs.scala-lang.org/sips/42.type.html).
 
-// Положительные числа
-type PositiveInt = Int Refined Positive
-object PositiveInt extends RefinedTypeOps[PositiveInt, Int]
-
-PositiveInt.from(-6)                // Left(Predicate failed: (-6 > 0).)
-PositiveInt.from(3)                 // Right(3)
-PositiveInt.from(4)                 // Right(4)
-PositiveInt.from(6)                 // Right(6)
-
-// Четные положительные числа
-type PositiveEvenInt = Int Refined (Positive And Even)
-object PositiveEvenInt extends RefinedTypeOps[PositiveEvenInt, Int]
-
-PositiveEvenInt.from(-6)            // Left(Left predicate of ((-6 > 0) && (-6 % 2 == 0)) failed: Predicate failed: (-6 > 0).)  
-PositiveEvenInt.from(3)             // Left(Right predicate of ((3 > 0) && (3 % 2 == 0)) failed: Predicate failed: (3 % 2 == 0).)
-PositiveEvenInt.from(4)             // Right(4)
-PositiveEvenInt.from(6)             // Right(6)
-
-// Четные положительные числа, делящиеся на 3
-type PositiveDivisibleBySixInt = Int Refined (Positive And Even And Divisible[3])
-object PositiveDivisibleBySixInt extends RefinedTypeOps[PositiveDivisibleBySixInt, Int]
-
-PositiveDivisibleBySixInt.from(-6)  // Left(Left predicate of (((-6 > 0) && (-6 % 2 == 0)) && (-6 % 3 == 0)) failed: Left predicate of ((-6 > 0) && (-6 % 2 == 0)) failed: Predicate failed: (-6 > 0).)  
-PositiveDivisibleBySixInt.from(3)   // Left(Left predicate of (((3 > 0) && (3 % 2 == 0)) && (3 % 3 == 0)) failed: Right predicate of ((3 > 0) && (3 % 2 == 0)) failed: Predicate failed: (3 % 2 == 0).)
-PositiveDivisibleBySixInt.from(4)   // Left(Right predicate of (((4 > 0) && (4 % 2 == 0)) && (4 % 3 == 0)) failed: Predicate failed: (4 % 3 == 0).)
-PositiveDivisibleBySixInt.from(6)   // Right(6)
-```
-
-[Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefineRefinementTypeExamples.sc&plain=1)
-
-
-## Литеральные типы
-
-Предельным непустым уточненным типом является литеральный тип:
-
-```scala
-var foo: "foo" = "foo"
-foo = "foo" // Позволительно
-foo = "bar" // Ошибка компиляции
-// Type Mismatch Error: -------------------------------------------------
-// foo = "bar"
-//       ^^^^^
-//       Found:    ("bar" : String)
-//       Required: ("foo" : String)
-
-var one: 1 = 1
-one = 1 // Позволительно
-one = 2 // Ошибка компиляции
-// Type Mismatch Error: -------------------------------------------------
-// one = 2
-//       ^
-//       Found:    (2 : Int)
-//       Required: (1 : Int)
-```
-
-Ограничение типа на использование только литеральных типов реализуется так - `T <: Singleton`, например:
-
-```scala1
-case class Narrow[T <: Singleton](var t: T)
-Narrow("foo")  // Позволительно
-Narrow(1)      // Позволительно
-
-// Попытка использования нелитерального типа, например, String приводит к ошибке компиляции
-Narrow("foo": String)
-// Narrow("foo": String)
-//        ^^^^^^^^^^^^^
-//        Found:    String
-//        Required: Singleton
-```
-
-[Разобранный пример на Scastie](https://scastie.scala-lang.org/JdqGqYyQQneu4N8vfku1Kw)
-
-[Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FLiteralTypes.sc&plain=1)
+[Пример в Scastie](https://scastie.scala-lang.org/EqPJmGGNQ4etxbUajGBBWg)
 
 
 ## Промежуточные итоги

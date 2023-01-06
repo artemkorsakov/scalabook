@@ -529,48 +529,42 @@ Person.refine("Andrew", 150, "id")
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefinedWithCatsExamples.worksheet.sc&plain=1)
 
 
-## Промежуточные итоги
+## Резюме
 
-К основным преимуществам библиотеки **refined** относится:
+Подведем краткие итоги обзора библиотеки **refined**:
 
-- Система типов
-- Отлов ошибок во время компиляции (с определенными трудностями в Scala 3)
-- Единая декларативная валидация
-
-К недостаткам же:
-
-- При использовании нотации инфиксного типа необходимо проявлять осторожность 
-  и использовать скобки или неинфиксное определение типа:
-  - ~~String Refined XXX And YYY~~
-  - String Refined And[XXX, YYY]
-  - String Refined (XXX And YYY)
-- Уточненные примитивы всегда упакованы
-- Сообщения об ошибках валидации не всегда понятны, а порой и просто ошибочны: `Empty did not fail`
-
-У библиотеки **refined** есть альтернативы:
-
-- [Bond](https://github.com/fwbrasil/bond)
-- [Scalactic](https://www.scalactic.org/)
-
-Библиотека **refined** интегрирована со следующими библиотеками:
-
-- [Полный список](https://github.com/fthomas/refined#using-refined)
-  - refined-cats (Scala 3 + Scala 2)
-  - refined-eval (только Scala 2)
-  - refined-jsonpath (Scala 3 + Scala 2)
-  - refined-pureconfig (только Scala 2)
+- К основным преимуществам библиотеки **refined** относится:
+  - Система типов
+  - Отлов ошибок во время компиляции (с определенными трудностями в Scala 3)
+  - Единая декларативная валидация
+- К недостаткам:
+  - При использовании нотации инфиксного типа необходимо проявлять осторожность 
+    и использовать скобки или неинфиксное определение типа:
+    - ~~String Refined XXX And YYY~~
+    - String Refined And[XXX, YYY]
+    - String Refined (XXX And YYY)
+  - Уточненные примитивы всегда упакованы
+  - Сообщения об ошибках валидации не всегда понятны, а порой и просто ошибочны
+- У библиотеки **refined** есть альтернативы:
+  - [Bond](https://github.com/fwbrasil/bond)
+  - [Scalactic](https://www.scalactic.org/)
+- [Интеграция с другими библиотеками](https://github.com/fthomas/refined#using-refined)
+  - [refined-cats (Scala 3 + Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-cats?pre-releases=false)
+  - [refined-eval (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-eval?pre-releases=false)
+  - [refined-jsonpath (Scala 3 + Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-jsonpath?pre-releases=false)
+  - [refined-pureconfig (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-pureconfig?pre-releases=false)
     - [Пример взаимодействия с **pureconfig**](refined/pureconfig)
-  - refined-scalacheck (Scala 3 + Scala 2)
-  - refined-scalaz (только Scala 2)
-  - refined-scodec (только Scala 2)
-  - refined-scopt (Scala 3 + Scala 2)
-  - refined-shapeless (только Scala 2)
-- Релизы на [Scaladex](https://index.scala-lang.org/fthomas/refined)
+  - [refined-scalacheck (Scala 3 + Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-scalacheck?pre-releases=false)
+  - [refined-scalaz (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-scalaz?pre-releases=false)
+  - [refined-scodec (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-scodec?pre-releases=false)
+  - [refined-scopt (Scala 3 + Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-scopt?pre-releases=false)
+  - [refined-shapeless (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-shapeless?pre-releases=false)
 
-## Заключение
+
+## Общее заключение об уточняющих типах
 
 Методов борьбы с ошибками в программном обеспечении очень много ввиду важности проблемы.
-[Тестирование программного обеспечения](https://ru.wikipedia.org/wiki/%D0%A2%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5_%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%BD%D0%BE%D0%B3%D0%BE_%D0%BE%D0%B1%D0%B5%D1%81%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D1%8F)
+Тестирование программного обеспечения
 является важным (если не самым важным) этапом выпуска продукта.
 Почти в каждой компании есть выделенное подразделение QA, порой по численности, знаниям и компетентности
 не уступающее подразделению разработки.

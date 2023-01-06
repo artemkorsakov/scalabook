@@ -591,26 +591,26 @@ Person.refine("Andrew", 150, "id")
 
 ---
 
-**Ссылки**
-- [Refined lib - Github][refined lib]
+**Ссылки** (в алфавитном порядке):
+- [Refined lib][refined lib]
 - Видео:
   - [Better types = fewer tests - Raúl Raja](https://www.youtube.com/watch?v=TScwxX62uig)
   - [Combining Refined Types with Type Class Derivation in Scala - Lawrence Carvalho](https://www.youtube.com/watch?v=Hq2QWbUXKbE&t)
-  - [Decorate your types with refined – Frank Thomas](https://www.youtube.com/watch?v=zExb9x3fzKs)
+  - [Decorate your types with refined - Frank Thomas](https://www.youtube.com/watch?v=zExb9x3fzKs)
   - [Defusing the configuration time bomb with PureConfig and Refined - Leif Wickland](https://www.youtube.com/watch?v=NjqRi-cF3-g)
   - [Enhancing the type system with Refined Types - Juliano Alves](https://www.youtube.com/watch?v=Fx8WXcAZWuk)
   - [How to Build a Functional API - Julien Truffaut](https://www.youtube.com/watch?v=__zuECMFCRc)
   - [Getting Started with #refined - DevInsideYou](https://www.youtube.com/watch?v=aZsmapo1afQ)
   - [Let The Compiler Help You: How To Make The Most Of Scala’s Typesystem - Markus Hauck](https://www.youtube.com/watch?v=hhXPeuJohM4)
   - [Literal types, what they are good for? - Tamer Abdulradi](https://slideslive.com/38907881/literal-types-what-they-are-good-for)  
-  - [Refinement Types - Tipagem ainda mais forte para Scala - Marcelo Gomes](https://www.youtube.com/watch?v=Zq4rkWs_ybA)
   - [Refined types for validated configurations – Viktor Lövgren](https://www.youtube.com/watch?v=C3ciegxMAqA)
-  - [Refined Types in Scala - Rock the JVM](https://www.youtube.com/watch?v=IDrGbsupaok)
+  - [Refined types in Scala - Rock the JVM](https://www.youtube.com/watch?v=IDrGbsupaok)
+  - [Refinement Types - Tipagem ainda mais forte para Scala - Marcelo Gomes](https://www.youtube.com/watch?v=Zq4rkWs_ybA)  
   - [Security with Scala: Refined Types and Object Capabilities - Will Sargent](https://slideslive.com/38908776/security-with-scala-refined-types-and-object-capabilities) 
   - [Strings are Evil: Methods to hide the use of primitive types - Noel Welsh](https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types)
   - [Why types matter - Gabriel Volpe](https://www.youtube.com/watch?v=n1Y2V4zCZdQ)
 - Статьи:
-  - [A simple trick to improve type safety of your Scala code](https://blog.softwaremill.com/a-simple-trick-to-improve-type-safety-of-your-scala-code-ba80559ca092)
+  - [A simple trick to improve type safety of your Scala code - Marcin Kubala](https://blog.softwaremill.com/a-simple-trick-to-improve-type-safety-of-your-scala-code-ba80559ca092)
   - [How we used Refined to improve type safety and error reporting in Scala](https://engineering.contentsquare.com/2021/scala-refined-types/)
   - [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/)
   - [On Eliminating Error in Distributed Software Systems][thetypesystem]
@@ -632,4 +632,4 @@ Person.refine("Andrew", 150, "id")
 [conversion]: refined/conversionInScala3
 [thetypesystem]: https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems
 [tests]: https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md
-[parse, don’t validate]: https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/#footnote-ref-1-1
+[parse, don’t validate]: https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate

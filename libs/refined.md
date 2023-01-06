@@ -469,7 +469,7 @@ refineV[NonEmpty](42: Packed)      // Right(42)
 
 Это именно то, что можно сделать с `ValidatedNec` из библиотеки [cats](https://typelevel.org/cats/index.html).
 
-К счастью, **refined** предоставляет расширение **refined-cats**, 
+К счастью, **refined** предоставляет расширение [**refined-cats**](https://index.scala-lang.org/fthomas/refined/artifacts/refined-cats?pre-releases=false), 
 которое позволяет возвращать шаги проверки `ValidatedNec[String, A]` вместо `Either[String, A]`:
 
 ```scala

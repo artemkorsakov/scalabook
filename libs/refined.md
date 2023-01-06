@@ -254,7 +254,6 @@ printT(name) // Печатает "Алёна"
 
 Есть очень хорошая статья по поводу [важности системы типов][thetypesystem].
 
-
 ### Проверка во время компиляции
 
 Ещё одним значительным преимуществом являлось возможность проверки типов во время компиляции в Scala 2.
@@ -449,43 +448,6 @@ refineV[NonEmpty](42: Packed)      // Right(42)
 [Пример в Scastie](https://scastie.scala-lang.org/EqPJmGGNQ4etxbUajGBBWg)
 
 
-## Промежуточные итоги
-
-К основным преимуществам библиотеки **refined** относится:
-
-- Система типов
-- Отлов ошибок во время компиляции (с определенными трудностями в Scala 3)
-- Единая декларативная валидация
-
-К недостаткам же:
-
-- При использовании нотации инфиксного типа необходимо проявлять осторожность 
-  и использовать скобки или неинфиксное определение типа:
-  - ~~String Refined XXX And YYY~~
-  - String Refined And[XXX, YYY]
-  - String Refined (XXX And YYY)
-- Уточненные примитивы всегда упакованы
-- Сообщения об ошибках валидации не всегда понятны, а порой и просто ошибочны: `Empty did not fail`
-
-У библиотеки **refined** есть альтернативы:
-
-- [Bond](https://github.com/fwbrasil/bond)
-- [Scalactic](https://www.scalactic.org/)
-
-Библиотека **refined** интегрирована со следующими библиотеками:
-
-- [Полный список](https://github.com/fthomas/refined#using-refined)
-  - refined-cats (Scala 3 + Scala 2)
-  - refined-eval (только Scala 2)
-  - refined-jsonpath (Scala 3 + Scala 2)
-  - refined-pureconfig (только Scala 2)
-  - refined-scalacheck (Scala 3 + Scala 2)
-  - refined-scalaz (только Scala 2)
-  - refined-scodec (только Scala 2)
-  - refined-scopt (Scala 3 + Scala 2)
-  - refined-shapeless (только Scala 2)
-- Релизы на [Scaladex](https://index.scala-lang.org/fthomas/refined)
-
 ## Накопление ошибок валидации
 
 Вариант использования `refineV`, рассмотренный выше, довольно прост, 
@@ -560,6 +522,44 @@ Person.refine("Андрей", 50, UUID.randomUUID().toString)
 и в случае неудачи некоторых из них их ошибки будут накапливаться в `NonEmptyChain`.
 
 [Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefinedWithCatsExamples.sc&plain=1)
+
+
+## Промежуточные итоги
+
+К основным преимуществам библиотеки **refined** относится:
+
+- Система типов
+- Отлов ошибок во время компиляции (с определенными трудностями в Scala 3)
+- Единая декларативная валидация
+
+К недостаткам же:
+
+- При использовании нотации инфиксного типа необходимо проявлять осторожность 
+  и использовать скобки или неинфиксное определение типа:
+  - ~~String Refined XXX And YYY~~
+  - String Refined And[XXX, YYY]
+  - String Refined (XXX And YYY)
+- Уточненные примитивы всегда упакованы
+- Сообщения об ошибках валидации не всегда понятны, а порой и просто ошибочны: `Empty did not fail`
+
+У библиотеки **refined** есть альтернативы:
+
+- [Bond](https://github.com/fwbrasil/bond)
+- [Scalactic](https://www.scalactic.org/)
+
+Библиотека **refined** интегрирована со следующими библиотеками:
+
+- [Полный список](https://github.com/fthomas/refined#using-refined)
+  - refined-cats (Scala 3 + Scala 2)
+  - refined-eval (только Scala 2)
+  - refined-jsonpath (Scala 3 + Scala 2)
+  - refined-pureconfig (только Scala 2)
+  - refined-scalacheck (Scala 3 + Scala 2)
+  - refined-scalaz (только Scala 2)
+  - refined-scodec (только Scala 2)
+  - refined-scopt (Scala 3 + Scala 2)
+  - refined-shapeless (только Scala 2)
+- Релизы на [Scaladex](https://index.scala-lang.org/fthomas/refined)
 
 
 ## Пример взаимодействия с другими библиотеками

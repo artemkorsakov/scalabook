@@ -615,17 +615,17 @@ Person.refine("Andrew", 150, "id")
   - [Lightweight Non-Negative Numerics for Better Scala Type Signatures - Erik Erlandson](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/)
   - [On Eliminating Error in Distributed Software Systems - Colin Breck][thetypesystem]
   - [Parse, don’t validate - Alexis King][parse, don’t validate]
-  - [Refined types in Scala](https://blog.rockthejvm.com/refined-types/)
-  - [Refined types in Scala: the Good, the Bad and the Ugly](https://medium.com/swlh/refined-types-the-good-the-bad-and-the-ugly-ee971e5d9137)
-  - [Refined types, what are they good for?](https://beyondthelines.net/programming/refined-types/)
-  - [Refined типы в Scala](https://habr.com/ru/post/574080)
-  - [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#1) 
-  - [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)
-  - [Safe, Expressive Code with Refinement Types](https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/)
-  - [Tests - can we have too many?][tests]
-  - [Type safety with refined](https://blog.michalp.net/posts/scala/refined/)
-  - [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)
-  - [Wtf is Refined?](https://medium.com/@Methrat0n/wtf-is-refined-5008eb233194)
+  - [Refined types in Scala - Daniel Ciocîrlan](https://blog.rockthejvm.com/refined-types/)
+  - [Refined types in Scala: the Good, the Bad and the Ugly - Manuel Rodríguez](https://medium.com/swlh/refined-types-the-good-the-bad-and-the-ugly-ee971e5d9137)
+  - [Refined types, what are they good for? - Malcolm](https://beyondthelines.net/programming/refined-types/)
+  - [Refined типы в Scala - hakain](https://habr.com/ru/post/574080)
+  - [Refinement types in practice - Peter Mortier](https://kwark.github.io/refined-in-practice-bescala/#1) 
+  - [Refining your data from configuration to database - Pere Villega](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)
+  - [Safe, Expressive Code with Refinement Types - Gordon Rennie](https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/)
+  - [Tests - can we have too many? - Jack Low][tests]
+  - [Type safety with refined - Michał Pawlik](https://blog.michalp.net/posts/scala/refined/)
+  - [Validate Service Configuration in Scala - Alexey Novakov](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)
+  - [Wtf is Refined? - Methrat0n](https://medium.com/@Methrat0n/wtf-is-refined-5008eb233194)
 
 
 [refined lib]: https://github.com/fthomas/refined

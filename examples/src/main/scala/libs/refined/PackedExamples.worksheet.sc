@@ -5,10 +5,10 @@ val nonEmpty: Packed => Boolean =
   case num: Int    => num > 0
   case _           => false
 
-import eu.timepit.refined.*
+import eu.timepit.refined.refineV
 import eu.timepit.refined.api.*
-import eu.timepit.refined.boolean.*
-import eu.timepit.refined.collection.*
+import eu.timepit.refined.boolean.Not
+import eu.timepit.refined.collection.{NonEmpty, Empty}
 
 given Validate[Packed, NonEmpty] with
   override type R = NonEmpty

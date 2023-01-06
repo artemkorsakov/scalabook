@@ -368,7 +368,7 @@ val name = "Алёна".toName
 [Исходный код валидного примера](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNameExamples.worksheet.sc&plain=1)
 
 
-Таким образом добиться ошибок компиляции в Scala 3 сложнее, но тоже можно.
+Таким образом добиться ошибок компиляции в Scala 3 сложнее, но тоже возможно.
 Конечно, хотелось бы, чтобы эта функциональность поставлялась "из коробки", но, думаю, это вопрос времени.
 
 
@@ -411,7 +411,7 @@ given Validate[Packed, NonEmpty] with
 
 Метод `showExpr` определяет сообщение об ошибке, если переданное значение не удовлетворяет предикату.
 
-Тогда можно использовать уточняющий тип следующим образом:
+Пример использования уточняющего типа для `Packed`:
 
 ```scala
 refineV[NonEmpty](null: Packed)    // Left(Predicate failed: Empty packed value: null.)
@@ -426,7 +426,9 @@ refineV[NonEmpty]("value": Packed) // Right(value)
 refineV[NonEmpty](42: Packed)      // Right(42)
 ```
 
-[Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FPackedExamples.sc&plain=1)
+[Пример в Scastie](https://scastie.scala-lang.org/EIwWjHrMSyu6OxrznZN38g)
+
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FPackedExamples.worksheet.sc&plain=1)
 
 
 ## Уточнение уточненного типа

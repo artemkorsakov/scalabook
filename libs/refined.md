@@ -197,8 +197,6 @@ val name5: Option[Name] = "Алёна"   // Some(Алёна)
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivation.worksheet.sc&plain=1)
 
-## Обзор библиотеки
-
 У библиотеки [достаточно большой набор предопределенных типов (69)](refined/types) 
 и есть, например, метод `refineV`,
 возвращающий значение типа `Either[String, T]`, где, как уже упоминалось для `from`, слева содержится ошибка, 

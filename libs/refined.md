@@ -611,15 +611,15 @@ Person.refine("Andrew", 150, "id")
   - [Why types matter - Gabriel Volpe](https://www.youtube.com/watch?v=n1Y2V4zCZdQ)
 - Статьи:
   - [A simple trick to improve type safety of your Scala code - Marcin Kubala](https://blog.softwaremill.com/a-simple-trick-to-improve-type-safety-of-your-scala-code-ba80559ca092)
-  - [How we used Refined to improve type safety and error reporting in Scala](https://engineering.contentsquare.com/2021/scala-refined-types/)
-  - [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/)
-  - [On Eliminating Error in Distributed Software Systems][thetypesystem]
-  - [Parse, don’t validate][parse, don’t validate]
+  - [How we used Refined to improve type safety and error reporting in Scala - Bertrand Junqua](https://engineering.contentsquare.com/2021/scala-refined-types/)
+  - [Lightweight Non-Negative Numerics for Better Scala Type Signatures - Erik Erlandson](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/)
+  - [On Eliminating Error in Distributed Software Systems - Colin Breck][thetypesystem]
+  - [Parse, don’t validate - Alexis King][parse, don’t validate]
+  - [Refined types in Scala](https://blog.rockthejvm.com/refined-types/)
+  - [Refined types in Scala: the Good, the Bad and the Ugly](https://medium.com/swlh/refined-types-the-good-the-bad-and-the-ugly-ee971e5d9137)
   - [Refined types, what are they good for?](https://beyondthelines.net/programming/refined-types/)
   - [Refined типы в Scala](https://habr.com/ru/post/574080)
   - [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#1) 
-  - [Refined Types in Scala](https://blog.rockthejvm.com/refined-types/)
-  - [Refined Types in Scala: the Good, the Bad and the Ugly](https://medium.com/swlh/refined-types-the-good-the-bad-and-the-ugly-ee971e5d9137)
   - [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)
   - [Safe, Expressive Code with Refinement Types](https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/)
   - [Tests - can we have too many?][tests]

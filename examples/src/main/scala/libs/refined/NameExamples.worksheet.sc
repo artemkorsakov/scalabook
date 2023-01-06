@@ -1,10 +1,5 @@
-import eu.timepit.refined.api.{Refined, RefinedTypeOps}
-import eu.timepit.refined.auto.*
-import eu.timepit.refined.string.*
-
-import scala.util.matching.Regex
-
-import libs.refined.Name.{toName, pattern}
+import libs.refined.Name
+import libs.refined.Name.{ *, given }
 
 "€‡™µ".toName
 "12345".toName
@@ -12,10 +7,6 @@ import libs.refined.Name.{toName, pattern}
 "Алёна18".toName
 "алёна".toName
 "Алёна".toName
-
-type Name = String Refined MatchesRegex[pattern.type]
-
-given Conversion[String, Name] = RefinedTypeOps[Name, String].unsafeFrom(_)
 
 val name0: Name = "€‡™µ".toName
 val name1: Name = "12345".toName

@@ -311,61 +311,54 @@ refineToNonEmptyString("Алёна")      // Компилируется успе
 
 ```scala
 import eu.timepit.refined.api.{Refined, RefinedTypeOps}
-import eu.timepit.refined.auto.*
-import eu.timepit.refined.string.*
-
-import scala.language.implicitConversions
+import eu.timepit.refined.string.MatchesRegex
 import scala.quoted.{Expr, Quotes}
-import scala.util.matching.Regex
 
-val namePattern: "[А-ЯЁ][а-яё]+" = "[А-ЯЁ][а-яё]+"
+type Name = String Refined MatchesRegex[Name.pattern.type]
 
-def inspectNameCode(x: Expr[String])(using Quotes): Expr[String] =
-  import scala.quoted.quotes.reflect.report
-  if !namePattern.r.matches(x.valueOrAbort) then report.errorAndAbort("Invalid name")
-  x
+object Name:
+  given Conversion[String, Name] = RefinedTypeOps[Name, String].unsafeFrom(_)
 
-inline def inspectName(inline str: String): String =
-  ${ inspectNameCode('str) }
+  val pattern: "[А-ЯЁ][а-яё]+" = "[А-ЯЁ][а-яё]+"
 
-inspectName("€‡™µ")
-// Не компилируется:
-// -- Error: ----------------------------------------------------------------------
-// inspectName("€‡™µ")
-// ^^^^^^^^^^^^^^^^^^^
-// Invalid name
-inspectName("12345")   // Не компилируется с аналогичной ошибкой
-inspectName("Alyona")  // Не компилируется с аналогичной ошибкой
-inspectName("Алёна18") // Не компилируется с аналогичной ошибкой
-inspectName("алёна")   // Не компилируется с аналогичной ошибкой
+  extension (inline str: String)
+    inline def toName: String = ${ inspectNameCode('str) }
 
-inspectName("Алёна")
-// Компилируется успешно!
+  private def inspectNameCode(x: Expr[String])(using Quotes): Expr[String] =
+    import scala.quoted.quotes.reflect.report
+    if !pattern.r.matches(x.valueOrAbort) then
+      report.errorAndAbort(s"Name does not match pattern '$pattern'")
+    x
+```
+
+
+```scala
+import libs.refined.Name
+import libs.refined.Name.{ *, given }
+
+"€‡™µ".toName       // Не компилируется с ошибкой "'€‡™µ' does not match pattern '[А-ЯЁ][а-яё]+'"
+"12345".toName      // Не компилируется с ошибкой "'12345' does not match pattern '[А-ЯЁ][а-яё]+'"
+"Alyona".toName     // Не компилируется с ошибкой "'Alyona' does not match pattern '[А-ЯЁ][а-яё]+'"
+"Алёна18".toName    // Не компилируется с ошибкой "'Алёна18' does not match pattern '[А-ЯЁ][а-яё]+'"
+"алёна".toName      // Не компилируется с ошибкой "'алёна' does not match pattern '[А-ЯЁ][а-яё]+'"
+"Алёна".toName      // Компилируется успешно!
 // val res0: String = Алёна
 
-type Name = String Refined MatchesRegex[namePattern.type]
-
-given Conversion[String, Name] = RefinedTypeOps[Name, String].unsafeFrom(_)
-
-val name0: Name = inspectName("€‡™µ")    // Не компилируется с аналогичной ошибкой
-val name1: Name = inspectName("12345")   // Не компилируется с аналогичной ошибкой
-val name2: Name = inspectName("Alyona")  // Не компилируется с аналогичной ошибкой
-val name3: Name = inspectName("Алёна18") // Не компилируется с аналогичной ошибкой
-val name4: Name = inspectName("алёна")   // Не компилируется с аналогичной ошибкой
-
-val name5: Name = inspectName("Алёна")
-// Компилируется успешно!
+val name0: Name = "€‡™µ".toName     // Не компилируется с ошибкой "'€‡™µ' does not match pattern '[А-ЯЁ][а-яё]+'"
+val name1: Name = "12345".toName    // Не компилируется с ошибкой "'12345' does not match pattern '[А-ЯЁ][а-яё]+'"
+val name2: Name = "Alyona".toName   // Не компилируется с ошибкой "'Alyona' does not match pattern '[А-ЯЁ][а-яё]+'"
+val name3: Name = "Алёна18".toName  // Не компилируется с ошибкой "'Алёна18' does not match pattern '[А-ЯЁ][а-яё]+'"
+val name4: Name = "алёна".toName    // Не компилируется с ошибкой "'алёна' does not match pattern '[А-ЯЁ][а-яё]+'"
+val name5: Name = "Алёна".toName    // Компилируется успешно!
 // val name5: Name = Алёна
 ```
 
-[Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNameCompileTimeExamples.sc&plain=1)
+[Исходный код Name](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FName.scala&plain=1)
+
+[Исходный код примера](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNameExamples.worksheet.sc&plain=1)
 
 Таким образом добиться ошибок компиляции в Scala 3 сложнее, но тоже можно.
 Конечно, хотелось бы, чтобы эта функциональность поставлялась "из коробки", но, думаю, это вопрос времени.
-
-
-
-
 
 
 Проверка во время компиляции открывает довольно обширные возможности: 

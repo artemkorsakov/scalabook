@@ -4,7 +4,7 @@ import eu.timepit.refined.api.{Refined, RefinedTypeOps}
 import eu.timepit.refined.cats.syntax.*
 import eu.timepit.refined.numeric.Interval
 import eu.timepit.refined.refineV
-import eu.timepit.refined.string.*
+import eu.timepit.refined.string.{MatchesRegex, Uuid}
 
 import java.util.UUID
 

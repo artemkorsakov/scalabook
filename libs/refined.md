@@ -500,7 +500,22 @@ object Person:
       Age.validateNec(age),
       refineV[Uuid](id).toValidatedNec
     ).mapN(Person.apply)
+```
 
+Метод `Person.refine` делает именно то, что нужно: 
+применяет все предикаты к входным данным для их проверки, 
+а также возвращает более конкретные типы, с которыми можно более безопасно работать в будущем:
+
+```scala
+Person.refine("Андрей", 50, UUID.randomUUID().toString)
+// val res1: cats.data.ValidatedNec[String, Person] = Valid(Person(Андрей,50,fccec68b-cefd-45e8-ae57-b8cdd3fa3cb8))
+```
+
+А так как мы используем [Applicative](https://typelevel.org/cats/typeclasses/applicative.html), 
+то всегда будут выполняться все этапы "уточнения", 
+и в случае неудачи некоторых из них их ошибки будут накапливаться в `NonEmptyChain`:
+
+```scala
 Person.refine("Andrew", 150, "id")
 // val res0: cats.data.ValidatedNec[String, Person] = 
 //   Invalid(Chain(
@@ -508,20 +523,11 @@ Person.refine("Andrew", 150, "id")
 //     Right predicate of (!(150 < 7) && (150 < 77)) failed: Predicate failed: (150 < 77)., 
 //     Uuid predicate failed: Invalid UUID string: id
 //   ))
-
-Person.refine("Андрей", 50, UUID.randomUUID().toString)
-// val res1: cats.data.ValidatedNec[String, Person] = Valid(Person(Андрей,50,fccec68b-cefd-45e8-ae57-b8cdd3fa3cb8))
 ```
 
-Метод `refinePerson` делает именно то, что нужно: 
-применяет все предикаты к входным данным для их проверки, 
-а также возвращает более конкретные типы, с которыми можно более безопасно работать в будущем. 
+[Пример в Scastie](https://scastie.scala-lang.org/ldZp5KvvSHKfieFPCefw7Q)
 
-А так как мы используем [Applicative](https://typelevel.org/cats/typeclasses/applicative.html), 
-то всегда будут выполняться все этапы "уточнения", 
-и в случае неудачи некоторых из них их ошибки будут накапливаться в `NonEmptyChain`.
-
-[Разобранный пример](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefinedWithCatsExamples.sc&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefinedWithCatsExamples.worksheet.sc&plain=1)
 
 
 ## Промежуточные итоги

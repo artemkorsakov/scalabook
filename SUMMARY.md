@@ -118,7 +118,6 @@
     - [Проверка фрагмента](scala/scaladoc/snippet-compiler.md)
     - [Настройки](scala/scaladoc/settings.md)
 
-## Функц. программ.
 - [Функц программирование](fp/index.md)
   - [Функц. структура данных](fp/data-structures.md)
   - [Обработка ошибок](fp/handling-errors.md)
@@ -129,7 +128,6 @@
   - [Функциональный журнал](fp/writer.md)
   - [Non-empty list](fp/non-empty-list.md)
   
-## Теория категорий
 - [Теория категорий](typeclass/index.md)
   - [Группа Equal](typeclass/equal.md)
     - [Equal](typeclass/equal/equal.md)
@@ -180,7 +178,6 @@
     - [Show](typeclass/other/show.md)
     - [Read](typeclass/other/read.md)
     
-## Алгоритмы 
 - [Алгоритмы](algorithms/index.md)
   - [Фундамент алгоритмы](algorithms/fundamental.md)
     - [Численные алгоритмы](algorithms/fundamental/numerical.md) 
@@ -197,7 +194,6 @@
   - [Поиск](algorithms/search.md)
   - [Графы](algorithms/graphs.md)
 
-## Scala библиотеки
 - [Scala библиотеки](libs/index.md)
   - [Refined](libs/refined.md)
     - [Список refined типов](libs/refined/types.md) 
@@ -207,7 +203,6 @@
     - [Производитель-потребитель](libs/cats-effect/producer-consumer-problem.md) 
   - [Http4s](libs/http4s.md)
 
-## Паттерны
 - [Паттерны проектирования](patterns/index.md)
   - [Порождающие шаблоны](patterns/creational.md)
     - [Фабричный метод](patterns/creational/factory-method.md)
@@ -236,7 +231,6 @@
     - [Стратегия](patterns/behavioral/strategy.md)
     - [Посетитель](patterns/behavioral/visitor.md)
 
-## Головоломки на Scala
 - [Головоломки на Scala](puzzlers/index.md)
   - [Hi There!](puzzlers/hi-there.md)
   - [UPSTAIRS downstairs](puzzlers/upstairs.md)
@@ -276,7 +270,6 @@
   - [For Each Step...](puzzlers/for-each-step.md)
   - [Beep Beep...Reversing](puzzlers/beep-beep-reversing.md)
 
-## Доп. материалы
 - [Дополнительные материалы](extra.md)
   - [&#10031;](extra/one_star.md)
   - [&#10031;&#10031;](extra/two_stars.md)

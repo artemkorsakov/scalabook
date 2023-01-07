@@ -1,8 +1,7 @@
 - [Домашняя](.)
 
-## [Блог](blog.md)
+- [Блог](blog.md)
 
-## Scala
 - [Scala](scala/index.md)
   - [С чего начать?](scala/getting-started.md)
   - [Hello, world!](scala/hello_world.md)

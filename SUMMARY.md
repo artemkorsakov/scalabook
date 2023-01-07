@@ -1,5 +1,8 @@
 - [Домашняя](.)
 
+## Блог
+- [Блог](blog.md)
+
 ## Scala
 - [Scala](scala/index.md)
   - [С чего начать?](scala/getting-started.md)
@@ -196,6 +199,16 @@
   - [Поиск](algorithms/search.md)
   - [Графы](algorithms/graphs.md)
 
+## Scala библиотеки
+- [Scala библиотеки](libs/index.md)
+  - [Refined](libs/refined.md)
+    - [Список refined типов](libs/refined/types.md) 
+    - [Refined + pureconfig](libs/refined/pureconfig.md) 
+  - [Cats effect](libs/cats-effect.md)
+    - [Копирование файлов](libs/cats-effect/copy-files.md) 
+    - [Производитель-потребитель](libs/cats-effect/producer-consumer-problem.md) 
+  - [Http4s](libs/http4s.md)
+
 ## Паттерны
 - [Паттерны проектирования](patterns/index.md)
   - [Порождающие шаблоны](patterns/creational.md)
@@ -264,16 +277,6 @@
   - [Inference Hindrance](puzzlers/inference.md)
   - [For Each Step...](puzzlers/for-each-step.md)
   - [Beep Beep...Reversing](puzzlers/beep-beep-reversing.md)
-
-## Scala библиотеки
-- [Scala библиотеки](libs/index.md)
-  - [Refined](libs/refined.md)
-    - [Список refined типов](libs/refined/types.md) 
-    - [Refined + pureconfig](libs/refined/pureconfig.md) 
-  - [Cats effect](libs/cats-effect.md)
-    - [Копирование файлов](libs/cats-effect/copy-files.md) 
-    - [Производитель-потребитель](libs/cats-effect/producer-consumer-problem.md) 
-  - [Http4s](libs/http4s.md)
 
 ## Доп. материалы
 - [Дополнительные материалы](extra.md)

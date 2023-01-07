@@ -7,6 +7,8 @@
 
 [Домашняя страница](https://scalabook.gitflic.space)
 
+[Блог](https://scalabook.gitflic.space/blog)
+
 [Обзор Scala](https://scalabook.gitflic.space/scala/index)
 
 [Функциональная разработка на Scala](https://scalabook.gitflic.space/fp/index)
@@ -15,8 +17,8 @@
 
 [Алгоритмы](https://scalabook.gitflic.space/algorithms/index)
 
+[Scala библиотеки](https://scalabook.gitflic.space/libs/index)
+
 [Паттерны проектирования на Scala](https://scalabook.gitflic.space/patterns/index)
 
 [Scala Puzzlers](https://scalabook.gitflic.space/puzzlers/index)
-
-[Scala библиотеки](https://scalabook.gitflic.space/libs/index)

@@ -1,7 +1,6 @@
 - [Домашняя](.)
 
-## Блог
-- [Блог](blog.md)
+## [Блог](blog.md)
 
 ## Scala
 - [Scala](scala/index.md)

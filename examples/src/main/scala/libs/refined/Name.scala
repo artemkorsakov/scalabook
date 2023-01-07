@@ -13,6 +13,7 @@ object Name:
     inline def toName: Name = ${ inspectNameCode('str) }
 
   private given NameToExpr: ToExpr[Name] with
+    @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
     def apply(x: Name)(using Quotes) =
       import quotes.reflect.*
       Literal(StringConstant(x.toString)).asExpr.asInstanceOf[Expr[Name]]

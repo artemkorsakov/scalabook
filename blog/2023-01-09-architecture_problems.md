@@ -25,7 +25,7 @@
 > если удовлетворяет следующим свойствам для любых `x, y, z ∈ M`:
 > - Closure (замыкание): `x + y ∈ M`
 > - Associativity (ассоциативность): `(x + y) + z = x + (y + z)`
-> - Identity (тождественность): существует единичный элемент `e ∈ M` (`empty: A`) такой, что `e + x = x + e = x` 
+> - Identity (тождественность): существует единичный элемент `e ∈ M` такой, что `e + x = x + e = x` 
 
 Давайте посмотрим, как это выглядит в Scala.
 
@@ -106,6 +106,34 @@ property("Множество чисел НЕ образует полугрупп
 либо оформить их в виде документации.
 Но важно их знать, чтобы поддерживать четкую структуру архитектуры.
 
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fblog%2Farchitectureproblems%2FSemigroup.scala&plain=1)
+
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Fblog%2Farchitectureproblems%2FSemigroupSuite.scala)
+
 
 ## Моноид
+
+Теперь перейдем к Моноиду. Моноид - это полугруппа с единичным элементом.
+И здесь естественным образом напрашивается наследование:
+
+```scala
+trait Monoid[A] extends Semigroup[A]:
+  def e: A
+```
+
+По сравнению с полугруппой добавляется закон "тождественности", 
+который необходимо проверить дополнительно к законам полугруппы:
+
+```scala
+object Monoid:
+  def doTheMonoidLawsHold[A: Monoid](x: A, y: A, z: A): Boolean =
+    val s = summon[Monoid[A]]
+    import s.*
+    doTheSemigroupLawsHold[A](x, y, z) &&
+    (e |+| x == x) && (x |+| e == x)
+```
+
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fblog%2Farchitectureproblems%2FMonoid.scala&plain=1)
+
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Fblog%2Farchitectureproblems%2FMonoidSuite.scala)
 

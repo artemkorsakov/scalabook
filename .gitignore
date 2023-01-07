@@ -22,6 +22,7 @@ project/plugins/project/
 .worksheet
 /.bsp/
 /out/
+cspell.json
 
 # Metals specific
 .metals/

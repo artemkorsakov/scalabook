@@ -1,5 +1,6 @@
 .idea
 .vscode
+.scala-build
 
 ### Scala template
 *.class

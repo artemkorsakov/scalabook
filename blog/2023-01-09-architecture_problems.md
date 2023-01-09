@@ -212,9 +212,8 @@ trait WrongMonoid[A]:
 В этом случае можно явно указать, что есть "моноиды" без единичного элемента:
 
 ```scala
-given WrongMonoid[NonEmptyList[Int]] with
-  override def maybeE: Option[NonEmptyList[Int]] = None
-  ...
+trait WrongSemigroup[A] extends WrongMonoid[A]:
+  override def maybeE: Option[A] = None
 ```
 
 Этот подход по сути говорит правду: все "полугруппы" - это "моноиды" без единичного элемента. 

@@ -35,15 +35,11 @@ object Numerical:
 
   /** Возведение в степень */
   def power(a: Long, n: Long): BigInt =
-    val bin        = n.toBinaryString.reverse
-    val powerArray = new Array[Long](bin.length)
-    powerArray(0) = a
-    (1 until powerArray.length).foreach(i =>
-      powerArray(i) = powerArray(i - 1) * powerArray(i - 1)
-    )
-    powerArray.indices.foldLeft(BigInt(1)) { (acc, i) =>
-      if bin(i) == '1' then acc * powerArray(i) else acc
-    }
+    if n == 0 then BigInt(1)
+    else if n % 2 == 0 then
+      val p = power(a, n / 2)
+      p * p
+    else a * power(a, n - 1)
 
   /** Нахождения квадратного корня */
   def sqrt(x: Double): Double       =

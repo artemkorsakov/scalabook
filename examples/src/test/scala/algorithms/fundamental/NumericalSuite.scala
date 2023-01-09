@@ -17,7 +17,9 @@ class NumericalSuite extends FunSuite:
   }
 
   test("'power' should raise the number to a power") {
+    assertEquals(power(7, 5), BigInt(16807))
     assertEquals(power(7, 6), BigInt(117649))
+    assertEquals(power(7, 7), BigInt(823543))
   }
 
   test(

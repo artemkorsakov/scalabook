@@ -194,6 +194,7 @@
   - [Сортировка](algorithms/sort.md)
   - [Поиск](algorithms/search.md)
   - [Графы](algorithms/graphs.md)
+  - [Функция Аккермана](algorithms/ackermann.md)
 
 - [Scala библиотеки](libs/index.md)
   - [Refined](libs/refined.md)

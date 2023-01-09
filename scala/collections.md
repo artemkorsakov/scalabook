@@ -24,6 +24,6 @@ Scala поставляется с большим количеством типо
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book, Collections intro](https://docs.scala-lang.org/scala3/book/collections-intro.html)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/taste-collections.html)

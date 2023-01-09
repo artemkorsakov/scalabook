@@ -176,5 +176,5 @@ summon[Foo[String]].value
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual/givens.html)

@@ -34,6 +34,6 @@
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala 3 Guide](https://docs.scala-lang.org/scala3/guides/macros/)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/metaprogramming/index.html)

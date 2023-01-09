@@ -82,6 +82,6 @@ Scala 3 предлагает несколько функций, ориентир
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book, Contextual Abstractions](https://docs.scala-lang.org/scala3/book/ca-contextual-abstractions-intro.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual/index.html)

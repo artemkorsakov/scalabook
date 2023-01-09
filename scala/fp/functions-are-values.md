@@ -117,5 +117,5 @@ nums.takeWhile(_ < 6).sortWith(_ < _)
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fp-functions-are-values.html)

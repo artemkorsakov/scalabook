@@ -24,5 +24,5 @@
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fun-intro.html)

@@ -27,5 +27,5 @@ xs collect { case Seq(x, y, z) => x + y + z }
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-009)

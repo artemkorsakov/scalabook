@@ -27,5 +27,5 @@ BConstructor("Readers")
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-004)

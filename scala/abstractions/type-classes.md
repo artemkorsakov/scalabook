@@ -55,7 +55,7 @@ Scala 3 предлагает дополнительные функции, кот
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-type-classes.html)
 
 [TypeClasses]: https://infoscience.epfl.ch/record/150280/files/TypeClasses.pdf

@@ -66,5 +66,5 @@ val elton = reginald.copy(
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fp-immutable-values.html)

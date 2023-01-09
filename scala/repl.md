@@ -55,5 +55,5 @@ val res2: Int = 4
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/taste-repl.html)

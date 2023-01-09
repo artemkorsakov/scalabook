@@ -133,5 +133,5 @@ sbt также создаст директорию `target`, которую по
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala, Getting started](https://docs.scala-lang.org/scala3/getting-started.html)

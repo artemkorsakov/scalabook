@@ -572,7 +572,7 @@ object Macro3:
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual/derivation.html)
 - [Scala 3 Reference, Derivation macros](https://docs.scala-lang.org/scala3/reference/contextual/derivation-macro.html)
 

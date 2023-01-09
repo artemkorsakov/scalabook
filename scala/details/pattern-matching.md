@@ -185,5 +185,5 @@ foo(new Foo("first", 2, 3, 4))
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/changed-features/pattern-matching.html)

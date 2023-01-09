@@ -461,7 +461,7 @@ a.reduce(_ * _)
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/taste-collections.html)
 - [Scala3 book, Collections Methods](https://docs.scala-lang.org/scala3/book/collections-methods.html)
 - [Изменяемые и неизменяемые коллекции][collections-2.13]

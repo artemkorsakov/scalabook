@@ -28,6 +28,6 @@ val (element, has23) = has123.dequeue
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala, Immutable collections](https://docs.scala-lang.org/ru/overviews/collections-2.13/concrete-immutable-collection-classes.html)
 - [Scala, Mutable collections](https://docs.scala-lang.org/ru/overviews/collections-2.13/concrete-mutable-collection-classes.html)

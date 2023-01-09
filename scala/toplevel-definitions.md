@@ -56,6 +56,6 @@ package foo {
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/taste-toplevel-definitions.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/dropped-features/package-objects.html)

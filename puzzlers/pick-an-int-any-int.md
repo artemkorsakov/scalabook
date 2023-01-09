@@ -37,5 +37,5 @@ scala> println(b.x: Int)
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-029)

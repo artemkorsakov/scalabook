@@ -37,5 +37,5 @@ Scala не жалуется на _unreachable code_, поэтому код ко�
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-018)

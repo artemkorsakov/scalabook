@@ -97,6 +97,6 @@
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/taste-collections.html)
 - [Scala3 book, Collections Types](https://docs.scala-lang.org/scala3/book/collections-classes.html)

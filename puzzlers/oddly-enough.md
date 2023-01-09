@@ -33,5 +33,5 @@ println(mkEven(3))
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-049)

@@ -3,6 +3,8 @@ package algorithms.fundamental
 import scala.annotation.tailrec
 
 object Numerical:
+  private val delta: Double = 0.001
+
   /** Преобразование десятичного числа в двоичное */
   def decToBinConv(x: Int): String =
     val seqOfDivByTwo = Iterator.iterate(x)(a => a / 2)
@@ -31,6 +33,7 @@ object Numerical:
         case (0, 1) => gcd(u, v >> 1)
         case (_, _) => if (u > v) gcd(u - v, v) else gcd(v - u, u)
 
+  /** Возведение в степень */
   def power(a: Long, n: Long): BigInt =
     val bin        = n.toBinaryString.reverse
     val powerArray = new Array[Long](bin.length)
@@ -41,3 +44,29 @@ object Numerical:
     powerArray.indices.foldLeft(BigInt(1)) { (acc, i) =>
       if bin(i) == '1' then acc * powerArray(i) else acc
     }
+
+  /** Нахождения квадратного корня */
+  def sqrt(x: Double): Double       =
+    def isGoodEnough(guess: Double): Boolean =
+      math.abs(guess * guess - x) < delta
+
+    def improve(guess: Double): Double = (guess + x / guess) / 2
+
+    def sqrtIter(guess: Double): Double =
+      if isGoodEnough(guess) then guess
+      else sqrtIter(improve(guess))
+
+    sqrtIter(1.0)
+
+    /** Нахождения кубического корня */
+  def cubeRootOf(x: Double): Double =
+    def isGoodEnough(guess: Double): Boolean =
+      math.abs(guess * guess * guess - x) < delta
+
+    def improve(guess: Double): Double = (x / (guess * guess) + 2 * guess) / 3
+
+    def sqrtIter(guess: Double): Double =
+      if isGoodEnough(guess) then guess
+      else sqrtIter(improve(guess))
+
+    sqrtIter(1.0)

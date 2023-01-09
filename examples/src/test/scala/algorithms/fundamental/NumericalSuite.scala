@@ -19,3 +19,17 @@ class NumericalSuite extends FunSuite:
   test("'power' should raise the number to a power") {
     assertEquals(power(7, 6), BigInt(117649))
   }
+
+  test(
+    "'sqrt' должен возвращать приближенное значение квадратного корня числа"
+  ) {
+    assertEqualsDouble(sqrt(9.0), 3.0, 0.001)
+    assertEqualsDouble(sqrt(137), 11.7047, 0.001)
+  }
+
+  test(
+    "'cubeRootOf' должен возвращать приближенное значение кубического корня числа"
+  ) {
+    assertEqualsDouble(cubeRootOf(27.0), 3.0, 0.001)
+    assertEqualsDouble(cubeRootOf(137), 5.1551, 0.001)
+  }

@@ -14,9 +14,11 @@ class MonoidSuite extends ScalaCheckSuite:
       z <- smallNumber
     yield (x, y, z)
 
-  property("Множество чисел образует моноид относительно умножения с единичным элементом равным 1") {
+  property(
+    "Множество чисел образует моноид относительно умножения с единичным элементом равным 1"
+  ) {
     given Monoid[Int] with
-      override def e: Int = 1
+      override def e: Int                              = 1
       extension (x: Int) override def |+|(y: Int): Int = x * y
 
     forAll(smallNumbers) { (x, y, z) =>
@@ -24,9 +26,11 @@ class MonoidSuite extends ScalaCheckSuite:
     }
   }
 
-  property("Множество чисел НЕ образует моноид относительно умножения с единичным элементом равным 0") {
+  property(
+    "Множество чисел НЕ образует моноид относительно умножения с единичным элементом равным 0"
+  ) {
     given Monoid[Int] with
-      override def e: Int = 0
+      override def e: Int                              = 0
       extension (x: Int) override def |+|(y: Int): Int = x * y
 
     exists(smallNumbers) { (x, y, z) =>

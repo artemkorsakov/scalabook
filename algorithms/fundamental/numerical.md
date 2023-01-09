@@ -116,15 +116,56 @@ def power(a: Long, n: Long): BigInt =
   }
 ```
 
+## Нахождение корня
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ffundamental%2FNumerical.scala&plain=1)
+Вычисление квадратного корня методом Ньютона хорошо описана [в главе "Пример: вычисление квадратного корня методом Ньютона" 
+книги "Структура и интерпретация компьютерных программ"][sicp].
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Ffundamental%2FNumericalSuite.scala)
+Метод Ньютона основывается на том, что имея некоторое приближенное значение `y` для квадратного корня числа `x`,
+мы можем получить более точное значение, если возьмем среднее между `y` и `x/y`.
+
+```scala
+def sqrt(x: Double): Double       =
+  def isGoodEnough(guess: Double): Boolean =
+    math.abs(guess * guess - x) < delta
+
+  def improve(guess: Double): Double = (guess + x / guess) / 2
+
+  def sqrtIter(guess: Double): Double =
+    if isGoodEnough(guess) then guess
+    else sqrtIter(improve(guess))
+
+  sqrtIter(1.0)
+```
+
+## Нахождение кубического корня
+
+Метод нахождения кубического корня основывается на том, что имея некоторое приближенное значение `y` для кубического корня числа `x`, можно получить более точное значение по формуле:
+`(x / y^2 + 2y)/3`.
+
+```scala
+def cubeRootOf(x: Double): Double =
+  def isGoodEnough(guess: Double): Boolean =
+    math.abs(guess * guess * guess - x) < delta
+
+  def improve(guess: Double): Double = (x / (guess * guess) + 2 * guess) / 3
+
+  def sqrtIter(guess: Double): Double =
+    if isGoodEnough(guess) then guess
+    else sqrtIter(improve(guess))
+
+  sqrtIter(1.0)
+```
 
 
 ---
 
 **Ссылки:**
+- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ffundamental%2FNumerical.scala&plain=1)
+- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Ffundamental%2FNumericalSuite.scala)
 - [Алгоритм Евклида](https://ru.wikipedia.org/wiki/%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%D0%95%D0%B2%D0%BA%D0%BB%D0%B8%D0%B4%D0%B0)
 - [Род Стивенс - Алгоритмы. Теория и практическое применение. Глава 2. Численные алгоритмы](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
+- [Абельсон Х., Сассман Д. - Структура и интерпретация компьютерных программ][sicp]
+
+[sicp]: https://web.mit.edu/6.001/6.037/sicp.pdf

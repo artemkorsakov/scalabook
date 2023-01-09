@@ -32,5 +32,5 @@ makeConnection(3_000, "https")
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book, Method Features](https://docs.scala-lang.org/scala3/book/methods-most.html)

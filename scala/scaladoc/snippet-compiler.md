@@ -282,5 +282,5 @@ val itShouldFail: Int = List(1.1, 2, 3).head
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scaladoc Guide](https://docs.scala-lang.org/scala3/guides/scaladoc/snippet-compiler.html)

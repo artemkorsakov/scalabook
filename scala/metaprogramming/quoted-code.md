@@ -595,6 +595,6 @@ def powerCode[Num: Type](x: Expr[Num], n: Int)(using num: Expr[Numeric[Num]])(us
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala 3 Guide](https://docs.scala-lang.org/scala3/guides/macros/quotes.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/metaprogramming/macros.html)

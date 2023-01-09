@@ -119,5 +119,5 @@ def g[X]: L[X] = ???
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/new-types/match-types.html)

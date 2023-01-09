@@ -57,5 +57,5 @@ sbt new scala/scala3-tasty-inspector.g8
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/metaprogramming/tasty-inspect.html)

@@ -154,6 +154,6 @@ type TL = [X] =>> [Y] =>> (X, Y)
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/new-types/type-lambdas.html)
 - [Scala 3 Reference, Details](https://docs.scala-lang.org/scala3/reference/new-types/type-lambdas-spec.html)

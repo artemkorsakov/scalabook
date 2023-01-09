@@ -111,5 +111,5 @@ f.apply(Array(1, 2, 3)) // Returns 6
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/metaprogramming/staging.html)

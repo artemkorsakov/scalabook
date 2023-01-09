@@ -78,5 +78,5 @@ println(e1)
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/new-types/polymorphic-function-types.html)

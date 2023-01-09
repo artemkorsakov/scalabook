@@ -170,7 +170,7 @@ between3and10(List(1, 3, 7, 11))
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book, taste Control Structures](https://docs.scala-lang.org/scala3/book/taste-control-structures.html)
 - [Scala3 book, Control Structures](https://docs.scala-lang.org/scala3/book/control-structures.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/changed-features/match-syntax.html)

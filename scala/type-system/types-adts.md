@@ -154,6 +154,6 @@ object Color:
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-adts-gadts.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/enums/adts.html)

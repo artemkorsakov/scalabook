@@ -32,7 +32,7 @@ _В функциональном программировании функции
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fp-what-is-fp.html)
 - [Wikipedia][Wikipedia]
 

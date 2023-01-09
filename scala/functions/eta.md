@@ -75,5 +75,5 @@ val methods = List(isEvenMethod)
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fun-eta-expansion.html)

@@ -712,5 +712,5 @@ def consumer[F[_]: Async: Console](id: Int, stateR: Ref[F, State[F, Int]]): F[Un
 
 ---
 
-**References:**
+**Ссылки:**
 - [Cats effect documentation](https://typelevel.org/cats-effect/docs/tutorial#a-nameproducerconsumeraproducer-consumer-problem---concurrency-and-fibers)

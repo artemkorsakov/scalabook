@@ -62,5 +62,5 @@ val addTo1And3: Int => Int = Lambda$9137/1728074700@1bd1b5e0
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-019)

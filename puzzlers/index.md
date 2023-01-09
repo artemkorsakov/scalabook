@@ -5,5 +5,5 @@
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html)

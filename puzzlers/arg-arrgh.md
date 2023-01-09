@@ -38,5 +38,5 @@ twiceD(2)(square)
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-007)

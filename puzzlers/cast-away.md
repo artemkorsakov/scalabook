@@ -48,5 +48,5 @@ public static int unboxToInt(Object i) {
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-028)

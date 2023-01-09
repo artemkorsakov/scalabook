@@ -32,5 +32,5 @@ ints.collect { case n if n > 0 => n }.head
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-069)

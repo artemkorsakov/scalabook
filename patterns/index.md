@@ -32,7 +32,7 @@
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala & Design Patterns by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf)
 - [Design Patterns by Gamma, Helm, Johnson, and Vlissides][Design Patterns]
 

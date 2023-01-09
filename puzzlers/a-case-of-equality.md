@@ -47,5 +47,5 @@ println(ccspy1.## == ccspy2.##)
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-011)

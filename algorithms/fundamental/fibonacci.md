@@ -22,16 +22,24 @@ object Fibonacci:
 memoizedFib(60)  // 1548008755920
 ```
 
+Либо число Фибоначчи можно вычислять итеративно:
 
-## Исходный код
+```scala
+def iterativeFib(n: Int): BigInt =
+  @tailrec
+  def loop(a: BigInt, b: BigInt, count: Int): BigInt =
+    if count == 0 then b
+    else loop(b, a + b, count - 1)
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ffundamental%2FFibonacci.scala&plain=1)
-
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Ffundamental%2FFibonacciSuite.scala)
+  loop(BigInt(0), BigInt(1), n - 1
+```
 
 
 ---
 
 ## Ссылки
 
+- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ffundamental%2FFibonacci.scala&plain=1)
+- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Ffundamental%2FFibonacciSuite.scala)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Memo.html)
+- [Абельсон Х., Сассман Д. - Структура и интерпретация компьютерных программ](https://web.mit.edu/6.001/6.037/sicp.pdf)

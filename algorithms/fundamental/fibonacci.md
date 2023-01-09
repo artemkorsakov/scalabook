@@ -32,6 +32,6 @@ memoizedFib(60)  // 1548008755920
 
 ---
 
-## References
+## Ссылки
 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Memo.html)

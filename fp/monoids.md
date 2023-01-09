@@ -222,6 +222,6 @@ val mean = p(0) / p(1).toDouble
 
 ---
 
-## References
+## Ссылки
 
 - [Functional Programming in Scala, Second Edition, Chapter 10](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)

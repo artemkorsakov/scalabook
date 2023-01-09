@@ -152,7 +152,7 @@ primeFactorsWithPow(777111) // Map(3 -> 1, 37 -> 1, 7001 -> 1)
 
 ---
 
-## References
+## Ссылки
 
 - [Решето Эратосфена][sieve]
 - [Род Стивенс - Алгоритмы. Теория и практическое применение. Глава 2. Численные алгоритмы](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854)

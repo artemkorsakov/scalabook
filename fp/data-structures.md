@@ -108,6 +108,6 @@ enum Tree[+A]:
 
 ---
 
-## References
+## Ссылки
 
 - [Functional Programming in Scala, Second Edition, Chapter 3](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)

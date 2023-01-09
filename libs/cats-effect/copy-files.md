@@ -342,5 +342,5 @@ object CopyingFiles extends IOApp:
 
 ---
 
-**References:**
+**Ссылки:**
 - [Cats effect documentation](https://typelevel.org/cats-effect/docs/tutorial#a-namecopyingfilesacopying-files---basic-concepts-resource-handling-and-cancelation)

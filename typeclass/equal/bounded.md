@@ -32,6 +32,6 @@ trait Bounded[F] extends Order[F]:
 
 ---
 
-## References
+## Ссылки
 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Bounded.html)

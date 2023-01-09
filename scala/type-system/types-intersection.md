@@ -217,7 +217,7 @@ glb(A, _)                 = A                     // use first
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-intersection.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/new-types/intersection-types.html)
 - [Scala 3 Reference, Details](https://docs.scala-lang.org/scala3/reference/new-types/intersection-types-spec.html)

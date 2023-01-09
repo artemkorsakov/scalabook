@@ -50,7 +50,7 @@ import Scalaz.*
 
 ---
 
-## References
+## Ссылки
 
 - [Herding Cats](http://eed3si9n.com/herding-cats/Arrow.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)

@@ -70,7 +70,7 @@ cat1 === cat2         // false
 
 ---
 
-## References
+## Ссылки
 
 - [Cats](https://typelevel.org/cats/typeclasses/eq.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Eq.html)

@@ -46,6 +46,6 @@ assert((1 |+| 1.inverse()) === Monoid[Int].empty)
 
 ---
 
-## References
+## Ссылки
 
 - [Herding Cats](http://eed3si9n.com/herding-cats/Grp.html)

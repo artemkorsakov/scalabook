@@ -115,7 +115,7 @@ Apply[Option].ap({ none[String => String] })("woot".some)       // None
 
 ---
 
-## References
+## Ссылки
 
 - [Herding Cats](http://eed3si9n.com/herding-cats/Apply.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Applicative.html)

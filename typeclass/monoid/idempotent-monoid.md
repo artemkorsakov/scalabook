@@ -40,4 +40,4 @@ given setIdempotentMonoidInstance[A]: IdempotentMonoid[Set[A]] with
 
 ---
 
-## References
+## Ссылки

@@ -79,7 +79,7 @@ import cats.implicits.*
 
 ---
 
-## References
+## Ссылки
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/semigroup.html)
 - [Cats](https://typelevel.org/cats/typeclasses/semigroup.html)

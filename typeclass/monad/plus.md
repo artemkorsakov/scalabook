@@ -43,7 +43,7 @@ List(1, 2) <+> List(3, 4)                   // List(1, 2, 3, 4)
 
 ---
 
-## References
+## Ссылки
 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/MonadPlus.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Plus.html)

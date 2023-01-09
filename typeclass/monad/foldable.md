@@ -165,7 +165,7 @@ Foldable[List].foldMap(List(1, 2, 3))(_.toString)  // 123
 
 ---
 
-## References
+## Ссылки
 
 - [Cats](https://typelevel.org/cats/typeclasses/foldable.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/using-monoids-to-fold.html)

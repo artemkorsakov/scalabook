@@ -55,7 +55,7 @@ Semigroupal.tuple3(Option(1), Option(2), Option(3)) // Some((1,2,3))
 
 ---
 
-## References
+## Ссылки
 
 - [Cats API](https://typelevel.org/cats/api/cats/Semigroupal.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Semigroupal.html)

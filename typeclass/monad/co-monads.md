@@ -58,6 +58,6 @@ given envCoMonad[R]: CoMonad[[X] =>> Env[X, R]] with
 
 ---
 
-## References
+## Ссылки
 
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Comonad.html)

@@ -276,7 +276,7 @@ def matching(x: A | B): String =
 
 ---
 
-**References:**
+**Ссылки:**
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-union.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/new-types/union-types.html)
 - [Scala 3 Reference, Details](https://docs.scala-lang.org/scala3/reference/new-types/union-types-spec.html)

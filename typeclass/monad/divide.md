@@ -42,6 +42,6 @@ given functionDivide[R: Monoid]: Divide[[X] =>> Function1[X, R]] with
 
 ---
 
-## References
+## Ссылки
 
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Divide.html)

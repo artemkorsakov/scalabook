@@ -58,6 +58,6 @@ given envCoBind[R]: CoBind[[X] =>> Env[X, R]] with
 
 ---
 
-## References
+## Ссылки
 
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Cobind.html)

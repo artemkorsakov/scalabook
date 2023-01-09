@@ -64,6 +64,6 @@ given eitherBifoldable: Bifoldable[Either] with
 
 ---
 
-## References
+## Ссылки
 
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bifoldable.html)

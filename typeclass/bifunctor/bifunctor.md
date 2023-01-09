@@ -130,7 +130,7 @@ Bifunctor[Tuple2].umap((2,3))(_ * 3)                                            
 
 ---
 
-## References
+## Ссылки
 
 - [Herding Cats](http://eed3si9n.com/herding-cats/datatype-generic-programming.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bifunctor.html)

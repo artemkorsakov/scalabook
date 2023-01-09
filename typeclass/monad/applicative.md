@@ -216,7 +216,7 @@ Applicative[Option].pure(1)  // Some(1)
 
 ---
 
-## References
+## Ссылки
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/applicative.html)
 - [Applicative Programming with Effects](https://www.staff.city.ac.uk/~ross/papers/Applicative.html)

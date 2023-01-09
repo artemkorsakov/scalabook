@@ -31,7 +31,7 @@ def iterativeFib(n: Int): BigInt =
     if count == 0 then b
     else loop(b, a + b, count - 1)
 
-  loop(BigInt(0), BigInt(1), n - 1
+  loop(BigInt(0), BigInt(1), n - 1)
 ```
 
 

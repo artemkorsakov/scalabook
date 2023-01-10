@@ -34,6 +34,15 @@ def iterativeFib(n: Int): BigInt =
   loop(BigInt(0), BigInt(1), n - 1)
 ```
 
+Но вышеперечисленные алгоритмы имеют линейную сложность.
+
+#### Числа Фибоначчи с логарифмической сложностью
+
+Вычислить числа Фибоначчи с логарифмической сложностью можно так (**Exercise 1.19** из [SICP][sicp]):
+
+```scala
+
+```
 
 ---
 
@@ -42,4 +51,6 @@ def iterativeFib(n: Int): BigInt =
 - [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ffundamental%2FFibonacci.scala&plain=1)
 - [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Ffundamental%2FFibonacciSuite.scala)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Memo.html)
-- [Абельсон Х., Сассман Д. - Структура и интерпретация компьютерных программ](https://web.mit.edu/6.001/6.037/sicp.pdf)
+- [SICP: Абельсон Х., Сассман Д. - Структура и интерпретация компьютерных программ][sicp]
+
+[sicp]: https://web.mit.edu/6.001/6.037/sicp.pdf

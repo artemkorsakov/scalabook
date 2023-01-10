@@ -16,6 +16,13 @@ class NumericalSuite extends FunSuite:
     assertEquals(gcd(4851, 3003), 231L)
   }
 
+  test("gcdex should return Extended Euclidean algorithm's result") {
+    assertEquals(
+      gcdex(BigInt(12121212L), BigInt(23422344L)),
+      (BigInt(12), BigInt(347845), BigInt(-180012))
+    )
+  }
+
   test("'power' should raise the number to a power") {
     assertEquals(power(7, 5), BigInt(16807))
     assertEquals(power(7, 6), BigInt(117649))
@@ -34,4 +41,17 @@ class NumericalSuite extends FunSuite:
   ) {
     assertEqualsDouble(cubeRootOf(27.0), 3.0, 0.001)
     assertEqualsDouble(cubeRootOf(137), 5.1551, 0.001)
+  }
+
+  test(
+    "'sumOfDivisors' должен возвращать сумму делителей числа"
+  ) {
+    assertEquals(sumOfDivisors(220), BigInt(504))
+    assertEquals(sumOfDivisors(284), BigInt(504))
+  }
+
+  test(
+    "'countOfDivisors' должен возвращать количество делителей числа"
+  ) {
+    assertEquals(countOfDivisors(100), 9L)
   }

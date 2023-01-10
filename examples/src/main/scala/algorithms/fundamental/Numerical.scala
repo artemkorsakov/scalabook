@@ -1,6 +1,7 @@
 package algorithms.fundamental
 
 import scala.annotation.tailrec
+import algorithms.fundamental.Primes.primeFactorsWithPow
 
 object Numerical:
   private val delta: Double = 0.001
@@ -32,6 +33,46 @@ object Numerical:
         case (1, 0) => gcd(u >> 1, v)
         case (0, 1) => gcd(u, v >> 1)
         case (_, _) => if (u > v) gcd(u - v, v) else gcd(v - u, u)
+
+  /** Return the greatest common divisor.
+    */
+  def gcd(a: BigInt, b: BigInt): BigInt =
+    val u = if a < 0 then -a else a
+    val v = if b < 0 then -b else b
+    if u == v then u
+    else if u == 0 then v
+    else if v == 0 then u
+    else
+      ((~u & 1).toInt, (~v & 1).toInt) match
+        case (1, 1) => gcd(u >> 1, v >> 1) << 1
+        case (1, 0) => gcd(u >> 1, v)
+        case (0, 1) => gcd(u, v >> 1)
+        case (_, _) => if (u > v) gcd(u - v, v) else gcd(v - u, u)
+
+  /** Extended Euclidean algorithm.
+    *
+    * @see
+    *   <a
+    *   href="https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm">detailed
+    *   description</a>
+    */
+  def gcdex(a: BigInt, b: BigInt): (BigInt, BigInt, BigInt) =
+    if a == 0 then (b, BigInt(0), BigInt(1))
+    else
+      val temp = gcdex(b % a, a)
+      (temp._1, temp._3 - (b / a) * temp._2, temp._2)
+
+  /** Modular multiplicative inverse.
+    *
+    * @see
+    *   <a
+    *   href="https://en.wikipedia.org/wiki/Modular_multiplicative_inverse">detailed
+    *   description</a>
+    */
+  def gcdInverse(a: BigInt, m: BigInt): BigInt =
+    val extraEuclid = gcdex(a, m)
+    if extraEuclid._1 == 1 then (extraEuclid._2 % m + m) % m
+    else -1
 
   /** Возведение в степень */
   def power(a: Long, n: Long): BigInt =
@@ -67,3 +108,22 @@ object Numerical:
       else sqrtIter(improve(guess))
 
     sqrtIter(1.0)
+
+  /** Return the sum of the divisors of n.
+    *
+    * @see
+    *   <a href="https://en.wikipedia.org/wiki/Divisor_function">detailed
+    *   description</a>
+    */
+  def sumOfDivisors(number: Long): BigInt =
+    val primeDivisors = primeFactorsWithPow(number)
+    primeDivisors.keySet.foldLeft(BigInt(1)) { (mul, prime) =>
+      val num = BigInt(prime).pow(primeDivisors(prime).toInt + 1) - 1
+      val den = BigInt(prime) - 1
+      mul * (num / den)
+    }
+
+  /** Return the count of divisors of n.
+    */
+  def countOfDivisors(number: Long): Long =
+    primeFactorsWithPow(number).values.foldLeft(1L)((mul, a) => mul * (a + 1))

@@ -24,3 +24,12 @@ class FibonacciSuite extends FunSuite:
     assertEquals(fastFib(45), BigInt(1134903170))
     assertEquals(fastFib(60), BigInt(1548008755920L))
   }
+
+  test(
+    "Вычисление приблизительного значения числа Фибонначи с помощью 'золотого сечения'"
+  ) {
+    assertEquals(approximateFibonacci(30), BigInt(832040))
+    assertEquals(approximateFibonacci(40), BigInt(102334155))
+    assertEquals(approximateFibonacci(45), BigInt(1134903170))
+    assertEquals(approximateFibonacci(100), BigInt("354224848179265190133"))
+  }

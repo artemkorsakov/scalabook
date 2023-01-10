@@ -4,6 +4,8 @@ import scalaz.*
 import scala.annotation.tailrec
 
 object Fibonacci:
+  private val PHI: BigDecimal = BigDecimal((1.0 + math.sqrt(5.0)) / 2.0)
+
   val memoizedFib: Int => BigInt = Memo.mutableHashMapMemo {
     case 0 => BigInt(0)
     case 1 => BigInt(1)
@@ -27,3 +29,8 @@ object Fibonacci:
       else loop(b * q + a * (p + q), b * p + a * q, p, q, count - 1)
 
     loop(1, 0, 0, 1, n)
+
+  def approximateFibonacci(n: Int): BigInt =
+    (PHI.pow(n) / BigDecimal(math.sqrt(5)))
+      .setScale(0, BigDecimal.RoundingMode.HALF_UP)
+      .toBigInt

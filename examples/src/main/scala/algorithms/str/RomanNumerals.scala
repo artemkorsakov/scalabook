@@ -31,6 +31,9 @@ object RomanNumerals:
           .replaceAll("CCCC", "CD")
       )
 
+  @SuppressWarnings(
+    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
+  )
   def toArabic(roman: String): Option[Long] =
     val min = toMinimalRomanNumeral(roman)
     if min.isEmpty then None

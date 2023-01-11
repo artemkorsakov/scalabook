@@ -14,6 +14,7 @@ class PrimesSuite extends ScalaCheckSuite:
     271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359,
     367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449,
     457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541)
+  private val primesArray            = primesNoMoreThanN(100)
 
   property("primes") {
     forAll(Gen.choose(0, 100)) { (k: Int) =>
@@ -54,6 +55,26 @@ class PrimesSuite extends ScalaCheckSuite:
         )
       )
     ) { (actual, expected) =>
+      actual == expected
+    }
+  }
+
+  property("nextPrime with prime array") {
+    forAll(Gen.oneOf(0 until primesArray.length - 1)) { i =>
+      nextPrime(primesArray(i)) == primesArray(i + 1)
+    }
+  }
+
+  property("primeFactors") {
+    forAll(
+      Gen.oneOf(
+        Seq(
+          (primeFactors(1000), Set(2, 5)),
+          (primeFactors(1024), Set(2)),
+          (primeFactors(777111), Set(3, 37, 7001))
+        )
+      )
+    ) { case (actual, expected) =>
       actual == expected
     }
   }

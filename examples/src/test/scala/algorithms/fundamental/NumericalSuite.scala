@@ -55,3 +55,15 @@ class NumericalSuite extends FunSuite:
   ) {
     assertEquals(countOfDivisors(100), 9L)
   }
+
+  test("sumToGiven") {
+    assertEquals(sumToGiven(1000000), 500000500000L)
+  }
+
+  test("sumOfSquaresTo") {
+    assertEquals(sumOfSquaresTo(1000), 333833500L)
+  }
+
+  test("sumOfCubesTo") {
+    assertEquals(sumOfCubesTo(1000), 250500250000L)
+  }

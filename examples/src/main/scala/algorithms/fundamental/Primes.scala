@@ -82,3 +82,37 @@ object Primes:
 
     // Если от числа что-то осталось, то остаток тоже множитель
     if number > 1 then map + (number -> 1) else map
+
+  /** Get next prime number for the given prime number.
+    */
+  @SuppressWarnings(
+    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
+  )
+  def nextPrime(n: Long): Long =
+    if n == 2 then 3
+    else if n == 3 then 5
+    else
+      var nextPrime = if (n % 3 == 1) n + 4 else n + 2
+      while !isPrime(nextPrime) do
+        nextPrime = if (nextPrime % 3 == 1) nextPrime + 4 else nextPrime + 2
+      nextPrime
+
+  @SuppressWarnings(
+    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
+  )
+  def primeFactors(n: Long): Set[Long] =
+    val set    = scala.collection.mutable.HashSet.empty[Long]
+    var number = math.abs(n)
+    if number % 2 == 0 then
+      while number % 2 == 0 do number /= 2
+      set += 2L
+    if number % 3 == 0 then
+      while number % 3 == 0 do number /= 3
+      set += 3L
+    var i = 5L
+    while number > 1 do
+      if number % i == 0 then
+        while number % i == 0 do number /= i
+        set += i
+      i += (if i % 6 == 5 then 2 else 4)
+    set.toSet

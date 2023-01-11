@@ -127,3 +127,23 @@ object Numerical:
     */
   def countOfDivisors(number: Long): Long =
     primeFactorsWithPow(number).values.foldLeft(1L)((mul, a) => mul * (a + 1))
+
+  /** Returns the sum of numbers from 1 to a given.
+    */
+  def sumToGiven(n: Long): Long = n * (n + 1) / 2
+
+  /** Returns the sum of squares of numbers from 1 to a given limit, inclusive.
+    *
+    * @see
+    *   <a href="https://en.wikipedia.org/wiki/Square_number">description</a>
+    */
+  def sumOfSquaresTo(n: Long): Long = n * (n + 1) * (2 * n + 1) / 6
+
+  /** Returns the sum of cubes first natural numbers.
+    *
+    * @see
+    *   <a href="https://en.wikipedia.org/wiki/Cube_(algebra)">description</a>
+    */
+  def sumOfCubesTo(n: Long): Long =
+    val s = sumToGiven(n)
+    s * s

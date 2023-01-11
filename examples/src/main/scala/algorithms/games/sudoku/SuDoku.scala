@@ -2,6 +2,9 @@ package algorithms.games.sudoku
 
 case class SuDoku(cells: Array[Array[Array[Int]]]):
 
+  @SuppressWarnings(
+    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
+  )
   def result: Option[Array[Array[Int]]] =
     var hasToRemove = true
     var isValid     = true

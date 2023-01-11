@@ -6,6 +6,7 @@ object Darts:
   private val triplePoints: Seq[Int] = 3 to 60 by 3
   private val points: Seq[Int]       = singlePoints ++ doublePoints ++ triplePoints
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   val allDistinctWaysToCheckOut: Map[Int, Int] =
     // First step checkout
     var integerMap = doublePoints.map(point => point -> 1).toMap

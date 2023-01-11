@@ -7,6 +7,9 @@ case class DiophantineEquation(d: Int):
     * method</a> is a cyclic algorithm to solve indeterminate quadratic
     * equations.
     */
+  @SuppressWarnings(
+    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
+  )
   def minimalEquation: Option[(BigInt, BigInt)] =
     if math.sqrt(d.toDouble).isWhole then None
     else
@@ -40,6 +43,9 @@ case class Iteration(a: BigInt, b: BigInt, k: BigInt, d: Int):
   /** At each iteration we find m > 0, such that k divides a + b*m and
     * \|m<sup>2</sup> − d| minimal.
     */
+  @SuppressWarnings(
+    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
+  )
   def getM: BigInt =
     var m    = BigInt(-1)
     var min  = d + 1

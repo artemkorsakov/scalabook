@@ -26,6 +26,9 @@ object Coins:
     array(1) = BigInt(1)
     array(2) = BigInt(2)
 
+    @SuppressWarnings(
+      Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
+    )
     def partitionPart(s: Int, n: Int, pS: BigInt): BigInt =
       var k  = s
       var op = k * (3 * k - 1) / 2

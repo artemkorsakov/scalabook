@@ -6,6 +6,7 @@ object PolynomialEquation:
 
   /** Solution of a polynomial equation with given coefficients for a given n.
     */
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def polynomialSolution(n: Int, aList: Array[Long]): Long =
     var number = 1L
     aList.reverse.foldLeft(0L) { (sum, a) =>
@@ -24,6 +25,7 @@ object PolynomialEquation:
     * @return
     *   a[1], a[2], ..., a[k]
     */
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def polynomialCoefficients(k: Int, solutions: Array[Long]): Array[Long] =
     val aList = new Array[Long](k)
 

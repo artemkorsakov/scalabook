@@ -20,13 +20,13 @@ class SuDokuSuite extends FunSuite:
     suDoku.flatMap(_.result).getOrElse(Array.empty[Array[Int]])
 
   test("SuDoku.result") {
-    assertEquals(result(0), Array(4, 8, 3, 9, 2, 1, 6, 5, 7))
-    assertEquals(result(1), Array(9, 6, 7, 3, 4, 5, 8, 2, 1))
-    assertEquals(result(2), Array(2, 5, 1, 8, 7, 6, 4, 9, 3))
-    assertEquals(result(3), Array(5, 4, 8, 1, 3, 2, 9, 7, 6))
-    assertEquals(result(4), Array(7, 2, 9, 5, 6, 4, 1, 3, 8))
-    assertEquals(result(5), Array(1, 3, 6, 7, 9, 8, 2, 4, 5))
-    assertEquals(result(6), Array(3, 7, 2, 6, 8, 9, 5, 1, 4))
-    assertEquals(result(7), Array(8, 1, 4, 2, 5, 3, 7, 6, 9))
-    assertEquals(result(8), Array(6, 9, 5, 4, 1, 7, 3, 8, 2))
+    assertEquals(result(0).toSeq, Array(4, 8, 3, 9, 2, 1, 6, 5, 7).toSeq)
+    assertEquals(result(1).toSeq, Array(9, 6, 7, 3, 4, 5, 8, 2, 1).toSeq)
+    assertEquals(result(2).toSeq, Array(2, 5, 1, 8, 7, 6, 4, 9, 3).toSeq)
+    assertEquals(result(3).toSeq, Array(5, 4, 8, 1, 3, 2, 9, 7, 6).toSeq)
+    assertEquals(result(4).toSeq, Array(7, 2, 9, 5, 6, 4, 1, 3, 8).toSeq)
+    assertEquals(result(5).toSeq, Array(1, 3, 6, 7, 9, 8, 2, 4, 5).toSeq)
+    assertEquals(result(6).toSeq, Array(3, 7, 2, 6, 8, 9, 5, 1, 4).toSeq)
+    assertEquals(result(7).toSeq, Array(8, 1, 4, 2, 5, 3, 7, 6, 9).toSeq)
+    assertEquals(result(8).toSeq, Array(6, 9, 5, 4, 1, 7, 3, 8, 2).toSeq)
   }

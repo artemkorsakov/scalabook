@@ -50,6 +50,11 @@ object Primes:
     do result(j * i) = false
     result
 
+  /** All prime numbers from 2 through n (inclusive).
+    */
+  def primesNoMoreThanN(n: Int): Array[Int] =
+    sieveOfEratosthenes(n).zipWithIndex.collect { case (true, prime) => prime }
+
   /** Нахождение простых множителей */
   @SuppressWarnings(
     Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")

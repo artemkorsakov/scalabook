@@ -35,6 +35,15 @@ class PrimesSuite extends ScalaCheckSuite:
     }
   }
 
+  property("primesNoMoreThanN") {
+    forAll(Gen.choose(1, theHundredthPrimeValue)) { n =>
+      assertEquals(
+        primesNoMoreThanN(n).toSeq,
+        first100Primes.filter(_ <= n).toSeq
+      )
+    }
+  }
+
   property("primeFactorsWithPow") {
     forAll(
       Gen.oneOf(

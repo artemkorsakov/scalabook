@@ -24,6 +24,7 @@ object HarshadNumber:
   /** Return all strong, right truncatable Harshad primes less than
     * 10<sup>p</sup>.
     */
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def getStrongRightTruncatableHarshadPrimes(p: Int): Seq[Long] =
     var harshadNumbers = Seq(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L)
     (1 until p - 1).flatMap { _ =>

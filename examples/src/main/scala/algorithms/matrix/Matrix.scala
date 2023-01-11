@@ -113,6 +113,7 @@ case class Matrix[T](elements: Seq[Seq[T]])(using I: Integral[T]):
     Vector(*(other.columnToMatrix, module).elements.map(_.head))
 
   /** Matrix exponentiation. */
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def power(p: Long): Matrix[T] =
     require(p >= 1)
     if p == 1 then this
@@ -129,6 +130,7 @@ case class Matrix[T](elements: Seq[Seq[T]])(using I: Integral[T]):
       }
       result
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def power(p: Long, module: T): Matrix[T] =
     require(p >= 1)
     if p == 1 then Matrix(elements.map(_.map(posMod(_, module))))

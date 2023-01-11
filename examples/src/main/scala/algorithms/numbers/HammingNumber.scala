@@ -10,6 +10,9 @@ object HammingNumber:
   def isHammingNumber(number: Int, n: Int): Boolean =
     isHammingNumber(number.toLong, n)
 
+  @SuppressWarnings(
+    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
+  )
   def isHammingNumber(number: Long, n: Int): Boolean =
     if number < 2 || number <= n then true
     else if n < 2 then false

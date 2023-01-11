@@ -8,7 +8,7 @@ class HadamardMatrix(elements: Seq[Seq[Int]])(using I: Integral[Int])
     val matrix = (this.transpose * this).toSquaredMatrix
     val n      = matrix.n
     val tl     = matrix.topLeft
-    val els    = matrix.elements.map(row => row.map(el => el.asInstanceOf[Int]))
+    val els    = matrix.elements
     (0 until n).forall(i =>
       (0 until n).forall(j => els(i)(j) == (if (i == j) tl else 0))
     )

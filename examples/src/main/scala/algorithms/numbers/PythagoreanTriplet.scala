@@ -40,6 +40,9 @@ object PythagoreanTriplet:
     * @see
     *   <a href="https://projecteuler.net/overview=009">detailed description</a>
     */
+  @SuppressWarnings(
+    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
+  )
   def pythagoreanTripletsWithGivenSum(sum: Long): Seq[PythagoreanTriplet] =
     if sum % 2 == 1 then Seq.empty[PythagoreanTriplet]
     else

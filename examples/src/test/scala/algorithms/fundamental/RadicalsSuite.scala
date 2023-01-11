@@ -1,7 +1,7 @@
-package algorithms.primes
+package algorithms.fundamental
 
 import munit.FunSuite
-import algorithms.primes.Radicals.*
+import algorithms.fundamental.Radicals.*
 
 class RadicalsSuite extends FunSuite:
   test("rad") {

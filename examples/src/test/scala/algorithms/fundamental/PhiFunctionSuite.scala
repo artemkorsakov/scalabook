@@ -1,7 +1,7 @@
-package algorithms.primes
+package algorithms.fundamental
 
 import munit.FunSuite
-import algorithms.primes.PhiFunction.*
+import algorithms.fundamental.PhiFunction.*
 
 class PhiFunctionSuite extends FunSuite:
   test("totient") {

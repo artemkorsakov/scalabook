@@ -1,4 +1,4 @@
-package algorithms.primes
+package algorithms.fundamental
 
 object PhiFunction:
   import algorithms.fundamental.Primes.primesNoMoreThanN

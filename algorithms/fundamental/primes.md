@@ -64,7 +64,7 @@ isPrime(999_999_000_001L)
 
 #### Тест простоты Ферма
 
-Тест простоты Ферма позволяет определить, простое ли число с определенной вероятностью.
+Тест простоты Ферма позволяет определить, простое ли число [с определенной вероятностью](https://ru.wikipedia.org/wiki/%D0%92%D0%B5%D1%80%D0%BE%D1%8F%D1%82%D0%BD%D0%BE%D1%81%D1%82%D0%BD%D1%8B%D0%B9_%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC).
 
 [Малая теорема Ферма](https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D0%BB%D0%B0%D1%8F_%D1%82%D0%B5%D0%BE%D1%80%D0%B5%D0%BC%D0%B0_%D0%A4%D0%B5%D1%80%D0%BC%D0%B0) 
 гласит: если **p** - простое число, а **1 <= n < p**, то **n<sup>p-1</sup> % p = 1**.
@@ -158,5 +158,7 @@ primeFactorsWithPow(777111) // Map(3 -> 1, 37 -> 1, 7001 -> 1)
 - [Род Стивенс - Алгоритмы. Теория и практическое применение. Глава 2. Численные алгоритмы](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
 - [Project Euler, Problem 7](https://projecteuler.net/problem=7)
+- [SICP: Абельсон Х., Сассман Д. - Структура и интерпретация компьютерных программ][sicp]
 
+[sicp]: https://web.mit.edu/6.001/6.037/sicp.pdf
 [sieve]:https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D1%88%D0%B5%D1%82%D0%BE_%D0%AD%D1%80%D0%B0%D1%82%D0%BE%D1%81%D1%84%D0%B5%D0%BD%D0%B0

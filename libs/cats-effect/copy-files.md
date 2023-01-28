@@ -310,10 +310,6 @@ object CopyingFiles extends IOApp:
 все равно ресурсы будут правильно освобождены.
 
 
-## Исходный код
-
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FCopyFiles.scala&plain=1)
-
 ## Полиморфный код с cats-effect
 
 Есть важная характеристика `IO`, о которой нужно знать. 
@@ -335,12 +331,9 @@ object CopyingFiles extends IOApp:
 поэтому нам не нужно беспокоиться об этом.
 
 
-## Исходный код
-
-[Исходный код с полиморфными методами](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FCopyFilesF.scala&plain=1)
-
-
 ---
 
 **Ссылки:**
+- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FCopyFiles.scala&plain=1)
+- [Исходный код с полиморфными методами](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FCopyFilesF.scala&plain=1)
 - [Cats effect documentation](https://typelevel.org/cats-effect/docs/tutorial#a-namecopyingfilesacopying-files---basic-concepts-resource-handling-and-cancelation)

@@ -292,7 +292,7 @@ sqrt(1000000)
 (inc (inc (+ (dec 3) 5)))
 (inc (inc (+ 2 5)))
 (inc (inc (inc (+ (dec 2) 5))))
-(inc (inc (inc (+ 2 5))))
+(inc (inc (inc (+ 1 5))))
 (inc (inc (inc (inc (+ (dec 1) 5)))))
 (inc (inc (inc (inc (+ 0 5)))))
 (inc (inc (inc (inc 5))))
@@ -320,6 +320,53 @@ sqrt(1000000)
 
 #### Упражнение 1.10
 
+> Следующая процедура вычисляет математическую функцию, называемую [функцией Аккермана](https://ru.wikipedia.org/wiki/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F_%D0%90%D0%BA%D0%BA%D0%B5%D1%80%D0%BC%D0%B0%D0%BD%D0%B0).
+>
+> ```
+> (define (A x y)
+>   (cond ((= y 0) 0)
+>         ((= x 0) (* 2 y))
+>         ((= y 1) 2)
+>         (else (A (- x 1)
+>                  (A x (- y 1))))))
+> ```
+>
+> Каковы значения следующих выражений?
+> (A 1 10)
+> (A 2 4)
+> (A 3 3)
+
+Функцию Аккермана можно определить так:
+
+```scala
+def functionAckermann(x: Int, y: Int): Int =
+  if y == 0 then 0
+  else if x == 0 then 2 * y
+  else if y == 1 then 2
+  else functionAckermann(x - 1, functionAckermann(x, y - 1))
+
+functionAckermann(1, 10)
+// res0: Int = 1024
+functionAckermann(2, 4)
+// res1: Int = 65536
+functionAckermann(3, 3)
+// res2: Int = 65536
+```
+
+> Рассмотрим следующие процедуры, где `A` — процедура, определенная выше:
+> - `(define (f n) (A 0 n))`
+> - `(define (g n) (A 1 n))`
+> - `(define (h n) (A 2 n))`
+>
+> Дайте краткие математические определения функций, вычисляемых процедурами `f`, `g` и `h` для положительных целых значений `n`. 
+
+Для малых `x` функция Аккермана равносильна следующим функциям:
+
+- `f <=> 2*n`
+- `g <=> 2^n`
+- `h <=> 2^2^...^2 (n раз)`
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-10.worksheet.sc)
 
 
 

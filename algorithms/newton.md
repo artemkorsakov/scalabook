@@ -12,6 +12,48 @@
 - Задается начальное приближение **x<sub>0</sub>**.
 - Пока не выполнено условие остановки (например, погрешность в нужных пределах), вычисляется новое приближение по формуле выше.
 
+Чтобы реализовать метод Ньютона в виде процедуры, сначала нужно выразить понятие производной. 
+В общем случае, если `g` есть функция, а `dx` — маленькое число, то
+производная `Dg` функции `g` есть функция, 
+значение которой в каждой точке `x` описывается формулой (при `dx`, стремящемся к нулю):
+
+![](https://latex.codecogs.com/svg.image?Dg(x)%20=%20\frac{g(x%20+%20\mathrm{d}%20x)%20-%20g(x)%20}{\mathrm{d}%20x})
+
+```scala
+object NewtonsMethod:
+  private val dx = 1e-6
+
+  def derivative(x: Double, g: Double => Double): Double =
+    (g(x + dx) - g(x)) / dx
+```
+
+С помощью `derivative` можно выразить метод Ньютона как процесс поиска неподвижной точки:
+
+```scala
+object NewtonsMethod:
+  private val accuracy = 1e-6
+
+  @scala.annotation.tailrec
+  def newtonsMethod(g: Double => Double, guess: Double): Double =
+    val next = transform(g)(guess)
+    if math.abs(next - guess) < accuracy then next
+    else newtonsMethod(g, next)
+
+  private def transform(g: Double => Double): Double => Double =
+    x => x - g(x) / derivative(x, g)
+```
+
+Рассмотрим задачу о нахождении положительных **x**, для которых **cos x=x<sup>3</sup>**. 
+Эта задача может быть представлена как задача нахождения нуля функции **f(x)=cos x - x<sup>3</sup>**. 
+Так как **cos x <= 1** для всех **x** и **x<sup>3</sup> > 1** для **x > 1**, очевидно, что решение лежит между **0** и **1**. 
+Возьмём в качестве начального приближения значение **x<sub>0</sub>=0,5**, тогда:
+
+```scala
+val g: Double => Double = x => math.cos(x) - x * x * x
+
+newtonsMethod(g, 0.5) // 0.865474033101...
+```
+
 
 ---
 

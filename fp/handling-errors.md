@@ -234,6 +234,6 @@ def catchNonFatal[A](a: => A): Either[Throwable, A] =
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Functional Programming in Scala, Second Edition, Chapter 4](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)

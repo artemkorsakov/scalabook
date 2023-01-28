@@ -57,7 +57,7 @@ val (log, result) = a.run
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Cats](https://typelevel.org/cats/datatypes/writer.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Writer.html)

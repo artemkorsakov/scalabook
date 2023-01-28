@@ -246,6 +246,6 @@ def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Functional Programming in Scala, Second Edition, Chapter 11](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)

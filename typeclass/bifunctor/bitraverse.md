@@ -65,6 +65,6 @@ given Bitraverse[Either] with
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bitraverse.html)

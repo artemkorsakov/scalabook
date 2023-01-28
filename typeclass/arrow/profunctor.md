@@ -73,7 +73,7 @@ import Scalaz.*
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Profunctor.html)

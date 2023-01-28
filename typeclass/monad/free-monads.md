@@ -32,7 +32,7 @@ given freeMonad[F[_]]: Monad[[X] =>> Free[F, X]] with
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Free Monads Are Simple](https://underscore.io/blog/posts/2015/04/14/free-monads-are-simple.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Free-monads.html)

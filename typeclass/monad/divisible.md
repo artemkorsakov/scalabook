@@ -44,6 +44,6 @@ given functionDivisible[R: Monoid]: Divisible[[X] =>> Function1[X, R]] with
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Divisible.html)

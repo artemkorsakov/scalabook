@@ -29,7 +29,7 @@ import cats.implicits.*
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Cats](https://typelevel.org/cats/typeclasses/show.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Show.html)

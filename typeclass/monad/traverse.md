@@ -179,7 +179,7 @@ Await.result(allUptimes, 1.second)  // List(1020, 960, 840)
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Cats](https://typelevel.org/cats/typeclasses/traverse.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Traverse.html)

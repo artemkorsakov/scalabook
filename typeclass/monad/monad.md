@@ -169,7 +169,7 @@ val list3 = Monad[List].map(list2)(a => a + 123)                     // List(124
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monad.html)
 - [Cats](https://typelevel.org/cats/typeclasses/monad.html)

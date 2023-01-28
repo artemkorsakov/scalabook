@@ -4,6 +4,6 @@
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Scalaz](https://scalaz.github.io/7/)

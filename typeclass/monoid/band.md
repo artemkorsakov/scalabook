@@ -37,6 +37,6 @@ given setBandInstance[A]: Band[Set[A]] =
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Band.html)

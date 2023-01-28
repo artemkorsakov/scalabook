@@ -109,7 +109,7 @@ Monoid[Int].combine(1, Monoid[Int].empty)   // 1
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monoid.html)
 - [Cats](https://typelevel.org/cats/typeclasses/monoid.html)

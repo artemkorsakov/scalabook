@@ -203,7 +203,7 @@ liftedFunc(Option(1))                        // Some(2)
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/functor.html)
 - [Cats](https://typelevel.org/cats/typeclasses/functor.html)

@@ -77,7 +77,7 @@ showString
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Cats](https://typelevel.org/cats/typeclasses/contravariant.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 

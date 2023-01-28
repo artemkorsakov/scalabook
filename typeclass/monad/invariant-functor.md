@@ -63,7 +63,7 @@ given InvariantFunctor[Codec] with
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Cats](https://typelevel.org/cats/typeclasses/invariant.html)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#sec:functors:invariant)

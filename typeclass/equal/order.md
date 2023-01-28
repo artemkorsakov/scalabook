@@ -89,7 +89,7 @@ import cats.implicits.*
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Cats API](https://www.javadoc.io/doc/org.typelevel/cats-docs_3/latest/cats/kernel/Order.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Order.html)

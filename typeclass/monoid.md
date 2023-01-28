@@ -54,7 +54,7 @@ trait Semigroup[A]:
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/sum+function.html)
 - [Scala with Cats][Scala with Cats]

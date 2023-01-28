@@ -26,7 +26,7 @@
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Scala with Cats][Scala with Cats]
 - [Type classes in Algebird](https://twitter.github.io/algebird/typeclasses.html)

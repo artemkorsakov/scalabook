@@ -17,6 +17,6 @@ Arrow — это термин, используемый в теории кате
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)

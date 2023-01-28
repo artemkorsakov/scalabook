@@ -9,7 +9,7 @@
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Equal.html)
 - [Scalaz](https://scalaz.github.io/7/typeclass/Equal.html)

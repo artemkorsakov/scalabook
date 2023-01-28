@@ -179,7 +179,7 @@
     - [Show](typeclass/other/show.md)
     - [Read](typeclass/other/read.md)
     
-- [Алгоритмы](algorithms/index.md)
+- [Алгоритмы и структуры данных](algorithms/index.md)
   - [Фундамент алгоритмы](algorithms/fundamental.md)
     - [Численные алгоритмы](algorithms/fundamental/numerical.md) 
     - [Простые числа](algorithms/fundamental/primes.md)

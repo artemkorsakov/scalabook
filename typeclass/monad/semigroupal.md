@@ -36,12 +36,6 @@ given Semigroupal[Option] with
 ```
 
 
-## Исходный код
-
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FSemigroupal.scala&plain=1)
-
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FSemigroupalSuite.scala)
-
 ## Реализация в Cats
 
 ```scala
@@ -57,6 +51,8 @@ Semigroupal.tuple3(Option(1), Option(2), Option(3)) // Some((1,2,3))
 
 **Ссылки:**
 
+- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FSemigroupal.scala&plain=1)
+- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FSemigroupalSuite.scala)
 - [Cats API](https://typelevel.org/cats/api/cats/Semigroupal.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Semigroupal.html)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#semigroupal)

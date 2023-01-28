@@ -138,12 +138,6 @@ given Functor[BinaryTree] with
       case Branch(a, left, right) => Branch(f(a), left.map(f), right.map(f))
 ```
 
-## Исходный код
-
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FFunctor.scala&plain=1)
-
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFunctorSuite.scala)
-
 
 ## Реализация в ScalaZ
 
@@ -205,6 +199,8 @@ liftedFunc(Option(1))                        // Some(2)
 
 **Ссылки:**
 
+- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FFunctor.scala&plain=1)
+- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFunctorSuite.scala)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/functor.html)
 - [Cats](https://typelevel.org/cats/typeclasses/functor.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Functor.html)

@@ -116,12 +116,6 @@ given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
         case Left(_)  => init
 ```
 
-## Исходный код
-
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FFoldable.scala&plain=1)
-
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFoldableSuite.scala)
-
 
 ## Реализация в ScalaZ
 
@@ -167,6 +161,8 @@ Foldable[List].foldMap(List(1, 2, 3))(_.toString)  // 123
 
 **Ссылки:**
 
+- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FFoldable.scala&plain=1)
+- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFoldableSuite.scala)
 - [Cats](https://typelevel.org/cats/typeclasses/foldable.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/using-monoids-to-fold.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)

@@ -195,6 +195,7 @@
   - [Поиск](algorithms/search.md)
   - [Графы](algorithms/graphs.md)
   - [Функция Аккермана](algorithms/ackermann.md)
+  - [Метод Ньютона](algorithms/newton.md)
 
 - [Scala библиотеки](libs/index.md)
   - [Refined](libs/refined.md)

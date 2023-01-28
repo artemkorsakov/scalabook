@@ -40,6 +40,45 @@ else 25                                                    // 16
 (/ (+ 5 4 (- 2 (- 3 (+ 6 (/ 4 5))))) (* 3 (- 6 2) (- 7 2)))
 ```
 
+### Упражнение 1.3 
+
+Определите процедуру, которая принимает в качестве аргументов три числа и возвращает сумму
+квадратов двух больших из них.
+
+```scala
+def square(x: Int): Int = x * x
+
+def sumOfSquares(x: Int, y: Int): Int = square(x) + square(y)
+
+def f(a: Int, b: Int, c: Int): Int =
+  if a <= b && a <= c then sumOfSquares(b, c)
+  else if b <= c then sumOfSquares(a, c)
+  else sumOfSquares(a, b)
+
+f(5, 3, 4)  // 41
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-3.worksheet.sc)
+
+### Упражнение 1.4
+
+Процедура `a-plus-abs-b`:
+
+```text
+(define (a-plus-abs-b a b)
+  ((if (> b 0) + -) a b))
+```
+
+работает так:
+
+- если `b` больше `0`, то выполняется процедура `(+ a b)`
+- в ином случае, выполняется процедура `(- a b)`
+
+Эта процедура складывает `a` и модуль числа `b`.
+
+### Упражнение 1.5
+
+
 
 ---
 

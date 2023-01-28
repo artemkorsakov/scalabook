@@ -2,6 +2,6 @@
 
 В этом разделе собраны решения упражнений/задач/головоломок, взятых из различных книг.
 Решения представлены на Scala:
-- [Abelson Harold, Sussman Gerald Jay, Sussman Julie - Structure and Interpretation of Computer Programs](sicp/index)
-- [Phillips Andrew, Šerifović Nermin - Scala Puzzlers](puzzlers/index)
+- [Abelson H., Sussman G. J., Sussman J. - Structure and Interpretation of Computer Programs](sicp/index)
+- [Phillips A., Šerifović N. - Scala Puzzlers](puzzlers/index)
 

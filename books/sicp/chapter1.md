@@ -24,9 +24,15 @@ else 25                                                    // 16
 ((if a > b then a else if a < b then b else -1) * (a + 1)) // 16
 ```
 
-[Scala worksheet]()
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-1.worksheet.sc)
 
 ### Упражнение 1.2
+
+Выражение в префиксной форме выглядит так:
+
+```text
+(/ (+ 5 4 (- 2 (- 3 (+ 6 (/ 4 5))))) (* 3 (- 6 2) (- 7 2)))
+```
 
 
 ---

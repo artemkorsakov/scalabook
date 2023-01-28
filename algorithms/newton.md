@@ -54,6 +54,12 @@ val g: Double => Double = x => math.cos(x) - x * x * x
 newtonsMethod(g, 0.5) // 0.865474033101...
 ```
 
+## Исходный код
+
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Fothers%2FNewtonsMethod.scala&plain=1)
+
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Fothers%2FNewtonsMethodSuite.scala)
+
 
 ---
 

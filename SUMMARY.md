@@ -236,6 +236,7 @@
 
 - [Упражнения из книг](books/index.md)
   - [Structure and Interpretation](books/sicp/index.md) 
+    - [Глава 1](books/sicp/chapter1)
   - [Scala Puzzlers](books/puzzlers/index.md)
     - [Hi There!](books/puzzlers/hi-there.md)
     - [UPSTAIRS downstairs](books/puzzlers/upstairs.md)

@@ -26,13 +26,6 @@ given Group[Int] with
 ```
 
 
-## Исходный код
-
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FGroup.scala&plain=1)
-
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FGroupSuite.scala)
-
-
 ## Реализация в Cats
 
 ```scala
@@ -48,4 +41,6 @@ assert((1 |+| 1.inverse()) === Monoid[Int].empty)
 
 **Ссылки:**
 
+- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FGroup.scala&plain=1)
+- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FGroupSuite.scala)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Grp.html)

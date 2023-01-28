@@ -80,12 +80,6 @@ given optionMonoidInstance[A: Semigroup]: Monoid[Option[A]] with
       case (None, None)         => None
 ```
 
-## Исходный код
-
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FMonoid.scala&plain=1)
-
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FMonoidSuite.scala)
-
 
 ## Реализация в ScalaZ
 
@@ -111,6 +105,8 @@ Monoid[Int].combine(1, Monoid[Int].empty)   // 1
 
 **Ссылки:**
 
+- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FMonoid.scala&plain=1)
+- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FMonoidSuite.scala)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monoid.html)
 - [Cats](https://typelevel.org/cats/typeclasses/monoid.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Monoid.html)

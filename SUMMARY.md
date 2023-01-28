@@ -1,7 +1,7 @@
 - [Домашняя](.)
 
-- [Блог](.)
-  - [Проблемы построения архитектуры на примере Моноидов](blog/2023-01-09-architecture_problems) 
+- [Блог](blog/index.md)
+  - [Проблемы архитектуры](blog/2023-01-09-architecture_problems.md) 
 
 - [Scala](scala/index.md)
   - [С чего начать?](scala/getting-started.md)

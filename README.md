@@ -7,7 +7,7 @@
 
 [Домашняя страница](https://scalabook.gitflic.space)
 
-[Блог](https://scalabook.gitflic.space/blog)
+[Блог](https://scalabook.gitflic.space/blog/index)
 
 [Обзор Scala](https://scalabook.gitflic.space/scala/index)
 

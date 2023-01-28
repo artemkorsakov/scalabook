@@ -70,7 +70,7 @@ def approximateFibonacci(n: Int): BigInt =
 
 ---
 
-## Ссылки
+**Ссылки:**
 
 - [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ffundamental%2FFibonacci.scala&plain=1)
 - [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Ffundamental%2FFibonacciSuite.scala)

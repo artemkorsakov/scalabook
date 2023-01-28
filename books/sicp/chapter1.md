@@ -200,6 +200,37 @@ sqrt(1000000)
 
 #### Упражнение 1.8
 
+> Метод Ньютона для кубических корней основан на том, 
+> что если `y` является приближением к кубическому корню из `x`, 
+> то мы можем получить лучшее приближение по формуле
+> **(x / y<sup>2</sup> + 2* y) / 3**
+> С помощью этой формулы напишите процедуру вычисления кубического корня, подобную процедуре для квадратного корня. 
+
+Процедура вычисления кубического корня:
+
+```scala
+def square(x: Double): Double = x * x
+
+def goodEnough(guess: Double, next: Double): Boolean = 
+  math.abs(guess - next) < 0.001
+
+def improve(guess: Double, x: Double): Double =
+  ((x / square(guess)) + 2 * guess) / 3
+
+def cubeIter(guess: Double, x: Double): Double =
+  val next = improve(guess, x)
+  if goodEnough(guess, next) then next
+  else cubeIter(next, x)
+
+def cubeOf(x: Double): Double = cubeIter(1.0, x)
+
+cubeOf(2.0)
+// res0: Double = 1.2599210500177698
+cubeOf(1000000)
+// res1: Double = 100.00000000005313 
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-8.worksheet.sc)
 
 ---
 

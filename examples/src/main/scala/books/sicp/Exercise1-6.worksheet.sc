@@ -1,10 +1,17 @@
-def square(x: Int): Int = x * x
+def square(x: Double): Double = x * x
 
-def sumOfSquares(x: Int, y: Int): Int = square(x) + square(y)
+def goodEnough(guess: Double, x: Double): Boolean = 
+  math.abs(square(guess) - x) < 0.001
 
-def f(a: Int, b: Int, c: Int): Int =
-  if a <= b && a <= c then sumOfSquares(b, c)
-  else if b <= c then sumOfSquares(a, c)
-  else sumOfSquares(a, b)
+def improve(guess: Double, x: Double): Double =
+  average(guess, x / guess)
 
-f(5, 3, 4)  
+def average(x: Double, y: Double): Double = (x + y) / 2
+
+def sqrtIter(guess: Double, x: Double): Double =
+  if goodEnough(guess, x) then guess
+  else sqrtIter(improve(guess, x), x)
+
+def sqrt(x: Double): Double = sqrtIter(1.0, x)
+
+sqrt(2.0)  

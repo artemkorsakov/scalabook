@@ -15,10 +15,10 @@
 
 [Теория категорий в Scala](https://scalabook.gitflic.space/typeclass/index)
 
-[Алгоритмы](https://scalabook.gitflic.space/algorithms/index)
+[Алгоритмы и структуры данных](https://scalabook.gitflic.space/algorithms/index)
 
 [Scala библиотеки](https://scalabook.gitflic.space/libs/index)
 
 [Паттерны проектирования на Scala](https://scalabook.gitflic.space/patterns/index)
 
-[Scala Puzzlers](https://scalabook.gitflic.space/puzzlers/index)
+[Упражнения из книг](https://scalabook.gitflic.space/books/index)

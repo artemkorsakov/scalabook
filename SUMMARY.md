@@ -235,7 +235,7 @@
     - [Посетитель](patterns/behavioral/visitor.md)
 
 - [Упражнения из книг](books/index.md)
-  - [Structure and Interpretation...](books/sicp/index.md) 
+  - [Structure and Interpretation](books/sicp/index.md) 
   - [Scala Puzzlers](books/puzzlers/index.md)
     - [Hi There!](books/puzzlers/hi-there.md)
     - [UPSTAIRS downstairs](books/puzzlers/upstairs.md)

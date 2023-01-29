@@ -561,3 +561,4 @@ pascalsTriangle(4, 2) // 6
 - [Упражнение 1.6 - 1.8](https://web.mit.edu/6.001/6.037/sicp.pdf#page=60)
 - [Упражнение 1.9 - 1.10](https://web.mit.edu/6.001/6.037/sicp.pdf#page=74)
 - [Упражнение 1.11 - 1.13](https://web.mit.edu/6.001/6.037/sicp.pdf#page=81)
+- [Упражнение 1.14 - 1.15](https://web.mit.edu/6.001/6.037/sicp.pdf#page=84)

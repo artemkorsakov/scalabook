@@ -587,6 +587,40 @@ sine(12.15)
 
 #### Упражнение 1.16
 
+> Напишите процедуру, которая развивается в виде итеративного процесса 
+> и реализует возведение в степень за логарифмическое число шагов, как **fast-expt**. 
+> (Указание: используя наблюдение, что **(b<sup>n/2</sup>)<sup>2</sup> = (b<sup>2</sup>)<sup>n/2</sup>**, 
+> храните, помимо значения степени **n** и основания **b**, дополнительную переменную состояния **a**, 
+> и определите переход между состояниями так, чтобы произведение **ab<sup>n</sup>** от шага к шагу не менялось. 
+> Вначале значение **a** берется равным **1**, а ответ получается как значение **a** в момент окончания процесса. 
+> В общем случае метод определения инварианта (_invariant quantity_), 
+> который не изменяется при переходе между шагами, 
+> является мощным способом размышления о построении итеративных алгоритмов.)
+
+На Scala эта программа будет выглядеть так:
+
+```scala
+def power(a: Long, n: Long): BigInt =
+  @scala.annotation.tailrec
+  def loop(base: BigInt, power: Long, acc: BigInt): BigInt =
+    if power == 0 then acc
+    else if power % 2 == 0 then loop(base * base, power / 2, acc)
+    else loop(base, power - 1, base * acc)
+  loop(a, n, 1)
+
+power(2, 10) // 1024
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-16.worksheet.sc)
+
+
+#### Упражнение 1.17
+
+#### Упражнение 1.18
+
+#### Упражнение 1.19
+
+
 
 ---
 
@@ -596,3 +630,4 @@ sine(12.15)
 - [Упражнение 1.9 - 1.10](https://web.mit.edu/6.001/6.037/sicp.pdf#page=74)
 - [Упражнение 1.11 - 1.13](https://web.mit.edu/6.001/6.037/sicp.pdf#page=81)
 - [Упражнение 1.14 - 1.15](https://web.mit.edu/6.001/6.037/sicp.pdf#page=84)
+- [Упражнение 1.16 - 1.19](https://web.mit.edu/6.001/6.037/sicp.pdf#page=87)

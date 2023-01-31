@@ -97,7 +97,7 @@ Name.fromString("Алёна")    // Some(Name(Алёна))
 
 ## Уточняющие типы
 
-Ещё одним способом решения заданной проблемы может стать библиотека для работы с уточняющими типами [**refined**][refined lib].
+Ещё одним способом решения заданной проблемы может стать библиотека для работы с уточняющими типами [**iron**][iron lib].
 
 В [теории типов](https://en.wikipedia.org/wiki/Type_theory) 
 [уточняющий тип (refinement type)](https://en.wikipedia.org/wiki/Refinement_type) — 
@@ -589,7 +589,7 @@ Person.refine("Andrew", 150, "id")
 ---
 
 **Ссылки** (в алфавитном порядке):
-- [Refined lib][refined lib]
+- [iron lib][iron lib]
 - Видео:
   - [Better types = fewer tests - Raúl Raja](https://www.youtube.com/watch?v=TScwxX62uig)
   - [Combining Refined Types with Type Class Derivation in Scala - Lawrence Carvalho](https://www.youtube.com/watch?v=Hq2QWbUXKbE&t)
@@ -625,6 +625,7 @@ Person.refine("Andrew", 150, "id")
   - [Wtf is Refined? - Methrat0n](https://medium.com/@Methrat0n/wtf-is-refined-5008eb233194)
 
 
+[iron lib]: https://github.com/Iltotore/iron
 [refined lib]: https://github.com/fthomas/refined
 [refined cats]: https://index.scala-lang.org/fthomas/refined/artifacts/refined-cats?pre-releases=false
 [conversion]: refined/conversionInScala3

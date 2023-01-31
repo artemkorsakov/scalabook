@@ -173,7 +173,25 @@ val name5: Name = "Алёна"   // Компиляция проходит усп
 
 [Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/OwN8IzucSCuJ3LsBmaxL7A)
 
+Библиотеки уточнения также позволяют преобразовывать базовое значение 
+в `Option` (метод расширения `refineOption` для **iron** / `unapply` в **refined**) 
+и в `Either` (метод расширения `refineEither` для **iron** / `from` в **refined**) 
+для более удобной работы в runtime:
 
+```scala
+val name0: Option[Name] = "€‡™µ".refineOption     // None
+val name1: Option[Name] = "12345".refineOption    // None
+val name2: Option[Name] = "Alyona".refineOption   // None
+val name3: Option[Name] = "Алёна18".refineOption  // None
+val name4: Option[Name] = "алёна".refineOption    // None
+val name5: Option[Name] = "Алёна".refineOption    // Some("Алёна")
+```
+
+
+
+[Пример в Scastie для **iron**](https://scastie.scala-lang.org/w6nxgVi4RHySQg6wGglUlQ)
+
+[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/OwN8IzucSCuJ3LsBmaxL7A)
 
 
 В библиотеке **refined** есть класс `RefinedTypeOps`, реализующий методы конвертации из базового типа в уточненный. 

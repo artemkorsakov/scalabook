@@ -1,6 +1,6 @@
-# Уточняющие типы в Scala 3
+# Уточняющие типы в Scala
 
-Используемая в статье версия Scala - `3.2.2`
+В этой статье используется версия Scala `3.2.2` c дублированием примеров на версию `2.13.10`.
 
 ## Введение
 
@@ -44,6 +44,8 @@ val name: Name = "€‡™µ"
 
 [Пример в Scastie](https://scastie.scala-lang.org/j3H5VznPQUOz6ylAQgFMoA)
 
+[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/4ojla7AbTCe4lw8EdHdTMw)
+
 ```scala
 case class Name(value: String) extends AnyVal
 val name: Name = Name("€‡™µ")
@@ -51,6 +53,8 @@ val name: Name = Name("€‡™µ")
 ```
 
 [Пример в Scastie](https://scastie.scala-lang.org/CjZpe7ejSwW724prXkQLqg)
+
+[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/69prW6KjRG6MPcL9fJSObw)
 
 "Стандартное" решение - регулировать создание `Name` путем ограничения видимости конструктора по умолчанию
 и определения метода создания экземпляра `Name` в сопутствующем объекте:
@@ -136,14 +140,30 @@ Name.fromString("Алёна")    // Some(Name(Алёна))
 Вот так можно объявить уточненный тип:
 
 ```scala
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.string.*
+
+opaque type Name = String :| Match["[А-ЯЁ][а-яё]+"]
+```
+
+## Знакомство с библиотекой refined
+
+Давайте рассмотрим решение исходной задачки с помощью **refined**. Вот так можно объявить уточненный тип:
+
+```scala
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.string.MatchesRegex
 
 type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
 ```
 
-В библиотеке **refined** есть класс `RefinedTypeOps`, реализующий методы конвертации из базового типа в уточненный.
-Давайте объявим объект `Name` для иссследования доступных методов:
+В библиотеке **refined** есть класс `RefinedTypeOps`, реализующий методы конвертации из базового типа в уточненный. Давайте объявим объект `Name` для иссследования доступных методов:
+
+```scala
+object Name extends RefinedTypeOps[Name, String]
+```
+
+Метод `from` возвращает `Either[String, Name]`, где слева - ошибка, если входящее значение не удовлетворяет предикату, а справа - уточненный тип, если удовлетворяет:
 
 ```scala
 object Name extends RefinedTypeOps[Name, String]
@@ -198,6 +218,8 @@ val name5: Option[Name] = "Алёна"   // Some(Алёна)
 ```
 
 [Пример в Scastie](https://scastie.scala-lang.org/0dUop1dQQLmAn0hfclbqTQ)
+
+[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/Nu5zRCrzR5qDV35BdA8iag)
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivation.worksheet.sc&plain=1)
 
@@ -433,6 +455,8 @@ refineV[NonEmpty](42: Packed)      // Right(42)
 
 [Пример в Scastie](https://scastie.scala-lang.org/EIwWjHrMSyu6OxrznZN38g)
 
+[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/9ssdbLvETGytvfqves0xlQ)
+
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FPackedExamples.worksheet.sc&plain=1)
 
 Уточнить можно любой тип, в том числе уточненный - в этом случае он становится базовым для другого типа,
@@ -442,11 +466,14 @@ refineV[NonEmpty](42: Packed)      // Right(42)
 
 [Пример в Scastie](https://scastie.scala-lang.org/nfETvR0vSUGv77Fc984icw)
 
+[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/8rtUUguHSVOrGttlP5J7mQ)
+
 Предельным непустым уточненным типом [является литеральный тип](https://docs.scala-lang.org/sips/42.type.html),
 добавленный в версии Scala 2.13.
 
 [Пример в Scastie](https://scastie.scala-lang.org/hEnqG1UxQkGeBpKX8wt40A)
 
+[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/JefKM7P2S3GaJfvxNR9yxg)
 
 ## Накопление ошибок валидации
 
@@ -524,6 +551,8 @@ Person.refine("Andrew", 150, "id")
 ```
 
 [Пример в Scastie](https://scastie.scala-lang.org/ldZp5KvvSHKfieFPCefw7Q)
+
+[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/roViFMw2SsaCWXB1vkMDdA)
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefinedWithCatsExamples.worksheet.sc&plain=1)
 

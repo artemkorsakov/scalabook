@@ -158,6 +158,21 @@ import eu.timepit.refined.string.MatchesRegex
 type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
 ```
 
+Явное присваивание невалидного значения вызовет ошибку компиляции:
+
+```scala
+val name0: Name = "€‡™µ"    // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+val name1: Name = "12345"   // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+val name2: Name = "Alyona"  // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+val name3: Name = "Алёна18" // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+val name4: Name = "алёна"   // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+val name5: Name = "Алёна"   // Компиляция проходит успешно
+```
+
+[Пример в Scastie для **iron**](https://scastie.scala-lang.org/4zUXqnzARFWscb44XGlLBw)
+
+[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/OwN8IzucSCuJ3LsBmaxL7A)
+
 
 
 

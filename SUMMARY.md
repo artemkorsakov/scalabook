@@ -198,6 +198,7 @@
   - [Метод Ньютона](algorithms/newton.md)
 
 - [Scala библиотеки](libs/index.md)
+  - [Iron](libs/iron/index.md) 
   - [Refined](libs/refined.md)
     - [Список refined типов](libs/refined/types.md) 
     - [Refined + pureconfig](libs/refined/pureconfig.md) 

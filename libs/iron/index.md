@@ -136,10 +136,11 @@ Name.fromString("Алёна")    // Some(Name(Алёна))
 
 Каждый следующий тип в этом списке уточняет предыдущий.
 
-## Знакомство с библиотекой iron
+## Знакомство с библиотеками iron и refined
 
-Давайте рассмотрим решение исходной задачки с помощью **iron**.
-Вот так можно объявить уточненный тип:
+Давайте рассмотрим решение исходной задачки с помощью **iron** (Scala 3) и **refined** (Scala 2).
+
+Вот так можно объявить уточненный тип с помощью **iron**:
 
 ```scala
 import io.github.iltotore.iron.*
@@ -148,9 +149,7 @@ import io.github.iltotore.iron.constraint.string.*
 opaque type Name = String :| Match["[А-ЯЁ][а-яё]+"]
 ```
 
-## Знакомство с библиотекой refined
-
-Давайте рассмотрим решение исходной задачки с помощью **refined**. Вот так можно объявить уточненный тип:
+А вот так - с помощью **refined**:
 
 ```scala
 import eu.timepit.refined.api.Refined
@@ -159,13 +158,11 @@ import eu.timepit.refined.string.MatchesRegex
 type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
 ```
 
-В библиотеке **refined** есть класс `RefinedTypeOps`, реализующий методы конвертации из базового типа в уточненный. Давайте объявим объект `Name` для иссследования доступных методов:
 
-```scala
-object Name extends RefinedTypeOps[Name, String]
-```
 
-Метод `from` возвращает `Either[String, Name]`, где слева - ошибка, если входящее значение не удовлетворяет предикату, а справа - уточненный тип, если удовлетворяет:
+
+В библиотеке **refined** есть класс `RefinedTypeOps`, реализующий методы конвертации из базового типа в уточненный. 
+Давайте объявим объект `Name` для иссследования доступных методов:
 
 ```scala
 object Name extends RefinedTypeOps[Name, String]
@@ -223,7 +220,8 @@ val name5: Option[Name] = "Алёна"   // Some(Алёна)
 
 [Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/Nu5zRCrzR5qDV35BdA8iag)
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivation.worksheet.sc&plain=1)
+
+#### Предопределенные типы
 
 У библиотеки [достаточно большой набор предопределенных типов (69)](refined/types) 
 и есть, например, метод `refineV`,

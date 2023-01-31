@@ -1,7 +1,7 @@
 import sbt._
 
 object Dependencies {
-  val Scala = "3.2.1"
+  val Scala = "3.2.2"
 
   object cats {
     private val version = "2.9.0"

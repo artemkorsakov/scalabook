@@ -16,6 +16,11 @@ object Dependencies {
     val dsl   = "org.http4s" %% "http4s-dsl"          % "0.23.16"
   }
 
+  object iron  {
+    private val version = "2.0.0"
+    val iron            = "io.github.iltotore" %% "iron"      % version
+    val cats            = "io.github.iltotore" %% "iron-cats" % version
+  }
   object munit {
     private val version = "0.7.29"
     val core            = "org.scalameta" %% "munit"               % version

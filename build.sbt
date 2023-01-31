@@ -33,6 +33,8 @@ lazy val examples = (project in file("examples"))
         cats.free,
         http4s.blaze,
         http4s.dsl,
+        iron.iron,
+        iron.cats,
         refined.cats,
         refined.core,
         scalaz.core,

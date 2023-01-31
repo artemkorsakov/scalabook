@@ -1,5 +1,7 @@
 # Уточняющие типы в Scala 3
 
+Используемая в статье версия Scala - `3.2.1`
+
 ## Введение
 
 Набор стандартных типов весьма ограничен и покрывает только самые распространенные ситуации.
@@ -35,12 +37,12 @@ val str: String = "€‡™µ"
 и по-прежнему позволяют "подложить" невалидное значение.
 
 ```scala
-type Name = String
+opaque type Name = String
 val name: Name = "€‡™µ"
 // val name: Name = €‡™µ
 ```
 
-[Пример в Scastie](https://scastie.scala-lang.org/keYiEtDCQkuOlfzZUVyXjQ)
+[Пример в Scastie](https://scastie.scala-lang.org/j3H5VznPQUOz6ylAQgFMoA)
 
 ```scala
 case class Name(value: String) extends AnyVal

@@ -175,7 +175,7 @@ val name5: Name = "Алёна"   // Компиляция проходит усп
 
 Библиотеки уточнения также позволяют преобразовывать базовое значение 
 в `Option` (метод расширения `refineOption` для **iron** / `unapply` в **refined**) 
-и в `Either` (метод расширения `refineEither` для **iron** / `from` в **refined**) 
+и в `Either` (метод расширения `refineEither` для **iron** / `from` в **refined**) - где слева будет ошибка валидации - 
 для более удобной работы в runtime:
 
 ```scala

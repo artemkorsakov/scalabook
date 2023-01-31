@@ -187,72 +187,23 @@ val name4: Option[Name] = "алёна".refineOption    // None
 val name5: Option[Name] = "Алёна".refineOption    // Some("Алёна")
 ```
 
-
-
 [Пример в Scastie для **iron**](https://scastie.scala-lang.org/w6nxgVi4RHySQg6wGglUlQ)
 
-[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/OwN8IzucSCuJ3LsBmaxL7A)
+[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/4q046xYGSGSJpyqft9pE8Q)
 
-
-В библиотеке **refined** есть класс `RefinedTypeOps`, реализующий методы конвертации из базового типа в уточненный. 
-Давайте объявим объект `Name` для иссследования доступных методов:
 
 ```scala
-object Name extends RefinedTypeOps[Name, String]
+val name0: Either[String, Name] = "€‡™µ".refineEither     // Left("Should match [А-ЯЁ][а-яё]+")
+val name1: Either[String, Name] = "12345".refineEither    // Left("Should match [А-ЯЁ][а-яё]+")
+val name2: Either[String, Name] = "Alyona".refineEither   // Left("Should match [А-ЯЁ][а-яё]+")
+val name3: Either[String, Name] = "Алёна18".refineEither  // Left("Should match [А-ЯЁ][а-яё]+")
+val name4: Either[String, Name] = "алёна".refineEither    // Left("Should match [А-ЯЁ][а-яё]+")
+val name5: Either[String, Name] = "Алёна".refineEither    // Right("Алёна")
 ```
 
-Метод `from` возвращает `Either[String, Name]`, 
-где слева - ошибка, если входящее значение не удовлетворяет предикату, 
-а справа - уточненный тип, если удовлетворяет:
+[Пример в Scastie для **iron**](https://scastie.scala-lang.org/cXvITTPiT4a27t8pU9m0fg)
 
-```scala
-Name.from("€‡™µ")     // Left(Predicate failed: "€‡™µ".matches("[А-ЯЁ][а-яё]+").)
-Name.from("12345")    // Left(Predicate failed: "12345".matches("[А-ЯЁ][а-яё]+").)
-Name.from("Alyona")   // Left(Predicate failed: "Alyona".matches("[А-ЯЁ][а-яё]+").)
-Name.from("Алёна18")  // Left(Predicate failed: "Алёна18".matches("[А-ЯЁ][а-яё]+").)
-Name.from("алёна")    // Left(Predicate failed: "алёна".matches("[А-ЯЁ][а-яё]+").)
-Name.from("Алёна")    // Right(Алёна)
-```
-
-`unsafeFrom` - небезопасная конвертация, бросающая исключение в невалидных случаях:
-
-```scala
-Name.unsafeFrom("€‡™µ")    // java.lang.IllegalArgumentException: Predicate failed: "€‡™µ".matches("[А-ЯЁ][а-яё]+").
-Name.unsafeFrom("12345")   // java.lang.IllegalArgumentException: Predicate failed: "12345".matches("[А-ЯЁ][а-яё]+").
-Name.unsafeFrom("Alyona")  // java.lang.IllegalArgumentException: Predicate failed: "Alyona".matches("[А-ЯЁ][а-яё]+").
-Name.unsafeFrom("Алёна18") // java.lang.IllegalArgumentException: Predicate failed: "Алёна18".matches("[А-ЯЁ][а-яё]+").
-Name.unsafeFrom("алёна")   // java.lang.IllegalArgumentException: Predicate failed: "алёна".matches("[А-ЯЁ][а-яё]+").
-Name.unsafeFrom("Алёна")
-// val res0: Name = Алёна
-```
-
-В Scala 2 библиотека **refined** позволяла неявное преобразование типов `val name: Name = "€‡™µ"`, 
-которое выдавало ошибку компиляции в случае, если значение базового типа не удовлетворяло предикату.
-
-В Scala 3 
-[неявные преобразования типов довольно сильно переработаны](https://docs.scala-lang.org/scala3/book/ca-implicit-conversions.html).
-
-Для того чтобы позволить неявное преобразование из `String` в `Name`
-нужно для начала определить соответствующий `given` экземпляр [как показано в документации](https://docs.scala-lang.org/scala3/book/ca-implicit-conversions.html)
-
-При этом преобразования типов будут происходить во время выполнения, а не компиляции, поэтому этот способ (из `String` в `Name`) небезопасен.
-Но можно определить неявное преобразование в `Option[Name]`, что позволяет выполнять такое присваивание:
-
-```scala
-given Conversion[String, Option[Name]] = Name.unapply(_)
-
-val name0: Option[Name] = "€‡™µ"    // None 
-val name1: Option[Name] = "12345"   // None
-val name2: Option[Name] = "Alyona"  // None
-val name3: Option[Name] = "Алёна18" // None
-val name4: Option[Name] = "алёна"   // None
-val name5: Option[Name] = "Алёна"   // Some(Алёна)
-```
-
-[Пример в Scastie](https://scastie.scala-lang.org/0dUop1dQQLmAn0hfclbqTQ)
-
-[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/Nu5zRCrzR5qDV35BdA8iag)
-
+[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/V9SYu9UcSx67hAcJMnRG7g)
 
 #### Предопределенные типы
 

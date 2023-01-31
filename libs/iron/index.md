@@ -101,7 +101,9 @@ Name.fromString("Алёна")    // Some(Name(Алёна))
 
 ## Уточняющие типы
 
-Ещё одним способом решения заданной проблемы может стать библиотека для работы с уточняющими типами [**iron**][iron lib].
+Ещё одним способом решения заданной проблемы могут стать библиотеки для работы с уточняющими типами
+- [**iron**][iron lib] (для Scala 3)
+- [**refined**][refined lib] (для Scala 2)
 
 В [теории типов](https://en.wikipedia.org/wiki/Type_theory) 
 [уточняющий тип (refinement type)](https://en.wikipedia.org/wiki/Refinement_type) — 

@@ -341,16 +341,17 @@ given Constraint[Packed, NonEmpty] with
 
 [Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/9ssdbLvETGytvfqves0xlQ)
 
-
-
 Уточнить можно любой тип, в том числе уточненный - в этом случае он становится базовым для другого типа,
 который будет его "уточнять".
-В библиотеке **refined** уточнение уточненного типа 
-равносильно использованию типа `And[A, B]` - коньюнкции предикатов `A` и `B`.
 
-[Пример в Scastie](https://scastie.scala-lang.org/nfETvR0vSUGv77Fc984icw)
+В библиотеке **iron** уточнение уточненного типа 
+равносильно использованию типа `A & B` - коньюнкции предикатов `A` и `B`.
 
-[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/8rtUUguHSVOrGttlP5J7mQ)
+В библиотеке **refined** - `And[A, B]`.
+
+[Пример в Scastie для **iron**](https://scastie.scala-lang.org/egKYj9zuRs2662bPEaUADw)
+
+[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/8rtUUguHSVOrGttlP5J7mQ)
 
 Предельным непустым уточненным типом [является литеральный тип](https://docs.scala-lang.org/sips/42.type.html),
 добавленный в версии Scala 2.13.

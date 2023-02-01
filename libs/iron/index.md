@@ -295,9 +295,9 @@ val name5: Name = "Алёна"   // Компиляция проходит усп
 Допустим у нас есть тип и некий предикат для значений заданного типа:
 
 ```scala
-type Packed = Any
+opaque type Packed = Any
 
-val nonEmpty: Packed => Boolean =
+val predicate: Packed => Boolean =
   case str: String => Option(str).exists(_.trim.nonEmpty)
   case num: Int    => num > 0
   case _           => false
@@ -306,42 +306,42 @@ val nonEmpty: Packed => Boolean =
 Уточняющий тип `NonEmpty` для `Packed` можно определить по предикату:
 
 ```scala
-import eu.timepit.refined.*
-import eu.timepit.refined.api.*
-import eu.timepit.refined.boolean.*
-import eu.timepit.refined.collection.*
+import io.github.iltotore.iron.{given, *}
+import io.github.iltotore.iron.constraint.all.*
 
-given Validate[Packed, NonEmpty] with
-  override type R = NonEmpty
-  override def validate(packed: Packed): Res    =
-    Result.fromBoolean(nonEmpty(packed), Not(Empty()))
-  override def showExpr(packed: Packed): String = s"Empty packed value: $packed"
+final class NonEmpty
+
+given Constraint[Packed, NonEmpty] with
+
+  override inline def test(value: Packed): Boolean = predicate(value)
+
+  override inline def message: String = "Should be non empty"
 ```
 
-Здесь в методе `validate` определяется предикат, который предполагается верным для всех значений заданного типа.
+Здесь в методе `test` определяется предикат, который предполагается верным для всех значений заданного типа.
 
-Метод `showExpr` определяет сообщение об ошибке, если переданное значение не удовлетворяет предикату.
+Метод `message` определяет сообщение об ошибке, если переданное значение не удовлетворяет предикату.
 
 Пример использования уточняющего типа для `Packed`:
 
 ```scala
-refineV[NonEmpty](null: Packed)    // Left(Predicate failed: Empty packed value: null.)
-refineV[NonEmpty]("": Packed)      // Left(Predicate failed: Empty packed value: .)
-refineV[NonEmpty](" ": Packed)     // Left(Predicate failed: Empty packed value:  .)
-refineV[NonEmpty]("   ": Packed)   // Left(Predicate failed: Empty packed value:    .)
-refineV[NonEmpty](0: Packed)       // Left(Predicate failed: Empty packed value: 0.)
-refineV[NonEmpty](-42: Packed)     // Left(Predicate failed: Empty packed value: -42.)
-refineV[NonEmpty](true: Packed)    // Left(Predicate failed: Empty packed value: true.)
+(null: Packed).refineEither[NonEmpty]     // Left(Should be non empty)
+("": Packed).refineEither[NonEmpty]       // Left(Should be non empty)
+(" ": Packed).refineEither[NonEmpty]      // Left(Should be non empty)
+("   ": Packed).refineEither[NonEmpty]    // Left(Should be non empty)
+(0: Packed).refineEither[NonEmpty]        // Left(Should be non empty)
+(-42: Packed).refineEither[NonEmpty]      // Left(Should be non empty)
+(true: Packed).refineEither[NonEmpty]     // Left(Should be non empty)
 
-refineV[NonEmpty]("value": Packed) // Right(value)
-refineV[NonEmpty](42: Packed)      // Right(42)
+("value": Packed).refineEither[NonEmpty]  // Right(value)
+(42: Packed).refineEither[NonEmpty]       // Right(42)
 ```
 
-[Пример в Scastie](https://scastie.scala-lang.org/EIwWjHrMSyu6OxrznZN38g)
+[Пример в Scastie для **iron**](https://scastie.scala-lang.org/oXHm4xGtQVqgcpoOGLCxEw)
 
-[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/9ssdbLvETGytvfqves0xlQ)
+[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/9ssdbLvETGytvfqves0xlQ)
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FPackedExamples.worksheet.sc&plain=1)
+
 
 Уточнить можно любой тип, в том числе уточненный - в этом случае он становится базовым для другого типа,
 который будет его "уточнять".

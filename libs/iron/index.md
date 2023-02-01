@@ -432,41 +432,37 @@ Person.refine("Andrew", 150, "id")
 // ))
 ```
 
-[Пример в Scastie](https://scastie.scala-lang.org/4seolbH9SXeHosgAUNDzFw)
+[Пример в Scastie для **iron**](https://scastie.scala-lang.org/4seolbH9SXeHosgAUNDzFw)
 
-[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/roViFMw2SsaCWXB1vkMDdA)
+[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/roViFMw2SsaCWXB1vkMDdA)
 
-## Итоги обзора библиотек уточенных типов
+## Итоги обзора библиотек уточенных типов **iron** и **refined**
 
-Подведем краткие итоги обзора библиотеки **refined**:
+Подведем краткие итоги обзора библиотек **iron** и **refined**:
 
-- К основным преимуществам библиотеки **refined** относится:
+- К основным преимуществам библиотек относится:
   - Система типов
-  - Отлов ошибок во время компиляции (с определенными трудностями в Scala 3)
+  - Отлов ошибок во время компиляции
   - Единая декларативная валидация
 - К недостаткам:
   - При использовании нотации инфиксного типа необходимо проявлять осторожность 
     и использовать скобки или неинфиксное определение типа:
-    - ~~String Refined XXX And YYY~~
-    - String Refined And[XXX, YYY]
-    - String Refined (XXX And YYY)
+    - **iron**
+      - ~~String :| XXX & YYY~~
+      - String :| &[XXX, YYY]
+      - String :| (XXX & YYY)
+    - **refined**
+      - ~~String Refined XXX And YYY~~
+      - String Refined And[XXX, YYY]
+      - String Refined (XXX And YYY)
   - Уточненные примитивы всегда упакованы
-  - Сообщения об ошибках валидации не всегда понятны, а порой и просто ошибочны
-- У библиотеки **refined** есть альтернативы:
+  - Сообщения об ошибках валидации не всегда понятны
+- У библиотек **iron** и **refined** есть альтернативы:
   - [Bond](https://github.com/fwbrasil/bond)
   - [Scalactic](https://www.scalactic.org/)
-- [Интеграция с другими библиотеками](https://github.com/fthomas/refined#using-refined)
-  - [refined-cats (Scala 3 + Scala 2)][refined cats]
-  - [refined-eval (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-eval?pre-releases=false)
-  - [refined-jsonpath (Scala 3 + Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-jsonpath?pre-releases=false)
-  - [refined-pureconfig (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-pureconfig?pre-releases=false)
-    - [Пример взаимодействия с pureconfig](refined/pureconfig)
-  - [refined-scalacheck (Scala 3 + Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-scalacheck?pre-releases=false)
-  - [refined-scalaz (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-scalaz?pre-releases=false)
-  - [refined-scodec (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-scodec?pre-releases=false)
-  - [refined-scopt (Scala 3 + Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-scopt?pre-releases=false)
-  - [refined-shapeless (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-shapeless?pre-releases=false)
-
+- Интеграция с другими библиотеками:
+  - [**iron**](https://iltotore.github.io/iron/docs/modules/index.html)
+  - [**refined**](https://github.com/fthomas/refined#using-refined)
 
 ## Заключение
 
@@ -500,6 +496,7 @@ Person.refine("Andrew", 150, "id")
 
 **Ссылки** (в алфавитном порядке):
 - [iron lib][iron lib]
+- [refined lib][refined lib]
 - Видео:
   - [Better types = fewer tests - Raúl Raja](https://www.youtube.com/watch?v=TScwxX62uig)
   - [Combining Refined Types with Type Class Derivation in Scala - Lawrence Carvalho](https://www.youtube.com/watch?v=Hq2QWbUXKbE&t)

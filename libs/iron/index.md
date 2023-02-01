@@ -362,7 +362,7 @@ given Constraint[Packed, NonEmpty] with
 
 ## Накопление ошибок валидации
 
-Вариант использования `refineV`, рассмотренный выше, довольно прост, 
+Вариант использования `refineEither`, рассмотренный выше, довольно прост, 
 и с ним часто сталкиваются разработчики: получение данных от некоего входящего потока.
 Но прерывание процесса на первой обнаруженной ошибке нежелательно. 
 Ведь на ошибки можно быстро реагировать и решать проблемы входящего потока пачками.
@@ -380,36 +380,33 @@ given Constraint[Packed, NonEmpty] with
 
 Это именно то, что можно сделать с `ValidatedNec` из библиотеки [cats](https://typelevel.org/cats/index.html).
 
-К счастью, **refined** предоставляет расширение [**refined-cats**][refined cats], 
+К счастью, **iron** предоставляет расширение [**iron-cats**](https://iltotore.github.io/iron/docs/modules/cats.html), 
 которое позволяет возвращать шаги проверки `ValidatedNec[String, A]` вместо `Either[String, A]`:
+
+Для библиотеки **refined** есть аналогичное расширение [**refined-cats**][refined cats]:
 
 ```scala
 import cats.data.ValidatedNec
-import cats.implicits.*
-import eu.timepit.refined.api.{Refined, RefinedTypeOps}
-import eu.timepit.refined.cats.syntax.*
-import eu.timepit.refined.numeric.Interval
-import eu.timepit.refined.refineV
-import eu.timepit.refined.string.*
+import cats.syntax.all.*
+
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.cats.*
+import io.github.iltotore.iron.constraint.all.*
 
 import java.util.UUID
 
-type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
-object Name extends RefinedTypeOps[Name, String]
-
-type Age = Int Refined Interval.ClosedOpen[7, 77]
-object Age extends RefinedTypeOps[Age, Int]
-
-type Id = String Refined Uuid
+opaque type Name = String :| Match["[А-ЯЁ][а-яё]+"]
+opaque type Age  = Int :| Interval.Open[7, 77]
+opaque type Id   = String :| ValidUUID
 
 final case class Person(name: Name, age: Age, id: Id)
 
 object Person:
   def refine(name: String, age: Int, id: String): ValidatedNec[String, Person] =
     (
-      Name.validateNec(name),
-      Age.validateNec(age),
-      refineV[Uuid](id).toValidatedNec
+      name.refineValidatedNec[Match["[А-ЯЁ][а-яё]+"]],
+      age.refineValidatedNec[Interval.Open[7, 77]],
+      id.refineValidatedNec[ValidUUID]
     ).mapN(Person.apply)
 ```
 
@@ -429,20 +426,17 @@ Person.refine("Андрей", 50, UUID.randomUUID().toString)
 ```scala
 Person.refine("Andrew", 150, "id")
 // Invalid(Chain(
-//   Predicate failed: "Andrew".matches("[А-ЯЁ][а-яё]+")., 
-//   Right predicate of (!(150 < 7) && (150 < 77)) failed: Predicate failed: (150 < 77)., 
-//   Uuid predicate failed: Invalid UUID string: id
+//   "Should match [А-ЯЁ][а-яё]+", 
+//   "Should be included in (7, 77)", 
+//   "Should be an UUID"
 // ))
 ```
 
-[Пример в Scastie](https://scastie.scala-lang.org/ldZp5KvvSHKfieFPCefw7Q)
+[Пример в Scastie](https://scastie.scala-lang.org/4seolbH9SXeHosgAUNDzFw)
 
 [Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/roViFMw2SsaCWXB1vkMDdA)
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefinedWithCatsExamples.worksheet.sc&plain=1)
-
-
-## Итоги обзора библиотеки refined
+## Итоги обзора библиотек уточенных типов
 
 Подведем краткие итоги обзора библиотеки **refined**:
 

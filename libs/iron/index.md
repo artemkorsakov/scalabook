@@ -264,124 +264,24 @@ printT(name) // Печатает "Алёна"
 
 #### Проверка во время компиляции
 
-Ещё одним значительным преимуществом являлось возможность проверки типов во время компиляции в Scala 2.
-Следующий код на Scala 2 (версия `2.13.10`) даже не скомпилится:
+Ещё одним значительным преимуществом является возможность проверки типов во время компиляции.
+
+Как уже было рассмотрено выше:
 
 ```scala
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.auto._
-import eu.timepit.refined.string._
-
-object Example {
-  type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
-
-  val name0: Name = "€‡™µ"     // Compile error: Predicate failed: "€‡™µ".matches("[А-ЯЁ][а-яё]+").
-  val name1: Name = "12345"    // Compile error: Predicate failed: "12345".matches("[А-ЯЁ][а-яё]+").
-  val name2: Name = "Alyona"   // Compile error: Predicate failed: "Alyona".matches("[А-ЯЁ][а-яё]+").
-  val name3: Name = "Алёна18"  // Compile error: Predicate failed: "Алёна18".matches("[А-ЯЁ][а-яё]+").
-  val name4: Name = "алёна"    // Compile error: Predicate failed: "алёна".matches("[А-ЯЁ][а-яё]+").
-  val name5: Name = "Алёна"    // Ок
-}
+val name0: Name = "€‡™µ"    // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+val name1: Name = "12345"   // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+val name2: Name = "Alyona"  // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+val name3: Name = "Алёна18" // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+val name4: Name = "алёна"   // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+val name5: Name = "Алёна"   // Компиляция проходит успешно
 ```
 
-Скомпилится только последний вариант, потому что строка `"Алёна"` удовлетворяет предикату уточненного типа.
+Скомпилируется только последний вариант, потому что строка `"Алёна"` удовлетворяет предикату уточненного типа.
 
-[Пример в Scastie](https://scastie.scala-lang.org/oqh3jUboQQqf3wKC8A5ZkA)
+[Пример в Scastie для **iron**](https://scastie.scala-lang.org/4zUXqnzARFWscb44XGlLBw)
 
-В Scala 3 не все так просто.
-
-Проверка соответствия уточненным типам в Scala 3 во время компиляции
-пока ещё не реализована, но это лишь вопрос времени,
-учитывая мощную функциональность [метапрограммирования в Scala 3](https://docs.scala-lang.org/scala3/reference/metaprogramming/index.html).
-
-Например, используя [inline методы](https://docs.scala-lang.org/scala3/reference/metaprogramming/inline.html) 
-реализовать уточнение типа `String` до `NonEmptyString` во время компиляции можно, например так:
-
-```scala
-import eu.timepit.refined.refineV
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.collection.NonEmpty
-import scala.compiletime.error
-
-type NonEmptyString = String Refined NonEmpty
-
-inline def refineToNonEmptyString(inline str: String): NonEmptyString =
-  inline str match
-    case null: Null | "" => error("String must be non empty")
-    case _               => refineV[NonEmpty].unsafeFrom(str)
-
-refineToNonEmptyString("")           // Не компилируется с ошибкой "String must be non empty"
-refineToNonEmptyString(null: String) // Не компилируется с ошибкой "String must be non empty"
-refineToNonEmptyString("Алёна")      // Компилируется успешно!
-// val res0: NonEmptyString = Алёна
-```
-
-[Пример в Scastie](https://scastie.scala-lang.org/nBe9eTIHTjqeGzHEMRu8jw)
-
-Уточнение `String` до `Name` (во время компиляции) можно реализовать с [помощью макросов](https://docs.scala-lang.org/scala3/reference/metaprogramming/macros.html):
-
-```scala
-import eu.timepit.refined.api.{Refined, RefinedTypeOps}
-import eu.timepit.refined.string.MatchesRegex
-import scala.quoted.{Expr, Quotes, ToExpr, quotes}
-
-type Name = String Refined MatchesRegex[Name.pattern.type]
-
-object Name:
-  val pattern: "[А-ЯЁ][а-яё]+" = "[А-ЯЁ][а-яё]+"
-
-  extension (inline str: String)
-    inline def toName: Name = ${ inspectNameCode('str) }
-
-  private given NameToExpr: ToExpr[Name] with
-    def apply(x: Name)(using Quotes) =
-      import quotes.reflect.*
-      Literal(StringConstant(x.toString)).asExpr.asInstanceOf[Expr[Name]]
-
-  private def inspectNameCode(x: Expr[String])(using Quotes): Expr[Name] =
-    val str        = x.valueOrAbort
-    if !pattern.r.matches(str) then
-      import quotes.reflect.*
-      report.errorAndAbort(s"'$str' does not match pattern '$pattern'")
-    val name: Name = RefinedTypeOps[Name, String].unsafeFrom(str)
-    Expr(name)
-```
-
-В `object Name` определяется встроенный (_inline_) метод расширения `toName`, 
-принимающий на вход `String` и возвращающий `Name`.
-Преобразование безопасно, потому что выполняется во время компиляции.
-
-[Исходный код Name](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FName.scala&plain=1)
-
-Попытки вызвать этот метод на невалидных значениях приводят к ошибкам компиляции:
-
-```scala
-import libs.refined.Name.toName
-
-"€‡™µ".toName       // Не компилируется с ошибкой "'€‡™µ' does not match pattern '[А-ЯЁ][а-яё]+'"
-"12345".toName      // Не компилируется с ошибкой "'12345' does not match pattern '[А-ЯЁ][а-яё]+'"
-"Alyona".toName     // Не компилируется с ошибкой "'Alyona' does not match pattern '[А-ЯЁ][а-яё]+'"
-"Алёна18".toName    // Не компилируется с ошибкой "'Алёна18' does not match pattern '[А-ЯЁ][а-яё]+'"
-"алёна".toName      // Не компилируется с ошибкой "'алёна' does not match pattern '[А-ЯЁ][а-яё]+'"
-```
-
-[Исходный код невалидных примеров](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNameCompileErrorExamples.worksheet.sc&plain=1)
-
-Если же строка удовлетворяет предикату, то тип результата - это уже уточненный тип:
-
-```scala
-import libs.refined.Name.toName
-
-val name = "Алёна".toName
-// val name: Name = Алёна
-```
-
-[Исходный код валидного примера](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNameExamples.worksheet.sc&plain=1)
-
-
-Таким образом добиться ошибок компиляции в Scala 3 сложнее, но тоже возможно.
-Конечно, хотелось бы, чтобы эта функциональность поставлялась "из коробки", но, думаю, это вопрос времени.
-
+[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/OwN8IzucSCuJ3LsBmaxL7A)
 
 Проверка во время компиляции открывает довольно обширные возможности: 
 как минимум, значительную часть проверок можно переложить с модульных тестов на компилятор.

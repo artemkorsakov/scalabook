@@ -349,7 +349,7 @@ given Constraint[Packed, NonEmpty] with
 
 В библиотеке **refined** - `And[A, B]`.
 
-[Пример в Scastie для **iron**](https://scastie.scala-lang.org/egKYj9zuRs2662bPEaUADw)
+[Пример в Scastie для **iron**](https://scastie.scala-lang.org/u8piqnZDQHuQNxqvlK4Ubw)
 
 [Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/8rtUUguHSVOrGttlP5J7mQ)
 

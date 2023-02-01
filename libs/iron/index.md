@@ -173,10 +173,8 @@ val name5: Name = "Алёна"   // Компиляция проходит усп
 
 [Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/OwN8IzucSCuJ3LsBmaxL7A)
 
-Библиотеки уточнения также позволяют преобразовывать базовое значение 
-в `Option` (метод расширения `refineOption` для **iron** / `unapply` в **refined**) 
-и в `Either` (метод расширения `refineEither` для **iron** / `from` в **refined**) - где слева будет ошибка валидации - 
-для более удобной работы в runtime:
+Библиотеки уточнения также позволяют преобразовывать базовое значение для более удобной работы в runtime
+в `Option` (`refineOption` для **iron** / `unapply` в **refined**):
 
 ```scala
 val name0: Option[Name] = "€‡™µ".refineOption     // None
@@ -191,6 +189,7 @@ val name5: Option[Name] = "Алёна".refineOption    // Some("Алёна")
 
 [Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/4q046xYGSGSJpyqft9pE8Q)
 
+и в `Either`, где слева будет ошибка валидации, (`refineEither` для **iron** / `from` в **refined**):
 
 ```scala
 val name0: Either[String, Name] = "€‡™µ".refineEither     // Left("Should match [А-ЯЁ][а-яё]+")

@@ -245,8 +245,8 @@ Name.fromString("Алёна").get.value
 Уточняющий тип же - это конкретный тип:
 
 ```scala
-Name.unsafeFrom("Алёна") 
-// val res0: Name = Алёна
+val name: Name = "Алёна"
+// val name: Name = Алёна
 ```
 
 И дальше по коду его можно использовать именно в качестве типа.
@@ -255,7 +255,7 @@ Name.unsafeFrom("Алёна")
 и его можно использовать там, где ожидается дочерний для базового тип:
 
 ```scala
-val name = Name.unsafeFrom("Алёна")
+val name: Name = "Алёна"
 def printT[T >: String](t: T): Unit = println(t)
 printT(name) // Печатает "Алёна"
 ```

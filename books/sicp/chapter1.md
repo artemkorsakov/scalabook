@@ -730,7 +730,9 @@ fastMul(22, 10) // 220
 - **a<sub>2</sub> ← b<sub>0</sub>q′ + a<sub>0</sub>(p′ + q′)**
 - **b<sub>2</sub> ← b<sub>0</sub>p′ + a<sub>0</sub>q′**
 
-На Scala эта программа будет выглядеть так:
+Это означает, что **Tpq<sup>2</sup> = Tp′q′**
+
+Что позволяет реализовать программу так:
 
 ```scala
 def fastFib(n: Int): BigInt =

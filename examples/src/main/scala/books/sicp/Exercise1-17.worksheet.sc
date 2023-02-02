@@ -8,11 +8,8 @@ double(4)
 halve(4)
 
 def fastMul(a: Long, b: Long): Long =
-  @scala.annotation.tailrec
-  def loop(base: Long, times: Long, acc: Long): Long =
-    if times == 0 then acc
-    else if times % 2 == 0 then loop(double(base), halve(times), acc)
-    else loop(base, times - 1, base + acc)
-  loop(a, b, 0)
+  if b == 0 then 0L
+  else if b % 2 == 0 then double(fastMul(a, halve(b)))
+  else a + fastMul(a, b - 1)
 
 fastMul(22, 10)

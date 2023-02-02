@@ -643,6 +643,32 @@ def halve(n: Long): Long =
   n >> 1
 
 def fastMul(a: Long, b: Long): Long =
+  if b == 0 then 0L
+  else if b % 2 == 0 then double(fastMul(a, halve(b)))
+  else a + fastMul(a, b - 1)
+
+fastMul(22, 10) // 220
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-17.worksheet.sc)
+
+
+#### Упражнение 1.18
+
+> Используя результаты упражнений 1.16 и 1.17, разработайте процедуру, 
+> которая порождает итеративный процесс для умножения двух чисел с помощью сложения, удвоения и деления пополам,
+> и затрачивает логарифмическое число шагов40.
+
+На Scala эта программа будет выглядеть так:
+
+```scala
+def double(n: Long): Long =
+  n << 1
+
+def halve(n: Long): Long =
+  n >> 1
+
+def fastMul(a: Long, b: Long): Long =
   @scala.annotation.tailrec
   def loop(base: Long, times: Long, acc: Long): Long =
     if times == 0 then acc
@@ -653,10 +679,8 @@ def fastMul(a: Long, b: Long): Long =
 fastMul(22, 10) // 220
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-17.worksheet.sc)
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-18.worksheet.sc)
 
-
-#### Упражнение 1.18
 
 #### Упражнение 1.19
 

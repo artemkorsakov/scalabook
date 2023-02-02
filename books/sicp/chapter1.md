@@ -720,6 +720,11 @@ fastMul(22, 10) // 220
 >                         (- count 1)))))
 > ```
 
+Применим трансформацию два раза:
+
+- **a<sub>2</sub> ← b<sub>1</sub>q + a<sub>1</sub>q + a<sub>1</sub>p ← (b<sub>0</sub>p + a<sub>0</sub>q)q + (b<sub>0</sub>q + a<sub>0</sub>(p + q))(q + p) ← b<sub>0</sub>(2pq + q<sup>2</sup>) + a<sub>0</sub>(q<sup>2</sup> + (p + q)<sup>2</sup>)**
+
+
 На Scala эта программа будет выглядеть так:
 
 ```scala

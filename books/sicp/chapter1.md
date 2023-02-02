@@ -616,6 +616,46 @@ power(2, 10) // 1024
 
 #### Упражнение 1.17
 
+> Алгоритмы возведения в степень из этого раздела основаны на повторяющемся умножении. 
+> Подобным же образом можно производить умножение с помощью повторяющегося сложения. 
+> Следующая процедура умножения (в которой предполагается, что наш язык способен только складывать, но не умножать) 
+> аналогична процедуре `expt`:
+> 
+> ```
+> (define (* a b)
+>   (if (= b 0)
+>       0
+>       (+ a (* a (- b 1)))))
+> ```
+> 
+> Этот алгоритм затрачивает количество шагов, линейно пропорциональное `b`. 
+> Предположим теперь, что, наряду со сложением, у нас есть операции `double`, которая удваивает целое число, 
+> и `halve`, которая делит (четное) число на `2`. 
+> Используя их, напишите процедуру, аналогичную `fast-expt`, которая затрачивает логарифмическое число шагов.
+
+На Scala эта программа будет выглядеть так:
+
+```scala
+def double(n: Long): Long =
+  n << 1
+
+def halve(n: Long): Long =
+  n >> 1
+
+def fastMul(a: Long, b: Long): Long =
+  @scala.annotation.tailrec
+  def loop(base: Long, times: Long, acc: Long): Long =
+    if times == 0 then acc
+    else if times % 2 == 0 then loop(double(base), halve(times), acc)
+    else loop(base, times - 1, base + acc)
+  loop(a, b, 0)
+
+fastMul(22, 10) // 220
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-17.worksheet.sc)
+
+
 #### Упражнение 1.18
 
 #### Упражнение 1.19

@@ -1,18 +1,11 @@
-def double(n: Long): Long =
-  n << 1
-
-def halve(n: Long): Long =
-  n >> 1
-
-double(4)
-halve(4)
-
-def fastMul(a: Long, b: Long): Long =
+def fastFib(n: Int): BigInt =
   @scala.annotation.tailrec
-  def loop(base: Long, times: Long, acc: Long): Long =
-    if times == 0 then acc
-    else if times % 2 == 0 then loop(double(base), halve(times), acc)
-    else loop(base, times - 1, base + acc)
-  loop(a, b, 0)
+  def loop(a: BigInt, b: BigInt, p: BigInt, q: BigInt, count: Int): BigInt =
+    if count == 0 then b
+    else if count % 2 == 0 then
+      loop(a, b, p * p + q * q, 2 * p * q + q * q, count / 2)
+    else loop(b * q + a * (p + q), b * p + a * q, p, q, count - 1)
 
-fastMul(22, 10)
+  loop(1, 0, 0, 1, n)
+
+fastFib(30)

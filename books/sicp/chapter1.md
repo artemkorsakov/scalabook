@@ -730,7 +730,7 @@ fastMul(22, 10) // 220
 - **a<sub>2</sub> ← b<sub>0</sub>q′ + a<sub>0</sub>(p′ + q′)**
 - **b<sub>2</sub> ← b<sub>0</sub>p′ + a<sub>0</sub>q′**
 
-Это означает, что **Tpq<sup>2</sup> = Tp′q′**
+Это означает, что **(T<sub>pq</sub>)<sup>2</sup> = T<sub>p′q′</sub>**
 
 Что позволяет реализовать программу так:
 

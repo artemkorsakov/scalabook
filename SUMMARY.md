@@ -237,11 +237,11 @@
 
 - [Упражнения из книг](books/index.md)
   - [Structure and Interpretation](books/sicp/index.md)
-    - [Глава 1.1]()  
+    - [Глава 1.1](books/sicp/index.md)
       - [Глава 1.1.6](books/sicp/chapter1.1.6)
       - [Глава 1.1.7](books/sicp/chapter1.1.7)
       - [Глава 1.1.8](books/sicp/chapter1.1.8)
-    - [Глава 1.2]()  
+    - [Глава 1.2](books/sicp/index.md) 
       - [Глава 1.2.1](books/sicp/chapter1.2.1)
       - [Глава 1.2.2](books/sicp/chapter1.2.2)
       - [Глава 1.2.3](books/sicp/chapter1.2.3)

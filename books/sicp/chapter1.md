@@ -773,6 +773,8 @@ fastFib(30) // 832040
 
 Нормальный порядок:
 
+???
+
 Аппликативный порядок:
 
 ```
@@ -815,6 +817,44 @@ if (= 0 0)
 2   
 ```
 
+### 1.2.6. Пример: проверка на простоту
+
+#### Упражнение 1.21
+
+> С помощью процедуры **smallest-divisor** найдите наименьший делитель следующих чисел: **199**, **1999**, **19999**.
+
+Решение на Scala:
+
+```scala
+def divides(a: Long, b: Long): Boolean = a % b == 0
+
+def findDivisor(n: Long, d: Long): Long =
+  if d * d > n then n
+  else if divides(n, d) then d
+  else findDivisor(n, d + 1)
+
+def smallestDivisor(n: Long): Long = findDivisor(n, 2)
+
+smallestDivisor(199)    // 199
+smallestDivisor(1999)   // 1999
+smallestDivisor(19999)  // 7
+```
+
+#### Упражнение 1.22
+
+#### Упражнение 1.23
+
+#### Упражнение 1.24
+
+#### Упражнение 1.25
+
+#### Упражнение 1.26
+
+#### Упражнение 1.27
+
+#### Упражнение 1.28
+
+
 
 ---
 
@@ -826,3 +866,4 @@ if (= 0 0)
 - [Упражнение 1.14 - 1.15](https://web.mit.edu/6.001/6.037/sicp.pdf#page=84)
 - [Упражнение 1.16 - 1.19](https://web.mit.edu/6.001/6.037/sicp.pdf#page=87)
 - [Упражнение 1.20](https://web.mit.edu/6.001/6.037/sicp.pdf#page=93)
+- [Упражнение 1.21 - 1.28](https://web.mit.edu/6.001/6.037/sicp.pdf#page=98)

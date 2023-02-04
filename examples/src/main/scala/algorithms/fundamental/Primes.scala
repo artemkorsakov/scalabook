@@ -32,10 +32,8 @@ object Primes:
   @tailrec
   def isProbablyPrime(p: Long, max_test: Int): Boolean =
     (max_test <= 0) || {
-      (BigInt(Random.nextLong(p)).modPow(p - 1, p) == 1) && isProbablyPrime(
-        p,
-        max_test - 1
-      )
+      (BigInt(Random.nextLong(p)).modPow(p - 1, p) == 1) &&
+      isProbablyPrime(p, max_test - 1)
     }
 
   def sieveOfEratosthenes(n: Int): Array[Boolean] =

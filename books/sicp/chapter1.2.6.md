@@ -274,7 +274,43 @@ fermatTest(6601)  // true
 > Проверьте свою процедуру на нескольких известных Вам простых и составных числах. 
 > Подсказка: удобный способ заставить **expmod** подавать особый сигнал — заставить ее возвращать **0**.
 
+На Scala эта программа будет выглядеть так:
 
+```scala
+import scala.util.Random
+
+def square(x: Long): Long = x * x
+
+def expmod(base: Long, exp: Long, m: Long): Long =
+  if exp == 0 then 1
+  else if exp % 2 == 0 then
+    val candidate = expmod(base, exp / 2, m)
+    val root = square(candidate) % m
+    if root == 1 && candidate != 1 && candidate != m - 1 then 0
+    else root
+  else (base * expmod(base, exp - 1, m)) % m
+
+def fermatTest(n: Long): Boolean =
+  def tryIt(a: Long): Boolean =
+    expmod(a, n - 1, n) == 1
+  tryIt(Random.nextLong(n - 1) + 1)
+
+def fastIsPrime(n: Long, times: Int): Boolean =
+  (times <= 0) || (fermatTest(n) && fastIsPrime(n, times - 1))
+
+fastIsPrime(19, 100)   // true
+fastIsPrime(199, 100)  // true
+fastIsPrime(1999, 100) // true
+
+fastIsPrime(561, 100)  // false
+fastIsPrime(1105, 100) // false
+fastIsPrime(1729, 100) // false
+fastIsPrime(2465, 100) // false
+fastIsPrime(2821, 100) // false
+fastIsPrime(6601, 100) // false
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-28.worksheet.sc)
 
 ---
 

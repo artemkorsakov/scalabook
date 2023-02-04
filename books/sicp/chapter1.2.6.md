@@ -220,6 +220,35 @@ Seq(1009, 1013, 1019, 10007, 10009, 10037, 100003, 100019, 100043, 1000003,
 
 #### Упражнение 1.27
 
+> Покажите, что числа Кармайкла, перечисленные в сноске 47, действительно «обманывают» тест Ферма: 
+> напишите процедуру, которая берет целое число **n** и проверяет, правда ли **a<sup>n</sup>**
+> равняется **a** по модулю **n** для всех **a < n**, и проверьте эту процедуру на этих числах Кармайкла.
+
+На Scala эта программа будет выглядеть так:
+
+```scala
+def expmod(base: Long, exp: Long, m: Long): Long =
+  if exp == 0 then 1
+  else if exp % 2 == 0 then
+    val a = expmod(base, exp / 2, m)
+    a * a % m
+  else
+    val a = base * expmod(base, exp - 1, m)
+    a % m
+
+def fermatTest(n: Long): Boolean =
+  (2L until n).forall(a => expmod(a, n, n) == a)
+
+fermatTest(561)   // true
+fermatTest(1105)  // true
+fermatTest(1729)  // true
+fermatTest(2465)  // true
+fermatTest(2821)  // true
+fermatTest(6601)  // true
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-27.worksheet.sc)
+
 
 #### Упражнение 1.28
 

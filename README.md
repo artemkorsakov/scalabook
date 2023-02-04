@@ -3,12 +3,13 @@
 В этой рабочей тетрадке я собираю информацию, 
 в основном посвященную функциональной разработке на [Scala](https://docs.scala-lang.org/scala3/getting-started.html).
 
-Несколько ссылок:
+Несколько внешних ссылок:
 
-- [Профиль на gitflic.ru](https://gitflic.ru/user/artemkorsakov)
-- [Профиль на github.com](https://github.com/artemkorsakov)
+- [Мой профиль на gitflic.ru](https://gitflic.ru/user/artemkorsakov)
+- [Мой профиль на github.com](https://github.com/artemkorsakov)
+- [Исходный код рабочей тетради](https://gitflic.ru/project/artemkorsakov/scalabook)
 
-Основные разделы:
+Основные разделы тетради:
 
 [Домашняя страница](https://scalabook.gitflic.space)
 

@@ -1,9 +1,14 @@
 # Функциональная разработка на Scala
 
-В справочнике изложены основные принципы разработки на [Scala](https://docs.scala-lang.org/scala3/getting-started.html),
-в том числе с помощью популярных библиотек.
+В этой рабочей тетрадке я собираю информацию, 
+в основном посвященную функциональной разработке на [Scala](https://docs.scala-lang.org/scala3/getting-started.html).
 
-Код написан на версии Scala - 3.2.1.
+Несколько ссылок:
+
+- [Профиль на gitflic.ru](https://gitflic.ru/user/artemkorsakov)
+- [Профиль на github.com](https://github.com/artemkorsakov)
+
+Основные разделы:
 
 [Домашняя страница](https://scalabook.gitflic.space)
 

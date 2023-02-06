@@ -4,7 +4,7 @@
 
 ### 1.3.1. Процедуры в качестве аргументов
 
-#### Упражнение 1.21
+#### Упражнение 1.29
 
 > С помощью процедуры **smallest-divisor** найдите наименьший делитель следующих чисел: **199**, **1999**, **19999**.
 
@@ -28,7 +28,16 @@ smallestDivisor(19999)  // 7
 [Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-21.worksheet.sc)
 
 
+#### Упражнение 1.30
+
+#### Упражнение 1.31
+
+#### Упражнение 1.32
+
+#### Упражнение 1.33
+
+
 ---
 
 **Ссылки:**
-- [Упражнение 1.21 - 1.28](https://web.mit.edu/6.001/6.037/sicp.pdf#page=98)
+- [Упражнение 1.29 - 1.33](https://web.mit.edu/6.001/6.037/sicp.pdf#page=108)

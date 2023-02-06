@@ -37,6 +37,46 @@ simpsonRule(cube, 0.0, 1.0, 1000)  // 0.25000000000000006
 
 #### Упражнение 1.30
 
+> Процедура **sum** порождает линейную рекурсию. 
+> Ее можно переписать так, чтобы суммирование выполнялось итеративно. 
+> Покажите, как сделать это, заполнив пропущенные выражения в следующем определении:
+>
+> ```
+> (define (sum term a next b)
+>   (define (iter a result)
+>      (if <??>
+>          <??>
+>          (iter <??> <??>)))
+>   (iter <??> <??>))
+> ```
+
+Решение на Scala:
+
+```scala
+def cube(a: Double): Double = a * a * a
+
+def sum(
+    term: Double => Double,
+    a: Double,
+    next: Double => Double,
+    b: Double
+): Double =
+  def iter(a: Double, result: Double): Double =
+    if a > b then result
+    else iter(next(a), result + term(a))
+  iter(a, 0.0)
+
+def integral(f: Double => Double, a: Double, b: Double, dx: Double): Double =
+  def addDx(x: Double): Double = x + dx
+  sum(f, a + dx / 2, addDx, b) * dx
+
+integral(cube, 0.0, 1.0, 0.01)  // 0.24998750000000042
+integral(cube, 0.0, 1.0, 0.001) // 0.24999987500000073
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-30.worksheet.sc)
+
+
 #### Упражнение 1.31
 
 #### Упражнение 1.32

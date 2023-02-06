@@ -7,7 +7,7 @@
 #### Упражнение 1.29
 
 > Правило Симпсона — более точный метод численного интегрирования, чем представленный выше. 
-> С помощью правила Симпсона интеграл функции f между a и b приближенно вычисляется в виде 
+> С помощью правила Симпсона интеграл функции **f** между **a** и **b** приближенно вычисляется в виде 
 > **(h / 3) * [y<sub>0</sub> + 4y<sub>1</sub> + 2y<sub>2</sub> + 4y<sub>3</sub> + 2y<sub>4</sub> + . . . + 2y<sub>n-2</sub> + 4y<sub>n-1</sub> + y<sub>n</sub>]** 
 > , где **h = (b − a)/n**, для какого-то четного целого числа **n**, а **y<sub>k</sub> = f(a + kh)**. 
 > (Увеличение **n** повышает точность приближенного вычисления.) 
@@ -20,21 +20,19 @@
 Решение на Scala:
 
 ```scala
-def divides(a: Long, b: Long): Boolean = a % b == 0
+def simpsonRule(f: Double => Double, a: Double, b: Double, n: Int): Double =
+  val h = (b - a) / n
+  def y(k: Int): Double =
+    val co = if k == 0 || k == n then 1 else if k % 2 == 0 then 2 else 4
+    co * f(a + k * h)
 
-def findDivisor(n: Long, d: Long): Long =
-  if d * d > n then n
-  else if divides(n, d) then d
-  else findDivisor(n, d + 1)
+  (0 to n).foldLeft(0.0)((acc, k) => acc + y(k)) * h / 3
 
-def smallestDivisor(n: Long): Long = findDivisor(n, 2)
-
-smallestDivisor(199)    // 199
-smallestDivisor(1999)   // 1999
-smallestDivisor(19999)  // 7
+simpsonRule(cube, 0.0, 1.0, 100)   // 0.25000000000000006
+simpsonRule(cube, 0.0, 1.0, 1000)  // 0.25000000000000006
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-21.worksheet.sc)
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-29.worksheet.sc)
 
 
 #### Упражнение 1.30

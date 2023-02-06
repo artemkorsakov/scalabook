@@ -1,31 +1,28 @@
-import scala.util.Random
+def cube(a: Double): Double = a * a * a
 
-def square(x: Long): Long = x * x
+def sum(
+    term: Double => Double,
+    a: Double,
+    next: Double => Double,
+    b: Double
+): Double =
+  if a > b then 0
+  else term(a) + sum(term, next(a), next, b)
 
-def expmod(base: Long, exp: Long, m: Long): Long =
-  if exp == 0 then 1
-  else if exp % 2 == 0 then
-    val candidate = expmod(base, exp / 2, m)
-    val root = square(candidate) % m
-    if root == 1 && candidate != 1 && candidate != m - 1 then 0
-    else root
-  else (base * expmod(base, exp - 1, m)) % m
+def integral(f: Double => Double, a: Double, b: Double, dx: Double): Double =
+  def addDx(x: Double): Double = x + dx
+  sum(f, a + dx / 2, addDx, b) * dx
 
-def fermatTest(n: Long): Boolean =
-  def tryIt(a: Long): Boolean =
-    expmod(a, n - 1, n) == 1
-  tryIt(Random.nextLong(n - 1) + 1)
+integral(cube, 0.0, 1.0, 0.01)
+integral(cube, 0.0, 1.0, 0.001)
 
-def fastIsPrime(n: Long, times: Int): Boolean =
-  (times <= 0) || (fermatTest(n) && fastIsPrime(n, times - 1))
+def simpsonRule(f: Double => Double, a: Double, b: Double, n: Int): Double =
+  val h = (b - a) / n
+  def y(k: Int): Double =
+    val co = if k == 0 || k == n then 1 else if k % 2 == 0 then 2 else 4
+    co * f(a + k * h)
 
-fastIsPrime(19, 100)
-fastIsPrime(199, 100)
-fastIsPrime(1999, 100)
+  (0 to n).foldLeft(0.0)((acc, k) => acc + y(k)) * h / 3
 
-fastIsPrime(561, 100)
-fastIsPrime(1105, 100)
-fastIsPrime(1729, 100)
-fastIsPrime(2465, 100)
-fastIsPrime(2821, 100)
-fastIsPrime(6601, 100)
+simpsonRule(cube, 0.0, 1.0, 100)
+simpsonRule(cube, 0.0, 1.0, 1000)

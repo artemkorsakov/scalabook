@@ -141,8 +141,67 @@ calculatePiIter(1000) // 3.1423773650938855
 [Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-31.worksheet.sc)
 
 
-
 #### Упражнение 1.32
+
+> а. Покажите, что **sum** и **product** (упражнение 1.31) являются частными случаями еще более общего понятия, 
+> называемого накопление (**accumulation**), которое комбинирует множество термов 
+> с помощью некоторой общей функции накопления **(accumulate combiner null-value term a next b)**
+>
+> **Accumulate** принимает в качестве аргументов те же описания термов и диапазона, что и **sum** с **product**, 
+> а еще процедуру **combiner** (двух аргументов), которая указывает, 
+> как нужно присоединить текущий терм к результату накопления предыдущих, 
+> и **null-value**, базовое значение, которое нужно использовать, когда термы закончатся. 
+> Напишите **accumulate** и покажите, как и **sum**, и **product** можно определить в виде простых вызовов **accumulate**.
+> 
+> б. Если Ваша процедура **accumulate** порождает рекурсивный процесс, перепишите ее так, чтобы она порождала итеративный. 
+> Если она порождает итеративный процесс, перепишите ее так, чтобы она порождала рекурсивный
+
+Решение на Scala:
+
+```scala
+def accumulateRec(
+    combiner: (Double, Double) => Double,
+    nullValue: Double,
+    term: Double => Double,
+    a: Double,
+    next: Double => Double,
+    b: Double
+): Double =
+  if a > b then nullValue
+  else combiner(term(a), productRec(term, next(a), next, b))
+
+def productRec(
+    term: Double => Double,
+    a: Double,
+    next: Double => Double,
+    b: Double
+): Double =
+  accumulateRec(_ * _, 1.0, term, a, next, b)
+
+def accumulateIter(
+    combiner: (Double, Double) => Double,
+    nullValue: Double,
+    term: Double => Double,
+    a: Double,
+    next: Double => Double,
+    b: Double
+): Double =
+  def iter(a: Double, result: Double): Double =
+    if a > b then result
+    else iter(next(a), combiner(result, term(a)))
+  iter(a, nullValue)
+
+def productIter(
+    term: Double => Double,
+    a: Double,
+    next: Double => Double,
+    b: Double
+): Double =
+  accumulateIter(_ * _, 1.0, term, a, next, b)
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-32.worksheet.sc)
+
 
 #### Упражнение 1.33
 

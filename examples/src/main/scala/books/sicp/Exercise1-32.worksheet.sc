@@ -7,7 +7,11 @@ def accumulateRec(
     b: Double
 ): Double =
   if a > b then nullValue
-  else combiner(term(a), productRec(term, next(a), next, b))
+  else
+    combiner(
+      term(a),
+      accumulateRec(combiner, nullValue, term, next(a), next, b)
+    )
 
 def productRec(
     term: Double => Double,

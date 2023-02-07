@@ -168,7 +168,11 @@ def accumulateRec(
     b: Double
 ): Double =
   if a > b then nullValue
-  else combiner(term(a), productRec(term, next(a), next, b))
+  else
+    combiner(
+      term(a),
+      accumulateRec(combiner, nullValue, term, next(a), next, b)
+    )
 
 def productRec(
     term: Double => Double,
@@ -204,6 +208,99 @@ def productIter(
 
 
 #### Упражнение 1.33
+
+> Можно получить еще более общую версию **accumulate** (упражнение 1.32), 
+> если ввести понятие фильтра (**filter**) на комбинируемые термы. 
+> То есть комбинировать только те термы, порожденные из значений диапазона, которые удовлетворяют указанному условию. 
+> 
+> Получающаяся абстракция **filtered-accumulate** получает те же аргументы, что и **accumulate**, 
+> плюс дополнительный одноаргументный предикат, который определяет фильтр. 
+> Запишите **filtered-accumulate** в виде процедуры. 
+> Покажите, как с помощью **filtered-accumulate** выразить следующее:
+> 
+> а. сумму квадратов простых чисел в интервале от **a** до **b** 
+> (в предположении, что процедура **prime?** уже написана);
+> 
+> б. произведение всех положительных целых чисел меньше **n**, 
+> которые просты по отношению к **n** (то есть всех таких положительных целых чисел **i < n**, что **НОД(i, n) = 1**).
+
+Решение на Scala:
+
+```scala
+def filteredAccumulateRec(
+    combiner: (Double, Double) => Double,
+    nullValue: Double,
+    term: Double => Double,
+    a: Double,
+    next: Double => Double,
+    b: Double,
+    filter: Double => Boolean
+): Double =
+  if a > b then nullValue
+  else
+    val nextA = term(a)
+    lazy val res =
+      filteredAccumulateRec(combiner, nullValue, term, next(a), next, b, filter)
+    if filter(nextA) then combiner(nextA, res)
+    else res
+
+def filteredAccumulateIter(
+    combiner: (Double, Double) => Double,
+    nullValue: Double,
+    term: Double => Double,
+    a: Double,
+    next: Double => Double,
+    b: Double,
+    filter: Double => Boolean
+): Double =
+  def iter(a: Double, result: Double): Double =
+    if a > b then result
+    else
+      val nextA = term(a)
+      val nextResult =
+        if filter(nextA) then combiner(result, nextA)
+        else result
+      iter(next(a), nextResult)
+  iter(a, nullValue)
+
+def filteredAccumulate(
+    combiner: (Int, Int) => Int,
+    nullValue: Int,
+    term: Int => Int,
+    a: Int,
+    next: Int => Int,
+    b: Int,
+    filter: Int => Boolean
+): Int = ???
+
+def isPrime(n: Int): Boolean = ???
+
+def sumPrimeSquares(a: Int, b: Int): Int =
+  filteredAccumulate(
+    combiner = (x, y) => x + y,
+    nullValue = 0,
+    term = x => x * x,
+    a = a,
+    next = x => x + 1,
+    b = b,
+    filter = isPrime
+  )
+
+def gcd(a: Int, b: Int): Int = ???
+
+def productPrimesLessThanN(n: Int): Int =
+  filteredAccumulate(
+    combiner = (x, y) => x * y,
+    nullValue = 1,
+    term = x => x,
+    a = 1,
+    next = x => x + 1,
+    b = n - 1,
+    filter = i => gcd(i, n) == 1
+  )
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-33.worksheet.sc)
 
 
 ---

@@ -79,6 +79,69 @@ integral(cube, 0.0, 1.0, 0.001) // 0.24999987500000073
 
 #### Упражнение 1.31
 
+> а. Процедура **sum** — всего лишь простейшая из обширного множества подобных абстракций, 
+> которые можно выразить через процедуры высших порядков. 
+> Напишите аналогичную процедуру под названием **product**, 
+> которая вычисляет произведение значений функции в точках на указанном интервале. 
+> Покажите, как с помощью этой процедуры определить **factorial**. 
+> Кроме того, при помощи **product** вычислите приближенное значение **π** по формуле:
+> **π / 4 = (2 / 3) * (4 / 3) * (4 / 5) * (6 / 5) * (6 / 7) * (8 / 7) * ...**
+> 
+> б. Если Ваша процедура **product** порождает рекурсивный процесс, перепишите ее так, чтобы она порождала итеративный. 
+> Если она порождает итеративный процесс, перепишите ее так, чтобы она порождала рекурсивный.
+
+Решение на Scala:
+
+```scala
+val identity: Double => Double = x => x
+val nextNum: Double => Double = x => x + 1
+val square: Double => Double = x => x * x
+val piFraction: Double => Double = k =>
+  (2 * k) * (2 * k + 2) / square(2 * k + 1)
+
+def productRec(
+    term: Double => Double,
+    a: Double,
+    next: Double => Double,
+    b: Double
+): Double =
+  if a > b then 1.0
+  else term(a) * productRec(term, next(a), next, b)
+
+def factorialRec(n: Int): Int =
+  productRec(identity, 1, nextNum, n).toInt
+
+def calculatePiRec(n: Int): Double =
+  4 * productRec(piFraction, 1, nextNum, n)
+
+factorialRec(10)     // 3628800
+calculatePiRec(1000) // 3.142377365093882
+
+def productIter(
+    term: Double => Double,
+    a: Double,
+    next: Double => Double,
+    b: Double
+): Double =
+  def iter(a: Double, result: Double): Double =
+    if a > b then result
+    else iter(next(a), result * term(a))
+  iter(a, 1.0)
+
+def factorialIter(n: Int): Int =
+  productIter(identity, 1, nextNum, n).toInt
+
+def calculatePiIter(n: Int): Double =
+  4 * productIter(piFraction, 1, nextNum, n)
+
+factorialIter(10)     // 3628800
+calculatePiIter(1000) // 3.1423773650938855
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-31.worksheet.sc)
+
+
+
 #### Упражнение 1.32
 
 #### Упражнение 1.33

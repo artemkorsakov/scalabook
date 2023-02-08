@@ -6,19 +6,26 @@
 
 #### Упражнение 1.34
 
+> Допустим, мы определили процедуру
 > 
+> (define (f g)
+>   (g 2))
+> 
+> Тогда мы имеем
+> 
+> (f square)
+> 4
+> 
+> (f (lambda (z) (* z (+ z 1))))
+> 6
+> 
+> Что случится, если мы (извращенно) попросим интерпретатор вычислить комбинацию **(f f)**?
+> Объясните.
 
-
-Решение на Scala:
-
-```scala
-
-```
-
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-29.worksheet.sc)
+[Ссылка на объяснение](https://eli.thegreenplace.net/2007/07/13/sicp-sections-132-133)
 
 
 ---
 
 **Ссылки:**
-- [Упражнение 1.34 - 1.33](https://web.mit.edu/6.001/6.037/sicp.pdf#page=108)
+- [Упражнение 1.34](https://web.mit.edu/6.001/6.037/sicp.pdf#page=116)

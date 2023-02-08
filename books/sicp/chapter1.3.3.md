@@ -16,8 +16,56 @@
 
 [Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-33.worksheet.sc)
 
+#### Упражнение 1.36
+
+> 
+
+Решение на Scala:
+
+```scala
+
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-33.worksheet.sc)
+
+#### Упражнение 1.37
+
+> 
+
+Решение на Scala:
+
+```scala
+
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-33.worksheet.sc)
+
+#### Упражнение 1.38
+
+> 
+
+Решение на Scala:
+
+```scala
+
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-33.worksheet.sc)
+
+#### Упражнение 1.39
+
+> 
+
+Решение на Scala:
+
+```scala
+
+```
+
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-33.worksheet.sc)
+
 
 ---
 
 **Ссылки:**
-- [Упражнение 1.35 - 1.33](https://web.mit.edu/6.001/6.037/sicp.pdf#page=116)
+- [Упражнение 1.35 - 1.39](https://web.mit.edu/6.001/6.037/sicp.pdf#page=122)

@@ -248,6 +248,7 @@
     - [Глава 1.2.6](books/sicp/chapter1.2.6)
     - [Глава 1.3.1](books/sicp/chapter1.3.1)
     - [Глава 1.3.2](books/sicp/chapter1.3.2) 
+    - [Глава 1.3.3](books/sicp/chapter1.3.3) 
   - [Scala Puzzlers](books/puzzlers/index.md)
     - [Hi There!](books/puzzlers/hi-there.md)
     - [UPSTAIRS downstairs](books/puzzlers/upstairs.md)

@@ -206,15 +206,38 @@ contFracIter(n, d, 1000) // 0.7182818284590453
 
 #### Упражнение 1.39
 
+> Представление тангенса в виде цепной дроби было опубликовано в 1770 году немецким математиком Й.Х. Ламбертом:
+>
+> **tg x = x / (1 − x<sup>2</sup> / (3 − x<sup>2</sup> / (5 − ...)))**
+>
+> где **x** дан в радианах. 
 > 
+> Определите процедуру **(tan-cf x k)**, которая вычисляет приближение к тангенсу на основе формулы Ламберта. 
+> **K** указывает количество термов, которые требуется вычислить, как в упражнении 1.37.
+
 
 Решение на Scala:
 
 ```scala
+def contFracIter(n: Int => Double, d: Int => Double, k: Int): Double =
+  def loop(i: Int, result: Double): Double =
+    if i == 0 then result
+    else loop(i - 1, n(i) / (d(i) + result))
+  loop(k, 0.0)
 
+def n(x: Double)(i: Int): Double =
+  if i == 1 then x
+  else -x * x
+
+val d: Int => Double = i => 2 * (i - 1) + 1
+
+def tanCf(x: Double, k: Int): Double =
+  contFracIter(n(x), d, k)
+
+tanCf(1.0, 100) // 1.557407724654902
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-33.worksheet.sc)
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-39.worksheet.sc)
 
 
 ---

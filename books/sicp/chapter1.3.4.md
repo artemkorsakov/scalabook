@@ -6,15 +6,23 @@
 
 #### Упражнение 1.40
 
-> 
+> Определите процедуру **cubic**, которую можно было бы использовать совместно с процедурой **newtons-method** 
+> в выражениях вида **(newtons-method (cubic a b c) 1)** для приближенного вычисления нулей 
+> кубических уравнений **x<sup>3</sup> + ax<sup>2</sup> + bx + c**.
+
 
 Решение на Scala:
 
 ```scala
+def square(x: Double): Double = x * x
 
+def cube(x: Double): Double = x * x * x
+
+def cubic(a: Double, b: Double, c: Double): Double => Double = x =>
+  cube(x) + a * square(x) + b * x + c
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-35.worksheet.sc)
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-40.worksheet.sc)
 
 
 #### Упражнение 1.41

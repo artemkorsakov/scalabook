@@ -79,15 +79,40 @@ compose(square, inc)(6) // 49
 
 #### Упражнение 1.43
 
+> Если **f** есть численная функция, а **n** — положительное целое число, 
+> то мы можем построить **n**-кратное применение **f**, 
+> которое определяется как функция, значение которой в точке **x** равно **f(f(... (f(x)) ...))**. 
+> Например, если **f** есть функция **x → x + 1**, то **n**-кратным применением **f** будет функция **x → x + n**. 
+> Если **f** есть операция возведения в квадрат, 
+> то **n**-кратное применение **f** есть функция, которая возводит свой аргумент в **2<sup>n</sup>**-ю степень. 
 > 
+> Напишите процедуру, которая принимает в качестве ввода процедуру, вычисляющую **f**, и положительное целое **n**, 
+> и возвращает процедуру, вычисляющую **n**-кратное применение **f**. 
+> 
+> Требуется, чтобы Вашу процедуру можно было использовать в таких контекстах:
+>
+> ```
+> ((repeated square 2) 5)
+> 625
+> ```
+>
+> Подсказка: может оказаться удобно использовать **compose** из упражнения 1.42
 
 Решение на Scala:
 
 ```scala
+def compose[A, B, C](f: B => C, g: A => B): A => C = x => f(g(x))
 
+def repeated[A](f: A => A, n: Int): A => A =
+  if n == 1 then f
+  else repeated(compose(f, f), n - 1)
+
+val square: Int => Int = x => x * x
+
+repeated(square, 2)(5) // 625
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-35.worksheet.sc)
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-43.worksheet.sc)
 
 
 #### Упражнение 1.44

@@ -177,15 +177,32 @@ contFracIter(_ => 1.0, _ => 1.0, 11) // 0.6180(5)
 
 #### Упражнение 1.38
 
+> В 1737 году швейцарский математик Леонард Эйлер опубликовал статью *De functionibus Continuis*, 
+> которая содержала расширение цепной дроби для **e−2**, где **e** — основание натуральных логарифмов. 
+> В этой дроби все **N<sub>1</sub>** равны **1**, а **D<sub>1</sub>** последовательно равны **1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, ...**
 > 
+> Напишите программу, использующую Вашу процедуру **cont-frac** из упражнения 1.37 
+> для вычисления **e** на основании формулы Эйлера
 
 Решение на Scala:
 
 ```scala
+def contFracIter(n: Int => Double, d: Int => Double, k: Int): Double =
+  def loop(i: Int, result: Double): Double =
+    if i == 0 then result
+    else loop(i - 1, n(i) / (d(i) + result))
+  loop(k, 0.0)
 
+val n: Int => Double = _ => 1.0
+
+val d: Int => Double = i =>
+  if i % 3 == 2 then (i / 3 + 1) * 2
+  else 1.0
+
+contFracIter(n, d, 1000) // 0.7182818284590453
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-33.worksheet.sc)
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-38.worksheet.sc)
 
 #### Упражнение 1.39
 

@@ -27,15 +27,26 @@ def cubic(a: Double, b: Double, c: Double): Double => Double = x =>
 
 #### Упражнение 1.41
 
-> 
+> Определите процедуру **double**, которая принимает как аргумент процедуру с одним аргументом 
+> и возвращает процедуру, которая применяет исходную процедуру дважды. 
+> Например, если процедура **inc** добавляет к своему аргументу **1**, 
+> то **(double inc)** должна быть процедурой, которая добавляет **2**. 
+> Скажите, какое значение возвращает **(((double (double double)) inc) 5)**
+
 
 Решение на Scala:
 
 ```scala
+val inc: Int => Int = _ + 1
 
+def double[T](f: T => T): T => T = x => f(f(x))
+
+// (((double (double double)) inc) 5)
+val f: (Int => Int) => (Int => Int) = double(double(double))
+f(inc)(5) // 21
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-35.worksheet.sc)
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-41.worksheet.sc)
 
 
 #### Упражнение 1.42

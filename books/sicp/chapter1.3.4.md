@@ -31,6 +31,7 @@ def cubic(a: Double, b: Double, c: Double): Double => Double = x =>
 > и возвращает процедуру, которая применяет исходную процедуру дважды. 
 > Например, если процедура **inc** добавляет к своему аргументу **1**, 
 > то **(double inc)** должна быть процедурой, которая добавляет **2**. 
+> 
 > Скажите, какое значение возвращает **(((double (double double)) inc) 5)**
 
 
@@ -51,15 +52,29 @@ f(inc)(5) // 21
 
 #### Упражнение 1.42
 
-> 
+> Пусть **f** и **g** — две одноаргументные функции. 
+> По определению, композиция (*composition*) **f** и **g** есть функция **x → f(g(x))**. 
+> Определите процедуру **compose** которая реализует композицию.
+> Например, если **inc** — процедура, добавляющая к своему аргументу **1**,
+>
+> ```
+> ((compose square inc) 6)
+> 49
+> ```
+
 
 Решение на Scala:
 
 ```scala
+def compose[A, B, C](f: B => C, g: A => B): A => C = x => f(g(x))
 
+val square: Int => Int = x => x * x
+val inc: Int => Int = x => x + 1
+
+compose(square, inc)(6) // 49
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-35.worksheet.sc)
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-42.worksheet.sc)
 
 
 #### Упражнение 1.43

@@ -117,15 +117,30 @@ repeated(square, 2)(5) // 625
 
 #### Упражнение 1.44
 
+> Идея сглаживания (*smoothing a function*) играет важную роль в обработке сигналов. 
+> Если **f** — функция, а **dx** — некоторое малое число, то сглаженная версия **f** есть функция, 
+> значение которой в точке **x** есть среднее между **f(x − dx)**, **f(x)** и **f(x + dx)**. 
+> Напишите процедуру **smooth**, которая в качестве ввода принимает процедуру, вычисляющую **f**, 
+> и возвращает процедуру, вычисляющую сглаженную версию **f**. 
 > 
+> Иногда бывает удобно проводить повторное сглаживание (то есть сглаживать сглаженную функцию и т.д.), 
+> получая **n**-кратно сглаженную функцию (*n-fold smoothed function*). 
+> Покажите, как породить **n**-кратно сглаженную функцию с помощью **smooth** и **repeated** из упражнения 1.43.
+
 
 Решение на Scala:
 
 ```scala
+val dx: Double = 1e-6
 
+def smooth(f: Double => Double): Double => Double =
+  x => (f(x - dx) + f(x) + f(x + dx)) / 3
+
+def nFoldSmoothedFunction(f: Double => Double, n: Int): Double => Double =
+  repeated(smooth, n)(f)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-35.worksheet.sc)
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-44.worksheet.sc)
 
 
 #### Упражнение 1.45

@@ -202,15 +202,46 @@ nRoot(math.pow(2, 100), 100) // 2.0079006560360497
 
 #### Упражнение 1.46
 
+> Некоторые из вычислительных методов, описанных в этой главе, 
+> являются примерами чрезвычайно общей вычислительной стратегии, называемой пошаговое улучшение (*iterative improvement*). 
+> Пошаговое улучшение состоит в следующем: чтобы что-то вычислить, нужно взять какое-то начальное значение, 
+> проверить, достаточно ли оно хорошо, чтобы служить ответом, 
+> и если нет, то улучшить это значение и продолжить процесс с новым значением. 
 > 
+> Напишите процедуру **iterative-improve**, которая принимает в качестве аргументов две процедуры: 
+> проверку, достаточно ли хорошо значение, и метод улучшения значения. 
+> **Iterative-improve** должна возвращать процедуру, которая принимает начальное значение в качестве аргумента 
+> и улучшает его, пока оно не станет достаточно хорошим. 
+> 
+> Перепишите процедуру **sqrt** из раздела 1.1.7 и 
+> процедуру **fixed-point** из раздела 1.3.3 в терминах **iterative-improve**.
 
 Решение на Scala:
 
 ```scala
+def iterativeImprove(
+    doesCloseEnough: (Double, Double) => Boolean,
+    next: Double => Double
+): Double => Double = firstGuess =>
+  def tryGuess(guess: Double): Double =
+    val nextGuess = next(guess)
+    if doesCloseEnough(nextGuess, guess) then nextGuess
+    else tryGuess(nextGuess)
+  tryGuess(firstGuess)
 
+def doesCloseEnough(a: Double, b: Double): Boolean =
+  math.abs(a - b) < 1e-5
+
+def average(x: Double, y: Double): Double = (x + y) / 2
+
+def sqrt(x: Double): Double =
+  iterativeImprove(doesCloseEnough, y => average(y, x / y))(1.0)
+
+def fixedPoint(f: Double => Double, firstGuess: Double): Double =
+  iterativeImprove(doesCloseEnough, f)(firstGuess)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-35.worksheet.sc)
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-46.worksheet.sc)
 
 
 ---

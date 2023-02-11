@@ -145,15 +145,59 @@ def nFoldSmoothedFunction(f: Double => Double, n: Int): Double => Double =
 
 #### Упражнение 1.45
 
-> 
+> В разделе 1.3.3 мы видели, что попытка вычисления квадратных корней путем наивного поиска неподвижной точки **y → x/y** не сходится, 
+> и что это можно исправить путем торможения усреднением. 
+> Тот же самый метод работает для нахождения кубического корня как неподвижной точки **y → x/y<sup>2</sup>**, заторможенной усреднением. 
+> К сожалению, этот процесс не работает для корней четвертой степени — однажды примененного торможения усреднением недостаточно, 
+> чтобы заставить сходиться процесс поиска неподвижной точки **y → x/y<sup>3</sup>**. 
+> С другой стороны, если мы применим торможение усреднением дважды 
+> (т.е. применим торможение усреднением к результату торможения усреднением от **y → x/y<sup>3</sup>**), 
+> то поиск неподвижной точки начнет сходиться. 
+> Проделайте эксперименты, чтобы понять, сколько торможений усреднением нужно, 
+> чтобы вычислить корень **n**-ой степени как неподвижную точку 
+> на основе многократного торможения усреднением функции **y → x/y<sup>n−1</sup>**. 
+> Используя свои результаты для написания простой процедуры вычисления корней **n**-ой степени с помощью процедур 
+> **fixed-point**, **average-damp** и **repeated** из упражнения 1.43. 
+> Считайте, что все арифметические операции, какие Вам понадобятся, присутствуют в языке как примитивы.
+
+Судя по наблюдениям, для вычисления корней **n**-ой степени достаточно **log(n) + 1** торможений.
 
 Решение на Scala:
 
 ```scala
+def compose[A, B, C](f: B => C, g: A => B): A => C = x => f(g(x))
 
+def repeated[A](f: A => A, n: Int): A => A =
+  if n == 1 then f
+  else repeated(compose(f, f), n - 1)
+
+def average(a: Double, b: Double): Double = (a + b) / 2
+
+def averageDamp(f: Double => Double): Double => Double =
+  x => average(x, f(x))
+
+val tolerance = 1e-5
+
+def fixedPoint(f: Double => Double, firstGuess: Double): Double =
+  def doesCloseEnough(a: Double, b: Double): Boolean =
+    math.abs(a - b) < tolerance
+  def tryGuess(guess: Double): Double =
+    val next = f(guess)
+    if doesCloseEnough(next, guess) then next
+    else tryGuess(next)
+  tryGuess(firstGuess)
+
+def nFoldAverageFunction(f: Double => Double, n: Int): Double => Double =
+  repeated(averageDamp, n)(f)
+
+def nRoot(x: Double, n: Int): Double =
+  val f: Double => Double = y => (x / math.pow(y, n - 1))
+  fixedPoint(nFoldAverageFunction(f, math.log(n).toInt + 1), 1.0)
+
+nRoot(math.pow(2, 100), 100) // 2.0079006560360497
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-35.worksheet.sc)
+[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-45.worksheet.sc)
 
 
 #### Упражнение 1.46

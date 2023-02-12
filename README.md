@@ -1,8 +1,6 @@
-# Функциональная разработка на Scala
+# Scalabook
 
-В этой рабочей тетрадке я собираю информацию, в основном посвященную функциональной разработке на Scala.
-
-[Домашняя страница](https://scalabook.gitflic.space)
+В этой рабочей тетраде собрана информация, в основном посвященная функциональной разработке на Scala.
 
 Несколько внешних ссылок:
 
@@ -12,6 +10,6 @@
     - [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook)
   
 - [github.com](https://github.com) 
-    - Домашняя страница
+    - [Домашняя страница](https://artemkorsakov.github.io/scalabook)
     - [Мой профиль на github](https://github.com/artemkorsakov)
     - [Исходный код](https://github.com/artemkorsakov/scalabook)

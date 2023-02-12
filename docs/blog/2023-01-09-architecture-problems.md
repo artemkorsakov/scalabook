@@ -5,7 +5,8 @@
 
 Рассмотрим развитие построения архитектуры на примере моноидальной группы из теории категорий.
 
-Возьмем для примера [полугруппу](../../typeclass/monoid/semigroup) и [моноид](../../typeclass/monoid/monoid), 
+Возьмем для примера [полугруппу](https://twitter.github.io/algebird/typeclasses/semigroup.html) 
+и [моноид](https://twitter.github.io/algebird/typeclasses/monoid.html), 
 детально рассмотренные на соответствующих страницах.
 
 Напомню определение полугруппы:

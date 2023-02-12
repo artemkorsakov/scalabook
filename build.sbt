@@ -17,7 +17,7 @@ ThisBuild / developers := List(
 
 ThisBuild / githubWorkflowPublishTargetBranches := Seq()
 
-ThisBuild / tlSitePublishBranch := Some("main")
+ThisBuild / tlSitePublishBranch := Some("master")
 
 ThisBuild / scalaVersion      := Scala
 ThisBuild / semanticdbEnabled := true

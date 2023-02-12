@@ -58,7 +58,7 @@ object PolynomialEquation:
     else
       val coefficients = coefficientsForSolutionSearching(k - 1)
       val last         = coefficients.last
-      val current      = 1L +: (0 until last.length - 1).map(i =>
+      val current = 1L +: (0 until last.length - 1).map(i =>
         last(i + 1) - last(i)
       ) :+ -last.last
       coefficients :+ current

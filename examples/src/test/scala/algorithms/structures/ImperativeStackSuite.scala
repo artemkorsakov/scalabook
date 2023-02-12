@@ -4,7 +4,7 @@ import munit.FunSuite
 
 class ImperativeStackSuite extends FunSuite:
   test("ImperativeStack.push") {
-    val stack             = new ImperativeStack[Int](2)
+    val stack = new ImperativeStack[Int](2)
     stack.push(1)
     stack.push(2)
     interceptMessage[java.lang.IllegalArgumentException](
@@ -52,7 +52,7 @@ class ImperativeStackSuite extends FunSuite:
   }
 
   test("ImperativeStack.isEmpty") {
-    val stack             = new ImperativeStack[Int](2)
+    val stack = new ImperativeStack[Int](2)
     assert(stack.isEmpty)
     stack.push(1)
     assert(!stack.isEmpty)
@@ -63,7 +63,7 @@ class ImperativeStackSuite extends FunSuite:
   }
 
   test("ImperativeStack.isFull") {
-    val stack             = new ImperativeStack[Int](2)
+    val stack = new ImperativeStack[Int](2)
     assert(!stack.isFull)
     stack.push(1)
     assert(!stack.isFull)

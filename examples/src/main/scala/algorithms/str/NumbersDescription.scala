@@ -15,11 +15,11 @@ object NumbersDescription:
   def inEnglish(number: Long): Option[String] =
     number match
       case n if n < 21 || (n < hundred && n % 10 == 0) => toEnglishBase(n)
-      case n if n < hundred && n            % 10 > 0   =>
+      case n if n < hundred && n            % 10 > 0 =>
         toEnglishBase((number / 10) * 10).flatMap(f =>
           toEnglishBase(number % 10).map(s => s"$f-$s")
         )
-      case n if n < thousand => constructEnglish(n, hundred)
+      case n if n < thousand    => constructEnglish(n, hundred)
       case n if n < million     => constructEnglish(n, thousand)
       case n if n < billion     => constructEnglish(n, million)
       case n if n < trillion    => constructEnglish(n, billion)
@@ -27,10 +27,10 @@ object NumbersDescription:
       case _                    => None
 
   private def constructEnglish(n: Long, base: Long): Option[String] =
-    val first  =
+    val first =
       inEnglish(n / base).flatMap(f => toEnglishBase(base).map(s => s"$f $s"))
-    val rest   = n % base
-    val art    = if base == hundred then " and " else " "
+    val rest = n % base
+    val art  = if base == hundred then " and " else " "
     val second =
       if rest == 0 then Some("") else inEnglish(rest).map(str => s"$art$str")
     first.flatMap(f => second.map(s => s"$f$s"))
@@ -74,17 +74,17 @@ object NumbersDescription:
 
   def inRussian(number: Long): Option[String] =
     (number match {
-      case n if n < 21          => toRussianBase(n)
-      case n if n < hundred     =>
+      case n if n < 21 => toRussianBase(n)
+      case n if n < hundred =>
         toRussianBase((number / 10) * 10).flatMap(f =>
           inRussian(number % 10).map(s => s"$f $s")
         )
-      case n if n < thousand    =>
+      case n if n < thousand =>
         toRussianBase((number / hundred) * hundred).flatMap(f =>
           inRussian(number % hundred).map(s => s"$f $s")
         )
-      case n if n < million     =>
-        val first          = number / thousand
+      case n if n < million =>
+        val first = number / thousand
         val firstInRussian =
           if (first % 10 == 1 && (first % hundred) / 10 != 1) {
             inRussian((first / 10) * 10).map(s => s"$s одна тысяча")
@@ -107,7 +107,7 @@ object NumbersDescription:
     }).map(ans => ans.trim)
 
   private def constructRussian(n: Long, base: Long): Option[String] =
-    val first          = n / base
+    val first = n / base
     val firstInRussian =
       if first % 10 == 1 && (first % base) / 10 != 1 then
         inRussian(first).flatMap(f => toRussianBase(base).map(s => s"$f $s"))

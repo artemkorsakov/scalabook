@@ -28,7 +28,7 @@ object Monoid:
       aMonoid: Monoid[A],
       bMonoid: Monoid[B]
   ): Monoid[(A, B)] with
-    lazy val empty: (A, B)                    = (aMonoid.empty, bMonoid.empty)
+    lazy val empty: (A, B) = (aMonoid.empty, bMonoid.empty)
     def combine(x: (A, B), y: (A, B)): (A, B) =
       (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
 

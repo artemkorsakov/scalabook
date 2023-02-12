@@ -4,7 +4,7 @@ object Darts:
   private val singlePoints: Seq[Int] = (1 to 20) :+ 25
   private val doublePoints: Seq[Int] = (2 to 40 by 2) :+ 50
   private val triplePoints: Seq[Int] = 3 to 60 by 3
-  private val points: Seq[Int]       = singlePoints ++ doublePoints ++ triplePoints
+  private val points: Seq[Int] = singlePoints ++ doublePoints ++ triplePoints
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   val allDistinctWaysToCheckOut: Map[Int, Int] =

@@ -31,10 +31,10 @@ object Foldable:
 
   given Foldable[Option] with
     extension [A](as: Option[A])
-      override def foldRight[B](acc: B)(f: (A, B) => B): B       = as match
+      override def foldRight[B](acc: B)(f: (A, B) => B): B = as match
         case None    => acc
         case Some(a) => f(a, acc)
-      override def foldLeft[B](acc: B)(f: (B, A) => B): B        = as match
+      override def foldLeft[B](acc: B)(f: (B, A) => B): B = as match
         case None    => acc
         case Some(a) => f(acc, a)
       override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
@@ -46,9 +46,9 @@ object Foldable:
     extension [A](as: List[A])
       override def foldRight[B](acc: B)(f: (A, B) => B): B =
         as.foldRight(acc)(f)
-      override def foldLeft[B](acc: B)(f: (B, A) => B): B  =
+      override def foldLeft[B](acc: B)(f: (B, A) => B): B =
         as.foldLeft(acc)(f)
-      override def toList: List[A]                         = as
+      override def toList: List[A] = as
 
   given tuple2Foldable: Foldable[[X] =>> (X, X)] with
     extension [A](fa: (A, A))

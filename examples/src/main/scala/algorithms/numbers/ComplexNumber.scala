@@ -8,24 +8,24 @@ case class ComplexNumber(a: Double, b: Double):
   def this(x: Long) = this(x.toDouble, 0.0)
   def this(r: ComplexNumber) = this(r.a, r.b)
 
-  def +(cn: ComplexNumber): ComplexNumber   = add(cn)
+  def +(cn: ComplexNumber): ComplexNumber = add(cn)
   def add(cn: ComplexNumber): ComplexNumber =
     ComplexNumber(a + cn.a, b + cn.b)
 
-  def -(cn: ComplexNumber): ComplexNumber   = sub(cn)
+  def -(cn: ComplexNumber): ComplexNumber = sub(cn)
   def sub(cn: ComplexNumber): ComplexNumber =
     ComplexNumber(a - cn.a, b - cn.b)
 
-  def *(cn: ComplexNumber): ComplexNumber   = mul(cn)
+  def *(cn: ComplexNumber): ComplexNumber = mul(cn)
   def mul(cn: ComplexNumber): ComplexNumber =
     ComplexNumber(a * cn.a - b * cn.b, a * cn.b + b * cn.a)
 
-  def /(cn: ComplexNumber): ComplexNumber   = div(cn)
+  def /(cn: ComplexNumber): ComplexNumber = div(cn)
   def div(cn: ComplexNumber): ComplexNumber =
     val den = cn.productWithConjugate
     require(den != 0, "Can't divide by 0")
-    val c   = a * cn.a + b * cn.b
-    val d   = b * cn.a - a * cn.b
+    val c = a * cn.a + b * cn.b
+    val d = b * cn.a - a * cn.b
     ComplexNumber(c / den, d / den)
 
   def abs: ComplexNumber =

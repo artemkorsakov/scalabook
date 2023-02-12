@@ -19,14 +19,14 @@ class StackSuite extends FunSuite:
   }
 
   test("Stack.peek") {
-    val stack    = Stack.empty[Int]
+    val stack = Stack.empty[Int]
     assertEquals(stack.peek(), None)
     val newStack = stack.push(1)
     assertEquals(newStack.peek(), Some((1, newStack)))
   }
 
   test("Stack.pop") {
-    val stack    = Stack.empty[Int]
+    val stack = Stack.empty[Int]
     assertEquals(stack.pop(), None)
     val newStack = stack.push(1)
     assertEquals(newStack.pop(), Some((1, stack)))

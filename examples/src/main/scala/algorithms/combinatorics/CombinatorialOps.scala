@@ -42,9 +42,9 @@ object CombinatorialOps:
       else
         l match
           case _ :: _ if n == 1 => l.map(List(_))
-          case hd :: tl         =>
+          case hd :: tl =>
             tl.xcombinations(n - 1).map(hd :: _) ::: tl.xcombinations(n)
-          case _                => Nil
+          case _ => Nil
 
     /** Generates all the subsets of this list. The order doesn't matter.
       *
@@ -84,9 +84,9 @@ object CombinatorialOps:
       else
         l match
           case _ :: _ if n == 1 => l.map(List(_))
-          case hd :: tl         =>
+          case hd :: tl =>
             mixmany(hd, tl.xvariations(n - 1)) ::: tl.xvariations(n)
-          case _                => Nil
+          case _ => Nil
 
     /** Generates all permutations of this list. The order does matter.
       *

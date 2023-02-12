@@ -14,4 +14,4 @@ object PokerCard:
       ) match
         case (Some(pokerRank), Some(pokerSuit)) =>
           Some(PokerCard(pokerRank, pokerSuit))
-        case _                                  => None
+        case _ => None

@@ -6,7 +6,7 @@ import org.scalacheck.Prop.*
 import algorithms.numbers.CyclicNumbers.*
 
 class CyclicNumbersSuite extends ScalaCheckSuite:
-  private val FIRST_TRIANGLES   =
+  private val FIRST_TRIANGLES =
     Array(1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91)
   private val FIRST_SQUARE      = Array(1, 4, 9, 16, 25, 36, 49, 64, 81)
   private val FIRST_PENTAGONALS = Array(1, 5, 12, 22, 35, 51, 70, 92)

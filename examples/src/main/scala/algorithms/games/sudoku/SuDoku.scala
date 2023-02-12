@@ -34,7 +34,7 @@ case class SuDoku(cells: Array[Array[Array[Int]]]):
   private def setValue(i: Int, j: Int, value: Int): Boolean =
     val tempSuDoku = copySuDoku
     tempSuDoku.cells(i)(j) = Array(value)
-    val result     = tempSuDoku.removeValueFromRowColSqr(
+    val result = tempSuDoku.removeValueFromRowColSqr(
       i,
       j,
       value
@@ -72,10 +72,10 @@ case class SuDoku(cells: Array[Array[Array[Int]]]):
   private def removeValueFromRowColSqr(i: Int, j: Int, value: Int): Boolean =
     (0 to 8).forall(k =>
       k == j || removeValue(i, k, value)
-    ) &&   // Removes a given value from the row
+    ) && // Removes a given value from the row
       (0 to 8).forall(k =>
         k == i || removeValue(k, j, value)
-      ) && // Removes a given value from the column
+      ) &&                 // Removes a given value from the column
       (0 to 2).forall(k => // Removes a given value from the square
         (0 to 2).forall { l =>
           val r = (i / 3) * 3 + k
@@ -104,8 +104,8 @@ object SuDoku:
     SuDoku(defaultCells)
 
   def toSuDoku(source: String): Option[SuDoku] =
-    val sudoku    = SuDoku()
-    val rows      = source.trim.split("\n")
+    val sudoku = SuDoku()
+    val rows   = source.trim.split("\n")
     val isCorrect = (0 to 8).forall(i =>
       (0 to 8).forall { j =>
         val d = rows(i).charAt(j).getNumericValue

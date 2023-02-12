@@ -1,7 +1,7 @@
 - [Домашняя](.)
 
-- [Блог](blog/index.md)
-  - [Проблемы архитектуры](blog/2023-01-09-architecture-problems.md) 
+- [Блог](docs/blog/index.md)
+  - [Проблемы архитектуры](docs/blog/2023-01-09-architecture-problems.md) 
 
 - [Scala](scala/index.md)
   - [С чего начать?](scala/getting-started.md)

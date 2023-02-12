@@ -22,7 +22,7 @@ case class QuadraticEquation(a: Double, b: Double, c: Double):
         if b % den == 0 then Seq((-b / den).toLong) else Seq.empty[Long]
       else
         ((-b + sqrt) % den == 0, (-b - sqrt) % den == 0) match
-          case (true, true)   =>
+          case (true, true) =>
             Seq(((-b + sqrt) / den).toLong, ((-b - sqrt) / den).toLong)
           case (true, false)  => Seq(((-b + sqrt) / den).toLong)
           case (false, true)  => Seq(((-b - sqrt) / den).toLong)

@@ -21,17 +21,17 @@ object ProducerConsumer extends IOApp:
 
   override def run(args: List[String]): IO[ExitCode] =
     for
-      stateR   <- Ref.of[IO, State[IO, Int]](State.empty[IO, Int](capacity = 100))
+      stateR <- Ref.of[IO, State[IO, Int]](State.empty[IO, Int](capacity = 100))
       counterR <- Ref.of[IO, Int](1)
       producers = List.range(1, 11).map(producer(_, counterR, stateR))
       consumers = List.range(1, 11).map(consumer(_, stateR))
-      res      <- (producers ++ consumers).parSequence
-                    .as(ExitCode.Success)
-                    .handleErrorWith { t =>
-                      Console[IO]
-                        .errorln(s"Error caught: ${t.getMessage}")
-                        .as(ExitCode.Error)
-                    }
+      res <- (producers ++ consumers).parSequence
+        .as(ExitCode.Success)
+        .handleErrorWith { t =>
+          Console[IO]
+            .errorln(s"Error caught: ${t.getMessage}")
+            .as(ExitCode.Error)
+        }
     yield res
 
   private def producer[F[_]: Async: Console](
@@ -51,7 +51,7 @@ object ProducerConsumer extends IOApp:
               State(queue.enqueue(i), capacity, takers, offerers) -> Async[
                 F
               ].unit
-            case State(queue, capacity, takers, offerers)                    =>
+            case State(queue, capacity, takers, offerers) =>
               val cleanup = stateR.update { s =>
                 s.copy(offerers = s.offerers.filter(_._2 ne offerer))
               }
@@ -68,9 +68,10 @@ object ProducerConsumer extends IOApp:
     for
       i <- counterR.getAndUpdate(_ + 1)
       _ <- offer(i)
-      _ <- (if i % 10000 == 0 then
-              Console[F].println(s"Producer $id has reached $i items")
-            else Async[F].unit)
+      _ <-
+        (if i % 10000 == 0 then
+           Console[F].println(s"Producer $id has reached $i items")
+         else Async[F].unit)
       _ <- producer(id, counterR, stateR)
     yield ()
 
@@ -96,7 +97,7 @@ object ProducerConsumer extends IOApp:
                 if offerers.nonEmpty =>
               val ((i, release), rest) = offerers.dequeue
               State(queue, capacity, takers, rest) -> release.complete(()).as(i)
-            case State(queue, capacity, takers, offerers)                   =>
+            case State(queue, capacity, takers, offerers) =>
               val cleanup = stateR.update { s =>
                 s.copy(takers = s.takers.filter(_ ne taker))
               }
@@ -109,8 +110,9 @@ object ProducerConsumer extends IOApp:
 
     for
       i <- take
-      _ <- (if i % 10000 == 0 then
-              Console[F].println(s"Consumer $id has reached $i items")
-            else Async[F].unit)
+      _ <-
+        (if i % 10000 == 0 then
+           Console[F].println(s"Consumer $id has reached $i items")
+         else Async[F].unit)
       _ <- consumer(id, stateR)
     yield ()

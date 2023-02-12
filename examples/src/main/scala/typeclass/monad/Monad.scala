@@ -12,7 +12,7 @@ object Monad:
   def apply[F[_]: Monad]: Monad[F] = summon[Monad[F]]
 
   given Monad[Id] with
-    override def unit[A](a: => A): Id[A]            = Id(a)
+    override def unit[A](a: => A): Id[A] = Id(a)
     extension [A](fa: Id[A])
       override def flatMap[B](f: A => Id[B]): Id[B] = f(fa.value)
 
@@ -41,7 +41,7 @@ object Monad:
           case Left(e)  => Left(e)
 
   given writerMonad[W](using monoid: Monoid[W]): Monad[[x] =>> Writer[W, x]]
-    with
+  with
     override def unit[A](a: => A): Writer[W, A] =
       Writer[W, A](() => (monoid.empty, a))
 

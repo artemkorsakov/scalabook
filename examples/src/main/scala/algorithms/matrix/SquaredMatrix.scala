@@ -41,7 +41,7 @@ class SquaredMatrix[T](elements: Seq[Seq[T]])(using I: Integral[T])
     if elements.length == 1 then topLeft
     else
       (0 until n).foldLeft(I.zero) { (sum, i) =>
-        val el  = elements.head(i)
+        val el = elements.head(i)
         val mul =
           if el == I.zero then I.zero
           else

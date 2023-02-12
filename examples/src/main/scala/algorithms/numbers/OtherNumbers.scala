@@ -6,14 +6,14 @@ import algorithms.combinatorics.BinomialCoefficient.*
 object OtherNumbers:
   private val bernoulliMap: mutable.Map[Int, BigDecimal] =
     mutable.Map((0, BigDecimal(1)))
-  private val padovanMap: mutable.Map[Int, BigInt]       =
+  private val padovanMap: mutable.Map[Int, BigInt] =
     mutable.Map((0, 1), (1, 0), (2, 0))
-  private val jacobsthalMap: mutable.Map[Int, BigInt]    =
+  private val jacobsthalMap: mutable.Map[Int, BigInt] =
     mutable.Map((0, 0), (1, 1))
-  private val pellMap: mutable.Map[Int, BigInt]          = mutable.Map((0, 0), (1, 1))
-  private val tribonacciMap: mutable.Map[Int, BigInt]    =
+  private val pellMap: mutable.Map[Int, BigInt] = mutable.Map((0, 0), (1, 1))
+  private val tribonacciMap: mutable.Map[Int, BigInt] =
     mutable.Map((0, 0), (1, 0), (2, 1))
-  private val tetranacciMap: mutable.Map[Int, BigInt]    =
+  private val tetranacciMap: mutable.Map[Int, BigInt] =
     mutable.Map((0, 0), (1, 0), (2, 0), (3, 1))
 
   /** <a href="https://en.wikipedia.org/wiki/Bernoulli_number">Bernoulli

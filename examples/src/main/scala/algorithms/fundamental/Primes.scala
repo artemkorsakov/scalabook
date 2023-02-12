@@ -72,7 +72,7 @@ object Primes:
     var i = 3L
     while i <= math.sqrt(number.toDouble) do
       var pow = 0L
-      while number              % i == 0 do
+      while number % i == 0 do
         number /= i
         pow += 1
       if pow > 0 then map += i -> pow

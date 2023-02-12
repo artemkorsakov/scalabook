@@ -25,7 +25,7 @@ class FreeSuite extends ScalaCheckSuite:
         a2 <- add(a1, b)
         a3 <- add(a2, c)
       } yield a3
-      val result       = Free.foldF(program)(OperationToId)
+      val result = Free.foldF(program)(OperationToId)
       assertEquals(result, Id(a + b + c))
     }
   }

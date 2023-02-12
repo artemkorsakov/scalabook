@@ -17,7 +17,7 @@ trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:
     override def bifoldMap[M](f: A => M)(g: B => M)(using ma: Monoid[M]): M =
       def toState[X](f: X => M): X => State[M, X] = x =>
         State[M, X](s => (ma.combine(s, f(x)), x))
-      val state                                   =
+      val state =
         bitraverse[[X] =>> State[M, X], A, B](toState[A](f), toState[B](g))
       state.run(ma.empty)._1
 

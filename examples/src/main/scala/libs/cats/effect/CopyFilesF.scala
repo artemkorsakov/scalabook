@@ -8,17 +8,18 @@ import java.io.*
 object CopyFilesF extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =
     for {
-      _     <- if (args.length < 2)
-                 IO.raiseError(
-                   new IllegalArgumentException("Need origin and destination files")
-                 )
-               else IO.unit
-      orig   = new File(args.head)
-      dest   = new File(args(1))
+      _ <-
+        if (args.length < 2)
+          IO.raiseError(
+            new IllegalArgumentException("Need origin and destination files")
+          )
+        else IO.unit
+      orig = new File(args.head)
+      dest = new File(args(1))
       count <- copy[IO](orig, dest)
-      _     <- IO.println(
-                 s"$count bytes copied from ${orig.getPath} to ${dest.getPath}"
-               )
+      _ <- IO.println(
+        s"$count bytes copied from ${orig.getPath} to ${dest.getPath}"
+      )
     } yield ExitCode.Success
 
   private def copy[F[_]: Sync](origin: File, destination: File): F[Long] =
@@ -63,7 +64,7 @@ object CopyFilesF extends IOApp:
   ): F[Long] =
     for {
       amount <- Sync[F].blocking(origin.read(buffer, 0, buffer.length))
-      count  <-
+      count <-
         if (amount > -1)
           Sync[F].blocking(destination.write(buffer, 0, amount)) >> transmit(
             origin,

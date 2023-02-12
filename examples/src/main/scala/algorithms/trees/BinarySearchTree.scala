@@ -10,13 +10,13 @@ object BinarySearchTree:
   extension [A](dict: Dictionary[A])
     def insert(key: String, value: A): Dictionary[A] =
       dict match
-        case Leaf                              =>
+        case Leaf =>
           Branch((key, value), Leaf, Leaf)
         case Branch((k, v), lb, rb) if key < k =>
           Branch((k, v), lb.insert(key, value), rb)
         case Branch((k, v), lb, rb) if key > k =>
           Branch((k, v), lb, rb.insert(key, value))
-        case Branch((_, _), _, _)              => dict
+        case Branch((_, _), _, _) => dict
 
     def searchKey(key: String): Option[A] =
       dict match
@@ -27,10 +27,10 @@ object BinarySearchTree:
 
     def updateValue(key: String, value: A): Dictionary[A] =
       dict match
-        case Leaf                              => Branch((key, value), Leaf, Leaf)
+        case Leaf => Branch((key, value), Leaf, Leaf)
         case Branch((k, _), lb, rb) if key < k =>
           Branch((k, value), lb.updateValue(key, value), rb)
         case Branch((k, _), lb, rb) if key > k =>
           Branch((k, value), lb, rb.updateValue(key, value))
-        case Branch((_, _), lb, rb)            =>
+        case Branch((_, _), lb, rb) =>
           Branch((key, value), lb, rb)

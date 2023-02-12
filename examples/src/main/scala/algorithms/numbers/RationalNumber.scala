@@ -105,16 +105,16 @@ object RationalNumber:
     def times(x: RationalNumber, y: RationalNumber): RationalNumber = x * y
     def quot(x: RationalNumber, y: RationalNumber): RationalNumber  = x / y
     def rem(x: RationalNumber, y: RationalNumber): RationalNumber   = x % y
-    def negate(x: RationalNumber): RationalNumber                   = RationalNumber(-x.x, x.y)
-    def fromInt(x: Int): RationalNumber                             = RationalNumber(x)
-    def parseString(str: String): Option[RationalNumber]            = None
-    def toInt(x: RationalNumber): Int                               = (x.numerator./(x.denominator)).toInt
-    def toLong(x: RationalNumber): Long                             = (x.numerator./(x.denominator)).toLong
-    def toFloat(x: RationalNumber): Float                           =
+    def negate(x: RationalNumber): RationalNumber = RationalNumber(-x.x, x.y)
+    def fromInt(x: Int): RationalNumber           = RationalNumber(x)
+    def parseString(str: String): Option[RationalNumber] = None
+    def toInt(x: RationalNumber): Int   = (x.numerator./(x.denominator)).toInt
+    def toLong(x: RationalNumber): Long = (x.numerator./(x.denominator)).toLong
+    def toFloat(x: RationalNumber): Float =
       (x.numerator./(x.denominator)).toFloat
-    def toDouble(x: RationalNumber): Double                         =
+    def toDouble(x: RationalNumber): Double =
       (x.numerator./(x.denominator)).toDouble
-    override def sign(x: RationalNumber): RationalNumber            = x
+    override def sign(x: RationalNumber): RationalNumber = x
 
   implicit object RationalNumberIsIntegral
       extends RationalNumberIsIntegral,

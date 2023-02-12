@@ -6,7 +6,7 @@ import org.scalacheck.Gen
 import blog.architectureproblems.Monoid.doTheMonoidLawsHold
 
 class MonoidSuite extends ScalaCheckSuite:
-  private val smallNumber  = Gen.choose[Int](-100, 100)
+  private val smallNumber = Gen.choose[Int](-100, 100)
   private val smallNumbers =
     for
       x <- smallNumber

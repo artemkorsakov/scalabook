@@ -10,7 +10,7 @@ import scala.collection.mutable
   * for which, a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup>.
   */
 case class PythagoreanTriplet(a: Long, b: Long, c: Long):
-  lazy val columnVector: Matrix[Long]     = Matrix(Seq(Seq(a), Seq(b), Seq(c)))
+  lazy val columnVector: Matrix[Long] = Matrix(Seq(Seq(a), Seq(b), Seq(c)))
   private lazy val a_matrix: Matrix[Long] = Matrix(
     Seq(Seq(1, -2, 2), Seq(2, -1, 2), Seq(2, -2, 3))
   )
@@ -20,7 +20,7 @@ case class PythagoreanTriplet(a: Long, b: Long, c: Long):
   private lazy val c_matrix: Matrix[Long] = Matrix(
     Seq(Seq(-1, 2, 2), Seq(-2, 1, 2), Seq(-2, 2, 3))
   )
-  private lazy val matrices               = IndexedSeq(a_matrix, b_matrix, c_matrix)
+  private lazy val matrices = IndexedSeq(a_matrix, b_matrix, c_matrix)
 
   /** <a
     * href="https://en.wikipedia.org/wiki/Tree_of_primitive_Pythagorean_triples">Tree

@@ -124,7 +124,7 @@ case class Matrix[T](elements: Seq[Seq[T]])(using I: Integral[T]):
       (1 until powers.length).foreach(i =>
         powersC(i) = powersC(i - 1) * powersC(i - 1)
       )
-      var result  = powersC.last
+      var result = powersC.last
       (1 until powers.length).withFilter(powers(_) == '1').foreach { i =>
         result = result * powersC(powersC.length - 1 - i)
       }
@@ -141,7 +141,7 @@ case class Matrix[T](elements: Seq[Seq[T]])(using I: Integral[T]):
       (1 until powers.length).foreach(i =>
         powersC(i) = powersC(i - 1) * (powersC(i - 1), module)
       )
-      var result  = powersC.last
+      var result = powersC.last
       (1 until powers.length).withFilter(powers(_) == '1').foreach { i =>
         result = result * (powersC(powersC.length - 1 - i), module)
       }

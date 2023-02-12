@@ -19,6 +19,6 @@ trait SemigroupalLaw extends Assertions:
         Semigroupal[F]
           .product[(A, B), C](Semigroupal[F].product[A, B](fa, fb), fc)
       )
-    val value1: (A, B, C)     = (product1._1, product1._2._1, product1._2._2)
-    val value2: (A, B, C)     = (product2._1._1, product2._1._2, product2._2)
+    val value1: (A, B, C) = (product1._1, product1._2._1, product1._2._2)
+    val value2: (A, B, C) = (product2._1._1, product2._1._2, product2._2)
     assertEquals(value1, value2, "associativity")

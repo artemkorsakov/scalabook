@@ -22,7 +22,7 @@ trait TraverseLaw extends FunctorLaw:
     assertEquals(Traverse[F].traverse(fa)(a => Id(f(a))).value, fa.map(f))
 
     // Два последовательно зависимых эффекта могут быть объединены в один, их композицию
-    val optFb: G[F[B]]         = Traverse[F].traverse(fa)(a2GB)
+    val optFb: G[F[B]] = Traverse[F].traverse(fa)(a2GB)
     val optListFc1: G[H[F[C]]] =
       Functor[G].map(optFb)(fb => Traverse[F].traverse(fb)(b2HC))
     val optListFc2: G[H[F[C]]] =

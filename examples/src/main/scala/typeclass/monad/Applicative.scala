@@ -20,7 +20,7 @@ object Applicative:
   def apply[F[_]: Applicative]: Applicative[F] = summon[Applicative[F]]
 
   given idApplicative: Applicative[Id] with
-    override def unit[A](a: => A): Id[A]                        = Id(a)
+    override def unit[A](a: => A): Id[A] = Id(a)
     override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(
       fab.value(fa.value)
     )
@@ -92,10 +92,10 @@ object Applicative:
     ): Nested[F, G, B] =
       val curriedFuncs: G[A => B] => G[A] => G[B] = gaTob =>
         ga => applG.apply(gaTob)(ga)
-      val fgaToB: F[G[A => B]]                    = fab.value
-      val fGaToGb: F[G[A] => G[B]]                = functorF.map(fgaToB)(curriedFuncs)
-      val fga: F[G[A]]                            = fa.value
-      val fgb: F[G[B]]                            = applF.apply(fGaToGb)(fga)
+      val fgaToB: F[G[A => B]]     = fab.value
+      val fGaToGb: F[G[A] => G[B]] = functorF.map(fgaToB)(curriedFuncs)
+      val fga: F[G[A]]             = fa.value
+      val fgb: F[G[B]]             = applF.apply(fGaToGb)(fga)
       Nested(fgb)
 
   given Applicative[IO] with

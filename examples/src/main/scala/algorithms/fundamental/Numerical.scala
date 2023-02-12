@@ -9,7 +9,7 @@ object Numerical:
   /** Преобразование десятичного числа в двоичное */
   def decToBinConv(x: Int): String =
     val seqOfDivByTwo = Iterator.iterate(x)(a => a / 2)
-    val binList       = seqOfDivByTwo
+    val binList = seqOfDivByTwo
       .takeWhile(a => a > 0)
       .map(a => a % 2)
     binList.mkString.reverse
@@ -84,7 +84,7 @@ object Numerical:
     loop(a, n, 1)
 
   /** Нахождения квадратного корня */
-  def sqrt(x: Double): Double       =
+  def sqrt(x: Double): Double =
     def isGoodEnough(guess: Double): Boolean =
       math.abs(guess * guess - x) < delta
 

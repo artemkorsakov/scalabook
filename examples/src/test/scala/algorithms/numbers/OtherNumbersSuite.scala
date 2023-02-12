@@ -6,7 +6,7 @@ import org.scalacheck.Prop.*
 import algorithms.numbers.OtherNumbers.*
 
 class OtherNumbersSuite extends ScalaCheckSuite:
-  private val expectedNumerators: IndexedSeq[BigDecimal]   = IndexedSeq(
+  private val expectedNumerators: IndexedSeq[BigDecimal] = IndexedSeq(
     1,
     -1,
     1,

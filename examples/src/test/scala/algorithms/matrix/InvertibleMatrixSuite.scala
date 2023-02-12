@@ -6,7 +6,7 @@ import algorithms.numbers.RationalNumber.RationalNumberIsIntegral
 
 class InvertibleMatrixSuite extends FunSuite:
   test("invertibleMatrix") {
-    val matrix    =
+    val matrix =
       InvertibleMatrix(
         Seq(
           Seq(RationalNumber(3), RationalNumber(2), RationalNumber(4)),
@@ -25,7 +25,7 @@ class InvertibleMatrixSuite extends FunSuite:
         )
       )
     )
-    val iMatrix   = matrix * invMatrix
+    val iMatrix = matrix * invMatrix
 
     assertEquals(
       iMatrix,
@@ -40,7 +40,7 @@ class InvertibleMatrixSuite extends FunSuite:
   }
 
   test("solveEquation") {
-    val matrix   =
+    val matrix =
       InvertibleMatrix(
         Seq(
           Seq(RationalNumber(1), RationalNumber(5)),

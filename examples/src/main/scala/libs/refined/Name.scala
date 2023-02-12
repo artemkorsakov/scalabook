@@ -19,7 +19,7 @@ object Name:
       Literal(StringConstant(x.toString)).asExpr.asInstanceOf[Expr[Name]]
 
   private def inspectNameCode(x: Expr[String])(using Quotes): Expr[Name] =
-    val str        = x.valueOrAbort
+    val str = x.valueOrAbort
     if !pattern.r.matches(str) then
       import quotes.reflect.*
       report.errorAndAbort(s"'$str' does not match pattern '$pattern'")

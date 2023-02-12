@@ -5,7 +5,7 @@ import scala.runtime.stdLibPatches.Predef.summon
 
 object Sorting:
   def bubbleSort[T: Ordering](array: Array[T]): Unit =
-    val ord                   = summon[Ordering[T]]
+    val ord = summon[Ordering[T]]
     def loop(j: Int): Boolean =
       (0 to array.length - 1 - j)
         .withFilter(i => ord.gt(array(i), array(i + 1)))
@@ -43,8 +43,8 @@ object Sorting:
 
   def quickSort[T: Ordering](list: List[T]): List[T] =
     list match
-      case Nil       => list
-      case _ :: Nil  => list
+      case Nil      => list
+      case _ :: Nil => list
       case h :: tail =>
         val (p1, p2)     = tail.partition(el => summon[Ordering[T]].lteq(el, h))
         val leftToPivot  = quickSort(p1)

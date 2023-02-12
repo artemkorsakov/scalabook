@@ -5,7 +5,7 @@ import munit.FunSuite
 
 class BinarySearchTreeSuite extends FunSuite:
   test("BinarySearchTree.searchKey") {
-    val myWordList      =
+    val myWordList =
       List(("cat", 5), ("dog", 7), ("the", 12), ("for", 4), ("then", 11))
     val myBinSearchTree = myWordList
       .foldLeft(empty[Int]) { case (dict, (key, value)) =>

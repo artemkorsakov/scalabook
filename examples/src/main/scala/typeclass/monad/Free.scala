@@ -3,7 +3,7 @@ package typeclass.monad
 import scala.annotation.tailrec
 
 sealed trait Free[F[_], A]
-final case class UnitF[F[_], A](a: A)     extends Free[F, A]
+final case class UnitF[F[_], A](a: A) extends Free[F, A]
 final case class FlatMap[F[_], A, B](a: Free[F, A], fx: A => Free[F, B])
     extends Free[F, B]
 final case class LiftF[F[_], A](fn: F[A]) extends Free[F, A]
@@ -29,10 +29,10 @@ object Free:
       monad: Monad[M]
   ): M[A] =
     fa match
-      case UnitF(a)                  => monad.unit(a)
-      case LiftF(fn)                 => trans.transform(fn)
-      case FlatMap(UnitF(a), f)      => foldF(f(a))(trans)
-      case FlatMap(LiftF(a), f)      =>
+      case UnitF(a)             => monad.unit(a)
+      case LiftF(fn)            => trans.transform(fn)
+      case FlatMap(UnitF(a), f) => foldF(f(a))(trans)
+      case FlatMap(LiftF(a), f) =>
         monad.flatMap(trans.transform(a)) { aa => foldF(f(aa))(trans) }
       case FlatMap(FlatMap(a, f), g) =>
         foldF(FlatMap(a, aa => FlatMap(f(aa), g)))(trans)

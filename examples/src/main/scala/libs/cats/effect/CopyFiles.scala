@@ -7,17 +7,18 @@ import java.io.*
 object CopyFiles extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =
     for {
-      _     <- if args.length < 2 then
-                 IO.raiseError(
-                   new IllegalArgumentException("Need origin and destination files")
-                 )
-               else IO.unit
-      orig   = new File(args.head)
-      dest   = new File(args(1))
+      _ <-
+        if args.length < 2 then
+          IO.raiseError(
+            new IllegalArgumentException("Need origin and destination files")
+          )
+        else IO.unit
+      orig = new File(args.head)
+      dest = new File(args(1))
       count <- copy(orig, dest)
-      _     <- IO.println(
-                 s"$count bytes copied from ${orig.getPath} to ${dest.getPath}"
-               )
+      _ <- IO.println(
+        s"$count bytes copied from ${orig.getPath} to ${dest.getPath}"
+      )
     } yield ExitCode.Success
 
   private def copy(origin: File, destination: File): IO[Long] =
@@ -62,7 +63,7 @@ object CopyFiles extends IOApp:
   ): IO[Long] =
     for
       amount <- IO.blocking(origin.read(buffer, 0, buffer.length))
-      count  <-
+      count <-
         if amount > -1 then
           IO.blocking(destination.write(buffer, 0, amount)) >> transmit(
             origin,

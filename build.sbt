@@ -1,6 +1,24 @@
 import Dependencies._
+import laika.ast._
+import laika.ast.Path._
+import laika.ast.InternalTarget
+import laika.helium.Helium
+import laika.helium.config.Favicon
+import laika.helium.config.HeliumIcon
+import laika.helium.config.IconLink
 
-ThisBuild / organization      := "ru.gitflic.artemkorsakov"
+ThisBuild / organization     := "ru.gitflic.artemkorsakov"
+ThisBuild / organizationName := "Artem Korsakov"
+ThisBuild / startYear        := Some(2022)
+ThisBuild / licenses         := Seq(License.Apache2)
+ThisBuild / developers := List(
+  tlGitHubDev("artemkorsakov", "Artem Korsakov")
+)
+
+ThisBuild / githubWorkflowPublishTargetBranches := Seq()
+
+ThisBuild / tlSitePublishBranch := Some("main")
+
 ThisBuild / scalaVersion      := Scala
 ThisBuild / semanticdbEnabled := true
 
@@ -60,3 +78,29 @@ lazy val commonSettings =
     Test / console / scalacOptions :=
       (Compile / console / scalacOptions).value
   )
+
+lazy val docs = project
+  .in(file("site"))
+  .settings(
+    tlSiteRelatedProjects := Seq(
+      "Scalabook на gitflic" -> url("https://scalabook.gitflic.space/")
+    ),
+    tlSiteHeliumConfig := {
+      tlSiteHeliumConfig.value.all
+        .metadata(
+          title = Some("Scalabook"),
+          language = Some("ru")
+        )
+        .site
+        .topNavigationBar(
+          homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
+          navLinks = Seq(
+            IconLink.external(
+              "https://github.com/artemkorsakov/scalabook",
+              HeliumIcon.github
+            )
+          )
+        )
+    }
+  )
+  .enablePlugins(TypelevelSitePlugin)

@@ -3,16 +3,16 @@ package algorithms.games.poker
 import algorithms.games.poker.PokerCard.*
 
 class PokerHand(hand: String):
-  private val split: Array[String]                = hand.split(" ")
+  private val split: Array[String] = hand.split(" ")
   require(split.length == 5)
-  private val cards: Seq[PokerCard]               = split.flatMap(string2PokerCard).toSeq
-  private val sortedRanks: Seq[PokerRank]         =
+  private val cards: Seq[PokerCard] = split.flatMap(string2PokerCard).toSeq
+  private val sortedRanks: Seq[PokerRank] =
     cards
       .map(card => card.pokerRank)
       .sortWith((pr1, pr2) => pr2.rank - pr1.rank < 0)
   private val sortedDistinctRanks: Seq[PokerRank] = sortedRanks.distinct
 
-  private def isFiveOfAKind: Boolean                        =
+  private def isFiveOfAKind: Boolean =
     sortedDistinctRanks.length == 1
   private def fiveOfAKind: (PokerHandsType, Seq[PokerRank]) =
     (
@@ -26,12 +26,12 @@ class PokerHand(hand: String):
       )
     )
 
-  private def isStraightFlush: Boolean                        =
+  private def isStraightFlush: Boolean =
     isStraight && isFlush
   private def straightFlush: (PokerHandsType, Seq[PokerRank]) =
     (PokerHandsType.STRAIGHT_FLUSH, straight._2)
 
-  private def isStraight: Boolean                        =
+  private def isStraight: Boolean =
     sortedRanks == Seq(
       PokerRank.FIVE,
       PokerRank.FOUR,
@@ -51,27 +51,27 @@ class PokerHand(hand: String):
       Seq(pokerRank, PokerRank.TWO, PokerRank.TWO, PokerRank.TWO, PokerRank.TWO)
     )
 
-  private def isFlush: Boolean                        =
+  private def isFlush: Boolean =
     cards.map(_.pokerSuit.ordinal).distinct.length == 1
   private def flush: (PokerHandsType, Seq[PokerRank]) =
     (PokerHandsType.FLUSH, sortedRanks)
 
-  private def isFourOfAKind: Boolean                        =
+  private def isFourOfAKind: Boolean =
     val countOfRank      = sortedDistinctRanks.length
     val countOfFirstCard = cards.count(c => c.pokerRank == cards.head.pokerRank)
     countOfRank == 2 && (countOfFirstCard == 1 || countOfFirstCard == 4)
   private def fourOfAKind: (PokerHandsType, Seq[PokerRank]) =
     val isFirstEqualSecond = sortedRanks.head.rank == sortedRanks(1).rank
-    val pokerRank1         =
+    val pokerRank1 =
       if isFirstEqualSecond then sortedRanks.head else sortedRanks(1)
-    val pokerRank2         =
+    val pokerRank2 =
       if isFirstEqualSecond then sortedRanks(4) else sortedRanks.head
     (
       PokerHandsType.FOUR_OF_A_KIND,
       Seq(pokerRank1, pokerRank2, PokerRank.TWO, PokerRank.TWO, PokerRank.TWO)
     )
 
-  private def isFullHouse: Boolean                        =
+  private def isFullHouse: Boolean =
     val countOfRank      = sortedDistinctRanks.length
     val countOfFirstCard = cards.count(c => c.pokerRank == cards.head.pokerRank)
     countOfRank == 2 && (countOfFirstCard == 2 || countOfFirstCard == 3)
@@ -85,7 +85,7 @@ class PokerHand(hand: String):
       Seq(pokerRank1, pokerRank2, PokerRank.TWO, PokerRank.TWO, PokerRank.TWO)
     )
 
-  private def isThreeOfAKind: Boolean                        =
+  private def isThreeOfAKind: Boolean =
     sortedDistinctRanks.length == 3 && {
       val countOfFirstCard = cards.count(c => c.pokerRank == sortedRanks.head)
       val countOfLastCard  = cards.count(c => c.pokerRank == sortedRanks.last)
@@ -110,7 +110,7 @@ class PokerHand(hand: String):
       )
     )
 
-  private def isTwoPair: Boolean                        =
+  private def isTwoPair: Boolean =
     sortedDistinctRanks.length == 3 && {
       val countOfFirstCard = cards.count(c => c.pokerRank == sortedRanks.head)
       val countOfLastCard  = cards.count(c => c.pokerRank == sortedRanks.last)
@@ -119,7 +119,7 @@ class PokerHand(hand: String):
   private def twoPair: (PokerHandsType, Seq[PokerRank]) =
     val isFirstEqualSecond = sortedRanks.head.rank == sortedRanks(1).rank
     val isThirdEqualFourth = sortedRanks(2).rank == sortedRanks(3).rank
-    val thirdIndex         =
+    val thirdIndex =
       if (isFirstEqualSecond && isThirdEqualFourth) 4
       else if isFirstEqualSecond then 2
       else 0
@@ -134,7 +134,7 @@ class PokerHand(hand: String):
       )
     )
 
-  private def isOnePair: Boolean                        =
+  private def isOnePair: Boolean =
     sortedDistinctRanks.length == 4
   private def onePair: (PokerHandsType, Seq[PokerRank]) =
     val index = (0 until sortedRanks.length - 1)

@@ -13,13 +13,13 @@ object Search:
     source.indices
       .foldLeft((-1, 0)) {
         case ((foundIndex, _), _) if foundIndex > 0 => (foundIndex, 0)
-        case ((_, x), i)                            =>
+        case ((_, x), i) =>
           val stepsX = LazyList.iterate(x)(x => prefixTab(x - 1))
           val lowerX =
             stepsX
               .find(x => x == 0 || searchWord(x) == source(i))
               .getOrElse(0)
-          val newX   =
+          val newX =
             if searchWord(lowerX) == source(i) then lowerX + 1
             else lowerX
           if newX == searchWord.length then (i - newX + 1, 0)
@@ -40,7 +40,7 @@ object Search:
                 ) == currentCharacter
               )
               .getOrElse(0)
-          val newValue   =
+          val newValue =
             if searchString(lowerValue) == currentCharacter then lowerValue + 1
             else lowerValue
           (newValue, prefixT :+ newValue)

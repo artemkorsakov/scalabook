@@ -16,8 +16,8 @@ object MonadTransformer:
     summon[MonadTransformer[T, M]]
 
   given idtMonad[M[_]](using outerMonad: Monad[M]): Monad[[X] =>> IdT[M, X]]
-    with
-    override def unit[A](a: => A): IdT[M, A]                =
+  with
+    override def unit[A](a: => A): IdT[M, A] =
       IdT[M, A](outerMonad.unit(Id(a)))
     extension [A](fa: IdT[M, A])
       override def flatMap[B](f: A => IdT[M, B]): IdT[M, B] =

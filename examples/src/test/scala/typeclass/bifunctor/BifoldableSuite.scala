@@ -20,7 +20,7 @@ class BifoldableSuite extends ScalaCheckSuite, BifoldableLaw:
       ) =>
         checkBifoldableLaw[Either, String, Char, Int](far, fla, faa)
 
-        val actual           =
+        val actual =
           Bifoldable[Either].bifoldMap(far)(f)(g)(using stringMonoidInstance)
         val expected: String =
           far match

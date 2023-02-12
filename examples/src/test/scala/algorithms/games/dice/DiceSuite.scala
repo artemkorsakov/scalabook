@@ -9,7 +9,7 @@ class DiceSuite extends FunSuite:
   private val fractionsColin = Dice(6).probabilities(6)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var fractionWin       = new RationalNumber(0, 1)
+  private var fractionWin = new RationalNumber(0, 1)
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var fractionLessColin = new RationalNumber(0, 1)
 

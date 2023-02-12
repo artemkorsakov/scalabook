@@ -101,6 +101,8 @@ lazy val docs = project
             )
           )
         )
-    }
+    },
+    laikaIncludeEPUB := true,
+    laikaIncludePDF  := true
   )
   .enablePlugins(TypelevelSitePlugin)

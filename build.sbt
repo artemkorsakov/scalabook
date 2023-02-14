@@ -89,7 +89,22 @@ lazy val docs = project
       tlSiteHeliumConfig.value.all
         .metadata(
           title = Some("Scalabook"),
+          description = Some("Функциональная разработка на Scala"),
           language = Some("ru")
+        )
+        .all
+        .tableOfContent("Оглавление", 2)
+        .site
+        .downloadPage(
+          "Загрузка",
+          Some(
+            "На этой странице находятся ссылки для скачивания рабочей тетради в формате PDF и EPUB."
+          )
+        )
+        .site
+        .markupEditLinks(
+          "Редактировать страницу",
+          "https://github.com/artemkorsakov/scalabook/blob/master/docs"
         )
         .site
         .topNavigationBar(
@@ -101,8 +116,6 @@ lazy val docs = project
             )
           )
         )
-    },
-    laikaIncludeEPUB := true,
-    laikaIncludePDF  := true
+    }
   )
   .enablePlugins(TypelevelSitePlugin)

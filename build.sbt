@@ -82,6 +82,8 @@ lazy val commonSettings =
 lazy val docs = project
   .in(file("site"))
   .settings(
+    name    := "scalabook",
+    version := "0.1",
     tlSiteRelatedProjects := Seq(
       "Scalabook на gitflic" -> url("https://scalabook.gitflic.space/")
     ),
@@ -96,7 +98,7 @@ lazy val docs = project
         .tableOfContent("Оглавление", 2)
         .site
         .downloadPage(
-          "Загрузка",
+          "Книга в PDF и EPUB",
           Some(
             "На этой странице находятся ссылки для скачивания рабочей тетради в формате PDF и EPUB."
           )

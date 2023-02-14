@@ -1,6 +1,6 @@
 - [Домашняя](.)
 
-- [Блог](docs/blog/index.md)
+- [Блог]()
   - [Трудности наследования](docs/blog/2023-01-09-architecture-problems.md) 
 
 - [Scala](scala/index.md)

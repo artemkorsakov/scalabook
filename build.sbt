@@ -98,10 +98,11 @@ lazy val docs = project
         .tableOfContent("Оглавление", 2)
         .site
         .downloadPage(
-          "Книга в PDF и EPUB",
-          Some(
+          title = "Книга в PDF и EPUB",
+          description = Some(
             "На этой странице находятся ссылки для скачивания рабочей тетради в формате PDF и EPUB."
-          )
+          ),
+          includePDF = false
         )
         .site
         .markupEditLinks(

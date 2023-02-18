@@ -1,11 +1,10 @@
 import Dependencies._
 import laika.ast._
 import laika.ast.Path._
-import laika.ast.InternalTarget
-import laika.helium.Helium
-import laika.helium.config.Favicon
+import laika.helium.config.ThemeNavigationSection
 import laika.helium.config.HeliumIcon
 import laika.helium.config.IconLink
+import laika.helium.config.TextLink
 
 ThisBuild / organization     := "ru.gitflic.artemkorsakov"
 ThisBuild / organizationName := "Artem Korsakov"
@@ -84,15 +83,15 @@ lazy val docs = project
   .settings(
     name    := "scalabook",
     version := "0.1",
-    tlSiteRelatedProjects := Seq(
-      "Scalabook на gitflic" -> url("https://scalabook.gitflic.space/")
-    ),
-    tlSiteHeliumConfig := {
-      tlSiteHeliumConfig.value.all
+    tlSiteHelium :=
+      tlSiteHelium.value.all
         .metadata(
           title = Some("Scalabook"),
           description = Some("Функциональная разработка на Scala"),
-          language = Some("ru")
+          identifier = Some("Scalabook"),
+          authors = Seq("Artem Korsakov"),
+          language = Some("ru"),
+          version = Some("0.1.0")
         )
         .site
         .topNavigationBar(
@@ -105,20 +104,36 @@ lazy val docs = project
           )
         )
         .site
-        .markupEditLinks(
-          "Редактировать страницу",
-          "https://github.com/artemkorsakov/scalabook/blob/master/docs"
+        .mainNavigation(
+          depth = 2,
+          includePageSections = false,
+          prependLinks = Seq(),
+          appendLinks = Seq(
+            ThemeNavigationSection(
+              "Связанные проекты",
+              TextLink.external(
+                "https://scalabook.gitflic.space/",
+                "Scalabook на gitflic"
+              )
+            )
+          )
         )
-//        .all
-//        .tableOfContent("Оглавление", 2)
+        .site
+        .pageNavigation(
+          enabled = true,
+          depth = 3,
+          sourceBaseURL =
+            Some("https://github.com/artemkorsakov/scalabook/blob/master/docs"),
+          sourceLinkText = "Редактировать страницу"
+        )
+        .site
+        .footer(Text(""))
 //        .site
 //        .downloadPage(
 //          title = "Книга в PDF и EPUB",
 //          description = Some(
 //            "На этой странице находятся ссылки для скачивания рабочей тетради в формате PDF и EPUB."
-//          ),
-//          includePDF = false
+//          )
 //        )
-    }
   )
   .enablePlugins(TypelevelSitePlugin)

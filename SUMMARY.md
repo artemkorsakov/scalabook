@@ -295,3 +295,5 @@
   - [&#10031;&#10031;&#10031;](extra/three_stars.md)
   - [&#10031;&#10031;&#10031;&#10031;](extra/four_stars.md)
   - [&#10031;&#10031;&#10031;&#10031;&#10031;](extra/five_stars.md)
+
+- [Scalabook на github](https://artemkorsakov.github.io/scalabook)

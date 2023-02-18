@@ -94,21 +94,6 @@ lazy val docs = project
           description = Some("Функциональная разработка на Scala"),
           language = Some("ru")
         )
-//        .all
-//        .tableOfContent("Оглавление", 2)
-        .site
-        .downloadPage(
-          title = "Книга в PDF и EPUB",
-          description = Some(
-            "На этой странице находятся ссылки для скачивания рабочей тетради в формате PDF и EPUB."
-          ),
-          includePDF = false
-        )
-        .site
-        .markupEditLinks(
-          "Редактировать страницу",
-          "https://github.com/artemkorsakov/scalabook/blob/master/docs"
-        )
         .site
         .topNavigationBar(
           homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
@@ -119,6 +104,21 @@ lazy val docs = project
             )
           )
         )
+        .site
+        .markupEditLinks(
+          "Редактировать страницу",
+          "https://github.com/artemkorsakov/scalabook/blob/master/docs"
+        )
+//        .all
+//        .tableOfContent("Оглавление", 2)
+//        .site
+//        .downloadPage(
+//          title = "Книга в PDF и EPUB",
+//          description = Some(
+//            "На этой странице находятся ссылки для скачивания рабочей тетради в формате PDF и EPUB."
+//          ),
+//          includePDF = false
+//        )
     }
   )
   .enablePlugins(TypelevelSitePlugin)

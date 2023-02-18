@@ -29,7 +29,7 @@ given idtMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransformer[Id
     IdT[M, A](ma.map(Id(_)))
 ```
 
-### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../docs/scala/fp/functional-error-handling)
 
 ```scala
 final case class OptionT[M[_], A](run: M[Option[A]])

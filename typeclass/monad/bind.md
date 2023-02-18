@@ -48,7 +48,7 @@ given Bind[Id] with
       f(fa.value)
 ```
 
-### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../docs/scala/fp/functional-error-handling)
 
 ```scala
 given Bind[Option] with

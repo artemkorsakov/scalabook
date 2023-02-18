@@ -39,7 +39,7 @@ given idMonad: Monad[Id] with
   extension [A](fa: Id[A]) override def flatMap[B](f: A => Id[B]): Id[B] = f(fa.value)
 ```
 
-### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../docs/scala/fp/functional-error-handling)
 
 ```scala
 given optionMonad: Monad[Option] with
@@ -52,7 +52,7 @@ given optionMonad: Monad[Option] with
         case None    => None
 ```
 
-### [Последовательность](../../scala/collections)
+### [Последовательность](../../docs/scala/collections)
 
 ```scala
 given listMonad: Monad[List] with

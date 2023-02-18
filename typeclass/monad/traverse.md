@@ -68,7 +68,7 @@ given Traverse[Id] with
       f(fa.value).map(b => Id(b))
 ```
 
-### [Кортеж](../../scala/collections/tuple) от двух и более элементов
+### [Кортеж](../../docs/scala/collections/tuple) от двух и более элементов
 
 ```scala
 given Traverse[[X] =>> (X, X)] with
@@ -86,7 +86,7 @@ given Traverse[[X] =>> (X, X, X)] with
       g.apply(g.apply(g.apply(func)(f(fa._1)))(f(fa._2)))(f(fa._3))
 ```
 
-### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../docs/scala/fp/functional-error-handling)
 
 ```scala
 given Traverse[Option] with
@@ -97,7 +97,7 @@ given Traverse[Option] with
         case None    => summon[Applicative[G]].unit(None)
 ```
 
-### [Последовательность](../../scala/collections)
+### [Последовательность](../../docs/scala/collections)
 
 ```scala
 given Traverse[List] with
@@ -124,7 +124,7 @@ tree.traverse(a => Id(a + 1))
 // val res0: Id[Tree[Int]] = Id(Tree(1,List(Tree(2,List(Tree(3,List()))))))
 ```
 
-### [Map](../../scala/collections/maps)
+### [Map](../../docs/scala/collections/maps)
 
 ```scala
 given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with

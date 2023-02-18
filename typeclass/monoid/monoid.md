@@ -48,7 +48,7 @@ given stringMonoidInstance: Monoid[String] with
   def combine(x: String, y: String): String = x + y
 ```
 
-### [Последовательность](../../scala/collections)
+### [Последовательность](../../docs/scala/collections)
 
 ```scala
 given listMonoidInstance[T]: Monoid[List[T]] with
@@ -56,7 +56,7 @@ given listMonoidInstance[T]: Monoid[List[T]] with
   def combine(x: List[T], y: List[T]): List[T] = x ++ y
 ```
 
-### [Кортеж](../../scala/collections/tuple) от двух и более моноидов
+### [Кортеж](../../docs/scala/collections/tuple) от двух и более моноидов
 
 ```scala
 given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): Monoid[(A, B)] with
@@ -64,7 +64,7 @@ given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): 
   def combine(x: (A, B), y: (A, B)): (A, B) = (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
 ```
 
-### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../docs/scala/fp/functional-error-handling)
 
 `Option` является моноидом, если его параметр типа - полугруппа, например:
 

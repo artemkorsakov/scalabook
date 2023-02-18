@@ -57,7 +57,7 @@ given idFoldable: Foldable[Id] with
       f(fa.value, init)
 ```
 
-### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../docs/scala/fp/functional-error-handling)
 
 ```scala
 given Foldable[Option] with
@@ -74,7 +74,7 @@ given Foldable[Option] with
         case Some(a) => f(a)
 ```
 
-### [Последовательность](../../scala/collections)
+### [Последовательность](../../docs/scala/collections)
 
 ```scala
 given Foldable[List] with
@@ -86,7 +86,7 @@ given Foldable[List] with
     override def toList: List[A] = as
 ```
 
-### [Кортеж](../../scala/collections/tuple) от двух и более элементов
+### [Кортеж](../../docs/scala/collections/tuple) от двух и более элементов
 
 ```scala
 given tuple2Foldable: Foldable[[X] =>> (X, X)] with

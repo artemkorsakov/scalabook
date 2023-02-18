@@ -79,7 +79,7 @@ given idApplicative: Applicative[Id] with
   override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab.value(fa.value))
 ```
 
-### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../docs/scala/fp/functional-error-handling)
 
 ```scala
 given optionApplicative: Applicative[Option] with
@@ -91,7 +91,7 @@ given optionApplicative: Applicative[Option] with
       case _                     => None
 ```
 
-### [Последовательность](../../scala/collections)
+### [Последовательность](../../docs/scala/collections)
 
 ```scala
 given listApplicative: Applicative[List] with

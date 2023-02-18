@@ -49,7 +49,7 @@ given idFunctor: Functor[Id] with
     override def map[B](f: A => B): Id[B] = Id(f(as.value))
 ```
 
-### [Option](../../scala/fp/functional-error-handling)
+### [Option](../../docs/scala/fp/functional-error-handling)
 
 ```scala
 given optionFunctor: Functor[Option] with
@@ -60,7 +60,7 @@ given optionFunctor: Functor[Option] with
         case None    => None
 ```
 
-### [Последовательность](../../scala/collections)
+### [Последовательность](../../docs/scala/collections)
 
 ```scala
 given listFunctor: Functor[List] with

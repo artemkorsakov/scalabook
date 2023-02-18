@@ -18,4 +18,5 @@
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/taste-hello-world.html)

@@ -105,7 +105,7 @@ lazy val docs = project
         )
         .site
         .mainNavigation(
-          depth = 2,
+          depth = 4,
           includePageSections = false,
           prependLinks = Seq(),
           appendLinks = Seq(

@@ -3,6 +3,7 @@
 Если провести аналогию с Java, то Scala `trait` похож на интерфейс в Java 8+.
 
 `trait`-ы могут содержать:
+
 - абстрактные методы и поля
 - конкретные методы и поля
 - могут иметь параметры конструктора, как и классы
@@ -101,7 +102,7 @@ class E extends Greeting("Bob"), FormalGreeting
 
 ### Trait-ы с параметрами контекста
 
-Правило "требуется явное расширение" ослабляется, если отсутствующий `trait` содержит [только параметры контекста](../abstractions/ca-using). 
+Правило "требуется явное расширение" ослабляется, если отсутствующий `trait` содержит [только параметры контекста](https://scalabook.gitflic.space/docs/scala/abstractions/ca-using). 
 В этом случае ссылка на трейт неявно вставляется как дополнительный родитель с выводимыми аргументами. 
 Например, вот вариант `Greeting`, где адресат является параметром контекста типа `ImpliedName`:
 
@@ -140,6 +141,7 @@ given ImpliedName = ImpliedName("Bob")
 ### Transparent traits
 
 Trait-ы используются в двух случаях:
+
 - как примеси для других классов и trait-ов
 - как типы констант, определений или параметров
 
@@ -159,8 +161,10 @@ val x = Set(if condition then Val else Var)
 Здесь предполагаемый тип `x` равен `Set[Kind & Product & Serializable]`, 
 тогда как можно было бы надеяться, что это будет `Set[Kind]`. 
 Основания для выделения именно этого типа следующие:
-- тип условного оператора, приведенного выше, является [типом объединения](../type-system/types-union) `Val | Var`.
+
+- тип условного оператора, приведенного выше, является [типом объединения](https://scalabook.gitflic.space/docs/scala/type-system/types-union) `Val | Var`.
 - тип объединения расширяется в выводе типа до наименьшего супертипа, который не является типом объединения. 
+
 В примере - это тип `Kind & Product & Serializable`, так как все три trait-а являются trait-ами обоих `Val` и `Var`. 
 Таким образом, этот тип становится предполагаемым типом элемента набора.
 
@@ -188,6 +192,7 @@ Trait-ы [scala.Product](https://scala-lang.org/api/3.x/scala/Product.html),
 Как правило, `transparent trait` — это trait-ы, влияющие на реализацию наследуемых классов, 
 и trait-ы, которые сами по себе обычно не используются как типы. 
 Два примера из стандартной библиотеки коллекций:
+
 - [IterableOps](https://scala-lang.org/api/3.x/scala/collection/IterableOps.html), 
 который предоставляет реализации методов для [Iterable](https://scala-lang.org/api/3.x/scala/collection/Iterable.html).
 - [StrictOptimizedSeqOps](https://scala-lang.org/api/3.x/scala/collection/StrictOptimizedSeqOps.html), 

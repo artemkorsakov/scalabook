@@ -29,4 +29,5 @@ Scala сама выводит типы, как показано выше.
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-inferred.html)

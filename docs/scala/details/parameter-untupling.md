@@ -85,5 +85,6 @@ xs.map(combiner)
 ---
 
 **Ссылки:**
+
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/other-new-features/parameter-untupling.html)
 - [Scala 3 Reference - Details](https://docs.scala-lang.org/scala3/reference/other-new-features/parameter-untupling-spec.html)

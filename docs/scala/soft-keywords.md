@@ -29,4 +29,5 @@
 ---
 
 **Ссылки:**
+
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/soft-modifier.html)

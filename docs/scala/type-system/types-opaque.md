@@ -317,6 +317,7 @@ l1.mul(x, z) // error: found l2.Logarithm, required l1.Logarithm
 [функцией методов расширения](../methods/extension-methods).
 
 Подробнее об opaque type:
+
 - [Мотивация](https://docs.scala-lang.org/sips/opaque-types.html)
 - [Детали](https://docs.scala-lang.org/scala3/reference/other-new-features/opaques-details.html)
 
@@ -324,5 +325,6 @@ l1.mul(x, z) // error: found l2.Logarithm, required l1.Logarithm
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-opaque-types.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/other-new-features/opaques.html)

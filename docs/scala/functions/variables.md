@@ -84,5 +84,6 @@ val functionMap: Map[String, Int => Int] = Map(
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fun-intro.html)
 - [Scala3 book, Function Variables](https://docs.scala-lang.org/scala3/book/fun-function-variables.html)

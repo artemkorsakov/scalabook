@@ -111,6 +111,7 @@ a.applyDynamic("f")(b, c)
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-structural.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/changed-features/structural-types.html)
 - [Scala 3 Reference, Details](https://docs.scala-lang.org/scala3/reference/changed-features/structural-types-spec.html)

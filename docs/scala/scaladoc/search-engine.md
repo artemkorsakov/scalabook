@@ -107,4 +107,5 @@ Inkuire работает как рабочий JavaScript в браузере б
 ---
 
 **Ссылки:**
+
 - [Scaladoc Guide](https://docs.scala-lang.org/scala3/guides/scaladoc/search-engine.html)

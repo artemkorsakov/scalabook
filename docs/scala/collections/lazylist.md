@@ -76,6 +76,7 @@ fibs.toList
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/taste-collections.html)
 - [Scala3 book, Collections Types](https://docs.scala-lang.org/scala3/book/collections-classes.html)
 - [Scala, Immutable collections](https://docs.scala-lang.org/ru/overviews/collections-2.13/concrete-immutable-collection-classes.html)

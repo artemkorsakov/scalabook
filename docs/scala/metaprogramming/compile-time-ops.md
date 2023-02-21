@@ -344,5 +344,6 @@ val addition: 1 + 1 = 2
 ---
 
 **Ссылки:**
+
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/metaprogramming/compiletime-ops.html)
 - [Scala 3 Guide](https://docs.scala-lang.org/scala3/guides/macros/compiletime.html)

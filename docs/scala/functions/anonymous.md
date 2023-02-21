@@ -112,5 +112,6 @@ ints.foreach(println)
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/taste-functions.html)
 - [Scala3 book, Anonymous Functions](https://docs.scala-lang.org/scala3/book/fun-anonymous-functions.html)

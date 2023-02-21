@@ -217,4 +217,5 @@ Scaladoc позволяет ссылаться на документацию п�
 ---
 
 **Ссылки:**
+
 - [Scaladoc Guide](https://docs.scala-lang.org/scala3/guides/scaladoc/docstrings.html)

@@ -299,5 +299,6 @@ def value(boolExpr: Expr[Boolean]): Option[Boolean] =
 ---
 
 **Ссылки:**
+
 - [Scala 3 Guide](https://docs.scala-lang.org/scala3/guides/macros/macros.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/metaprogramming/macros.html)

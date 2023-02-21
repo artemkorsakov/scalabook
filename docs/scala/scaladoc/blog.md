@@ -26,4 +26,5 @@ Scaladoc загружает блог, если существует катало
 ---
 
 **Ссылки:**
+
 - [Scaladoc Guide](https://docs.scala-lang.org/scala3/guides/scaladoc/blog.html)

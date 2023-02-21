@@ -106,5 +106,6 @@ end Completions
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/ca-implicit-conversions.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual/conversions.html)

@@ -63,5 +63,6 @@ def g[T <: B : C](x: T): R = ...
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/ca-context-bounds.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual/context-bounds.html)

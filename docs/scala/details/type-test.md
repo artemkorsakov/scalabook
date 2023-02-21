@@ -184,4 +184,5 @@ println(divOpt(two, Zero))
 ---
 
 **Ссылки:**
+
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/other-new-features/type-test.html)

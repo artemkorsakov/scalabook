@@ -403,5 +403,6 @@ end readerMonad
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/ca-type-classes.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual/type-classes.html)

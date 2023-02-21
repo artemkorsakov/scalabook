@@ -30,4 +30,5 @@ s.write(None)
 ---
 
 **Ссылки:**
+
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual/by-name-context-parameters.html)

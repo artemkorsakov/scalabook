@@ -42,4 +42,5 @@ engage(
 ---
 
 **Ссылки:**
+
 - [Scala3 book, Method Features](https://docs.scala-lang.org/scala3/book/methods-most.html)

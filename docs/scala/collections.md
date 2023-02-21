@@ -8,16 +8,19 @@ Scala поставляется с большим количеством типо
 Поэтому в этом разделе продемонстрированы наиболее распространенные типы и методы коллекций.
 
 Более подробная информация о типах коллекций, показанных в этой главе, доступна в Scaladoc:
+
 - [List](https://scala-lang.org/api/3.x/scala/collection/immutable/List.html)
 - [Vector](https://scala-lang.org/api/3.x/scala/collection/immutable/Vector.html)
 - [ArrayBuffer](https://scala-lang.org/api/3.x/scala/collection/mutable/ArrayBuffer.html)
 - [Range](https://scala-lang.org/api/3.x/scala/collection/immutable/Range.html)
 
 Также упоминаются неизменяемые `Map` и `Set`:
+
 - [Map](https://scala-lang.org/api/3.x/scala/collection/immutable/Map.html)
 - [Set](https://scala-lang.org/api/3.x/scala/collection/immutable/Set.html)
 
 и изменяемые `Map` и `Set`:
+
 - [Map](https://scala-lang.org/api/3.x/scala/collection/mutable/Map.html)
 - [Set](https://scala-lang.org/api/3.x/scala/collection/mutable/Set.html)
 
@@ -25,5 +28,6 @@ Scala поставляется с большим количеством типо
 ---
 
 **Ссылки:**
+
 - [Scala3 book, Collections intro](https://docs.scala-lang.org/scala3/book/collections-intro.html)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/taste-collections.html)

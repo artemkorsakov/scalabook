@@ -47,5 +47,6 @@ printList(lst.tail)
 ---
 
 **Ссылки:**
+
 - [Scala3 book, Method Features](https://docs.scala-lang.org/scala3/book/methods-most.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/changed-features/vararg-splices.html)

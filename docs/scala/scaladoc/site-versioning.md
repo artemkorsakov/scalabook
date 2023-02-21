@@ -48,4 +48,5 @@ doc / scalacOptions ++= Seq("-versions-dictionary-url", "https://dotty.epfl.ch/v
 ---
 
 **Ссылки:**
+
 - [Scaladoc Guide](https://docs.scala-lang.org/scala3/guides/scaladoc/site-versioning.html)

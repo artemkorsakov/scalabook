@@ -2,6 +2,7 @@
 
 На следующих страницах представлен дизайн метапрограммирования в Scala. 
 Он вводит следующие основные средства:
+
 - [inline](metaprogramming/inline) функция позволяет помечать некоторые абстракции (значения и методы) 
 как статически сводимые. Она обеспечивает точку входа для макросов и других утилит метапрограммирования.
 - [Операции времени компиляции](metaprogramming/compile-time-ops) 
@@ -35,5 +36,6 @@
 ---
 
 **Ссылки:**
+
 - [Scala 3 Guide](https://docs.scala-lang.org/scala3/guides/macros/)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/metaprogramming/index.html)

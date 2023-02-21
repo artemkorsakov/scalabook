@@ -85,4 +85,5 @@ map(strlen, List("a", "bb", "ccc"))
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fun-write-map-function.html)

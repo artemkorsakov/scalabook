@@ -1,6 +1,7 @@
 # Моделирование данных
 
 В этой главе показано моделирование данных с помощью Scala 3:
+
 - Конструкции для моделирования:
   - Классы (Classes)
   - Объекты (Objects)
@@ -15,4 +16,5 @@
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/domain-modeling-intro.html)

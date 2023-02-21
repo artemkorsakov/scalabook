@@ -169,4 +169,5 @@ val s =
 ---
 
 **Ссылки:**
+
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual/context-functions.html)

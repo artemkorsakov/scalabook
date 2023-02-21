@@ -198,4 +198,5 @@ println(pBook == aBook)   // false
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/ca-multiversal-equality.html)

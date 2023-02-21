@@ -350,5 +350,6 @@ System.out.printf("x = %d\n", x);
 ---
 
 **Ссылки:**
+
 - [Scala 3 book](https://docs.scala-lang.org/scala3/book/interacting-with-java.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/other-new-features/targetName.html)

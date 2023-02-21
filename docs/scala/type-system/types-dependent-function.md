@@ -271,6 +271,7 @@ composeFn(i2s)(s2i)(22)
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-dependent-function.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/new-types/dependent-function-types.html)
 - [Scala 3 Reference, Details](https://docs.scala-lang.org/scala3/reference/new-types/dependent-function-types-spec.html)

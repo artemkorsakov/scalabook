@@ -264,5 +264,6 @@ cat.speak()
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/taste-methods.html)
 - [Scala3 book, Method Features](https://docs.scala-lang.org/scala3/book/methods-most.html)

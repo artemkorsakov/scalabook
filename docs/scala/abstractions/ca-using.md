@@ -184,5 +184,6 @@ def summon[T](using x: T): x.type = x
 ---
 
 **Ссылки:**
+
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/ca-given-using-clauses.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual/using-clauses.html)

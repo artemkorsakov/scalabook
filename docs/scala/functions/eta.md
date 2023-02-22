@@ -25,7 +25,8 @@ List(1, 2, 3).map(times10)
 ### Различия между методами и функциями
 
 Исторически _методы_ были частью определения класса, хотя в Scala 3 методы могут быть вне классов, 
-такие как [определения верхнего уровня](../toplevel-definitions) и [методы расширения](../methods/extension-methods).
+такие как [определения верхнего уровня](https://scalabook.gitflic.space/docs/scala/toplevel-definitions) 
+и [методы расширения](https://scalabook.gitflic.space/docs/scala/methods/extension-methods).
 
 В отличие от методов, _функции_ сами по себе являются полноценными объектами, что делает их 
 [объектами первого класса](https://ru.wikipedia.org/wiki/%D0%9E%D0%B1%D1%8A%D0%B5%D0%BA%D1%82_%D0%BF%D0%B5%D1%80%D0%B2%D0%BE%D0%B3%D0%BE_%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%B0).
@@ -69,6 +70,7 @@ val methods = List(isEvenMethod)
 ```
 
 Важно отметить следующее:
+
 - Eta Expansion — технология Scala, позволяющая использовать методы так же, как и функции
 - Технология была улучшена в Scala 3, чтобы быть почти полностью бесшовной
 

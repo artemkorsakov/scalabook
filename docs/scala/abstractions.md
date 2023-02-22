@@ -14,7 +14,7 @@ Implicits представляют собой единую парадигму с
 
 С тех пор этому примеру последовали другие языки, например, 
 [traits в Rust](https://doc.rust-lang.org/rust-by-example/trait.html) 
-или [protocol extensions в Swift](https://docs.swift.org/swift-book/LanguageGuide/Protocols.html#ID521). 
+или [protocol extensions в Swift](https://docs.swift.org/swift-book/documentation/the-swift-programming-language/). 
 Предложения по дизайну также представлены для 
 [Kotlin в качестве разрешения зависимостей во время компиляции](https://github.com/Kotlin/KEEP/blob/e863b25f8b3f2e9b9aaac361c6ee52be31453ee0/proposals/compile-time-dependency-resolution.md), 
 для C# [в качестве Shapes и Extensions](https://github.com/dotnet/csharplang/discussions/164) 
@@ -39,23 +39,23 @@ Scala 3 включает в себя переработку контекстны
 Scala 3 предлагает несколько функций, ориентированных на варианты использования:
 
 - **Отвлечение контекстной информации**. 
-[Предложения Using](abstractions/ca-using) 
+[Предложения Using](https://scalabook.gitflic.space/docs/scala/abstractions/ca-using) 
 позволяют программистам абстрагироваться от информации, которая доступна в контексте вызова и должна передаваться неявно. 
 В качестве улучшения по сравнению со Scala 2 подразумевается, 
 что предложения using могут быть указаны по типу, 
 освобождая сигнатуры функций от имен переменных, на которые никогда не ссылаются явно.
 - **Предоставление экземпляров Type-class**. 
-[Given экземпляры](abstractions/ca-type-classes) позволяют программистам определять каноническое значение определенного типа. 
+[Given экземпляры](https://scalabook.gitflic.space/docs/scala/abstractions/ca-type-classes) позволяют программистам определять каноническое значение определенного типа. 
 Это делает программирование с type-classes более простым без утечек деталей реализации.
 - **Расширение классов**. 
 В Scala 2 методы расширения должны были кодироваться с использованием неявных преобразований или неявных классов. 
-Напротив, в Scala 3 [методы расширения](abstractions/ca-extension-methods) 
+Напротив, в Scala 3 [методы расширения](https://scalabook.gitflic.space/docs/scala/abstractions/ca-extension-methods) 
 теперь встроены непосредственно в язык, что приводит к улучшению сообщений об ошибках и улучшению вывода типов.
 - **Неявное преобразование одного типа в другой**.
-Неявное преобразование было [переработано](abstractions/ca-implicit-conversions) с нуля 
+Неявное преобразование было [переработано](https://scalabook.gitflic.space/docs/scala/abstractions/ca-implicit-conversions) с нуля 
 как экземпляры type-class `Conversion`.
 - **Контекстные абстракции более высокого порядка**. 
-Совершенно новая функция [контекстных функций](type-system/types-dependent-function) 
+Совершенно новая функция [контекстных функций](https://scalabook.gitflic.space/docs/scala/type-system/types-dependent-function) 
 делает контекстные абстракции объектами первого класса. 
 Они являются важным инструментом для авторов библиотек и позволяют выражать лаконичный DSL.
 - **Полезная обратная связь от компилятора**. 
@@ -70,9 +70,9 @@ Scala 3 предлагает несколько функций, ориентир
 
 - существует единственный способ определить данные
 - существует единственный способ ввести неявные параметры и аргументы
-- существует отдельный способ [импорта givens](abstractions/ca-given-imports), 
+- существует отдельный способ [импорта givens](https://scalabook.gitflic.space/docs/scala/abstractions/ca-given-imports), 
 который не позволяет им прятаться в море обычного импорта
-- существует единственный способ определить [неявное преобразование](abstractions/ca-implicit-conversions), 
+- существует единственный способ определить [неявное преобразование](https://scalabook.gitflic.space/docs/scala/abstractions/ca-implicit-conversions), 
 которое четко обозначено как таковое и не требует специального синтаксиса
 
 К преимуществам этих изменений относятся:
@@ -89,4 +89,4 @@ Scala 3 предлагает несколько функций, ориентир
 **Ссылки:**
 
 - [Scala3 book, Contextual Abstractions](https://docs.scala-lang.org/scala3/book/ca-contextual-abstractions-intro.html)
-- [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual/index.html)
+- [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual.html)

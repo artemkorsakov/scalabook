@@ -1,7 +1,7 @@
 # Экземпляры given
 
 _Given instances_ (или просто "givens") определяют "канонические" значения определенных типов, 
-которые служат для синтеза аргументов [в параметрах контекста](ca-using). 
+которые служат для синтеза аргументов [в параметрах контекста](https://scalabook.gitflic.space/docs/scala/abstractions/ca-using). 
 Пример:
 
 ```scala
@@ -31,7 +31,7 @@ given listOrd[T](using ord: Ord[T]): Ord[List[T]] with
 которые поставляются с `given` экземпляром `Ord[T]`. 
 Предложение `using` в `listOrd` определяет условие: 
 для существования `given` типа `Ord[List[T]]` должен существовать `given` тип `Ord[T]`. 
-Такие условия расширяются компилятором [до параметров контекста](ca-using).
+Такие условия расширяются компилятором [до параметров контекста](https://scalabook.gitflic.space/docs/scala/abstractions/ca-using).
 
 Результат:
 
@@ -91,7 +91,7 @@ given (using config: Config): Factory = MemoizingFactory(config)
 
 ### Given макросы
 
-Псевдонимы given могут иметь [модификаторы `inline` и `transparent`](../metaprogramming/inline).
+Псевдонимы given могут иметь [модификаторы `inline` и `transparent`](https://scalabook.gitflic.space/docs/scala/metaprogramming/inline).
 Пример:
 
 ```scala

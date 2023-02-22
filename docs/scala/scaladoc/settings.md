@@ -66,10 +66,10 @@ Compile / doc / scalacOptions ++= Seq("-project", "my-project"),
 
 где `<ссылка-источник>` является одним из следующих:
 - `github://<organization>/<repository>[/revision][#subpath]` будет соответствовать 
-https://github.com/$organization/$repository/[blob|edit]/$revision[/$subpath]/$filePath[$lineNumber], 
+`https://github.com/$organization/$repository/[blob|edit]/$revision[/$subpath]/$filePath[$lineNumber]`, 
 если редакция не указана, тогда требуется указать редакцию в качестве аргумента для Scaladoc
 - `gitlab://<organization>/<repository>` будет соответствовать 
-https://gitlab.com/$organization/$repository/-/[blob|edit]/$revision[/$subpath]/$filePath[$lineNumber], 
+`https://gitlab.com/$organization/$repository/-/[blob|edit]/$revision[/$subpath]/$filePath[$lineNumber]`, 
 если редакция не указана, тогда требуется, 
 чтобы редакция была указана как аргумент в Scaladoc
 - `<scaladoc-template>`

@@ -1,6 +1,6 @@
 # Макросы
 
-[Встроенные методы](inline) предоставляют элегантную технику метапрограммирования, 
+[Встроенные методы][inline] предоставляют элегантную технику метапрограммирования, 
 выполняя некоторые операции во время компиляции. 
 Однако иногда встраивания недостаточно, и нужны более мощные способы анализа и синтеза программ во время компиляции. 
 Макросы позволяют делать именно это: относиться к **программам как к данным** и манипулировать ими.
@@ -12,7 +12,8 @@
 Выражение Scala с типом `T` представлено экземпляром типа `scala.quoted.Expr[T]`.
 
 Более детально о типе `Expr[T]`, а также различные способы анализа и построения экземпляров, 
-будут раскрыты в главах [Quoted Code](quoted-code) и [Reflection](reflection). 
+будут раскрыты в главах [Quoted Code][quoted-code] 
+и [Reflection](https://scalabook.gitflic.space/docs/scala/metaprogramming/reflection). 
 Пока достаточно знать, что макросы — это метапрограммы, которые манипулируют выражениями типа `Expr[T]`.
 
 Следующая реализация макроса просто печатает выражение предоставленного аргумента:
@@ -25,7 +26,7 @@ def inspectCode(x: Expr[Any])(using Quotes): Expr[Any] =
 
 После печати выражения аргумента исходный аргумент возвращается как выражение Scala типа `Expr[Any]`.
 
-Как уже упоминалось в разделе [Inline](inline), 
+Как уже упоминалось в разделе [Inline][inline], 
 встроенные методы предоставляют точку входа для определений макросов:
 
 ```scala
@@ -34,7 +35,8 @@ inline def inspect(inline x: Any): Any = ${ inspectCode('x) }
 
 Все макросы определены с расширением `inline def`. 
 Реализация этой точки входа всегда имеет одинаковую форму:
-- они содержат только одну [склейку](quoted-code) `${ ... }`
+
+- они содержат только одну [склейку][quoted-code] `${ ... }`
 - склейка содержит единственный вызов метода, реализующего макрос (например `inspectCode`).
 - вызов реализации макроса получает параметры в кавычках (то есть `'x` вместо `x`) и контекстное `Quotes`.
 
@@ -86,7 +88,7 @@ def loggedCode[T](x: Expr[T])(using Type[T], Quotes): Expr[T] = ...
 
 #### Пример: статическая оценка `power` с помощью макросов
 
-Вспомним определение `power` из раздела [Inline](inline), 
+Вспомним определение `power` из раздела [Inline][inline], 
 которое специализировало вычисление `xⁿ` для статически известных значений `n`.
 
 ```scala
@@ -141,7 +143,7 @@ def powerCode(
 Создание выражений из значений работает для всех примитивных типов, кортежей любой арности, 
 `Class`, `Array`, `Seq`, `Set`, `List`, `Map`, `Option`, `Either`, `BigInt`, `BigDecimal`, `StringContext`. 
 Другие типы также могут работать, если для них реализован `ToExpr`, 
-[как будет показано позже](quoted-code).
+[как будет показано позже][quoted-code].
 
 #### Извлечение значений из выражений
 
@@ -180,7 +182,7 @@ def powerCode(
 Операции `value`, `valueOrError` и `Expr.unapply` будут работать для всех примитивных типов, кортежей любой арности, 
 `Option`, `Seq`, `Set`, `Map`, `Either` и `StringContext`. 
 Другие типы также могут работать, если для них реализован FromExpr, 
-[как будет показано позже](quoted-code).
+[как будет показано позже][quoted-code].
 
 #### Отображение выражений
 
@@ -234,9 +236,10 @@ def sumCode(nums: Expr[Seq[Int]])(using Quotes): Expr[Int] =
 
 Было показано, как создавать и распаковывать выражения, соответствующие простым значениям. 
 Для работы с более сложными выражениями Scala предлагает различные средства метапрограммирования, начиная от
+
 - дополнительные конструкторы, такие как `Expr.apply`,
-- [сопоставление с образцом в цитатах](quoted-code),
-- [reflection API](reflection);
+- [сопоставление с образцом в цитатах][quoted-code],
+- [reflection API](https://scalabook.gitflic.space/docs/scala/metaprogramming/reflection);
 
 каждый из них усложняется и потенциально теряет гарантии безопасности. 
 Обычно рекомендуется чаще использовать простые API. 
@@ -249,6 +252,7 @@ def sumCode(nums: Expr[Seq[Int]])(using Quotes): Expr[Int] =
 Как насчет преобразования `List[Expr[Int]]` в `Expr[List[Int]]`? 
 Упоминалось, что `Varargs.apply` может сделать это для последовательностей; 
 аналогично, для других типов коллекций доступны соответствующие методы:
+
 - `Expr.ofList`: преобразует `List[Expr[T]]` в `Expr[List[T]]`
 - `Expr.ofSeq`: преобразует `Seq[Expr[T]]` в `Expr[Seq[T]]` (так же, как Varargs)
 - `Expr.ofTupleFromSeq`: преобразует `Seq[Expr[T]]` в `Expr[Tuple]`
@@ -291,9 +295,9 @@ def value(boolExpr: Expr[Boolean]): Option[Boolean] =
 
 #### Произвольные выражения
 
-Можно создать произвольный код Scala `Expr[T]`, заключив его [в цитаты](quoted-code). 
+Можно создать произвольный код Scala `Expr[T]`, заключив его [в цитаты][quoted-code]. 
 Например, `'{ ${expr}; true }` сгенерирует `Expr[Int]` эквивалент `Expr.block(List(expr), Expr(true))`. 
-В следующем разделе, посвященном [Quoted Code](quoted-code), цитаты представлены более подробно.
+В следующем разделе, посвященном [Quoted Code][quoted-code], цитаты представлены более подробно.
 
 
 ---
@@ -302,3 +306,6 @@ def value(boolExpr: Expr[Boolean]): Option[Boolean] =
 
 - [Scala 3 Guide](https://docs.scala-lang.org/scala3/guides/macros/macros.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/metaprogramming/macros.html)
+
+[quoted-code]: https://scalabook.gitflic.space/docs/scala/metaprogramming/quoted-code
+[inline]: https://scalabook.gitflic.space/docs/scala/metaprogramming/inline

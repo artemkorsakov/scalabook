@@ -271,7 +271,7 @@ val dAny: None.type = defaultValue[Any]
 
 В качестве другого примера рассмотрим приведенную ниже версию на уровне типов `toInt`: 
 для заданного типа, представляющего число Пеано, вернуть соответствующее ему целочисленное значение. 
-Рассмотрим определения чисел, как в разделе ["inline match"](inline#Встроенные-match). 
+Рассмотрим определения чисел, как в разделе ["inline match"](https://scalabook.gitflic.space/docs/scala/metaprogramming/inline#%D0%92%D1%81%D1%82%D1%80%D0%BE%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5-match). 
 Вот как можно определить `toIntT`:
 
 ```scala
@@ -337,6 +337,7 @@ val addition: 1 + 1 = 2
 ### Детали
 
 Дополнительная информация об операциях во время компиляции:
+
 - [PR #4768](https://github.com/lampepfl/dotty/pull/4768), 
 - [PR #7201](https://github.com/lampepfl/dotty/pull/7201).
 

@@ -75,6 +75,7 @@ Illegal command line: java.lang.NumberFormatException: For input string: "sixty"
 ### Детали
 
 Компилятор Scala генерирует программу из `@main` метода `f` следующим образом:
+
 - он создает класс с именем `f` в пакете, где был найден метод `@main`.
 - класс имеет статический метод `main` с обычной сигнатурой Java `main` метода: 
 принимает `Array[String]` в качестве аргумента и возвращает `Unit`.

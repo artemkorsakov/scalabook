@@ -45,7 +45,7 @@ trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:
 
 ## Примеры
 
-### [Either](../../docs/fp/handling-errors)
+### [Either](https://scalabook.gitflic.space/docs/fp/handling-errors)
 
 ```scala
 given Bitraverse[Either] with

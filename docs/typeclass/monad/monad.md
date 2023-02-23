@@ -39,7 +39,7 @@ given idMonad: Monad[Id] with
   extension [A](fa: Id[A]) override def flatMap[B](f: A => Id[B]): Id[B] = f(fa.value)
 ```
 
-### [Option](../../docs/scala/fp/functional-error-handling)
+### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
 
 ```scala
 given optionMonad: Monad[Option] with
@@ -52,7 +52,7 @@ given optionMonad: Monad[Option] with
         case None    => None
 ```
 
-### [Последовательность](../../scala/collections)
+### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections)
 
 ```scala
 given listMonad: Monad[List] with
@@ -61,7 +61,7 @@ given listMonad: Monad[List] with
   extension [A](fa: List[A]) override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
 ```
 
-### [Either](../../docs/fp/handling-errors)
+### [Either](https://scalabook.gitflic.space/docs/fp/handling-errors)
 
 ```scala
 given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
@@ -74,7 +74,7 @@ given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
         case Left(e)  => Left(e)
 ```
 
-### [Writer](../../docs/fp/writer) - функциональный журнал
+### [Writer](https://scalabook.gitflic.space/docs/fp/writer) - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))
@@ -98,7 +98,7 @@ given writerMonad[W](using monoid: Monoid[W]): Monad[[x] =>> Writer[W, x]] with
       }
 ```
 
-### [State](../../docs/fp/state) - функциональное состояние
+### [State](https://scalabook.gitflic.space/docs/fp/state) - функциональное состояние
 
 ```scala
 case class State[S, +A](run: S => (S, A))

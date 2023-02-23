@@ -79,7 +79,7 @@ given idApplicative: Applicative[Id] with
   override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab.value(fa.value))
 ```
 
-### [Option](../../docs/scala/fp/functional-error-handling)
+### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
 
 ```scala
 given optionApplicative: Applicative[Option] with
@@ -91,7 +91,7 @@ given optionApplicative: Applicative[Option] with
       case _                     => None
 ```
 
-### [Последовательность](../../scala/collections)
+### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections)
 
 ```scala
 given listApplicative: Applicative[List] with
@@ -101,7 +101,7 @@ given listApplicative: Applicative[List] with
     fab.flatMap { aToB => fa.map(aToB) }
 ```
 
-### [Either](../../docs/fp/handling-errors)
+### [Either](https://scalabook.gitflic.space/docs/fp/handling-errors)
 
 ```scala
 given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
@@ -114,7 +114,7 @@ given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
       case (_, Left(l))          => Left(l)
 ```
 
-### [Writer](../../docs/fp/writer) - функциональный журнал
+### [Writer](https://scalabook.gitflic.space/docs/fp/writer) - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))
@@ -137,7 +137,7 @@ given writerApplicative[W](using monoid: Monoid[W]): Applicative[[x] =>> Writer[
     }
 ```
 
-### [State](../../docs/fp/state) - функциональное состояние
+### [State](https://scalabook.gitflic.space/docs/fp/state) - функциональное состояние
 
 ```scala
 case class State[S, +A](run: S => (S, A))

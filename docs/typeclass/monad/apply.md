@@ -49,7 +49,7 @@ given idApply: Apply[Id] with
   extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as.value))
 ```
 
-### [Option](../../docs/scala/fp/functional-error-handling)
+### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
 
 ```scala
 given Apply[Option] with

@@ -86,7 +86,7 @@ given Traverse[[X] =>> (X, X, X)] with
       g.apply(g.apply(g.apply(func)(f(fa._1)))(f(fa._2)))(f(fa._3))
 ```
 
-### [Option](../../docs/scala/fp/functional-error-handling)
+### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
 
 ```scala
 given Traverse[Option] with
@@ -97,7 +97,7 @@ given Traverse[Option] with
         case None    => summon[Applicative[G]].unit(None)
 ```
 
-### [Последовательность](../../scala/collections)
+### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections)
 
 ```scala
 given Traverse[List] with

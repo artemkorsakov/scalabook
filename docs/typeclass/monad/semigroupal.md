@@ -25,7 +25,7 @@ given Semigroupal[Id] with
   override def product[A, B](fa: Id[A], fb: Id[B]): Id[(A, B)] = Id((fa.value, fb.value))
 ```
 
-### [Option](../../docs/scala/fp/functional-error-handling)
+### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
 
 ```scala
 given Semigroupal[Option] with

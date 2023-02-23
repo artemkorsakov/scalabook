@@ -57,7 +57,7 @@ given idFoldable: Foldable[Id] with
       f(fa.value, init)
 ```
 
-### [Option](../../docs/scala/fp/functional-error-handling)
+### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
 
 ```scala
 given Foldable[Option] with
@@ -74,7 +74,7 @@ given Foldable[Option] with
         case Some(a) => f(a)
 ```
 
-### [Последовательность](../../scala/collections)
+### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections)
 
 ```scala
 given Foldable[List] with
@@ -105,7 +105,7 @@ given tuple3Foldable: Foldable[[X] =>> (X, X, X)] with
       f(a0, b1)
 ```
 
-### [Either](../../docs/fp/handling-errors)
+### [Either](https://scalabook.gitflic.space/docs/fp/handling-errors)
 
 ```scala
 given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with

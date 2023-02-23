@@ -29,7 +29,7 @@ given idtMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransformer[Id
     IdT[M, A](ma.map(Id(_)))
 ```
 
-### [Option](../../docs/scala/fp/functional-error-handling)
+### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
 
 ```scala
 final case class OptionT[M[_], A](run: M[Option[A]])
@@ -52,7 +52,7 @@ given optionTMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransforme
     OptionT[M, A](ma.map(Some(_)))      
 ```
 
-### [Writer](../../docs/fp/writer) - функциональный журнал
+### [Writer](https://scalabook.gitflic.space/docs/fp/writer) - функциональный журнал
 
 ```scala
 final case class WriterT[M[_], W, A](run: () => M[(W, A)])
@@ -77,7 +77,7 @@ given writerTMonadTransformer[M[_], W](using
     WriterT[M, W, A](() => ma.map(a => (outerMonoid.empty, a)))      
 ```
 
-### [State](../../docs/fp/state) - функциональное состояние
+### [State](https://scalabook.gitflic.space/docs/fp/state) - функциональное состояние
 
 ```scala
 final case class StateT[M[_], S, A](run: S => M[(S, A)])

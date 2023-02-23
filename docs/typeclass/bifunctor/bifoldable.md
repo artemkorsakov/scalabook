@@ -43,7 +43,7 @@ trait Bifoldable[F[_, _]]:
 
 ## Примеры
 
-### [Either](../../docs/fp/handling-errors)
+### [Either](https://scalabook.gitflic.space/docs/fp/handling-errors)
 
 ```scala
 given eitherBifoldable: Bifoldable[Either] with

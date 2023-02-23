@@ -36,5 +36,6 @@ given setIdempotentMonoidInstance[A]: IdempotentMonoid[Set[A]] with
 ---
 
 **Ссылки:**
+
 - [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FIdempotentMonoid.scala&plain=1)
 - [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FIdempotentMonoidSuite.scala)

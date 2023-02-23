@@ -5,8 +5,10 @@
 
 Функтор создает новые экземпляры классов типов, добавляя функцию в цепочку преобразований.
 
-Функтор (F) расширяет [инвариантный функтор](invariant-functor) и должен следовать следующим законам 
+Функтор (F) расширяет [инвариантный функтор](https://scalabook.gitflic.space/docs/typeclass/monad/invariant-functor) 
+и должен следовать следующим законам 
 (помимо законов инвариантного функтора):
+
 - Identity (тождественность): Если определен метод идентификации `identity` такой, что: `identity(a) == a`, 
   тогда `map(fa)(identity) == fa`. Другими словами: если мы отобразим функцию `identity` на функтор, 
   функтор, который мы получим, должен быть таким же, как исходный функтор.
@@ -32,6 +34,7 @@ trait Functor[F[_]] extends InvariantFunctor[F]:
 ```
 
 Как видно из примера выше, функтор позволяет определить дополнительные операции:
+
 - "поднимает" функцию `A => B` до функции преобразования функторов `F[A] => F[B]`
 - применяет функтор от функции преобразования из `A` в `B` (`F[A => B]`) к элементу типа `A` и получает функтор от `B`
 - по функтору от `A` и функции преобразования из `A` в `B` позволяет получать функтор от кортежа `(A, B)` 
@@ -49,7 +52,7 @@ given idFunctor: Functor[Id] with
     override def map[B](f: A => B): Id[B] = Id(f(as.value))
 ```
 
-### [Option](../../docs/scala/fp/functional-error-handling)
+### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
 
 ```scala
 given optionFunctor: Functor[Option] with
@@ -60,7 +63,7 @@ given optionFunctor: Functor[Option] with
         case None    => None
 ```
 
-### [Последовательность](../../scala/collections)
+### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections)
 
 ```scala
 given listFunctor: Functor[List] with
@@ -68,7 +71,7 @@ given listFunctor: Functor[List] with
     override def map[B](f: A => B): List[B] = as.map(f)
 ```
 
-### [Either](../../docs/fp/handling-errors)
+### [Either](https://scalabook.gitflic.space/docs/fp/handling-errors)
 
 ```scala
 given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
@@ -79,7 +82,7 @@ given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
         case Left(e)  => Left(e)
 ```
 
-### [Writer](../../docs/fp/writer) - функциональный журнал
+### [Writer](https://scalabook.gitflic.space/docs/fp/writer) - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))
@@ -91,7 +94,7 @@ given writerFunctor[W]: Functor[[x] =>> Writer[W, x]] with
       Writer[W, B](() => (w, f(a)))
 ```
 
-### [State](../../docs/fp/state) - функциональное состояние
+### [State](https://scalabook.gitflic.space/docs/fp/state) - функциональное состояние
 
 ```scala
 case class State[S, +A](run: S => (S, A))
@@ -128,7 +131,7 @@ given ioFunctor: Functor[IO] with
   extension [A](as: IO[A]) override def map[B](f: A => B): IO[B] = IO { () => f(as.run()) }
 ```
 
-### [Бинарное дерево](../../algorithms/trees/binary-tree)
+### Бинарное дерево
 
 ```scala
 given Functor[BinaryTree] with

@@ -1,10 +1,7 @@
 import Dependencies._
 import laika.ast._
 import laika.ast.Path._
-import laika.helium.config.ThemeNavigationSection
-import laika.helium.config.HeliumIcon
-import laika.helium.config.IconLink
-import laika.helium.config.TextLink
+import laika.helium.config._
 
 ThisBuild / organization     := "ru.gitflic.artemkorsakov"
 ThisBuild / organizationName := "Artem Korsakov"
@@ -84,8 +81,7 @@ lazy val docs = project
     name    := "scalabook",
     version := "0.1",
     tlSiteHelium :=
-      tlSiteHelium.value
-        .all
+      tlSiteHelium.value.all
         .metadata(
           title = Some("Scalabook"),
           description = Some("Функциональная разработка на Scala"),
@@ -98,13 +94,15 @@ lazy val docs = project
         .topNavigationBar(
           homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
           navLinks = Seq(
-            IconLink.external(
-              "https://github.com/artemkorsakov/scalabook",
-              HeliumIcon.github
+            ButtonLink.external(
+              "https://scalabook.gitflic.space",
+              "Scalabook на gitflic"
             ),
-            IconLink.external(
+            ButtonLink
+              .external("https://github.com/artemkorsakov/scalabook", "Github"),
+            ButtonLink.external(
               "https://gitflic.ru/project/artemkorsakov/scalabook",
-              HeliumIcon.github
+              "Gitflic"
             )
           )
         )
@@ -113,15 +111,7 @@ lazy val docs = project
           depth = 4,
           includePageSections = false,
           prependLinks = Seq(),
-          appendLinks = Seq(
-            ThemeNavigationSection(
-              "Связанные проекты",
-              TextLink.external(
-                "https://scalabook.gitflic.space/",
-                "Scalabook на gitflic"
-              )
-            )
-          )
+          appendLinks = Seq()
         )
         .site
         .pageNavigation(

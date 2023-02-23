@@ -2,6 +2,7 @@
 
 `(S, +)` является полугруппой (_semigroup_) для множества `S` и операции `+`, 
 если удовлетворяет следующим свойствам для любых `x, y, z ∈ S`:
+
 - Closure (замыкание): `x + y ∈ S`
 - Associativity (ассоциативность): `(x + y) + z = x + (y + z)`
 
@@ -34,14 +35,14 @@ given productSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x * y
 given stringSemigroupInstance: Semigroup[String] = (x: String, y: String) => x + y
 ```
 
-### [Последовательность](../../scala/collections) образует полугруппу относительно операции объединения
+### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections) образует полугруппу относительно операции объединения
 
 ```scala
 given listSemigroupInstance[T]: Semigroup[List[T]] =
   (x: List[T], y: List[T]) => x ++ y
 ```
 
-### [Кортеж](../../docs/scala/collections/tuple) от двух и более полугрупп также является полугруппой
+### [Кортеж](https://scalabook.gitflic.space/docs/scala/collections/tuple) от двух и более полугрупп также является полугруппой
 
 ```scala
 given nestedSemigroupInstance[A, B](using aSemigroup: Semigroup[A], bSemigroup: Semigroup[B]): Semigroup[(A, B)] =

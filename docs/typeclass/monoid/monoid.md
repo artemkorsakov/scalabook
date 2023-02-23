@@ -4,6 +4,7 @@
 
 Более формально: `(M, +)` является моноидом для заданного множества `M` и операции `+` (`combine` с типом `(A, A) => A`),
 если удовлетворяет следующим свойствам для любых `x, y, z ∈ M`:
+
 - Closure (замыкание): `x + y ∈ M`
 - Associativity (ассоциативность): `(x + y) + z = x + (y + z)` или 
   `m.combine(x, m.combine(y, z)) == m.combine(m.combine(x, y), z)`
@@ -48,7 +49,7 @@ given stringMonoidInstance: Monoid[String] with
   def combine(x: String, y: String): String = x + y
 ```
 
-### [Последовательность](../../scala/collections)
+### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections)
 
 ```scala
 given listMonoidInstance[T]: Monoid[List[T]] with
@@ -56,7 +57,7 @@ given listMonoidInstance[T]: Monoid[List[T]] with
   def combine(x: List[T], y: List[T]): List[T] = x ++ y
 ```
 
-### [Кортеж](../../docs/scala/collections/tuple) от двух и более моноидов
+### [Кортеж](https://scalabook.gitflic.space/docs/scala/collections/tuple) от двух и более моноидов
 
 ```scala
 given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): Monoid[(A, B)] with
@@ -64,7 +65,7 @@ given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): 
   def combine(x: (A, B), y: (A, B)): (A, B) = (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
 ```
 
-### [Option](../../docs/scala/fp/functional-error-handling)
+### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
 
 `Option` является моноидом, если его параметр типа - полугруппа, например:
 

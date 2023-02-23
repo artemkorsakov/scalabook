@@ -15,6 +15,7 @@ ThisBuild / developers := List(
 )
 
 ThisBuild / githubWorkflowPublishTargetBranches := Seq()
+ThisBuild / githubWorkflowOSes                  := Seq("windows-latest")
 
 ThisBuild / tlSitePublishBranch := Some("master")
 

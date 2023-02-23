@@ -26,12 +26,17 @@ jobs:
     name: Build and Test
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [windows-latest]
         scala: [3]
         java: [temurin@11]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     steps:
+      - name: Ignore line ending differences in git
+        if: contains(runner.os, 'windows')
+        shell: bash
+        run: git config --global core.autocrlf false
+
       - name: Checkout current branch (full)
         uses: actions/checkout@v3
         with:
@@ -57,12 +62,15 @@ jobs:
 
       - name: sbt update
         if: matrix.java == 'temurin@11' && steps.setup-java-temurin-11.outputs.cache-hit == 'false'
+        shell: bash
         run: sbt '++ ${{ matrix.scala }}' reload +update
 
       - name: Check that workflows are up to date
+        shell: bash
         run: sbt githubWorkflowCheck
 
       - name: Build project
+        shell: bash
         run: sbt '++ ${{ matrix.scala }}' test
 
   site:
@@ -74,6 +82,10 @@ jobs:
         java: [temurin@11]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Ignore line ending differences in git
+        if: contains(runner.os, 'windows')
+        run: git config --global core.autocrlf false
+
       - name: Checkout current branch (full)
         uses: actions/checkout@v3
         with:

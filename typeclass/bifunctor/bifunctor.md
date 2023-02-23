@@ -37,7 +37,7 @@ trait Bifunctor[F[_, _]]:
 
 ## Примеры
 
-### [Either](../../fp/handling-errors)
+### [Either](../../docs/fp/handling-errors)
 
 ```scala
 given Bifunctor[Either] with
@@ -47,7 +47,7 @@ given Bifunctor[Either] with
       case Left(value)  => Left(f(value))
 ```
 
-### [Writer](../../fp/writer) - функциональный журнал
+### [Writer](../../docs/fp/writer) - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))

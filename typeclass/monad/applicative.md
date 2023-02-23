@@ -101,7 +101,7 @@ given listApplicative: Applicative[List] with
     fab.flatMap { aToB => fa.map(aToB) }
 ```
 
-### [Either](../../fp/handling-errors)
+### [Either](../../docs/fp/handling-errors)
 
 ```scala
 given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
@@ -114,7 +114,7 @@ given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
       case (_, Left(l))          => Left(l)
 ```
 
-### [Writer](../../fp/writer) - функциональный журнал
+### [Writer](../../docs/fp/writer) - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))
@@ -137,7 +137,7 @@ given writerApplicative[W](using monoid: Monoid[W]): Applicative[[x] =>> Writer[
     }
 ```
 
-### [State](../../fp/state) - функциональное состояние
+### [State](../../docs/fp/state) - функциональное состояние
 
 ```scala
 case class State[S, +A](run: S => (S, A))

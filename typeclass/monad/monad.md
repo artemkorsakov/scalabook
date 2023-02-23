@@ -61,7 +61,7 @@ given listMonad: Monad[List] with
   extension [A](fa: List[A]) override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
 ```
 
-### [Either](../../fp/handling-errors)
+### [Either](../../docs/fp/handling-errors)
 
 ```scala
 given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
@@ -74,7 +74,7 @@ given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
         case Left(e)  => Left(e)
 ```
 
-### [Writer](../../fp/writer) - функциональный журнал
+### [Writer](../../docs/fp/writer) - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))
@@ -98,7 +98,7 @@ given writerMonad[W](using monoid: Monoid[W]): Monad[[x] =>> Writer[W, x]] with
       }
 ```
 
-### [State](../../fp/state) - функциональное состояние
+### [State](../../docs/fp/state) - функциональное состояние
 
 ```scala
 case class State[S, +A](run: S => (S, A))

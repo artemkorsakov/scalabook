@@ -68,7 +68,7 @@ given listFunctor: Functor[List] with
     override def map[B](f: A => B): List[B] = as.map(f)
 ```
 
-### [Either](../../fp/handling-errors)
+### [Either](../../docs/fp/handling-errors)
 
 ```scala
 given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
@@ -79,7 +79,7 @@ given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
         case Left(e)  => Left(e)
 ```
 
-### [Writer](../../fp/writer) - функциональный журнал
+### [Writer](../../docs/fp/writer) - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))
@@ -91,7 +91,7 @@ given writerFunctor[W]: Functor[[x] =>> Writer[W, x]] with
       Writer[W, B](() => (w, f(a)))
 ```
 
-### [State](../../fp/state) - функциональное состояние
+### [State](../../docs/fp/state) - функциональное состояние
 
 ```scala
 case class State[S, +A](run: S => (S, A))

@@ -105,7 +105,7 @@ given tuple3Foldable: Foldable[[X] =>> (X, X, X)] with
       f(a0, b1)
 ```
 
-### [Either](../../fp/handling-errors)
+### [Either](../../docs/fp/handling-errors)
 
 ```scala
 given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with

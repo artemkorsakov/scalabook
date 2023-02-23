@@ -84,7 +84,8 @@ lazy val docs = project
     name    := "scalabook",
     version := "0.1",
     tlSiteHelium :=
-      tlSiteHelium.value.all
+      tlSiteHelium.value
+        .all
         .metadata(
           title = Some("Scalabook"),
           description = Some("Функциональная разработка на Scala"),

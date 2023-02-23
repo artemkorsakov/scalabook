@@ -52,7 +52,7 @@ given optionTMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransforme
     OptionT[M, A](ma.map(Some(_)))      
 ```
 
-### [Writer](../../fp/writer) - функциональный журнал
+### [Writer](../../docs/fp/writer) - функциональный журнал
 
 ```scala
 final case class WriterT[M[_], W, A](run: () => M[(W, A)])
@@ -77,7 +77,7 @@ given writerTMonadTransformer[M[_], W](using
     WriterT[M, W, A](() => ma.map(a => (outerMonoid.empty, a)))      
 ```
 
-### [State](../../fp/state) - функциональное состояние
+### [State](../../docs/fp/state) - функциональное состояние
 
 ```scala
 final case class StateT[M[_], S, A](run: S => M[(S, A)])

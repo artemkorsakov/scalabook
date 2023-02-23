@@ -1,6 +1,7 @@
 # Idempotent Monoid
 
-_IdempotentMonoid_ — это [моноид](monoid), который также является [идемпотентным](band),
+_IdempotentMonoid_ — это [моноид](https://scalabook.gitflic.space/docs/typeclass/monoid/monoid), 
+который также является [идемпотентным](https://scalabook.gitflic.space/docs/typeclass/monoid/band),
 т.е. добавление значения к самому себе приводит к тому же значению.
 
 `IdempotentMonoid` должен удовлетворять законам своих "родителей": `Monoid`, `Band`, `Semigroup`.

@@ -1,6 +1,6 @@
 # Bifoldable
 
-`Bifoldable` - тип, порождающий два несвязанных [`Foldable`](../monad/foldable).
+`Bifoldable` - тип, порождающий два несвязанных [`Foldable`](https://scalabook.gitflic.space/docs/typeclass/monad/foldable).
 
 
 ## Описание

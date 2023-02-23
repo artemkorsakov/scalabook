@@ -1,9 +1,11 @@
 # Compose
 
 `Compose` объединяет две функции в одну.
-Функция `compose` позволяет реализовать [Semigroup](../monoid/semigroup) и [Plus](../monad/plus) в терминах объединения функций.
+Функция `compose` позволяет реализовать [Semigroup](https://scalabook.gitflic.space/docs/typeclass/monoid/semigroup) 
+и [Plus](https://scalabook.gitflic.space/docs/typeclass/monad/plus) в терминах объединения функций.
 
 `Compose` должен удовлетворять следующим законам:
+
 - Associativity (ассоциативность): `compose(compose(f, g), h) = compose(f, compose(g, h))`
 
 

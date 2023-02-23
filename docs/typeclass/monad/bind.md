@@ -1,14 +1,16 @@
 # Bind
 
-`Bind` - это [`Apply`](apply) функтор, в котором функция может вводить новые значения и новый контекст функтора, 
+`Bind` - это [`Apply`](https://scalabook.gitflic.space/docs/typeclass/monad/apply) функтор, 
+в котором функция может вводить новые значения и новый контекст функтора, 
 включенный в контекст "подъемника". Эта операция называется `flatMap[B](f: A => F[B]): F[B]` (или её синоним - `bind`)
 
 Для `Bind` должны соблюдаться следующие законы:
+
 - соответствие `apply` и `flatMap`:
-  - `apply(fab)(fa) == fab.flatMap(a2b => fa.map(a2b))`
+    - `apply(fab)(fa) == fab.flatMap(a2b => fa.map(a2b))`
 - associativity на `flatMap` (как и в случае с полугруппами, монадические эффекты изменяются только при изменении их порядка,
   а не при изменении порядка их объединения):
-  - `fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) }`
+    - `fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) }`
 
 Функция `flatMap` позволяет нам определить операцию `join[A](ffa: F[F[A]]): F[A]`, "схлопывающую" слои функтора.
 Синоним `join` - это `flatten`.

@@ -1,7 +1,8 @@
 # ApplicativePlus
 
 `ApplicativePlus` - это моноидальный аппликативный функтор, 
-[`Applicative`](applicative) комбинированный с [`PlusEmpty`](plus-empty).
+[`Applicative`](https://scalabook.gitflic.space/docs/typeclass/monad/applicative) 
+комбинированный с [`PlusEmpty`](https://scalabook.gitflic.space/docs/typeclass/monad/plus-empty).
 
 `ApplicativePlus` должен удовлетворять законам своих родителей.
 

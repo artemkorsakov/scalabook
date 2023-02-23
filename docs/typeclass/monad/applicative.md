@@ -1,10 +1,13 @@
 # Applicative
 
-`Applicative` расширяет [`Apply`](apply) (и [`InvariantApplicative`](invariant-applicative)) и позволяет работать с несколькими «ящиками».
+`Applicative` расширяет [`Apply`](https://scalabook.gitflic.space/docs/typeclass/monad/apply) 
+(и [`InvariantApplicative`](https://scalabook.gitflic.space/docs/typeclass/monad/invariant-applicative)) 
+и позволяет работать с несколькими «ящиками».
 `Applicative`, дополнительно к операциям `Apply`, реализует операцию `unit` (другие названия: `point`, `pure`),
 оборачивающую значение произвольного типа `A` в `Applicative`.
 
 Для `Applicative` должны соблюдаться следующие законы (помимо законов родительских типовых классов):
+
 - Identity: `apply(unit(identity))(fa) == fa`
 - `unit(x).map(f) == unit(f(x))`
 - `fa.map(f) == apply(unit(f))(fa)`

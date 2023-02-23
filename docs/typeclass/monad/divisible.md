@@ -1,9 +1,11 @@
 # Divisible
 
-`Divisible` - контравариантный аналог [`Applicative`](applicative). 
-Он расширяет [`Divide`](divide) и [`InvariantApplicative`](invariant-applicative).
+`Divisible` - контравариантный аналог [`Applicative`](https://scalabook.gitflic.space/docs/typeclass/monad/applicative). 
+Он расширяет [`Divide`](https://scalabook.gitflic.space/docs/typeclass/monad/divide) 
+и [`InvariantApplicative`](https://scalabook.gitflic.space/docs/typeclass/monad/invariant-applicative).
 
 Законы `Divisible`:
+
 - right identity: `divide(fa, conquer)(delta) == fa`, где `delta: A => (A, A) = a => (a, a)`
 - left identity: `divide(conquer, fa)(delta) == fa`
 

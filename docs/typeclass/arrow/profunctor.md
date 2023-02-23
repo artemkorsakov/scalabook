@@ -1,10 +1,12 @@
 # Profunctor
 
 `Profunctor` ковариантен справа и контравариантен слева.
-`Profunctor` позволяет реализовать [InvariantFunctor](../monad/invariant-functor), [Functor](../monad/functor) 
-и [ContravariantFunctor](../monad/contravariant-functor).
+`Profunctor` позволяет реализовать [InvariantFunctor](https://scalabook.gitflic.space/docs/typeclass/monad/invariant-functor), 
+[Functor](https://scalabook.gitflic.space/docs/typeclass/monad/functor) 
+и [ContravariantFunctor](https://scalabook.gitflic.space/docs/typeclass/monad/contravariant-functor).
 
 `Profunctor` должен удовлетворять следующим законам:
+
 - _identity_: если определен метод идентификации `identity` такой, что: `identity(a) == a`, то при отображении этой функции
   на профунктор и слева, и справа, то получим тот же профунктор: `dimap(gad)(identity)(identity) == gad`
 - `composite`: при последовательном отображении двух пар функции на профунктор слева и справа - это тоже самое,

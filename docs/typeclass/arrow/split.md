@@ -1,6 +1,6 @@
 # Split
 
-`Split` - полугруппоид ([`Compose`](compose)), допускающий произведения.
+`Split` - полугруппоид ([`Compose`](https://scalabook.gitflic.space/docs/typeclass/arrow/compose)), допускающий произведения.
 
 `Split` должен удовлетворять законам `Compose`.
 

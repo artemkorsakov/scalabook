@@ -3,7 +3,8 @@
 `Apply` реализует операцию `apply`
 (также встречаются названия `join`, `sequence`, `joinWith`, `ap`, `applicate` - названия взаимозаменяемы),
 которая объединяет `F[A]` и `F[A => B]` в `F[B]`.
-`Apply` расширяет [`Functor`](functor) и [`Semigroupal`](semigroupal).
+`Apply` расширяет [`Functor`](https://scalabook.gitflic.space/docs/typeclass/monad/functor) 
+и [`Semigroupal`](https://scalabook.gitflic.space/docs/typeclass/monad/semigroupal).
 
 Об `apply` можно думать как о своего рода усиленной `map`. 
 В то время как `map` берет функцию и функтор и применяет функцию внутри значения функтора,
@@ -11,6 +12,7 @@
 извлекает эту функцию из первого функтора, а затем отображает ее на второй.
 
 `Apply` должен удовлетворять следующим законам:
+
 - Composition (композиция) - `apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)`
 
 ## Описание
@@ -30,6 +32,7 @@ trait Apply[F[_]] extends Functor[F], Semigroupal[F]:
 ```
 
 С помощью операций `apply` и `map` можно реализовать следующие операции:
+
 - `apply2`, принимающую два `Apply` и функцию преобразования из типов этих `Apply` в третий тип `C` и возвращающую `Apply` от `C`. 
 - `tuple2`, принимающую два `Apply` и возвращающую `Apply` от кортежа этих типов.
 - `lift2`, "поднимающую" функцию `(A, B) => C` до функции преобразования `Apply`: `(F[A], F[B]) => F[C]`

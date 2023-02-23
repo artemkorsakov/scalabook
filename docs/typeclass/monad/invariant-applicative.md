@@ -2,7 +2,7 @@
 
 Инвариантный Applicative поддерживает операции `xunit0`, `xunit1` и т.д., 
 которые "оборачивают" тип в инвариантный функтор. 
-`InvariantApplicative` расширяет [`InvariantFunctor`](invariant-functor).
+`InvariantApplicative` расширяет [`InvariantFunctor`](https://scalabook.gitflic.space/docs/typeclass/monad/invariant-functor).
 
 Используется для получения класса типов продуктов и типов значений.
 

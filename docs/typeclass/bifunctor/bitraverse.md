@@ -1,7 +1,8 @@
 # Bitraverse
 
-`Bitraverse` - тип, порождающий два несвязанных [`Traverse`](../monad/traverse).
-Расширяет [`Bifoldable`](bifoldable) и [`Bifunctor`](bifunctor).
+`Bitraverse` - тип, порождающий два несвязанных [`Traverse`](https://scalabook.gitflic.space/docs/typeclass/monad/traverse).
+Расширяет [`Bifoldable`](https://scalabook.gitflic.space/docs/typeclass/bifunctor/bifoldable) 
+и [`Bifunctor`](https://scalabook.gitflic.space/docs/typeclass/bifunctor/bifunctor).
 
 
 ## Описание

@@ -1,6 +1,6 @@
 # CoBind
 
-`CoBind` реализует противоположные для [`Bind`](bind) операции.
+`CoBind` реализует противоположные для [`Bind`](https://scalabook.gitflic.space/docs/typeclass/monad/bind) операции.
 
 
 ## Описание

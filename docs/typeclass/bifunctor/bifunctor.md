@@ -1,6 +1,6 @@
 # Bifunctor
 
-`Bifunctor` - тип, порождающий два несвязанных [функтора](../monad/functor).
+`Bifunctor` - тип, порождающий два несвязанных [функтора](https://scalabook.gitflic.space/docs/typeclass/monad/functor).
 
 
 ## Описание

@@ -1,6 +1,8 @@
 # Monad
 
-Монада (_monad_) - это [`Applicative`](applicative), который также поддерживает [`Bind`](bind), ограниченный законами монады.
+Монада (_monad_) - это [`Applicative`](https://scalabook.gitflic.space/docs/typeclass/monad/applicative), 
+который также поддерживает [`Bind`](https://scalabook.gitflic.space/docs/typeclass/monad/bind), 
+ограниченный законами монады.
 
 Монады являются естественным расширением аппликативных функторов, они обеспечивают решение следующей проблемы: 
 если у нас есть значение с контекстом, `m a`, как нам применить его к функции, 

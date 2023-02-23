@@ -1,9 +1,11 @@
 # Category
 
-`Category` - это [`Compose`](compose) с операцией `identity`.
-`Category` можно трансформировать в [Monoid](../monoid/monoid) и [PlusEmpty](../monad/plus-empty).
+`Category` - это [`Compose`](https://scalabook.gitflic.space/docs/typeclass/arrow/compose) с операцией `identity`.
+`Category` можно трансформировать в [Monoid](https://scalabook.gitflic.space/docs/typeclass/monoid/monoid) 
+и [PlusEmpty](https://scalabook.gitflic.space/docs/typeclass/monad/plus-empty).
 
 `Category` должен удовлетворять следующим законам (помимо законов родительских типовых классов):
+
 - Identity (тождественность): существует `e ∈ M` такое, что `e + x = x + e = x`
 
 

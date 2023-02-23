@@ -68,7 +68,7 @@ given Traverse[Id] with
       f(fa.value).map(b => Id(b))
 ```
 
-### [Кортеж](../../docs/scala/collections/tuple) от двух и более элементов
+### [Кортеж](https://scalabook.gitflic.space/docs/scala/collections/tuple) от двух и более элементов
 
 ```scala
 given Traverse[[X] =>> (X, X)] with
@@ -124,7 +124,7 @@ tree.traverse(a => Id(a + 1))
 // val res0: Id[Tree[Int]] = Id(Tree(1,List(Tree(2,List(Tree(3,List()))))))
 ```
 
-### [Map](../../docs/scala/collections/maps)
+### [Map](https://scalabook.gitflic.space/docs/scala/collections/maps)
 
 ```scala
 given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with

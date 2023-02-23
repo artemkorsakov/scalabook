@@ -1,9 +1,11 @@
 # Divide
 
-`Divide` - контравариантный аналог [`Apply`](apply). Он расширяет ковариантный функтор и дополнительно реализует
+`Divide` - контравариантный аналог [`Apply`](https://scalabook.gitflic.space/docs/typeclass/monad/apply). 
+Он расширяет ковариантный функтор и дополнительно реализует
 операцию `divide`: `def divide[A, B, C](fa: => F[A], fb: => F[B])(f: C => (A, B)): F[C]`
 
 Законы `Divide`:
+
 - Composition (композиция): `divide(divide(fa1, fa2)(delta), fa3)(delta) == divide(fa1, divide(fa2, fa3)(delta))(delta)`,
   где `delta: A => (A, A) = a => (a, a)`
 

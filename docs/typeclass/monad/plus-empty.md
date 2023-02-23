@@ -1,8 +1,9 @@
 # PlusEmpty
 
-Универсальный количественный [моноид](../monoid/monoid).
+Универсальный количественный [моноид](https://scalabook.gitflic.space/docs/typeclass/monoid/monoid).
 
 `PlusEmpty` должен удовлетворять законам моноида:
+
 - Associativity (ассоциативность): `(x + y) + z = x + (y + z)`
 - Identity (тождественность): существует `e ∈ M` такое, что `e + x = x + e = x`
 

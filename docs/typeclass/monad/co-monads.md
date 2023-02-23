@@ -1,6 +1,7 @@
 # Co-Monad
 
-Комонада реализует противоположные для [монады](monad) операции и расширяет [`CoBind`](co-bind).
+Комонада реализует противоположные для [монады](https://scalabook.gitflic.space/docs/typeclass/monad/monad) 
+операции и расширяет [`CoBind`](https://scalabook.gitflic.space/docs/typeclass/monad/co-bind).
 
 
 ## Описание

@@ -1,8 +1,9 @@
 # Plus
 
-Универсальная количественная [полугруппа](../monoid/semigroup). 
+Универсальная количественная [полугруппа](https://scalabook.gitflic.space/docs/typeclass/monoid/semigroup). 
 
 `Plus` должен удовлетворять законам полугруппы:
+
 - Associativity (ассоциативность): `(x + y) + z = x + (y + z)`
 
 

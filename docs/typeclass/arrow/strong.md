@@ -1,10 +1,11 @@
 # Strong
 
-`Strong` - сила в объединении. `Strong` расширяет [`Profunctor`](profunctor) и добавляет операции `first` и `second`,
+`Strong` - сила в объединении. `Strong` расширяет [`Profunctor`](https://scalabook.gitflic.space/docs/typeclass/arrow/profunctor) и добавляет операции `first` и `second`,
 добавляющие заданное значение слева или справа от функции 
 `A =>: B => (A, C) =>: (B, C)` или `A =>: B => (C, A) =>: (C, B)`.
 
 `Strong` должен [удовлетворять следующим законам](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FStrongLaw.scala):
+
 - при отображении функции swap слева и справа на `second` получим `first`: `dimap(second)(_.swap)(_.swap) == first`
 - верно и обратное: `dimap(first)(_.swap)(_.swap) == second`
 - `lmap fst == rmap fst . first'`

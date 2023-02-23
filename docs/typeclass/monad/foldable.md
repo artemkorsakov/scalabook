@@ -19,6 +19,7 @@ _Fold_ может использоваться для реализации `redu
 необходимо реализовать несколько операций напрямую.
 
 Связь между операциями должна удовлетворять следующим законам:
+
 - `foldLeft` соответствует `foldMap`: `fa.foldMap(Vector(_)) == fa.foldLeft(Vector.empty[A])(_ :+ _)`
 - `foldRight` соответствует `foldMap`: `fa.foldMap(Vector(_)) == fa.foldRight(Vector.empty[A])(_ +: _)`
 
@@ -86,7 +87,7 @@ given Foldable[List] with
     override def toList: List[A] = as
 ```
 
-### [Кортеж](../../docs/scala/collections/tuple) от двух и более элементов
+### [Кортеж](https://scalabook.gitflic.space/docs/scala/collections/tuple) от двух и более элементов
 
 ```scala
 given tuple2Foldable: Foldable[[X] =>> (X, X)] with

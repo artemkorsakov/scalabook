@@ -1,9 +1,10 @@
 # IsEmpty
 
 `IsEmpty` - класс типов, позволяющий проверить, действительно ли какой-либо тип с пустым представлением является пустым.
-Расширяет [`PlusEmpty`](plus-empty).
+Расширяет [`PlusEmpty`](https://scalabook.gitflic.space/docs/typeclass/monad/plus-empty).
 
 `IsEmpty` должен удовлетворять следующим законам (помимо законов родителей): 
+
 - `isEmpty` с параметром `empty` должен возвращать `true`: `isEmpty(empty[A]) == true`.
 - `isEmpty` от композиции двух функторов равно `true` тогда и только тогда, когда `isEmpty` от каждого функтора - `true`: 
   `isEmpty(f1) && isEmpty(f2) == isEmpty(plus(f1, f2))`

@@ -1,6 +1,7 @@
 # MonadPlus
 
-Класс типов `MonadPlus` предназначен для [монад](monad), которые также могут действовать как [моноиды](../monoid/monoid).
+Класс типов `MonadPlus` предназначен для [монад](https://scalabook.gitflic.space/docs/typeclass/monad/monad), 
+которые также могут действовать как [моноиды](https://scalabook.gitflic.space/docs/typeclass/monoid/monoid).
 
 `MonadPlus` должен удовлетворять законам монад и моноидов.
 

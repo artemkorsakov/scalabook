@@ -2,9 +2,12 @@
 
 `Arrow` ("стрелка") — это термин, используемый в теории категорий как абстрактное понятие вещи, 
 которая ведет себя как функция. "Стрелки", могут быть полезны, если нужно добавить некоторый контекст к функциям и парам.
-Каждая "стрелка" образует [`Contravariant`](../monad/contravariant-functor) в одном параметре типа 
-и [`Applicative`](../monad/applicative) в другом, как и в случае с обычными функциями.
-`Arrow` расширяет [`Split`](split), [`Strong`](strong) и [`Category`](category).
+Каждая "стрелка" образует [`Contravariant`](https://scalabook.gitflic.space/docs/typeclass/monad/contravariant-functor) 
+в одном параметре типа и [`Applicative`](https://scalabook.gitflic.space/docs/typeclass/monad/applicative)
+в другом, как и в случае с обычными функциями.
+`Arrow` расширяет [`Split`](https://scalabook.gitflic.space/docs/typeclass/arrow/split), 
+[`Strong`](https://scalabook.gitflic.space/docs/typeclass/arrow/strong) 
+и [`Category`](https://scalabook.gitflic.space/docs/typeclass/arrow/category).
 
 `Arrow` должен удовлетворять законам расширяемых трейтов.
 

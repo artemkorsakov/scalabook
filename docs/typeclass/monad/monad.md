@@ -52,7 +52,7 @@ given optionMonad: Monad[Option] with
         case None    => None
 ```
 
-### [Последовательность](../../docs/scala/collections)
+### [Последовательность](../../scala/collections)
 
 ```scala
 given listMonad: Monad[List] with

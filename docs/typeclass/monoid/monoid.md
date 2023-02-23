@@ -48,7 +48,7 @@ given stringMonoidInstance: Monoid[String] with
   def combine(x: String, y: String): String = x + y
 ```
 
-### [Последовательность](../../docs/scala/collections)
+### [Последовательность](../../scala/collections)
 
 ```scala
 given listMonoidInstance[T]: Monoid[List[T]] with

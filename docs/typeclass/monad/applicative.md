@@ -91,7 +91,7 @@ given optionApplicative: Applicative[Option] with
       case _                     => None
 ```
 
-### [Последовательность](../../docs/scala/collections)
+### [Последовательность](../../scala/collections)
 
 ```scala
 given listApplicative: Applicative[List] with

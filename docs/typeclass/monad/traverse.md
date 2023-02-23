@@ -97,7 +97,7 @@ given Traverse[Option] with
         case None    => summon[Applicative[G]].unit(None)
 ```
 
-### [Последовательность](../../docs/scala/collections)
+### [Последовательность](../../scala/collections)
 
 ```scala
 given Traverse[List] with

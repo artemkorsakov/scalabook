@@ -101,6 +101,10 @@ lazy val docs = project
             IconLink.external(
               "https://github.com/artemkorsakov/scalabook",
               HeliumIcon.github
+            ),
+            IconLink.external(
+              "https://gitflic.ru/project/artemkorsakov/scalabook",
+              HeliumIcon.github
             )
           )
         )

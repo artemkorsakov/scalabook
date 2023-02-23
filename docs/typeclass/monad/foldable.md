@@ -74,7 +74,7 @@ given Foldable[Option] with
         case Some(a) => f(a)
 ```
 
-### [Последовательность](../../docs/scala/collections)
+### [Последовательность](../../scala/collections)
 
 ```scala
 given Foldable[List] with

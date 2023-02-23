@@ -60,7 +60,7 @@ given optionFunctor: Functor[Option] with
         case None    => None
 ```
 
-### [Последовательность](../../docs/scala/collections)
+### [Последовательность](../../scala/collections)
 
 ```scala
 given listFunctor: Functor[List] with

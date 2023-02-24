@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="ru">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.0 + Helium Theme" />
+  <title>Моделирование ФП</title>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  
+  <meta name="description" content="Функциональная разработка на Scala"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+  <script src="../../helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../">Домашняя</a></li>
+    <li class="level1 nav-header">Блог</li>
+    <li class="level2 nav-leaf"><a href="../../blog/2023-01-09-architecture-problems.html">Ошибки при наследовании</a></li>
+    <li class="level1 nav-header">Scala</li>
+    <li class="level2 nav-leaf"><a href="../">Обзор Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../getting-started.html">С чего начать?</a></li>
+    <li class="level2 nav-leaf"><a href="../hello_world.html">Hello, world!</a></li>
+    <li class="level2 nav-leaf"><a href="../repl.html">REPL</a></li>
+    <li class="level2 nav-leaf"><a href="../types.html">Типы данных</a></li>
+    <li class="level2 nav-leaf"><a href="../structures.html">Структуры управления</a></li>
+    <li class="level2 nav-header">Структуры управления</li>
+    <li class="level3 nav-leaf"><a href="../structures/ifelse.html">if/else</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/for.html">for</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/match.html">match expressions</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/others.html">while and try</a></li>
+    <li class="level2 nav-leaf"><a href="../modeling.html">Моделирование данных</a></li>
+    <li class="level2 nav-header">Моделирование данных</li>
+    <li class="level3 nav-leaf"><a href="classes.html">Классы</a></li>
+    <li class="level3 nav-leaf"><a href="objects.html">Объекты</a></li>
+    <li class="level3 nav-leaf"><a href="companion-objects.html">Сопутствующие объекты</a></li>
+    <li class="level3 nav-leaf"><a href="traits.html">Трейты</a></li>
+    <li class="level3 nav-leaf"><a href="abstract-class.html">Абстрактные классы</a></li>
+    <li class="level3 nav-leaf"><a href="enums.html">Перечисления</a></li>
+    <li class="level3 nav-leaf"><a href="case-class.html">Кейс классы и объекты</a></li>
+    <li class="level3 nav-leaf"><a href="oop.html">Моделирование ООП</a></li>
+    <li class="level3 active nav-leaf"><a href="#">Моделирование ФП</a></li>
+    <li class="level2 nav-leaf"><a href="../methods.html">Методы</a></li>
+    <li class="level2 nav-header">Методы</li>
+    <li class="level3 nav-leaf"><a href="../methods/method-features.html">Определение методов</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/default-parameters.html">Параметры по умолчанию</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/named-parameters.html">Именованные параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/by-name-parameter.html">Параметры по имени</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/partially-applied-functions.html">Каррирование</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/vararg-parameters.html">Методы с неопределенным количеством параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/generic-parameter.html">Generic параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/extension-methods.html">Методы расширения</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/main-methods.html">main методы</a></li>
+    <li class="level2 nav-leaf"><a href="../functions.html">Функции</a></li>
+    <li class="level2 nav-header">Функции</li>
+    <li class="level3 nav-leaf"><a href="../functions/anonymous.html">Анонимные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/variables.html">Параметры функции</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/eta.html">Eta расширение</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/hofs.html">Функции высшего порядка</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/write-map.html">Написание своего собственного метода map</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/returns-function.html">Возврат функции в методе</a></li>
+    <li class="level2 nav-leaf"><a href="../packaging.html">Пакеты и импорт</a></li>
+    <li class="level2 nav-leaf"><a href="../toplevel-definitions.html">Верхнеуровневые определения</a></li>
+    <li class="level2 nav-leaf"><a href="../collections.html">Коллекции</a></li>
+    <li class="level2 nav-header">Коллекции</li>
+    <li class="level3 nav-leaf"><a href="../collections/classes.html">Типы коллекций</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/list.html">List</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/lazylist.html">LazyList</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/array-seq.html">ArraySeq</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/vector.html">Vector</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/array-buffer.html">ArrayBuffer</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/maps.html">Maps</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/set.html">Работа с множествами</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/range.html">Диапазон (Range)</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/tuple.html">Tuple (кортежи)</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/queue.html">Queue</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/methods.html">Методы в коллекциях</a></li>
+    <li class="level2 nav-leaf"><a href="../fp.html">Функциональное программирование</a></li>
+    <li class="level2 nav-header">ФП</li>
+    <li class="level3 nav-leaf"><a href="../fp/what-is-fp.html">Что такое функциональное программирование?</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/immutable-values.html">Неизменяемые значения</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/pure-functions.html">Чистые функции</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/functions-are-values.html">Функции - это значения</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/functional-error-handling.html">Функциональная обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../type-system.html">Система типов</a></li>
+    <li class="level2 nav-header">Система типов</li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-inferred.html">Определение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-generics.html">Generics типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/upper-type-bounds.html">Верхнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/lower-type-bounds.html">Нижнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-intersection.html">Пересечение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-union.html">Объединение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-adts.html">Алгебраические типы данных (ADT)</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-variance.html">Ковариантность типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-opaque.html">Непрозрачные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-structural.html">Структурные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-dependent-function.html">Зависимые типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/type-lambdas.html">Лямбда-типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/match-types.html">Типы match</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/polymorphic-function-types.html">Полиморфные типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-others.html">Другие типы</a></li>
+    <li class="level2 nav-leaf"><a href="../abstractions.html">Контекстуальные абстракции</a></li>
+    <li class="level2 nav-header">Абстракции</li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-given.html">Экземпляры given</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-using.html">Предложения using</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/type-classes.html">Класс типов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-context-bounds.html">Контекстные границы</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-given-imports.html">Given imports</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-extension-methods.html">Методы расширения - детали</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-type-classes.html">Имплементация type классов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-type-class-derivation.html">Type Class Derivation</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-multiversal-equality.html">Многостороннее равенство</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/context-functions.html">Контекстные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-implicit-conversions.html">Неявные преобразования типов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-by-name-parameters.html">Контекстные параметры по имени</a></li>
+    <li class="level2 nav-leaf"><a href="../details.html">Детали</a></li>
+    <li class="level2 nav-header">Детали</li>
+    <li class="level3 nav-leaf"><a href="../details/export-causes.html">Предложения export</a></li>
+    <li class="level3 nav-leaf"><a href="../details/parameter-untupling.html">Распаковка параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../details/type-test.html">Проверка типа</a></li>
+    <li class="level3 nav-leaf"><a href="../details/pattern-matching.html">Сопоставление с образцом</a></li>
+    <li class="level2 nav-leaf"><a href="../concurrency.html">Параллелизм</a></li>
+    <li class="level2 nav-leaf"><a href="../tools.html">Утилиты</a></li>
+    <li class="level2 nav-header">Утилиты</li>
+    <li class="level3 nav-leaf"><a href="../tools/tools-sbt.html">Сборка и тестирование проектов Scala с помощью Sbt</a></li>
+    <li class="level3 nav-leaf"><a href="../tools/tools-worksheets.html">Worksheet</a></li>
+    <li class="level2 nav-leaf"><a href="../with_java.html">Взаимодействие с Java</a></li>
+    <li class="level2 nav-leaf"><a href="../metaprogramming.html">Метапрограммирование</a></li>
+    <li class="level2 nav-header">Metaprogramming</li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/inline.html">Inline</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/compile-time-ops.html">Операции во время компиляции</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/macros.html">Макросы</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/quoted-code.html">Quoted Code</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/runtime-staging.html">Runtime Staging</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/reflection.html">Reflection</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/tasty-inspection.html">TASTy Inspection</a></li>
+    <li class="level2 nav-leaf"><a href="../soft-keywords.html">Soft Keywords</a></li>
+    <li class="level2 nav-leaf"><a href="../scaladoc.html">Scaladoc</a></li>
+    <li class="level2 nav-header">Scaladoc</li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/docstrings.html">Документы</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/linking.html">Связующая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/static-site.html">Статическая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/blog.html">Встроенный блог</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/site-versioning.html">Версионность сайта</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/search-engine.html">Поиск по типу</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/snippet-compiler.html">Проверка фрагмента</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/settings.html">Настройки</a></li>
+    <li class="level1 nav-header">Функциональное программирование</li>
+    <li class="level2 nav-leaf"><a href="../../fp/">Функциональное программирование</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/data-structures.html">Функциональная структура данных</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/handling-errors.html">Обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/laziness.html">Ленивые вычисления</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/state.html">Функциональное состояние</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monoids.html">Monoids</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monads.html">Monads</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/writer.html">Функциональный журнал</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/non-empty-list.html">Непустой связанный список</a></li>
+    <li class="level1 nav-header">Теория категорий</li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/">Теория категорий</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/equal.html">Группа Equal</a></li>
+    <li class="level2 nav-header">Группа Equal</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/equal.html">Equal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/order.html">Order</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/enum.html">Enum</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/bounded.html">Bounded</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monoid.html">Группа Monoid</a></li>
+    <li class="level2 nav-header">Группа Monoid</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/semigroup.html">Semigroup</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/monoid.html">Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/band.html">Band</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/idempotent-monoid.html">Idempotent Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/group.html">Group</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monad.html">Группа Monad</a></li>
+    <li class="level2 nav-header">Группа Monad</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-functor.html">Invariant Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/functor.html">Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-applicative.html">Invariant Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/semigroupal.html">Semigroupal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/apply.html">Apply</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative.html">Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/bind.html">Bind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad.html">Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus.html">Plus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus-empty.html">PlusEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative-plus.html">ApplicativePlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-plus.html">MonadPlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/is-empty.html">IsEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/foldable.html">Foldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/traverse.html">Traverse</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/contravariant-functor.html">Контравариантный функтор</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divide.html">Divide</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divisible.html">Divisible</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-bind.html">CoBind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-monads.html">Co-Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-transformer.html">Monad Transformer</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/free-monads.html">Free Monad</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/arrow.html">Группа Arrow</a></li>
+    <li class="level2 nav-header">Группа Arrow</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/compose.html">Compose</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/category.html">Category</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/split.html">Split</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/profunctor.html">Profunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/strong.html">Strong</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/arrow.html">Arrow</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/bifunctor.html">Группа Bifunctor</a></li>
+    <li class="level2 nav-header">Группа Bifunctor</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifunctor.html">Bifunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifoldable.html">Bifoldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bitraverse.html">Bitraverse</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/other.html">Вне группы</a></li>
+    <li class="level2 nav-header">Вне группы</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/show.html">Show</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/read.html">Read</a></li>
+    <li class="level1 nav-header">Алгоритмы и структуры</li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/">Структуры данных и алгоритмы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/fundamental.html">Фундаментальные алгоритмы</a></li>
+    <li class="level2 nav-header">Фундаментальные алгоритмы</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/numerical.html">Численные алгоритмы</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/primes.html">Простые числа</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/fibonacci.html">Числа Фибоначчи</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/lists.html">Связанные списки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/arrays.html">Массивы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/stacks.html">Стеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/queues.html">Очереди</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/trees.html">Деревья</a></li>
+    <li class="level2 nav-header">Двоичное дерево</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/trees/binary-tree.html">Двоичное дерево</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/hash-tables.html">Хеш-таблицы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/sort.html">Сортировка</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/search.html">Поиск</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/graphs.html">Графы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/ackermann.html">Функция Аккермана</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/newton.html">Метод Ньютона</a></li>
+    <li class="level1 nav-header">Scala библиотеки</li>
+    <li class="level2 nav-leaf"><a href="../../libs/">Scala библиотеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/refined.html">Уточняющие типы в Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/cats-effect.html">Cats effect</a></li>
+    <li class="level2 nav-header">Cats effect</li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/copy-files.html">Копирование файлов</a></li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/producer-consumer-problem.html">Проблема производитель-потребитель — параллелизм и волокна</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/http4s.html">Http4s</a></li>
+    <li class="level1 nav-header">Паттерны проектирования</li>
+    <li class="level2 nav-leaf"><a href="../../patterns/">Паттерны проектирования</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/creational.html">Порождающие шаблоны</a></li>
+    <li class="level2 nav-header">Порождающие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/factory-method.html">Фабричный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/abstract-factory.html">Абстрактная фабрика</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/builder.html">Строитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/prototype.html">Прототип</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/singleton.html">Одиночка</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/structural.html">Структурные шаблоны</a></li>
+    <li class="level2 nav-header">Структурные шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/adapter.html">Адаптер</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/bridge.html">Мост</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/composite.html">Компоновщик</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/decorator.html">Декоратор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/facade.html">Фасад</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/flyweight.html">Приспособленец</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/proxy.html">Заместитель</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/behavioral.html">Поведенческие шаблоны</a></li>
+    <li class="level2 nav-header">Поведенческие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/interpreter.html">Интерпретатор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/template-method.html">Шаблонный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/chain-of-responsibility.html">Цепочка обязанностей</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/command.html">Команда</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/iterator.html">Итератор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/mediator.html">Посредник</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/memento.html">Хранитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/observer.html">Наблюдатель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/state.html">Состояние</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/strategy.html">Стратегия</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/visitor.html">Посетитель</a></li>
+    <li class="level1 nav-header">Упражнения из книг</li>
+    <li class="level2 nav-leaf"><a href="../../books/">Упражнения из книг</a></li>
+    <li class="level2 nav-header">Structure and Interpretation</li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/">Структура и интерпретация компьютерных программ</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_6.html">Глава 1.1.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_7.html">Глава 1.1.7</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_8.html">Глава 1.1.8</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_1.html">Глава 1.2.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_2.html">Глава 1.2.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_3.html">Глава 1.2.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_4.html">Глава 1.2.4</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_5.html">Глава 1.2.5</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_6.html">Глава 1.2.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_1.html">Глава 1.3.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_2.html">Глава 1.3.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_3.html">Глава 1.3.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_4.html">Глава 1.3.4</a></li>
+    <li class="level2 nav-header">Scala Puzzlers</li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/">Головоломки на Scala</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/hi-there.html">Hi There!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/upstairs.html">UPSTAIRS downstairs</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/location.html">Location, Location, Location</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/now-you-see-me.html">Now You See Me, Now You Don&#39;t</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-missing-list.html">The Missing List</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/arg-arrgh.html">Arg Arrgh!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/captured-by-closures.html">Captured by Closures</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/map-comprehension.html">Map Comprehension</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/init-you-init-me.html">Init You, Init Me</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-equality.html">A Case of Equality</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/if-at-first.html">If At First You Don&#39;t Succeed...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/to-map-or-not-to-map.html">To Map, or Not to Map</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/private-lives.html">Private Lives</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/self-see-self.html">Self - See &#39;Self&#39;</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-egg-or-two.html">One Egg or Two..?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/return-to-me.html">Return to Me!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/implicitly-surprising.html">Implicitly Surprising</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-bound-two-to-go.html">One Bound, Two to Go</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/count-me-now-count-me-later.html">Count Me Now, Count Me Later</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/whats-in-a-name.html">What&#39;s in a Name?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/i-can-has-padding.html">I Can Has Padding?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/cast-away.html">Cast Away</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/pick-an-int-any-int.html">Pick an Int, Any Int!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-string.html">A Case of Strings</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-view-to-a-shill.html">A View to a Shill</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/accepts-any-args.html">Accepts Any Args</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-devil-is-in-the-defaults.html">The Devil is in the Defaults</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-two-skip-a-few.html">One, Two, Skip a Few</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/oddly-enough.html">Oddly Enough</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/splitting-headache.html">Splitting Headache</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-result-finally.html">A Result, Finally!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/heads-you-win.html">Heads You Win...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/ex-stream-surprise.html">(Ex)Stream Surprise</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-matter-of-context.html">A Matter of Context</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/inference.html">Inference Hindrance</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/for-each-step.html">For Each Step...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/beep-beep-reversing.html">Beep Beep...Reversing</a></li>
+    <li class="level1 nav-leaf"><a href="../../extra.html">Дополнительные материалы</a></li>
+    <li class="level1 nav-header">Дополнительные материалы</li>
+    <li class="level2 nav-leaf"><a href="../../extra/one_star.html">✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/two_stars.html">✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/three_stars.html">✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/four_stars.html">✯✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/five_stars.html">✯✯✯✯✯</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Моделирование ФП</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#введение">Введение</a></li>
+    <li class="level1 nav-node"><a href="#моделирование-данных">Моделирование данных</a></li>
+    <li class="level2 nav-leaf"><a href="#описание-вариантов">Описание вариантов</a></li>
+    <li class="level2 nav-node"><a href="#описание-основных-данных">Описание основных данных</a></li>
+    <li class="level3 nav-leaf"><a href="#подробнее-о-модели-данных">Подробнее о модели данных</a></li>
+    <li class="level3 nav-leaf"><a href="#узкие-доменные-объекты">&quot;Узкие доменные объекты&quot;</a></li>
+    <li class="level1 nav-leaf"><a href="#моделирование-операций">Моделирование операций</a></li>
+    <li class="level1 nav-node"><a href="#как-организовать-функциональность">Как организовать функциональность?</a></li>
+    <li class="level2 nav-leaf"><a href="#companion-object">Companion Object</a></li>
+    <li class="level1 nav-node"><a href="#модули">Модули</a></li>
+    <li class="level2 nav-leaf"><a href="#создание-интерфейса-pizzaservice">Создание интерфейса <em>PizzaService</em></a></li>
+    <li class="level2 nav-leaf"><a href="#создание-конкретной-реализации">Создание конкретной реализации</a></li>
+    <li class="level2 nav-node"><a href="#функциональные-объекты">Функциональные объекты</a></li>
+    <li class="level3 nav-leaf"><a href="#пример">Пример</a></li>
+    <li class="level2 nav-leaf"><a href="#методы-расширения">Методы расширения</a></li>
+    <li class="level1 nav-leaf"><a href="#резюме-функционального-подхода">Резюме функционального подхода</a></li>
+  </ul>
+
+  <p class="footer"><a href="https://github.com/artemkorsakov/scalabook/blob/master/docs/scala/modeling/fp.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Редактировать страницу</a></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="моделирование-фп" class="title">Моделирование ФП</h1>
+        <p>В этой главе представлено введение в моделирование предметной области 
+        с использованием функционального программирования (ФП). </p>
+        <p>При моделировании с помощью ФП обычно используются следующие конструкции Scala:</p>
+        <ul>
+          <li>Enums</li>
+          <li>Case classes</li>
+          <li>Traits</li>
+        </ul>
+        
+        <h3 id="введение" class="section"><a class="anchor-link left" href="#введение"><i class="icofont-laika link">&#xef71;</i></a>Введение</h3>
+        <p>В ФП данные и операции над этими данными — это две разные вещи; их необязательно инкапсулировать вместе, как в ООП.</p>
+        <p>Концепция аналогична числовой алгебре. 
+        Когда вы думаете о целых числах, значения которых больше или равны нулю, 
+        то у вас есть набор возможных значений, который выглядит следующим образом:</p>
+        <pre><code>0, 1, 2 ... Int.MaxValue</code></pre>
+        <p>Игнорируя деление целых чисел, возможные операции над этими значениями такие:</p>
+        <pre><code>+, -, *</code></pre>
+        <p>Схема ФП реализуется аналогичным образом: </p>
+        <ul>
+          <li>описывается свой набор значений (данные) </li>
+          <li>описываются операции, которые работают с этими значениями (функции)</li>
+        </ul>
+        <blockquote>Как будет видно, рассуждения о программах в этом стиле сильно отличаются 
+        от объектно-ориентированного программирования. 
+        Отделение функциональности от данных позволяет проверять свои данные, не беспокоясь о поведении.</blockquote>
+        <p>В этой главе мы смоделируем данные и операции для &quot;пиццы&quot; в пиццерии. 
+        Будет показано, как реализовать часть &quot;данных&quot; модели Scala/ФП, 
+        а затем - несколько различных способов организации операций с этими данными.</p>
+        
+        <h3 id="моделирование-данных" class="section"><a class="anchor-link left" href="#моделирование-данных"><i class="icofont-laika link">&#xef71;</i></a>Моделирование данных</h3>
+        <p>В Scala достаточно просто описать модель данных:</p>
+        <ul>
+          <li>если необходимо смоделировать данные с различными вариантами, то используется конструкция <code>enum</code></li>
+          <li>если необходимо только сгруппировать сущности (или нужен более детальный контроль), то используются <code>case class</code>-ы</li>
+        </ul>
+        
+        <h4 id="описание-вариантов" class="section"><a class="anchor-link left" href="#описание-вариантов"><i class="icofont-laika link">&#xef71;</i></a>Описание вариантов</h4>
+        <p>Данные, которые просто состоят из различных вариантов, таких как размер корочки, тип корочки и начинка, 
+        кратко моделируются с помощью конструкции <code>enum</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">enum</span><span> </span><span class="type-name">CrustSize</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Small</span><span>, </span><span class="type-name">Medium</span><span>, </span><span class="type-name">Large</span><span>
+  
+</span><span class="keyword">enum</span><span> </span><span class="type-name">CrustType</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Thin</span><span>, </span><span class="type-name">Thick</span><span>, </span><span class="type-name">Regular</span><span>
+  
+</span><span class="keyword">enum</span><span> </span><span class="type-name">Topping</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Cheese</span><span>, </span><span class="type-name">Pepperoni</span><span>, </span><span class="type-name">BlackOlives</span><span>, </span><span class="type-name">GreenOlives</span><span>, </span><span class="type-name">Onions</span></code></pre>
+        <blockquote>Типы данных, которые описывают различные варианты (например, <code>CrustSize</code>), 
+        также иногда называют типами суммы (<em>sum types</em>).</blockquote>
+        
+        <h4 id="описание-основных-данных" class="section"><a class="anchor-link left" href="#описание-основных-данных"><i class="icofont-laika link">&#xef71;</i></a>Описание основных данных</h4>
+        <p>Пиццу можно рассматривать как составной контейнер с различными атрибутами, указанными выше. 
+        Мы можем использовать <code>case class</code>, чтобы описать, что пицца состоит из размеров корки, типа корки 
+        и, возможно, нескольких начинок:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="type-name">CrustSize</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="type-name">CrustType</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="type-name">Topping</span><span>.*
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Pizza</span><span>(
+  </span><span class="identifier">crustSize</span><span>: </span><span class="type-name">CrustSize</span><span>,
+  </span><span class="identifier">crustType</span><span>: </span><span class="type-name">CrustType</span><span>,
+  </span><span class="identifier">toppings</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">Topping</span><span>]
+)</span></code></pre>
+        <blockquote>Типы данных, объединяющие несколько компонентов (например, <code>Pizza</code>), 
+        также иногда называют типами продуктов (<em>product types</em>).</blockquote>
+        <p>И все. Это модель данных для системы доставки пиццы в стиле ФП. 
+        Решение очень лаконично, поскольку оно не требует объединения модели данных с операциями с пиццей. 
+        Модель данных легко читается, как объявление дизайна для реляционной базы данных. 
+        Также очень легко создавать значения нашей модели данных и проверять их:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">myFavPizza</span><span> = </span><span class="type-name">Pizza</span><span>(</span><span class="type-name">Small</span><span>, </span><span class="type-name">Regular</span><span>, </span><span class="type-name">Seq</span><span>(</span><span class="type-name">Cheese</span><span>, </span><span class="type-name">Pepperoni</span><span>))
+</span><span class="comment">// myFavPizza: Pizza = Pizza(
+//   crustSize = Small,
+//   crustType = Regular,
+//   toppings = List(Cheese, Pepperoni)
+// )
+</span><span class="identifier">println</span><span>(</span><span class="identifier">myFavPizza</span><span>.</span><span class="identifier">crustType</span><span>)
+</span><span class="comment">// Regular</span></code></pre>
+        
+        <h5 id="подробнее-о-модели-данных" class="section"><a class="anchor-link left" href="#подробнее-о-модели-данных"><i class="icofont-laika link">&#xef71;</i></a>Подробнее о модели данных</h5>
+        <p>Таким же образом можно было бы смоделировать всю систему заказа пиццы. 
+        Вот несколько других <code>case class</code>-ов, которые используются для моделирования такой системы:</p>
+        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Address</span><span>(
+  </span><span class="identifier">street1</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="identifier">street2</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>],
+  </span><span class="identifier">city</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="identifier">state</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="identifier">zipCode</span><span>: </span><span class="type-name">String</span><span>
+)
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Customer</span><span>(
+  </span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="identifier">phone</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="identifier">address</span><span>: </span><span class="type-name">Address</span><span>
+)
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Order</span><span>(
+  </span><span class="identifier">pizzas</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">Pizza</span><span>],
+  </span><span class="identifier">customer</span><span>: </span><span class="type-name">Customer</span><span>
+)</span></code></pre>
+        
+        <h5 id="узкие-доменные-объекты" class="section"><a class="anchor-link left" href="#узкие-доменные-объекты"><i class="icofont-laika link">&#xef71;</i></a>&quot;Узкие доменные объекты&quot;</h5>
+        <p>В своей книге <a href="https://www.manning.com/books/functional-and-reactive-domain-modeling">Functional and Reactive Domain Modeling</a>, 
+        Debasish Ghosh утверждает, 
+        что там, где специалисты по ООП описывают свои классы как &quot;широкие модели предметной области&quot;, 
+        которые инкапсулируют данные и поведение, 
+        модели данных ФП можно рассматривать как &quot;узкие объекты предметной области&quot;. 
+        Это связано с тем, что, как показано выше, модели данных определяются как <code>case class</code>-ы с атрибутами, 
+        но без поведения, что приводит к коротким и лаконичным структурам данных.</p>
+        
+        <h3 id="моделирование-операций" class="section"><a class="anchor-link left" href="#моделирование-операций"><i class="icofont-laika link">&#xef71;</i></a>Моделирование операций</h3>
+        <p>Возникает интересный вопрос: 
+        поскольку ФП отделяет данные от операций над этими данными, то как эти операции реализуются в Scala?</p>
+        <p>Ответ на самом деле довольно прост: пишутся функции/методы, 
+        работающие со значениями смоделированных данных. 
+        Например, можно определить функцию, которая вычисляет цену пиццы.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">pizzaPrice</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Pizza</span><span>): </span><span class="type-name">Double</span><span> = </span><span class="identifier">p</span><span> </span><span class="keyword">match</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Pizza</span><span>(</span><span class="identifier">crustSize</span><span>, </span><span class="identifier">crustType</span><span>, </span><span class="identifier">toppings</span><span>) =&gt;
+    </span><span class="keyword">val</span><span> </span><span class="identifier">base</span><span>  = </span><span class="number-literal">6.00</span><span>
+    </span><span class="keyword">val</span><span> </span><span class="identifier">crust</span><span> = </span><span class="identifier">crustPrice</span><span>(</span><span class="identifier">crustSize</span><span>, </span><span class="identifier">crustType</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">tops</span><span>  = </span><span class="identifier">toppings</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">toppingPrice</span><span>).</span><span class="identifier">sum</span><span>
+    </span><span class="identifier">base</span><span> + </span><span class="identifier">crust</span><span> + </span><span class="identifier">tops</span></code></pre>
+        <p>Можно заметить, что реализация функции просто повторяет форму данных: 
+        поскольку <code>Pizza</code> является <code>case class</code>-ом, используется сопоставление с образцом для извлечения компонентов,
+        а затем вызываются вспомогательные функции для вычисления отдельных цен.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">toppingPrice</span><span>(</span><span class="identifier">t</span><span>: </span><span class="type-name">Topping</span><span>): </span><span class="type-name">Double</span><span> = </span><span class="identifier">t</span><span> </span><span class="keyword">match</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Cheese</span><span> | </span><span class="type-name">Onions</span><span> =&gt; </span><span class="number-literal">0.5</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Pepperoni</span><span> | </span><span class="type-name">BlackOlives</span><span> | </span><span class="type-name">GreenOlives</span><span> =&gt; </span><span class="number-literal">0.75</span></code></pre>
+        <p>Точно так же, поскольку <code>Topping</code> является перечислением, используется сопоставление с образцом, 
+        чтобы разделить варианты. Сыр и лук продаются по 50 центов за штуку, остальные — по 75.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">crustPrice</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">CrustSize</span><span>, </span><span class="identifier">t</span><span>: </span><span class="type-name">CrustType</span><span>): </span><span class="type-name">Double</span><span> =
+  (</span><span class="identifier">s</span><span>, </span><span class="identifier">t</span><span>) </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> (</span><span class="type-name">Small</span><span> | </span><span class="type-name">Medium</span><span>, </span><span class="identifier">_</span><span>) =&gt; </span><span class="number-literal">0.25</span><span> </span><span class="comment">// игнорируем значение t
+</span><span>    </span><span class="keyword">case</span><span> (</span><span class="type-name">Large</span><span>, </span><span class="type-name">Thin</span><span>) =&gt; </span><span class="number-literal">0.50</span><span>
+    </span><span class="keyword">case</span><span> (</span><span class="type-name">Large</span><span>, </span><span class="type-name">Regular</span><span>) =&gt; </span><span class="number-literal">0.75</span><span>
+    </span><span class="keyword">case</span><span> (</span><span class="type-name">Large</span><span>, </span><span class="type-name">Thick</span><span>) =&gt; </span><span class="number-literal">1.00</span></code></pre>
+        <p>Чтобы рассчитать цену корки, мы одновременно сопоставляем образцы как по размеру, так и по типу корки.</p>
+        <blockquote>Важным моментом во всех показанных выше функциях является то, что они являются чистыми функциями (pure functions): 
+        они не изменяют данные и не имеют других побочных эффектов (таких, как выдача исключений или запись в файл). 
+        Всё, что они делают - это просто получают значения и вычисляют результат.</blockquote>
+        
+        <h3 id="как-организовать-функциональность" class="section"><a class="anchor-link left" href="#как-организовать-функциональность"><i class="icofont-laika link">&#xef71;</i></a>Как организовать функциональность?</h3>
+        <p>При реализации функции расчета цены пиццы, описанной выше, не было сказано, где ее определять.
+        В Scala 3 вполне допустимо определить функцию на верхнем уровне файла. 
+        Тем не менее язык предоставляет множество отличных инструментов для организации логики 
+        в различных пространствах имен и модулях.</p>
+        <p>Существует несколько способов реализации и организации поведения:</p>
+        <ul>
+          <li>определить функции в сопутствующих объектах (companion object)</li>
+          <li>использовать модульный стиль программирования</li>
+          <li>использовать подход &quot;функциональных объектов&quot;</li>
+          <li>определить функциональность в методах расширения</li>
+        </ul>
+        <p>Эти различные решения показаны в оставшейся части этого раздела.</p>
+        
+        <h4 id="companion-object" class="section"><a class="anchor-link left" href="#companion-object"><i class="icofont-laika link">&#xef71;</i></a>Companion Object</h4>
+        <p>Первый подход — определить поведение (функции) в сопутствующем объекте.</p>
+        <blockquote>Как обсуждалось в разделе <a href="https://scalabook.gitflic.space/docs/scala/modeling/companion-objects">&quot;Companion objects&quot;</a>, 
+        сопутствующий объект — это объект с тем же именем, что и у класса, и объявленный в том же файле, что и класс.</blockquote>
+        <p>При таком подходе в дополнение к <code>enum</code> или <code>case class</code> также определяется companion object с таким же именем, 
+        который содержит поведение (функции).</p>
+        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Pizza</span><span>(
+  </span><span class="identifier">crustSize</span><span>: </span><span class="type-name">CrustSize</span><span>,
+  </span><span class="identifier">crustType</span><span>: </span><span class="type-name">CrustType</span><span>,
+  </span><span class="identifier">toppings</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">Topping</span><span>]
+)
+
+</span><span class="comment">// companion object для кейс класса Pizza
+</span><span class="keyword">object</span><span> </span><span class="type-name">Pizza</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">price</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Pizza</span><span>): </span><span class="type-name">Double</span><span> = ... </span><span class="comment">// тоже самое, что и pizzaPrice
+</span><span>
+</span><span class="keyword">enum</span><span> </span><span class="type-name">Topping</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Cheese</span><span>, </span><span class="type-name">Pepperoni</span><span>, </span><span class="type-name">BlackOlives</span><span>, </span><span class="type-name">GreenOlives</span><span>, </span><span class="type-name">Onions</span><span>
+
+</span><span class="comment">// companion object для перечисления Topping
+</span><span class="keyword">object</span><span> </span><span class="type-name">Topping</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">price</span><span>(</span><span class="identifier">t</span><span>: </span><span class="type-name">Topping</span><span>): </span><span class="type-name">Double</span><span> = </span><span class="identifier">t</span><span> </span><span class="keyword">match</span><span> </span><span class="comment">// тоже самое, что и toppingPrice
+</span><span>    </span><span class="keyword">case</span><span> </span><span class="type-name">Cheese</span><span> | </span><span class="type-name">Onions</span><span> =&gt; </span><span class="number-literal">0.5</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Pepperoni</span><span> | </span><span class="type-name">BlackOlives</span><span> | </span><span class="type-name">GreenOlives</span><span> =&gt; </span><span class="number-literal">0.75</span></code></pre>
+        <p>При таком подходе можно создать <code>Pizza</code> и вычислить ее цену следующим образом:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">pizza1</span><span> = </span><span class="type-name">Pizza</span><span>(</span><span class="type-name">Small</span><span>, </span><span class="type-name">Thin</span><span>, </span><span class="type-name">Seq</span><span>(</span><span class="type-name">Cheese</span><span>, </span><span class="type-name">Onions</span><span>))
+</span><span class="type-name">Pizza</span><span>.</span><span class="identifier">price</span><span>(</span><span class="identifier">pizza1</span><span>)</span></code></pre>
+        <p>Группировка функциональности с помощью сопутствующих объектов имеет несколько преимуществ:</p>
+        <ul>
+          <li>связывает функциональность с данными и облегчает их поиск программистам (и компилятору).</li>
+          <li>создает пространство имен и, например, позволяет использовать <code>price</code> в качестве имени метода, 
+          не полагаясь на перегрузку.</li>
+          <li>реализация <code>Topping.price</code> может получить доступ к значениям перечисления, таким как <code>Cheese</code>, 
+          без необходимости их импорта.</li>
+        </ul>
+        <p>Однако также есть несколько компромиссов, которые следует учитывать:</p>
+        <ul>
+          <li>модель данных тесно связывается с функциональностью. 
+          В частности, сопутствующий объект должен быть определен в том же файле, что и <code>case class</code>.</li>
+          <li>неясно, где определять такие функции, как <code>crustPrice</code>, 
+          которые с одинаковым успехом можно поместить в сопутствующий объект <code>CrustSize</code> или <code>CrustType</code>.</li>
+        </ul>
+        
+        <h3 id="модули" class="section"><a class="anchor-link left" href="#модули"><i class="icofont-laika link">&#xef71;</i></a>Модули</h3>
+        <p>Второй способ организации поведения — использование &quot;модульного&quot; подхода. 
+        В книге <a href="https://www.artima.com/shop/programming_in_scala_5ed">&quot;Программирование на Scala&quot;</a>
+        модуль определяется как &quot;<em>небольшая часть программы с четко определенным интерфейсом и скрытой реализацией</em>&quot;. 
+        Давайте посмотрим, что это значит.</p>
+        
+        <h4 id="создание-интерфейса-pizzaservice" class="section"><a class="anchor-link left" href="#создание-интерфейса-pizzaservice"><i class="icofont-laika link">&#xef71;</i></a>Создание интерфейса <em>PizzaService</em></h4>
+        <p>Первое, о чем следует подумать, — это &quot;поведение&quot; <code>Pizza</code>. 
+        Делая это, определяем <code>trait</code> <code>PizzaServiceInterface</code> следующим образом:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">PizzaServiceInterface</span><span>:
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">price</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Pizza</span><span>): </span><span class="type-name">Double</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">addTopping</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Pizza</span><span>, </span><span class="identifier">t</span><span>: </span><span class="type-name">Topping</span><span>): </span><span class="type-name">Pizza</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">removeAllToppings</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Pizza</span><span>): </span><span class="type-name">Pizza</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateCrustSize</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Pizza</span><span>, </span><span class="identifier">cs</span><span>: </span><span class="type-name">CrustSize</span><span>): </span><span class="type-name">Pizza</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateCrustType</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Pizza</span><span>, </span><span class="identifier">ct</span><span>: </span><span class="type-name">CrustType</span><span>): </span><span class="type-name">Pizza</span></code></pre>
+        <p>Как показано, каждый метод принимает <code>Pizza</code> в качестве входного параметра вместе с другими параметрами, 
+        а затем возвращает экземпляр <code>Pizza</code> в качестве результата.</p>
+        <p>Когда пишется такой чистый интерфейс, можно думать о нем как о контракте, в котором говорится: 
+        &quot;Все неабстрактные классы, расширяющие этот trait, <em>должны</em> предоставлять реализацию этих сервисов&quot;.</p>
+        <p>На этом этапе также можно представить, что вы являетесь потребителем этого API. 
+        Когда вы это сделаете, будет полезно набросать некоторый пример &quot;потребительского&quot; кода, чтобы убедиться, 
+        что API выглядит так, как хотелось:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">p</span><span> = </span><span class="type-name">Pizza</span><span>(</span><span class="type-name">Small</span><span>, </span><span class="type-name">Thin</span><span>, </span><span class="type-name">Seq</span><span>(</span><span class="type-name">Cheese</span><span>))
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">p1</span><span> = </span><span class="identifier">addTopping</span><span>(</span><span class="identifier">p</span><span>, </span><span class="type-name">Pepperoni</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">p2</span><span> = </span><span class="identifier">addTopping</span><span>(</span><span class="identifier">p1</span><span>, </span><span class="type-name">Onions</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">p3</span><span> = </span><span class="identifier">updateCrustType</span><span>(</span><span class="identifier">p2</span><span>, </span><span class="type-name">Thick</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">p4</span><span> = </span><span class="identifier">updateCrustSize</span><span>(</span><span class="identifier">p3</span><span>, </span><span class="type-name">Large</span><span>)</span></code></pre>
+        <p>Если с этим кодом все в порядке, как правило, можно начать набрасывать другой API, например API для заказов, 
+        но, поскольку сейчас рассматривается только <code>Pizza</code>, перейдем к созданию конкретной реализации этого интерфейса.</p>
+        <blockquote>Обратите внимание, что обычно это двухэтапный процесс. 
+        На первом шаге набрасывается контракт API в качестве интерфейса. 
+        На втором шаге создается конкретная реализация этого интерфейса. 
+        В некоторых случаях в конечном итоге создается несколько конкретных реализаций базового интерфейса.</blockquote>
+        
+        <h4 id="создание-конкретной-реализации" class="section"><a class="anchor-link left" href="#создание-конкретной-реализации"><i class="icofont-laika link">&#xef71;</i></a>Создание конкретной реализации</h4>
+        <p>Теперь, когда известно, как выглядит <code>PizzaServiceInterface</code>, можно создать конкретную реализацию, 
+        написав тело для всех методов, определенных в интерфейсе:</p>
+        <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">PizzaService</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">PizzaServiceInterface</span><span>:
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">price</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Pizza</span><span>): </span><span class="type-name">Double</span><span> = </span><span class="identifier">p</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Pizza</span><span>(</span><span class="identifier">crustSize</span><span>, </span><span class="identifier">crustType</span><span>, </span><span class="identifier">toppings</span><span>) =&gt;
+      </span><span class="keyword">val</span><span> </span><span class="identifier">base</span><span>  = </span><span class="number-literal">6.00</span><span>
+      </span><span class="keyword">val</span><span> </span><span class="identifier">crust</span><span> = </span><span class="identifier">crustPrice</span><span>(</span><span class="identifier">crustSize</span><span>, </span><span class="identifier">crustType</span><span>)
+      </span><span class="keyword">val</span><span> </span><span class="identifier">tops</span><span>  = </span><span class="identifier">toppings</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">toppingPrice</span><span>).</span><span class="identifier">sum</span><span>
+      </span><span class="identifier">base</span><span> + </span><span class="identifier">crust</span><span> + </span><span class="identifier">tops</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">addTopping</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Pizza</span><span>, </span><span class="identifier">t</span><span>: </span><span class="type-name">Topping</span><span>): </span><span class="type-name">Pizza</span><span> =
+    </span><span class="identifier">p</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">toppings</span><span> = </span><span class="identifier">p</span><span>.</span><span class="identifier">toppings</span><span> :+ </span><span class="identifier">t</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">removeAllToppings</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Pizza</span><span>): </span><span class="type-name">Pizza</span><span> =
+    </span><span class="identifier">p</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">toppings</span><span> = </span><span class="type-name">Seq</span><span>.</span><span class="identifier">empty</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateCrustSize</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Pizza</span><span>, </span><span class="identifier">cs</span><span>: </span><span class="type-name">CrustSize</span><span>): </span><span class="type-name">Pizza</span><span> =
+    </span><span class="identifier">p</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">crustSize</span><span> = </span><span class="identifier">cs</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateCrustType</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Pizza</span><span>, </span><span class="identifier">ct</span><span>: </span><span class="type-name">CrustType</span><span>): </span><span class="type-name">Pizza</span><span> =
+    </span><span class="identifier">p</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">crustType</span><span> = </span><span class="identifier">ct</span><span>)
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">toppingPrice</span><span>(</span><span class="identifier">t</span><span>: </span><span class="type-name">Topping</span><span>): </span><span class="type-name">Double</span><span> = </span><span class="identifier">t</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Cheese</span><span> | </span><span class="type-name">Onions</span><span> =&gt; </span><span class="number-literal">0.5</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Pepperoni</span><span> | </span><span class="type-name">BlackOlives</span><span> | </span><span class="type-name">GreenOlives</span><span> =&gt; </span><span class="number-literal">0.75</span><span>
+  
+  </span><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">crustPrice</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">CrustSize</span><span>, </span><span class="identifier">t</span><span>: </span><span class="type-name">CrustType</span><span>): </span><span class="type-name">Double</span><span> = (</span><span class="identifier">s</span><span>, </span><span class="identifier">t</span><span>) </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> (</span><span class="type-name">Small</span><span> | </span><span class="type-name">Medium</span><span>, </span><span class="identifier">_</span><span>) =&gt; </span><span class="number-literal">0.25</span><span>
+    </span><span class="keyword">case</span><span> (</span><span class="type-name">Large</span><span>, </span><span class="type-name">Thin</span><span>) =&gt; </span><span class="number-literal">0.50</span><span>
+    </span><span class="keyword">case</span><span> (</span><span class="type-name">Large</span><span>, </span><span class="type-name">Regular</span><span>) =&gt; </span><span class="number-literal">0.75</span><span>
+    </span><span class="keyword">case</span><span> (</span><span class="type-name">Large</span><span>, </span><span class="type-name">Thick</span><span>) =&gt; </span><span class="number-literal">1.00</span><span>
+    
+</span><span class="identifier">end</span><span> </span><span class="type-name">PizzaService</span></code></pre>
+        <p>Хотя двухэтапный процесс создания интерфейса с последующей реализацией не всегда необходим, 
+        явное продумывание API и его использования — хороший подход.</p>
+        <p>Когда все готово, можно использовать <code>Pizza</code> и <code>PizzaService</code>:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="type-name">PizzaService</span><span>.*
+</span><span class="keyword">val</span><span> </span><span class="identifier">p</span><span> = </span><span class="type-name">Pizza</span><span>(</span><span class="type-name">Small</span><span>, </span><span class="type-name">Thin</span><span>, </span><span class="type-name">Seq</span><span>(</span><span class="type-name">Cheese</span><span>))
+</span><span class="comment">// p: Pizza = Pizza(crustSize = Small, crustType = Thin, toppings = List(Cheese))
+</span><span class="keyword">val</span><span> </span><span class="identifier">p1</span><span> = </span><span class="identifier">addTopping</span><span>(</span><span class="identifier">p</span><span>, </span><span class="type-name">Pepperoni</span><span>)
+</span><span class="comment">// p1: Pizza = Pizza(crustSize = Small, crustType = Thin, toppings = List(Cheese, Pepperoni))
+</span><span class="keyword">val</span><span> </span><span class="identifier">p2</span><span> = </span><span class="identifier">addTopping</span><span>(</span><span class="identifier">p1</span><span>, </span><span class="type-name">Onions</span><span>)
+</span><span class="comment">// p2: Pizza = Pizza(crustSize = Small, crustType = Thin, toppings = List(Cheese, Pepperoni, Onions))
+</span><span class="keyword">val</span><span> </span><span class="identifier">p3</span><span> = </span><span class="identifier">updateCrustType</span><span>(</span><span class="identifier">p2</span><span>, </span><span class="type-name">Thick</span><span>)
+</span><span class="comment">// p3: Pizza = Pizza(crustSize = Small, crustType = Thick, toppings = List(Cheese, Pepperoni, Onions))
+</span><span class="keyword">val</span><span> </span><span class="identifier">p4</span><span> = </span><span class="identifier">updateCrustSize</span><span>(</span><span class="identifier">p3</span><span>, </span><span class="type-name">Large</span><span>)
+</span><span class="comment">// p4: Pizza = Pizza(crustSize = Large, crustType = Thick, toppings = List(Cheese, Pepperoni, Onions))
+</span><span class="identifier">println</span><span>(</span><span class="identifier">price</span><span>(</span><span class="identifier">p4</span><span>))
+</span><span class="comment">// 8.75</span></code></pre>
+        
+        <h4 id="функциональные-объекты" class="section"><a class="anchor-link left" href="#функциональные-объекты"><i class="icofont-laika link">&#xef71;</i></a>Функциональные объекты</h4>
+        <p>В книге <a href="https://www.artima.com/shop/programming_in_scala_5ed">&quot;Программирование на Scala&quot;</a> авторы определяют термин &quot;Функциональные объекты&quot;
+        как &quot;объекты, которые не имеют никакого изменяемого состояния&quot;. 
+        Это также относится к типам в <code>scala.collection.immutable</code>. 
+        Например, методы в <code>List</code> не изменяют внутреннего состояния, а вместо этого создают в результате копию <code>List</code>.</p>
+        <p>Об этом подходе можно думать, как о &quot;гибридном дизайне ФП/ООП&quot;, потому что:</p>
+        <ul>
+          <li>данные моделируются, используя неизменяемые <code>case class</code>-ы.</li>
+          <li>определяется поведение (методы) того же типа, что и данные.</li>
+          <li>поведение реализуется как чистые функции: они не изменяют никакого внутреннего состояния; скорее - возвращают копию.</li>
+        </ul>
+        <blockquote>Это действительно гибридный подход: как и в дизайне ООП, методы инкапсулированы в класс с данными, 
+        но, как это обычно бывает в дизайне ФП, методы реализованы как чистые функции, которые данные не изменяют.</blockquote>
+        
+        <h5 id="пример" class="section"><a class="anchor-link left" href="#пример"><i class="icofont-laika link">&#xef71;</i></a>Пример</h5>
+        <p>Используя этот подход, можно напрямую реализовать функциональность пиццы в <code>case class</code>:</p>
+        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Pizza</span><span>(
+  </span><span class="identifier">crustSize</span><span>: </span><span class="type-name">CrustSize</span><span>,
+  </span><span class="identifier">crustType</span><span>: </span><span class="type-name">CrustType</span><span>,
+  </span><span class="identifier">toppings</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">Topping</span><span>]
+):
+
+  </span><span class="comment">// операции этой модели данных
+</span><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">price</span><span>: </span><span class="type-name">Double</span><span> = ... </span><span class="comment">// такая же имплементация, как и выше в PizzaService.price
+</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">addTopping</span><span>(</span><span class="identifier">t</span><span>: </span><span class="type-name">Topping</span><span>): </span><span class="type-name">Pizza</span><span> =
+    </span><span class="keyword">this</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">toppings</span><span> = </span><span class="keyword">this</span><span>.</span><span class="identifier">toppings</span><span> :+ </span><span class="identifier">t</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">removeAllToppings</span><span>: </span><span class="type-name">Pizza</span><span> =
+    </span><span class="keyword">this</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">toppings</span><span> = </span><span class="type-name">Seq</span><span>.</span><span class="identifier">empty</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateCrustSize</span><span>(</span><span class="identifier">cs</span><span>: </span><span class="type-name">CrustSize</span><span>): </span><span class="type-name">Pizza</span><span> =
+    </span><span class="keyword">this</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">crustSize</span><span> = </span><span class="identifier">cs</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateCrustType</span><span>(</span><span class="identifier">ct</span><span>: </span><span class="type-name">CrustType</span><span>): </span><span class="type-name">Pizza</span><span> =
+    </span><span class="keyword">this</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">crustType</span><span> = </span><span class="identifier">ct</span><span>)</span></code></pre>
+        <p>Обратите внимание, что в отличие от предыдущих подходов, поскольку это методы класса <code>Pizza</code>, 
+        они не принимают ссылку <code>Pizza</code> в качестве входного параметра. 
+        Вместо этого у них есть собственная ссылка на текущий экземпляр пиццы - <code>this</code>.</p>
+        <p>Теперь можно использовать этот новый дизайн следующим образом:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Pizza</span><span>(</span><span class="type-name">Small</span><span>, </span><span class="type-name">Thin</span><span>, </span><span class="type-name">Seq</span><span>(</span><span class="type-name">Cheese</span><span>))
+  .</span><span class="identifier">addTopping</span><span>(</span><span class="type-name">Pepperoni</span><span>)
+  .</span><span class="identifier">updateCrustType</span><span>(</span><span class="type-name">Thick</span><span>)
+  .</span><span class="identifier">price</span></code></pre>
+        
+        <h4 id="методы-расширения" class="section"><a class="anchor-link left" href="#методы-расширения"><i class="icofont-laika link">&#xef71;</i></a>Методы расширения</h4>
+        <p>Методы расширения - подход, который находится где-то между первым (определение функций в сопутствующем объекте) 
+        и последним (определение функций как методов самого типа).</p>
+        <p>Методы расширения позволяют создавать API, похожий на API функционального объекта, 
+        без необходимости определять функции как методы самого типа. 
+        Это может иметь несколько преимуществ:</p>
+        <ul>
+          <li>модель данных снова очень лаконична и не упоминает никакого поведения.</li>
+          <li>можно задним числом развить функциональность типов дополнительными методами, не изменяя исходного определения.</li>
+          <li>помимо сопутствующих объектов или прямых методов типов, 
+          методы расширения могут быть определены извне в другом файле.</li>
+        </ul>
+        <p>Вернемся к примеру:</p>
+        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Pizza</span><span>(
+  </span><span class="identifier">crustSize</span><span>: </span><span class="type-name">CrustSize</span><span>,
+  </span><span class="identifier">crustType</span><span>: </span><span class="type-name">CrustType</span><span>,
+  </span><span class="identifier">toppings</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">Topping</span><span>]
+)
+
+</span><span class="keyword">extension</span><span> (</span><span class="identifier">p</span><span>: </span><span class="type-name">Pizza</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">price</span><span>: </span><span class="type-name">Double</span><span> =
+    </span><span class="identifier">pizzaPrice</span><span>(</span><span class="identifier">p</span><span>) </span><span class="comment">// имплементация выше
+</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">addTopping</span><span>(</span><span class="identifier">t</span><span>: </span><span class="type-name">Topping</span><span>): </span><span class="type-name">Pizza</span><span> =
+    </span><span class="identifier">p</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">toppings</span><span> = </span><span class="identifier">p</span><span>.</span><span class="identifier">toppings</span><span> :+ </span><span class="identifier">t</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">removeAllToppings</span><span>: </span><span class="type-name">Pizza</span><span> =
+    </span><span class="identifier">p</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">toppings</span><span> = </span><span class="type-name">Seq</span><span>.</span><span class="identifier">empty</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateCrustSize</span><span>(</span><span class="identifier">cs</span><span>: </span><span class="type-name">CrustSize</span><span>): </span><span class="type-name">Pizza</span><span> =
+    </span><span class="identifier">p</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">crustSize</span><span> = </span><span class="identifier">cs</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateCrustType</span><span>(</span><span class="identifier">ct</span><span>: </span><span class="type-name">CrustType</span><span>): </span><span class="type-name">Pizza</span><span> =
+    </span><span class="identifier">p</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">crustType</span><span> = </span><span class="identifier">ct</span><span>)</span></code></pre>
+        <p>В приведенном выше коде различные методы для пиццы определяются как методы расширения (extension methods). 
+        Код <code>extension (p: Pizza)</code> говорит о том, что мы хотим сделать методы доступными для экземпляров <code>Pizza</code>, 
+        и в дальнейшем ссылаемся на экземпляр, который расширяем, как <code>p</code>.</p>
+        <p>Таким образом, получается тот же API, что и раньше:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Pizza</span><span>(</span><span class="type-name">Small</span><span>, </span><span class="type-name">Thin</span><span>, </span><span class="type-name">Seq</span><span>(</span><span class="type-name">Cheese</span><span>))
+  .</span><span class="identifier">addTopping</span><span>(</span><span class="type-name">Pepperoni</span><span>)
+  .</span><span class="identifier">updateCrustType</span><span>(</span><span class="type-name">Thick</span><span>)
+  .</span><span class="identifier">price</span></code></pre>
+        <p>При этом методы расширения можно определить в любом другом модуле. 
+        Как правило, если вы являетесь разработчиком модели данных, вы определяете свои методы расширения в сопутствующем объекте. 
+        Таким образом, они уже доступны всем пользователям. 
+        В противном случае методы расширения должны быть импортированы явно, чтобы их можно было использовать.</p>
+        
+        <h3 id="резюме-функционального-подхода" class="section"><a class="anchor-link left" href="#резюме-функционального-подхода"><i class="icofont-laika link">&#xef71;</i></a>Резюме функционального подхода</h3>
+        <p>Определение модели данных в Scala/ФП, как правило, простое: 
+        моделируются варианты данных с помощью <code>enum</code>-ов и составных данных с помощью <code>case class</code>-ов. 
+        Затем, чтобы смоделировать поведение, определяются функции, которые работают со значениями модели данных. 
+        Были рассмотрены разные способы организации функций:</p>
+        <ul>
+          <li>можно поместить методы в сопутствующие объекты</li>
+          <li>можно использовать модульный стиль программирования, разделяющий интерфейс и реализацию</li>
+          <li>можно использовать подход &quot;функциональных объектов&quot; и хранить методы в определенном типе данных</li>
+          <li>можно использовать методы расширения, чтобы снабдить модель данных функциональностью</li>
+        </ul>
+        <hr>
+        <p><strong>Ссылки:</strong></p>
+        <ul>
+          <li><a href="https://docs.scala-lang.org/scala3/book/domain-modeling-fp.html">Scala3 book, domain modeling fp</a></li>
+          <li><a href="https://docs.scala-lang.org/scala3/book/taste-modeling.html">Scala3 book, taste modeling</a></li>
+          <li><a href="https://docs.scala-lang.org/scala3/book/taste-objects.html">Scala3 book, taste objects</a></li>
+        </ul>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

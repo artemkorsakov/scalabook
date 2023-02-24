@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ru">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.0 + Helium Theme" />
+  <title>Функции высшего порядка</title>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  
+  <meta name="description" content="Функциональная разработка на Scala"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+  <script src="../../helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../">Домашняя</a></li>
+    <li class="level1 nav-header">Блог</li>
+    <li class="level2 nav-leaf"><a href="../../blog/2023-01-09-architecture-problems.html">Ошибки при наследовании</a></li>
+    <li class="level1 nav-header">Scala</li>
+    <li class="level2 nav-leaf"><a href="../">Обзор Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../getting-started.html">С чего начать?</a></li>
+    <li class="level2 nav-leaf"><a href="../hello_world.html">Hello, world!</a></li>
+    <li class="level2 nav-leaf"><a href="../repl.html">REPL</a></li>
+    <li class="level2 nav-leaf"><a href="../types.html">Типы данных</a></li>
+    <li class="level2 nav-leaf"><a href="../structures.html">Структуры управления</a></li>
+    <li class="level2 nav-header">Структуры управления</li>
+    <li class="level3 nav-leaf"><a href="../structures/ifelse.html">if/else</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/for.html">for</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/match.html">match expressions</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/others.html">while and try</a></li>
+    <li class="level2 nav-leaf"><a href="../modeling.html">Моделирование данных</a></li>
+    <li class="level2 nav-header">Моделирование данных</li>
+    <li class="level3 nav-leaf"><a href="../modeling/classes.html">Классы</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/objects.html">Объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/companion-objects.html">Сопутствующие объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/traits.html">Трейты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/abstract-class.html">Абстрактные классы</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/enums.html">Перечисления</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/case-class.html">Кейс классы и объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/oop.html">Моделирование ООП</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/fp.html">Моделирование ФП</a></li>
+    <li class="level2 nav-leaf"><a href="../methods.html">Методы</a></li>
+    <li class="level2 nav-header">Методы</li>
+    <li class="level3 nav-leaf"><a href="../methods/method-features.html">Определение методов</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/default-parameters.html">Параметры по умолчанию</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/named-parameters.html">Именованные параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/by-name-parameter.html">Параметры по имени</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/partially-applied-functions.html">Каррирование</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/vararg-parameters.html">Методы с неопределенным количеством параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/generic-parameter.html">Generic параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/extension-methods.html">Методы расширения</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/main-methods.html">main методы</a></li>
+    <li class="level2 nav-leaf"><a href="../functions.html">Функции</a></li>
+    <li class="level2 nav-header">Функции</li>
+    <li class="level3 nav-leaf"><a href="anonymous.html">Анонимные функции</a></li>
+    <li class="level3 nav-leaf"><a href="variables.html">Параметры функции</a></li>
+    <li class="level3 nav-leaf"><a href="eta.html">Eta расширение</a></li>
+    <li class="level3 active nav-leaf"><a href="#">Функции высшего порядка</a></li>
+    <li class="level3 nav-leaf"><a href="write-map.html">Написание своего собственного метода map</a></li>
+    <li class="level3 nav-leaf"><a href="returns-function.html">Возврат функции в методе</a></li>
+    <li class="level2 nav-leaf"><a href="../packaging.html">Пакеты и импорт</a></li>
+    <li class="level2 nav-leaf"><a href="../toplevel-definitions.html">Верхнеуровневые определения</a></li>
+    <li class="level2 nav-leaf"><a href="../collections.html">Коллекции</a></li>
+    <li class="level2 nav-header">Коллекции</li>
+    <li class="level3 nav-leaf"><a href="../collections/classes.html">Типы коллекций</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/list.html">List</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/lazylist.html">LazyList</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/array-seq.html">ArraySeq</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/vector.html">Vector</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/array-buffer.html">ArrayBuffer</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/maps.html">Maps</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/set.html">Работа с множествами</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/range.html">Диапазон (Range)</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/tuple.html">Tuple (кортежи)</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/queue.html">Queue</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/methods.html">Методы в коллекциях</a></li>
+    <li class="level2 nav-leaf"><a href="../fp.html">Функциональное программирование</a></li>
+    <li class="level2 nav-header">ФП</li>
+    <li class="level3 nav-leaf"><a href="../fp/what-is-fp.html">Что такое функциональное программирование?</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/immutable-values.html">Неизменяемые значения</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/pure-functions.html">Чистые функции</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/functions-are-values.html">Функции - это значения</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/functional-error-handling.html">Функциональная обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../type-system.html">Система типов</a></li>
+    <li class="level2 nav-header">Система типов</li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-inferred.html">Определение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-generics.html">Generics типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/upper-type-bounds.html">Верхнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/lower-type-bounds.html">Нижнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-intersection.html">Пересечение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-union.html">Объединение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-adts.html">Алгебраические типы данных (ADT)</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-variance.html">Ковариантность типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-opaque.html">Непрозрачные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-structural.html">Структурные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-dependent-function.html">Зависимые типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/type-lambdas.html">Лямбда-типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/match-types.html">Типы match</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/polymorphic-function-types.html">Полиморфные типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-others.html">Другие типы</a></li>
+    <li class="level2 nav-leaf"><a href="../abstractions.html">Контекстуальные абстракции</a></li>
+    <li class="level2 nav-header">Абстракции</li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-given.html">Экземпляры given</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-using.html">Предложения using</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/type-classes.html">Класс типов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-context-bounds.html">Контекстные границы</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-given-imports.html">Given imports</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-extension-methods.html">Методы расширения - детали</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-type-classes.html">Имплементация type классов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-type-class-derivation.html">Type Class Derivation</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-multiversal-equality.html">Многостороннее равенство</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/context-functions.html">Контекстные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-implicit-conversions.html">Неявные преобразования типов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-by-name-parameters.html">Контекстные параметры по имени</a></li>
+    <li class="level2 nav-leaf"><a href="../details.html">Детали</a></li>
+    <li class="level2 nav-header">Детали</li>
+    <li class="level3 nav-leaf"><a href="../details/export-causes.html">Предложения export</a></li>
+    <li class="level3 nav-leaf"><a href="../details/parameter-untupling.html">Распаковка параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../details/type-test.html">Проверка типа</a></li>
+    <li class="level3 nav-leaf"><a href="../details/pattern-matching.html">Сопоставление с образцом</a></li>
+    <li class="level2 nav-leaf"><a href="../concurrency.html">Параллелизм</a></li>
+    <li class="level2 nav-leaf"><a href="../tools.html">Утилиты</a></li>
+    <li class="level2 nav-header">Утилиты</li>
+    <li class="level3 nav-leaf"><a href="../tools/tools-sbt.html">Сборка и тестирование проектов Scala с помощью Sbt</a></li>
+    <li class="level3 nav-leaf"><a href="../tools/tools-worksheets.html">Worksheet</a></li>
+    <li class="level2 nav-leaf"><a href="../with_java.html">Взаимодействие с Java</a></li>
+    <li class="level2 nav-leaf"><a href="../metaprogramming.html">Метапрограммирование</a></li>
+    <li class="level2 nav-header">Metaprogramming</li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/inline.html">Inline</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/compile-time-ops.html">Операции во время компиляции</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/macros.html">Макросы</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/quoted-code.html">Quoted Code</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/runtime-staging.html">Runtime Staging</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/reflection.html">Reflection</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/tasty-inspection.html">TASTy Inspection</a></li>
+    <li class="level2 nav-leaf"><a href="../soft-keywords.html">Soft Keywords</a></li>
+    <li class="level2 nav-leaf"><a href="../scaladoc.html">Scaladoc</a></li>
+    <li class="level2 nav-header">Scaladoc</li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/docstrings.html">Документы</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/linking.html">Связующая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/static-site.html">Статическая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/blog.html">Встроенный блог</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/site-versioning.html">Версионность сайта</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/search-engine.html">Поиск по типу</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/snippet-compiler.html">Проверка фрагмента</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/settings.html">Настройки</a></li>
+    <li class="level1 nav-header">Функциональное программирование</li>
+    <li class="level2 nav-leaf"><a href="../../fp/">Функциональное программирование</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/data-structures.html">Функциональная структура данных</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/handling-errors.html">Обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/laziness.html">Ленивые вычисления</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/state.html">Функциональное состояние</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monoids.html">Monoids</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monads.html">Monads</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/writer.html">Функциональный журнал</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/non-empty-list.html">Непустой связанный список</a></li>
+    <li class="level1 nav-header">Теория категорий</li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/">Теория категорий</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/equal.html">Группа Equal</a></li>
+    <li class="level2 nav-header">Группа Equal</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/equal.html">Equal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/order.html">Order</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/enum.html">Enum</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/bounded.html">Bounded</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monoid.html">Группа Monoid</a></li>
+    <li class="level2 nav-header">Группа Monoid</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/semigroup.html">Semigroup</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/monoid.html">Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/band.html">Band</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/idempotent-monoid.html">Idempotent Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/group.html">Group</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monad.html">Группа Monad</a></li>
+    <li class="level2 nav-header">Группа Monad</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-functor.html">Invariant Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/functor.html">Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-applicative.html">Invariant Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/semigroupal.html">Semigroupal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/apply.html">Apply</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative.html">Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/bind.html">Bind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad.html">Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus.html">Plus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus-empty.html">PlusEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative-plus.html">ApplicativePlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-plus.html">MonadPlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/is-empty.html">IsEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/foldable.html">Foldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/traverse.html">Traverse</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/contravariant-functor.html">Контравариантный функтор</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divide.html">Divide</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divisible.html">Divisible</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-bind.html">CoBind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-monads.html">Co-Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-transformer.html">Monad Transformer</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/free-monads.html">Free Monad</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/arrow.html">Группа Arrow</a></li>
+    <li class="level2 nav-header">Группа Arrow</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/compose.html">Compose</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/category.html">Category</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/split.html">Split</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/profunctor.html">Profunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/strong.html">Strong</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/arrow.html">Arrow</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/bifunctor.html">Группа Bifunctor</a></li>
+    <li class="level2 nav-header">Группа Bifunctor</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifunctor.html">Bifunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifoldable.html">Bifoldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bitraverse.html">Bitraverse</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/other.html">Вне группы</a></li>
+    <li class="level2 nav-header">Вне группы</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/show.html">Show</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/read.html">Read</a></li>
+    <li class="level1 nav-header">Алгоритмы и структуры</li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/">Структуры данных и алгоритмы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/fundamental.html">Фундаментальные алгоритмы</a></li>
+    <li class="level2 nav-header">Фундаментальные алгоритмы</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/numerical.html">Численные алгоритмы</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/primes.html">Простые числа</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/fibonacci.html">Числа Фибоначчи</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/lists.html">Связанные списки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/arrays.html">Массивы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/stacks.html">Стеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/queues.html">Очереди</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/trees.html">Деревья</a></li>
+    <li class="level2 nav-header">Двоичное дерево</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/trees/binary-tree.html">Двоичное дерево</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/hash-tables.html">Хеш-таблицы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/sort.html">Сортировка</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/search.html">Поиск</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/graphs.html">Графы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/ackermann.html">Функция Аккермана</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/newton.html">Метод Ньютона</a></li>
+    <li class="level1 nav-header">Scala библиотеки</li>
+    <li class="level2 nav-leaf"><a href="../../libs/">Scala библиотеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/refined.html">Уточняющие типы в Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/cats-effect.html">Cats effect</a></li>
+    <li class="level2 nav-header">Cats effect</li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/copy-files.html">Копирование файлов</a></li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/producer-consumer-problem.html">Проблема производитель-потребитель — параллелизм и волокна</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/http4s.html">Http4s</a></li>
+    <li class="level1 nav-header">Паттерны проектирования</li>
+    <li class="level2 nav-leaf"><a href="../../patterns/">Паттерны проектирования</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/creational.html">Порождающие шаблоны</a></li>
+    <li class="level2 nav-header">Порождающие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/factory-method.html">Фабричный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/abstract-factory.html">Абстрактная фабрика</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/builder.html">Строитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/prototype.html">Прототип</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/singleton.html">Одиночка</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/structural.html">Структурные шаблоны</a></li>
+    <li class="level2 nav-header">Структурные шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/adapter.html">Адаптер</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/bridge.html">Мост</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/composite.html">Компоновщик</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/decorator.html">Декоратор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/facade.html">Фасад</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/flyweight.html">Приспособленец</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/proxy.html">Заместитель</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/behavioral.html">Поведенческие шаблоны</a></li>
+    <li class="level2 nav-header">Поведенческие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/interpreter.html">Интерпретатор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/template-method.html">Шаблонный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/chain-of-responsibility.html">Цепочка обязанностей</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/command.html">Команда</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/iterator.html">Итератор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/mediator.html">Посредник</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/memento.html">Хранитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/observer.html">Наблюдатель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/state.html">Состояние</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/strategy.html">Стратегия</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/visitor.html">Посетитель</a></li>
+    <li class="level1 nav-header">Упражнения из книг</li>
+    <li class="level2 nav-leaf"><a href="../../books/">Упражнения из книг</a></li>
+    <li class="level2 nav-header">Structure and Interpretation</li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/">Структура и интерпретация компьютерных программ</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_6.html">Глава 1.1.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_7.html">Глава 1.1.7</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_8.html">Глава 1.1.8</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_1.html">Глава 1.2.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_2.html">Глава 1.2.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_3.html">Глава 1.2.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_4.html">Глава 1.2.4</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_5.html">Глава 1.2.5</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_6.html">Глава 1.2.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_1.html">Глава 1.3.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_2.html">Глава 1.3.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_3.html">Глава 1.3.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_4.html">Глава 1.3.4</a></li>
+    <li class="level2 nav-header">Scala Puzzlers</li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/">Головоломки на Scala</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/hi-there.html">Hi There!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/upstairs.html">UPSTAIRS downstairs</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/location.html">Location, Location, Location</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/now-you-see-me.html">Now You See Me, Now You Don&#39;t</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-missing-list.html">The Missing List</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/arg-arrgh.html">Arg Arrgh!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/captured-by-closures.html">Captured by Closures</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/map-comprehension.html">Map Comprehension</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/init-you-init-me.html">Init You, Init Me</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-equality.html">A Case of Equality</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/if-at-first.html">If At First You Don&#39;t Succeed...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/to-map-or-not-to-map.html">To Map, or Not to Map</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/private-lives.html">Private Lives</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/self-see-self.html">Self - See &#39;Self&#39;</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-egg-or-two.html">One Egg or Two..?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/return-to-me.html">Return to Me!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/implicitly-surprising.html">Implicitly Surprising</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-bound-two-to-go.html">One Bound, Two to Go</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/count-me-now-count-me-later.html">Count Me Now, Count Me Later</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/whats-in-a-name.html">What&#39;s in a Name?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/i-can-has-padding.html">I Can Has Padding?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/cast-away.html">Cast Away</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/pick-an-int-any-int.html">Pick an Int, Any Int!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-string.html">A Case of Strings</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-view-to-a-shill.html">A View to a Shill</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/accepts-any-args.html">Accepts Any Args</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-devil-is-in-the-defaults.html">The Devil is in the Defaults</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-two-skip-a-few.html">One, Two, Skip a Few</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/oddly-enough.html">Oddly Enough</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/splitting-headache.html">Splitting Headache</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-result-finally.html">A Result, Finally!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/heads-you-win.html">Heads You Win...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/ex-stream-surprise.html">(Ex)Stream Surprise</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-matter-of-context.html">A Matter of Context</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/inference.html">Inference Hindrance</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/for-each-step.html">For Each Step...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/beep-beep-reversing.html">Beep Beep...Reversing</a></li>
+    <li class="level1 nav-leaf"><a href="../../extra.html">Дополнительные материалы</a></li>
+    <li class="level1 nav-header">Дополнительные материалы</li>
+    <li class="level2 nav-leaf"><a href="../../extra/one_star.html">✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/two_stars.html">✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/three_stars.html">✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/four_stars.html">✯✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/five_stars.html">✯✯✯✯✯</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Функции высшего порядка</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#от-потребителя-к-разработчику">От потребителя к разработчику</a></li>
+    <li class="level1 nav-leaf"><a href="#понимание-scaladoc-метода-filter">Понимание Scaladoc метода filter</a></li>
+    <li class="level1 nav-node"><a href="#написание-методов-которые-принимают-параметры-функции">Написание методов, которые принимают параметры функции</a></li>
+    <li class="level2 nav-node"><a href="#пример">Пример</a></li>
+    <li class="level3 nav-leaf"><a href="#sayhello-может-принимать-разные-функции">sayHello может принимать разные функции</a></li>
+    <li class="level1 nav-leaf"><a href="#общий-синтаксис-для-определения-входных-параметров-функции">Общий синтаксис для определения входных параметров функции</a></li>
+    <li class="level1 nav-node"><a href="#параметр-функции-вместе-с-другими-параметрами">Параметр функции вместе с другими параметрами</a></li>
+    <li class="level2 nav-leaf"><a href="#столько-параметров-сколько-необходимо">Столько параметров, сколько необходимо</a></li>
+    <li class="level1 nav-leaf"><a href="#согласованность-подписи-типа-функции">Согласованность подписи типа функции</a></li>
+  </ul>
+
+  <p class="footer"><a href="https://github.com/artemkorsakov/scalabook/blob/master/docs/scala/functions/hofs.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Редактировать страницу</a></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="функции-высшего-порядка" class="title">Функции высшего порядка</h1>
+        <p>Функция высшего порядка (HOF - higher-order function) часто определяется как функция, которая </p>
+        <ul>
+          <li>принимает другие функции в качестве входных параметров или </li>
+          <li>возвращает функцию в качестве результата. </li>
+        </ul>
+        <p>В Scala HOF возможны, потому что функции являются <a href="https://ru.wikipedia.org/wiki/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B8_%D0%BF%D0%B5%D1%80%D0%B2%D0%BE%D0%B3%D0%BE_%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%B0">объектами первого класса</a>.</p>
+        <blockquote>В качестве важного примечания: 
+        хотя в этом документе используется общепринятый термин &quot;функция высшего порядка&quot;, 
+        в Scala эта фраза применима как к методам, так и к функциям. 
+        Благодаря технологии <a href="https://scalabook.gitflic.space/docs/scala/functions/eta">Eta Expansion</a> их, как правило, можно использовать в одних и тех же местах.</blockquote>
+        
+        <h3 id="от-потребителя-к-разработчику" class="section"><a class="anchor-link left" href="#от-потребителя-к-разработчику"><i class="icofont-laika link">&#xef71;</i></a>От потребителя к разработчику</h3>
+        <p>В примерах, приведенных ранее в документации, было видно, как пользоваться методами, 
+        которые принимают другие функции в качестве входных параметров, например, <code>map</code> и <code>filter</code>. </p>
+        <p>В следующих разделах будет показано, как создавать HOF, в том числе:</p>
+        <ul>
+          <li>как писать методы, принимающие функции в качестве входных параметров</li>
+          <li>как возвращать функции из методов</li>
+        </ul>
+        <p>В процессе будет видно:</p>
+        <ul>
+          <li>синтаксис, который используется для определения входных параметров функции</li>
+          <li>как вызвать функцию, если есть на нее ссылка</li>
+        </ul>
+        <p>В качестве полезного побочного эффекта, как только синтаксис станет привычным, 
+        его можно начать использовать для определения параметров функций, анонимных функций и функциональных переменных, 
+        а также станет легче читать Scaladoc для функций высшего порядка.</p>
+        
+        <h3 id="понимание-scaladoc-метода-filter" class="section"><a class="anchor-link left" href="#понимание-scaladoc-метода-filter"><i class="icofont-laika link">&#xef71;</i></a>Понимание Scaladoc метода filter</h3>
+        <p>Чтобы понять, как работают функции высшего порядка, рассмотрим пример: 
+        определим, какой тип функций принимает <code>filter</code>, взглянув на 
+        <a href="https://scala-lang.org/api/3.x/scala/collection/immutable/List.html#filter-5a1">его Scaladoc</a>. 
+        Вот определение <code>filter</code> в классе <code>List[A]</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">filter</span><span>(</span><span class="identifier">p</span><span>: (</span><span class="type-name">A</span><span>) =&gt; </span><span class="type-name">Boolean</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]</span></code></pre>
+        <p>Это определение указывает на то, что <code>filter</code> - метод, который принимает параметр функции с именем <code>p</code>. 
+        По соглашению, <code>p</code> обозначает <em>предикат</em>, который представляет собой просто функцию, возвращающую <code>Boolean</code>. 
+        Таким образом, <code>filter</code> принимает предикат <code>p</code> в качестве входного параметра и возвращает <code>List[A]</code>, 
+        где <code>A</code> - тип, содержащийся в списке; если <code>filter</code> вызывается для <code>List[Int]</code>, то <code>A</code> - это тип <code>Int</code>.</p>
+        <p>На данный момент, если не учитывать назначение метода <code>filter</code>, все, что известно, 
+        так это то, что алгоритм каким-то образом использует предикат <code>p</code> для создания и возврата <code>List[A]</code>.</p>
+        <p>Если посмотреть конкретно на параметр функции <code>p</code>: <code>p: (A) =&gt; Boolean</code>, то эта часть описания <code>filter</code> означает, 
+        что любая передаваемая функция должна принимать тип <code>A</code> в качестве входного параметра и возвращать <code>Boolean</code>. 
+        Итак, если список представляет собой список <code>List[Int]</code>, 
+        то можно заменить универсальный тип <code>A</code> на <code>Int</code> и прочитать эту подпись следующим образом: <code>p: (Int) =&gt; Boolean</code>.</p>
+        <p>Поскольку <code>isEven</code> имеет такой же тип — преобразует входное значение <code>Int</code> в результирующее <code>Boolean</code> — 
+        его можно использовать с <code>filter</code>.</p>
+        
+        <h3 id="написание-методов-которые-принимают-параметры-функции" class="section"><a class="anchor-link left" href="#написание-методов-которые-принимают-параметры-функции"><i class="icofont-laika link">&#xef71;</i></a>Написание методов, которые принимают параметры функции</h3>
+        <p>Рассмотрим пример написания методов, которые принимают функции в качестве входных параметров.</p>
+        <blockquote>Для определенности, будем называть код, который пишется, <em>методом</em>, 
+        а код, принимаемый в качестве входного параметра, — <em>функцией</em>.</blockquote>
+        
+        <h4 id="пример" class="section"><a class="anchor-link left" href="#пример"><i class="icofont-laika link">&#xef71;</i></a>Пример</h4>
+        <p>Чтобы создать метод, который принимает функцию в качестве параметра, необходимо:</p>
+        <ul>
+          <li>в списке параметров метода определить сигнатуру принимаемой функции</li>
+          <li>использовать эту функцию внутри метода</li>
+        </ul>
+        <p>Чтобы продемонстрировать это, вот метод, который принимает входной параметр с именем <code>f</code>, где <code>f</code> — функция:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">sayHello</span><span>(</span><span class="identifier">f</span><span>: () =&gt; </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Unit</span><span> = </span><span class="identifier">f</span><span>()</span></code></pre>
+        <p>Эта часть кода — сигнатура типа (<em>type signature</em>) — утверждает, что <code>f</code> является функцией, 
+        и определяет типы функций, которые будет принимать метод <code>sayHello</code>: <code>f: () =&gt; Unit</code>.</p>
+        <p>Как это работает:</p>
+        <ul>
+          <li><code>f</code> — имя входного параметра функции. 
+          Аналогично тому, как параметр <code>String</code> обычно называется <code>s</code> или параметр <code>Int</code> - <code>i</code></li>
+          <li>сигнатура типа <code>f</code> определяет тип функций, которые будет принимать метод</li>
+          <li>часть <code>()</code> подписи <code>f</code> (слева от символа <code>=&gt;</code>) указывает на то, что <code>f</code> не принимает входных параметров</li>
+          <li>часть сигнатуры <code>Unit</code> (справа от символа <code>=&gt;</code>) указывает на то, что функция <code>f</code> не должна возвращать осмысленный результат</li>
+          <li>в теле метода <code>sayHello</code> (справа от символа <code>=</code>) оператор <code>f()</code> вызывает переданную функцию</li>
+        </ul>
+        <p>Теперь, когда <code>sayHello</code> определен, создадим функцию, соответствующую сигнатуре <code>f</code>, чтобы ее можно было проверить. 
+        Следующая функция не принимает входных параметров и ничего не возвращает, поэтому она соответствует сигнатуре типа <code>f</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">helloJoe</span><span>(): </span><span class="type-name">Unit</span><span> = </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Hello, Joe&quot;</span><span>)</span></code></pre>
+        <p>Поскольку сигнатуры типов совпадают, можно передать <code>helloJoe</code> в <code>sayHello</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">sayHello</span><span>(</span><span class="identifier">helloJoe</span><span>)
+</span><span class="comment">// Hello, Joe</span></code></pre>
+        <p>Был определен метод с именем <code>sayHello</code>, который принимает функцию в качестве входного параметра, 
+        а затем вызывает эту функцию в теле своего метода.</p>
+        
+        <h5 id="sayhello-может-принимать-разные-функции" class="section"><a class="anchor-link left" href="#sayhello-может-принимать-разные-функции"><i class="icofont-laika link">&#xef71;</i></a>sayHello может принимать разные функции</h5>
+        <p>Важно знать, что преимущество этого подхода заключается не в том, 
+        что <code>sayHello</code> может принимать одну функцию в качестве входного параметра;
+        преимущество в том, что <code>sayHello</code> может принимать любую функцию, соответствующую сигнатуре <code>f</code>. 
+        Например, поскольку следующая функция не принимает входных параметров и ничего не возвращает, 
+        она также работает с <code>sayHello</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">bonjourJulien</span><span>(): </span><span class="type-name">Unit</span><span> = </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Bonjour, Julien&quot;</span><span>)</span></code></pre>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">sayHello</span><span>(</span><span class="identifier">bonjourJulien</span><span>)
+</span><span class="comment">// Bonjour, Julien</span></code></pre>
+        <p>Рассмотрим ещё несколько примеров того, как определять сигнатуры различных типов для параметров функции.</p>
+        
+        <h3 id="общий-синтаксис-для-определения-входных-параметров-функции" class="section"><a class="anchor-link left" href="#общий-синтаксис-для-определения-входных-параметров-функции"><i class="icofont-laika link">&#xef71;</i></a>Общий синтаксис для определения входных параметров функции</h3>
+        <p>В методе:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">sayHello</span><span>(</span><span class="identifier">f</span><span>: () =&gt; </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Unit</span></code></pre>
+        <p>сигнатурой типа для <code>f</code> является <code>() =&gt; Unit</code>.</p>
+        <p>Это сигнатура означает &quot;функцию, которая не принимает входных параметров и не возвращает ничего значимого (<code>Unit</code>)&quot;.</p>
+        <p>Вот сигнатура функции, которая принимает параметр <code>String</code> и возвращает <code>Int</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">f</span><span>: (</span><span class="type-name">String</span><span>) =&gt; </span><span class="type-name">Int</span></code></pre>
+        <p>Какие функции принимают строку и возвращают целое число? 
+        Например, такие, как &quot;длина строки&quot; и контрольная сумма.</p>
+        <p>Эта функция принимает два параметра <code>Int</code> и возвращает <code>Int</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">f</span><span>: (</span><span class="type-name">Int</span><span>, </span><span class="type-name">Int</span><span>) =&gt; </span><span class="type-name">Int</span></code></pre>
+        <p>Какие функции соответствуют данной сигнатуре?</p>
+        <p>Любая функция, которая принимает два входных параметра <code>Int</code> и возвращает <code>Int</code>, соответствует этой сигнатуре, 
+        поэтому все &quot;функции&quot; ниже (точнее, методы) подходят:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">b</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Int</span><span> = </span><span class="identifier">a</span><span> + </span><span class="identifier">b</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">subtract</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">b</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Int</span><span> = </span><span class="identifier">a</span><span> - </span><span class="identifier">b</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">multiply</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">b</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Int</span><span> = </span><span class="identifier">a</span><span> * </span><span class="identifier">b</span></code></pre>
+        <p>Из примеров выше можно сделать вывод, что общий синтаксис сигнатуры функций такой:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">variableName</span><span>: (</span><span class="identifier">parameterTypes</span><span> ...) =&gt; </span><span class="identifier">returnType</span></code></pre>
+        <blockquote>Поскольку функциональное программирование похоже на создание и объединение ряда алгебраических уравнений, 
+        обычно много думают о типах при разработке функций и приложений. Можно сказать, что «думают типами».</blockquote>
+        
+        <h3 id="параметр-функции-вместе-с-другими-параметрами" class="section"><a class="anchor-link left" href="#параметр-функции-вместе-с-другими-параметрами"><i class="icofont-laika link">&#xef71;</i></a>Параметр функции вместе с другими параметрами</h3>
+        <p>Чтобы HOFs стали действительно полезными, им также нужны некоторые данные для работы. 
+        Для класса, подобного <code>List</code>, в его методе <code>map</code> уже есть данные для работы: элементы в <code>List</code>. 
+        Но для автономного приложения, у которого нет собственных данных, 
+        метод также должен принимать в качестве других входных параметров данные.</p>
+        <p>Рассмотрим пример метода с именем <code>executeNTimes</code>, который имеет два входных параметра: функцию и <code>Int</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">executeNTimes</span><span>(</span><span class="identifier">f</span><span>: () =&gt; </span><span class="type-name">Unit</span><span>, </span><span class="identifier">n</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Unit</span><span> =
+  </span><span class="keyword">for</span><span> </span><span class="identifier">i</span><span> &lt;- </span><span class="number-literal">1</span><span> </span><span class="identifier">to</span><span> </span><span class="identifier">n</span><span> </span><span class="keyword">do</span><span> </span><span class="identifier">f</span><span>()</span></code></pre>
+        <p>Как видно из кода, <code>executeNTimes</code> выполняет функцию <code>f</code> <code>n</code> раз. 
+        Поскольку простой цикл <code>for</code>, подобный этому, не имеет возвращаемого значения, <code>executeNTimes</code> возвращает <code>Unit</code>.</p>
+        <p>Чтобы протестировать <code>executeNTimes</code>, определим метод, соответствующий сигнатуре <code>f</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">helloWorld</span><span>(): </span><span class="type-name">Unit</span><span> = </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Hello, world&quot;</span><span>)</span></code></pre>
+        <p>Затем передадим этот метод в <code>executeNTimes</code> вместе с <code>Int</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">executeNTimes</span><span>(</span><span class="identifier">helloWorld</span><span>, </span><span class="number-literal">3</span><span>)
+</span><span class="comment">// Hello, world
+// Hello, world
+// Hello, world</span></code></pre>
+        <p>Метод <code>executeNTimes</code> трижды выполняет функцию <code>helloWorld</code>.</p>
+        
+        <h5 id="столько-параметров-сколько-необходимо" class="section"><a class="anchor-link left" href="#столько-параметров-сколько-необходимо"><i class="icofont-laika link">&#xef71;</i></a>Столько параметров, сколько необходимо</h5>
+        <p>Методы могут усложняться по мере необходимости. 
+        Например, этот метод принимает функцию типа <code>(Int, Int) =&gt; Int</code> вместе с двумя входными параметрами:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">executeAndPrint</span><span>(</span><span class="identifier">f</span><span>: (</span><span class="type-name">Int</span><span>, </span><span class="type-name">Int</span><span>) =&gt; </span><span class="type-name">Int</span><span>, </span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">j</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Unit</span><span> =
+  </span><span class="identifier">println</span><span>(</span><span class="identifier">f</span><span>(</span><span class="identifier">i</span><span>, </span><span class="identifier">j</span><span>))</span></code></pre>
+        <p>Поскольку методы <code>sum</code> и <code>multiply</code> соответствуют сигнатуре <code>f</code>, 
+        их можно передать в <code>executeAndPrint</code> вместе с двумя значениями <code>Int</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">sum</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">Int</span><span>) = </span><span class="identifier">x</span><span> + </span><span class="identifier">y</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">multiply</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">Int</span><span>) = </span><span class="identifier">x</span><span> * </span><span class="identifier">y</span></code></pre>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">executeAndPrint</span><span>(</span><span class="identifier">sum</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">11</span><span>)     
+</span><span class="comment">// 14     
+</span><span class="identifier">executeAndPrint</span><span>(</span><span class="identifier">multiply</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">9</span><span>)
+</span><span class="comment">// 27</span></code></pre>
+        
+        <h3 id="согласованность-подписи-типа-функции" class="section"><a class="anchor-link left" href="#согласованность-подписи-типа-функции"><i class="icofont-laika link">&#xef71;</i></a>Согласованность подписи типа функции</h3>
+        <p>Самое замечательное в изучении сигнатур типов функций Scala заключается в том, 
+        что синтаксис, используемый для определения входных параметров функции, — 
+        это тот же синтаксис, что используется для написания литералов функций.</p>
+        <p>Например, если необходимо написать функцию, вычисляющую сумму двух целых чисел, её можно было бы написать так:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">f</span><span>: (</span><span class="type-name">Int</span><span>, </span><span class="type-name">Int</span><span>) =&gt; </span><span class="type-name">Int</span><span> = (</span><span class="identifier">a</span><span>, </span><span class="identifier">b</span><span>) =&gt; </span><span class="identifier">a</span><span> + </span><span class="identifier">b</span></code></pre>
+        <p>Этот код состоит из сигнатуры типа:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">f</span><span>: (</span><span class="type-name">Int</span><span>, </span><span class="type-name">Int</span><span>) =&gt; </span><span class="type-name">Int</span><span> = (</span><span class="identifier">a</span><span>, </span><span class="identifier">b</span><span>) =&gt; </span><span class="identifier">a</span><span> + </span><span class="identifier">b</span><span>
+       -----------------</span></code></pre>
+        <p>входных параметров:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">f</span><span>: (</span><span class="type-name">Int</span><span>, </span><span class="type-name">Int</span><span>) =&gt; </span><span class="type-name">Int</span><span> = (</span><span class="identifier">a</span><span>, </span><span class="identifier">b</span><span>) =&gt; </span><span class="identifier">a</span><span> + </span><span class="identifier">b</span><span>
+                           ------</span></code></pre>
+        <p>и тела функции:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">f</span><span>: (</span><span class="type-name">Int</span><span>, </span><span class="type-name">Int</span><span>) =&gt; </span><span class="type-name">Int</span><span> = (</span><span class="identifier">a</span><span>, </span><span class="identifier">b</span><span>) =&gt; </span><span class="identifier">a</span><span> + </span><span class="identifier">b</span><span>
+                                     -----</span></code></pre>
+        <p>Согласованность Scala состоит в том, что тип функции:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">f</span><span>: (</span><span class="type-name">Int</span><span>, </span><span class="type-name">Int</span><span>) =&gt; </span><span class="type-name">Int</span><span> = (</span><span class="identifier">a</span><span>, </span><span class="identifier">b</span><span>) =&gt; </span><span class="identifier">a</span><span> + </span><span class="identifier">b</span><span>
+       -----------------</span></code></pre>
+        <p>совпадает с сигнатурой типа, используемого для определения входного параметра функции:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">executeAndPrint</span><span>(</span><span class="identifier">f</span><span>: (</span><span class="type-name">Int</span><span>, </span><span class="type-name">Int</span><span>) =&gt; </span><span class="type-name">Int</span><span>, ...
+                       -----------------</span></code></pre>
+        <p>По мере освоения этого синтаксиса, становится привычным его использование для определения параметров функций, 
+        анонимных функций и функциональных переменных, 
+        а также становится легче читать Scaladoc для функций высшего порядка.</p>
+        <hr>
+        <p><strong>Ссылки:</strong></p>
+        <ul>
+          <li><a href="https://docs.scala-lang.org/scala3/book/fun-hofs.html">Scala3 book</a></li>
+        </ul>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ru">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.0 + Helium Theme" />
+  <title>Декоратор</title>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  
+  <meta name="description" content="Функциональная разработка на Scala"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+  <script src="../../helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../">Домашняя</a></li>
+    <li class="level1 nav-header">Блог</li>
+    <li class="level2 nav-leaf"><a href="../../blog/2023-01-09-architecture-problems.html">Ошибки при наследовании</a></li>
+    <li class="level1 nav-header">Scala</li>
+    <li class="level2 nav-leaf"><a href="../../scala/">Обзор Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/getting-started.html">С чего начать?</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/hello_world.html">Hello, world!</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/repl.html">REPL</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/types.html">Типы данных</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/structures.html">Структуры управления</a></li>
+    <li class="level2 nav-header">Структуры управления</li>
+    <li class="level3 nav-leaf"><a href="../../scala/structures/ifelse.html">if/else</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/structures/for.html">for</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/structures/match.html">match expressions</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/structures/others.html">while and try</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/modeling.html">Моделирование данных</a></li>
+    <li class="level2 nav-header">Моделирование данных</li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/classes.html">Классы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/objects.html">Объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/companion-objects.html">Сопутствующие объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/traits.html">Трейты</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/abstract-class.html">Абстрактные классы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/enums.html">Перечисления</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/case-class.html">Кейс классы и объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/oop.html">Моделирование ООП</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/fp.html">Моделирование ФП</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/methods.html">Методы</a></li>
+    <li class="level2 nav-header">Методы</li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/method-features.html">Определение методов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/default-parameters.html">Параметры по умолчанию</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/named-parameters.html">Именованные параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/by-name-parameter.html">Параметры по имени</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/partially-applied-functions.html">Каррирование</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/vararg-parameters.html">Методы с неопределенным количеством параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/generic-parameter.html">Generic параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/extension-methods.html">Методы расширения</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/main-methods.html">main методы</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/functions.html">Функции</a></li>
+    <li class="level2 nav-header">Функции</li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/anonymous.html">Анонимные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/variables.html">Параметры функции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/eta.html">Eta расширение</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/hofs.html">Функции высшего порядка</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/write-map.html">Написание своего собственного метода map</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/returns-function.html">Возврат функции в методе</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/packaging.html">Пакеты и импорт</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/toplevel-definitions.html">Верхнеуровневые определения</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/collections.html">Коллекции</a></li>
+    <li class="level2 nav-header">Коллекции</li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/classes.html">Типы коллекций</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/list.html">List</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/lazylist.html">LazyList</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/array-seq.html">ArraySeq</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/vector.html">Vector</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/array-buffer.html">ArrayBuffer</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/maps.html">Maps</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/set.html">Работа с множествами</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/range.html">Диапазон (Range)</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/tuple.html">Tuple (кортежи)</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/queue.html">Queue</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/methods.html">Методы в коллекциях</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/fp.html">Функциональное программирование</a></li>
+    <li class="level2 nav-header">ФП</li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/what-is-fp.html">Что такое функциональное программирование?</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/immutable-values.html">Неизменяемые значения</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/pure-functions.html">Чистые функции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/functions-are-values.html">Функции - это значения</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/functional-error-handling.html">Функциональная обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/type-system.html">Система типов</a></li>
+    <li class="level2 nav-header">Система типов</li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-inferred.html">Определение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-generics.html">Generics типы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/upper-type-bounds.html">Верхнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/lower-type-bounds.html">Нижнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-intersection.html">Пересечение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-union.html">Объединение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-adts.html">Алгебраические типы данных (ADT)</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-variance.html">Ковариантность типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-opaque.html">Непрозрачные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-structural.html">Структурные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-dependent-function.html">Зависимые типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/type-lambdas.html">Лямбда-типы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/match-types.html">Типы match</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/polymorphic-function-types.html">Полиморфные типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-others.html">Другие типы</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/abstractions.html">Контекстуальные абстракции</a></li>
+    <li class="level2 nav-header">Абстракции</li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-given.html">Экземпляры given</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-using.html">Предложения using</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/type-classes.html">Класс типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-context-bounds.html">Контекстные границы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-given-imports.html">Given imports</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-extension-methods.html">Методы расширения - детали</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-type-classes.html">Имплементация type классов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-type-class-derivation.html">Type Class Derivation</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-multiversal-equality.html">Многостороннее равенство</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/context-functions.html">Контекстные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-implicit-conversions.html">Неявные преобразования типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-by-name-parameters.html">Контекстные параметры по имени</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/details.html">Детали</a></li>
+    <li class="level2 nav-header">Детали</li>
+    <li class="level3 nav-leaf"><a href="../../scala/details/export-causes.html">Предложения export</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/details/parameter-untupling.html">Распаковка параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/details/type-test.html">Проверка типа</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/details/pattern-matching.html">Сопоставление с образцом</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/concurrency.html">Параллелизм</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/tools.html">Утилиты</a></li>
+    <li class="level2 nav-header">Утилиты</li>
+    <li class="level3 nav-leaf"><a href="../../scala/tools/tools-sbt.html">Сборка и тестирование проектов Scala с помощью Sbt</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/tools/tools-worksheets.html">Worksheet</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/with_java.html">Взаимодействие с Java</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/metaprogramming.html">Метапрограммирование</a></li>
+    <li class="level2 nav-header">Metaprogramming</li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/inline.html">Inline</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/compile-time-ops.html">Операции во время компиляции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/macros.html">Макросы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/quoted-code.html">Quoted Code</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/runtime-staging.html">Runtime Staging</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/reflection.html">Reflection</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/tasty-inspection.html">TASTy Inspection</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/soft-keywords.html">Soft Keywords</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/scaladoc.html">Scaladoc</a></li>
+    <li class="level2 nav-header">Scaladoc</li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/docstrings.html">Документы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/linking.html">Связующая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/static-site.html">Статическая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/blog.html">Встроенный блог</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/site-versioning.html">Версионность сайта</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/search-engine.html">Поиск по типу</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/snippet-compiler.html">Проверка фрагмента</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/settings.html">Настройки</a></li>
+    <li class="level1 nav-header">Функциональное программирование</li>
+    <li class="level2 nav-leaf"><a href="../../fp/">Функциональное программирование</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/data-structures.html">Функциональная структура данных</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/handling-errors.html">Обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/laziness.html">Ленивые вычисления</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/state.html">Функциональное состояние</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monoids.html">Monoids</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monads.html">Monads</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/writer.html">Функциональный журнал</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/non-empty-list.html">Непустой связанный список</a></li>
+    <li class="level1 nav-header">Теория категорий</li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/">Теория категорий</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/equal.html">Группа Equal</a></li>
+    <li class="level2 nav-header">Группа Equal</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/equal.html">Equal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/order.html">Order</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/enum.html">Enum</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/bounded.html">Bounded</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monoid.html">Группа Monoid</a></li>
+    <li class="level2 nav-header">Группа Monoid</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/semigroup.html">Semigroup</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/monoid.html">Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/band.html">Band</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/idempotent-monoid.html">Idempotent Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/group.html">Group</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monad.html">Группа Monad</a></li>
+    <li class="level2 nav-header">Группа Monad</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-functor.html">Invariant Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/functor.html">Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-applicative.html">Invariant Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/semigroupal.html">Semigroupal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/apply.html">Apply</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative.html">Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/bind.html">Bind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad.html">Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus.html">Plus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus-empty.html">PlusEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative-plus.html">ApplicativePlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-plus.html">MonadPlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/is-empty.html">IsEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/foldable.html">Foldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/traverse.html">Traverse</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/contravariant-functor.html">Контравариантный функтор</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divide.html">Divide</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divisible.html">Divisible</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-bind.html">CoBind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-monads.html">Co-Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-transformer.html">Monad Transformer</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/free-monads.html">Free Monad</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/arrow.html">Группа Arrow</a></li>
+    <li class="level2 nav-header">Группа Arrow</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/compose.html">Compose</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/category.html">Category</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/split.html">Split</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/profunctor.html">Profunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/strong.html">Strong</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/arrow.html">Arrow</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/bifunctor.html">Группа Bifunctor</a></li>
+    <li class="level2 nav-header">Группа Bifunctor</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifunctor.html">Bifunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifoldable.html">Bifoldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bitraverse.html">Bitraverse</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/other.html">Вне группы</a></li>
+    <li class="level2 nav-header">Вне группы</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/show.html">Show</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/read.html">Read</a></li>
+    <li class="level1 nav-header">Алгоритмы и структуры</li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/">Структуры данных и алгоритмы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/fundamental.html">Фундаментальные алгоритмы</a></li>
+    <li class="level2 nav-header">Фундаментальные алгоритмы</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/numerical.html">Численные алгоритмы</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/primes.html">Простые числа</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/fibonacci.html">Числа Фибоначчи</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/lists.html">Связанные списки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/arrays.html">Массивы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/stacks.html">Стеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/queues.html">Очереди</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/trees.html">Деревья</a></li>
+    <li class="level2 nav-header">Двоичное дерево</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/trees/binary-tree.html">Двоичное дерево</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/hash-tables.html">Хеш-таблицы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/sort.html">Сортировка</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/search.html">Поиск</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/graphs.html">Графы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/ackermann.html">Функция Аккермана</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/newton.html">Метод Ньютона</a></li>
+    <li class="level1 nav-header">Scala библиотеки</li>
+    <li class="level2 nav-leaf"><a href="../../libs/">Scala библиотеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/refined.html">Уточняющие типы в Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/cats-effect.html">Cats effect</a></li>
+    <li class="level2 nav-header">Cats effect</li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/copy-files.html">Копирование файлов</a></li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/producer-consumer-problem.html">Проблема производитель-потребитель — параллелизм и волокна</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/http4s.html">Http4s</a></li>
+    <li class="level1 nav-header">Паттерны проектирования</li>
+    <li class="level2 nav-leaf"><a href="../">Паттерны проектирования</a></li>
+    <li class="level2 nav-leaf"><a href="../creational.html">Порождающие шаблоны</a></li>
+    <li class="level2 nav-header">Порождающие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../creational/factory-method.html">Фабричный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../creational/abstract-factory.html">Абстрактная фабрика</a></li>
+    <li class="level3 nav-leaf"><a href="../creational/builder.html">Строитель</a></li>
+    <li class="level3 nav-leaf"><a href="../creational/prototype.html">Прототип</a></li>
+    <li class="level3 nav-leaf"><a href="../creational/singleton.html">Одиночка</a></li>
+    <li class="level2 nav-leaf"><a href="../structural.html">Структурные шаблоны</a></li>
+    <li class="level2 nav-header">Структурные шаблоны</li>
+    <li class="level3 nav-leaf"><a href="adapter.html">Адаптер</a></li>
+    <li class="level3 nav-leaf"><a href="bridge.html">Мост</a></li>
+    <li class="level3 nav-leaf"><a href="composite.html">Компоновщик</a></li>
+    <li class="level3 active nav-leaf"><a href="#">Декоратор</a></li>
+    <li class="level3 nav-leaf"><a href="facade.html">Фасад</a></li>
+    <li class="level3 nav-leaf"><a href="flyweight.html">Приспособленец</a></li>
+    <li class="level3 nav-leaf"><a href="proxy.html">Заместитель</a></li>
+    <li class="level2 nav-leaf"><a href="../behavioral.html">Поведенческие шаблоны</a></li>
+    <li class="level2 nav-header">Поведенческие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../behavioral/interpreter.html">Интерпретатор</a></li>
+    <li class="level3 nav-leaf"><a href="../behavioral/template-method.html">Шаблонный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../behavioral/chain-of-responsibility.html">Цепочка обязанностей</a></li>
+    <li class="level3 nav-leaf"><a href="../behavioral/command.html">Команда</a></li>
+    <li class="level3 nav-leaf"><a href="../behavioral/iterator.html">Итератор</a></li>
+    <li class="level3 nav-leaf"><a href="../behavioral/mediator.html">Посредник</a></li>
+    <li class="level3 nav-leaf"><a href="../behavioral/memento.html">Хранитель</a></li>
+    <li class="level3 nav-leaf"><a href="../behavioral/observer.html">Наблюдатель</a></li>
+    <li class="level3 nav-leaf"><a href="../behavioral/state.html">Состояние</a></li>
+    <li class="level3 nav-leaf"><a href="../behavioral/strategy.html">Стратегия</a></li>
+    <li class="level3 nav-leaf"><a href="../behavioral/visitor.html">Посетитель</a></li>
+    <li class="level1 nav-header">Упражнения из книг</li>
+    <li class="level2 nav-leaf"><a href="../../books/">Упражнения из книг</a></li>
+    <li class="level2 nav-header">Structure and Interpretation</li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/">Структура и интерпретация компьютерных программ</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_6.html">Глава 1.1.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_7.html">Глава 1.1.7</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_8.html">Глава 1.1.8</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_1.html">Глава 1.2.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_2.html">Глава 1.2.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_3.html">Глава 1.2.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_4.html">Глава 1.2.4</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_5.html">Глава 1.2.5</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_6.html">Глава 1.2.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_1.html">Глава 1.3.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_2.html">Глава 1.3.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_3.html">Глава 1.3.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_4.html">Глава 1.3.4</a></li>
+    <li class="level2 nav-header">Scala Puzzlers</li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/">Головоломки на Scala</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/hi-there.html">Hi There!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/upstairs.html">UPSTAIRS downstairs</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/location.html">Location, Location, Location</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/now-you-see-me.html">Now You See Me, Now You Don&#39;t</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-missing-list.html">The Missing List</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/arg-arrgh.html">Arg Arrgh!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/captured-by-closures.html">Captured by Closures</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/map-comprehension.html">Map Comprehension</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/init-you-init-me.html">Init You, Init Me</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-equality.html">A Case of Equality</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/if-at-first.html">If At First You Don&#39;t Succeed...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/to-map-or-not-to-map.html">To Map, or Not to Map</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/private-lives.html">Private Lives</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/self-see-self.html">Self - See &#39;Self&#39;</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-egg-or-two.html">One Egg or Two..?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/return-to-me.html">Return to Me!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/implicitly-surprising.html">Implicitly Surprising</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-bound-two-to-go.html">One Bound, Two to Go</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/count-me-now-count-me-later.html">Count Me Now, Count Me Later</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/whats-in-a-name.html">What&#39;s in a Name?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/i-can-has-padding.html">I Can Has Padding?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/cast-away.html">Cast Away</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/pick-an-int-any-int.html">Pick an Int, Any Int!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-string.html">A Case of Strings</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-view-to-a-shill.html">A View to a Shill</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/accepts-any-args.html">Accepts Any Args</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-devil-is-in-the-defaults.html">The Devil is in the Defaults</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-two-skip-a-few.html">One, Two, Skip a Few</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/oddly-enough.html">Oddly Enough</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/splitting-headache.html">Splitting Headache</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-result-finally.html">A Result, Finally!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/heads-you-win.html">Heads You Win...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/ex-stream-surprise.html">(Ex)Stream Surprise</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-matter-of-context.html">A Matter of Context</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/inference.html">Inference Hindrance</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/for-each-step.html">For Each Step...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/beep-beep-reversing.html">Beep Beep...Reversing</a></li>
+    <li class="level1 nav-leaf"><a href="../../extra.html">Дополнительные материалы</a></li>
+    <li class="level1 nav-header">Дополнительные материалы</li>
+    <li class="level2 nav-leaf"><a href="../../extra/one_star.html">✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/two_stars.html">✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/three_stars.html">✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/four_stars.html">✯✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/five_stars.html">✯✯✯✯✯</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Декоратор</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#назначение">Назначение</a></li>
+    <li class="level1 nav-leaf"><a href="#диаграмма">Диаграмма</a></li>
+    <li class="level1 nav-leaf"><a href="#пример">Пример</a></li>
+  </ul>
+
+  <p class="footer"><a href="https://github.com/artemkorsakov/scalabook/blob/master/docs/patterns/structural/decorator.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Редактировать страницу</a></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="декоратор" class="title">Декоратор</h1>
+        
+        <h4 id="назначение" class="section"><a class="anchor-link left" href="#назначение"><i class="icofont-laika link">&#xef71;</i></a>Назначение</h4>
+        <p>Динамически прикреплять дополнительные обязанности к объекту. 
+        Декораторы предоставляют гибкую альтернативу подклассам для расширения функциональности.</p>
+        
+        <h4 id="диаграмма" class="section"><a class="anchor-link left" href="#диаграмма"><i class="icofont-laika link">&#xef71;</i></a>Диаграмма</h4>
+        <p><img src="https://upload.wikimedia.org/wikipedia/ru/0/00/Decorator_template.png" alt="Decorator"></p>
+        
+        <h4 id="пример" class="section"><a class="anchor-link left" href="#пример"><i class="icofont-laika link">&#xef71;</i></a>Пример</h4>
+        <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Component</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">draw</span><span>(): </span><span class="type-name">Unit</span><span>
+
+</span><span class="keyword">class</span><span> </span><span class="type-name">TextView</span><span>(</span><span class="keyword">var</span><span> </span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">Component</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">draw</span><span>(): </span><span class="type-name">Unit</span><span> = </span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;Drawing..</span><span class="substitution">$s</span><span class="string-literal">&quot;</span><span>)
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">EncapsulateTextView</span><span>(</span><span class="identifier">c</span><span>: </span><span class="type-name">TextView</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">Component</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">draw</span><span>(): </span><span class="type-name">Unit</span><span> = </span><span class="identifier">c</span><span>.</span><span class="identifier">draw</span><span>()
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">BorderDecorator</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Component</span><span>:
+  </span><span class="keyword">abstract</span><span> </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">draw</span><span>(): </span><span class="type-name">Unit</span><span> =
+    </span><span class="keyword">super</span><span>.</span><span class="identifier">draw</span><span>()
+    </span><span class="identifier">drawBorder</span><span>()
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">drawBorder</span><span>(): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Drawing border&quot;</span><span>)
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">ScrollDecorator</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Component</span><span>:
+  </span><span class="keyword">abstract</span><span> </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">draw</span><span>(): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">scrollTo</span><span>()
+    </span><span class="keyword">super</span><span>.</span><span class="identifier">draw</span><span>()
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scrollTo</span><span>(): </span><span class="type-name">Unit</span><span> = </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Scrolling..&quot;</span><span>)</span></code></pre>
+        <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">tw</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">TextView</span><span>(</span><span class="string-literal">&quot;foo&quot;</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">etw1</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">EncapsulateTextView</span><span>(</span><span class="identifier">tw</span><span>) </span><span class="keyword">with</span><span> </span><span class="type-name">BorderDecorator</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">ScrollDecorator</span><span>
+</span><span class="comment">// etw1: EncapsulateTextView &amp; BorderDecorator &amp; ScrollDecorator = repl.MdocSession$$anon$2@7d6a5d30
+</span><span class="identifier">etw1</span><span>.</span><span class="identifier">draw</span><span>()
+</span><span class="comment">// Scrolling..
+// Drawing..foo
+// Drawing border
+</span><span class="identifier">tw</span><span>.</span><span class="identifier">s</span><span> = </span><span class="string-literal">&quot;bar&quot;</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">etw2</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">EncapsulateTextView</span><span>(</span><span class="identifier">tw</span><span>) </span><span class="keyword">with</span><span> </span><span class="type-name">ScrollDecorator</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">BorderDecorator</span><span>
+</span><span class="comment">// etw2: EncapsulateTextView &amp; ScrollDecorator &amp; BorderDecorator = repl.MdocSession$$anon$6@88da5b
+</span><span class="identifier">etw2</span><span>.</span><span class="identifier">draw</span><span>()
+</span><span class="comment">// Scrolling..
+// Drawing..bar
+// Drawing border</span></code></pre>
+        <hr>
+        <p><strong>Ссылки:</strong></p>
+        <ul>
+          <li><a href="https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf">Scala &amp; Design Patterns by Frederik Skeel Løkke</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Decorator_pattern">Wikipedia</a></li>
+        </ul>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

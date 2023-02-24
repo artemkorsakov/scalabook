@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ru">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.0 + Helium Theme" />
+  <title>Проблема производитель-потребитель — параллелизм и волокна</title>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  
+  <meta name="description" content="Функциональная разработка на Scala"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+  <script src="../../helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../">Домашняя</a></li>
+    <li class="level1 nav-header">Блог</li>
+    <li class="level2 nav-leaf"><a href="../../blog/2023-01-09-architecture-problems.html">Ошибки при наследовании</a></li>
+    <li class="level1 nav-header">Scala</li>
+    <li class="level2 nav-leaf"><a href="../../scala/">Обзор Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/getting-started.html">С чего начать?</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/hello_world.html">Hello, world!</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/repl.html">REPL</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/types.html">Типы данных</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/structures.html">Структуры управления</a></li>
+    <li class="level2 nav-header">Структуры управления</li>
+    <li class="level3 nav-leaf"><a href="../../scala/structures/ifelse.html">if/else</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/structures/for.html">for</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/structures/match.html">match expressions</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/structures/others.html">while and try</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/modeling.html">Моделирование данных</a></li>
+    <li class="level2 nav-header">Моделирование данных</li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/classes.html">Классы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/objects.html">Объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/companion-objects.html">Сопутствующие объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/traits.html">Трейты</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/abstract-class.html">Абстрактные классы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/enums.html">Перечисления</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/case-class.html">Кейс классы и объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/oop.html">Моделирование ООП</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/fp.html">Моделирование ФП</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/methods.html">Методы</a></li>
+    <li class="level2 nav-header">Методы</li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/method-features.html">Определение методов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/default-parameters.html">Параметры по умолчанию</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/named-parameters.html">Именованные параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/by-name-parameter.html">Параметры по имени</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/partially-applied-functions.html">Каррирование</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/vararg-parameters.html">Методы с неопределенным количеством параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/generic-parameter.html">Generic параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/extension-methods.html">Методы расширения</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/main-methods.html">main методы</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/functions.html">Функции</a></li>
+    <li class="level2 nav-header">Функции</li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/anonymous.html">Анонимные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/variables.html">Параметры функции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/eta.html">Eta расширение</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/hofs.html">Функции высшего порядка</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/write-map.html">Написание своего собственного метода map</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/returns-function.html">Возврат функции в методе</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/packaging.html">Пакеты и импорт</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/toplevel-definitions.html">Верхнеуровневые определения</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/collections.html">Коллекции</a></li>
+    <li class="level2 nav-header">Коллекции</li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/classes.html">Типы коллекций</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/list.html">List</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/lazylist.html">LazyList</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/array-seq.html">ArraySeq</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/vector.html">Vector</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/array-buffer.html">ArrayBuffer</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/maps.html">Maps</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/set.html">Работа с множествами</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/range.html">Диапазон (Range)</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/tuple.html">Tuple (кортежи)</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/queue.html">Queue</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/methods.html">Методы в коллекциях</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/fp.html">Функциональное программирование</a></li>
+    <li class="level2 nav-header">ФП</li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/what-is-fp.html">Что такое функциональное программирование?</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/immutable-values.html">Неизменяемые значения</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/pure-functions.html">Чистые функции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/functions-are-values.html">Функции - это значения</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/functional-error-handling.html">Функциональная обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/type-system.html">Система типов</a></li>
+    <li class="level2 nav-header">Система типов</li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-inferred.html">Определение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-generics.html">Generics типы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/upper-type-bounds.html">Верхнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/lower-type-bounds.html">Нижнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-intersection.html">Пересечение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-union.html">Объединение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-adts.html">Алгебраические типы данных (ADT)</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-variance.html">Ковариантность типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-opaque.html">Непрозрачные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-structural.html">Структурные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-dependent-function.html">Зависимые типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/type-lambdas.html">Лямбда-типы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/match-types.html">Типы match</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/polymorphic-function-types.html">Полиморфные типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-others.html">Другие типы</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/abstractions.html">Контекстуальные абстракции</a></li>
+    <li class="level2 nav-header">Абстракции</li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-given.html">Экземпляры given</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-using.html">Предложения using</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/type-classes.html">Класс типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-context-bounds.html">Контекстные границы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-given-imports.html">Given imports</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-extension-methods.html">Методы расширения - детали</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-type-classes.html">Имплементация type классов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-type-class-derivation.html">Type Class Derivation</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-multiversal-equality.html">Многостороннее равенство</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/context-functions.html">Контекстные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-implicit-conversions.html">Неявные преобразования типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-by-name-parameters.html">Контекстные параметры по имени</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/details.html">Детали</a></li>
+    <li class="level2 nav-header">Детали</li>
+    <li class="level3 nav-leaf"><a href="../../scala/details/export-causes.html">Предложения export</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/details/parameter-untupling.html">Распаковка параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/details/type-test.html">Проверка типа</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/details/pattern-matching.html">Сопоставление с образцом</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/concurrency.html">Параллелизм</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/tools.html">Утилиты</a></li>
+    <li class="level2 nav-header">Утилиты</li>
+    <li class="level3 nav-leaf"><a href="../../scala/tools/tools-sbt.html">Сборка и тестирование проектов Scala с помощью Sbt</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/tools/tools-worksheets.html">Worksheet</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/with_java.html">Взаимодействие с Java</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/metaprogramming.html">Метапрограммирование</a></li>
+    <li class="level2 nav-header">Metaprogramming</li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/inline.html">Inline</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/compile-time-ops.html">Операции во время компиляции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/macros.html">Макросы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/quoted-code.html">Quoted Code</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/runtime-staging.html">Runtime Staging</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/reflection.html">Reflection</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/tasty-inspection.html">TASTy Inspection</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/soft-keywords.html">Soft Keywords</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/scaladoc.html">Scaladoc</a></li>
+    <li class="level2 nav-header">Scaladoc</li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/docstrings.html">Документы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/linking.html">Связующая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/static-site.html">Статическая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/blog.html">Встроенный блог</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/site-versioning.html">Версионность сайта</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/search-engine.html">Поиск по типу</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/snippet-compiler.html">Проверка фрагмента</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/settings.html">Настройки</a></li>
+    <li class="level1 nav-header">Функциональное программирование</li>
+    <li class="level2 nav-leaf"><a href="../../fp/">Функциональное программирование</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/data-structures.html">Функциональная структура данных</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/handling-errors.html">Обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/laziness.html">Ленивые вычисления</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/state.html">Функциональное состояние</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monoids.html">Monoids</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monads.html">Monads</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/writer.html">Функциональный журнал</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/non-empty-list.html">Непустой связанный список</a></li>
+    <li class="level1 nav-header">Теория категорий</li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/">Теория категорий</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/equal.html">Группа Equal</a></li>
+    <li class="level2 nav-header">Группа Equal</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/equal.html">Equal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/order.html">Order</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/enum.html">Enum</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/bounded.html">Bounded</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monoid.html">Группа Monoid</a></li>
+    <li class="level2 nav-header">Группа Monoid</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/semigroup.html">Semigroup</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/monoid.html">Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/band.html">Band</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/idempotent-monoid.html">Idempotent Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/group.html">Group</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monad.html">Группа Monad</a></li>
+    <li class="level2 nav-header">Группа Monad</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-functor.html">Invariant Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/functor.html">Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-applicative.html">Invariant Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/semigroupal.html">Semigroupal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/apply.html">Apply</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative.html">Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/bind.html">Bind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad.html">Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus.html">Plus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus-empty.html">PlusEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative-plus.html">ApplicativePlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-plus.html">MonadPlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/is-empty.html">IsEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/foldable.html">Foldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/traverse.html">Traverse</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/contravariant-functor.html">Контравариантный функтор</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divide.html">Divide</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divisible.html">Divisible</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-bind.html">CoBind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-monads.html">Co-Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-transformer.html">Monad Transformer</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/free-monads.html">Free Monad</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/arrow.html">Группа Arrow</a></li>
+    <li class="level2 nav-header">Группа Arrow</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/compose.html">Compose</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/category.html">Category</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/split.html">Split</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/profunctor.html">Profunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/strong.html">Strong</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/arrow.html">Arrow</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/bifunctor.html">Группа Bifunctor</a></li>
+    <li class="level2 nav-header">Группа Bifunctor</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifunctor.html">Bifunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifoldable.html">Bifoldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bitraverse.html">Bitraverse</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/other.html">Вне группы</a></li>
+    <li class="level2 nav-header">Вне группы</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/show.html">Show</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/read.html">Read</a></li>
+    <li class="level1 nav-header">Алгоритмы и структуры</li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/">Структуры данных и алгоритмы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/fundamental.html">Фундаментальные алгоритмы</a></li>
+    <li class="level2 nav-header">Фундаментальные алгоритмы</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/numerical.html">Численные алгоритмы</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/primes.html">Простые числа</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/fibonacci.html">Числа Фибоначчи</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/lists.html">Связанные списки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/arrays.html">Массивы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/stacks.html">Стеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/queues.html">Очереди</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/trees.html">Деревья</a></li>
+    <li class="level2 nav-header">Двоичное дерево</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/trees/binary-tree.html">Двоичное дерево</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/hash-tables.html">Хеш-таблицы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/sort.html">Сортировка</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/search.html">Поиск</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/graphs.html">Графы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/ackermann.html">Функция Аккермана</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/newton.html">Метод Ньютона</a></li>
+    <li class="level1 nav-header">Scala библиотеки</li>
+    <li class="level2 nav-leaf"><a href="../">Scala библиотеки</a></li>
+    <li class="level2 nav-leaf"><a href="../refined.html">Уточняющие типы в Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../cats-effect.html">Cats effect</a></li>
+    <li class="level2 nav-header">Cats effect</li>
+    <li class="level3 nav-leaf"><a href="copy-files.html">Копирование файлов</a></li>
+    <li class="level3 active nav-leaf"><a href="#">Проблема производитель-потребитель — параллелизм и волокна</a></li>
+    <li class="level2 nav-leaf"><a href="../http4s.html">Http4s</a></li>
+    <li class="level1 nav-header">Паттерны проектирования</li>
+    <li class="level2 nav-leaf"><a href="../../patterns/">Паттерны проектирования</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/creational.html">Порождающие шаблоны</a></li>
+    <li class="level2 nav-header">Порождающие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/factory-method.html">Фабричный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/abstract-factory.html">Абстрактная фабрика</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/builder.html">Строитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/prototype.html">Прототип</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/singleton.html">Одиночка</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/structural.html">Структурные шаблоны</a></li>
+    <li class="level2 nav-header">Структурные шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/adapter.html">Адаптер</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/bridge.html">Мост</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/composite.html">Компоновщик</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/decorator.html">Декоратор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/facade.html">Фасад</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/flyweight.html">Приспособленец</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/proxy.html">Заместитель</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/behavioral.html">Поведенческие шаблоны</a></li>
+    <li class="level2 nav-header">Поведенческие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/interpreter.html">Интерпретатор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/template-method.html">Шаблонный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/chain-of-responsibility.html">Цепочка обязанностей</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/command.html">Команда</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/iterator.html">Итератор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/mediator.html">Посредник</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/memento.html">Хранитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/observer.html">Наблюдатель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/state.html">Состояние</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/strategy.html">Стратегия</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/visitor.html">Посетитель</a></li>
+    <li class="level1 nav-header">Упражнения из книг</li>
+    <li class="level2 nav-leaf"><a href="../../books/">Упражнения из книг</a></li>
+    <li class="level2 nav-header">Structure and Interpretation</li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/">Структура и интерпретация компьютерных программ</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_6.html">Глава 1.1.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_7.html">Глава 1.1.7</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_8.html">Глава 1.1.8</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_1.html">Глава 1.2.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_2.html">Глава 1.2.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_3.html">Глава 1.2.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_4.html">Глава 1.2.4</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_5.html">Глава 1.2.5</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_6.html">Глава 1.2.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_1.html">Глава 1.3.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_2.html">Глава 1.3.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_3.html">Глава 1.3.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_4.html">Глава 1.3.4</a></li>
+    <li class="level2 nav-header">Scala Puzzlers</li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/">Головоломки на Scala</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/hi-there.html">Hi There!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/upstairs.html">UPSTAIRS downstairs</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/location.html">Location, Location, Location</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/now-you-see-me.html">Now You See Me, Now You Don&#39;t</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-missing-list.html">The Missing List</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/arg-arrgh.html">Arg Arrgh!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/captured-by-closures.html">Captured by Closures</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/map-comprehension.html">Map Comprehension</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/init-you-init-me.html">Init You, Init Me</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-equality.html">A Case of Equality</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/if-at-first.html">If At First You Don&#39;t Succeed...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/to-map-or-not-to-map.html">To Map, or Not to Map</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/private-lives.html">Private Lives</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/self-see-self.html">Self - See &#39;Self&#39;</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-egg-or-two.html">One Egg or Two..?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/return-to-me.html">Return to Me!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/implicitly-surprising.html">Implicitly Surprising</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-bound-two-to-go.html">One Bound, Two to Go</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/count-me-now-count-me-later.html">Count Me Now, Count Me Later</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/whats-in-a-name.html">What&#39;s in a Name?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/i-can-has-padding.html">I Can Has Padding?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/cast-away.html">Cast Away</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/pick-an-int-any-int.html">Pick an Int, Any Int!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-string.html">A Case of Strings</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-view-to-a-shill.html">A View to a Shill</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/accepts-any-args.html">Accepts Any Args</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-devil-is-in-the-defaults.html">The Devil is in the Defaults</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-two-skip-a-few.html">One, Two, Skip a Few</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/oddly-enough.html">Oddly Enough</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/splitting-headache.html">Splitting Headache</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-result-finally.html">A Result, Finally!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/heads-you-win.html">Heads You Win...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/ex-stream-surprise.html">(Ex)Stream Surprise</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-matter-of-context.html">A Matter of Context</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/inference.html">Inference Hindrance</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/for-each-step.html">For Each Step...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/beep-beep-reversing.html">Beep Beep...Reversing</a></li>
+    <li class="level1 nav-leaf"><a href="../../extra.html">Дополнительные материалы</a></li>
+    <li class="level1 nav-header">Дополнительные материалы</li>
+    <li class="level2 nav-leaf"><a href="../../extra/one_star.html">✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/two_stars.html">✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/three_stars.html">✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/four_stars.html">✯✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/five_stars.html">✯✯✯✯✯</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Проблема производитель-потребитель — параллелизм и волокна</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#введение-в-волокна">Введение в волокна</a></li>
+    <li class="level1 nav-leaf"><a href="#первая-и-неэффективная-реализация">Первая (и неэффективная) реализация</a></li>
+    <li class="level1 nav-leaf"><a href="#более-надежная-реализация-проблемы-производителя-потребителя">Более надежная реализация проблемы производителя/потребителя</a></li>
+    <li class="level1 nav-leaf"><a href="#производитель-потребитель-с-ограниченной-очередью">Производитель-потребитель с ограниченной очередью</a></li>
+    <li class="level1 nav-leaf"><a href="#забота-об-отмене">Забота об отмене</a></li>
+  </ul>
+
+  <p class="footer"><a href="https://github.com/artemkorsakov/scalabook/blob/master/docs/libs/cats-effect/producer-consumer-problem.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Редактировать страницу</a></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="проблема-производитель-потребитель-параллелизм-и-волокна" class="title">Проблема производитель-потребитель — параллелизм и волокна</h1>
+        <p>Модель производитель-потребитель часто встречается в параллельных запусках. 
+        Здесь один или несколько производителей вставляют данные в общую структуру данных, такую как очередь, 
+        в то время как один или несколько потребителей извлекают данные из нее. 
+        Читатели и писатели работают одновременно. 
+        Если очередь пуста, то читатели будут блокироваться до тех пор, пока данные не будут доступны, 
+        если очередь заполнена, то писатели будут ждать освобождения некоторого «сегмента». 
+        Только один модуль записи может одновременно добавлять данные в очередь, чтобы предотвратить повреждение данных. 
+        Кроме того, только один считыватель может извлекать данные из очереди, 
+        поэтому никакие два считывателя не могут получить один и тот же элемент данных.</p>
+        <p>Существуют вариации этой проблемы в зависимости от того, имеется ли более одного потребителя/производителя, 
+        или структура данных, находящаяся между ними, ограничена по размеру или нет. 
+        Решения, обсуждаемые здесь, подходят для настроек с несколькими потребителями и несколькими читателями. 
+        Сначала мы будем предполагать неограниченную структуру данных, а позже предложим решение для ограниченной.</p>
+        <p>Но прежде чем мы приступим к решению этой проблемы, мы должны определить волокна (<em>fibers</em>), 
+        которые являются основным строительным блоком параллелизма на основе cats-effect.</p>
+        
+        <h2 id="введение-в-волокна" class="section"><a class="anchor-link left" href="#введение-в-волокна"><i class="icofont-laika link">&#xef71;</i></a>Введение в волокна</h2>
+        <p>Волокно содержит <code>F</code> - действие для выполнения (обычно <code>IO</code> экземпляр). 
+        Волокна похожи на «легкие» потоки, то есть их можно использовать так же, как и потоки, для создания параллельного кода. 
+        Однако они не являются потоками. 
+        Порождение новых волокон не гарантирует, что действие, описанное в связанном с ним <code>F</code>, 
+        будет выполнено в случае нехватки потоков. 
+        Внутренне cats-effect использует пулы потоков для запуска волокон при работе на JVM. 
+        Таким образом, если в пуле нет доступного потока, выполнение волокна будет «ждать», 
+        пока какой-либо поток снова не освободится. 
+        С другой стороны, когда выполнение некоторого волокна заблокировано, 
+        например поскольку он должен ждать освобождения семафора, поток, выполняющий волокно, 
+        повторно используется с помощью cats-effect, поэтому он доступен для других волокон. 
+        Когда выполнение волокна может быть возобновлено, cats-effect будет искать свободный поток для продолжения выполнения. 
+        Термин «семантически заблокированный» иногда используется для обозначения того, 
+        что блокирование волокна не влечет за собой остановку какого-либо потока. 
+        Cats-effect также перерабатывает волокна из готовых и погашенных волокон. 
+        Но имейте в виду, что, напротив, если волокно действительно заблокировано каким-то внешним действием, 
+        например, ожиданием некоторого ввода из TCP-сокета, 
+        то у Cats-effect нет возможности восстановить этот поток, пока действие не завершится. 
+        Такие вызовы должны быть обернуты <code>IO.blocking</code>, чтобы сигнализировать о том, что обернутый код заблокирует поток. 
+        Cats-effect использует эту информацию как подсказку для оптимизации <code>IO</code> планирования.</p>
+        <p>Еще одно отличие потоков заключается в том, что волокна — очень дешевые объекты. 
+        Мы можем легко создать миллионы из них, не влияя на производительность.</p>
+        <p>Стоит отметить, что вам не нужно явно отключать волокна. 
+        Если вы создадите волокно и оно закончит активную работу <code>IO</code>, то оно будет очищено сборщиком мусора, 
+        если только на него не будет какой-либо другой активной ссылки в памяти.
+        Таким образом, вы можете рассматривать волокно как любой другой обычный объект, 
+        за исключением того, что, когда волокно работает, сама среда выполнения с cats-effect поддерживает волокно в живых.</p>
+        <p>Это также имеет некоторые интересные последствия. 
+        Например, если вы создаете узел <code>IO.async</code> и регистрируете обратный вызов с чем-то, 
+        и находитесь в волокне, у которого нет сильных ссылок на объекты где-либо еще 
+        (т.е. вы сделали что-то вроде действия «запустил и забыл»), 
+        тогда сам обратный вызов является единственной сильной ссылкой на волокно. 
+        Это означает, что если регистрация завершится ошибкой или система, в которой вы зарегистрировались, выбросит ее, 
+        волокно просто изящно исчезнет.</p>
+        <p>Cats-effect реализует некоторые примитивы параллелизма для координации параллельных волокон: 
+        <a href="https://typelevel.org/cats-effect/docs/std/deferred">Deferred</a>, <a href="https://typelevel.org/cats-effect/docs/std/ref">Ref</a>, 
+        <a href="https://typelevel.org/cats-effect/docs/std/semaphore">Semaphore</a> ...</p>
+        <p>Более подробную информацию о параллелизме в cats-effect можно найти 
+        в этом учебнике <a href="https://github.com/slouc/concurrency-in-scala-with-ce">«Параллелизм в Scala с cats-effect»</a>.</p>
+        <p>Хорошо, теперь, после краткого рассмотрения волокон, можно начать работать над проблемой производителя-потребителя.</p>
+        
+        <h2 id="первая-и-неэффективная-реализация" class="section"><a class="anchor-link left" href="#первая-и-неэффективная-реализация"><i class="icofont-laika link">&#xef71;</i></a>Первая (и неэффективная) реализация</h2>
+        <p>Нам нужна промежуточная структура, в которую производитель(-и) может вставлять данные, а потребитель(-и) извлекать. 
+        Предположим, что это простая очередь. Первоначально будет только один производитель и один потребитель. 
+        Производитель сгенерирует последовательность целых чисел (<code>1</code>, <code>2</code>, <code>3</code>...), 
+        а потребитель просто прочитает эту последовательность. 
+        Наша общая очередь будет экземпляром неизменного объекта <code>Queue[Int]</code>.</p>
+        <p>Доступ к очереди может быть одновременным (и будет!), поэтому нам нужен какой-то способ защитить очередь, 
+        чтобы только одно волокно одновременно обрабатывало ее. 
+        Лучший способ обеспечить упорядоченный доступ к некоторым общим данным — <a href="https://typelevel.org/cats-effect/docs/std/ref"><code>Ref</code></a>. 
+        Экземпляр <code>Ref</code> упаковывает некоторые заданные данные и реализует методы для безопасного управления этими данными. 
+        Когда какое-то волокно запускает один из этих методов, 
+        любой другой вызов любого метода <code>Ref</code> экземпляра будет заблокирован.</p>
+        <p>Обертка <code>Ref</code> для нашей очереди будет <code>Ref[F, Queue[Int]]</code> (для некоторых <code>F[_]</code>).</p>
+        <p>Метод <code>producer</code> будет таким:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">std</span><span>.</span><span class="type-name">Console</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">producer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Sync</span><span>: </span><span class="type-name">Console</span><span>](</span><span class="identifier">queueR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Int</span><span>]], </span><span class="identifier">counter</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+  </span><span class="keyword">for</span><span>
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="keyword">if</span><span> </span><span class="identifier">counter</span><span> % </span><span class="number-literal">10000</span><span> == </span><span class="number-literal">0</span><span> </span><span class="keyword">then</span><span> </span><span class="type-name">Console</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;Produced </span><span class="substitution">$counter</span><span class="string-literal"> items&quot;</span><span>) </span><span class="keyword">else</span><span> </span><span class="type-name">Sync</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">unit</span><span>
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">queueR</span><span>.</span><span class="identifier">getAndUpdate</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">enqueue</span><span>(</span><span class="identifier">counter</span><span> + </span><span class="number-literal">1</span><span>))
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">producer</span><span>(</span><span class="identifier">queueR</span><span>, </span><span class="identifier">counter</span><span> + </span><span class="number-literal">1</span><span>)
+  </span><span class="keyword">yield</span><span> ()</span></code></pre>
+        <p>Первая строка просто печатает какое-то сообщение журнала для каждого 10000-го элемента, поэтому мы знаем, «живой» ли он. 
+        Он использует <code>type class Console[_]</code>, который дает возможность печатать 
+        и читать строки (<code>IO.println</code> просто использует внутри <code>Console[IO].println</code>).</p>
+        <p>Затем код вызывает <code>queueR.getAndUpdate</code> - добавление данных в очередь. 
+        Обратите внимание, что <code>.getAndUpdate</code> предоставляется текущая очередь, 
+        затем используем ее <code>.enqueue</code> для вставки следующего значения <code>counter + 1</code>. 
+        Этот вызов возвращает новую очередь с добавленным значением, которое хранится в экземпляре <code>ref</code>. 
+        Если какое-то другое волокно получает доступ к <code>queueR</code>, то волокно (семантически) блокируется.</p>
+        <p>Метод <code>consumer</code> немного другой. 
+        Он попытается прочитать данные из очереди, но должен знать, что очередь может быть пустой:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">std</span><span>.</span><span class="type-name">Console</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">consumer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Sync</span><span>: </span><span class="type-name">Console</span><span>](</span><span class="identifier">queueR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Int</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+  </span><span class="keyword">for</span><span>
+    </span><span class="identifier">iO</span><span> &lt;- </span><span class="identifier">queueR</span><span>.</span><span class="identifier">modify</span><span> { </span><span class="identifier">queue</span><span> =&gt;
+            </span><span class="identifier">queue</span><span>.</span><span class="identifier">dequeueOption</span><span>.</span><span class="identifier">fold</span><span>((</span><span class="identifier">queue</span><span>, </span><span class="type-name">Option</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">Int</span><span>])) { (</span><span class="identifier">i</span><span>, </span><span class="identifier">queue</span><span>) =&gt; (</span><span class="identifier">queue</span><span>, </span><span class="type-name">Option</span><span>(</span><span class="identifier">i</span><span>)) }
+          }
+    </span><span class="identifier">_</span><span>  &lt;- </span><span class="keyword">if</span><span> </span><span class="identifier">iO</span><span>.</span><span class="identifier">exists</span><span>(</span><span class="identifier">_</span><span> % </span><span class="number-literal">10000</span><span> == </span><span class="number-literal">0</span><span>) </span><span class="keyword">then</span><span> </span><span class="type-name">Console</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;Consumed </span><span class="substitution">${iO.get}</span><span class="string-literal"> items&quot;</span><span>) </span><span class="keyword">else</span><span> </span><span class="type-name">Sync</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">unit</span><span>
+    </span><span class="identifier">_</span><span>  &lt;- </span><span class="identifier">consumer</span><span>(</span><span class="identifier">queueR</span><span>)
+  </span><span class="keyword">yield</span><span> ()</span></code></pre>
+        <p>Вызов <code>queueR.modify</code> позволяет изменить упакованные данные (нашу очередь) и вернуть значение, вычисленное из этих данных. 
+        В нашем случае он возвращает <code>Option[Int]</code>, что выдало бы <code>None</code>, если бы очередь была пустой. 
+        Следующая строка используется для регистрации сообщения в консоли о каждом 10000-ом прочитанном элементе. 
+        Наконец <code>consumer</code> вызывается рекурсивно, чтобы начать снова.</p>
+        <p>Теперь мы можем создать программу, которая создает экземпляр <code>queueR</code> и запускает <code>producer</code> и <code>consumer</code> параллельно:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">std</span><span>.</span><span class="type-name">Console</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">InefficientProducerConsumer</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">IOApp</span><span>:
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">run</span><span>(</span><span class="identifier">args</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">ExitCode</span><span>] =
+    </span><span class="keyword">for</span><span>
+      </span><span class="identifier">queueR</span><span> &lt;- </span><span class="type-name">Ref</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Int</span><span>]](</span><span class="type-name">Queue</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">Int</span><span>])
+      </span><span class="identifier">res</span><span> &lt;- (</span><span class="identifier">consumer</span><span>(</span><span class="identifier">queueR</span><span>), </span><span class="identifier">producer</span><span>(</span><span class="identifier">queueR</span><span>, </span><span class="number-literal">0</span><span>))
+        .</span><span class="identifier">parMapN</span><span>((</span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>) =&gt; </span><span class="type-name">ExitCode</span><span>.</span><span class="type-name">Success</span><span>) </span><span class="comment">// Запуск producer и consumer в параллели до окончания выполнения (до отмены пользователем по CTRL-C)
+</span><span>        .</span><span class="identifier">handleErrorWith</span><span> { </span><span class="identifier">t</span><span> =&gt;
+          </span><span class="type-name">Console</span><span>[</span><span class="type-name">IO</span><span>].</span><span class="identifier">errorln</span><span>(</span><span class="string-literal">s&quot;Error caught: </span><span class="substitution">${t.getMessage}</span><span class="string-literal">&quot;</span><span>).</span><span class="identifier">as</span><span>(</span><span class="type-name">ExitCode</span><span>.</span><span class="type-name">Error</span><span>)
+        }
+    </span><span class="keyword">yield</span><span> </span><span class="identifier">res</span><span>
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">producer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Sync</span><span>](</span><span class="identifier">queueR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Int</span><span>]], </span><span class="identifier">counter</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] = ??? </span><span class="comment">// определено выше
+</span><span>  </span><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">consumer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Sync</span><span>](</span><span class="identifier">queueR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Int</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] = ???               </span><span class="comment">// определено выше</span></code></pre>
+        <p>Полная реализация этого примитивного производителя-потребителя доступна <a href="https://github.com/lrodero/cats-effect-tutorial/blob/series/3.x/src/main/scala/catseffecttutorial/producerconsumer/InefficientProducerConsumer.scala">здесь</a>.</p>
+        <p>Наша функция <code>run</code> создает экземпляр общей очереди, обернутой в <code>Ref</code>, 
+        и параллельно загружает производителя и потребителя. 
+        Для этого используется <code>parMapN</code>, который создает и запускает волокна, запускающие <code>IO</code>-ы, переданный в качестве параметра. 
+        Затем он берет выходные данные каждого волокна и применяет к ним заданную функцию. 
+        В нашем случае и производитель, и потребитель будут работать &quot;вечно&quot;, 
+        пока пользователь не нажмет CTRL-C, что вызовет отмену.</p>
+        <p>В качестве альтернативы мы могли бы использовать метод <code>start</code> для явного создания новых экземпляров <code>Fiber</code>, 
+        которые будут запускать производителя и потребителя, а затем использовать <code>join</code> для ожидания их завершения, 
+        например:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">InefficientProducerConsumer</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">IOApp</span><span>:
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">run</span><span>(</span><span class="identifier">args</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">ExitCode</span><span>] =
+    </span><span class="keyword">for</span><span>
+      </span><span class="identifier">queueR</span><span>        &lt;- </span><span class="type-name">Ref</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Int</span><span>]](</span><span class="type-name">Queue</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">Int</span><span>])
+      </span><span class="identifier">producerFiber</span><span> &lt;- </span><span class="identifier">producer</span><span>(</span><span class="identifier">queueR</span><span>, </span><span class="number-literal">0</span><span>).</span><span class="identifier">start</span><span>
+      </span><span class="identifier">consumerFiber</span><span> &lt;- </span><span class="identifier">consumer</span><span>(</span><span class="identifier">queueR</span><span>).</span><span class="identifier">start</span><span>
+      </span><span class="identifier">_</span><span>             &lt;- </span><span class="identifier">producerFiber</span><span>.</span><span class="identifier">join</span><span>
+      </span><span class="identifier">_</span><span>             &lt;- </span><span class="identifier">consumerFiber</span><span>.</span><span class="identifier">join</span><span>
+    </span><span class="keyword">yield</span><span> </span><span class="type-name">ExitCode</span><span>.</span><span class="type-name">Error</span><span>
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">producer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Sync</span><span>](</span><span class="identifier">queueR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Int</span><span>]], </span><span class="identifier">counter</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] = ??? </span><span class="comment">// определено выше
+</span><span>  </span><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">consumer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Sync</span><span>](</span><span class="identifier">queueR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Int</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] = ???               </span><span class="comment">// определено выше</span></code></pre>
+        <p>Однако в большинстве случаев не рекомендуется обрабатывать волокна вручную, так как с ними не так просто работать. 
+        Например, если в волокне есть ошибка, вызов <code>join</code> этого волокна не вызовет ее, он вернется в обычном режиме, 
+        и вы должны явно проверить экземпляр <code>Outcome</code>, возвращенный вызовом <code>.join</code>, чтобы увидеть, не возникла ли ошибка. 
+        Кроме того, другие волокна будут продолжать работать, не зная о том, что произошло.</p>
+        <p>Cats Effect предоставляет дополнительные методы <code>joinWith</code> или <code>joinWithNever</code>, чтобы убедиться, что ошибка вызвана, 
+        по крайней мере, обычной семантикой <code>MonadError</code> (например, &quot;короткое замыкание&quot;). 
+        Теперь, когда мы вызываем ошибку, нам также нужно отменить другие работающие волокна. 
+        Мы можем легко попасть в ловушку путаницы волокон, чтобы следить за ней. 
+        Кроме того, ошибка, вызванная волокном, не продвигается до тех пор, 
+        пока не будет достигнут вызов <code>joinWith</code> или <code>joinWithNever</code>.</p>
+        <p>Таким образом, в нашем примере выше, если в <code>consumerFiber</code> возникает ошибка, 
+        то у нас нет возможности наблюдать это, пока волокно <code>producer</code> не завершится. 
+        Обратите внимание, что в нашем примере <code>producer</code> никогда не завершает работу, 
+        и поэтому ошибка никогда не возникает! 
+        И даже если бы волокно <code>producer</code> закончилось, оно бы потребляло ресурсы впустую.</p>
+        <p>В отличие от этого, <code>parMapN</code> передает вызывающей стороне любую обнаруженную ошибку 
+        и заботится об отмене других запущенных волокон. 
+        В результате <code>parMapN</code> проще в использовании, более лаконичен и о нем легче рассуждать. 
+        <em>Из-за этого, если у вас нет особых и необычных требований, 
+        вы должны предпочесть использовать команды высшего уровня, 
+        такие как <code>parMapN</code> или <code>parSequence</code> для работы с волокнами.</em></p>
+        <p>Хорошо, мы придерживаемся нашей реализации, основанной на <code>.parMapN</code>. 
+        Все? Это работает? Что ж, это работает... но далеко от идеала. 
+        Если мы запустим его, то обнаружим, что <code>producer</code> работает быстрее, чем <code>consumer</code>, поэтому очередь постоянно растет. 
+        И даже если бы это было не так, мы должны понимать, что consumer будет работать постоянно, 
+        независимо от наличия элементов в очереди, что далеко не идеально. 
+        Мы постараемся улучшить его в следующем разделе, используя <a href="https://typelevel.org/cats-effect/docs/std/deferred">Deferred</a>. 
+        Также мы будем использовать несколько потребителей и производителей, 
+        чтобы сбалансировать скорость производства и потребления.</p>
+        
+        <h2 id="более-надежная-реализация-проблемы-производителя-потребителя" class="section"><a class="anchor-link left" href="#более-надежная-реализация-проблемы-производителя-потребителя"><i class="icofont-laika link">&#xef71;</i></a>Более надежная реализация проблемы производителя/потребителя</h2>
+        <p>В нашем коде производителя/потребителя мы уже защищаем доступ к очереди (нашему общему ресурсу) с помощью <code>Ref</code>. 
+        Теперь, вместо того, чтобы использовать <code>Option</code> для представления элементов, извлеченных из возможно пустой очереди, 
+        мы должны вместо этого каким-то образом заблокировать волокно вызывающей стороны, если очередь пуста, 
+        до тех пор, пока какой-либо элемент не может быть возвращен. 
+        Это будет сделано путем создания и хранения экземпляров <code>Deferred</code>. 
+        Экземпляр <code>Deferred[F, A]</code> может содержать один единственный элемент некоторого типа <code>A</code>. 
+        <code>Deferred</code> экземпляры создаются пустыми и могут быть заполнены только один раз. 
+        Если какое-то волокно попытается прочитать элемент из пустого <code>Deferred</code>, 
+        то оно будет семантически заблокировано до тех пор, пока какое-то другое волокно не заполнит (завершит) его.</p>
+        <p>Таким образом, наряду с очередью произведенных, но еще не потребленных элементов, 
+        мы должны отслеживать экземпляры <code>Deferred</code>, созданные, когда очередь была пуста и ожидающие доступности элементов. 
+        Эти экземпляры будут храниться в новой очереди <code>takers</code>. 
+        Мы сохраним обе очереди в новом типе <code>State</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">Deferred</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">queue</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">takers</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">A</span><span>]])</span></code></pre>
+        <p>И производитель, и потребитель будут иметь доступ к одному и тому же общему экземпляру состояния, 
+        который будет переноситься и безопасно модифицироваться экземпляром <code>Ref</code>. </p>
+        <p>Потребитель работает следующим образом:</p>
+        <ul>
+          <li>Если <code>queue</code> не пустой, он извлечет и вернет свой заглавный элемент. 
+          Новое состояние сохранит остаток очереди, изменения <code>takers</code> не потребуются.</li>
+          <li>Если <code>queue</code> пусто, он будет использовать новый экземпляр <code>Deferred</code> в качестве нового <code>taker</code>, 
+          добавит его в очередь <code>takers</code> и «заблокирует» вызывающую сторону, вызвав <code>taker.get</code></li>
+        </ul>
+        <p>Если предположить, что в нашей настройке мы производим и потребляем <code>Ints</code> (как и раньше), 
+        тогда новый потребительский код будет таким:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.{</span><span class="type-name">Deferred</span><span>, </span><span class="type-name">Ref</span><span>, </span><span class="type-name">Async</span><span>}
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">std</span><span>.</span><span class="type-name">Console</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">queue</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">takers</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">A</span><span>]])
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">consumer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Async</span><span>: </span><span class="type-name">Console</span><span>](</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">stateR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+  </span><span class="keyword">val</span><span> </span><span class="identifier">take</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] =
+    </span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>].</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">taker</span><span> =&gt;
+      </span><span class="identifier">stateR</span><span>.</span><span class="identifier">modify</span><span> {
+        </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">takers</span><span>) </span><span class="keyword">if</span><span> </span><span class="identifier">queue</span><span>.</span><span class="identifier">nonEmpty</span><span> =&gt;
+          </span><span class="keyword">val</span><span> (</span><span class="identifier">i</span><span>, </span><span class="identifier">rest</span><span>) = </span><span class="identifier">queue</span><span>.</span><span class="identifier">dequeue</span><span>
+          </span><span class="comment">// Получен элемент из очереди, мы можем просто вернуть его
+</span><span>          </span><span class="type-name">State</span><span>(</span><span class="identifier">rest</span><span>, </span><span class="identifier">takers</span><span>) -&gt; </span><span class="type-name">Async</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">pure</span><span>(</span><span class="identifier">i</span><span>)
+        </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">takers</span><span>)                   =&gt;
+          </span><span class="comment">// Нет элемента в очереди, должны заблокировать вызов пока что-то не получим
+</span><span>          </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">takers</span><span>.</span><span class="identifier">enqueue</span><span>(</span><span class="identifier">taker</span><span>)) -&gt; </span><span class="identifier">taker</span><span>.</span><span class="identifier">get</span><span>
+      }.</span><span class="identifier">flatten</span><span>
+    }
+
+  </span><span class="keyword">for</span><span>
+    </span><span class="identifier">i</span><span> &lt;- </span><span class="identifier">take</span><span>
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="keyword">if</span><span> (</span><span class="identifier">i</span><span> % </span><span class="number-literal">10000</span><span> == </span><span class="number-literal">0</span><span>) </span><span class="type-name">Console</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;Consumer </span><span class="substitution">$id</span><span class="string-literal"> has reached </span><span class="substitution">$i</span><span class="string-literal"> items&quot;</span><span>) </span><span class="keyword">else</span><span> </span><span class="type-name">Async</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">unit</span><span>
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">consumer</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">stateR</span><span>)
+  </span><span class="keyword">yield</span><span> ()
+</span><span class="identifier">end</span><span> </span><span class="identifier">consumer</span></code></pre>
+        <p>Параметр <code>id</code> используется только для идентификации потребителя в логах консоли 
+        (напомним, теперь у нас будет несколько производителей и потребителей, работающих параллельно). 
+        Экземпляр <code>take</code> реализует проверку и обновление состояния в <code>stateR</code>. 
+        Обратите внимание, как он будет блокироваться на <code>taker.get</code>, когда очередь пуста.</p>
+        <p>Производитель, со своей стороны, будет:</p>
+        <ul>
+          <li>Если есть ожидающие <code>takers</code>, то он возьмет первый в очереди и предложит ему вновь созданный элемент (<code>taker.complete</code>).</li>
+          <li>Если нет <code>takers</code>, он просто поставит в очередь созданный элемент.</li>
+        </ul>
+        <p>Таким образом производитель будет выглядеть так:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.{</span><span class="type-name">Deferred</span><span>, </span><span class="type-name">Ref</span><span>, </span><span class="type-name">Sync</span><span>}
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">std</span><span>.</span><span class="type-name">Console</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">queue</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">takers</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">A</span><span>]])
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">producer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Sync</span><span>: </span><span class="type-name">Console</span><span>](</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">counterR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>], </span><span class="identifier">stateR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">offer</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+    </span><span class="identifier">stateR</span><span>.</span><span class="identifier">modify</span><span> {
+      </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">takers</span><span>) </span><span class="keyword">if</span><span> </span><span class="identifier">takers</span><span>.</span><span class="identifier">nonEmpty</span><span> =&gt;
+        </span><span class="keyword">val</span><span> (</span><span class="identifier">taker</span><span>, </span><span class="identifier">rest</span><span>) = </span><span class="identifier">takers</span><span>.</span><span class="identifier">dequeue</span><span>
+        </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">rest</span><span>) -&gt; </span><span class="identifier">taker</span><span>.</span><span class="identifier">complete</span><span>(</span><span class="identifier">i</span><span>).</span><span class="identifier">void</span><span>
+      </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">takers</span><span>)                    =&gt;
+        </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>.</span><span class="identifier">enqueue</span><span>(</span><span class="identifier">i</span><span>), </span><span class="identifier">takers</span><span>) -&gt; </span><span class="type-name">Sync</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">unit</span><span>
+    }.</span><span class="identifier">flatten</span><span>
+
+  </span><span class="keyword">for</span><span>
+    </span><span class="identifier">i</span><span> &lt;- </span><span class="identifier">counterR</span><span>.</span><span class="identifier">getAndUpdate</span><span>(</span><span class="identifier">_</span><span> + </span><span class="number-literal">1</span><span>)
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">offer</span><span>(</span><span class="identifier">i</span><span>)
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="keyword">if</span><span> </span><span class="identifier">i</span><span> % </span><span class="number-literal">10000</span><span> == </span><span class="number-literal">0</span><span> </span><span class="keyword">then</span><span> </span><span class="type-name">Console</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;Producer </span><span class="substitution">$id</span><span class="string-literal"> has reached </span><span class="substitution">$i</span><span class="string-literal"> items&quot;</span><span>) </span><span class="keyword">else</span><span> </span><span class="type-name">Sync</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">unit</span><span>
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">producer</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">counterR</span><span>, </span><span class="identifier">stateR</span><span>)
+  </span><span class="keyword">yield</span><span> ()</span></code></pre>
+        <p>Наконец, мы модифицируем нашу основную программу, чтобы она создавала счетчик и состояние <code>Refs</code>. 
+        Также она создаст несколько потребителей и производителей, по 10 штук, и запустит их всех параллельно:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">std</span><span>.</span><span class="type-name">Console</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">instances</span><span>.</span><span class="identifier">list</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">ProducerConsumer</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">IOApp</span><span>:
+
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">queue</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">takers</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">A</span><span>]])
+
+  </span><span class="keyword">object</span><span> </span><span class="type-name">State</span><span>:
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">empty</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>]: </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">A</span><span>] = </span><span class="type-name">State</span><span>(</span><span class="type-name">Queue</span><span>.</span><span class="identifier">empty</span><span>, </span><span class="type-name">Queue</span><span>.</span><span class="identifier">empty</span><span>)
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">run</span><span>(</span><span class="identifier">args</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">ExitCode</span><span>] =
+    </span><span class="keyword">for</span><span>
+      </span><span class="identifier">stateR</span><span>   &lt;- </span><span class="type-name">Ref</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">State</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Int</span><span>]](</span><span class="type-name">State</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Int</span><span>])
+      </span><span class="identifier">counterR</span><span> &lt;- </span><span class="type-name">Ref</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Int</span><span>](</span><span class="number-literal">1</span><span>)
+      </span><span class="identifier">producers</span><span> = </span><span class="type-name">List</span><span>.</span><span class="identifier">range</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">11</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">producer</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">counterR</span><span>, </span><span class="identifier">stateR</span><span>)) </span><span class="comment">// 10 производителей
+</span><span>      </span><span class="identifier">consumers</span><span> = </span><span class="type-name">List</span><span>.</span><span class="identifier">range</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">11</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">consumer</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">stateR</span><span>))           </span><span class="comment">// 10 потребителей
+</span><span>      </span><span class="identifier">res</span><span>      &lt;- (</span><span class="identifier">producers</span><span> ++ </span><span class="identifier">consumers</span><span>).</span><span class="identifier">parSequence</span><span>
+                    .</span><span class="identifier">as</span><span>(
+                      </span><span class="type-name">ExitCode</span><span>.</span><span class="type-name">Success</span><span>
+                    ) </span><span class="comment">// Запуск producer и consumer в параллели до окончания выполнения (до отмены пользователем по CTRL-C)
+</span><span>                    .</span><span class="identifier">handleErrorWith</span><span> { </span><span class="identifier">t</span><span> =&gt;
+                      </span><span class="type-name">Console</span><span>[</span><span class="type-name">IO</span><span>].</span><span class="identifier">errorln</span><span>(</span><span class="string-literal">s&quot;Error caught: </span><span class="substitution">${t.getMessage}</span><span class="string-literal">&quot;</span><span>).</span><span class="identifier">as</span><span>(</span><span class="type-name">ExitCode</span><span>.</span><span class="type-name">Error</span><span>)
+                    }
+    </span><span class="keyword">yield</span><span> </span><span class="identifier">res</span><span>
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">producer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Sync</span><span>](</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">counterR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>], </span><span class="identifier">stateR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+    ??? </span><span class="comment">// определено выше
+</span><span>
+  </span><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">consumer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Async</span><span>](</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">stateR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] = ??? </span><span class="comment">// определено выше</span></code></pre>
+        <p>Полная реализация этого производителя-потребителя с неограниченной очередью доступна <a href="https://github.com/lrodero/cats-effect-tutorial/blob/series/3.x/src/main/scala/catseffecttutorial/producerconsumer/ProducerConsumer.scala">здесь</a>.</p>
+        <p>Производители и потребители создаются в виде двух списков <code>IO</code> экземпляров. 
+        Все они запускаются в своем собственном волокне вызовом <code>parSequence</code>, который будет ждать завершения всех из них, 
+        а затем вернет значение, переданное в качестве параметра. 
+        Как и в предыдущем примере, эта программа будет работать вечно, пока пользователь не нажмет CTRL-C.</p>
+        <p>Наличие нескольких потребителей и производителей улучшает баланс между потребителями и производителями... 
+        но, тем не менее, в долгосрочной перспективе очередь имеет тенденцию увеличиваться в размерах. 
+        Чтобы исправить это, мы обеспечим ограничение размера очереди, поэтому всякий раз, 
+        когда этот максимальный размер будет достигнут, производители будут блокироваться, 
+        как это делают потребители, когда очередь пуста.</p>
+        
+        <h2 id="производитель-потребитель-с-ограниченной-очередью" class="section"><a class="anchor-link left" href="#производитель-потребитель-с-ограниченной-очередью"><i class="icofont-laika link">&#xef71;</i></a>Производитель-потребитель с ограниченной очередью</h2>
+        <p>Наличие ограниченной очереди подразумевает, что производители, когда очередь заполнена, 
+        будут ждать (быть «семантически заблокированными»), пока не появится какая-то пустая корзина, доступная для заполнения. 
+        Таким образом, реализация должна отслеживать этих ожидающих производителей. 
+        Для этого мы добавим новую очередь <code>offerers</code>, которая будет добавлена в <code>State</code> рядом с <code>takers</code>. 
+        Для каждого ожидающего производителя в очереди <code>offerers</code> будет храниться <code>Deferred[F, Unit]</code>, 
+        который будет использоваться для блокировки производителя до тех пор, 
+        пока предлагаемый им элемент не будет добавлен в <code>queue</code> или напрямую передан какому-либо потребителю (<code>taker</code>). 
+        Наряду с экземпляром <code>Deferred</code> нам также необходимо сохранить в очереди <code>offerers</code> 
+        фактический элемент, предлагаемый производителем. 
+        Таким образом класс <code>State</code> теперь становится:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">Deferred</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](
+    </span><span class="identifier">queue</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">A</span><span>],
+    </span><span class="identifier">capacity</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">takers</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">A</span><span>]],
+    </span><span class="identifier">offerers</span><span>: </span><span class="type-name">Queue</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Unit</span><span>])]
+)</span></code></pre>
+        <p>Конечно, и потребитель, и производитель должны быть изменены для обработки этой новой очереди <code>offerers</code>. 
+        У потребителя может быть четыре сценария, в зависимости от того, является ли каждый из <code>queue</code> и <code>offerers</code> пустым или нет. 
+        Для каждого сценария потребитель должен:</p>
+        <ul>
+          <li>
+            Если <code>queue</code> не пусто:
+            <ul>
+              <li>Если <code>offerers</code> пустой, то он извлечет и вернет головной элемент <code>queue</code>.</li>
+              <li>Если <code>offerers</code> не пустой (есть какой-то производитель), тогда все сложнее. 
+              Головной элемент <code>queue</code> будет возвращен потребителю. Теперь у нас есть свободная корзина в формате <code>queue</code>. 
+              Таким образом, первый ожидающий может использовать эту корзину, чтобы добавить предлагаемый им элемент. 
+              Этот элемент будет добавлен в <code>queue</code>, и экземпляр <code>Deferred</code> будет завершен, 
+              поэтому производитель будет освобожден (разблокирован).</li>
+            </ul>
+          </li>
+          <li>
+            Если <code>queue</code> пусто:
+            <ul>
+              <li>Если <code>offerers</code> пустой, то мы ничего не можем дать вызывающей стороне, поэтому создается <code>taker</code> 
+              и добавляется в <code>takers</code>, пока вызывающая сторона заблокирована с помощью <code>taker.get</code>.</li>
+              <li>Если <code>offerers</code> не пустой, то извлекается первый в очереди <code>offerer</code>, его <code>Deferred</code> экземпляр освобождается, 
+              в то время как предлагаемый элемент возвращается вызывающему.</li>
+            </ul>
+          </li>
+        </ul>
+        <p>Итак, потребительский код выглядит так:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">std</span><span>.</span><span class="type-name">Console</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](
+    </span><span class="identifier">queue</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">A</span><span>],
+    </span><span class="identifier">capacity</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">takers</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">A</span><span>]],
+    </span><span class="identifier">offerers</span><span>: </span><span class="type-name">Queue</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Unit</span><span>])]
+)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">consumer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Async</span><span>: </span><span class="type-name">Console</span><span>](</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">stateR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+  </span><span class="keyword">val</span><span> </span><span class="identifier">take</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] =
+    </span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>].</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">taker</span><span> =&gt;
+      </span><span class="identifier">stateR</span><span>.</span><span class="identifier">modify</span><span> {
+        </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) </span><span class="keyword">if</span><span> </span><span class="identifier">queue</span><span>.</span><span class="identifier">nonEmpty</span><span> &amp;&amp; </span><span class="identifier">offerers</span><span>.</span><span class="identifier">isEmpty</span><span> =&gt;
+          </span><span class="keyword">val</span><span> (</span><span class="identifier">i</span><span>, </span><span class="identifier">rest</span><span>) = </span><span class="identifier">queue</span><span>.</span><span class="identifier">dequeue</span><span>
+          </span><span class="type-name">State</span><span>(</span><span class="identifier">rest</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) -&gt; </span><span class="type-name">Async</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">pure</span><span>(</span><span class="identifier">i</span><span>)
+        </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) </span><span class="keyword">if</span><span> </span><span class="identifier">queue</span><span>.</span><span class="identifier">nonEmpty</span><span>                     =&gt;
+          </span><span class="keyword">val</span><span> (</span><span class="identifier">i</span><span>, </span><span class="identifier">rest</span><span>)               = </span><span class="identifier">queue</span><span>.</span><span class="identifier">dequeue</span><span>
+          </span><span class="keyword">val</span><span> ((</span><span class="identifier">move</span><span>, </span><span class="identifier">release</span><span>), </span><span class="identifier">tail</span><span>) = </span><span class="identifier">offerers</span><span>.</span><span class="identifier">dequeue</span><span>
+          </span><span class="type-name">State</span><span>(</span><span class="identifier">rest</span><span>.</span><span class="identifier">enqueue</span><span>(</span><span class="identifier">move</span><span>), </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">tail</span><span>) -&gt; </span><span class="identifier">release</span><span>.</span><span class="identifier">complete</span><span>(()).</span><span class="identifier">as</span><span>(</span><span class="identifier">i</span><span>)
+        </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) </span><span class="keyword">if</span><span> </span><span class="identifier">offerers</span><span>.</span><span class="identifier">nonEmpty</span><span>                  =&gt;
+          </span><span class="keyword">val</span><span> ((</span><span class="identifier">i</span><span>, </span><span class="identifier">release</span><span>), </span><span class="identifier">rest</span><span>) = </span><span class="identifier">offerers</span><span>.</span><span class="identifier">dequeue</span><span>
+          </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">rest</span><span>) -&gt; </span><span class="identifier">release</span><span>.</span><span class="identifier">complete</span><span>(()).</span><span class="identifier">as</span><span>(</span><span class="identifier">i</span><span>)
+        </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>)                                       =&gt;
+          </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>.</span><span class="identifier">enqueue</span><span>(</span><span class="identifier">taker</span><span>), </span><span class="identifier">offerers</span><span>) -&gt; </span><span class="identifier">taker</span><span>.</span><span class="identifier">get</span><span>
+      }.</span><span class="identifier">flatten</span><span>
+    }
+
+  </span><span class="keyword">for</span><span>
+    </span><span class="identifier">i</span><span> &lt;- </span><span class="identifier">take</span><span>
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="keyword">if</span><span> </span><span class="identifier">i</span><span> % </span><span class="number-literal">10000</span><span> == </span><span class="number-literal">0</span><span> </span><span class="keyword">then</span><span> </span><span class="type-name">Console</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;Consumer </span><span class="substitution">$id</span><span class="string-literal"> has reached </span><span class="substitution">$i</span><span class="string-literal"> items&quot;</span><span>) </span><span class="keyword">else</span><span> </span><span class="type-name">Async</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">unit</span><span>
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">consumer</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">stateR</span><span>)
+  </span><span class="keyword">yield</span><span> ()</span></code></pre>
+        <p>Функциональность продюсера немного проще:</p>
+        <ul>
+          <li>Если есть какой-то ожидающий <code>taker</code>, то произведенный элемент будет передан ему, освобождая заблокированное волокно.</li>
+          <li>Если ожидающего <code>taker</code> нет, а <code>queue</code> не заполнен, то предложенный элемент будет поставлен в очередь.</li>
+          <li>Если ожидающего <code>taker</code> нет, а <code>queue</code> уже заполнен, то создается новый <code>offerer</code>, 
+          блокирующий волокно-производитель на методе <code>.get</code> экземпляра <code>Deferred</code>.</li>
+        </ul>
+        <p>Теперь код производителя выглядит так:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">std</span><span>.</span><span class="type-name">Console</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](
+    </span><span class="identifier">queue</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">A</span><span>],
+    </span><span class="identifier">capacity</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">takers</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">A</span><span>]],
+    </span><span class="identifier">offerers</span><span>: </span><span class="type-name">Queue</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Unit</span><span>])]
+)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">producer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Async</span><span>: </span><span class="type-name">Console</span><span>](</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">counterR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>], </span><span class="identifier">stateR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">offer</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+    </span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Unit</span><span>].</span><span class="identifier">flatMap</span><span>[</span><span class="type-name">Unit</span><span>] { </span><span class="identifier">offerer</span><span> =&gt;
+      </span><span class="identifier">stateR</span><span>.</span><span class="identifier">modify</span><span> {
+        </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) </span><span class="keyword">if</span><span> </span><span class="identifier">takers</span><span>.</span><span class="identifier">nonEmpty</span><span>       =&gt;
+          </span><span class="keyword">val</span><span> (</span><span class="identifier">taker</span><span>, </span><span class="identifier">rest</span><span>) = </span><span class="identifier">takers</span><span>.</span><span class="identifier">dequeue</span><span>
+          </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">rest</span><span>, </span><span class="identifier">offerers</span><span>) -&gt; </span><span class="identifier">taker</span><span>.</span><span class="identifier">complete</span><span>(</span><span class="identifier">i</span><span>).</span><span class="identifier">void</span><span>
+        </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) </span><span class="keyword">if</span><span> </span><span class="identifier">queue</span><span>.</span><span class="identifier">size</span><span> &lt; </span><span class="identifier">capacity</span><span> =&gt;
+          </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>.</span><span class="identifier">enqueue</span><span>(</span><span class="identifier">i</span><span>), </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) -&gt; </span><span class="type-name">Async</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">unit</span><span>
+        </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>)                          =&gt;
+          </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>.</span><span class="identifier">enqueue</span><span>(</span><span class="identifier">i</span><span> -&gt; </span><span class="identifier">offerer</span><span>)) -&gt; </span><span class="identifier">offerer</span><span>.</span><span class="identifier">get</span><span>
+      }.</span><span class="identifier">flatten</span><span>
+    }
+
+  </span><span class="keyword">for</span><span>
+    </span><span class="identifier">i</span><span> &lt;- </span><span class="identifier">counterR</span><span>.</span><span class="identifier">getAndUpdate</span><span>(</span><span class="identifier">_</span><span> + </span><span class="number-literal">1</span><span>)
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">offer</span><span>(</span><span class="identifier">i</span><span>)
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="keyword">if</span><span> </span><span class="identifier">i</span><span> % </span><span class="number-literal">10000</span><span> == </span><span class="number-literal">0</span><span> </span><span class="keyword">then</span><span> </span><span class="type-name">Console</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;Producer </span><span class="substitution">$id</span><span class="string-literal"> has reached </span><span class="substitution">$i</span><span class="string-literal"> items&quot;</span><span>) </span><span class="keyword">else</span><span> </span><span class="type-name">Async</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">unit</span><span>
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">producer</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">counterR</span><span>, </span><span class="identifier">stateR</span><span>)
+  </span><span class="keyword">yield</span><span> ()</span></code></pre>
+        <p>Как видите, производитель и потребитель закодированы вокруг идеи сохранения и изменения состояния, 
+        как и в случае с неограниченными очередями.</p>
+        <p>В качестве последнего шага мы должны адаптировать основную программу для использования этих новых потребителей и производителей. 
+        Допустим, мы ограничиваем размер очереди до <code>100</code>, тогда имеем:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">std</span><span>.</span><span class="type-name">Console</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">ProducerConsumerBounded</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">IOApp</span><span>:
+
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](
+      </span><span class="identifier">queue</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">A</span><span>],
+      </span><span class="identifier">capacity</span><span>: </span><span class="type-name">Int</span><span>,
+      </span><span class="identifier">takers</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">A</span><span>]],
+      </span><span class="identifier">offerers</span><span>: </span><span class="type-name">Queue</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Unit</span><span>])]
+  )
+
+  </span><span class="keyword">object</span><span> </span><span class="type-name">State</span><span>:
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">empty</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">capacity</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">A</span><span>] = </span><span class="type-name">State</span><span>(</span><span class="type-name">Queue</span><span>.</span><span class="identifier">empty</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="type-name">Queue</span><span>.</span><span class="identifier">empty</span><span>, </span><span class="type-name">Queue</span><span>.</span><span class="identifier">empty</span><span>)
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">run</span><span>(</span><span class="identifier">args</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">ExitCode</span><span>] =
+    </span><span class="keyword">for</span><span>
+      </span><span class="identifier">stateR</span><span>   &lt;- </span><span class="type-name">Ref</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">State</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Int</span><span>]](</span><span class="type-name">State</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Int</span><span>](</span><span class="identifier">capacity</span><span> = </span><span class="number-literal">100</span><span>))
+      </span><span class="identifier">counterR</span><span> &lt;- </span><span class="type-name">Ref</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Int</span><span>](</span><span class="number-literal">1</span><span>)
+      </span><span class="identifier">producers</span><span> = </span><span class="type-name">List</span><span>.</span><span class="identifier">range</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">11</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">producer</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">counterR</span><span>, </span><span class="identifier">stateR</span><span>)) </span><span class="comment">// 10 производителей
+</span><span>      </span><span class="identifier">consumers</span><span> = </span><span class="type-name">List</span><span>.</span><span class="identifier">range</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">11</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">consumer</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">stateR</span><span>))           </span><span class="comment">// 10 потребителей
+</span><span>      </span><span class="identifier">res</span><span>      &lt;- (</span><span class="identifier">producers</span><span> ++ </span><span class="identifier">consumers</span><span>).</span><span class="identifier">parSequence</span><span>
+                    .</span><span class="identifier">as</span><span>(
+                      </span><span class="type-name">ExitCode</span><span>.</span><span class="type-name">Success</span><span>
+                    ) </span><span class="comment">// Запуск producer и consumer в параллели до окончания выполнения (до отмены пользователем по CTRL-C)
+</span><span>                    .</span><span class="identifier">handleErrorWith</span><span> { </span><span class="identifier">t</span><span> =&gt;
+                      </span><span class="type-name">Console</span><span>[</span><span class="type-name">IO</span><span>].</span><span class="identifier">errorln</span><span>(</span><span class="string-literal">s&quot;Error caught: </span><span class="substitution">${t.getMessage}</span><span class="string-literal">&quot;</span><span>).</span><span class="identifier">as</span><span>(</span><span class="type-name">ExitCode</span><span>.</span><span class="type-name">Error</span><span>)
+                    }
+    </span><span class="keyword">yield</span><span> </span><span class="identifier">res</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">producer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Async</span><span>](</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">counterR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>], </span><span class="identifier">stateR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+    ??? </span><span class="comment">// определено выше
+</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">consumer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Async</span><span>](</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">stateR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] = ??? </span><span class="comment">// определено выше</span></code></pre>
+        <p>Полная реализация этого производителя-потребителя с ограниченной очередью доступна <a href="https://github.com/lrodero/cats-effect-tutorial/blob/series/3.x/src/main/scala/catseffecttutorial/producerconsumer/ProducerConsumerBounded.scala">здесь</a>.</p>
+        
+        <h2 id="забота-об-отмене" class="section"><a class="anchor-link left" href="#забота-об-отмене"><i class="icofont-laika link">&#xef71;</i></a>Забота об отмене</h2>
+        <p>Безопасна ли отмена этой реализации? 
+        То есть, что произойдет, если волокно, по которому работает потребитель или производитель, будет отменено? 
+        Становится ли состояние непоследовательным? 
+        Давайте сначала проверим <code>producer</code>. 
+        Его состояние обрабатывается внутренним <code>offer</code>, поэтому сосредоточимся на нем. 
+        И, для ясности в нашем анализе, давайте переформатируем код, используя для понимания:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">Deferred</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">offer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+  </span><span class="keyword">for</span><span>
+    </span><span class="identifier">offerer</span><span> &lt;- </span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>]
+    </span><span class="identifier">op</span><span>      &lt;- </span><span class="identifier">stateR</span><span>.</span><span class="identifier">modify</span><span> { ??? } </span><span class="comment">// `op` - это F[] для запуска
+</span><span>    </span><span class="identifier">_</span><span>       &lt;- </span><span class="identifier">op</span><span>
+  </span><span class="keyword">yield</span><span> ()</span></code></pre>
+        <p>Теперь отмена вступает в действие в каждом <code>.flatMap</code> в <code>F</code>, т.е. в каждом шаге нашего <em>for-comprehension</em>. 
+        Если волокно отменяется прямо перед или после первого шага, это не проблема. 
+        <code>offerer</code> в конечном итоге будет удален сборщиком мусора, вот и все. 
+        Но что, если отмена произойдет сразу после вызова <code>modify</code>? 
+        Ну тогда <code>op</code> не будет запускаться.
+        Напомним, что по содержанию <code>modify</code>, <code>op</code> может быть <code>taker.complete(i).void</code>, <code>Sync[F].unit</code> или <code>offerer.get</code>. 
+        Отмена после удаления <code>taker</code> или добавления <code>offerer</code> в состояние, но без запуска <code>op</code>, оставит состояние несогласованным. 
+        Мы можем быстро исправить это, сделав этот код неотменяемым:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">offer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+  </span><span class="keyword">for</span><span>
+    </span><span class="identifier">offerer</span><span> &lt;- </span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>]
+    </span><span class="identifier">_</span><span>       &lt;- </span><span class="type-name">F</span><span>.</span><span class="identifier">uncancelable</span><span> { </span><span class="identifier">poll</span><span> =&gt; </span><span class="comment">// `poll` пока игнорируется, мы обсудим его позже
+</span><span>      </span><span class="keyword">for</span><span>
+        </span><span class="identifier">op</span><span> &lt;- </span><span class="identifier">stateR</span><span>.</span><span class="identifier">modify</span><span> {???} </span><span class="comment">// `op` - это F[] для запуска
+</span><span>        </span><span class="identifier">_</span><span>  &lt;- </span><span class="identifier">op</span><span> </span><span class="comment">// `taker.complete(i).void`, `Sync[F].unit` или `offerer.get`
+</span><span>      </span><span class="keyword">yield</span><span> ()
+    }
+  </span><span class="keyword">yield</span><span> ()</span></code></pre>
+        <p>В чем проблема? 
+        Если <code>op</code> не блокируемый, то есть либо <code>F.unit</code> или <code>taker.complete(a).void</code>, то наше решение подойдет. 
+        Но когда выполняется операция <code>offerer.get</code>, у нас возникает проблема, поскольку <code>.get</code> будет блокироваться до тех пор, 
+        пока <code>offerer</code> не будет завершена (напомним, что это <code>Deferred</code> экземпляр). 
+        Таким образом, волокно не будет продвигаться, но в то же время мы установили эту операцию внутри неотменяемой области. 
+        Таким образом, нет никакого способа отменить это заблокированное волокно! 
+        Например, мы не можем установить таймаут на его выполнение! 
+        Таким образом, если <code>offerer</code> волокно никогда не будет завершено, то все это волокно никогда не будет завершено.</p>
+        <p>Это можно решить с помощью <code>Poll[F]</code>, который передается в качестве параметра <code>F.uncancelable</code>. 
+        <code>Poll[F]</code> используется для определения отменяемого кода внутри неотменяемой области. 
+        Поэтому, если операция, которую нужно запустить, была <code>offerer.get</code>, мы встроим этот вызов в <code>Poll[F]</code>, 
+        тем самым обеспечив возможность отмены заблокированного волокна. 
+        Наконец, мы также должны позаботиться об очистке состояния, если действительно есть отмена. 
+        Эта очистка должна будет удалить <code>offerer</code> из списка <code>offerers</code>, хранящихся в <code>State</code>, 
+        поскольку она никогда не будет завершена. 
+        Наша <code>offer</code> функция стала:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">std</span><span>.</span><span class="type-name">Console</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](
+    </span><span class="identifier">queue</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">A</span><span>],
+    </span><span class="identifier">capacity</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">takers</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">A</span><span>]],
+    </span><span class="identifier">offerers</span><span>: </span><span class="type-name">Queue</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Unit</span><span>])]
+)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">producer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Async</span><span>: </span><span class="type-name">Console</span><span>](</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">counterR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>], </span><span class="identifier">stateR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">offer</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+    </span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Unit</span><span>].</span><span class="identifier">flatMap</span><span>[</span><span class="type-name">Unit</span><span>] { </span><span class="identifier">offerer</span><span> =&gt;
+      </span><span class="type-name">Async</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">uncancelable</span><span> {
+        </span><span class="identifier">poll</span><span> =&gt; </span><span class="comment">// `poll`, используемый для встраивания отменяемого кода, то есть вызов `offerer.get`
+</span><span>          </span><span class="identifier">stateR</span><span>.</span><span class="identifier">modify</span><span> {
+            </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) </span><span class="keyword">if</span><span> </span><span class="identifier">takers</span><span>.</span><span class="identifier">nonEmpty</span><span>       =&gt;
+              </span><span class="keyword">val</span><span> (</span><span class="identifier">taker</span><span>, </span><span class="identifier">rest</span><span>) = </span><span class="identifier">takers</span><span>.</span><span class="identifier">dequeue</span><span>
+              </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">rest</span><span>, </span><span class="identifier">offerers</span><span>) -&gt; </span><span class="identifier">taker</span><span>.</span><span class="identifier">complete</span><span>(</span><span class="identifier">i</span><span>).</span><span class="identifier">void</span><span>
+            </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) </span><span class="keyword">if</span><span> </span><span class="identifier">queue</span><span>.</span><span class="identifier">size</span><span> &lt; </span><span class="identifier">capacity</span><span> =&gt;
+              </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>.</span><span class="identifier">enqueue</span><span>(</span><span class="identifier">i</span><span>), </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) -&gt; </span><span class="type-name">Async</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">unit</span><span>
+            </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>)                          =&gt;
+              </span><span class="keyword">val</span><span> </span><span class="identifier">cleanup</span><span> = </span><span class="identifier">stateR</span><span>.</span><span class="identifier">update</span><span> { </span><span class="identifier">s</span><span> =&gt; </span><span class="identifier">s</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">offerers</span><span> = </span><span class="identifier">s</span><span>.</span><span class="identifier">offerers</span><span>.</span><span class="identifier">filter</span><span>(</span><span class="identifier">_</span><span class="number-literal">._2</span><span> </span><span class="identifier">ne</span><span> </span><span class="identifier">offerer</span><span>)) }
+              </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>.</span><span class="identifier">enqueue</span><span>(</span><span class="identifier">i</span><span> -&gt; </span><span class="identifier">offerer</span><span>)) -&gt; </span><span class="identifier">poll</span><span>(</span><span class="identifier">offerer</span><span>.</span><span class="identifier">get</span><span>).</span><span class="identifier">onCancel</span><span>(</span><span class="identifier">cleanup</span><span>)
+          }.</span><span class="identifier">flatten</span><span>
+      }
+    }
+
+  </span><span class="keyword">for</span><span>
+    </span><span class="identifier">i</span><span> &lt;- </span><span class="identifier">counterR</span><span>.</span><span class="identifier">getAndUpdate</span><span>(</span><span class="identifier">_</span><span> + </span><span class="number-literal">1</span><span>)
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">offer</span><span>(</span><span class="identifier">i</span><span>)
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="keyword">if</span><span> </span><span class="identifier">i</span><span> % </span><span class="number-literal">10000</span><span> == </span><span class="number-literal">0</span><span> </span><span class="keyword">then</span><span> </span><span class="type-name">Console</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;Producer </span><span class="substitution">$id</span><span class="string-literal"> has reached </span><span class="substitution">$i</span><span class="string-literal"> items&quot;</span><span>) </span><span class="keyword">else</span><span> </span><span class="type-name">Async</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">unit</span><span>
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">producer</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">counterR</span><span>, </span><span class="identifier">stateR</span><span>)
+  </span><span class="keyword">yield</span><span> ()</span></code></pre>
+        <p>Потребительская часть должна работать с отменой таким же образом. 
+        Она будет использовать <code>poll</code> для включения отмены блокирующих вызовов, 
+        но в то же время обязательно очистит состояние при отмене. 
+        В этом случае вызов блокируется <code>taker.get</code>, 
+        при отмене такого вызова <code>taker</code> будет удален из списка принимающих в <code>State</code>. 
+        Итак, <code>consumer</code> сейчас:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">std</span><span>.</span><span class="type-name">Console</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Queue</span><span>
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">queue</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">capacity</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">takers</span><span>: </span><span class="type-name">Queue</span><span>[</span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>,</span><span class="type-name">A</span><span>]], </span><span class="identifier">offerers</span><span>: </span><span class="type-name">Queue</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>,</span><span class="type-name">Unit</span><span>])])
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">consumer</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Async</span><span>: </span><span class="type-name">Console</span><span>](</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">stateR</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">State</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">take</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] =
+    </span><span class="type-name">Deferred</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>].</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">taker</span><span> =&gt;
+      </span><span class="type-name">Async</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">uncancelable</span><span> { </span><span class="identifier">poll</span><span> =&gt;
+        </span><span class="identifier">stateR</span><span>.</span><span class="identifier">modify</span><span> {
+          </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) </span><span class="keyword">if</span><span> </span><span class="identifier">queue</span><span>.</span><span class="identifier">nonEmpty</span><span> &amp;&amp; </span><span class="identifier">offerers</span><span>.</span><span class="identifier">isEmpty</span><span> =&gt;
+            </span><span class="keyword">val</span><span> (</span><span class="identifier">i</span><span>, </span><span class="identifier">rest</span><span>) = </span><span class="identifier">queue</span><span>.</span><span class="identifier">dequeue</span><span>
+            </span><span class="type-name">State</span><span>(</span><span class="identifier">rest</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) -&gt; </span><span class="type-name">Async</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">pure</span><span>(</span><span class="identifier">i</span><span>)
+          </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) </span><span class="keyword">if</span><span> </span><span class="identifier">queue</span><span>.</span><span class="identifier">nonEmpty</span><span> =&gt;
+            </span><span class="keyword">val</span><span> (</span><span class="identifier">i</span><span>, </span><span class="identifier">rest</span><span>) = </span><span class="identifier">queue</span><span>.</span><span class="identifier">dequeue</span><span>
+            </span><span class="keyword">val</span><span> ((</span><span class="identifier">move</span><span>, </span><span class="identifier">release</span><span>), </span><span class="identifier">tail</span><span>) = </span><span class="identifier">offerers</span><span>.</span><span class="identifier">dequeue</span><span>
+            </span><span class="type-name">State</span><span>(</span><span class="identifier">rest</span><span>.</span><span class="identifier">enqueue</span><span>(</span><span class="identifier">move</span><span>), </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">tail</span><span>) -&gt; </span><span class="identifier">release</span><span>.</span><span class="identifier">complete</span><span>(()).</span><span class="identifier">as</span><span>(</span><span class="identifier">i</span><span>)
+          </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) </span><span class="keyword">if</span><span> </span><span class="identifier">offerers</span><span>.</span><span class="identifier">nonEmpty</span><span> =&gt;
+            </span><span class="keyword">val</span><span> ((</span><span class="identifier">i</span><span>, </span><span class="identifier">release</span><span>), </span><span class="identifier">rest</span><span>) = </span><span class="identifier">offerers</span><span>.</span><span class="identifier">dequeue</span><span>
+            </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">rest</span><span>) -&gt; </span><span class="identifier">release</span><span>.</span><span class="identifier">complete</span><span>(()).</span><span class="identifier">as</span><span>(</span><span class="identifier">i</span><span>)
+          </span><span class="keyword">case</span><span> </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>, </span><span class="identifier">offerers</span><span>) =&gt;
+            </span><span class="keyword">val</span><span> </span><span class="identifier">cleanup</span><span> = </span><span class="identifier">stateR</span><span>.</span><span class="identifier">update</span><span> { </span><span class="identifier">s</span><span> =&gt; </span><span class="identifier">s</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">takers</span><span> = </span><span class="identifier">s</span><span>.</span><span class="identifier">takers</span><span>.</span><span class="identifier">filter</span><span>(</span><span class="identifier">_</span><span> </span><span class="identifier">ne</span><span> </span><span class="identifier">taker</span><span>)) }
+            </span><span class="type-name">State</span><span>(</span><span class="identifier">queue</span><span>, </span><span class="identifier">capacity</span><span>, </span><span class="identifier">takers</span><span>.</span><span class="identifier">enqueue</span><span>(</span><span class="identifier">taker</span><span>), </span><span class="identifier">offerers</span><span>) -&gt; </span><span class="identifier">poll</span><span>(</span><span class="identifier">taker</span><span>.</span><span class="identifier">get</span><span>).</span><span class="identifier">onCancel</span><span>(</span><span class="identifier">cleanup</span><span>)
+        }.</span><span class="identifier">flatten</span><span>
+      }
+    }
+
+  </span><span class="keyword">for</span><span>
+    </span><span class="identifier">i</span><span> &lt;- </span><span class="identifier">take</span><span>
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="keyword">if</span><span> </span><span class="identifier">i</span><span> % </span><span class="number-literal">10000</span><span> == </span><span class="number-literal">0</span><span> </span><span class="keyword">then</span><span> </span><span class="type-name">Console</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;Consumer </span><span class="substitution">$id</span><span class="string-literal"> has reached </span><span class="substitution">$i</span><span class="string-literal"> items&quot;</span><span>) </span><span class="keyword">else</span><span> </span><span class="type-name">Async</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">unit</span><span>
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">consumer</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">stateR</span><span>)
+  </span><span class="keyword">yield</span><span> ()</span></code></pre>
+        <p>Мы сделали реализацию производителя-потребителя способной обрабатывать отмену. 
+        Примечательно, что нам не нужно было менять сигнатуры функций <code>producer</code> и <code>consumer</code>.</p>
+        <hr>
+        <p><strong>Ссылки:</strong></p>
+        <ul>
+          <li><a href="https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FProducerConsumer.scala&plain=1">Исходный код</a></li>
+          <li><a href="https://typelevel.org/cats-effect/docs/tutorial#a-nameproducerconsumeraproducer-consumer-problem---concurrency-and-fibers">Cats effect documentation</a></li>
+        </ul>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

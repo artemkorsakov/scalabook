@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="ru">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.0 + Helium Theme" />
+  <title>Уточняющие типы в Scala</title>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  
+  <meta name="description" content="Функциональная разработка на Scala"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
+  
+  <link rel="stylesheet" type="text/css" href="../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../helium/laika-helium.css" />
+  <script src="../helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../">Домашняя</a></li>
+    <li class="level1 nav-header">Блог</li>
+    <li class="level2 nav-leaf"><a href="../blog/2023-01-09-architecture-problems.html">Ошибки при наследовании</a></li>
+    <li class="level1 nav-header">Scala</li>
+    <li class="level2 nav-leaf"><a href="../scala/">Обзор Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/getting-started.html">С чего начать?</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/hello_world.html">Hello, world!</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/repl.html">REPL</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/types.html">Типы данных</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/structures.html">Структуры управления</a></li>
+    <li class="level2 nav-header">Структуры управления</li>
+    <li class="level3 nav-leaf"><a href="../scala/structures/ifelse.html">if/else</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/structures/for.html">for</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/structures/match.html">match expressions</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/structures/others.html">while and try</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/modeling.html">Моделирование данных</a></li>
+    <li class="level2 nav-header">Моделирование данных</li>
+    <li class="level3 nav-leaf"><a href="../scala/modeling/classes.html">Классы</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/modeling/objects.html">Объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/modeling/companion-objects.html">Сопутствующие объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/modeling/traits.html">Трейты</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/modeling/abstract-class.html">Абстрактные классы</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/modeling/enums.html">Перечисления</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/modeling/case-class.html">Кейс классы и объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/modeling/oop.html">Моделирование ООП</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/modeling/fp.html">Моделирование ФП</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/methods.html">Методы</a></li>
+    <li class="level2 nav-header">Методы</li>
+    <li class="level3 nav-leaf"><a href="../scala/methods/method-features.html">Определение методов</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/methods/default-parameters.html">Параметры по умолчанию</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/methods/named-parameters.html">Именованные параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/methods/by-name-parameter.html">Параметры по имени</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/methods/partially-applied-functions.html">Каррирование</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/methods/vararg-parameters.html">Методы с неопределенным количеством параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/methods/generic-parameter.html">Generic параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/methods/extension-methods.html">Методы расширения</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/methods/main-methods.html">main методы</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/functions.html">Функции</a></li>
+    <li class="level2 nav-header">Функции</li>
+    <li class="level3 nav-leaf"><a href="../scala/functions/anonymous.html">Анонимные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/functions/variables.html">Параметры функции</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/functions/eta.html">Eta расширение</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/functions/hofs.html">Функции высшего порядка</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/functions/write-map.html">Написание своего собственного метода map</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/functions/returns-function.html">Возврат функции в методе</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/packaging.html">Пакеты и импорт</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/toplevel-definitions.html">Верхнеуровневые определения</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/collections.html">Коллекции</a></li>
+    <li class="level2 nav-header">Коллекции</li>
+    <li class="level3 nav-leaf"><a href="../scala/collections/classes.html">Типы коллекций</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/collections/list.html">List</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/collections/lazylist.html">LazyList</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/collections/array-seq.html">ArraySeq</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/collections/vector.html">Vector</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/collections/array-buffer.html">ArrayBuffer</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/collections/maps.html">Maps</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/collections/set.html">Работа с множествами</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/collections/range.html">Диапазон (Range)</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/collections/tuple.html">Tuple (кортежи)</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/collections/queue.html">Queue</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/collections/methods.html">Методы в коллекциях</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/fp.html">Функциональное программирование</a></li>
+    <li class="level2 nav-header">ФП</li>
+    <li class="level3 nav-leaf"><a href="../scala/fp/what-is-fp.html">Что такое функциональное программирование?</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/fp/immutable-values.html">Неизменяемые значения</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/fp/pure-functions.html">Чистые функции</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/fp/functions-are-values.html">Функции - это значения</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/fp/functional-error-handling.html">Функциональная обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/type-system.html">Система типов</a></li>
+    <li class="level2 nav-header">Система типов</li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/types-inferred.html">Определение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/types-generics.html">Generics типы</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/upper-type-bounds.html">Верхнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/lower-type-bounds.html">Нижнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/types-intersection.html">Пересечение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/types-union.html">Объединение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/types-adts.html">Алгебраические типы данных (ADT)</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/types-variance.html">Ковариантность типов</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/types-opaque.html">Непрозрачные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/types-structural.html">Структурные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/types-dependent-function.html">Зависимые типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/type-lambdas.html">Лямбда-типы</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/match-types.html">Типы match</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/polymorphic-function-types.html">Полиморфные типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/type-system/types-others.html">Другие типы</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/abstractions.html">Контекстуальные абстракции</a></li>
+    <li class="level2 nav-header">Абстракции</li>
+    <li class="level3 nav-leaf"><a href="../scala/abstractions/ca-given.html">Экземпляры given</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/abstractions/ca-using.html">Предложения using</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/abstractions/type-classes.html">Класс типов</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/abstractions/ca-context-bounds.html">Контекстные границы</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/abstractions/ca-given-imports.html">Given imports</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/abstractions/ca-extension-methods.html">Методы расширения - детали</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/abstractions/ca-type-classes.html">Имплементация type классов</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/abstractions/ca-type-class-derivation.html">Type Class Derivation</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/abstractions/ca-multiversal-equality.html">Многостороннее равенство</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/abstractions/context-functions.html">Контекстные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/abstractions/ca-implicit-conversions.html">Неявные преобразования типов</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/abstractions/ca-by-name-parameters.html">Контекстные параметры по имени</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/details.html">Детали</a></li>
+    <li class="level2 nav-header">Детали</li>
+    <li class="level3 nav-leaf"><a href="../scala/details/export-causes.html">Предложения export</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/details/parameter-untupling.html">Распаковка параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/details/type-test.html">Проверка типа</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/details/pattern-matching.html">Сопоставление с образцом</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/concurrency.html">Параллелизм</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/tools.html">Утилиты</a></li>
+    <li class="level2 nav-header">Утилиты</li>
+    <li class="level3 nav-leaf"><a href="../scala/tools/tools-sbt.html">Сборка и тестирование проектов Scala с помощью Sbt</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/tools/tools-worksheets.html">Worksheet</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/with_java.html">Взаимодействие с Java</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/metaprogramming.html">Метапрограммирование</a></li>
+    <li class="level2 nav-header">Metaprogramming</li>
+    <li class="level3 nav-leaf"><a href="../scala/metaprogramming/inline.html">Inline</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/metaprogramming/compile-time-ops.html">Операции во время компиляции</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/metaprogramming/macros.html">Макросы</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/metaprogramming/quoted-code.html">Quoted Code</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/metaprogramming/runtime-staging.html">Runtime Staging</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/metaprogramming/reflection.html">Reflection</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/metaprogramming/tasty-inspection.html">TASTy Inspection</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/soft-keywords.html">Soft Keywords</a></li>
+    <li class="level2 nav-leaf"><a href="../scala/scaladoc.html">Scaladoc</a></li>
+    <li class="level2 nav-header">Scaladoc</li>
+    <li class="level3 nav-leaf"><a href="../scala/scaladoc/docstrings.html">Документы</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/scaladoc/linking.html">Связующая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/scaladoc/static-site.html">Статическая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/scaladoc/blog.html">Встроенный блог</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/scaladoc/site-versioning.html">Версионность сайта</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/scaladoc/search-engine.html">Поиск по типу</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/scaladoc/snippet-compiler.html">Проверка фрагмента</a></li>
+    <li class="level3 nav-leaf"><a href="../scala/scaladoc/settings.html">Настройки</a></li>
+    <li class="level1 nav-header">Функциональное программирование</li>
+    <li class="level2 nav-leaf"><a href="../fp/">Функциональное программирование</a></li>
+    <li class="level2 nav-leaf"><a href="../fp/data-structures.html">Функциональная структура данных</a></li>
+    <li class="level2 nav-leaf"><a href="../fp/handling-errors.html">Обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../fp/laziness.html">Ленивые вычисления</a></li>
+    <li class="level2 nav-leaf"><a href="../fp/state.html">Функциональное состояние</a></li>
+    <li class="level2 nav-leaf"><a href="../fp/monoids.html">Monoids</a></li>
+    <li class="level2 nav-leaf"><a href="../fp/monads.html">Monads</a></li>
+    <li class="level2 nav-leaf"><a href="../fp/writer.html">Функциональный журнал</a></li>
+    <li class="level2 nav-leaf"><a href="../fp/non-empty-list.html">Непустой связанный список</a></li>
+    <li class="level1 nav-header">Теория категорий</li>
+    <li class="level2 nav-leaf"><a href="../typeclass/">Теория категорий</a></li>
+    <li class="level2 nav-leaf"><a href="../typeclass/equal.html">Группа Equal</a></li>
+    <li class="level2 nav-header">Группа Equal</li>
+    <li class="level3 nav-leaf"><a href="../typeclass/equal/equal.html">Equal</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/equal/order.html">Order</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/equal/enum.html">Enum</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/equal/bounded.html">Bounded</a></li>
+    <li class="level2 nav-leaf"><a href="../typeclass/monoid.html">Группа Monoid</a></li>
+    <li class="level2 nav-header">Группа Monoid</li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monoid/semigroup.html">Semigroup</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monoid/monoid.html">Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monoid/band.html">Band</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monoid/idempotent-monoid.html">Idempotent Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monoid/group.html">Group</a></li>
+    <li class="level2 nav-leaf"><a href="../typeclass/monad.html">Группа Monad</a></li>
+    <li class="level2 nav-header">Группа Monad</li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/invariant-functor.html">Invariant Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/functor.html">Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/invariant-applicative.html">Invariant Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/semigroupal.html">Semigroupal</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/apply.html">Apply</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/applicative.html">Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/bind.html">Bind</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/monad.html">Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/plus.html">Plus</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/plus-empty.html">PlusEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/applicative-plus.html">ApplicativePlus</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/monad-plus.html">MonadPlus</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/is-empty.html">IsEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/foldable.html">Foldable</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/traverse.html">Traverse</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/contravariant-functor.html">Контравариантный функтор</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/divide.html">Divide</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/divisible.html">Divisible</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/co-bind.html">CoBind</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/co-monads.html">Co-Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/monad-transformer.html">Monad Transformer</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/monad/free-monads.html">Free Monad</a></li>
+    <li class="level2 nav-leaf"><a href="../typeclass/arrow.html">Группа Arrow</a></li>
+    <li class="level2 nav-header">Группа Arrow</li>
+    <li class="level3 nav-leaf"><a href="../typeclass/arrow/compose.html">Compose</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/arrow/category.html">Category</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/arrow/split.html">Split</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/arrow/profunctor.html">Profunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/arrow/strong.html">Strong</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/arrow/arrow.html">Arrow</a></li>
+    <li class="level2 nav-leaf"><a href="../typeclass/bifunctor.html">Группа Bifunctor</a></li>
+    <li class="level2 nav-header">Группа Bifunctor</li>
+    <li class="level3 nav-leaf"><a href="../typeclass/bifunctor/bifunctor.html">Bifunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/bifunctor/bifoldable.html">Bifoldable</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/bifunctor/bitraverse.html">Bitraverse</a></li>
+    <li class="level2 nav-leaf"><a href="../typeclass/other.html">Вне группы</a></li>
+    <li class="level2 nav-header">Вне группы</li>
+    <li class="level3 nav-leaf"><a href="../typeclass/other/show.html">Show</a></li>
+    <li class="level3 nav-leaf"><a href="../typeclass/other/read.html">Read</a></li>
+    <li class="level1 nav-header">Алгоритмы и структуры</li>
+    <li class="level2 nav-leaf"><a href="../algorithms/">Структуры данных и алгоритмы</a></li>
+    <li class="level2 nav-leaf"><a href="../algorithms/fundamental.html">Фундаментальные алгоритмы</a></li>
+    <li class="level2 nav-header">Фундаментальные алгоритмы</li>
+    <li class="level3 nav-leaf"><a href="../algorithms/fundamental/numerical.html">Численные алгоритмы</a></li>
+    <li class="level3 nav-leaf"><a href="../algorithms/fundamental/primes.html">Простые числа</a></li>
+    <li class="level3 nav-leaf"><a href="../algorithms/fundamental/fibonacci.html">Числа Фибоначчи</a></li>
+    <li class="level2 nav-leaf"><a href="../algorithms/lists.html">Связанные списки</a></li>
+    <li class="level2 nav-leaf"><a href="../algorithms/arrays.html">Массивы</a></li>
+    <li class="level2 nav-leaf"><a href="../algorithms/stacks.html">Стеки</a></li>
+    <li class="level2 nav-leaf"><a href="../algorithms/queues.html">Очереди</a></li>
+    <li class="level2 nav-leaf"><a href="../algorithms/trees.html">Деревья</a></li>
+    <li class="level2 nav-header">Двоичное дерево</li>
+    <li class="level3 nav-leaf"><a href="../algorithms/trees/binary-tree.html">Двоичное дерево</a></li>
+    <li class="level2 nav-leaf"><a href="../algorithms/hash-tables.html">Хеш-таблицы</a></li>
+    <li class="level2 nav-leaf"><a href="../algorithms/sort.html">Сортировка</a></li>
+    <li class="level2 nav-leaf"><a href="../algorithms/search.html">Поиск</a></li>
+    <li class="level2 nav-leaf"><a href="../algorithms/graphs.html">Графы</a></li>
+    <li class="level2 nav-leaf"><a href="../algorithms/ackermann.html">Функция Аккермана</a></li>
+    <li class="level2 nav-leaf"><a href="../algorithms/newton.html">Метод Ньютона</a></li>
+    <li class="level1 nav-header">Scala библиотеки</li>
+    <li class="level2 nav-leaf"><a href="index.html">Scala библиотеки</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Уточняющие типы в Scala</a></li>
+    <li class="level2 nav-leaf"><a href="cats-effect.html">Cats effect</a></li>
+    <li class="level2 nav-header">Cats effect</li>
+    <li class="level3 nav-leaf"><a href="cats-effect/copy-files.html">Копирование файлов</a></li>
+    <li class="level3 nav-leaf"><a href="cats-effect/producer-consumer-problem.html">Проблема производитель-потребитель — параллелизм и волокна</a></li>
+    <li class="level2 nav-leaf"><a href="http4s.html">Http4s</a></li>
+    <li class="level1 nav-header">Паттерны проектирования</li>
+    <li class="level2 nav-leaf"><a href="../patterns/">Паттерны проектирования</a></li>
+    <li class="level2 nav-leaf"><a href="../patterns/creational.html">Порождающие шаблоны</a></li>
+    <li class="level2 nav-header">Порождающие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../patterns/creational/factory-method.html">Фабричный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/creational/abstract-factory.html">Абстрактная фабрика</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/creational/builder.html">Строитель</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/creational/prototype.html">Прототип</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/creational/singleton.html">Одиночка</a></li>
+    <li class="level2 nav-leaf"><a href="../patterns/structural.html">Структурные шаблоны</a></li>
+    <li class="level2 nav-header">Структурные шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../patterns/structural/adapter.html">Адаптер</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/structural/bridge.html">Мост</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/structural/composite.html">Компоновщик</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/structural/decorator.html">Декоратор</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/structural/facade.html">Фасад</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/structural/flyweight.html">Приспособленец</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/structural/proxy.html">Заместитель</a></li>
+    <li class="level2 nav-leaf"><a href="../patterns/behavioral.html">Поведенческие шаблоны</a></li>
+    <li class="level2 nav-header">Поведенческие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../patterns/behavioral/interpreter.html">Интерпретатор</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/behavioral/template-method.html">Шаблонный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/behavioral/chain-of-responsibility.html">Цепочка обязанностей</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/behavioral/command.html">Команда</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/behavioral/iterator.html">Итератор</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/behavioral/mediator.html">Посредник</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/behavioral/memento.html">Хранитель</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/behavioral/observer.html">Наблюдатель</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/behavioral/state.html">Состояние</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/behavioral/strategy.html">Стратегия</a></li>
+    <li class="level3 nav-leaf"><a href="../patterns/behavioral/visitor.html">Посетитель</a></li>
+    <li class="level1 nav-header">Упражнения из книг</li>
+    <li class="level2 nav-leaf"><a href="../books/">Упражнения из книг</a></li>
+    <li class="level2 nav-header">Structure and Interpretation</li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/">Структура и интерпретация компьютерных программ</a></li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/chapter1_1_6.html">Глава 1.1.6</a></li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/chapter1_1_7.html">Глава 1.1.7</a></li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/chapter1_1_8.html">Глава 1.1.8</a></li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/chapter1_2_1.html">Глава 1.2.1</a></li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/chapter1_2_2.html">Глава 1.2.2</a></li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/chapter1_2_3.html">Глава 1.2.3</a></li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/chapter1_2_4.html">Глава 1.2.4</a></li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/chapter1_2_5.html">Глава 1.2.5</a></li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/chapter1_2_6.html">Глава 1.2.6</a></li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/chapter1_3_1.html">Глава 1.3.1</a></li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/chapter1_3_2.html">Глава 1.3.2</a></li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/chapter1_3_3.html">Глава 1.3.3</a></li>
+    <li class="level3 nav-leaf"><a href="../books/sicp/chapter1_3_4.html">Глава 1.3.4</a></li>
+    <li class="level2 nav-header">Scala Puzzlers</li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/">Головоломки на Scala</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/hi-there.html">Hi There!</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/upstairs.html">UPSTAIRS downstairs</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/location.html">Location, Location, Location</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/now-you-see-me.html">Now You See Me, Now You Don&#39;t</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/the-missing-list.html">The Missing List</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/arg-arrgh.html">Arg Arrgh!</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/captured-by-closures.html">Captured by Closures</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/map-comprehension.html">Map Comprehension</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/init-you-init-me.html">Init You, Init Me</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/a-case-of-equality.html">A Case of Equality</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/if-at-first.html">If At First You Don&#39;t Succeed...</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/to-map-or-not-to-map.html">To Map, or Not to Map</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/private-lives.html">Private Lives</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/self-see-self.html">Self - See &#39;Self&#39;</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/one-egg-or-two.html">One Egg or Two..?</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/return-to-me.html">Return to Me!</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/implicitly-surprising.html">Implicitly Surprising</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/one-bound-two-to-go.html">One Bound, Two to Go</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/count-me-now-count-me-later.html">Count Me Now, Count Me Later</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/whats-in-a-name.html">What&#39;s in a Name?</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/i-can-has-padding.html">I Can Has Padding?</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/cast-away.html">Cast Away</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/pick-an-int-any-int.html">Pick an Int, Any Int!</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/a-case-of-string.html">A Case of Strings</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/a-view-to-a-shill.html">A View to a Shill</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/accepts-any-args.html">Accepts Any Args</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/the-devil-is-in-the-defaults.html">The Devil is in the Defaults</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/one-two-skip-a-few.html">One, Two, Skip a Few</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/oddly-enough.html">Oddly Enough</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/splitting-headache.html">Splitting Headache</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/a-result-finally.html">A Result, Finally!</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/heads-you-win.html">Heads You Win...</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/ex-stream-surprise.html">(Ex)Stream Surprise</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/a-matter-of-context.html">A Matter of Context</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/inference.html">Inference Hindrance</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/for-each-step.html">For Each Step...</a></li>
+    <li class="level3 nav-leaf"><a href="../books/puzzlers/beep-beep-reversing.html">Beep Beep...Reversing</a></li>
+    <li class="level1 nav-leaf"><a href="../extra.html">Дополнительные материалы</a></li>
+    <li class="level1 nav-header">Дополнительные материалы</li>
+    <li class="level2 nav-leaf"><a href="../extra/one_star.html">✯</a></li>
+    <li class="level2 nav-leaf"><a href="../extra/two_stars.html">✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../extra/three_stars.html">✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../extra/four_stars.html">✯✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../extra/five_stars.html">✯✯✯✯✯</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Уточняющие типы в Scala</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#введение">Введение</a></li>
+    <li class="level1 nav-leaf"><a href="#уточняющие-типы">Уточняющие типы</a></li>
+    <li class="level1 nav-node"><a href="#знакомство-с-библиотеками-iron-и-refined">Знакомство с библиотеками iron и refined</a></li>
+    <li class="level2 nav-leaf"><a href="#предопределенные-типы">Предопределенные типы</a></li>
+    <li class="level1 nav-node"><a href="#а-в-чем-разница">А в чем разница?</a></li>
+    <li class="level2 nav-leaf"><a href="#система-типов">Система типов</a></li>
+    <li class="level2 nav-leaf"><a href="#проверка-во-время-компиляции">Проверка во время компиляции</a></li>
+    <li class="level1 nav-leaf"><a href="#уточнение-произвольного-типа">Уточнение произвольного типа</a></li>
+    <li class="level1 nav-leaf"><a href="#накопление-ошибок-валидации">Накопление ошибок валидации</a></li>
+    <li class="level1 nav-leaf"><a href="#итоги-обзора-библиотек-уточенных-типов-iron-и-refined">Итоги обзора библиотек уточенных типов <strong>iron</strong> и <strong>refined</strong></a></li>
+    <li class="level1 nav-leaf"><a href="#заключение">Заключение</a></li>
+  </ul>
+
+  <p class="footer"><a href="https://github.com/artemkorsakov/scalabook/blob/master/docs/libs/refined.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Редактировать страницу</a></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="уточняющие-типы-в-scala" class="title">Уточняющие типы в Scala</h1>
+        <p>В этой статье по умолчанию используется Scala 3 (версия <code>3.2.2</code>) c дублированием примеров на Scala 2 (версия <code>2.13.10</code>).</p>
+        
+        <h2 id="введение" class="section"><a class="anchor-link left" href="#введение"><i class="icofont-laika link">&#xef71;</i></a>Введение</h2>
+        <p>Набор стандартных типов весьма ограничен и покрывает только самые распространенные ситуации.
+        Каждый стандартный тип данных - это достаточно общее множество значений и операций над этими значениями.
+        Возьмем для примера <code>String</code> - строковый тип в Scala.
+        Какое множество значений он представляет?
+        Да все что угодно: практически все алфавиты мира и всевозможные символы,
+        абсолютное большинство которых никто никогда в процессе разработки не встречает. Например: <code>&quot;€‡™µ&quot;</code></p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">str</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;€‡™µ&quot;</span></code></pre>
+        <blockquote>Вспомним фразу <a href="https://github.com/kenbot">Ken Scambler</a>, процитированную <a href="https://www.youtube.com/watch?v=zExb9x3fzKs&t=52s">вот в этом видео</a>: валиден ли китайский перевод книг Шекспира в качестве входящего параметра типа <code>String</code>?!</blockquote>
+        <p>В абсолютном большинстве случаев такая &quot;свобода&quot; не нужна.</p>
+        <p>Давайте, представим, что нам нужно создать множество, которое представляло бы собой всевозможные имена людей,
+        написанные кириллицей и начинающиеся с заглавной буквы,
+        для дальнейшего использования.</p>
+        <p>Например, следующий вариант позволителен - <code>Алёна</code>,
+        а вот такие варианты - нет: <code>€‡™µ</code>, <code>12345</code>, <code>Alyona</code>, <code>Алёна18</code>, <code>алёна</code>.</p>
+        <p>Но все перечисленные невалидные варианты - это <code>String</code>.
+        Получается, что этот тип описывает не только нужное нам множество, но ещё и множество невалидных вариантов,
+        что нас не устраивает.</p>
+        <p>Как можно более четко сформулировать необходимое множество значений?</p>
+        <p>Псевдонимы типов и &quot;чистые&quot; case классы (или <a href="https://docs.scala-lang.org/overviews/core/value-classes.html">классы значений</a>)
+        не подходят, потому что они представляют собой только &quot;оболочку&quot; над <code>String</code>,
+        и по-прежнему позволяют &quot;подложить&quot; невалидное значение.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">Name</span><span> = </span><span class="type-name">String</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">name</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;€‡™µ&quot;</span><span>
+</span><span class="comment">// val name: Name = €‡™µ</span></code></pre>
+        <p><a href="https://scastie.scala-lang.org/j3H5VznPQUOz6ylAQgFMoA">Пример в Scastie</a></p>
+        <p><a href="https://scastie.scala-lang.org/4ojla7AbTCe4lw8EdHdTMw">Тот же пример в Scastie на Scala 2</a></p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Name</span><span>(</span><span class="identifier">value</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyVal</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">name</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="type-name">Name</span><span>(</span><span class="string-literal">&quot;€‡™µ&quot;</span><span>)
+</span><span class="comment">// val name: Name = Name(€‡™µ)</span></code></pre>
+        <p><a href="https://scastie.scala-lang.org/CjZpe7ejSwW724prXkQLqg">Пример в Scastie</a></p>
+        <p><a href="https://scastie.scala-lang.org/69prW6KjRG6MPcL9fJSObw">Тот же пример в Scastie на Scala 2</a></p>
+        <p>&quot;Стандартное&quot; решение - регулировать создание <code>Name</code> путем ограничения видимости конструктора по умолчанию
+        и определения метода создания экземпляра <code>Name</code> в сопутствующем объекте:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Name</span><span> </span><span class="keyword">private</span><span> (</span><span class="identifier">value</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyVal</span><span>
+</span><span class="keyword">object</span><span> </span><span class="type-name">Name</span><span>:
+  </span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">util</span><span>.</span><span class="identifier">matching</span><span>.</span><span class="type-name">Regex</span><span>
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">pattern</span><span>: </span><span class="type-name">Regex</span><span>                = </span><span class="string-literal">&quot;[А-ЯЁ][а-яё]+&quot;</span><span>.</span><span class="identifier">r</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">fromString</span><span>(</span><span class="identifier">str</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Name</span><span>] =
+    </span><span class="keyword">if</span><span> </span><span class="identifier">pattern</span><span>.</span><span class="identifier">matches</span><span>(</span><span class="identifier">str</span><span>) </span><span class="keyword">then</span><span> </span><span class="type-name">Some</span><span>(</span><span class="type-name">Name</span><span>(</span><span class="identifier">str</span><span>))
+    </span><span class="keyword">else</span><span> </span><span class="type-name">None</span></code></pre>
+        <p>В этом случае нельзя создать невалидное имя напрямую, используя стандартный конструктор:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">name</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="type-name">Name</span><span>(</span><span class="string-literal">&quot;€‡™µ&quot;</span><span>) </span><span class="comment">// не скомпилируется</span></code></pre>
+        <p>А его использование происходит так, как было задумано:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Name</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="string-literal">&quot;€‡™µ&quot;</span><span>)     </span><span class="comment">// None
+</span><span class="type-name">Name</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="string-literal">&quot;12345&quot;</span><span>)    </span><span class="comment">// None
+</span><span class="type-name">Name</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="string-literal">&quot;Alyona&quot;</span><span>)   </span><span class="comment">// None
+</span><span class="type-name">Name</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="string-literal">&quot;Алёна18&quot;</span><span>)  </span><span class="comment">// None
+</span><span class="type-name">Name</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="string-literal">&quot;алёна&quot;</span><span>)    </span><span class="comment">// None
+</span><span class="type-name">Name</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="string-literal">&quot;Алёна&quot;</span><span>)    </span><span class="comment">// Some(Name(Алёна))</span></code></pre>
+        <p><a href="https://scastie.scala-lang.org/HvKxeWpVT22Cv50N8GnbCw">Пример в Scastie</a></p>
+        <blockquote>
+          <p>В Scala 2 этот способ можно &quot;взломать&quot; через метод <code>copy</code> (в Scala 3 эту лазейку убрали):</p>
+          <p><code>Name.fromString(&quot;Алёна&quot;).map(_.copy(&quot;€‡™µ&quot;)) // Some(Name(€‡™µ))</code></p>
+          <p>Для запрета на использование метода <code>copy</code> или переопределения через наследование
+          в Scala 2 требовалось объявлять класс как <code>sealed abstract</code>, вот так:</p>
+          <p><code>sealed abstract case class Name private (value: String) extends AnyVal</code></p>
+          <p><a href="https://scastie.scala-lang.org/9Uzl00WPTs6TJg8jW7GzOg">Пример &quot;взлома&quot; через copy в Scala 2 на Scastie</a></p>
+        </blockquote>
+        
+        <h2 id="уточняющие-типы" class="section"><a class="anchor-link left" href="#уточняющие-типы"><i class="icofont-laika link">&#xef71;</i></a>Уточняющие типы</h2>
+        <p>Ещё одним способом решения заданной проблемы могут стать библиотеки для работы с уточняющими типами:</p>
+        <ul>
+          <li><a href="https://github.com/Iltotore/iron"><strong>iron</strong></a> (для Scala 3)</li>
+          <li><a href="https://github.com/fthomas/refined"><strong>refined</strong></a> (для Scala 2)</li>
+        </ul>
+        <p>В <a href="https://en.wikipedia.org/wiki/Type_theory">теории типов</a>
+        <a href="https://en.wikipedia.org/wiki/Refinement_type">уточняющий тип (refinement type)</a> —
+        это тип, снабженный предикатом, который предполагается верным для любого элемента уточняемого типа.
+        Например, натуральные числа больше 5 могут быть описаны так:</p>
+        <p><img src="https://wikimedia.org/api/rest_v1/media/math/render/svg/b3771ee3aa45615fadcccdf42d259f5eb61fd0ea" alt=""></p>
+        <p>Т.о. уточняющий тип - это базовый тип + предикат,
+        а значения уточняющего типа - это все значения базового типа, удовлетворяющие определенному предикату.</p>
+        <p>Концепция уточняющих типов была впервые введена Фриманом и Пфеннингом в работе 1991 года <a href="https://www.cs.cmu.edu/~fp/papers/pldi91.pdf">&quot;Уточняющие типы для ML&quot;</a>,
+        в которой представлена система типов для языка Standard ML.</p>
+        <p>Самая идея выражения ограничений на уровне типов в виде библиотеки Scala была впервые исследована Flavio W. Brasil
+        в библиотеке <a href="https://github.com/fwbrasil/bond"><strong>bond</strong></a>.</p>
+        <p>И довольно сильно усовершенствована в библиотеке <a href="https://github.com/fthomas/refined"><strong>refined</strong></a>, которая начиналась как переработка <a href="http://nikita-volkov.github.io/refined/">библиотеки на Haskell Никиты Волкова</a>.</p>
+        <p>Библиотека <a href="https://github.com/Iltotore/iron"><strong>iron</strong></a> - это дальнейшее развитие идеи уточненных типов в Scala 3.</p>
+        <p>Уточнение - это достаточно распространенная и естественная процедура в программировании.</p>
+        <p>Достаточно взглянуть на <a href="https://docs.scala-lang.org/scala3/book/first-look-at-types.html#scalas-value-types">примитивные типы в Scala</a>:</p>
+        <p><code>Long</code> (от <code>-2^63</code> до <code>2^63 - 1</code>) -&gt;
+        <code>Int</code> (от <code>-2^31</code> до <code>2^31 - 1</code>) -&gt;
+        <code>Short</code> (от <code>-2^15</code> до <code>2^15 - 1</code>) -&gt;
+        <code>Byte</code> (от <code>-2^7</code> до <code>2^7 - 1</code>)</p>
+        <p>Каждый следующий тип в этом списке уточняет предыдущий.</p>
+        
+        <h2 id="знакомство-с-библиотеками-iron-и-refined" class="section"><a class="anchor-link left" href="#знакомство-с-библиотеками-iron-и-refined"><i class="icofont-laika link">&#xef71;</i></a>Знакомство с библиотеками iron и refined</h2>
+        <p>Давайте рассмотрим решение исходной задачки с помощью <strong>iron</strong> (Scala 3) и <strong>refined</strong> (Scala 2).</p>
+        <p>Вот так можно объявить уточненный тип с помощью <strong>iron</strong>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">github</span><span>.</span><span class="identifier">iltotore</span><span>.</span><span class="identifier">iron</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">github</span><span>.</span><span class="identifier">iltotore</span><span>.</span><span class="identifier">iron</span><span>.</span><span class="identifier">constraint</span><span>.</span><span class="identifier">string</span><span>.*
+
+</span><span class="keyword">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">Name</span><span> = </span><span class="type-name">String</span><span> :| </span><span class="type-name">Match</span><span>[</span><span class="string-literal">&quot;[А-ЯЁ][а-яё]+&quot;</span><span>]</span></code></pre>
+        <p>А вот так - с помощью <strong>refined</strong>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">eu</span><span>.</span><span class="identifier">timepit</span><span>.</span><span class="identifier">refined</span><span>.</span><span class="identifier">api</span><span>.</span><span class="type-name">Refined</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">eu</span><span>.</span><span class="identifier">timepit</span><span>.</span><span class="identifier">refined</span><span>.</span><span class="identifier">string</span><span>.</span><span class="type-name">MatchesRegex</span><span>
+
+</span><span class="keyword">type</span><span> </span><span class="type-name">Name</span><span> = </span><span class="type-name">String</span><span> </span><span class="type-name">Refined</span><span> </span><span class="type-name">MatchesRegex</span><span>[</span><span class="string-literal">&quot;[А-ЯЁ][а-яё]+&quot;</span><span>]</span></code></pre>
+        <p>Явное присваивание невалидного значения вызовет ошибку компиляции:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">name0</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;€‡™µ&quot;</span><span>    </span><span class="comment">// Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+</span><span class="keyword">val</span><span> </span><span class="identifier">name1</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;12345&quot;</span><span>   </span><span class="comment">// Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+</span><span class="keyword">val</span><span> </span><span class="identifier">name2</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;Alyona&quot;</span><span>  </span><span class="comment">// Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+</span><span class="keyword">val</span><span> </span><span class="identifier">name3</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;Алёна18&quot;</span><span> </span><span class="comment">// Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+</span><span class="keyword">val</span><span> </span><span class="identifier">name4</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;алёна&quot;</span><span>   </span><span class="comment">// Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+</span><span class="keyword">val</span><span> </span><span class="identifier">name5</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;Алёна&quot;</span><span>   </span><span class="comment">// Компиляция проходит успешно</span></code></pre>
+        <p><a href="https://scastie.scala-lang.org/4zUXqnzARFWscb44XGlLBw">Пример в Scastie для <strong>iron</strong></a></p>
+        <p><a href="https://scastie.scala-lang.org/OwN8IzucSCuJ3LsBmaxL7A">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
+        <p>Библиотеки уточнения также позволяют преобразовывать базовое значение для более удобной работы в runtime
+        в <code>Option</code> (<code>refineOption</code> для <strong>iron</strong> / <code>unapply</code> в <strong>refined</strong>):</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">name0</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;€‡™µ&quot;</span><span>.</span><span class="identifier">refineOption</span><span>     </span><span class="comment">// None
+</span><span class="keyword">val</span><span> </span><span class="identifier">name1</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;12345&quot;</span><span>.</span><span class="identifier">refineOption</span><span>    </span><span class="comment">// None
+</span><span class="keyword">val</span><span> </span><span class="identifier">name2</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;Alyona&quot;</span><span>.</span><span class="identifier">refineOption</span><span>   </span><span class="comment">// None
+</span><span class="keyword">val</span><span> </span><span class="identifier">name3</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;Алёна18&quot;</span><span>.</span><span class="identifier">refineOption</span><span>  </span><span class="comment">// None
+</span><span class="keyword">val</span><span> </span><span class="identifier">name4</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;алёна&quot;</span><span>.</span><span class="identifier">refineOption</span><span>    </span><span class="comment">// None
+</span><span class="keyword">val</span><span> </span><span class="identifier">name5</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;Алёна&quot;</span><span>.</span><span class="identifier">refineOption</span><span>    </span><span class="comment">// Some(&quot;Алёна&quot;)</span></code></pre>
+        <p><a href="https://scastie.scala-lang.org/w6nxgVi4RHySQg6wGglUlQ">Пример в Scastie для <strong>iron</strong></a></p>
+        <p><a href="https://scastie.scala-lang.org/4q046xYGSGSJpyqft9pE8Q">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
+        <p>и в <code>Either</code>, где слева будет ошибка валидации, (<code>refineEither</code> для <strong>iron</strong> / <code>from</code> в <strong>refined</strong>):</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">name0</span><span>: </span><span class="type-name">Either</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;€‡™µ&quot;</span><span>.</span><span class="identifier">refineEither</span><span>     </span><span class="comment">// Left(&quot;Should match [А-ЯЁ][а-яё]+&quot;)
+</span><span class="keyword">val</span><span> </span><span class="identifier">name1</span><span>: </span><span class="type-name">Either</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;12345&quot;</span><span>.</span><span class="identifier">refineEither</span><span>    </span><span class="comment">// Left(&quot;Should match [А-ЯЁ][а-яё]+&quot;)
+</span><span class="keyword">val</span><span> </span><span class="identifier">name2</span><span>: </span><span class="type-name">Either</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;Alyona&quot;</span><span>.</span><span class="identifier">refineEither</span><span>   </span><span class="comment">// Left(&quot;Should match [А-ЯЁ][а-яё]+&quot;)
+</span><span class="keyword">val</span><span> </span><span class="identifier">name3</span><span>: </span><span class="type-name">Either</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;Алёна18&quot;</span><span>.</span><span class="identifier">refineEither</span><span>  </span><span class="comment">// Left(&quot;Should match [А-ЯЁ][а-яё]+&quot;)
+</span><span class="keyword">val</span><span> </span><span class="identifier">name4</span><span>: </span><span class="type-name">Either</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;алёна&quot;</span><span>.</span><span class="identifier">refineEither</span><span>    </span><span class="comment">// Left(&quot;Should match [А-ЯЁ][а-яё]+&quot;)
+</span><span class="keyword">val</span><span> </span><span class="identifier">name5</span><span>: </span><span class="type-name">Either</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;Алёна&quot;</span><span>.</span><span class="identifier">refineEither</span><span>    </span><span class="comment">// Right(&quot;Алёна&quot;)</span></code></pre>
+        <p><a href="https://scastie.scala-lang.org/cXvITTPiT4a27t8pU9m0fg">Пример в Scastie для <strong>iron</strong></a></p>
+        <p><a href="https://scastie.scala-lang.org/V9SYu9UcSx67hAcJMnRG7g">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
+        
+        <h4 id="предопределенные-типы" class="section"><a class="anchor-link left" href="#предопределенные-типы"><i class="icofont-laika link">&#xef71;</i></a>Предопределенные типы</h4>
+        <p>У библиотек достаточно большой набор предопределенных типов:</p>
+        <ul>
+          <li><a href="https://iltotore.github.io/iron/io/github/iltotore/iron/constraint.html">предопределенные типы в <strong>iron</strong></a></li>
+          <li><a href="https://github.com/fthomas/refined#provided-predicates">предопределенные типы в <strong>refined</strong></a></li>
+        </ul>
+        <p>Вот несколько примеров использования библиотек:</p>
+        <ul>
+          <li><a href="https://iltotore.github.io/iron/docs/reference/refinement.html">примеры в <strong>iron</strong></a></li>
+          <li><a href="https://github.com/fthomas/refined#more-examples">примеры в <strong>refined</strong></a></li>
+        </ul>
+        
+        <h2 id="а-в-чем-разница" class="section"><a class="anchor-link left" href="#а-в-чем-разница"><i class="icofont-laika link">&#xef71;</i></a>А в чем разница?</h2>
+        <p>Здесь может возникнуть резонный вопрос:
+        у нас есть два способа определения уточненного типа:</p>
+        <ul>
+          <li>&quot;стандартный&quot; ---
+          <code>case class Name private (value: String) extends AnyVal</code></li>
+          <li>через библиотеку <strong>refined</strong> ---
+          <code>type Name = String Refined MatchesRegex[&quot;[А-ЯЁ][а-яё]+&quot;]</code></li>
+        </ul>
+        <p>А в чем принципиальная разница между этими двумя способами?
+        Только лишь в удобстве справочника предопределенных типов?</p>
+        
+        <h4 id="система-типов" class="section"><a class="anchor-link left" href="#система-типов"><i class="icofont-laika link">&#xef71;</i></a>Система типов</h4>
+        <p>Важным преимуществом библиотеки <strong>refined</strong> является то, что &quot;типы врать не могут&quot;.</p>
+        <p>При использовании case класса значение имени - это по-прежнему строка:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Name</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="string-literal">&quot;Алёна&quot;</span><span>).</span><span class="identifier">get</span><span>.</span><span class="identifier">value</span><span>
+</span><span class="comment">// val res0: String = Алёна</span></code></pre>
+        <p>Мы опять получили слишком &quot;широкое&quot; множество значений.
+        И дальнейшее использование <code>Name.value</code> в коде возможно только в качестве <code>String</code>.
+        При этом отброшена потенциально полезная информация о том, какая это строка.</p>
+        <p>Уточняющий тип же - это конкретный тип:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">name</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;Алёна&quot;</span><span>
+</span><span class="comment">// val name: Name = Алёна</span></code></pre>
+        <p>И дальше по коду его можно использовать именно в качестве типа.</p>
+        <p>Уточненный тип расширяет базовый (в данном случае - <code>String</code>)
+        и его можно использовать там, где ожидается дочерний для базового тип:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">name</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;Алёна&quot;</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">printT</span><span>[</span><span class="type-name">T</span><span> &gt;: </span><span class="type-name">String</span><span>](</span><span class="identifier">t</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">Unit</span><span> = </span><span class="identifier">println</span><span>(</span><span class="identifier">t</span><span>)
+</span><span class="identifier">printT</span><span>(</span><span class="identifier">name</span><span>) </span><span class="comment">// Печатает &quot;Алёна&quot;</span></code></pre>
+        <p>Есть очень хорошая статья по поводу <a href="https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems">важности системы типов</a>.</p>
+        
+        <h4 id="проверка-во-время-компиляции" class="section"><a class="anchor-link left" href="#проверка-во-время-компиляции"><i class="icofont-laika link">&#xef71;</i></a>Проверка во время компиляции</h4>
+        <p>Ещё одним значительным преимуществом является возможность проверки типов во время компиляции.</p>
+        <p>Как уже было рассмотрено выше:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">name0</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;€‡™µ&quot;</span><span>    </span><span class="comment">// Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+</span><span class="keyword">val</span><span> </span><span class="identifier">name1</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;12345&quot;</span><span>   </span><span class="comment">// Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+</span><span class="keyword">val</span><span> </span><span class="identifier">name2</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;Alyona&quot;</span><span>  </span><span class="comment">// Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+</span><span class="keyword">val</span><span> </span><span class="identifier">name3</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;Алёна18&quot;</span><span> </span><span class="comment">// Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+</span><span class="keyword">val</span><span> </span><span class="identifier">name4</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;алёна&quot;</span><span>   </span><span class="comment">// Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
+</span><span class="keyword">val</span><span> </span><span class="identifier">name5</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;Алёна&quot;</span><span>   </span><span class="comment">// Компиляция проходит успешно</span></code></pre>
+        <p>Скомпилируется только последний вариант, потому что строка <code>&quot;Алёна&quot;</code> удовлетворяет предикату уточненного типа.</p>
+        <p><a href="https://scastie.scala-lang.org/4zUXqnzARFWscb44XGlLBw">Пример в Scastie для <strong>iron</strong></a></p>
+        <p><a href="https://scastie.scala-lang.org/OwN8IzucSCuJ3LsBmaxL7A">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
+        <p>Проверка во время компиляции открывает довольно обширные возможности:
+        как минимум, значительную часть проверок можно переложить с модульных тестов на компилятор.
+        Что в свою очередь может сэкономить общее время разработки.
+        <a href="https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md">По этому поводу написана отличная статья</a>.</p>
+        
+        <h2 id="уточнение-произвольного-типа" class="section"><a class="anchor-link left" href="#уточнение-произвольного-типа"><i class="icofont-laika link">&#xef71;</i></a>Уточнение произвольного типа</h2>
+        <p>Уточняющий тип можно создать для любого типа.</p>
+        <p>Допустим у нас есть тип и некий предикат для значений заданного типа:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">Packed</span><span> = </span><span class="type-name">Any</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">predicate</span><span>: </span><span class="type-name">Packed</span><span> =&gt; </span><span class="type-name">Boolean</span><span> =
+  </span><span class="keyword">case</span><span> </span><span class="identifier">str</span><span>: </span><span class="type-name">String</span><span> =&gt; </span><span class="type-name">Option</span><span>(</span><span class="identifier">str</span><span>).</span><span class="identifier">exists</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">trim</span><span>.</span><span class="identifier">nonEmpty</span><span>)
+  </span><span class="keyword">case</span><span> </span><span class="identifier">num</span><span>: </span><span class="type-name">Int</span><span>    =&gt; </span><span class="identifier">num</span><span> &gt; </span><span class="number-literal">0</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>           =&gt; </span><span class="boolean-literal">false</span></code></pre>
+        <p>Уточняющий тип <code>NonEmpty</code> для <code>Packed</code> можно определить по предикату:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">github</span><span>.</span><span class="identifier">iltotore</span><span>.</span><span class="identifier">iron</span><span>.{</span><span class="keyword">given</span><span>, *}
+</span><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">github</span><span>.</span><span class="identifier">iltotore</span><span>.</span><span class="identifier">iron</span><span>.</span><span class="identifier">constraint</span><span>.</span><span class="identifier">all</span><span>.*
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">NonEmpty</span><span>
+
+</span><span class="keyword">given</span><span> </span><span class="type-name">Constraint</span><span>[</span><span class="type-name">Packed</span><span>, </span><span class="type-name">NonEmpty</span><span>] </span><span class="keyword">with</span><span>
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">inline</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">test</span><span>(</span><span class="identifier">value</span><span>: </span><span class="type-name">Packed</span><span>): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">predicate</span><span>(</span><span class="identifier">value</span><span>)
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">inline</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">message</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Should be non empty&quot;</span></code></pre>
+        <p>Здесь в методе <code>test</code> определяется предикат, который предполагается верным для всех значений заданного типа.</p>
+        <p>Метод <code>message</code> определяет сообщение об ошибке, если переданное значение не удовлетворяет предикату.</p>
+        <p>Пример использования уточняющего типа для <code>Packed</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>(</span><span class="literal-value">null</span><span>: </span><span class="type-name">Packed</span><span>).</span><span class="identifier">refineEither</span><span>[</span><span class="type-name">NonEmpty</span><span>]     </span><span class="comment">// Left(Should be non empty)
+</span><span>(</span><span class="string-literal">&quot;&quot;</span><span>: </span><span class="type-name">Packed</span><span>).</span><span class="identifier">refineEither</span><span>[</span><span class="type-name">NonEmpty</span><span>]       </span><span class="comment">// Left(Should be non empty)
+</span><span>(</span><span class="string-literal">&quot; &quot;</span><span>: </span><span class="type-name">Packed</span><span>).</span><span class="identifier">refineEither</span><span>[</span><span class="type-name">NonEmpty</span><span>]      </span><span class="comment">// Left(Should be non empty)
+</span><span>(</span><span class="string-literal">&quot;   &quot;</span><span>: </span><span class="type-name">Packed</span><span>).</span><span class="identifier">refineEither</span><span>[</span><span class="type-name">NonEmpty</span><span>]    </span><span class="comment">// Left(Should be non empty)
+</span><span>(</span><span class="number-literal">0</span><span>: </span><span class="type-name">Packed</span><span>).</span><span class="identifier">refineEither</span><span>[</span><span class="type-name">NonEmpty</span><span>]        </span><span class="comment">// Left(Should be non empty)
+</span><span>(-</span><span class="number-literal">42</span><span>: </span><span class="type-name">Packed</span><span>).</span><span class="identifier">refineEither</span><span>[</span><span class="type-name">NonEmpty</span><span>]      </span><span class="comment">// Left(Should be non empty)
+</span><span>(</span><span class="boolean-literal">true</span><span>: </span><span class="type-name">Packed</span><span>).</span><span class="identifier">refineEither</span><span>[</span><span class="type-name">NonEmpty</span><span>]     </span><span class="comment">// Left(Should be non empty)
+</span><span>
+(</span><span class="string-literal">&quot;value&quot;</span><span>: </span><span class="type-name">Packed</span><span>).</span><span class="identifier">refineEither</span><span>[</span><span class="type-name">NonEmpty</span><span>]  </span><span class="comment">// Right(value)
+</span><span>(</span><span class="number-literal">42</span><span>: </span><span class="type-name">Packed</span><span>).</span><span class="identifier">refineEither</span><span>[</span><span class="type-name">NonEmpty</span><span>]       </span><span class="comment">// Right(42)</span></code></pre>
+        <p><a href="https://scastie.scala-lang.org/oXHm4xGtQVqgcpoOGLCxEw">Пример в Scastie для <strong>iron</strong></a></p>
+        <p><a href="https://scastie.scala-lang.org/9ssdbLvETGytvfqves0xlQ">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
+        <p>Уточнить можно любой тип, в том числе уточненный - в этом случае он становится базовым для другого типа,
+        который будет его &quot;уточнять&quot;.</p>
+        <p>В библиотеке <strong>iron</strong> уточнение уточненного типа
+        равносильно использованию типа <code>A &amp; B</code> - коньюнкции предикатов <code>A</code> и <code>B</code>.</p>
+        <p>В библиотеке <strong>refined</strong> - <code>And[A, B]</code>.</p>
+        <p><a href="https://scastie.scala-lang.org/u8piqnZDQHuQNxqvlK4Ubw">Пример в Scastie для <strong>iron</strong></a></p>
+        <p><a href="https://scastie.scala-lang.org/8rtUUguHSVOrGttlP5J7mQ">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
+        <p>Предельным непустым уточненным типом <a href="https://docs.scala-lang.org/sips/42.type.html">является литеральный тип</a>,
+        добавленный в версии Scala 2.13.</p>
+        <p><a href="https://scastie.scala-lang.org/hEnqG1UxQkGeBpKX8wt40A">Пример в Scastie</a></p>
+        <p><a href="https://scastie.scala-lang.org/JefKM7P2S3GaJfvxNR9yxg">Тот же пример в Scastie на Scala 2</a></p>
+        
+        <h2 id="накопление-ошибок-валидации" class="section"><a class="anchor-link left" href="#накопление-ошибок-валидации"><i class="icofont-laika link">&#xef71;</i></a>Накопление ошибок валидации</h2>
+        <p>Вариант использования <code>refineEither</code>, рассмотренный выше, довольно прост,
+        и с ним часто сталкиваются разработчики: получение данных от некоего входящего потока.
+        Но прерывание процесса на первой обнаруженной ошибке нежелательно.
+        Ведь на ошибки можно быстро реагировать и решать проблемы входящего потока пачками.
+        По этой причине просто монадическая композиция цепочек <code>Either</code> не подходит.
+        Другими словами, <a href="https://fsharpforfunandprofit.com/rop/">&quot;ориентированная на железную дорогу&quot;</a> проверка,
+        которая останавливается на ошибочном предикате, будет недостаточной.</p>
+        <p>Давайте рассмотрим проблему накопления ошибок синтаксического анализа/валидации.
+        Нежелательно связывать этапы проверки одного сообщения с другими монадическими способами,
+        потому что этот способ возвращал бы только первую из них.
+        Вместо этого было бы идеально, если бы эти шаги находились на одном уровне.
+        Надо сохранять все ошибки валидации,
+        а затем агрегировать результат либо в желаемую форму, если все прошло хорошо,
+        либо в список ошибок, если хотя бы один шаг не пройден.</p>
+        <p>Это именно то, что можно сделать с <code>ValidatedNec</code> из библиотеки <a href="https://typelevel.org/cats/index.html">cats</a>.</p>
+        <p>К счастью, <strong>iron</strong> предоставляет расширение <a href="https://iltotore.github.io/iron/docs/modules/cats.html"><strong>iron-cats</strong></a>,
+        которое позволяет возвращать шаги проверки <code>ValidatedNec[String, A]</code> вместо <code>Either[String, A]</code>:</p>
+        <p>Для библиотеки <strong>refined</strong> есть аналогичное расширение <a href="https://index.scala-lang.org/fthomas/refined/artifacts/refined-cats?pre-releases=false"><strong>refined-cats</strong></a>:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">data</span><span>.</span><span class="type-name">ValidatedNec</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">github</span><span>.</span><span class="identifier">iltotore</span><span>.</span><span class="identifier">iron</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">github</span><span>.</span><span class="identifier">iltotore</span><span>.</span><span class="identifier">iron</span><span>.</span><span class="identifier">cats</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">github</span><span>.</span><span class="identifier">iltotore</span><span>.</span><span class="identifier">iron</span><span>.</span><span class="identifier">constraint</span><span>.</span><span class="identifier">all</span><span>.*
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">UUID</span><span>
+
+</span><span class="keyword">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">Name</span><span> = </span><span class="type-name">String</span><span> :| </span><span class="type-name">Match</span><span>[</span><span class="string-literal">&quot;[А-ЯЁ][а-яё]+&quot;</span><span>]
+</span><span class="keyword">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">Age</span><span>  = </span><span class="type-name">Int</span><span> :| </span><span class="type-name">Interval</span><span>.</span><span class="type-name">Open</span><span>[</span><span class="number-literal">7</span><span>, </span><span class="number-literal">77</span><span>]
+</span><span class="keyword">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">Id</span><span>   = </span><span class="type-name">String</span><span> :| </span><span class="type-name">ValidUUID</span><span>
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Person</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">Name</span><span>, </span><span class="identifier">age</span><span>: </span><span class="type-name">Age</span><span>, </span><span class="identifier">id</span><span>: </span><span class="type-name">Id</span><span>)
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Person</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">refine</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">age</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">id</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">ValidatedNec</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Person</span><span>] =
+    (
+      </span><span class="identifier">name</span><span>.</span><span class="identifier">refineValidatedNec</span><span>[</span><span class="type-name">Match</span><span>[</span><span class="string-literal">&quot;[А-ЯЁ][а-яё]+&quot;</span><span>]],
+      </span><span class="identifier">age</span><span>.</span><span class="identifier">refineValidatedNec</span><span>[</span><span class="type-name">Interval</span><span>.</span><span class="type-name">Open</span><span>[</span><span class="number-literal">7</span><span>, </span><span class="number-literal">77</span><span>]],
+      </span><span class="identifier">id</span><span>.</span><span class="identifier">refineValidatedNec</span><span>[</span><span class="type-name">ValidUUID</span><span>]
+    ).</span><span class="identifier">mapN</span><span>(</span><span class="type-name">Person</span><span>.</span><span class="identifier">apply</span><span>)</span></code></pre>
+        <p>Метод <code>Person.refine</code> делает именно то, что нужно:
+        применяет все предикаты к входным данным для их проверки,
+        а также возвращает более конкретные типы, с которыми можно более безопасно работать в будущем:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Person</span><span>.</span><span class="identifier">refine</span><span>(</span><span class="string-literal">&quot;Андрей&quot;</span><span>, </span><span class="number-literal">50</span><span>, </span><span class="type-name">UUID</span><span>.</span><span class="identifier">randomUUID</span><span>().</span><span class="identifier">toString</span><span>)
+</span><span class="comment">// Valid(Person(Андрей,50,fccec68b-cefd-45e8-ae57-b8cdd3fa3cb8))</span></code></pre>
+        <p>А так как мы используем <a href="https://typelevel.org/cats/typeclasses/applicative.html">Applicative</a>,
+        то всегда будут выполняться все этапы &quot;уточнения&quot;,
+        и в случае неудачи некоторых из них их ошибки будут накапливаться в <code>NonEmptyChain</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Person</span><span>.</span><span class="identifier">refine</span><span>(</span><span class="string-literal">&quot;Andrew&quot;</span><span>, </span><span class="number-literal">150</span><span>, </span><span class="string-literal">&quot;id&quot;</span><span>)
+</span><span class="comment">// Invalid(Chain(
+//   &quot;Should match [А-ЯЁ][а-яё]+&quot;, 
+//   &quot;Should be included in (7, 77)&quot;, 
+//   &quot;Should be an UUID&quot;
+// ))</span></code></pre>
+        <p><a href="https://scastie.scala-lang.org/4seolbH9SXeHosgAUNDzFw">Пример в Scastie для <strong>iron</strong></a></p>
+        <p><a href="https://scastie.scala-lang.org/roViFMw2SsaCWXB1vkMDdA">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
+        
+        <h2 id="итоги-обзора-библиотек-уточенных-типов-iron-и-refined" class="section"><a class="anchor-link left" href="#итоги-обзора-библиотек-уточенных-типов-iron-и-refined"><i class="icofont-laika link">&#xef71;</i></a>Итоги обзора библиотек уточенных типов <strong>iron</strong> и <strong>refined</strong></h2>
+        <p>Подведем краткие итоги обзора библиотек <strong>iron</strong> и <strong>refined</strong>:</p>
+        <ul>
+          <li>
+            К основным преимуществам библиотек относится:
+            <ul>
+              <li>Система типов</li>
+              <li>Отлов ошибок во время компиляции</li>
+              <li>Единая декларативная валидация</li>
+            </ul>
+          </li>
+          <li>
+            К недостаткам:
+            <ul>
+              <li>
+                При использовании нотации инфиксного типа необходимо проявлять осторожность
+                и использовать скобки или неинфиксное определение типа:
+                <ul>
+                  <li>
+                    <strong>iron</strong>
+                    <ul>
+                      <li><del>String :| XXX &amp; YYY</del></li>
+                      <li><code>String :| &amp;[XXX, YYY]</code></li>
+                      <li><code>String :| (XXX &amp; YYY)</code></li>
+                    </ul>
+                  </li>
+                  <li>
+                    <strong>refined</strong>
+                    <ul>
+                      <li><del>String Refined XXX And YYY</del></li>
+                      <li><code>String Refined And[XXX, YYY]</code></li>
+                      <li><code>String Refined (XXX And YYY)</code></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>Уточненные примитивы всегда упакованы</li>
+              <li>Сообщения об ошибках валидации не всегда понятны</li>
+            </ul>
+          </li>
+          <li>
+            У библиотек <strong>iron</strong> и <strong>refined</strong> есть альтернативы:
+            <ul>
+              <li><a href="https://github.com/fwbrasil/bond">Bond</a></li>
+              <li><a href="https://www.scalactic.org/">Scalactic</a></li>
+            </ul>
+          </li>
+          <li>
+            Интеграция с другими библиотеками:
+            <ul>
+              <li><a href="https://iltotore.github.io/iron/docs/modules/index.html"><strong>iron</strong></a></li>
+              <li><a href="https://github.com/fthomas/refined#using-refined"><strong>refined</strong></a></li>
+            </ul>
+          </li>
+        </ul>
+        
+        <h2 id="заключение" class="section"><a class="anchor-link left" href="#заключение"><i class="icofont-laika link">&#xef71;</i></a>Заключение</h2>
+        <p>Методов борьбы с ошибками в программном обеспечении очень много ввиду критичности проблемы.
+        Тестирование программного обеспечения
+        является важным (если не самым важным) этапом выпуска продукта.
+        Почти в каждой компании есть выделенное подразделение QA, порой по численности, знаниям и компетентности
+        не уступающее подразделению разработки.
+        Кодовая база тестов порой превышает тестируемый код.</p>
+        <p>Уточненные типы - безусловно не панацея, а ещё один способ повысить качество выпускаемого продукта.
+        Уточненные типы имеют огромное значение, когда речь идет о возможности уверенности в нашем коде,
+        и часто они могут использоваться без дополнительных тестов.</p>
+        <p>Уточнение во время синтаксического анализа не только гарантирует, что мы не забудем о невалидных данных,
+        но также дает более точные, ограниченные типы для использования во всем нашем коде.
+        Эта идея хорошо разобрана <a href="https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate">в следующей статье</a>.</p>
+        <p>Однако необходимо помнить, что <em>больше - не всегда лучше</em>, когда дело доходит до набора текста.
+        Иногда лучше оставить универсальный тип или обобщить его до чего-то более простого,
+        когда нижестоящая логика на самом деле не требует уточнения этого типа.</p>
+        <p>В противном случае ваша логика становится тесно связанной с тем, что вы делаете в данный момент,
+        и вы теряете возможность повторного использования, которая так дорога функциональным программистам.</p>
+        <p>Эмпирическое правило таково: всегда кодируйте то, что нужно вашей логике, а не только то, что вы можете.
+        И не бойтесь ослаблять ограничения в дальнейшем.</p>
+        <hr>
+        <p><strong>Ссылки</strong> (в алфавитном порядке):</p>
+        <ul>
+          <li><a href="https://github.com/Iltotore/iron">iron lib</a></li>
+          <li><a href="https://github.com/fthomas/refined">refined lib</a></li>
+          <li>
+            Видео:
+            <ul>
+              <li><a href="https://www.youtube.com/watch?v=TScwxX62uig">Better types = fewer tests - Raúl Raja</a></li>
+              <li><a href="https://www.youtube.com/watch?v=Hq2QWbUXKbE&t">Combining Refined Types with Type Class Derivation in Scala - Lawrence Carvalho</a></li>
+              <li><a href="https://www.youtube.com/watch?v=zExb9x3fzKs">Decorate your types with refined - Frank Thomas</a></li>
+              <li><a href="https://www.youtube.com/watch?v=NjqRi-cF3-g">Defusing the configuration time bomb with PureConfig and Refined - Leif Wickland</a></li>
+              <li><a href="https://www.youtube.com/watch?v=Fx8WXcAZWuk">Enhancing the type system with Refined Types - Juliano Alves</a></li>
+              <li><a href="https://www.youtube.com/watch?v=__zuECMFCRc">How to Build a Functional API - Julien Truffaut</a></li>
+              <li><a href="https://www.youtube.com/watch?v=aZsmapo1afQ">Getting Started with #refined - DevInsideYou</a></li>
+              <li><a href="https://www.youtube.com/watch?v=hhXPeuJohM4">Let The Compiler Help You: How To Make The Most Of Scala’s Typesystem - Markus Hauck</a></li>
+              <li><a href="https://slideslive.com/38907881/literal-types-what-they-are-good-for">Literal types, what they are good for? - Tamer Abdulradi</a></li>
+              <li><a href="https://www.youtube.com/watch?v=C3ciegxMAqA">Refined types for validated configurations – Viktor Lövgren</a></li>
+              <li><a href="https://www.youtube.com/watch?v=IDrGbsupaok">Refined types in Scala - Rock the JVM</a></li>
+              <li><a href="https://www.youtube.com/watch?v=Zq4rkWs_ybA">Refinement Types - Tipagem ainda mais forte para Scala - Marcelo Gomes</a></li>
+              <li><a href="https://slideslive.com/38908776/security-with-scala-refined-types-and-object-capabilities">Security with Scala: Refined Types and Object Capabilities - Will Sargent</a></li>
+              <li><a href="https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types">Strings are Evil: Methods to hide the use of primitive types - Noel Welsh</a></li>
+              <li><a href="https://www.youtube.com/watch?v=n1Y2V4zCZdQ">Why types matter - Gabriel Volpe</a></li>
+            </ul>
+          </li>
+          <li>
+            Статьи:
+            <ul>
+              <li><a href="https://blog.softwaremill.com/a-simple-trick-to-improve-type-safety-of-your-scala-code-ba80559ca092">A simple trick to improve type safety of your Scala code - Marcin Kubala</a></li>
+              <li><a href="https://engineering.contentsquare.com/2021/scala-refined-types/">How we used Refined to improve type safety and error reporting in Scala - Bertrand Junqua</a></li>
+              <li><a href="http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/">Lightweight Non-Negative Numerics for Better Scala Type Signatures - Erik Erlandson</a></li>
+              <li><a href="https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems">On Eliminating Error in Distributed Software Systems - Colin Breck</a></li>
+              <li><a href="https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate">Parse, don’t validate - Alexis King</a></li>
+              <li><a href="https://blog.rockthejvm.com/refined-types/">Refined types in Scala - Daniel Ciocîrlan</a></li>
+              <li><a href="https://medium.com/swlh/refined-types-the-good-the-bad-and-the-ugly-ee971e5d9137">Refined types in Scala: the Good, the Bad and the Ugly - Manuel Rodríguez</a></li>
+              <li><a href="https://beyondthelines.net/programming/refined-types/">Refined types, what are they good for? - Malcolm</a></li>
+              <li><a href="https://habr.com/ru/post/574080">Refined типы в Scala - hakain</a></li>
+              <li><a href="https://kwark.github.io/refined-in-practice-bescala/#1">Refinement types in practice - Peter Mortier</a></li>
+              <li><a href="https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html">Refining your data from configuration to database - Pere Villega</a></li>
+              <li><a href="https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/">Safe, Expressive Code with Refinement Types - Gordon Rennie</a></li>
+              <li><a href="https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md">Tests - can we have too many? - Jack Low</a></li>
+              <li><a href="https://blog.michalp.net/posts/scala/refined/">Type safety with refined - Michał Pawlik</a></li>
+              <li><a href="https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6">Validate Service Configuration in Scala - Alexey Novakov</a></li>
+              <li><a href="https://medium.com/@Methrat0n/wtf-is-refined-5008eb233194">Wtf is Refined? - Methrat0n</a></li>
+            </ul>
+          </li>
+        </ul>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

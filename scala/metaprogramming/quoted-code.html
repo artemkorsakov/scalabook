@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ru">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.0 + Helium Theme" />
+  <title>Quoted Code</title>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  
+  <meta name="description" content="Функциональная разработка на Scala"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+  <script src="../../helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../">Домашняя</a></li>
+    <li class="level1 nav-header">Блог</li>
+    <li class="level2 nav-leaf"><a href="../../blog/2023-01-09-architecture-problems.html">Ошибки при наследовании</a></li>
+    <li class="level1 nav-header">Scala</li>
+    <li class="level2 nav-leaf"><a href="../">Обзор Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../getting-started.html">С чего начать?</a></li>
+    <li class="level2 nav-leaf"><a href="../hello_world.html">Hello, world!</a></li>
+    <li class="level2 nav-leaf"><a href="../repl.html">REPL</a></li>
+    <li class="level2 nav-leaf"><a href="../types.html">Типы данных</a></li>
+    <li class="level2 nav-leaf"><a href="../structures.html">Структуры управления</a></li>
+    <li class="level2 nav-header">Структуры управления</li>
+    <li class="level3 nav-leaf"><a href="../structures/ifelse.html">if/else</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/for.html">for</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/match.html">match expressions</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/others.html">while and try</a></li>
+    <li class="level2 nav-leaf"><a href="../modeling.html">Моделирование данных</a></li>
+    <li class="level2 nav-header">Моделирование данных</li>
+    <li class="level3 nav-leaf"><a href="../modeling/classes.html">Классы</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/objects.html">Объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/companion-objects.html">Сопутствующие объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/traits.html">Трейты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/abstract-class.html">Абстрактные классы</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/enums.html">Перечисления</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/case-class.html">Кейс классы и объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/oop.html">Моделирование ООП</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/fp.html">Моделирование ФП</a></li>
+    <li class="level2 nav-leaf"><a href="../methods.html">Методы</a></li>
+    <li class="level2 nav-header">Методы</li>
+    <li class="level3 nav-leaf"><a href="../methods/method-features.html">Определение методов</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/default-parameters.html">Параметры по умолчанию</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/named-parameters.html">Именованные параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/by-name-parameter.html">Параметры по имени</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/partially-applied-functions.html">Каррирование</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/vararg-parameters.html">Методы с неопределенным количеством параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/generic-parameter.html">Generic параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/extension-methods.html">Методы расширения</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/main-methods.html">main методы</a></li>
+    <li class="level2 nav-leaf"><a href="../functions.html">Функции</a></li>
+    <li class="level2 nav-header">Функции</li>
+    <li class="level3 nav-leaf"><a href="../functions/anonymous.html">Анонимные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/variables.html">Параметры функции</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/eta.html">Eta расширение</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/hofs.html">Функции высшего порядка</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/write-map.html">Написание своего собственного метода map</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/returns-function.html">Возврат функции в методе</a></li>
+    <li class="level2 nav-leaf"><a href="../packaging.html">Пакеты и импорт</a></li>
+    <li class="level2 nav-leaf"><a href="../toplevel-definitions.html">Верхнеуровневые определения</a></li>
+    <li class="level2 nav-leaf"><a href="../collections.html">Коллекции</a></li>
+    <li class="level2 nav-header">Коллекции</li>
+    <li class="level3 nav-leaf"><a href="../collections/classes.html">Типы коллекций</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/list.html">List</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/lazylist.html">LazyList</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/array-seq.html">ArraySeq</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/vector.html">Vector</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/array-buffer.html">ArrayBuffer</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/maps.html">Maps</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/set.html">Работа с множествами</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/range.html">Диапазон (Range)</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/tuple.html">Tuple (кортежи)</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/queue.html">Queue</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/methods.html">Методы в коллекциях</a></li>
+    <li class="level2 nav-leaf"><a href="../fp.html">Функциональное программирование</a></li>
+    <li class="level2 nav-header">ФП</li>
+    <li class="level3 nav-leaf"><a href="../fp/what-is-fp.html">Что такое функциональное программирование?</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/immutable-values.html">Неизменяемые значения</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/pure-functions.html">Чистые функции</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/functions-are-values.html">Функции - это значения</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/functional-error-handling.html">Функциональная обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../type-system.html">Система типов</a></li>
+    <li class="level2 nav-header">Система типов</li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-inferred.html">Определение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-generics.html">Generics типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/upper-type-bounds.html">Верхнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/lower-type-bounds.html">Нижнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-intersection.html">Пересечение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-union.html">Объединение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-adts.html">Алгебраические типы данных (ADT)</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-variance.html">Ковариантность типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-opaque.html">Непрозрачные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-structural.html">Структурные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-dependent-function.html">Зависимые типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/type-lambdas.html">Лямбда-типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/match-types.html">Типы match</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/polymorphic-function-types.html">Полиморфные типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-others.html">Другие типы</a></li>
+    <li class="level2 nav-leaf"><a href="../abstractions.html">Контекстуальные абстракции</a></li>
+    <li class="level2 nav-header">Абстракции</li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-given.html">Экземпляры given</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-using.html">Предложения using</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/type-classes.html">Класс типов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-context-bounds.html">Контекстные границы</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-given-imports.html">Given imports</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-extension-methods.html">Методы расширения - детали</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-type-classes.html">Имплементация type классов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-type-class-derivation.html">Type Class Derivation</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-multiversal-equality.html">Многостороннее равенство</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/context-functions.html">Контекстные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-implicit-conversions.html">Неявные преобразования типов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-by-name-parameters.html">Контекстные параметры по имени</a></li>
+    <li class="level2 nav-leaf"><a href="../details.html">Детали</a></li>
+    <li class="level2 nav-header">Детали</li>
+    <li class="level3 nav-leaf"><a href="../details/export-causes.html">Предложения export</a></li>
+    <li class="level3 nav-leaf"><a href="../details/parameter-untupling.html">Распаковка параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../details/type-test.html">Проверка типа</a></li>
+    <li class="level3 nav-leaf"><a href="../details/pattern-matching.html">Сопоставление с образцом</a></li>
+    <li class="level2 nav-leaf"><a href="../concurrency.html">Параллелизм</a></li>
+    <li class="level2 nav-leaf"><a href="../tools.html">Утилиты</a></li>
+    <li class="level2 nav-header">Утилиты</li>
+    <li class="level3 nav-leaf"><a href="../tools/tools-sbt.html">Сборка и тестирование проектов Scala с помощью Sbt</a></li>
+    <li class="level3 nav-leaf"><a href="../tools/tools-worksheets.html">Worksheet</a></li>
+    <li class="level2 nav-leaf"><a href="../with_java.html">Взаимодействие с Java</a></li>
+    <li class="level2 nav-leaf"><a href="../metaprogramming.html">Метапрограммирование</a></li>
+    <li class="level2 nav-header">Metaprogramming</li>
+    <li class="level3 nav-leaf"><a href="inline.html">Inline</a></li>
+    <li class="level3 nav-leaf"><a href="compile-time-ops.html">Операции во время компиляции</a></li>
+    <li class="level3 nav-leaf"><a href="macros.html">Макросы</a></li>
+    <li class="level3 active nav-leaf"><a href="#">Quoted Code</a></li>
+    <li class="level3 nav-leaf"><a href="runtime-staging.html">Runtime Staging</a></li>
+    <li class="level3 nav-leaf"><a href="reflection.html">Reflection</a></li>
+    <li class="level3 nav-leaf"><a href="tasty-inspection.html">TASTy Inspection</a></li>
+    <li class="level2 nav-leaf"><a href="../soft-keywords.html">Soft Keywords</a></li>
+    <li class="level2 nav-leaf"><a href="../scaladoc.html">Scaladoc</a></li>
+    <li class="level2 nav-header">Scaladoc</li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/docstrings.html">Документы</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/linking.html">Связующая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/static-site.html">Статическая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/blog.html">Встроенный блог</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/site-versioning.html">Версионность сайта</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/search-engine.html">Поиск по типу</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/snippet-compiler.html">Проверка фрагмента</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/settings.html">Настройки</a></li>
+    <li class="level1 nav-header">Функциональное программирование</li>
+    <li class="level2 nav-leaf"><a href="../../fp/">Функциональное программирование</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/data-structures.html">Функциональная структура данных</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/handling-errors.html">Обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/laziness.html">Ленивые вычисления</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/state.html">Функциональное состояние</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monoids.html">Monoids</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monads.html">Monads</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/writer.html">Функциональный журнал</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/non-empty-list.html">Непустой связанный список</a></li>
+    <li class="level1 nav-header">Теория категорий</li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/">Теория категорий</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/equal.html">Группа Equal</a></li>
+    <li class="level2 nav-header">Группа Equal</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/equal.html">Equal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/order.html">Order</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/enum.html">Enum</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/bounded.html">Bounded</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monoid.html">Группа Monoid</a></li>
+    <li class="level2 nav-header">Группа Monoid</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/semigroup.html">Semigroup</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/monoid.html">Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/band.html">Band</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/idempotent-monoid.html">Idempotent Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/group.html">Group</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monad.html">Группа Monad</a></li>
+    <li class="level2 nav-header">Группа Monad</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-functor.html">Invariant Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/functor.html">Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-applicative.html">Invariant Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/semigroupal.html">Semigroupal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/apply.html">Apply</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative.html">Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/bind.html">Bind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad.html">Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus.html">Plus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus-empty.html">PlusEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative-plus.html">ApplicativePlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-plus.html">MonadPlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/is-empty.html">IsEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/foldable.html">Foldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/traverse.html">Traverse</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/contravariant-functor.html">Контравариантный функтор</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divide.html">Divide</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divisible.html">Divisible</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-bind.html">CoBind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-monads.html">Co-Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-transformer.html">Monad Transformer</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/free-monads.html">Free Monad</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/arrow.html">Группа Arrow</a></li>
+    <li class="level2 nav-header">Группа Arrow</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/compose.html">Compose</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/category.html">Category</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/split.html">Split</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/profunctor.html">Profunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/strong.html">Strong</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/arrow.html">Arrow</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/bifunctor.html">Группа Bifunctor</a></li>
+    <li class="level2 nav-header">Группа Bifunctor</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifunctor.html">Bifunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifoldable.html">Bifoldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bitraverse.html">Bitraverse</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/other.html">Вне группы</a></li>
+    <li class="level2 nav-header">Вне группы</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/show.html">Show</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/read.html">Read</a></li>
+    <li class="level1 nav-header">Алгоритмы и структуры</li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/">Структуры данных и алгоритмы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/fundamental.html">Фундаментальные алгоритмы</a></li>
+    <li class="level2 nav-header">Фундаментальные алгоритмы</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/numerical.html">Численные алгоритмы</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/primes.html">Простые числа</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/fibonacci.html">Числа Фибоначчи</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/lists.html">Связанные списки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/arrays.html">Массивы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/stacks.html">Стеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/queues.html">Очереди</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/trees.html">Деревья</a></li>
+    <li class="level2 nav-header">Двоичное дерево</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/trees/binary-tree.html">Двоичное дерево</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/hash-tables.html">Хеш-таблицы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/sort.html">Сортировка</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/search.html">Поиск</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/graphs.html">Графы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/ackermann.html">Функция Аккермана</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/newton.html">Метод Ньютона</a></li>
+    <li class="level1 nav-header">Scala библиотеки</li>
+    <li class="level2 nav-leaf"><a href="../../libs/">Scala библиотеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/refined.html">Уточняющие типы в Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/cats-effect.html">Cats effect</a></li>
+    <li class="level2 nav-header">Cats effect</li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/copy-files.html">Копирование файлов</a></li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/producer-consumer-problem.html">Проблема производитель-потребитель — параллелизм и волокна</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/http4s.html">Http4s</a></li>
+    <li class="level1 nav-header">Паттерны проектирования</li>
+    <li class="level2 nav-leaf"><a href="../../patterns/">Паттерны проектирования</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/creational.html">Порождающие шаблоны</a></li>
+    <li class="level2 nav-header">Порождающие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/factory-method.html">Фабричный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/abstract-factory.html">Абстрактная фабрика</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/builder.html">Строитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/prototype.html">Прототип</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/singleton.html">Одиночка</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/structural.html">Структурные шаблоны</a></li>
+    <li class="level2 nav-header">Структурные шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/adapter.html">Адаптер</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/bridge.html">Мост</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/composite.html">Компоновщик</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/decorator.html">Декоратор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/facade.html">Фасад</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/flyweight.html">Приспособленец</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/proxy.html">Заместитель</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/behavioral.html">Поведенческие шаблоны</a></li>
+    <li class="level2 nav-header">Поведенческие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/interpreter.html">Интерпретатор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/template-method.html">Шаблонный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/chain-of-responsibility.html">Цепочка обязанностей</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/command.html">Команда</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/iterator.html">Итератор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/mediator.html">Посредник</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/memento.html">Хранитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/observer.html">Наблюдатель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/state.html">Состояние</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/strategy.html">Стратегия</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/visitor.html">Посетитель</a></li>
+    <li class="level1 nav-header">Упражнения из книг</li>
+    <li class="level2 nav-leaf"><a href="../../books/">Упражнения из книг</a></li>
+    <li class="level2 nav-header">Structure and Interpretation</li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/">Структура и интерпретация компьютерных программ</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_6.html">Глава 1.1.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_7.html">Глава 1.1.7</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_8.html">Глава 1.1.8</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_1.html">Глава 1.2.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_2.html">Глава 1.2.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_3.html">Глава 1.2.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_4.html">Глава 1.2.4</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_5.html">Глава 1.2.5</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_6.html">Глава 1.2.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_1.html">Глава 1.3.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_2.html">Глава 1.3.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_3.html">Глава 1.3.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_4.html">Глава 1.3.4</a></li>
+    <li class="level2 nav-header">Scala Puzzlers</li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/">Головоломки на Scala</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/hi-there.html">Hi There!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/upstairs.html">UPSTAIRS downstairs</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/location.html">Location, Location, Location</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/now-you-see-me.html">Now You See Me, Now You Don&#39;t</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-missing-list.html">The Missing List</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/arg-arrgh.html">Arg Arrgh!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/captured-by-closures.html">Captured by Closures</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/map-comprehension.html">Map Comprehension</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/init-you-init-me.html">Init You, Init Me</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-equality.html">A Case of Equality</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/if-at-first.html">If At First You Don&#39;t Succeed...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/to-map-or-not-to-map.html">To Map, or Not to Map</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/private-lives.html">Private Lives</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/self-see-self.html">Self - See &#39;Self&#39;</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-egg-or-two.html">One Egg or Two..?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/return-to-me.html">Return to Me!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/implicitly-surprising.html">Implicitly Surprising</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-bound-two-to-go.html">One Bound, Two to Go</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/count-me-now-count-me-later.html">Count Me Now, Count Me Later</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/whats-in-a-name.html">What&#39;s in a Name?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/i-can-has-padding.html">I Can Has Padding?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/cast-away.html">Cast Away</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/pick-an-int-any-int.html">Pick an Int, Any Int!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-string.html">A Case of Strings</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-view-to-a-shill.html">A View to a Shill</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/accepts-any-args.html">Accepts Any Args</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-devil-is-in-the-defaults.html">The Devil is in the Defaults</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-two-skip-a-few.html">One, Two, Skip a Few</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/oddly-enough.html">Oddly Enough</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/splitting-headache.html">Splitting Headache</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-result-finally.html">A Result, Finally!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/heads-you-win.html">Heads You Win...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/ex-stream-surprise.html">(Ex)Stream Surprise</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-matter-of-context.html">A Matter of Context</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/inference.html">Inference Hindrance</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/for-each-step.html">For Each Step...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/beep-beep-reversing.html">Beep Beep...Reversing</a></li>
+    <li class="level1 nav-leaf"><a href="../../extra.html">Дополнительные материалы</a></li>
+    <li class="level1 nav-header">Дополнительные материалы</li>
+    <li class="level2 nav-leaf"><a href="../../extra/one_star.html">✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/two_stars.html">✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/three_stars.html">✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/four_stars.html">✯✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/five_stars.html">✯✯✯✯✯</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Quoted Code</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#кодовые-блоки">Кодовые блоки</a></li>
+    <li class="level1 nav-leaf"><a href="#согласованность-уровней">Согласованность уровней</a></li>
+    <li class="level1 nav-leaf"><a href="#дженерики">Дженерики</a></li>
+    <li class="level1 nav-leaf"><a href="#toexpr">ToExpr</a></li>
+    <li class="level1 nav-node"><a href="#шаблоны-цитат">Шаблоны цитат</a></li>
+    <li class="level2 nav-leaf"><a href="#соответствие-точному-выражению">Соответствие точному выражению</a></li>
+    <li class="level2 nav-leaf"><a href="#соответствующее-частичное-выражение">Соответствующее частичное выражение</a></li>
+    <li class="level2 nav-leaf"><a href="#соответствие-типов-выражений">Соответствие типов выражений</a></li>
+    <li class="level2 nav-leaf"><a href="#соответствующий-приемник-методов">Соответствующий приемник методов</a></li>
+    <li class="level2 nav-node"><a href="#сопоставление-типов">Сопоставление типов</a></li>
+    <li class="level3 nav-leaf"><a href="#общие-типы-в-шаблонах">Общие типы в шаблонах</a></li>
+    <li class="level3 nav-leaf"><a href="#переменные-типа-в-шаблонах">Переменные типа в шаблонах</a></li>
+    <li class="level3 nav-leaf"><a href="#quote-types-patterns">Quote types patterns</a></li>
+    <li class="level1 nav-leaf"><a href="#fromexpr">FromExpr</a></li>
+    <li class="level1 nav-leaf"><a href="#цитаты">Цитаты</a></li>
+    <li class="level1 nav-leaf"><a href="#β-reduction">β-reduction</a></li>
+    <li class="level1 nav-leaf"><a href="#summon-values">Summon values</a></li>
+    <li class="level1 nav-leaf"><a href="#цитатные-классы-типов">Цитатные классы типов</a></li>
+  </ul>
+
+  <p class="footer"><a href="https://github.com/artemkorsakov/scalabook/blob/master/docs/scala/metaprogramming/quoted-code.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Редактировать страницу</a></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="quoted-code" class="title">Quoted Code</h1>
+        
+        <h3 id="кодовые-блоки" class="section"><a class="anchor-link left" href="#кодовые-блоки"><i class="icofont-laika link">&#xef71;</i></a>Кодовые блоки</h3>
+        <p>Блок кода в кавычках <code>&#39;{ ... }</code> синтаксически похож на строковую кавычку <code>&quot; ... &quot;</code> 
+        с той разницей, что первая содержит типизированный код. 
+        Чтобы вставить код в другой код, можно использовать синтаксис <code>$expr</code> или <code>${ expr }</code>, 
+        где <code>expr</code> имеет тип <code>Expr[T]</code>.
+        Интуитивно понятно, что код непосредственно внутри кавычки (<code>&#39;{ ... }</code>) сейчас не выполняется, 
+        в то время как код внутри склейки (<code>${ ... }</code>) оценивается и результаты встраиваются в окружающее выражение.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">msg</span><span> = </span><span class="type-name">Expr</span><span>(</span><span class="string-literal">&quot;Hello&quot;</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">printHello</span><span> = &#39;{ </span><span class="identifier">print</span><span>(</span><span class="identifier">$msg</span><span>) }
+</span><span class="identifier">println</span><span>(</span><span class="identifier">printHello</span><span>.</span><span class="identifier">show</span><span>) </span><span class="comment">// print(&quot;Hello&quot;)</span></code></pre>
+        <p>Как правило, цитаты задерживают выполнение, в то время как склейка делает это раньше окружающего кода.
+        Из-за некоторых технических соображений непосредственно внутри <code>inline</code> определений, 
+        которые называются <a href="https://scalabook.gitflic.space/docs/scala/metaprogramming/macros">макросами</a>, 
+        разрешены только склейки верхнего уровня.</p>
+        <p>Можно написать цитату внутри цитаты, но этот шаблон не распространен при написании макросов.</p>
+        
+        <h3 id="согласованность-уровней" class="section"><a class="anchor-link left" href="#согласованность-уровней"><i class="icofont-laika link">&#xef71;</i></a>Согласованность уровней</h3>
+        <p>Нельзя просто написать любой произвольный код в цитатах и в склейках, 
+        так как одна часть программы будет жить во время компиляции, а другая — во время выполнения. 
+        Рассмотрим следующий плохо сконструированный код:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">myBadCounter1</span><span>(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Int</span><span>] = {
+  </span><span class="keyword">var</span><span> </span><span class="identifier">x</span><span> = </span><span class="number-literal">0</span><span>
+  &#39;{ </span><span class="identifier">x</span><span> += </span><span class="number-literal">1</span><span>; </span><span class="identifier">x</span><span> }
+}</span></code></pre>
+        <p>Проблема с этим кодом в том, что <code>x</code> существует во время компиляции, 
+        но затем мы пытаемся использовать его после завершения компиляции (возможно, даже на другой машине). 
+        Ясно, что невозможно получить доступ к его значению и обновить <code>x</code>.</p>
+        <p>Теперь рассмотрим двойную версию, где определяется переменная во время выполнения 
+        и происходит попытка получить к ней доступ во время компиляции:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">myBadCounter2</span><span>(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Int</span><span>] = &#39;{
+  </span><span class="keyword">var</span><span> </span><span class="identifier">x</span><span> = </span><span class="number-literal">0</span><span>
+  </span><span class="identifier">$</span><span>{ </span><span class="identifier">x</span><span> += </span><span class="number-literal">1</span><span>; </span><span class="symbol-literal">&#39;x</span><span> }
+}</span></code></pre>
+        <p>Ясно, что это не должно работать, так как переменная еще не существует.</p>
+        <p>Чтобы убедиться, что нельзя писать программы, которые содержат такого рода проблемы, 
+        виды ссылок, разрешенных в области цитат, ограничиваются.</p>
+        <p>Вводятся уровни как количество цитат за вычетом количества склеек, окружающих выражение или определение.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// level 0
+</span><span>&#39;{ </span><span class="comment">// level 1
+</span><span>  </span><span class="keyword">var</span><span> </span><span class="identifier">x</span><span> = </span><span class="number-literal">0</span><span>
+  </span><span class="identifier">$</span><span>{ </span><span class="comment">// level 0
+</span><span>    </span><span class="identifier">x</span><span> += </span><span class="number-literal">1</span><span>
+    </span><span class="symbol-literal">&#39;x</span><span> </span><span class="comment">// level 1
+</span><span>  }
+}</span></code></pre>
+        <p>Система разрешает ссылки на глобальные определения, например, <code>println</code> на любом уровне, 
+        но ограничивает ссылки на локальные определения. 
+        Доступ к локальному определению возможен только в том случае, если оно задано на том же уровне, что и его ссылка. 
+        Это позволит поймать ошибки в <code>myBadCounter1</code> и <code>myBadCounter2</code>.</p>
+        <p>Несмотря на то, что нельзя ссылаться на переменную внутри цитаты, 
+        все же можно передать ее текущее значение через кавычку, 
+        подняв значение до выражения с помощью <code>Expr.apply</code>.</p>
+        
+        <h3 id="дженерики" class="section"><a class="anchor-link left" href="#дженерики"><i class="icofont-laika link">&#xef71;</i></a>Дженерики</h3>
+        <p>При использовании параметров типа или других видов абстрактных типов с кодом в кавычках 
+        потребуется явно отслеживать некоторые из этих типов. 
+        Scala использует семантику стертых типов для своих дженериков. 
+        Это означает, что типы удаляются из программы при компиляции, 
+        и среде выполнения не нужно отслеживать все типы во время выполнения.</p>
+        <p>Рассмотрим следующий код:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">evalAndUse</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>) = &#39;{
+  </span><span class="keyword">val</span><span> </span><span class="identifier">x2</span><span>: </span><span class="type-name">T</span><span> = </span><span class="identifier">$x</span><span> </span><span class="comment">// error
+</span><span>  ... </span><span class="comment">// use x2
+</span><span>}</span></code></pre>
+        <p>Здесь будет получено сообщение об ошибке, сообщающее, что не хватает контекстного параметра <code>Type[T]</code>. 
+        Это можно легко исправить, написав:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">evalAndUse</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>])(</span><span class="keyword">using</span><span> </span><span class="type-name">Type</span><span>[</span><span class="type-name">T</span><span>])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>) = &#39;{
+  </span><span class="keyword">val</span><span> </span><span class="identifier">x2</span><span>: </span><span class="type-name">T</span><span> = </span><span class="identifier">$x</span><span>
+  ... </span><span class="comment">// use x2
+</span><span>}</span></code></pre>
+        <p>Код будет эквивалентен такой более подробной версии:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">evalAndUse</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>])(</span><span class="keyword">using</span><span> </span><span class="identifier">t</span><span>: </span><span class="type-name">Type</span><span>[</span><span class="type-name">T</span><span>])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>) = &#39;{
+  </span><span class="keyword">val</span><span> </span><span class="identifier">x2</span><span>: </span><span class="identifier">t</span><span>.</span><span class="type-name">Underlying</span><span> = </span><span class="identifier">$x</span><span>
+  ... </span><span class="comment">// use x2
+</span><span>}</span></code></pre>
+        <p>Обратите внимание, что у <code>Type</code> вызывается член типа <code>Underlying</code>, который ссылается на тип, хранящийся в <code>Type</code>; 
+        в данном случае <code>t.Underlying</code> есть <code>T</code>. 
+        Даже если <code>Type</code> используется неявно, как правило, лучше оставить его контекстуальным, 
+        так как некоторые изменения внутри цитаты могут потребовать этого. 
+        Менее подробная версия обычно является лучшим способом написания типов, поскольку ее намного проще читать. 
+        В некоторых случаях не будет статически известен тип внутри <code>Type</code> 
+        и нужно будет использовать <code>t.Underlying</code> для ссылки на него.</p>
+        <p>Когда нужен этот дополнительный <code>Type</code> параметр?</p>
+        <ul>
+          <li>когда тип является абстрактным и используется на уровне выше текущего</li>
+        </ul>
+        <p>Когда добавляется контекстный параметр <code>Type</code> в метод, 
+        он либо получается из другого параметра контекста, либо неявно с помощью вызова <code>Type.of</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">evalAndUse</span><span>(</span><span class="type-name">Expr</span><span>(</span><span class="number-literal">3</span><span>))
+</span><span class="comment">// эквивалентно:
+</span><span class="identifier">evalAndUse</span><span>[</span><span class="type-name">Int</span><span>](</span><span class="type-name">Expr</span><span>(</span><span class="number-literal">3</span><span>))(</span><span class="keyword">using</span><span> </span><span class="type-name">Type</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">Int</span><span>])</span></code></pre>
+        <p>Не каждый тип можно использовать в качестве параметра <code>Type.of[..]</code> из коробки. 
+        Например, нельзя восстановить абстрактные типы, которые уже были стерты:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">evalAndUse</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>) =
+  </span><span class="keyword">given</span><span> </span><span class="type-name">Type</span><span>[</span><span class="type-name">T</span><span>] = </span><span class="type-name">Type</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">T</span><span>] </span><span class="comment">// error
+</span><span>  &#39;{
+    </span><span class="keyword">val</span><span> </span><span class="identifier">x2</span><span>: </span><span class="type-name">T</span><span> = </span><span class="identifier">$x</span><span>
+    ... </span><span class="comment">// use x2
+</span><span>  }</span></code></pre>
+        <p>Но можно написать более сложные типы, которые зависят от этих абстрактных типов. 
+        Например, если ищем или явно создаем <code>Type[List[T]]</code>, 
+        то системе потребуется <code>Type[T]</code> в текущем контексте для компиляции.</p>
+        <p>Хороший код должен добавлять <code>Types</code> только к параметрам контекста и никогда не использовать их явно. 
+        Однако явное использование полезно при отладке, хотя и достигается за счет краткости и ясности.</p>
+        
+        <h3 id="toexpr" class="section"><a class="anchor-link left" href="#toexpr"><i class="icofont-laika link">&#xef71;</i></a>ToExpr</h3>
+        <p>Метод <code>Expr.apply</code> использует экземпляры <code>ToExpr</code> для создания выражения, которое создаст копию значения.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">Expr</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>)(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>, </span><span class="type-name">ToExpr</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>] =
+    </span><span class="identifier">summon</span><span>[</span><span class="type-name">ToExpr</span><span>[</span><span class="type-name">T</span><span>]].</span><span class="identifier">apply</span><span>(</span><span class="identifier">x</span><span>)</span></code></pre>
+        <p><code>ToExpr</code> определяется следующим образом:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">ToExpr</span><span>[</span><span class="type-name">T</span><span>]:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>)(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>]</span></code></pre>
+        <p>Метод <code>ToExpr.apply</code> примет значение <code>T</code> и сгенерирует код, который создаст копию этого значения во время выполнения.</p>
+        <p>Можно определить собственные <code>ToExpr</code>-ы, например:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">given</span><span> </span><span class="type-name">ToExpr</span><span>[</span><span class="type-name">Boolean</span><span>] </span><span class="keyword">with</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Boolean</span><span>)(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>) =
+    </span><span class="keyword">if</span><span> </span><span class="identifier">x</span><span> </span><span class="keyword">then</span><span> &#39;{</span><span class="boolean-literal">true</span><span>}
+    </span><span class="keyword">else</span><span> &#39;{</span><span class="boolean-literal">false</span><span>}
+}
+
+</span><span class="keyword">given</span><span> </span><span class="type-name">ToExpr</span><span>[</span><span class="type-name">StringContext</span><span>] </span><span class="keyword">with</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">stringContext</span><span>: </span><span class="type-name">StringContext</span><span>)(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>) =
+    </span><span class="keyword">val</span><span> </span><span class="identifier">parts</span><span> = </span><span class="type-name">Varargs</span><span>(</span><span class="identifier">stringContext</span><span>.</span><span class="identifier">parts</span><span>.</span><span class="identifier">map</span><span>(</span><span class="type-name">Expr</span><span>(</span><span class="identifier">_</span><span>)))
+    &#39;{ </span><span class="type-name">StringContext</span><span>(</span><span class="identifier">$parts</span><span>: </span><span class="identifier">_</span><span>*) }
+}</span></code></pre>
+        <p>Конструктор <code>Varargs</code> просто создает <code>Expr[Seq[T]]</code>, который можно эффективно склеить как varargs. 
+        В общем, любую последовательность <code>$mySeq: _*</code> можно соединить, чтобы соединить ее как varargs.</p>
+        
+        <h3 id="шаблоны-цитат" class="section"><a class="anchor-link left" href="#шаблоны-цитат"><i class="icofont-laika link">&#xef71;</i></a>Шаблоны цитат</h3>
+        <p>Цитаты также можно использовать для проверки эквивалентности одного выражения другому 
+        или для деконструкции выражения на части.</p>
+        
+        <h4 id="соответствие-точному-выражению" class="section"><a class="anchor-link left" href="#соответствие-точному-выражению"><i class="icofont-laika link">&#xef71;</i></a>Соответствие точному выражению</h4>
+        <p>Самое простое, что можно сделать, - это проверить, соответствует ли выражение другому известному выражению. 
+        Пример:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">valueOfBoolean</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Boolean</span><span>])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Boolean</span><span>] =
+  </span><span class="identifier">x</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="boolean-literal">true</span><span> } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="boolean-literal">true</span><span>)
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="boolean-literal">false</span><span> } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="boolean-literal">false</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">valueOfBooleanOption</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Boolean</span><span>]])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Boolean</span><span>]] =
+  </span><span class="identifier">x</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="type-name">Some</span><span>(</span><span class="boolean-literal">true</span><span>) } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="type-name">Some</span><span>(</span><span class="boolean-literal">true</span><span>))
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="type-name">Some</span><span>(</span><span class="boolean-literal">false</span><span>) } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="type-name">Some</span><span>(</span><span class="boolean-literal">false</span><span>))
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="type-name">None</span><span> } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="type-name">None</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span></code></pre>
+        
+        <h4 id="соответствующее-частичное-выражение" class="section"><a class="anchor-link left" href="#соответствующее-частичное-выражение"><i class="icofont-laika link">&#xef71;</i></a>Соответствующее частичное выражение</h4>
+        <p>Для большей компактности, можно сопоставить часть выражения, используя склейку (<code>$</code>), 
+        чтобы сматчить произвольный код и извлечь его.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">valueOfBooleanOption</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Boolean</span><span>]])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Boolean</span><span>]] =
+  </span><span class="identifier">x</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="type-name">Some</span><span>(</span><span class="identifier">$boolExpr</span><span>) } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="identifier">valueOfBoolean</span><span>(</span><span class="identifier">boolExpr</span><span>))
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="type-name">None</span><span> } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="type-name">None</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span></code></pre>
+        
+        <h4 id="соответствие-типов-выражений" class="section"><a class="anchor-link left" href="#соответствие-типов-выражений"><i class="icofont-laika link">&#xef71;</i></a>Соответствие типов выражений</h4>
+        <p>Также можно сопоставлять код произвольного типа <code>T</code>. 
+        Ниже матчится <code>$x</code> типа <code>T</code> и на выходе получается <code>x</code> типа <code>Expr[T]</code>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">exprOfOption</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">T</span><span>]])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>]] =
+  </span><span class="identifier">x</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="type-name">Some</span><span>(</span><span class="identifier">$x</span><span>) } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="identifier">x</span><span>) </span><span class="comment">// x: Expr[T]
+</span><span>    </span><span class="keyword">case</span><span> &#39;{ </span><span class="type-name">None</span><span> } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="type-name">None</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span></code></pre>
+        <p>Также можно проверить тип выражения:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">valueOf</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Any</span><span>])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Any</span><span>] =
+  </span><span class="identifier">x</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="identifier">$x</span><span>: </span><span class="type-name">Boolean</span><span> } =&gt; </span><span class="identifier">valueOfBoolean</span><span>(</span><span class="identifier">x</span><span>) </span><span class="comment">// x: Expr[Boolean]
+</span><span>    </span><span class="keyword">case</span><span> &#39;{ </span><span class="identifier">$x</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Boolean</span><span>] }  =&gt; </span><span class="identifier">valueOfBooleanOption</span><span>(</span><span class="identifier">x</span><span>) </span><span class="comment">// x: Expr[Option[Boolean]]
+</span><span>    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span></code></pre>
+        <p>Или аналогично для частичного выражения:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> &#39;{ </span><span class="type-name">Some</span><span>(</span><span class="identifier">$x</span><span>: </span><span class="type-name">Boolean</span><span>) } =&gt; </span><span class="comment">// x: Expr[Boolean]</span></code></pre>
+        
+        <h4 id="соответствующий-приемник-методов" class="section"><a class="anchor-link left" href="#соответствующий-приемник-методов"><i class="icofont-laika link">&#xef71;</i></a>Соответствующий приемник методов</h4>
+        <p>Когда желательно сопоставить получателя метода, нужно явно указать его тип:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> &#39;{ (</span><span class="identifier">$ls</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]).</span><span class="identifier">sum</span><span> } =&gt;</span></code></pre>
+        <p>Если бы было написано <code>$ls.sum</code>, то нельзя было бы узнать тип <code>ls</code> и метод <code>sum</code>, который вызывается.</p>
+        <p>Другой распространенный случай, когда нужны аннотации типов, — это инфиксные операции:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> &#39;{ (</span><span class="identifier">$x</span><span>: </span><span class="type-name">Int</span><span>) + (</span><span class="identifier">$y</span><span>: </span><span class="type-name">Int</span><span>) } =&gt;
+</span><span class="keyword">case</span><span> &#39;{ (</span><span class="identifier">$x</span><span>: </span><span class="type-name">Double</span><span>) + (</span><span class="identifier">$y</span><span>: </span><span class="type-name">Double</span><span>) } =&gt;
+</span><span class="keyword">case</span><span> ...</span></code></pre>
+        
+        <h4 id="сопоставление-типов" class="section"><a class="anchor-link left" href="#сопоставление-типов"><i class="icofont-laika link">&#xef71;</i></a>Сопоставление типов</h4>
+        <p>До сих пор предполагалось, что типы внутри паттернов цитат будут известны статически. 
+        Шаблоны цитат также допускают общие типы и экзистенциальные типы.</p>
+        
+        <h5 id="общие-типы-в-шаблонах" class="section"><a class="anchor-link left" href="#общие-типы-в-шаблонах"><i class="icofont-laika link">&#xef71;</i></a>Общие типы в шаблонах</h5>
+        <p>Рассмотрим функцию <code>exprOfOption</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">exprOfOption</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">T</span><span>]])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>]] =
+  </span><span class="identifier">x</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="type-name">Some</span><span>(</span><span class="identifier">$x</span><span>: </span><span class="type-name">T</span><span>) } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="identifier">x</span><span>) </span><span class="comment">// x: Expr[T]
+</span><span>                </span><span class="comment">// ^^^ type ascription with generic type T
+</span><span>    ...</span></code></pre>
+        <p>Обратите внимание, что на этот раз <code>T</code> добавлен в шаблон явно, хотя его можно было бы вывести. 
+        Ссылаясь на универсальный тип <code>T</code> в шаблоне, в области видимости должен быть доступен <code>given Type[T]</code>. 
+        Это означает, что <code>$x: T</code> будет матчиться, только если <code>x</code> имеет тип <code>Expr[T]</code>. 
+        В данном конкретном случае это условие всегда будет истинным.</p>
+        <p>Теперь рассмотрим следующий вариант, где <code>x</code> - необязательное значение со (статически) неизвестным типом элемента:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">exprOfOptionOf</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Any</span><span>]])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>]] =
+  </span><span class="identifier">x</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="type-name">Some</span><span>(</span><span class="identifier">$x</span><span>: </span><span class="type-name">T</span><span>) } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="identifier">x</span><span>) </span><span class="comment">// x: Expr[T]
+</span><span>    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span></code></pre>
+        <p>На этот раз шаблон будет соответствовать только в том случае, если <code>Some($x: T)</code> - тип <code>.OptionSome[T]</code></p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">exprOfOptionOf</span><span>[</span><span class="type-name">Int</span><span>](&#39;{ </span><span class="type-name">Some</span><span>(</span><span class="number-literal">3</span><span>) })   </span><span class="comment">// Some(&#39;{3})
+</span><span class="identifier">exprOfOptionOf</span><span>[</span><span class="type-name">Int</span><span>](&#39;{ </span><span class="type-name">Some</span><span>(</span><span class="string-literal">&quot;a&quot;</span><span>) }) </span><span class="comment">// None</span></code></pre>
+        
+        <h5 id="переменные-типа-в-шаблонах" class="section"><a class="anchor-link left" href="#переменные-типа-в-шаблонах"><i class="icofont-laika link">&#xef71;</i></a>Переменные типа в шаблонах</h5>
+        <p>Код в кавычках может содержать типы, неизвестные вне кавычек. 
+        Можно сопоставить их, используя переменные типа шаблона. 
+        Как и в обычном шаблоне, переменные типа записываются с использованием имен нижнего регистра.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">exprOptionToList</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Any</span><span>]])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Expr</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">Any</span><span>]]] =
+  </span><span class="identifier">x</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="type-name">Some</span><span>(</span><span class="identifier">$x</span><span>: </span><span class="identifier">t</span><span>) } =&gt;
+                </span><span class="comment">// ^^^ this binds the type `t` in the body of the case
+</span><span>      </span><span class="type-name">Some</span><span>(&#39;{ </span><span class="type-name">List</span><span>[</span><span class="identifier">t</span><span>](</span><span class="identifier">$x</span><span>) }) </span><span class="comment">// x: Expr[List[t]]
+</span><span>    </span><span class="keyword">case</span><span> &#39;{ </span><span class="type-name">None</span><span> } =&gt;
+      </span><span class="type-name">Some</span><span>(&#39;{ </span><span class="type-name">Nil</span><span> })
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span></code></pre>
+        <p>Шаблон <code>$x: t</code> будет соответствовать выражению любого типа и <code>t</code> будет привязан к типу шаблона. 
+        Эта переменная типа доступна только в правой части case. 
+        В этом примере переменная используется для построения списка <code>List[t]($x)</code>(<code>List($x)</code> тоже сработает). 
+        Поскольку это тип, который неизвестен статически, нужен <code>given Type[t]</code> в области видимости. 
+        К счастью, приведенный шаблон автоматически это предоставит.</p>
+        <p>Простой шаблон <code>case &#39;{ $expr: tpe } =&gt;</code> очень полезен, если необходимо знать точный тип выражения.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">expr</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Int</span><span>]] = ...
+</span><span class="identifier">expr</span><span> </span><span class="keyword">match</span><span>
+  </span><span class="keyword">case</span><span> &#39;{ </span><span class="identifier">$expr</span><span>: </span><span class="identifier">tpe</span><span> } =&gt;
+    </span><span class="type-name">Type</span><span>.</span><span class="identifier">show</span><span>[</span><span class="identifier">tpe</span><span>] </span><span class="comment">// could be: Option[Int], Some[Int], None, Option[1], Option[2], ...
+</span><span>    &#39;{ </span><span class="keyword">val</span><span> </span><span class="identifier">x</span><span>: </span><span class="identifier">tpe</span><span> = </span><span class="identifier">$expr</span><span>; </span><span class="identifier">x</span><span> } </span><span class="comment">// binds the value without widening the type
+</span><span>    ...</span></code></pre>
+        <p>В некоторых случаях необходимо определить переменную шаблона, 
+        на которую ссылаются несколько раз или имеющую некоторые ограничения типа. 
+        Для этого можно создать переменные шаблона в начале шаблона, используя <code>type t</code> переменную шаблона типа.</p>
+        <pre><code class="nohighlight"><span class="comment">/**
+ * Use: Converts a redundant `list.map(f).map(g)` to only use one call
+ * to `map`: `list.map(y =&gt; g(f(y)))`.
+ */</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">fuseMap</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">T</span><span>]])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Expr</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">T</span><span>]] = </span><span class="identifier">x</span><span> </span><span class="keyword">match</span><span> {
+  </span><span class="keyword">case</span><span> &#39;{
+    </span><span class="keyword">type</span><span> </span><span class="identifier">u</span><span>
+    </span><span class="keyword">type</span><span> </span><span class="identifier">v</span><span>
+    (</span><span class="identifier">$ls</span><span>: </span><span class="type-name">List</span><span>[</span><span class="identifier">`u`</span><span>])
+      .</span><span class="identifier">map</span><span>(</span><span class="identifier">$f</span><span>: </span><span class="identifier">`u`</span><span> =&gt; </span><span class="identifier">`v`</span><span>)
+      .</span><span class="identifier">map</span><span>(</span><span class="identifier">$g</span><span>: </span><span class="identifier">`v`</span><span> =&gt; </span><span class="type-name">T</span><span>)
+    } =&gt;
+    &#39;{ </span><span class="identifier">$ls</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">y</span><span> =&gt; </span><span class="identifier">$g</span><span>(</span><span class="identifier">$f</span><span>(</span><span class="identifier">y</span><span>))) }
+  </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; </span><span class="identifier">x</span><span>
+}</span></code></pre>
+        <p>Здесь определяются две переменные типа <code>u</code> и <code>v</code>, а затем к ним идет обращение. 
+        Обращение идет не напрямую <code>u</code> или <code>v</code> (без обратных кавычек), 
+        потому что они будут интерпретироваться как переменные нового типа с тем же именем переменной. 
+        Эта нотация следует обычному синтаксису 
+        <a href="https://www.scala-lang.org/files/archive/spec/2.13/08-pattern-matching.html#stable-identifier-patterns">шаблонов стабильных идентификаторов (stable identifier patterns)</a>. 
+        Кроме того, если переменная типа должна быть ограничена, 
+        можно добавить ограничения непосредственно к определению типа <code>case &#39;{ type u &lt;: AnyRef; ... } =&gt;:</code></p>
+        <p>Обратите внимание, что предыдущий случай также может быть записан как <code>case &#39;{ ($ls: List[u]).map[v]($f).map[T]($g) =&gt;</code>.</p>
+        
+        <h5 id="quote-types-patterns" class="section"><a class="anchor-link left" href="#quote-types-patterns"><i class="icofont-laika link">&#xef71;</i></a>Quote types patterns</h5>
+        <p>Типы, представленные с помощью <code>Type[T]</code>, можно сопоставить с помощью шаблона <code>case &#39;[...] =&gt;</code>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">mirrorFields</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>] =
+  </span><span class="type-name">Type</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">T</span><span>] </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> &#39;[</span><span class="identifier">field</span><span> *: </span><span class="identifier">fields</span><span>] =&gt;
+      </span><span class="type-name">Type</span><span>.</span><span class="identifier">show</span><span>[</span><span class="identifier">field</span><span>] :: </span><span class="identifier">mirrorFields</span><span>[</span><span class="identifier">fields</span><span>]
+    </span><span class="keyword">case</span><span> &#39;[</span><span class="type-name">EmptyTuple</span><span>] =&gt;
+      </span><span class="type-name">Nil</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt;
+      </span><span class="identifier">compiletime</span><span>.</span><span class="identifier">error</span><span>(</span><span class="string-literal">&quot;Expected known tuple but got: &quot;</span><span> + </span><span class="type-name">Type</span><span>.</span><span class="identifier">show</span><span>[</span><span class="type-name">T</span><span>])
+
+</span><span class="identifier">mirrorFields</span><span>[</span><span class="type-name">EmptyTuple</span><span>]         </span><span class="comment">// Nil
+</span><span class="identifier">mirrorFields</span><span>[(</span><span class="type-name">Int</span><span>, </span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>)] </span><span class="comment">// List(&quot;Int&quot;, &quot;String&quot;, &quot;Int&quot;)
+</span><span class="identifier">mirrorFields</span><span>[</span><span class="type-name">Tuple</span><span>]              </span><span class="comment">// error: Expected known tuple but got: Tuple</span></code></pre>
+        <p>Как и в случае выражений шаблонов в кавычках, переменные типа представлены с использованием имен нижнего регистра.</p>
+        
+        <h3 id="fromexpr" class="section"><a class="anchor-link left" href="#fromexpr"><i class="icofont-laika link">&#xef71;</i></a>FromExpr</h3>
+        <p>Методы <code>Expr.value</code>, <code>Expr.valueOrError</code> и <code>Expr.unapply</code> 
+        используют экземпляры <code>FromExpr</code> для извлечения значения, если это возможно.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">extension</span><span> [</span><span class="type-name">T</span><span>](</span><span class="identifier">expr</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>]):
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">value</span><span>(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>)(</span><span class="keyword">using</span><span> </span><span class="identifier">fromExpr</span><span>: </span><span class="type-name">FromExpr</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">Option</span><span>[</span><span class="type-name">T</span><span>] =
+    </span><span class="identifier">fromExpr</span><span>.</span><span class="identifier">unapply</span><span>(</span><span class="identifier">expr</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">valueOrError</span><span>(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>)(</span><span class="keyword">using</span><span> </span><span class="identifier">fromExpr</span><span>: </span><span class="type-name">FromExpr</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">T</span><span> =
+    </span><span class="identifier">fromExpr</span><span>.</span><span class="identifier">unapply</span><span>(</span><span class="identifier">expr</span><span>).</span><span class="identifier">getOrElse</span><span>(</span><span class="identifier">eport</span><span>.</span><span class="identifier">throwError</span><span>(</span><span class="string-literal">&quot;...&quot;</span><span>, </span><span class="identifier">expr</span><span>))
+</span><span class="identifier">end</span><span> </span><span class="identifier">extension</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Expr</span><span>:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">unapply</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">expr</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>)(</span><span class="keyword">using</span><span> </span><span class="identifier">fromExpr</span><span>: </span><span class="type-name">FromExpr</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">Option</span><span>[</span><span class="type-name">T</span><span>] =
+    </span><span class="identifier">fromExpr</span><span>.</span><span class="identifier">unapply</span><span>(</span><span class="identifier">expr</span><span>)</span></code></pre>
+        <p><code>FromExpr</code> определяется следующим образом:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">FromExpr</span><span>[</span><span class="type-name">T</span><span>]:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">unapply</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">T</span><span>]</span></code></pre>
+        <p>Метод <code>FromExpr.unapply</code> примет значение <code>x</code> и сгенерирует код, 
+        который создаст копию этого значения во время выполнения.</p>
+        <p>Можно определить собственные <code>FromExprs</code> следующим образом:</p>
+        <pre><code class="nohighlight"><span class="keyword">given</span><span> </span><span class="type-name">FromExpr</span><span>[</span><span class="type-name">Boolean</span><span>] </span><span class="keyword">with</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">unapply</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Boolean</span><span>])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Boolean</span><span>] =
+    </span><span class="identifier">x</span><span> </span><span class="keyword">match</span><span>
+      </span><span class="keyword">case</span><span> &#39;{ </span><span class="boolean-literal">true</span><span> } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="boolean-literal">true</span><span>)
+      </span><span class="keyword">case</span><span> &#39;{ </span><span class="boolean-literal">false</span><span> } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="boolean-literal">false</span><span>)
+      </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span><span>
+}
+
+</span><span class="keyword">given</span><span> </span><span class="type-name">FromExpr</span><span>[</span><span class="type-name">StringContext</span><span>] </span><span class="keyword">with</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">unapply</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">StringContext</span><span>])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">StringContext</span><span>] = </span><span class="identifier">x</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="keyword">new</span><span> </span><span class="type-name">StringContext</span><span>(</span><span class="identifier">$</span><span>{</span><span class="type-name">Varargs</span><span>(</span><span class="type-name">Exprs</span><span>(</span><span class="identifier">args</span><span>))}: </span><span class="identifier">_</span><span>*) } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="type-name">StringContext</span><span>(</span><span class="identifier">args</span><span>: </span><span class="identifier">_</span><span>*))
+    </span><span class="keyword">case</span><span> &#39;{     </span><span class="type-name">StringContext</span><span>(</span><span class="identifier">$</span><span>{</span><span class="type-name">Varargs</span><span>(</span><span class="type-name">Exprs</span><span>(</span><span class="identifier">args</span><span>))}: </span><span class="identifier">_</span><span>*) } =&gt; </span><span class="type-name">Some</span><span>(</span><span class="type-name">StringContext</span><span>(</span><span class="identifier">args</span><span>: </span><span class="identifier">_</span><span>*))
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span><span>
+  }
+}</span></code></pre>
+        <p>Стоит обратить внимание на то, что были рассмотрены два случая <code>StringContext</code>. 
+        Поскольку это объект <em>case class</em>, его можно создать 
+        с помощью <code>new StringContext</code> или <code>StringContext.apply</code> из объекта-компаньона. 
+        Также был использован <code>Varargs</code> экстрактор для сопоставления аргументов 
+        типа <code>Expr[Seq[String]]</code> с <code>Seq[Expr[String]]</code>. 
+        Затем был использован <code>Exprs</code>, чтобы сопоставить известные константы в <code>Seq[Expr[String]]</code> для получения <code>Seq[String]</code>.</p>
+        
+        <h3 id="цитаты" class="section"><a class="anchor-link left" href="#цитаты"><i class="icofont-laika link">&#xef71;</i></a>Цитаты</h3>
+        <p><code>Quotes</code> - основная точка входа для создания всех цитат. 
+        Этот контекст обычно просто передается через контекстные абстракции (<code>using</code> и <code>?=&gt;</code>). 
+        Каждая область цитаты будет иметь свой собственный <code>Quotes</code>. 
+        Новые области вводятся каждый раз, когда вводится соединение (<code>${ ... }</code>). 
+        Хотя кажется, что splice принимает выражение в качестве аргумента, на самом деле он принимает <code>Quotes ?=&gt; Expr[T]</code>. 
+        Следовательно, можно было бы написать это явно как <code>${ (using q) =&gt; ... }</code>. 
+        Это может быть полезно при отладке, чтобы избежать создания имен для этих областей.</p>
+        <p>Метод <code>scala.quoted.quotes</code> обеспечивает простой способ использования <code>Quotes</code> без его именования. 
+        Обычно он импортируется вместе с <code>Quotes</code> используя <code>import scala.quoted.*</code>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">$</span><span>{ (</span><span class="keyword">using</span><span> </span><span class="identifier">q1</span><span>) =&gt; </span><span class="identifier">body</span><span>(</span><span class="keyword">using</span><span> </span><span class="identifier">q1</span><span>) }
+</span><span class="comment">// equivalent to
+</span><span class="identifier">$</span><span>{ </span><span class="identifier">body</span><span>(</span><span class="keyword">using</span><span> </span><span class="identifier">quotes</span><span>) }</span></code></pre>
+        <p>Предупреждение: если вы явно назовете <code>Quotes</code> <code>quotes</code>, вы перетрёте это определение.</p>
+        <p>Когда пишется splice верхнего уровня в макросе, вызывается что-то похожее на следующее определение. 
+        Этот splice обеспечит начальное значение <code>Quotes</code>, связанное с расширением макроса.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">$</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">Quotes</span><span> ?=&gt; </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">T</span><span> = ...</span></code></pre>
+        <p>Когда есть splice внутри цитаты, внутренний контекст цитаты будет зависеть от внешнего. 
+        Эта ссылка представлена с использованием типа <code>Quotes.Nested</code>. 
+        Пользователям цитат почти никогда не понадобится использовать <code>Quotes.Nested</code>. 
+        Эти сведения полезны только для расширенных макросов, 
+        которые будут проверять код и могут столкнуться с деталями кавычек и splice-ов.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">f</span><span>(</span><span class="keyword">using</span><span> </span><span class="identifier">q1</span><span>: </span><span class="type-name">Quotes</span><span>) = &#39;{
+  </span><span class="identifier">$</span><span>{ (</span><span class="keyword">using</span><span> </span><span class="identifier">q2</span><span>: </span><span class="identifier">q1</span><span>.</span><span class="type-name">Nested</span><span>) ?=&gt;
+      ...
+  }
+}</span></code></pre>
+        <p>Можно представить, что вложенный splice подобен следующему методу, где <code>ctx</code> - контекст, полученный окружающей цитатой.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">$</span><span>[</span><span class="type-name">T</span><span>](</span><span class="keyword">using</span><span> </span><span class="identifier">q</span><span>: </span><span class="type-name">Quotes</span><span>)(</span><span class="identifier">x</span><span>: </span><span class="identifier">q</span><span>.</span><span class="type-name">Nested</span><span> ?=&gt; </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">T</span><span> = ...</span></code></pre>
+        
+        <h3 id="β-reduction" class="section"><a class="anchor-link left" href="#β-reduction"><i class="icofont-laika link">&#xef71;</i></a>β-reduction</h3>
+        <p>Когда есть лямбда, применяемая к аргументу в кавычке <code>&#39;{ ((x: Int) =&gt; x + x)(y) }</code>, 
+        она не уменьшается внутри кавычки; код сохраняется как есть. 
+        Существует оптимизация, которая будет β-редуцировать все лямбда-выражения, непосредственно применяемые к параметрам, 
+        чтобы избежать создания замыкания. 
+        Это не будет видно с точки зрения цитаты.</p>
+        <p>Иногда бывает полезно выполнить эту β-редукцию непосредственно на цитатах. 
+        Для этого используется функция <code>Expr.betaReduce[T]</code>, которая получает <code>Expr[T]</code> и β-редуцирует, 
+        если она непосредственно содержит применяемую лямбду.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Expr</span><span>.</span><span class="identifier">betaReduce</span><span>(&#39;{ ((</span><span class="identifier">x</span><span>: </span><span class="type-name">Int</span><span>) =&gt; </span><span class="identifier">x</span><span> + </span><span class="identifier">x</span><span>)(</span><span class="identifier">y</span><span>) }) </span><span class="comment">// returns &#39;{ val x = y; x + x }</span></code></pre>
+        
+        <h3 id="summon-values" class="section"><a class="anchor-link left" href="#summon-values"><i class="icofont-laika link">&#xef71;</i></a>Summon values</h3>
+        <p>Есть два способа вызвать значения в макросе.
+        Во-первых, использовать using параметр во встроенном методе, который явно передается реализации макроса.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">inline</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">setOf</span><span>[</span><span class="type-name">T</span><span>](</span><span class="keyword">using</span><span> </span><span class="identifier">ord</span><span>: </span><span class="type-name">Ordering</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">Set</span><span>[</span><span class="type-name">T</span><span>] =
+  </span><span class="identifier">$</span><span>{ </span><span class="identifier">setOfCode</span><span>[</span><span class="type-name">T</span><span>](</span><span class="symbol-literal">&#39;ord</span><span>) }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">setOfCode</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="identifier">ord</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Ordering</span><span>[</span><span class="type-name">T</span><span>]])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">T</span><span>]] =
+  &#39;{ </span><span class="type-name">TreeSet</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">T</span><span>](</span><span class="keyword">using</span><span> </span><span class="identifier">$ord</span><span>) }</span></code></pre>
+        <p>В этом случае параметр контекста обнаруживается до развертывания макроса. Если не найден, макрос не будет раскрыт.</p>
+        <p>Второй способ — использование <code>Expr.summon</code>. 
+        Это позволяет программно искать различные given выражения. 
+        Следующий пример аналогичен предыдущему примеру:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">inline</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">setOf</span><span>[</span><span class="type-name">T</span><span>]: </span><span class="type-name">Set</span><span>[</span><span class="type-name">T</span><span>] =
+  </span><span class="identifier">$</span><span>{ </span><span class="identifier">setOfCode</span><span>[</span><span class="type-name">T</span><span>] }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">setOfCode</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">T</span><span>]] =
+  </span><span class="type-name">Expr</span><span>.</span><span class="identifier">summon</span><span>[</span><span class="type-name">Ordering</span><span>[</span><span class="type-name">T</span><span>]] </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">ord</span><span>) =&gt; &#39;{ </span><span class="type-name">TreeSet</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">T</span><span>](</span><span class="keyword">using</span><span> </span><span class="identifier">$ord</span><span>) }
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; &#39;{ </span><span class="type-name">HashSet</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">T</span><span>] }</span></code></pre>
+        <p>Разница в том, что во втором сценарии макрос разворачивается перед выполнением неявного поиска. 
+        Поэтому можно написать произвольный код для обработки случая, когда элемент <code>Ordering[T]</code> не найден. 
+        Здесь используется <code>HashSet</code> вместо <code>TreeSet</code>, потому что первый не нуждается в <code>Ordering</code>.</p>
+        
+        <h3 id="цитатные-классы-типов" class="section"><a class="anchor-link left" href="#цитатные-классы-типов"><i class="icofont-laika link">&#xef71;</i></a>Цитатные классы типов</h3>
+        <p>В предыдущем примере было показано, как явно использовать класс типа <code>Expr[Ordering[T]]</code>, 
+        используя предложение аргумента <code>using</code>. 
+        Это хорошо, но не очень удобно, если нужно использовать класс типов несколько раз. 
+        Чтобы показать это, будем использовать функцию <code>powerCode</code>, 
+        которую можно использовать для любого числового типа.</p>
+        <p>Во-первых, может быть полезно сделать так, чтобы класс типа <code>Expr</code> мог сделать его given параметром. 
+        Для этого нужно явно указать <code>powerCode</code> в <code>power</code>, 
+        потому что есть given <code>Numeric[Num]</code>, но требуется <code>Expr[Numeric[Num]]</code>. 
+        Но тогда можно игнорировать его в <code>powerMacro</code> и в любом другом месте, которое только его передает.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">inline</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">power</span><span>[</span><span class="type-name">Num</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">Num</span><span>, </span><span class="identifier">inline</span><span> </span><span class="identifier">n</span><span>: </span><span class="type-name">Int</span><span>)(</span><span class="keyword">using</span><span> </span><span class="identifier">num</span><span>: </span><span class="type-name">Numeric</span><span>[</span><span class="type-name">Num</span><span>]) =
+  </span><span class="identifier">$</span><span>{ </span><span class="identifier">powerMacro</span><span>(</span><span class="symbol-literal">&#39;x</span><span>, </span><span class="symbol-literal">&#39;n</span><span>)(</span><span class="identifier">using</span><span> </span><span class="symbol-literal">&#39;num</span><span>) }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">powerMacro</span><span>[</span><span class="type-name">Num</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Num</span><span>], </span><span class="identifier">n</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Int</span><span>])(</span><span class="keyword">using</span><span> </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Numeric</span><span>[</span><span class="type-name">Num</span><span>]])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Num</span><span>] =
+  </span><span class="identifier">powerCode</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">n</span><span>.</span><span class="identifier">valueOrAbort</span><span>)</span></code></pre>
+        <p>Чтобы использовать этот класс типа, нужен given <code>Numeric[Num]</code>,но у нас есть <code>Expr[Numeric[Num]]</code>, 
+        и поэтому нужно склеить это выражение в сгенерированном коде. 
+        Чтобы сделать его доступным, можно просто соединить его с заданным определением.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">powerCode</span><span>[</span><span class="type-name">Num</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Num</span><span>], </span><span class="identifier">n</span><span>: </span><span class="type-name">Int</span><span>)(</span><span class="keyword">using</span><span> </span><span class="identifier">num</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Numeric</span><span>[</span><span class="type-name">Num</span><span>]])(</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Num</span><span>] =
+  </span><span class="keyword">if</span><span> (</span><span class="identifier">n</span><span> == </span><span class="number-literal">0</span><span>) &#39;{ </span><span class="identifier">$num</span><span>.</span><span class="identifier">one</span><span> }
+  </span><span class="keyword">else</span><span> </span><span class="keyword">if</span><span> (</span><span class="identifier">n</span><span> % </span><span class="number-literal">2</span><span> == </span><span class="number-literal">0</span><span>) &#39;{
+    </span><span class="keyword">given</span><span> </span><span class="type-name">Numeric</span><span>[</span><span class="type-name">Num</span><span>] = </span><span class="identifier">$num</span><span>
+    </span><span class="keyword">val</span><span> </span><span class="identifier">y</span><span> = </span><span class="identifier">$x</span><span> * </span><span class="identifier">$x</span><span>
+    </span><span class="identifier">$</span><span>{ </span><span class="identifier">powerCode</span><span>(</span><span class="symbol-literal">&#39;y</span><span>, </span><span class="identifier">n</span><span> / </span><span class="number-literal">2</span><span>) }
+  }
+  </span><span class="keyword">else</span><span> &#39;{
+    </span><span class="keyword">given</span><span> </span><span class="type-name">Numeric</span><span>[</span><span class="type-name">Num</span><span>] = </span><span class="identifier">$num</span><span>
+    </span><span class="identifier">$x</span><span> * </span><span class="identifier">$</span><span>{ </span><span class="identifier">powerCode</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">n</span><span> - </span><span class="number-literal">1</span><span>) }
+  }</span></code></pre>
+        <hr>
+        <p><strong>Ссылки:</strong></p>
+        <ul>
+          <li><a href="https://docs.scala-lang.org/scala3/guides/macros/quotes.html">Scala 3 Guide</a></li>
+          <li><a href="https://docs.scala-lang.org/scala3/reference/metaprogramming/macros.html">Scala 3 Reference</a></li>
+        </ul>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

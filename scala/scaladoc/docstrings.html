@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ru">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.0 + Helium Theme" />
+  <title>Документы</title>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  
+  <meta name="description" content="Функциональная разработка на Scala"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+  <script src="../../helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../">Домашняя</a></li>
+    <li class="level1 nav-header">Блог</li>
+    <li class="level2 nav-leaf"><a href="../../blog/2023-01-09-architecture-problems.html">Ошибки при наследовании</a></li>
+    <li class="level1 nav-header">Scala</li>
+    <li class="level2 nav-leaf"><a href="../">Обзор Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../getting-started.html">С чего начать?</a></li>
+    <li class="level2 nav-leaf"><a href="../hello_world.html">Hello, world!</a></li>
+    <li class="level2 nav-leaf"><a href="../repl.html">REPL</a></li>
+    <li class="level2 nav-leaf"><a href="../types.html">Типы данных</a></li>
+    <li class="level2 nav-leaf"><a href="../structures.html">Структуры управления</a></li>
+    <li class="level2 nav-header">Структуры управления</li>
+    <li class="level3 nav-leaf"><a href="../structures/ifelse.html">if/else</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/for.html">for</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/match.html">match expressions</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/others.html">while and try</a></li>
+    <li class="level2 nav-leaf"><a href="../modeling.html">Моделирование данных</a></li>
+    <li class="level2 nav-header">Моделирование данных</li>
+    <li class="level3 nav-leaf"><a href="../modeling/classes.html">Классы</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/objects.html">Объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/companion-objects.html">Сопутствующие объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/traits.html">Трейты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/abstract-class.html">Абстрактные классы</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/enums.html">Перечисления</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/case-class.html">Кейс классы и объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/oop.html">Моделирование ООП</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/fp.html">Моделирование ФП</a></li>
+    <li class="level2 nav-leaf"><a href="../methods.html">Методы</a></li>
+    <li class="level2 nav-header">Методы</li>
+    <li class="level3 nav-leaf"><a href="../methods/method-features.html">Определение методов</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/default-parameters.html">Параметры по умолчанию</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/named-parameters.html">Именованные параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/by-name-parameter.html">Параметры по имени</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/partially-applied-functions.html">Каррирование</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/vararg-parameters.html">Методы с неопределенным количеством параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/generic-parameter.html">Generic параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/extension-methods.html">Методы расширения</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/main-methods.html">main методы</a></li>
+    <li class="level2 nav-leaf"><a href="../functions.html">Функции</a></li>
+    <li class="level2 nav-header">Функции</li>
+    <li class="level3 nav-leaf"><a href="../functions/anonymous.html">Анонимные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/variables.html">Параметры функции</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/eta.html">Eta расширение</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/hofs.html">Функции высшего порядка</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/write-map.html">Написание своего собственного метода map</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/returns-function.html">Возврат функции в методе</a></li>
+    <li class="level2 nav-leaf"><a href="../packaging.html">Пакеты и импорт</a></li>
+    <li class="level2 nav-leaf"><a href="../toplevel-definitions.html">Верхнеуровневые определения</a></li>
+    <li class="level2 nav-leaf"><a href="../collections.html">Коллекции</a></li>
+    <li class="level2 nav-header">Коллекции</li>
+    <li class="level3 nav-leaf"><a href="../collections/classes.html">Типы коллекций</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/list.html">List</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/lazylist.html">LazyList</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/array-seq.html">ArraySeq</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/vector.html">Vector</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/array-buffer.html">ArrayBuffer</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/maps.html">Maps</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/set.html">Работа с множествами</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/range.html">Диапазон (Range)</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/tuple.html">Tuple (кортежи)</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/queue.html">Queue</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/methods.html">Методы в коллекциях</a></li>
+    <li class="level2 nav-leaf"><a href="../fp.html">Функциональное программирование</a></li>
+    <li class="level2 nav-header">ФП</li>
+    <li class="level3 nav-leaf"><a href="../fp/what-is-fp.html">Что такое функциональное программирование?</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/immutable-values.html">Неизменяемые значения</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/pure-functions.html">Чистые функции</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/functions-are-values.html">Функции - это значения</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/functional-error-handling.html">Функциональная обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../type-system.html">Система типов</a></li>
+    <li class="level2 nav-header">Система типов</li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-inferred.html">Определение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-generics.html">Generics типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/upper-type-bounds.html">Верхнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/lower-type-bounds.html">Нижнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-intersection.html">Пересечение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-union.html">Объединение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-adts.html">Алгебраические типы данных (ADT)</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-variance.html">Ковариантность типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-opaque.html">Непрозрачные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-structural.html">Структурные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-dependent-function.html">Зависимые типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/type-lambdas.html">Лямбда-типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/match-types.html">Типы match</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/polymorphic-function-types.html">Полиморфные типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-others.html">Другие типы</a></li>
+    <li class="level2 nav-leaf"><a href="../abstractions.html">Контекстуальные абстракции</a></li>
+    <li class="level2 nav-header">Абстракции</li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-given.html">Экземпляры given</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-using.html">Предложения using</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/type-classes.html">Класс типов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-context-bounds.html">Контекстные границы</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-given-imports.html">Given imports</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-extension-methods.html">Методы расширения - детали</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-type-classes.html">Имплементация type классов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-type-class-derivation.html">Type Class Derivation</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-multiversal-equality.html">Многостороннее равенство</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/context-functions.html">Контекстные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-implicit-conversions.html">Неявные преобразования типов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-by-name-parameters.html">Контекстные параметры по имени</a></li>
+    <li class="level2 nav-leaf"><a href="../details.html">Детали</a></li>
+    <li class="level2 nav-header">Детали</li>
+    <li class="level3 nav-leaf"><a href="../details/export-causes.html">Предложения export</a></li>
+    <li class="level3 nav-leaf"><a href="../details/parameter-untupling.html">Распаковка параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../details/type-test.html">Проверка типа</a></li>
+    <li class="level3 nav-leaf"><a href="../details/pattern-matching.html">Сопоставление с образцом</a></li>
+    <li class="level2 nav-leaf"><a href="../concurrency.html">Параллелизм</a></li>
+    <li class="level2 nav-leaf"><a href="../tools.html">Утилиты</a></li>
+    <li class="level2 nav-header">Утилиты</li>
+    <li class="level3 nav-leaf"><a href="../tools/tools-sbt.html">Сборка и тестирование проектов Scala с помощью Sbt</a></li>
+    <li class="level3 nav-leaf"><a href="../tools/tools-worksheets.html">Worksheet</a></li>
+    <li class="level2 nav-leaf"><a href="../with_java.html">Взаимодействие с Java</a></li>
+    <li class="level2 nav-leaf"><a href="../metaprogramming.html">Метапрограммирование</a></li>
+    <li class="level2 nav-header">Metaprogramming</li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/inline.html">Inline</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/compile-time-ops.html">Операции во время компиляции</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/macros.html">Макросы</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/quoted-code.html">Quoted Code</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/runtime-staging.html">Runtime Staging</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/reflection.html">Reflection</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/tasty-inspection.html">TASTy Inspection</a></li>
+    <li class="level2 nav-leaf"><a href="../soft-keywords.html">Soft Keywords</a></li>
+    <li class="level2 nav-leaf"><a href="../scaladoc.html">Scaladoc</a></li>
+    <li class="level2 nav-header">Scaladoc</li>
+    <li class="level3 active nav-leaf"><a href="#">Документы</a></li>
+    <li class="level3 nav-leaf"><a href="linking.html">Связующая документация</a></li>
+    <li class="level3 nav-leaf"><a href="static-site.html">Статическая документация</a></li>
+    <li class="level3 nav-leaf"><a href="blog.html">Встроенный блог</a></li>
+    <li class="level3 nav-leaf"><a href="site-versioning.html">Версионность сайта</a></li>
+    <li class="level3 nav-leaf"><a href="search-engine.html">Поиск по типу</a></li>
+    <li class="level3 nav-leaf"><a href="snippet-compiler.html">Проверка фрагмента</a></li>
+    <li class="level3 nav-leaf"><a href="settings.html">Настройки</a></li>
+    <li class="level1 nav-header">Функциональное программирование</li>
+    <li class="level2 nav-leaf"><a href="../../fp/">Функциональное программирование</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/data-structures.html">Функциональная структура данных</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/handling-errors.html">Обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/laziness.html">Ленивые вычисления</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/state.html">Функциональное состояние</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monoids.html">Monoids</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monads.html">Monads</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/writer.html">Функциональный журнал</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/non-empty-list.html">Непустой связанный список</a></li>
+    <li class="level1 nav-header">Теория категорий</li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/">Теория категорий</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/equal.html">Группа Equal</a></li>
+    <li class="level2 nav-header">Группа Equal</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/equal.html">Equal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/order.html">Order</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/enum.html">Enum</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/bounded.html">Bounded</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monoid.html">Группа Monoid</a></li>
+    <li class="level2 nav-header">Группа Monoid</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/semigroup.html">Semigroup</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/monoid.html">Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/band.html">Band</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/idempotent-monoid.html">Idempotent Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/group.html">Group</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monad.html">Группа Monad</a></li>
+    <li class="level2 nav-header">Группа Monad</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-functor.html">Invariant Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/functor.html">Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-applicative.html">Invariant Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/semigroupal.html">Semigroupal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/apply.html">Apply</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative.html">Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/bind.html">Bind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad.html">Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus.html">Plus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus-empty.html">PlusEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative-plus.html">ApplicativePlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-plus.html">MonadPlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/is-empty.html">IsEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/foldable.html">Foldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/traverse.html">Traverse</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/contravariant-functor.html">Контравариантный функтор</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divide.html">Divide</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divisible.html">Divisible</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-bind.html">CoBind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-monads.html">Co-Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-transformer.html">Monad Transformer</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/free-monads.html">Free Monad</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/arrow.html">Группа Arrow</a></li>
+    <li class="level2 nav-header">Группа Arrow</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/compose.html">Compose</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/category.html">Category</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/split.html">Split</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/profunctor.html">Profunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/strong.html">Strong</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/arrow.html">Arrow</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/bifunctor.html">Группа Bifunctor</a></li>
+    <li class="level2 nav-header">Группа Bifunctor</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifunctor.html">Bifunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifoldable.html">Bifoldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bitraverse.html">Bitraverse</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/other.html">Вне группы</a></li>
+    <li class="level2 nav-header">Вне группы</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/show.html">Show</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/read.html">Read</a></li>
+    <li class="level1 nav-header">Алгоритмы и структуры</li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/">Структуры данных и алгоритмы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/fundamental.html">Фундаментальные алгоритмы</a></li>
+    <li class="level2 nav-header">Фундаментальные алгоритмы</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/numerical.html">Численные алгоритмы</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/primes.html">Простые числа</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/fibonacci.html">Числа Фибоначчи</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/lists.html">Связанные списки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/arrays.html">Массивы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/stacks.html">Стеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/queues.html">Очереди</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/trees.html">Деревья</a></li>
+    <li class="level2 nav-header">Двоичное дерево</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/trees/binary-tree.html">Двоичное дерево</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/hash-tables.html">Хеш-таблицы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/sort.html">Сортировка</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/search.html">Поиск</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/graphs.html">Графы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/ackermann.html">Функция Аккермана</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/newton.html">Метод Ньютона</a></li>
+    <li class="level1 nav-header">Scala библиотеки</li>
+    <li class="level2 nav-leaf"><a href="../../libs/">Scala библиотеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/refined.html">Уточняющие типы в Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/cats-effect.html">Cats effect</a></li>
+    <li class="level2 nav-header">Cats effect</li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/copy-files.html">Копирование файлов</a></li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/producer-consumer-problem.html">Проблема производитель-потребитель — параллелизм и волокна</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/http4s.html">Http4s</a></li>
+    <li class="level1 nav-header">Паттерны проектирования</li>
+    <li class="level2 nav-leaf"><a href="../../patterns/">Паттерны проектирования</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/creational.html">Порождающие шаблоны</a></li>
+    <li class="level2 nav-header">Порождающие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/factory-method.html">Фабричный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/abstract-factory.html">Абстрактная фабрика</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/builder.html">Строитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/prototype.html">Прототип</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/singleton.html">Одиночка</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/structural.html">Структурные шаблоны</a></li>
+    <li class="level2 nav-header">Структурные шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/adapter.html">Адаптер</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/bridge.html">Мост</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/composite.html">Компоновщик</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/decorator.html">Декоратор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/facade.html">Фасад</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/flyweight.html">Приспособленец</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/proxy.html">Заместитель</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/behavioral.html">Поведенческие шаблоны</a></li>
+    <li class="level2 nav-header">Поведенческие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/interpreter.html">Интерпретатор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/template-method.html">Шаблонный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/chain-of-responsibility.html">Цепочка обязанностей</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/command.html">Команда</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/iterator.html">Итератор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/mediator.html">Посредник</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/memento.html">Хранитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/observer.html">Наблюдатель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/state.html">Состояние</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/strategy.html">Стратегия</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/visitor.html">Посетитель</a></li>
+    <li class="level1 nav-header">Упражнения из книг</li>
+    <li class="level2 nav-leaf"><a href="../../books/">Упражнения из книг</a></li>
+    <li class="level2 nav-header">Structure and Interpretation</li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/">Структура и интерпретация компьютерных программ</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_6.html">Глава 1.1.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_7.html">Глава 1.1.7</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_8.html">Глава 1.1.8</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_1.html">Глава 1.2.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_2.html">Глава 1.2.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_3.html">Глава 1.2.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_4.html">Глава 1.2.4</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_5.html">Глава 1.2.5</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_6.html">Глава 1.2.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_1.html">Глава 1.3.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_2.html">Глава 1.3.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_3.html">Глава 1.3.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_4.html">Глава 1.3.4</a></li>
+    <li class="level2 nav-header">Scala Puzzlers</li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/">Головоломки на Scala</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/hi-there.html">Hi There!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/upstairs.html">UPSTAIRS downstairs</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/location.html">Location, Location, Location</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/now-you-see-me.html">Now You See Me, Now You Don&#39;t</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-missing-list.html">The Missing List</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/arg-arrgh.html">Arg Arrgh!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/captured-by-closures.html">Captured by Closures</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/map-comprehension.html">Map Comprehension</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/init-you-init-me.html">Init You, Init Me</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-equality.html">A Case of Equality</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/if-at-first.html">If At First You Don&#39;t Succeed...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/to-map-or-not-to-map.html">To Map, or Not to Map</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/private-lives.html">Private Lives</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/self-see-self.html">Self - See &#39;Self&#39;</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-egg-or-two.html">One Egg or Two..?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/return-to-me.html">Return to Me!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/implicitly-surprising.html">Implicitly Surprising</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-bound-two-to-go.html">One Bound, Two to Go</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/count-me-now-count-me-later.html">Count Me Now, Count Me Later</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/whats-in-a-name.html">What&#39;s in a Name?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/i-can-has-padding.html">I Can Has Padding?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/cast-away.html">Cast Away</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/pick-an-int-any-int.html">Pick an Int, Any Int!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-string.html">A Case of Strings</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-view-to-a-shill.html">A View to a Shill</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/accepts-any-args.html">Accepts Any Args</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-devil-is-in-the-defaults.html">The Devil is in the Defaults</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-two-skip-a-few.html">One, Two, Skip a Few</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/oddly-enough.html">Oddly Enough</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/splitting-headache.html">Splitting Headache</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-result-finally.html">A Result, Finally!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/heads-you-win.html">Heads You Win...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/ex-stream-surprise.html">(Ex)Stream Surprise</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-matter-of-context.html">A Matter of Context</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/inference.html">Inference Hindrance</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/for-each-step.html">For Each Step...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/beep-beep-reversing.html">Beep Beep...Reversing</a></li>
+    <li class="level1 nav-leaf"><a href="../../extra.html">Дополнительные материалы</a></li>
+    <li class="level1 nav-header">Дополнительные материалы</li>
+    <li class="level2 nav-leaf"><a href="../../extra/one_star.html">✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/two_stars.html">✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/three_stars.html">✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/four_stars.html">✯✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/five_stars.html">✯✯✯✯✯</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Документы</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#куда-поместить-строки-документации">Куда поместить строки документации</a></li>
+    <li class="level1 nav-node"><a href="#теги">Теги</a></li>
+    <li class="level2 nav-leaf"><a href="#теги-специфичные-для-класса">Теги, специфичные для класса</a></li>
+    <li class="level2 nav-leaf"><a href="#теги-специфичные-для-метода">Теги, специфичные для метода</a></li>
+    <li class="level2 nav-leaf"><a href="#теги-метода-конструктора-и-или-класса">Теги метода, конструктора и/или класса</a></li>
+    <li class="level2 nav-leaf"><a href="#теги-использования">Теги использования</a></li>
+    <li class="level2 nav-leaf"><a href="#теги-группировки">Теги группировки</a></li>
+    <li class="level2 nav-leaf"><a href="#другие-теги">Другие теги</a></li>
+    <li class="level2 nav-leaf"><a href="#макросы">Макросы</a></li>
+    <li class="level2 nav-leaf"><a href="#явный">Явный</a></li>
+    <li class="level2 nav-node"><a href="#разметка">Разметка</a></li>
+    <li class="level3 nav-leaf"><a href="#markdown">Markdown</a></li>
+    <li class="level3 nav-leaf"><a href="#wikidoc">Wikidoc</a></li>
+    <li class="level2 nav-leaf"><a href="#другие-примечания-по-форматированию">Другие примечания по форматированию</a></li>
+    <li class="level1 nav-leaf"><a href="#связывание-с-api">Связывание с API</a></li>
+  </ul>
+
+  <p class="footer"><a href="https://github.com/artemkorsakov/scalabook/blob/master/docs/scala/scaladoc/docstrings.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Редактировать страницу</a></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="документы" class="title">Документы</h1>
+        <p>В этой главе описывается, как правильно писать строки документации и как использовать все доступные функции scaladoc.
+        Scaladoc расширяет возможности Markdown дополнительными функциями, такими как ссылки на определения API. 
+        Это можно использовать из статической документации и постов в блогах для создания смешиваемого контента.</p>
+        
+        <h3 id="куда-поместить-строки-документации" class="section"><a class="anchor-link left" href="#куда-поместить-строки-документации"><i class="icofont-laika link">&#xef71;</i></a>Куда поместить строки документации</h3>
+        <p>Комментарии Scaladoc идут перед элементами, к которым они относятся, 
+        в специальном блоке комментариев, который начинается с <code>/**</code> и заканчивается <code>*/</code>, например:</p>
+        <pre><code class="nohighlight"><span class="comment">/** Комментарий начинается здесь.
+  * Левая &quot;звезда&quot;, за которой следует пробел в каждой строке,
+  * позволяет продолжить комментарий.
+  *
+  * Даже на пустых строках разрыва абзаца.
+  *
+  * Обратите внимание, что &#39;*&#39; в каждой строке выровнена
+  * со вторым &#39;*&#39; в &#39;/**&#39; так, чтобы
+  * левое поле находилось в том же столбце, где
+  * первая строка и последующие.
+  *
+  * Комментарий закрывается с помощью &#39;*&#39; и обратного слэша.
+  *
+  * Если используются теги Scaladoc (@param, @group и т.д.),
+  * не забудьте поместить их в отдельные строки без предшествующих им строк.
+  *
+  * Например:
+  *
+  * Рассчитать квадрат заданного числа
+  *
+  * @param d the Double to square
+  * @return the result of squaring d
+  */</span><span>
+ </span><span class="keyword">def</span><span> </span><span class="declaration-name">square</span><span>(</span><span class="identifier">d</span><span>: </span><span class="type-name">Double</span><span>): </span><span class="type-name">Double</span><span> = </span><span class="identifier">d</span><span> * </span><span class="identifier">d</span></code></pre>
+        <p>В приведенном выше примере комментарий Scaladoc связан с методом <code>square</code>, 
+        поскольку он находится в исходном коде прямо перед ним.</p>
+        <p>Комментарии Scoladoc могут идти перед полями, методами, классами, трейтами, объектами. 
+        На данный момент scaladoc не поддерживает прямое решение для документирования пакетов. 
+        На гитхабе есть специальный <a href="https://github.com/lampepfl/dotty/issues/11284">issue</a>, 
+        где можно проверить текущий статус проблемы.</p>
+        <p>Для первичных конструкторов класса, которые в Scala совпадают с определением самого класса, 
+        тег @constructor используется для указания комментария, 
+        помещаемого в документацию первичных конструкторов, а не в обзор класса.</p>
+        
+        <h3 id="теги" class="section"><a class="anchor-link left" href="#теги"><i class="icofont-laika link">&#xef71;</i></a>Теги</h3>
+        <p>Scoladoc использует теги <code>@&lt;tagname&gt;</code> для предоставления определенных подробностей полей в комментариях. 
+        Теги включают:</p>
+        
+        <h4 id="теги-специфичные-для-класса" class="section"><a class="anchor-link left" href="#теги-специфичные-для-класса"><i class="icofont-laika link">&#xef71;</i></a>Теги, специфичные для класса</h4>
+        <ul>
+          <li><code>@constructor</code> помещенный в комментарий класса, будет описывать первичный конструктор.</li>
+        </ul>
+        
+        <h4 id="теги-специфичные-для-метода" class="section"><a class="anchor-link left" href="#теги-специфичные-для-метода"><i class="icofont-laika link">&#xef71;</i></a>Теги, специфичные для метода</h4>
+        <ul>
+          <li><code>@return</code> для детализации возвращаемого значения из метода (по одному на метод).</li>
+        </ul>
+        
+        <h4 id="теги-метода-конструктора-и-или-класса" class="section"><a class="anchor-link left" href="#теги-метода-конструктора-и-или-класса"><i class="icofont-laika link">&#xef71;</i></a>Теги метода, конструктора и/или класса</h4>
+        <ul>
+          <li><code>@throws</code> какие исключения (если есть) может генерировать метод или конструктор.</li>
+          <li><code>@param</code> детализация параметра метода или конструктора, 
+          предоставляется по одному <code>@param</code> для каждого параметра метода/конструктора.</li>
+          <li><code>@tparam</code> детализация параметра типа для метода, конструктора или класса. 
+          Указывается по одному для каждого параметра типа.</li>
+        </ul>
+        
+        <h4 id="теги-использования" class="section"><a class="anchor-link left" href="#теги-использования"><i class="icofont-laika link">&#xef71;</i></a>Теги использования</h4>
+        <ul>
+          <li><code>@see</code> ссылки на другие источники информации, такие как ссылки на внешние документы или связанные объекты в документации.</li>
+          <li><code>@note</code> добавление примечания о предварительных или последующих условиях или любых других заметных ограничениях или ожиданиях.</li>
+          <li><code>@example</code> предоставление примера кода или соответствующей документации.</li>
+        </ul>
+        
+        <h4 id="теги-группировки" class="section"><a class="anchor-link left" href="#теги-группировки"><i class="icofont-laika link">&#xef71;</i></a>Теги группировки</h4>
+        <p>Эти теги хорошо подходят для больших типов или пакетов со многими элементами. 
+        Они позволяют организовать страницу Scoladoc в отдельные разделы, 
+        каждый из которых отображается отдельно в выбранном порядке.</p>
+        <p>Эти теги не включены по умолчанию! 
+        Необходимо передать флаг <code>-groups</code> в Scaladoc, чтобы включить их. 
+        В sbt это обычно выглядит примерно так:</p>
+        <pre class="keep-together pdf epub"><code class="sbt">Compile / doc / scalacOptions ++= Seq(
+  &quot;-groups&quot;
+)</code></pre>
+        <p>Каждый раздел должен иметь идентификатор из одного слова, 
+        который используется во всех этих тегах, как показано ниже в <code>group</code>. 
+        По умолчанию этот идентификатор отображается как заголовок раздела документации, 
+        но можно использовать <code>@groupname</code>, чтобы указать более длинный заголовок.</p>
+        <p>Как правило, необходимо поместить <code>@groupprio</code> (и, возможно, <code>@groupname</code> и <code>@groupdesc</code>) в Scaladoc 
+        для самого пакета/trait/класса/объекта, описывая все группы и их порядок. 
+        Затем поместить <code>@group</code> в Scoladoc для каждого члена, указав, в какой группе он находится.</p>
+        <p>Члены, у которых нет тега <code>@group</code>, будут перечислены в результирующей документации как &quot;Ungrouped&quot;.</p>
+        <ul>
+          <li><code>@group &lt;group&gt;</code> - пометить сущность как члена <code>&lt;group&gt;</code> группы.</li>
+          <li><code>@groupname &lt;group&gt; &lt;name&gt;</code> - указание необязательного имени для группы. 
+          <code>&lt;name&gt;</code> отображается как заголовок группы перед её описанием.</li>
+          <li><code>@groupdesc &lt;group&gt; &lt;description&gt;</code> - добавление необязательного описания для отображения под именем группы. 
+          Поддерживает многострочный форматированный текст.</li>
+          <li><code>@groupprio &lt;group&gt; &lt;priority&gt;</code> - управление порядком группы на странице. По умолчанию 0. 
+          Несгруппированные элементы имеют неявный приоритет 1000. 
+          Используются значения от 0 до 999, чтобы задать положение относительно других групп. 
+          Низкие значения появятся перед высокими значениями.</li>
+        </ul>
+        
+        <h4 id="другие-теги" class="section"><a class="anchor-link left" href="#другие-теги"><i class="icofont-laika link">&#xef71;</i></a>Другие теги</h4>
+        <ul>
+          <li><code>@author</code> - предоставление информации об авторе для следующего объекта.</li>
+          <li><code>@version</code> - версия системы или API, частью которой является этот объект.</li>
+          <li><code>@since</code> - похож на <code>@version</code>, но определяет систему или API, в котором эта сущность была впервые определена.</li>
+          <li><code>@deprecated</code> - помечает объект как устаревший, 
+          предоставляя как замену реализации, которую следует использовать, 
+          так и версию/дату, когда этот объект устарел.</li>
+          <li><code>@syntax &lt;name&gt;</code> - позволяет изменить парсер для docstring. 
+          Синтаксис по умолчанию — markdown, однако можно изменить его с помощью этой директивы. 
+          В настоящее время доступны синтаксисы <code>markdown</code> или <code>wiki</code>. Пример использования: <code>@syntax wiki</code>.</li>
+        </ul>
+        
+        <h4 id="макросы" class="section"><a class="anchor-link left" href="#макросы"><i class="icofont-laika link">&#xef71;</i></a>Макросы</h4>
+        <ul>
+          <li><code>@define &lt;name&gt; &lt;definition&gt;</code> позволяет использовать <code>$name</code> в других комментариях Scaladoc в том же исходном файле, 
+          который будет заменен на <code>&lt;definition&gt;</code>.</li>
+        </ul>
+        <p>Если комментарий не предоставляется для объекта на текущем уровне наследования, 
+        но предоставляется для переопределенного объекта на более высоком уровне иерархии наследования, 
+        будет использоваться комментарий из суперкласса.</p>
+        <p>Аналогично, если <code>@param</code>, <code>@tparam</code>, <code>@return</code> и другие теги сущностей опущены, 
+        но доступны из суперкласса, эти комментарии будут использоваться.</p>
+        
+        <h4 id="явный" class="section"><a class="anchor-link left" href="#явный"><i class="icofont-laika link">&#xef71;</i></a>Явный</h4>
+        <p>Для явного наследования комментариев используется тег <code>@inheritdoc</code>.</p>
+        
+        <h4 id="разметка" class="section"><a class="anchor-link left" href="#разметка"><i class="icofont-laika link">&#xef71;</i></a>Разметка</h4>
+        <p>Scaladoc предоставляет два анализатора синтаксиса: <code>markdown</code> (по умолчанию) или <code>wikidoc</code>. 
+        В Scaladoc по-прежнему можно встраивать теги HTML (как и в Javadoc), 
+        но в большинстве случаев это не обязательно, поскольку вместо этого может использоваться разметка.</p>
+        
+        <h5 id="markdown" class="section"><a class="anchor-link left" href="#markdown"><i class="icofont-laika link">&#xef71;</i></a>Markdown</h5>
+        <p>Markdown использует <a href="https://spec.commonmark.org/0.30/">вариант commonmark</a> с двумя пользовательскими расширениями:</p>
+        <ul>
+          <li><code>wikidoc</code> - ссылки для удобства</li>
+          <li><code>wikidoc</code> - кодовые блоки с синтаксисом фигурных скобок</li>
+        </ul>
+        
+        <h5 id="wikidoc" class="section"><a class="anchor-link left" href="#wikidoc"><i class="icofont-laika link">&#xef71;</i></a>Wikidoc</h5>
+        <p>Wikidoc — это синтаксис, используемый для scala2 scaladoc. 
+        Он поддерживается из-за многих существующих исходных кодов, однако не рекомендуется его использование в новых проектах. 
+        Синтаксис вики можно включить с помощью глобального флага <code>-comment-syntax wiki</code> 
+        или с помощью <code>@syntax wiki</code> директивы в строке документации.</p>
+        <p>Некоторые из стандартных доступных разметки:</p>
+        <pre><code>`monospace`
+&#39;&#39;italic text&#39;&#39;
+&#39;&#39;&#39;bold text&#39;&#39;&#39;
+__underline__
+^superscript^
+,,subscript,,
+[[entity link]], e.g. [[scala.collection.Seq]]
+[[https://external.link External Link]], e.g. [[https://scala-lang.org Scala Language Site]]</code></pre>
+        
+        <h4 id="другие-примечания-по-форматированию" class="section"><a class="anchor-link left" href="#другие-примечания-по-форматированию"><i class="icofont-laika link">&#xef71;</i></a>Другие примечания по форматированию</h4>
+        <ul>
+          <li>Абзацы начинаются с одной (или нескольких) пустых строк. 
+          <code>*</code> на полях для комментария допустимо (и должно быть включено), но в противном случае строка должна быть пустой.</li>
+          <li>Заголовки определяются окружающими символами <code>=</code> с большим количеством <code>=</code> для обозначающих подзаголовков. 
+          Например <code>=Heading=</code>, <code>==Sub-Heading==</code> и т.д.</li>
+          <li>Блоки списка представляют собой последовательность элементов списка с одинаковым стилем и уровнем, 
+          без прерываний от других стилей блоков. 
+          Неупорядоченные списки можно маркировать с помощью <code>-</code>, 
+          нумерованные списки можно обозначать с помощью <code>1.</code>, <code>i.</code>, <code>I.</code> или <code>a.</code> для различных стилей нумерации. 
+          В обоих случаях должно быть дополнительное пространство впереди, а большее пространство создает подуровень.</li>
+        </ul>
+        <p>Разметка для блоков списка выглядит так:</p>
+        <pre><code>/** Вот неупорядоченный список:
+  *
+  *   - Первый элемент
+  *   - Второй элемент
+  *     - Подпункт ко второму
+  *     - Еще один подпункт
+  *   - Третий пункт
+  *
+  * Вот упорядоченный список:
+  *
+  *   1. Первый пронумерованный элемент
+  *   1. Второй номер позиции
+  *     i. Подпункт ко второму
+  *     i. Еще один подпункт
+  *   1. Третий пункт
+  */</code></pre>
+        
+        <h3 id="связывание-с-api" class="section"><a class="anchor-link left" href="#связывание-с-api"><i class="icofont-laika link">&#xef71;</i></a>Связывание с API</h3>
+        <p>Scaladoc позволяет ссылаться на документацию по API с помощью ссылок в стиле Wiki. 
+        Связать с <code>scala.collection.immutable.List</code> так же просто, как <code>[[scala.collection.immutable.List]]</code>. 
+        Для получения дополнительной информации о точном синтаксисе см. <a href="https://scalabook.gitflic.space/docs/scala/scaladoc/linking">Ссылки</a>.</p>
+        <hr>
+        <p><strong>Ссылки:</strong></p>
+        <ul>
+          <li><a href="https://docs.scala-lang.org/scala3/guides/scaladoc/docstrings.html">Scaladoc Guide</a></li>
+        </ul>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

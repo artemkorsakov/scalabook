@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="ru">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.0 + Helium Theme" />
+  <title>Type Class Derivation</title>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  
+  <meta name="description" content="Функциональная разработка на Scala"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+  <script src="../../helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../">Домашняя</a></li>
+    <li class="level1 nav-header">Блог</li>
+    <li class="level2 nav-leaf"><a href="../../blog/2023-01-09-architecture-problems.html">Ошибки при наследовании</a></li>
+    <li class="level1 nav-header">Scala</li>
+    <li class="level2 nav-leaf"><a href="../">Обзор Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../getting-started.html">С чего начать?</a></li>
+    <li class="level2 nav-leaf"><a href="../hello_world.html">Hello, world!</a></li>
+    <li class="level2 nav-leaf"><a href="../repl.html">REPL</a></li>
+    <li class="level2 nav-leaf"><a href="../types.html">Типы данных</a></li>
+    <li class="level2 nav-leaf"><a href="../structures.html">Структуры управления</a></li>
+    <li class="level2 nav-header">Структуры управления</li>
+    <li class="level3 nav-leaf"><a href="../structures/ifelse.html">if/else</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/for.html">for</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/match.html">match expressions</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/others.html">while and try</a></li>
+    <li class="level2 nav-leaf"><a href="../modeling.html">Моделирование данных</a></li>
+    <li class="level2 nav-header">Моделирование данных</li>
+    <li class="level3 nav-leaf"><a href="../modeling/classes.html">Классы</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/objects.html">Объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/companion-objects.html">Сопутствующие объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/traits.html">Трейты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/abstract-class.html">Абстрактные классы</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/enums.html">Перечисления</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/case-class.html">Кейс классы и объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/oop.html">Моделирование ООП</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/fp.html">Моделирование ФП</a></li>
+    <li class="level2 nav-leaf"><a href="../methods.html">Методы</a></li>
+    <li class="level2 nav-header">Методы</li>
+    <li class="level3 nav-leaf"><a href="../methods/method-features.html">Определение методов</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/default-parameters.html">Параметры по умолчанию</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/named-parameters.html">Именованные параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/by-name-parameter.html">Параметры по имени</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/partially-applied-functions.html">Каррирование</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/vararg-parameters.html">Методы с неопределенным количеством параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/generic-parameter.html">Generic параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/extension-methods.html">Методы расширения</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/main-methods.html">main методы</a></li>
+    <li class="level2 nav-leaf"><a href="../functions.html">Функции</a></li>
+    <li class="level2 nav-header">Функции</li>
+    <li class="level3 nav-leaf"><a href="../functions/anonymous.html">Анонимные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/variables.html">Параметры функции</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/eta.html">Eta расширение</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/hofs.html">Функции высшего порядка</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/write-map.html">Написание своего собственного метода map</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/returns-function.html">Возврат функции в методе</a></li>
+    <li class="level2 nav-leaf"><a href="../packaging.html">Пакеты и импорт</a></li>
+    <li class="level2 nav-leaf"><a href="../toplevel-definitions.html">Верхнеуровневые определения</a></li>
+    <li class="level2 nav-leaf"><a href="../collections.html">Коллекции</a></li>
+    <li class="level2 nav-header">Коллекции</li>
+    <li class="level3 nav-leaf"><a href="../collections/classes.html">Типы коллекций</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/list.html">List</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/lazylist.html">LazyList</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/array-seq.html">ArraySeq</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/vector.html">Vector</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/array-buffer.html">ArrayBuffer</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/maps.html">Maps</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/set.html">Работа с множествами</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/range.html">Диапазон (Range)</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/tuple.html">Tuple (кортежи)</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/queue.html">Queue</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/methods.html">Методы в коллекциях</a></li>
+    <li class="level2 nav-leaf"><a href="../fp.html">Функциональное программирование</a></li>
+    <li class="level2 nav-header">ФП</li>
+    <li class="level3 nav-leaf"><a href="../fp/what-is-fp.html">Что такое функциональное программирование?</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/immutable-values.html">Неизменяемые значения</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/pure-functions.html">Чистые функции</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/functions-are-values.html">Функции - это значения</a></li>
+    <li class="level3 nav-leaf"><a href="../fp/functional-error-handling.html">Функциональная обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../type-system.html">Система типов</a></li>
+    <li class="level2 nav-header">Система типов</li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-inferred.html">Определение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-generics.html">Generics типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/upper-type-bounds.html">Верхнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/lower-type-bounds.html">Нижнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-intersection.html">Пересечение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-union.html">Объединение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-adts.html">Алгебраические типы данных (ADT)</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-variance.html">Ковариантность типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-opaque.html">Непрозрачные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-structural.html">Структурные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-dependent-function.html">Зависимые типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/type-lambdas.html">Лямбда-типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/match-types.html">Типы match</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/polymorphic-function-types.html">Полиморфные типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-others.html">Другие типы</a></li>
+    <li class="level2 nav-leaf"><a href="../abstractions.html">Контекстуальные абстракции</a></li>
+    <li class="level2 nav-header">Абстракции</li>
+    <li class="level3 nav-leaf"><a href="ca-given.html">Экземпляры given</a></li>
+    <li class="level3 nav-leaf"><a href="ca-using.html">Предложения using</a></li>
+    <li class="level3 nav-leaf"><a href="type-classes.html">Класс типов</a></li>
+    <li class="level3 nav-leaf"><a href="ca-context-bounds.html">Контекстные границы</a></li>
+    <li class="level3 nav-leaf"><a href="ca-given-imports.html">Given imports</a></li>
+    <li class="level3 nav-leaf"><a href="ca-extension-methods.html">Методы расширения - детали</a></li>
+    <li class="level3 nav-leaf"><a href="ca-type-classes.html">Имплементация type классов</a></li>
+    <li class="level3 active nav-leaf"><a href="#">Type Class Derivation</a></li>
+    <li class="level3 nav-leaf"><a href="ca-multiversal-equality.html">Многостороннее равенство</a></li>
+    <li class="level3 nav-leaf"><a href="context-functions.html">Контекстные функции</a></li>
+    <li class="level3 nav-leaf"><a href="ca-implicit-conversions.html">Неявные преобразования типов</a></li>
+    <li class="level3 nav-leaf"><a href="ca-by-name-parameters.html">Контекстные параметры по имени</a></li>
+    <li class="level2 nav-leaf"><a href="../details.html">Детали</a></li>
+    <li class="level2 nav-header">Детали</li>
+    <li class="level3 nav-leaf"><a href="../details/export-causes.html">Предложения export</a></li>
+    <li class="level3 nav-leaf"><a href="../details/parameter-untupling.html">Распаковка параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../details/type-test.html">Проверка типа</a></li>
+    <li class="level3 nav-leaf"><a href="../details/pattern-matching.html">Сопоставление с образцом</a></li>
+    <li class="level2 nav-leaf"><a href="../concurrency.html">Параллелизм</a></li>
+    <li class="level2 nav-leaf"><a href="../tools.html">Утилиты</a></li>
+    <li class="level2 nav-header">Утилиты</li>
+    <li class="level3 nav-leaf"><a href="../tools/tools-sbt.html">Сборка и тестирование проектов Scala с помощью Sbt</a></li>
+    <li class="level3 nav-leaf"><a href="../tools/tools-worksheets.html">Worksheet</a></li>
+    <li class="level2 nav-leaf"><a href="../with_java.html">Взаимодействие с Java</a></li>
+    <li class="level2 nav-leaf"><a href="../metaprogramming.html">Метапрограммирование</a></li>
+    <li class="level2 nav-header">Metaprogramming</li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/inline.html">Inline</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/compile-time-ops.html">Операции во время компиляции</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/macros.html">Макросы</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/quoted-code.html">Quoted Code</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/runtime-staging.html">Runtime Staging</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/reflection.html">Reflection</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/tasty-inspection.html">TASTy Inspection</a></li>
+    <li class="level2 nav-leaf"><a href="../soft-keywords.html">Soft Keywords</a></li>
+    <li class="level2 nav-leaf"><a href="../scaladoc.html">Scaladoc</a></li>
+    <li class="level2 nav-header">Scaladoc</li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/docstrings.html">Документы</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/linking.html">Связующая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/static-site.html">Статическая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/blog.html">Встроенный блог</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/site-versioning.html">Версионность сайта</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/search-engine.html">Поиск по типу</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/snippet-compiler.html">Проверка фрагмента</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/settings.html">Настройки</a></li>
+    <li class="level1 nav-header">Функциональное программирование</li>
+    <li class="level2 nav-leaf"><a href="../../fp/">Функциональное программирование</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/data-structures.html">Функциональная структура данных</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/handling-errors.html">Обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/laziness.html">Ленивые вычисления</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/state.html">Функциональное состояние</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monoids.html">Monoids</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monads.html">Monads</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/writer.html">Функциональный журнал</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/non-empty-list.html">Непустой связанный список</a></li>
+    <li class="level1 nav-header">Теория категорий</li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/">Теория категорий</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/equal.html">Группа Equal</a></li>
+    <li class="level2 nav-header">Группа Equal</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/equal.html">Equal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/order.html">Order</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/enum.html">Enum</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/bounded.html">Bounded</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monoid.html">Группа Monoid</a></li>
+    <li class="level2 nav-header">Группа Monoid</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/semigroup.html">Semigroup</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/monoid.html">Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/band.html">Band</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/idempotent-monoid.html">Idempotent Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/group.html">Group</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monad.html">Группа Monad</a></li>
+    <li class="level2 nav-header">Группа Monad</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-functor.html">Invariant Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/functor.html">Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-applicative.html">Invariant Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/semigroupal.html">Semigroupal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/apply.html">Apply</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative.html">Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/bind.html">Bind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad.html">Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus.html">Plus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus-empty.html">PlusEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative-plus.html">ApplicativePlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-plus.html">MonadPlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/is-empty.html">IsEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/foldable.html">Foldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/traverse.html">Traverse</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/contravariant-functor.html">Контравариантный функтор</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divide.html">Divide</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divisible.html">Divisible</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-bind.html">CoBind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-monads.html">Co-Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-transformer.html">Monad Transformer</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/free-monads.html">Free Monad</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/arrow.html">Группа Arrow</a></li>
+    <li class="level2 nav-header">Группа Arrow</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/compose.html">Compose</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/category.html">Category</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/split.html">Split</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/profunctor.html">Profunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/strong.html">Strong</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/arrow.html">Arrow</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/bifunctor.html">Группа Bifunctor</a></li>
+    <li class="level2 nav-header">Группа Bifunctor</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifunctor.html">Bifunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifoldable.html">Bifoldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bitraverse.html">Bitraverse</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/other.html">Вне группы</a></li>
+    <li class="level2 nav-header">Вне группы</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/show.html">Show</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/read.html">Read</a></li>
+    <li class="level1 nav-header">Алгоритмы и структуры</li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/">Структуры данных и алгоритмы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/fundamental.html">Фундаментальные алгоритмы</a></li>
+    <li class="level2 nav-header">Фундаментальные алгоритмы</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/numerical.html">Численные алгоритмы</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/primes.html">Простые числа</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/fibonacci.html">Числа Фибоначчи</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/lists.html">Связанные списки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/arrays.html">Массивы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/stacks.html">Стеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/queues.html">Очереди</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/trees.html">Деревья</a></li>
+    <li class="level2 nav-header">Двоичное дерево</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/trees/binary-tree.html">Двоичное дерево</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/hash-tables.html">Хеш-таблицы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/sort.html">Сортировка</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/search.html">Поиск</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/graphs.html">Графы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/ackermann.html">Функция Аккермана</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/newton.html">Метод Ньютона</a></li>
+    <li class="level1 nav-header">Scala библиотеки</li>
+    <li class="level2 nav-leaf"><a href="../../libs/">Scala библиотеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/refined.html">Уточняющие типы в Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/cats-effect.html">Cats effect</a></li>
+    <li class="level2 nav-header">Cats effect</li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/copy-files.html">Копирование файлов</a></li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/producer-consumer-problem.html">Проблема производитель-потребитель — параллелизм и волокна</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/http4s.html">Http4s</a></li>
+    <li class="level1 nav-header">Паттерны проектирования</li>
+    <li class="level2 nav-leaf"><a href="../../patterns/">Паттерны проектирования</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/creational.html">Порождающие шаблоны</a></li>
+    <li class="level2 nav-header">Порождающие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/factory-method.html">Фабричный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/abstract-factory.html">Абстрактная фабрика</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/builder.html">Строитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/prototype.html">Прототип</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/singleton.html">Одиночка</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/structural.html">Структурные шаблоны</a></li>
+    <li class="level2 nav-header">Структурные шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/adapter.html">Адаптер</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/bridge.html">Мост</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/composite.html">Компоновщик</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/decorator.html">Декоратор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/facade.html">Фасад</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/flyweight.html">Приспособленец</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/proxy.html">Заместитель</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/behavioral.html">Поведенческие шаблоны</a></li>
+    <li class="level2 nav-header">Поведенческие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/interpreter.html">Интерпретатор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/template-method.html">Шаблонный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/chain-of-responsibility.html">Цепочка обязанностей</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/command.html">Команда</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/iterator.html">Итератор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/mediator.html">Посредник</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/memento.html">Хранитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/observer.html">Наблюдатель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/state.html">Состояние</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/strategy.html">Стратегия</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/visitor.html">Посетитель</a></li>
+    <li class="level1 nav-header">Упражнения из книг</li>
+    <li class="level2 nav-leaf"><a href="../../books/">Упражнения из книг</a></li>
+    <li class="level2 nav-header">Structure and Interpretation</li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/">Структура и интерпретация компьютерных программ</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_6.html">Глава 1.1.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_7.html">Глава 1.1.7</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_8.html">Глава 1.1.8</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_1.html">Глава 1.2.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_2.html">Глава 1.2.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_3.html">Глава 1.2.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_4.html">Глава 1.2.4</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_5.html">Глава 1.2.5</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_6.html">Глава 1.2.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_1.html">Глава 1.3.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_2.html">Глава 1.3.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_3.html">Глава 1.3.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_4.html">Глава 1.3.4</a></li>
+    <li class="level2 nav-header">Scala Puzzlers</li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/">Головоломки на Scala</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/hi-there.html">Hi There!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/upstairs.html">UPSTAIRS downstairs</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/location.html">Location, Location, Location</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/now-you-see-me.html">Now You See Me, Now You Don&#39;t</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-missing-list.html">The Missing List</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/arg-arrgh.html">Arg Arrgh!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/captured-by-closures.html">Captured by Closures</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/map-comprehension.html">Map Comprehension</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/init-you-init-me.html">Init You, Init Me</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-equality.html">A Case of Equality</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/if-at-first.html">If At First You Don&#39;t Succeed...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/to-map-or-not-to-map.html">To Map, or Not to Map</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/private-lives.html">Private Lives</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/self-see-self.html">Self - See &#39;Self&#39;</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-egg-or-two.html">One Egg or Two..?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/return-to-me.html">Return to Me!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/implicitly-surprising.html">Implicitly Surprising</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-bound-two-to-go.html">One Bound, Two to Go</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/count-me-now-count-me-later.html">Count Me Now, Count Me Later</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/whats-in-a-name.html">What&#39;s in a Name?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/i-can-has-padding.html">I Can Has Padding?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/cast-away.html">Cast Away</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/pick-an-int-any-int.html">Pick an Int, Any Int!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-string.html">A Case of Strings</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-view-to-a-shill.html">A View to a Shill</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/accepts-any-args.html">Accepts Any Args</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-devil-is-in-the-defaults.html">The Devil is in the Defaults</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-two-skip-a-few.html">One, Two, Skip a Few</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/oddly-enough.html">Oddly Enough</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/splitting-headache.html">Splitting Headache</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-result-finally.html">A Result, Finally!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/heads-you-win.html">Heads You Win...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/ex-stream-surprise.html">(Ex)Stream Surprise</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-matter-of-context.html">A Matter of Context</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/inference.html">Inference Hindrance</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/for-each-step.html">For Each Step...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/beep-beep-reversing.html">Beep Beep...Reversing</a></li>
+    <li class="level1 nav-leaf"><a href="../../extra.html">Дополнительные материалы</a></li>
+    <li class="level1 nav-header">Дополнительные материалы</li>
+    <li class="level2 nav-leaf"><a href="../../extra/one_star.html">✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/two_stars.html">✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/three_stars.html">✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/four_stars.html">✯✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/five_stars.html">✯✯✯✯✯</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Type Class Derivation</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#типы-вспомогательных-derives-предложений">Типы вспомогательных derives предложений</a></li>
+    <li class="level1 nav-node"><a href="#классы-типов-поддерживающие-автоматическую-деривиацию">Классы типов, поддерживающие автоматическую деривиацию</a></li>
+    <li class="level2 nav-leaf"><a href="#как-написать-метод-derived-класса-типов-используя-низкоуровневые-механизмы">Как написать метод derived класса типов, используя низкоуровневые механизмы</a></li>
+    <li class="level2 nav-leaf"><a href="#получение-экземпляров-в-другом-месте">Получение экземпляров в другом месте</a></li>
+    <li class="level2 nav-leaf"><a href="#как-написать-метод-derived-класса-типов-используя-макросы">Как написать метод derived класса типов, используя макросы</a></li>
+    <li class="level2 nav-leaf"><a href="#вызов-производного-метода-внутри-макроса">Вызов производного метода внутри макроса</a></li>
+  </ul>
+
+  <p class="footer"><a href="https://github.com/artemkorsakov/scalabook/blob/master/docs/scala/abstractions/ca-type-class-derivation.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Редактировать страницу</a></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="type-class-derivation" class="title">Type Class Derivation</h1>
+        <p>Type class derivation - это способ автоматического создания экземпляров <code>given</code> классов типов, 
+        которые удовлетворяют некоторым простым условиям. 
+        Класс типов в этом смысле — это любой trait 
+        или класс с параметром типа, определяющим тип, над которым выполняется операция. 
+        Общие примеры: <code>Eq</code>, <code>Ordering</code> или <code>Show</code>. 
+        Пример, для следующего алгебраического типа данных (ADT) <code>Tree</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">enum</span><span> </span><span class="type-name">Tree</span><span>[</span><span class="type-name">T</span><span>] </span><span class="keyword">derives</span><span> </span><span class="type-name">Eq</span><span>, </span><span class="type-name">Ordering</span><span>, </span><span class="type-name">Show</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Branch</span><span>(</span><span class="identifier">left</span><span>: </span><span class="type-name">Tree</span><span>[</span><span class="type-name">T</span><span>], </span><span class="identifier">right</span><span>: </span><span class="type-name">Tree</span><span>[</span><span class="type-name">T</span><span>])
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Leaf</span><span>(</span><span class="identifier">elem</span><span>: </span><span class="type-name">T</span><span>)</span></code></pre>
+        <p>Предложение <code>derives</code> создает следующие экземпляры <code>given</code> 
+        для классов типов <code>Eq</code>, <code>Ordering</code> и <code>Show</code> в сопутствующем объекте <code>Tree</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">given</span><span> [</span><span class="type-name">T</span><span>: </span><span class="type-name">Eq</span><span>]       : </span><span class="type-name">Eq</span><span>[</span><span class="type-name">Tree</span><span>[</span><span class="type-name">T</span><span>]]    = </span><span class="type-name">Eq</span><span>.</span><span class="identifier">derived</span><span>
+</span><span class="keyword">given</span><span> [</span><span class="type-name">T</span><span>: </span><span class="type-name">Ordering</span><span>] : </span><span class="type-name">Ordering</span><span>[</span><span class="type-name">Tree</span><span>] = </span><span class="type-name">Ordering</span><span>.</span><span class="identifier">derived</span><span>
+</span><span class="keyword">given</span><span> [</span><span class="type-name">T</span><span>: </span><span class="type-name">Show</span><span>]     : </span><span class="type-name">Show</span><span>[</span><span class="type-name">Tree</span><span>]     = </span><span class="type-name">Show</span><span>.</span><span class="identifier">derived</span></code></pre>
+        <p>Говорится, что <code>Tree</code> - это производный тип (<em>deriving type</em>), 
+        а экземпляры <code>Eq</code>, <code>Ordering</code> и <code>Show</code> являются производными экземплярами (<em>derived instances</em>).</p>
+        
+        <h3 id="типы-вспомогательных-derives-предложений" class="section"><a class="anchor-link left" href="#типы-вспомогательных-derives-предложений"><i class="icofont-laika link">&#xef71;</i></a>Типы вспомогательных derives предложений</h3>
+        <p>Все типы данных могут содержать предложение <code>derives</code>. 
+        В этом документе основное внимание уделяется типам данных, 
+        для которых также доступен given экземпляр класса типа <code>Mirror</code>. 
+        Экземпляры класса типа <code>Mirror</code> автоматически генерируются компилятором для,</p>
+        <ul>
+          <li>enums и enum cases</li>
+          <li>case classes и case objects</li>
+          <li>sealed классы или trait-ы, которые содержат в качестве потомков только case classes и case objects</li>
+        </ul>
+        <p>Экземпляры класса типа <code>Mirror</code> предоставляют информацию на уровне типа о компонентах и маркировке типа. 
+        Они также обеспечивают минимальную инфраструктуру уровня терминов, 
+        позволяющую библиотекам более высокого уровня обеспечивать всестороннюю поддержку деривации.</p>
+        <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Mirror</span><span>:
+
+  </span><span class="comment">/** the type being mirrored */</span><span>
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredType</span><span>
+
+  </span><span class="comment">/** the type of the elements of the mirrored type */</span><span>
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredElemTypes</span><span>
+
+  </span><span class="comment">/** The mirrored *-type */</span><span>
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredMonoType</span><span>
+
+  </span><span class="comment">/** The name of the type */</span><span>
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredLabel</span><span> &lt;: </span><span class="type-name">String</span><span>
+
+  </span><span class="comment">/** The names of the elements of the type */</span><span>
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredElemLabels</span><span> &lt;: </span><span class="type-name">Tuple</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Mirror</span><span>:
+
+  </span><span class="comment">/** The Mirror for a product type */</span><span>
+  </span><span class="keyword">trait</span><span> </span><span class="type-name">Product</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Mirror</span><span>:
+
+    </span><span class="comment">/** Create a new instance of type `T` with elements
+     *  taken from product `p`.
+     */</span><span>
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">fromProduct</span><span>(</span><span class="identifier">p</span><span>: </span><span class="identifier">scala</span><span>.</span><span class="type-name">Product</span><span>): </span><span class="type-name">MirroredMonoType</span><span>
+
+  </span><span class="keyword">trait</span><span> </span><span class="type-name">Sum</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Mirror</span><span>:
+
+    </span><span class="comment">/** The ordinal number of the case class of `x`.
+     *  For enums, `ordinal(x) == x.ordinal`
+     */</span><span>
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">ordinal</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">MirroredMonoType</span><span>): </span><span class="type-name">Int</span><span>
+
+</span><span class="identifier">end</span><span> </span><span class="type-name">Mirror</span></code></pre>
+        <p>Типы продуктов (т.е. case классы и case объекты, а также enum case) имеют зеркала, 
+        которые являются подтипами <code>Mirror.Product</code>. 
+        Типы суммы (т.е. закрытый (<code>sealed</code>) класс или trait-ы с дочерними продуктами и перечисления) имеют зеркала, 
+        которые являются подтипами <code>Mirror.Sum</code>.</p>
+        <p>Для <code>Tree</code> ADT, описанного выше, следующие экземпляры <code>Mirror</code> будут автоматически предоставлены компилятором:</p>
+        <pre><code class="nohighlight"><span class="comment">// Mirror for Tree
+</span><span class="keyword">new</span><span> </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">Sum</span><span>:
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredType</span><span> = </span><span class="type-name">Tree</span><span>
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredElemTypes</span><span>[</span><span class="type-name">T</span><span>] = (</span><span class="type-name">Branch</span><span>[</span><span class="type-name">T</span><span>], </span><span class="type-name">Leaf</span><span>[</span><span class="type-name">T</span><span>])
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredMonoType</span><span> = </span><span class="type-name">Tree</span><span>[</span><span class="identifier">_</span><span>]
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredLabel</span><span> = </span><span class="string-literal">&quot;Tree&quot;</span><span>
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredElemLabels</span><span> = (</span><span class="string-literal">&quot;Branch&quot;</span><span>, </span><span class="string-literal">&quot;Leaf&quot;</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">ordinal</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">MirroredMonoType</span><span>): </span><span class="type-name">Int</span><span> = </span><span class="identifier">x</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">Branch</span><span>[</span><span class="identifier">_</span><span>] =&gt; </span><span class="number-literal">0</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">Leaf</span><span>[</span><span class="identifier">_</span><span>] =&gt; </span><span class="number-literal">1</span><span>
+
+</span><span class="comment">// Mirror for Branch
+</span><span class="keyword">new</span><span> </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">Product</span><span>:
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredType</span><span> = </span><span class="type-name">Branch</span><span>
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredElemTypes</span><span>[</span><span class="type-name">T</span><span>] = (</span><span class="type-name">Tree</span><span>[</span><span class="type-name">T</span><span>], </span><span class="type-name">Tree</span><span>[</span><span class="type-name">T</span><span>])
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredMonoType</span><span> = </span><span class="type-name">Branch</span><span>[</span><span class="identifier">_</span><span>]
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredLabel</span><span> = </span><span class="string-literal">&quot;Branch&quot;</span><span>
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredElemLabels</span><span> = (</span><span class="string-literal">&quot;left&quot;</span><span>, </span><span class="string-literal">&quot;right&quot;</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">fromProduct</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Product</span><span>): </span><span class="type-name">MirroredMonoType</span><span> =
+    </span><span class="keyword">new</span><span> </span><span class="type-name">Branch</span><span>(...)
+
+</span><span class="comment">// Mirror for Leaf
+</span><span class="keyword">new</span><span> </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">Product</span><span>:
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredType</span><span> = </span><span class="type-name">Leaf</span><span>
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredElemTypes</span><span>[</span><span class="type-name">T</span><span>] = </span><span class="type-name">Tuple1</span><span>[</span><span class="type-name">T</span><span>]
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredMonoType</span><span> = </span><span class="type-name">Leaf</span><span>[</span><span class="identifier">_</span><span>]
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredLabel</span><span> = </span><span class="string-literal">&quot;Leaf&quot;</span><span>
+  </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredElemLabels</span><span> = </span><span class="type-name">Tuple1</span><span>[</span><span class="string-literal">&quot;elem&quot;</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">fromProduct</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">Product</span><span>): </span><span class="type-name">MirroredMonoType</span><span> =
+    </span><span class="keyword">new</span><span> </span><span class="type-name">Leaf</span><span>(...)</span></code></pre>
+        <p>Обратите внимание на следующие свойства типов <code>Mirror</code>:</p>
+        <ul>
+          <li>Свойства кодируются с использованием типов, а не терминов. 
+          Это означает, что они не влияют на время выполнения, если не используются, 
+          а также что они являются функцией времени компиляции для использования со средствами метапрограммирования Scala 3.</li>
+          <li>Типы <code>MirroredType</code> и <code>MirroredElemTypes</code> соответствуют типам данных, экземпляром которых является зеркало. 
+          Это позволяет <code>Mirrors</code> поддерживать ADT всех видов.</li>
+          <li>Нет отдельного типа представления для сумм или произведений 
+          (т.е. нет типа <code>HList</code> или <code>Coproduct</code>, как в версиях Shapeless для Scala 2). 
+          Вместо этого набор дочерних типов типа данных представлен обычным, возможно, параметризованным типом кортежа. 
+          Средства метапрограммирования Scala 3 можно использовать для работы с этими типами кортежей как есть, 
+          а поверх них можно создавать библиотеки более высокого уровня.</li>
+          <li>Как для типов произведения, так и для суммы, 
+          элементы <code>MirroredElemTypes</code> располагаются в порядке определения 
+          (т.е. <code>Branch[T]</code> предшествуют <code>Leaf[T]</code>, потому что они определены раньше в исходном файле). 
+          Это означает, что в этом отношении оно отличается от общего представления Shapeless для ADT в Scala 2, 
+          где конструкторы упорядочены в алфавитном порядке по именам.</li>
+          <li>Методы <code>ordinal</code> и <code>fromProduct</code> определяются в терминах того <code>MirroredMonoType</code>, 
+          который получается из <code>MirroredType</code> с подстановочными знаками в его параметрах типа.</li>
+        </ul>
+        
+        <h3 id="классы-типов-поддерживающие-автоматическую-деривиацию" class="section"><a class="anchor-link left" href="#классы-типов-поддерживающие-автоматическую-деривиацию"><i class="icofont-laika link">&#xef71;</i></a>Классы типов, поддерживающие автоматическую деривиацию</h3>
+        <p>Trait или класс могут появиться в предложении <code>derives</code>, 
+        если их сопутствующий объект определяет метод с именем <code>derived</code>. 
+        Сигнатура и реализация <code>derived</code> метода для класса типов <code>TC[_]</code> произвольны, 
+        но обычно имеют следующую форму:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">deriving</span><span>.</span><span class="type-name">Mirror</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">derived</span><span>[</span><span class="type-name">T</span><span>](</span><span class="keyword">using</span><span> </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">Of</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">TC</span><span>[</span><span class="type-name">T</span><span>] = ...</span></code></pre>
+        <p>То есть метод <code>derived</code> принимает контекстный параметр типа <code>Mirror</code> (некоторого подтипа), 
+        который определяет форму производного типа <code>T</code>, и вычисляет реализацию класса типа в соответствии с этой формой. 
+        Это все, что поставщик ADT с предложением <code>derives</code> должен знать о порождении экземпляра класса типов.</p>
+        <p>Обратите внимание, что методы <code>derived</code> могут косвенно иметь параметры контекста <code>Mirror</code> 
+        (например, иметь аргумент контекста, который, в свою очередь, имеет параметр контекста <code>Mirror</code>, 
+        или вообще не иметь 
+        (например, они могут использовать какой-то совершенно другой механизм, предоставленный пользователем, 
+        например, с помощью макросов Scala 3 или runtime reflection)).
+        Ожидается, что наиболее распространенными будут (прямые или непрямые) реализации <code>Mirror</code>.</p>
+        <p>Авторы классов типов, скорее всего, будут использовать производные библиотеки более высокого уровня 
+        или универсальные библиотеки программирования для реализации методов <code>derived</code>. 
+        Пример того, как метод <code>derived</code> может быть реализован с использованием только средств низкого уровня, описанных выше, 
+        и общих возможностей метапрограммирования Scala 3, приведен ниже. 
+        Не предполагается, что авторы классов типов обычно будут реализовывать метод <code>derived</code> таким образом, 
+        однако это пошаговое руководство можно рассматривать 
+        как руководство для авторов библиотек деривации более высокого уровня
+        (для полностью проработанного примера о такой библиотеке см. <a href="https://github.com/typelevel/shapeless-3">Shapeless 3</a>).</p>
+        
+        <h4 id="как-написать-метод-derived-класса-типов-используя-низкоуровневые-механизмы" class="section"><a class="anchor-link left" href="#как-написать-метод-derived-класса-типов-используя-низкоуровневые-механизмы"><i class="icofont-laika link">&#xef71;</i></a>Как написать метод derived класса типов, используя низкоуровневые механизмы</h4>
+        <p>Низкоуровневый метод, который будет использоваться для реализации метода <code>derived</code> класса типа в этом примере, 
+        использует три новые конструкции уровня типа в Scala 3: 
+        встроенные методы (<em>inline methods</em>), 
+        встроенные совпадения (<em>inline matches</em>)
+        и неявный поиск через <code>summonInline</code> или <code>summonFrom</code>. 
+        Учитывая это определение класса типа <code>Eq</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">Boolean</span></code></pre>
+        <p>нужно реализовать метод <code>Eq.derived</code> для сопутствующего объекта <code>Eq</code>, 
+        который создает экземпляр <code>given</code> для <code>Eq[T]</code> заданного <code>Mirror[T]</code>. 
+        Вот возможная реализация:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">deriving</span><span>.</span><span class="type-name">Mirror</span><span>
+
+</span><span class="identifier">inline</span><span> </span><span class="keyword">given</span><span> </span><span class="identifier">derived</span><span>[</span><span class="type-name">T</span><span>](</span><span class="keyword">using</span><span> </span><span class="identifier">m</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">Of</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>] =
+  </span><span class="keyword">val</span><span> </span><span class="identifier">elemInstances</span><span> = </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">m</span><span>.</span><span class="type-name">MirroredElemTypes</span><span>]           </span><span class="comment">// (1)
+</span><span>  </span><span class="identifier">inline</span><span> </span><span class="identifier">m</span><span> </span><span class="keyword">match</span><span>                                               </span><span class="comment">// (2)
+</span><span>    </span><span class="keyword">case</span><span> </span><span class="identifier">s</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">SumOf</span><span>[</span><span class="type-name">T</span><span>]     =&gt; </span><span class="identifier">eqSum</span><span>(</span><span class="identifier">s</span><span>, </span><span class="identifier">elemInstances</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">p</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">ProductOf</span><span>[</span><span class="type-name">T</span><span>] =&gt; </span><span class="identifier">eqProduct</span><span>(</span><span class="identifier">p</span><span>, </span><span class="identifier">elemInstances</span><span>)</span></code></pre>
+        <p>Обратите внимание, что <code>derived</code> определяется как <code>inline given</code>. 
+        Это означает, что метод будет расширен в местах вызова 
+        (например, компилятор сгенерировал определения экземпляров в сопутствующих объектах ADT, 
+        которые содержат <code>derived Eq</code> предложение), 
+        а также, что его можно будет использовать рекурсивно, если необходимо, 
+        для вычисления экземпляров для дочерних элементов.</p>
+        <p>Тело этого метода (1) сначала материализует экземпляры <code>Eq</code> для всех дочерних типов типа, 
+        для которого создается экземпляр. 
+        Это либо все ветви типа суммы, либо все поля типа продукта. 
+        Реализация <code>summonAll</code> - <code>inline</code> и использует конструкцию Scala 3 <code>summonInline</code> для сбора экземпляров в виде <code>List</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">inline</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">summonAll</span><span>[</span><span class="type-name">T</span><span> &lt;: </span><span class="type-name">Tuple</span><span>]: </span><span class="type-name">List</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="identifier">_</span><span>]] =
+  </span><span class="identifier">inline</span><span> </span><span class="identifier">erasedValue</span><span>[</span><span class="type-name">T</span><span>] </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">EmptyTuple</span><span> =&gt; </span><span class="type-name">Nil</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: (</span><span class="identifier">t</span><span> *: </span><span class="identifier">ts</span><span>) =&gt; </span><span class="identifier">summonInline</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="identifier">t</span><span>]] :: </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">ts</span><span>]</span></code></pre>
+        <p>с экземплярами для дочерних элементов метод <code>derived</code> использует <code>inline match</code> для отправки методов, 
+        которые могут создавать экземпляры либо для сумм, либо для произведений (2). 
+        Обратите внимание, что поскольку <code>derived</code> - <code>inline</code> совпадение будет разрешено во время компиляции, 
+        и только левая часть совпадающего случая будет встроена в сгенерированный код с уточненными типами, 
+        выявленными в результате совпадения.</p>
+        <p>В случае суммы, <code>eqSum</code>, используются <code>ordinal</code> runtime значения аргументов <code>eqv</code>, 
+        чтобы сначала проверить, относятся ли два значения к одному и тому же подтипу ADT (3), 
+        а затем, если подтипы совпадают, 
+        для дальнейшей проверки на равенство на основе экземпляра <code>Eq</code> 
+        для соответствующего подтипа ADT с помощью вспомогательного метода <code>check</code> (4).</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">deriving</span><span>.</span><span class="type-name">Mirror</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">eqSum</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">s</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">SumOf</span><span>[</span><span class="type-name">T</span><span>], </span><span class="identifier">elems</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="identifier">_</span><span>]]): </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]:
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">Boolean</span><span> =
+      </span><span class="keyword">val</span><span> </span><span class="identifier">ordx</span><span> = </span><span class="identifier">s</span><span>.</span><span class="identifier">ordinal</span><span>(</span><span class="identifier">x</span><span>)                            </span><span class="comment">// (3)
+</span><span>      (</span><span class="identifier">s</span><span>.</span><span class="identifier">ordinal</span><span>(</span><span class="identifier">y</span><span>) == </span><span class="identifier">ordx</span><span>) &amp;&amp; </span><span class="identifier">check</span><span>(</span><span class="identifier">elems</span><span>(</span><span class="identifier">ordx</span><span>))(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>) </span><span class="comment">// (4)</span></code></pre>
+        <p>В случае продукта <code>eqProduct</code> мы проверяем runtime значения аргументов <code>eqv</code> на равенство 
+        как продукты на основе экземпляров <code>Eq</code> для полей типа данных (5):</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">deriving</span><span>.</span><span class="type-name">Mirror</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">eqProduct</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">p</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">ProductOf</span><span>[</span><span class="type-name">T</span><span>], </span><span class="identifier">elems</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="identifier">_</span><span>]]): </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]:
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">Boolean</span><span> =
+      </span><span class="identifier">iterator</span><span>(</span><span class="identifier">x</span><span>).</span><span class="identifier">zip</span><span>(</span><span class="identifier">iterator</span><span>(</span><span class="identifier">y</span><span>)).</span><span class="identifier">zip</span><span>(</span><span class="identifier">elems</span><span>.</span><span class="identifier">iterator</span><span>).</span><span class="identifier">forall</span><span> {  </span><span class="comment">// (5)
+</span><span>        </span><span class="keyword">case</span><span> ((</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>), </span><span class="identifier">elem</span><span>) =&gt; </span><span class="identifier">check</span><span>(</span><span class="identifier">elem</span><span>)(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)
+      }</span></code></pre>
+        <p>Собрав все это вместе, получается следующая полная реализация:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">deriving</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">compiletime</span><span>.{</span><span class="identifier">erasedValue</span><span>, </span><span class="identifier">summonInline</span><span>}
+
+</span><span class="keyword">inline</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">summonAll</span><span>[</span><span class="type-name">T</span><span> &lt;: </span><span class="type-name">Tuple</span><span>]: </span><span class="type-name">List</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="identifier">_</span><span>]] =
+  </span><span class="identifier">inline</span><span> </span><span class="identifier">erasedValue</span><span>[</span><span class="type-name">T</span><span>] </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">EmptyTuple</span><span> =&gt; </span><span class="type-name">Nil</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: (</span><span class="identifier">t</span><span> *: </span><span class="identifier">ts</span><span>) =&gt; </span><span class="identifier">summonInline</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="identifier">t</span><span>]] :: </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">ts</span><span>]
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">Boolean</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Eq</span><span>:
+  </span><span class="keyword">given</span><span> </span><span class="type-name">Eq</span><span>[</span><span class="type-name">Int</span><span>] </span><span class="keyword">with</span><span>
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">Int</span><span>) = </span><span class="identifier">x</span><span> == </span><span class="identifier">y</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">check</span><span>(</span><span class="identifier">elem</span><span>: </span><span class="type-name">Eq</span><span>[</span><span class="identifier">_</span><span>])(</span><span class="identifier">x</span><span>: </span><span class="type-name">Any</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">Any</span><span>): </span><span class="type-name">Boolean</span><span> =
+    </span><span class="identifier">elem</span><span>.</span><span class="identifier">asInstanceOf</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="type-name">Any</span><span>]].</span><span class="identifier">eqv</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">iterator</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">p</span><span>: </span><span class="type-name">T</span><span>) = </span><span class="identifier">p</span><span>.</span><span class="identifier">asInstanceOf</span><span>[</span><span class="type-name">Product</span><span>].</span><span class="identifier">productIterator</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqSum</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">s</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">SumOf</span><span>[</span><span class="type-name">T</span><span>], </span><span class="identifier">elems</span><span>: =&gt; </span><span class="type-name">List</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="identifier">_</span><span>]]): </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>] =
+    </span><span class="keyword">new</span><span> </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]:
+      </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">Boolean</span><span> =
+        </span><span class="keyword">val</span><span> </span><span class="identifier">ordx</span><span> = </span><span class="identifier">s</span><span>.</span><span class="identifier">ordinal</span><span>(</span><span class="identifier">x</span><span>)
+        (</span><span class="identifier">s</span><span>.</span><span class="identifier">ordinal</span><span>(</span><span class="identifier">y</span><span>) == </span><span class="identifier">ordx</span><span>) &amp;&amp; </span><span class="identifier">check</span><span>(</span><span class="identifier">elems</span><span>(</span><span class="identifier">ordx</span><span>))(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqProduct</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">p</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">ProductOf</span><span>[</span><span class="type-name">T</span><span>], </span><span class="identifier">elems</span><span>: =&gt; </span><span class="type-name">List</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="identifier">_</span><span>]]): </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>] =
+    </span><span class="keyword">new</span><span> </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]:
+      </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">Boolean</span><span> =
+        </span><span class="identifier">iterator</span><span>(</span><span class="identifier">x</span><span>).</span><span class="identifier">zip</span><span>(</span><span class="identifier">iterator</span><span>(</span><span class="identifier">y</span><span>)).</span><span class="identifier">zip</span><span>(</span><span class="identifier">elems</span><span>.</span><span class="identifier">iterator</span><span>).</span><span class="identifier">forall</span><span> {
+          </span><span class="keyword">case</span><span> ((</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>), </span><span class="identifier">elem</span><span>) =&gt; </span><span class="identifier">check</span><span>(</span><span class="identifier">elem</span><span>)(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)
+        }
+
+  </span><span class="identifier">inline</span><span> </span><span class="keyword">given</span><span> </span><span class="identifier">derived</span><span>[</span><span class="type-name">T</span><span>](</span><span class="keyword">using</span><span> </span><span class="identifier">m</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">Of</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>] =
+    </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">elemInstances</span><span> = </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">m</span><span>.</span><span class="type-name">MirroredElemTypes</span><span>]
+    </span><span class="identifier">inline</span><span> </span><span class="identifier">m</span><span> </span><span class="keyword">match</span><span>
+      </span><span class="keyword">case</span><span> </span><span class="identifier">s</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">SumOf</span><span>[</span><span class="type-name">T</span><span>]     =&gt; </span><span class="identifier">eqSum</span><span>(</span><span class="identifier">s</span><span>, </span><span class="identifier">elemInstances</span><span>)
+      </span><span class="keyword">case</span><span> </span><span class="identifier">p</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">ProductOf</span><span>[</span><span class="type-name">T</span><span>] =&gt; </span><span class="identifier">eqProduct</span><span>(</span><span class="identifier">p</span><span>, </span><span class="identifier">elemInstances</span><span>)
+</span><span class="identifier">end</span><span> </span><span class="type-name">Eq</span></code></pre>
+        <p>Получившийся результат можно проверить относительно простого ADT, например:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">enum</span><span> </span><span class="type-name">Opt</span><span>[+</span><span class="type-name">T</span><span>] </span><span class="keyword">derives</span><span> </span><span class="type-name">Eq</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Sm</span><span>(</span><span class="identifier">t</span><span>: </span><span class="type-name">T</span><span>)
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Nn</span><span>
+
+</span><span class="annotation">@main</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">test</span><span>(): </span><span class="type-name">Unit</span><span> =
+  </span><span class="keyword">import</span><span> </span><span class="type-name">Opt</span><span>.*
+  </span><span class="keyword">val</span><span> </span><span class="identifier">eqoi</span><span> = </span><span class="identifier">summon</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="type-name">Opt</span><span>[</span><span class="type-name">Int</span><span>]]]
+  </span><span class="identifier">assert</span><span>(</span><span class="identifier">eqoi</span><span>.</span><span class="identifier">eqv</span><span>(</span><span class="type-name">Sm</span><span>(</span><span class="number-literal">23</span><span>), </span><span class="type-name">Sm</span><span>(</span><span class="number-literal">23</span><span>)))
+  </span><span class="identifier">assert</span><span>(!</span><span class="identifier">eqoi</span><span>.</span><span class="identifier">eqv</span><span>(</span><span class="type-name">Sm</span><span>(</span><span class="number-literal">23</span><span>), </span><span class="type-name">Sm</span><span>(</span><span class="number-literal">13</span><span>)))
+  </span><span class="identifier">assert</span><span>(!</span><span class="identifier">eqoi</span><span>.</span><span class="identifier">eqv</span><span>(</span><span class="type-name">Sm</span><span>(</span><span class="number-literal">23</span><span>), </span><span class="type-name">Nn</span><span>))</span></code></pre>
+        <p>В этом случае код, сгенерированный встроенным расширением для derived экземпляра <code>Eq</code> для <code>Opt</code>, 
+        после небольшой доработки выглядит следующим образом:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">given</span><span> </span><span class="identifier">derived$Eq</span><span>[</span><span class="type-name">T</span><span>](</span><span class="keyword">using</span><span> </span><span class="identifier">eqT</span><span>: </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">Eq</span><span>[</span><span class="type-name">Opt</span><span>[</span><span class="type-name">T</span><span>]] =
+  </span><span class="identifier">eqSum</span><span>(
+    </span><span class="identifier">summon</span><span>[</span><span class="type-name">Mirror</span><span>[</span><span class="type-name">Opt</span><span>[</span><span class="type-name">T</span><span>]]],
+    </span><span class="type-name">List</span><span>(
+      </span><span class="identifier">eqProduct</span><span>(</span><span class="identifier">summon</span><span>[</span><span class="type-name">Mirror</span><span>[</span><span class="type-name">Sm</span><span>[</span><span class="type-name">T</span><span>]]], </span><span class="type-name">List</span><span>(</span><span class="identifier">summon</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]])),
+      </span><span class="identifier">eqProduct</span><span>(</span><span class="identifier">summon</span><span>[</span><span class="type-name">Mirror</span><span>[</span><span class="type-name">Nn</span><span>.</span><span class="keyword">type</span><span>]], </span><span class="type-name">Nil</span><span>)
+    )
+  )</span></code></pre>
+        <p>Можно использовать альтернативные подходы к определению derived методов. 
+        Например, более агрессивно встроенные варианты с использованием макросов Scala 3, 
+        хотя и более используемы авторами классов типов, чем в приведенном выше примере, 
+        могут создавать код для классов типов наподобие <code>Eq</code>, который устраняет все артефакты абстракции 
+        (например, дочерние экземпляры <code>List</code>-а в приведенном выше примере)
+        и генерировать код, который неотличим от того, что программист мог бы написать вручную. 
+        В качестве третьего примера, используя библиотеку более высокого уровня, такую как Shapeless, 
+        автор класса типов может определить эквивалентный derived метод как:</p>
+        <pre><code class="nohighlight"><span class="keyword">given</span><span> </span><span class="identifier">eqSum</span><span>[</span><span class="type-name">A</span><span>](</span><span class="keyword">using</span><span> </span><span class="identifier">inst</span><span>: =&gt; </span><span class="type-name">K0</span><span>.</span><span class="type-name">CoproductInstances</span><span>[</span><span class="type-name">Eq</span><span>, </span><span class="type-name">A</span><span>]): </span><span class="type-name">Eq</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">with</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">inst</span><span>.</span><span class="identifier">fold2</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)(</span><span class="boolean-literal">false</span><span>)(
+    [</span><span class="identifier">t</span><span>] =&gt; (</span><span class="identifier">eqt</span><span>: </span><span class="type-name">Eq</span><span>[</span><span class="identifier">t</span><span>], </span><span class="identifier">t0</span><span>: </span><span class="identifier">t</span><span>, </span><span class="identifier">t1</span><span>: </span><span class="identifier">t</span><span>) =&gt; </span><span class="identifier">eqt</span><span>.</span><span class="identifier">eqv</span><span>(</span><span class="identifier">t0</span><span>, </span><span class="identifier">t1</span><span>)
+  )
+
+</span><span class="keyword">given</span><span> </span><span class="identifier">eqProduct</span><span>[</span><span class="type-name">A</span><span>](</span><span class="keyword">using</span><span> </span><span class="identifier">inst</span><span>: </span><span class="type-name">K0</span><span>.</span><span class="type-name">ProductInstances</span><span>[</span><span class="type-name">Eq</span><span>, </span><span class="type-name">A</span><span>]): </span><span class="type-name">Eq</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">with</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">inst</span><span>.</span><span class="identifier">foldLeft2</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)(</span><span class="boolean-literal">true</span><span>: </span><span class="type-name">Boolean</span><span>)(
+    [</span><span class="identifier">t</span><span>] =&gt; (</span><span class="identifier">acc</span><span>: </span><span class="type-name">Boolean</span><span>, </span><span class="identifier">eqt</span><span>: </span><span class="type-name">Eq</span><span>[</span><span class="identifier">t</span><span>], </span><span class="identifier">t0</span><span>: </span><span class="identifier">t</span><span>, </span><span class="identifier">t1</span><span>: </span><span class="identifier">t</span><span>) =&gt;
+      </span><span class="type-name">Complete</span><span>(!</span><span class="identifier">eqt</span><span>.</span><span class="identifier">eqv</span><span>(</span><span class="identifier">t0</span><span>, </span><span class="identifier">t1</span><span>))(</span><span class="boolean-literal">false</span><span>)(</span><span class="boolean-literal">true</span><span>)
+  )
+
+</span><span class="keyword">inline</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">derived</span><span>[</span><span class="type-name">A</span><span>](</span><span class="keyword">using</span><span> </span><span class="identifier">gen</span><span>: </span><span class="type-name">K0</span><span>.</span><span class="type-name">Generic</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Eq</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="identifier">gen</span><span>.</span><span class="identifier">derive</span><span>(</span><span class="identifier">eqProduct</span><span>, </span><span class="identifier">eqSum</span><span>)</span></code></pre>
+        <p>Описанная здесь структура позволяет использовать все три этих подхода, не навязывая ни один из них.</p>
+        
+        <h4 id="получение-экземпляров-в-другом-месте" class="section"><a class="anchor-link left" href="#получение-экземпляров-в-другом-месте"><i class="icofont-laika link">&#xef71;</i></a>Получение экземпляров в другом месте</h4>
+        <p>Иногда требуется создать экземпляр класса типов для ADT после того, как ADT определен, 
+        без возможности изменения кода самого ADT. 
+        Для этого просто определите экземпляр, используя метод <code>derived</code> класса типа в правой части. 
+        Например, для реализации <code>Ordering</code> для определения <code>Option</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">given</span><span> [</span><span class="type-name">T</span><span>: </span><span class="type-name">Ordering</span><span>]: </span><span class="type-name">Ordering</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">T</span><span>]] = </span><span class="type-name">Ordering</span><span>.</span><span class="identifier">derived</span></code></pre>
+        <p>Предполагая, что у метода <code>Ordering.derived</code> есть контекстный параметр типа <code>Mirror[T]</code>, 
+        сгенерированным компилятором экземпляр <code>Mirror</code> для <code>Option</code> будет достаточен, 
+        а вывод экземпляра будет расширен в правой части этого определения так же, 
+        как экземпляр, определенный в сопутствующих объектах ADT.</p>
+        
+        <h4 id="как-написать-метод-derived-класса-типов-используя-макросы" class="section"><a class="anchor-link left" href="#как-написать-метод-derived-класса-типов-используя-макросы"><i class="icofont-laika link">&#xef71;</i></a>Как написать метод derived класса типов, используя макросы</h4>
+        <p>Ниже демонстрируется, как реализовать derived метод класса типа, используя только макросы. 
+        Мы следуем тому же примеру deriving экземпляров <code>Eq</code> 
+        и для простоты поддерживаем тип <code>Product</code>, например класс case <code>Person</code>. 
+        Низкоуровневый метод, который будет использовать для реализации метода <code>derived</code>, 
+        использует кавычки, соединения как выражений, так и типов, 
+        а также <code>scala.quoted.Expr.summon</code> метод, эквивалентный методу <code>summonFrom</code>. 
+        Первый подходит для использования в контексте кавычек, используемых в макросах.</p>
+        <p>Как и в исходном коде, определение класса типа такое же:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">Boolean</span></code></pre>
+        <p>нам нужно реализовать метод <code>Eq.derived</code> для сопутствующего объекта <code>Eq</code>, 
+        который создает quoted экземпляр для <code>Eq[T]</code>. 
+        Вот возможная подпись:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">given</span><span> </span><span class="identifier">derived</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]]</span></code></pre>
+        <p>и для сравнения дадим ту же подпись, что и у нас с <code>inline</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">inline</span><span> </span><span class="keyword">given</span><span> </span><span class="identifier">derived</span><span>[</span><span class="type-name">T</span><span>]: (</span><span class="identifier">m</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">Of</span><span>[</span><span class="type-name">T</span><span>]) =&gt; </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>] = ???</span></code></pre>
+        <p>Обратите внимание, что поскольку тип используется на последующем этапе, его необходимо поднять до <code>Type</code> 
+        с помощью соответствующей привязки контекста. 
+        Кроме того, мы не можем вызвать quoted <code>Mirror</code> внутри тела <code>derived</code>, мы можем опустить его из подписи. 
+        Тело метода <code>derived</code> показано ниже:</p>
+        <pre><code class="nohighlight"><span class="keyword">given</span><span> </span><span class="identifier">derived</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]] =
+  </span><span class="keyword">import</span><span> </span><span class="identifier">quotes</span><span>.</span><span class="identifier">reflect</span><span>.*
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Mirror</span><span>.</span><span class="type-name">Of</span><span>[</span><span class="type-name">T</span><span>]] = </span><span class="type-name">Expr</span><span>.</span><span class="identifier">summon</span><span>[</span><span class="type-name">Mirror</span><span>.</span><span class="type-name">Of</span><span>[</span><span class="type-name">T</span><span>]].</span><span class="identifier">get</span><span>
+
+  </span><span class="identifier">ev</span><span> </span><span class="keyword">match</span><span>
+    </span><span class="keyword">case</span><span> &#39;{ </span><span class="identifier">$m</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">ProductOf</span><span>[</span><span class="type-name">T</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredElemTypes</span><span> = </span><span class="identifier">elementTypes</span><span> }} =&gt;
+      </span><span class="keyword">val</span><span> </span><span class="identifier">elemInstances</span><span> = </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">elementTypes</span><span>]
+      </span><span class="keyword">val</span><span> </span><span class="identifier">eqProductBody</span><span>: (</span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>], </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>]) =&gt; </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Boolean</span><span>] = (</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>) =&gt;
+        </span><span class="identifier">elemInstances</span><span>.</span><span class="identifier">zipWithIndex</span><span>.</span><span class="identifier">foldLeft</span><span>(</span><span class="type-name">Expr</span><span>(</span><span class="boolean-literal">true</span><span>: </span><span class="type-name">Boolean</span><span>)) {
+          </span><span class="keyword">case</span><span> (</span><span class="identifier">acc</span><span>, (</span><span class="identifier">elem</span><span>, </span><span class="identifier">index</span><span>)) =&gt;
+            </span><span class="keyword">val</span><span> </span><span class="identifier">e1</span><span> = &#39;{</span><span class="identifier">$x</span><span>.</span><span class="identifier">asInstanceOf</span><span>[</span><span class="type-name">Product</span><span>].</span><span class="identifier">productElement</span><span>(</span><span class="identifier">$</span><span>{</span><span class="type-name">Expr</span><span>(</span><span class="identifier">index</span><span>)})}
+            </span><span class="keyword">val</span><span> </span><span class="identifier">e2</span><span> = &#39;{</span><span class="identifier">$y</span><span>.</span><span class="identifier">asInstanceOf</span><span>[</span><span class="type-name">Product</span><span>].</span><span class="identifier">productElement</span><span>(</span><span class="identifier">$</span><span>{</span><span class="type-name">Expr</span><span>(</span><span class="identifier">index</span><span>)})}
+            &#39;{ </span><span class="identifier">$acc</span><span> &amp;&amp; </span><span class="identifier">$elem</span><span>.</span><span class="identifier">asInstanceOf</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="type-name">Any</span><span>]].</span><span class="identifier">eqv</span><span>(</span><span class="identifier">$e1</span><span>, </span><span class="identifier">$e2</span><span>) }
+        }
+
+      &#39;{ </span><span class="identifier">eqProduct</span><span>((</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>) =&gt; </span><span class="identifier">$</span><span>{</span><span class="identifier">eqProductBody</span><span>(</span><span class="symbol-literal">&#39;x</span><span>, </span><span class="symbol-literal">&#39;y</span><span>)}) }
+
+  </span><span class="comment">// case for Mirror.ProductOf[T]
+</span><span>  </span><span class="comment">// ...</span></code></pre>
+        <p>Обратите внимание, что в этом <code>inline</code> случае 
+        можно просто написать <code>summonAll[m.MirroredElemTypes]</code> внутри встроенного метода, 
+        но здесь, поскольку это необходимо <code>Expr.summon</code>, можно извлечь типы элементов в виде макроса. 
+        Находясь внутри макроса, нашей первой реакцией было бы написать приведенный ниже код. 
+        Поскольку путь внутри аргумента типа нестабилен, его нельзя использовать:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>&#39;{
+  </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">$m</span><span>.</span><span class="type-name">MirroredElemTypes</span><span>]
+}</span></code></pre>
+        <p>Вместо этого мы извлекаем тип кортежа для типов элементов, 
+        используя сопоставление с образцом по кавычкам и, более конкретно, уточненный тип:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> &#39;{ </span><span class="identifier">$m</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">ProductOf</span><span>[</span><span class="type-name">T</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredElemTypes</span><span> = </span><span class="identifier">elementTypes</span><span> }} =&gt; ...</span></code></pre>
+        <p>Ниже показана реализация <code>summonAll</code> в виде макроса. 
+        Предполагается, что given экземпляры для примитивных типов существуют.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">summonAll</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">Expr</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="identifier">_</span><span>]]] =
+   </span><span class="type-name">Type</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">T</span><span>] </span><span class="keyword">match</span><span>
+      </span><span class="keyword">case</span><span> &#39;[</span><span class="type-name">String</span><span> *: </span><span class="identifier">tpes</span><span>] =&gt; &#39;{ </span><span class="identifier">summon</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="type-name">String</span><span>]] } :: </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">tpes</span><span>]
+      </span><span class="keyword">case</span><span> &#39;[</span><span class="type-name">Int</span><span> *: </span><span class="identifier">tpes</span><span>]    =&gt; &#39;{ </span><span class="identifier">summon</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="type-name">Int</span><span>]] }    :: </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">tpes</span><span>]
+      </span><span class="keyword">case</span><span> &#39;[</span><span class="identifier">tpe</span><span> *: </span><span class="identifier">tpes</span><span>]    =&gt; </span><span class="identifier">derived</span><span>[</span><span class="identifier">tpe</span><span>] :: </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">tpes</span><span>]
+      </span><span class="keyword">case</span><span> &#39;[</span><span class="type-name">EmptyTuple</span><span>]     =&gt; </span><span class="type-name">Nil</span></code></pre>
+        <p>Еще одно отличие тела <code>derived</code> здесь от тела с <code>inline</code> заключается в том, 
+        что с макросами нужно синтезировать тело кода во время макрорасширения. 
+        Это обоснование функции <code>eqProductBody</code>. 
+        Предполагая, что мы вычисляем равенство двух <code>Persons</code>, определенных с case классом, 
+        который содержит имя типа <code>String</code> и возраст типа <code>Int</code>, 
+        проверка на равенство, которую хотим сгенерировать, выглядит следующим образом:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="boolean-literal">true</span><span>
+   &amp;&amp; </span><span class="type-name">Eq</span><span>[</span><span class="type-name">String</span><span>].</span><span class="identifier">eqv</span><span>(</span><span class="identifier">x</span><span>.</span><span class="identifier">productElement</span><span>(</span><span class="number-literal">0</span><span>),</span><span class="identifier">y</span><span>.</span><span class="identifier">productElement</span><span>(</span><span class="number-literal">0</span><span>))
+   &amp;&amp; </span><span class="type-name">Eq</span><span>[</span><span class="type-name">Int</span><span>].</span><span class="identifier">eqv</span><span>(</span><span class="identifier">x</span><span>.</span><span class="identifier">productElement</span><span>(</span><span class="number-literal">1</span><span>), </span><span class="identifier">y</span><span>.</span><span class="identifier">productElement</span><span>(</span><span class="number-literal">1</span><span>))</span></code></pre>
+        
+        <h4 id="вызов-производного-метода-внутри-макроса" class="section"><a class="anchor-link left" href="#вызов-производного-метода-внутри-макроса"><i class="icofont-laika link">&#xef71;</i></a>Вызов производного метода внутри макроса</h4>
+        <p>Следуя правилам <a href="https://scalabook.gitflic.space/docs/scala/metaprogramming">макросов</a>, мы создаем два метода. 
+        Первый, в котором размещается соединение верхнего уровня <code>eqv</code>, и второй - реализация. 
+        В качестве альтернативы показанного ниже, можно вызвать метод <code>eqv</code> напрямую. 
+        <code>eqGen</code> может вызвать деривацию.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">extension</span><span> [</span><span class="type-name">T</span><span>](</span><span class="identifier">inline</span><span> </span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>)
+   </span><span class="keyword">inline</span><span> </span><span class="keyword">def</span><span> === (</span><span class="identifier">inline</span><span> </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>)(</span><span class="keyword">using</span><span> </span><span class="identifier">eq</span><span>: </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">eq</span><span>.</span><span class="identifier">eqv</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)
+
+</span><span class="identifier">inline</span><span> </span><span class="keyword">given</span><span> </span><span class="identifier">eqGen</span><span>[</span><span class="type-name">T</span><span>]: </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>] = </span><span class="identifier">$</span><span>{ </span><span class="type-name">Eq</span><span>.</span><span class="identifier">derived</span><span>[</span><span class="type-name">T</span><span>] }</span></code></pre>
+        <p>Обратите внимание, что используется синтаксис inline метода, 
+        и можно сравнивать экземпляры, <code>Sm(Person(&quot;Test&quot;, 23)) === Sm(Person(&quot;Test&quot;, 24))</code>, например, для следующих двух типов:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Person</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">age</span><span>: </span><span class="type-name">Int</span><span>)
+
+</span><span class="keyword">enum</span><span> </span><span class="type-name">Opt</span><span>[+</span><span class="type-name">T</span><span>]:
+   </span><span class="keyword">case</span><span> </span><span class="type-name">Sm</span><span>(</span><span class="identifier">t</span><span>: </span><span class="type-name">T</span><span>)
+   </span><span class="keyword">case</span><span> </span><span class="type-name">Nn</span></code></pre>
+        <p>Полный код показан ниже:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">deriving</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">quoted</span><span>.*
+
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]:
+   </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">Boolean</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Eq</span><span>:
+   </span><span class="keyword">given</span><span> </span><span class="type-name">Eq</span><span>[</span><span class="type-name">String</span><span>] </span><span class="keyword">with</span><span>
+      </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">String</span><span>) = </span><span class="identifier">x</span><span> == </span><span class="identifier">y</span><span>
+
+   </span><span class="keyword">given</span><span> </span><span class="type-name">Eq</span><span>[</span><span class="type-name">Int</span><span>] </span><span class="keyword">with</span><span>
+      </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">Int</span><span>) = </span><span class="identifier">x</span><span> == </span><span class="identifier">y</span><span>
+
+   </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqProduct</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">body</span><span>: (</span><span class="type-name">T</span><span>, </span><span class="type-name">T</span><span>) =&gt; </span><span class="type-name">Boolean</span><span>): </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>] =
+      </span><span class="keyword">new</span><span> </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]:
+         </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">body</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)
+
+   </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqSum</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">body</span><span>: (</span><span class="type-name">T</span><span>, </span><span class="type-name">T</span><span>) =&gt; </span><span class="type-name">Boolean</span><span>): </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>] =
+      </span><span class="keyword">new</span><span> </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]:
+         </span><span class="keyword">def</span><span> </span><span class="declaration-name">eqv</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">body</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)
+
+   </span><span class="keyword">def</span><span> </span><span class="declaration-name">summonAll</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="keyword">using</span><span> </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">Expr</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="identifier">_</span><span>]]] =
+      </span><span class="type-name">Type</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">T</span><span>] </span><span class="keyword">match</span><span>
+         </span><span class="keyword">case</span><span> &#39;[</span><span class="type-name">String</span><span> *: </span><span class="identifier">tpes</span><span>] =&gt; &#39;{ </span><span class="identifier">summon</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="type-name">String</span><span>]] } :: </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">tpes</span><span>]
+         </span><span class="keyword">case</span><span> &#39;[</span><span class="type-name">Int</span><span> *: </span><span class="identifier">tpes</span><span>]    =&gt; &#39;{ </span><span class="identifier">summon</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="type-name">Int</span><span>]] }    :: </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">tpes</span><span>]
+         </span><span class="keyword">case</span><span> &#39;[</span><span class="identifier">tpe</span><span> *: </span><span class="identifier">tpes</span><span>]    =&gt; </span><span class="identifier">derived</span><span>[</span><span class="identifier">tpe</span><span>] :: </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">tpes</span><span>]
+         </span><span class="keyword">case</span><span> &#39;[</span><span class="type-name">EmptyTuple</span><span>]     =&gt; </span><span class="type-name">Nil</span><span>
+
+   </span><span class="keyword">given</span><span> </span><span class="identifier">derived</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Type</span><span>](</span><span class="keyword">using</span><span> </span><span class="identifier">q</span><span>: </span><span class="type-name">Quotes</span><span>): </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]] =
+      </span><span class="keyword">import</span><span> </span><span class="identifier">quotes</span><span>.</span><span class="identifier">reflect</span><span>.*
+
+      </span><span class="keyword">val</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Mirror</span><span>.</span><span class="type-name">Of</span><span>[</span><span class="type-name">T</span><span>]] = </span><span class="type-name">Expr</span><span>.</span><span class="identifier">summon</span><span>[</span><span class="type-name">Mirror</span><span>.</span><span class="type-name">Of</span><span>[</span><span class="type-name">T</span><span>]].</span><span class="identifier">get</span><span>
+
+      </span><span class="identifier">ev</span><span> </span><span class="keyword">match</span><span>
+         </span><span class="keyword">case</span><span> &#39;{ </span><span class="identifier">$m</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">ProductOf</span><span>[</span><span class="type-name">T</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredElemTypes</span><span> = </span><span class="identifier">elementTypes</span><span> }} =&gt;
+            </span><span class="keyword">val</span><span> </span><span class="identifier">elemInstances</span><span> = </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">elementTypes</span><span>]
+            </span><span class="keyword">val</span><span> </span><span class="identifier">eqProductBody</span><span>: (</span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>], </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>]) =&gt; </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Boolean</span><span>] = (</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>) =&gt;
+               </span><span class="identifier">elemInstances</span><span>.</span><span class="identifier">zipWithIndex</span><span>.</span><span class="identifier">foldLeft</span><span>(</span><span class="type-name">Expr</span><span>(</span><span class="boolean-literal">true</span><span>: </span><span class="type-name">Boolean</span><span>)) {
+                  </span><span class="keyword">case</span><span> (</span><span class="identifier">acc</span><span>, (</span><span class="identifier">elem</span><span>, </span><span class="identifier">index</span><span>)) =&gt;
+                     </span><span class="keyword">val</span><span> </span><span class="identifier">e1</span><span> = &#39;{</span><span class="identifier">$x</span><span>.</span><span class="identifier">asInstanceOf</span><span>[</span><span class="type-name">Product</span><span>].</span><span class="identifier">productElement</span><span>(</span><span class="identifier">$</span><span>{</span><span class="type-name">Expr</span><span>(</span><span class="identifier">index</span><span>)})}
+                     </span><span class="keyword">val</span><span> </span><span class="identifier">e2</span><span> = &#39;{</span><span class="identifier">$y</span><span>.</span><span class="identifier">asInstanceOf</span><span>[</span><span class="type-name">Product</span><span>].</span><span class="identifier">productElement</span><span>(</span><span class="identifier">$</span><span>{</span><span class="type-name">Expr</span><span>(</span><span class="identifier">index</span><span>)})}
+
+                     &#39;{ </span><span class="identifier">$acc</span><span> &amp;&amp; </span><span class="identifier">$elem</span><span>.</span><span class="identifier">asInstanceOf</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="type-name">Any</span><span>]].</span><span class="identifier">eqv</span><span>(</span><span class="identifier">$e1</span><span>, </span><span class="identifier">$e2</span><span>) }
+               }
+            &#39;{ </span><span class="identifier">eqProduct</span><span>((</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>) =&gt; </span><span class="identifier">$</span><span>{</span><span class="identifier">eqProductBody</span><span>(</span><span class="symbol-literal">&#39;x</span><span>, </span><span class="symbol-literal">&#39;y</span><span>)}) }
+
+         </span><span class="keyword">case</span><span> &#39;{ </span><span class="identifier">$m</span><span>: </span><span class="type-name">Mirror</span><span>.</span><span class="type-name">SumOf</span><span>[</span><span class="type-name">T</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">MirroredElemTypes</span><span> = </span><span class="identifier">elementTypes</span><span> }} =&gt;
+            </span><span class="keyword">val</span><span> </span><span class="identifier">elemInstances</span><span> = </span><span class="identifier">summonAll</span><span>[</span><span class="identifier">elementTypes</span><span>]
+            </span><span class="keyword">val</span><span> </span><span class="identifier">eqSumBody</span><span>: (</span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>], </span><span class="type-name">Expr</span><span>[</span><span class="type-name">T</span><span>]) =&gt; </span><span class="type-name">Expr</span><span>[</span><span class="type-name">Boolean</span><span>] = (</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>) =&gt;
+               </span><span class="keyword">val</span><span> </span><span class="identifier">ordx</span><span> = &#39;{ </span><span class="identifier">$m</span><span>.</span><span class="identifier">ordinal</span><span>(</span><span class="identifier">$x</span><span>) }
+               </span><span class="keyword">val</span><span> </span><span class="identifier">ordy</span><span> = &#39;{ </span><span class="identifier">$m</span><span>.</span><span class="identifier">ordinal</span><span>(</span><span class="identifier">$y</span><span>) }
+
+               </span><span class="keyword">val</span><span> </span><span class="identifier">elements</span><span> = </span><span class="type-name">Expr</span><span>.</span><span class="identifier">ofList</span><span>(</span><span class="identifier">elemInstances</span><span>)
+               &#39;{ </span><span class="identifier">$ordx</span><span> == </span><span class="identifier">$ordy</span><span> &amp;&amp; </span><span class="identifier">$elements</span><span>(</span><span class="identifier">$ordx</span><span>).</span><span class="identifier">asInstanceOf</span><span>[</span><span class="type-name">Eq</span><span>[</span><span class="type-name">Any</span><span>]].</span><span class="identifier">eqv</span><span>(</span><span class="identifier">$x</span><span>, </span><span class="identifier">$y</span><span>) }
+
+         &#39;{ </span><span class="identifier">eqSum</span><span>((</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>) =&gt; </span><span class="identifier">$</span><span>{</span><span class="identifier">eqSumBody</span><span>(</span><span class="symbol-literal">&#39;x</span><span>, </span><span class="symbol-literal">&#39;y</span><span>)}) }
+   </span><span class="identifier">end</span><span> </span><span class="identifier">derived</span><span>
+</span><span class="identifier">end</span><span> </span><span class="type-name">Eq</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Macro3</span><span>:
+   </span><span class="keyword">extension</span><span> [</span><span class="type-name">T</span><span>](</span><span class="identifier">inline</span><span> </span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>)
+      </span><span class="keyword">inline</span><span> </span><span class="keyword">def</span><span> === (</span><span class="identifier">inline</span><span> </span><span class="identifier">y</span><span>: </span><span class="type-name">T</span><span>)(</span><span class="keyword">using</span><span> </span><span class="identifier">eq</span><span>: </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">eq</span><span>.</span><span class="identifier">eqv</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)
+
+   </span><span class="identifier">inline</span><span> </span><span class="keyword">given</span><span> </span><span class="identifier">eqGen</span><span>[</span><span class="type-name">T</span><span>]: </span><span class="type-name">Eq</span><span>[</span><span class="type-name">T</span><span>] = </span><span class="identifier">$</span><span>{ </span><span class="type-name">Eq</span><span>.</span><span class="identifier">derived</span><span>[</span><span class="type-name">T</span><span>] }</span></code></pre>
+        <hr>
+        <p><strong>Ссылки:</strong></p>
+        <ul>
+          <li><a href="https://docs.scala-lang.org/scala3/reference/contextual/derivation.html">Scala 3 Reference</a></li>
+          <li><a href="https://docs.scala-lang.org/scala3/reference/contextual/derivation-macro.html">Scala 3 Reference, Derivation macros</a></li>
+        </ul>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ru">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.0 + Helium Theme" />
+  <title>Функциональная обработка ошибок</title>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  
+  <meta name="description" content="Функциональная разработка на Scala"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+  <script src="../../helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../">Домашняя</a></li>
+    <li class="level1 nav-header">Блог</li>
+    <li class="level2 nav-leaf"><a href="../../blog/2023-01-09-architecture-problems.html">Ошибки при наследовании</a></li>
+    <li class="level1 nav-header">Scala</li>
+    <li class="level2 nav-leaf"><a href="../">Обзор Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../getting-started.html">С чего начать?</a></li>
+    <li class="level2 nav-leaf"><a href="../hello_world.html">Hello, world!</a></li>
+    <li class="level2 nav-leaf"><a href="../repl.html">REPL</a></li>
+    <li class="level2 nav-leaf"><a href="../types.html">Типы данных</a></li>
+    <li class="level2 nav-leaf"><a href="../structures.html">Структуры управления</a></li>
+    <li class="level2 nav-header">Структуры управления</li>
+    <li class="level3 nav-leaf"><a href="../structures/ifelse.html">if/else</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/for.html">for</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/match.html">match expressions</a></li>
+    <li class="level3 nav-leaf"><a href="../structures/others.html">while and try</a></li>
+    <li class="level2 nav-leaf"><a href="../modeling.html">Моделирование данных</a></li>
+    <li class="level2 nav-header">Моделирование данных</li>
+    <li class="level3 nav-leaf"><a href="../modeling/classes.html">Классы</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/objects.html">Объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/companion-objects.html">Сопутствующие объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/traits.html">Трейты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/abstract-class.html">Абстрактные классы</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/enums.html">Перечисления</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/case-class.html">Кейс классы и объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/oop.html">Моделирование ООП</a></li>
+    <li class="level3 nav-leaf"><a href="../modeling/fp.html">Моделирование ФП</a></li>
+    <li class="level2 nav-leaf"><a href="../methods.html">Методы</a></li>
+    <li class="level2 nav-header">Методы</li>
+    <li class="level3 nav-leaf"><a href="../methods/method-features.html">Определение методов</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/default-parameters.html">Параметры по умолчанию</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/named-parameters.html">Именованные параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/by-name-parameter.html">Параметры по имени</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/partially-applied-functions.html">Каррирование</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/vararg-parameters.html">Методы с неопределенным количеством параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/generic-parameter.html">Generic параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/extension-methods.html">Методы расширения</a></li>
+    <li class="level3 nav-leaf"><a href="../methods/main-methods.html">main методы</a></li>
+    <li class="level2 nav-leaf"><a href="../functions.html">Функции</a></li>
+    <li class="level2 nav-header">Функции</li>
+    <li class="level3 nav-leaf"><a href="../functions/anonymous.html">Анонимные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/variables.html">Параметры функции</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/eta.html">Eta расширение</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/hofs.html">Функции высшего порядка</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/write-map.html">Написание своего собственного метода map</a></li>
+    <li class="level3 nav-leaf"><a href="../functions/returns-function.html">Возврат функции в методе</a></li>
+    <li class="level2 nav-leaf"><a href="../packaging.html">Пакеты и импорт</a></li>
+    <li class="level2 nav-leaf"><a href="../toplevel-definitions.html">Верхнеуровневые определения</a></li>
+    <li class="level2 nav-leaf"><a href="../collections.html">Коллекции</a></li>
+    <li class="level2 nav-header">Коллекции</li>
+    <li class="level3 nav-leaf"><a href="../collections/classes.html">Типы коллекций</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/list.html">List</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/lazylist.html">LazyList</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/array-seq.html">ArraySeq</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/vector.html">Vector</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/array-buffer.html">ArrayBuffer</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/maps.html">Maps</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/set.html">Работа с множествами</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/range.html">Диапазон (Range)</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/tuple.html">Tuple (кортежи)</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/queue.html">Queue</a></li>
+    <li class="level3 nav-leaf"><a href="../collections/methods.html">Методы в коллекциях</a></li>
+    <li class="level2 nav-leaf"><a href="../fp.html">Функциональное программирование</a></li>
+    <li class="level2 nav-header">ФП</li>
+    <li class="level3 nav-leaf"><a href="what-is-fp.html">Что такое функциональное программирование?</a></li>
+    <li class="level3 nav-leaf"><a href="immutable-values.html">Неизменяемые значения</a></li>
+    <li class="level3 nav-leaf"><a href="pure-functions.html">Чистые функции</a></li>
+    <li class="level3 nav-leaf"><a href="functions-are-values.html">Функции - это значения</a></li>
+    <li class="level3 active nav-leaf"><a href="#">Функциональная обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../type-system.html">Система типов</a></li>
+    <li class="level2 nav-header">Система типов</li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-inferred.html">Определение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-generics.html">Generics типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/upper-type-bounds.html">Верхнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/lower-type-bounds.html">Нижнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-intersection.html">Пересечение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-union.html">Объединение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-adts.html">Алгебраические типы данных (ADT)</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-variance.html">Ковариантность типов</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-opaque.html">Непрозрачные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-structural.html">Структурные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-dependent-function.html">Зависимые типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/type-lambdas.html">Лямбда-типы</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/match-types.html">Типы match</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/polymorphic-function-types.html">Полиморфные типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../type-system/types-others.html">Другие типы</a></li>
+    <li class="level2 nav-leaf"><a href="../abstractions.html">Контекстуальные абстракции</a></li>
+    <li class="level2 nav-header">Абстракции</li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-given.html">Экземпляры given</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-using.html">Предложения using</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/type-classes.html">Класс типов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-context-bounds.html">Контекстные границы</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-given-imports.html">Given imports</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-extension-methods.html">Методы расширения - детали</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-type-classes.html">Имплементация type классов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-type-class-derivation.html">Type Class Derivation</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-multiversal-equality.html">Многостороннее равенство</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/context-functions.html">Контекстные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-implicit-conversions.html">Неявные преобразования типов</a></li>
+    <li class="level3 nav-leaf"><a href="../abstractions/ca-by-name-parameters.html">Контекстные параметры по имени</a></li>
+    <li class="level2 nav-leaf"><a href="../details.html">Детали</a></li>
+    <li class="level2 nav-header">Детали</li>
+    <li class="level3 nav-leaf"><a href="../details/export-causes.html">Предложения export</a></li>
+    <li class="level3 nav-leaf"><a href="../details/parameter-untupling.html">Распаковка параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../details/type-test.html">Проверка типа</a></li>
+    <li class="level3 nav-leaf"><a href="../details/pattern-matching.html">Сопоставление с образцом</a></li>
+    <li class="level2 nav-leaf"><a href="../concurrency.html">Параллелизм</a></li>
+    <li class="level2 nav-leaf"><a href="../tools.html">Утилиты</a></li>
+    <li class="level2 nav-header">Утилиты</li>
+    <li class="level3 nav-leaf"><a href="../tools/tools-sbt.html">Сборка и тестирование проектов Scala с помощью Sbt</a></li>
+    <li class="level3 nav-leaf"><a href="../tools/tools-worksheets.html">Worksheet</a></li>
+    <li class="level2 nav-leaf"><a href="../with_java.html">Взаимодействие с Java</a></li>
+    <li class="level2 nav-leaf"><a href="../metaprogramming.html">Метапрограммирование</a></li>
+    <li class="level2 nav-header">Metaprogramming</li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/inline.html">Inline</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/compile-time-ops.html">Операции во время компиляции</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/macros.html">Макросы</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/quoted-code.html">Quoted Code</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/runtime-staging.html">Runtime Staging</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/reflection.html">Reflection</a></li>
+    <li class="level3 nav-leaf"><a href="../metaprogramming/tasty-inspection.html">TASTy Inspection</a></li>
+    <li class="level2 nav-leaf"><a href="../soft-keywords.html">Soft Keywords</a></li>
+    <li class="level2 nav-leaf"><a href="../scaladoc.html">Scaladoc</a></li>
+    <li class="level2 nav-header">Scaladoc</li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/docstrings.html">Документы</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/linking.html">Связующая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/static-site.html">Статическая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/blog.html">Встроенный блог</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/site-versioning.html">Версионность сайта</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/search-engine.html">Поиск по типу</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/snippet-compiler.html">Проверка фрагмента</a></li>
+    <li class="level3 nav-leaf"><a href="../scaladoc/settings.html">Настройки</a></li>
+    <li class="level1 nav-header">Функциональное программирование</li>
+    <li class="level2 nav-leaf"><a href="../../fp/">Функциональное программирование</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/data-structures.html">Функциональная структура данных</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/handling-errors.html">Обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/laziness.html">Ленивые вычисления</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/state.html">Функциональное состояние</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monoids.html">Monoids</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monads.html">Monads</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/writer.html">Функциональный журнал</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/non-empty-list.html">Непустой связанный список</a></li>
+    <li class="level1 nav-header">Теория категорий</li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/">Теория категорий</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/equal.html">Группа Equal</a></li>
+    <li class="level2 nav-header">Группа Equal</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/equal.html">Equal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/order.html">Order</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/enum.html">Enum</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/bounded.html">Bounded</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monoid.html">Группа Monoid</a></li>
+    <li class="level2 nav-header">Группа Monoid</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/semigroup.html">Semigroup</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/monoid.html">Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/band.html">Band</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/idempotent-monoid.html">Idempotent Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/group.html">Group</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monad.html">Группа Monad</a></li>
+    <li class="level2 nav-header">Группа Monad</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-functor.html">Invariant Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/functor.html">Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-applicative.html">Invariant Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/semigroupal.html">Semigroupal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/apply.html">Apply</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative.html">Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/bind.html">Bind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad.html">Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus.html">Plus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus-empty.html">PlusEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative-plus.html">ApplicativePlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-plus.html">MonadPlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/is-empty.html">IsEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/foldable.html">Foldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/traverse.html">Traverse</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/contravariant-functor.html">Контравариантный функтор</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divide.html">Divide</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divisible.html">Divisible</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-bind.html">CoBind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-monads.html">Co-Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-transformer.html">Monad Transformer</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/free-monads.html">Free Monad</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/arrow.html">Группа Arrow</a></li>
+    <li class="level2 nav-header">Группа Arrow</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/compose.html">Compose</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/category.html">Category</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/split.html">Split</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/profunctor.html">Profunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/strong.html">Strong</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/arrow.html">Arrow</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/bifunctor.html">Группа Bifunctor</a></li>
+    <li class="level2 nav-header">Группа Bifunctor</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifunctor.html">Bifunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifoldable.html">Bifoldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bitraverse.html">Bitraverse</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/other.html">Вне группы</a></li>
+    <li class="level2 nav-header">Вне группы</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/show.html">Show</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/read.html">Read</a></li>
+    <li class="level1 nav-header">Алгоритмы и структуры</li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/">Структуры данных и алгоритмы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/fundamental.html">Фундаментальные алгоритмы</a></li>
+    <li class="level2 nav-header">Фундаментальные алгоритмы</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/numerical.html">Численные алгоритмы</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/primes.html">Простые числа</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/fibonacci.html">Числа Фибоначчи</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/lists.html">Связанные списки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/arrays.html">Массивы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/stacks.html">Стеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/queues.html">Очереди</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/trees.html">Деревья</a></li>
+    <li class="level2 nav-header">Двоичное дерево</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/trees/binary-tree.html">Двоичное дерево</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/hash-tables.html">Хеш-таблицы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/sort.html">Сортировка</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/search.html">Поиск</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/graphs.html">Графы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/ackermann.html">Функция Аккермана</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/newton.html">Метод Ньютона</a></li>
+    <li class="level1 nav-header">Scala библиотеки</li>
+    <li class="level2 nav-leaf"><a href="../../libs/">Scala библиотеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/refined.html">Уточняющие типы в Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/cats-effect.html">Cats effect</a></li>
+    <li class="level2 nav-header">Cats effect</li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/copy-files.html">Копирование файлов</a></li>
+    <li class="level3 nav-leaf"><a href="../../libs/cats-effect/producer-consumer-problem.html">Проблема производитель-потребитель — параллелизм и волокна</a></li>
+    <li class="level2 nav-leaf"><a href="../../libs/http4s.html">Http4s</a></li>
+    <li class="level1 nav-header">Паттерны проектирования</li>
+    <li class="level2 nav-leaf"><a href="../../patterns/">Паттерны проектирования</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/creational.html">Порождающие шаблоны</a></li>
+    <li class="level2 nav-header">Порождающие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/factory-method.html">Фабричный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/abstract-factory.html">Абстрактная фабрика</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/builder.html">Строитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/prototype.html">Прототип</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/singleton.html">Одиночка</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/structural.html">Структурные шаблоны</a></li>
+    <li class="level2 nav-header">Структурные шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/adapter.html">Адаптер</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/bridge.html">Мост</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/composite.html">Компоновщик</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/decorator.html">Декоратор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/facade.html">Фасад</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/flyweight.html">Приспособленец</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/proxy.html">Заместитель</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/behavioral.html">Поведенческие шаблоны</a></li>
+    <li class="level2 nav-header">Поведенческие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/interpreter.html">Интерпретатор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/template-method.html">Шаблонный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/chain-of-responsibility.html">Цепочка обязанностей</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/command.html">Команда</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/iterator.html">Итератор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/mediator.html">Посредник</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/memento.html">Хранитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/observer.html">Наблюдатель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/state.html">Состояние</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/strategy.html">Стратегия</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/visitor.html">Посетитель</a></li>
+    <li class="level1 nav-header">Упражнения из книг</li>
+    <li class="level2 nav-leaf"><a href="../../books/">Упражнения из книг</a></li>
+    <li class="level2 nav-header">Structure and Interpretation</li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/">Структура и интерпретация компьютерных программ</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_6.html">Глава 1.1.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_7.html">Глава 1.1.7</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_8.html">Глава 1.1.8</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_1.html">Глава 1.2.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_2.html">Глава 1.2.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_3.html">Глава 1.2.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_4.html">Глава 1.2.4</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_5.html">Глава 1.2.5</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_6.html">Глава 1.2.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_1.html">Глава 1.3.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_2.html">Глава 1.3.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_3.html">Глава 1.3.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_4.html">Глава 1.3.4</a></li>
+    <li class="level2 nav-header">Scala Puzzlers</li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/">Головоломки на Scala</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/hi-there.html">Hi There!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/upstairs.html">UPSTAIRS downstairs</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/location.html">Location, Location, Location</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/now-you-see-me.html">Now You See Me, Now You Don&#39;t</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-missing-list.html">The Missing List</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/arg-arrgh.html">Arg Arrgh!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/captured-by-closures.html">Captured by Closures</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/map-comprehension.html">Map Comprehension</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/init-you-init-me.html">Init You, Init Me</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-equality.html">A Case of Equality</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/if-at-first.html">If At First You Don&#39;t Succeed...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/to-map-or-not-to-map.html">To Map, or Not to Map</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/private-lives.html">Private Lives</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/self-see-self.html">Self - See &#39;Self&#39;</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-egg-or-two.html">One Egg or Two..?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/return-to-me.html">Return to Me!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/implicitly-surprising.html">Implicitly Surprising</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-bound-two-to-go.html">One Bound, Two to Go</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/count-me-now-count-me-later.html">Count Me Now, Count Me Later</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/whats-in-a-name.html">What&#39;s in a Name?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/i-can-has-padding.html">I Can Has Padding?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/cast-away.html">Cast Away</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/pick-an-int-any-int.html">Pick an Int, Any Int!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-string.html">A Case of Strings</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-view-to-a-shill.html">A View to a Shill</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/accepts-any-args.html">Accepts Any Args</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-devil-is-in-the-defaults.html">The Devil is in the Defaults</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-two-skip-a-few.html">One, Two, Skip a Few</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/oddly-enough.html">Oddly Enough</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/splitting-headache.html">Splitting Headache</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-result-finally.html">A Result, Finally!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/heads-you-win.html">Heads You Win...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/ex-stream-surprise.html">(Ex)Stream Surprise</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-matter-of-context.html">A Matter of Context</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/inference.html">Inference Hindrance</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/for-each-step.html">For Each Step...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/beep-beep-reversing.html">Beep Beep...Reversing</a></li>
+    <li class="level1 nav-leaf"><a href="../../extra.html">Дополнительные материалы</a></li>
+    <li class="level1 nav-header">Дополнительные материалы</li>
+    <li class="level2 nav-leaf"><a href="../../extra/one_star.html">✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/two_stars.html">✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/three_stars.html">✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/four_stars.html">✯✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/five_stars.html">✯✯✯✯✯</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Функциональная обработка ошибок</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#первый-пример">Первый пример</a></li>
+    <li class="level1 nav-leaf"><a href="#использование-option-some-none">Использование Option/Some/None</a></li>
+    <li class="level1 nav-leaf"><a href="#потребитель-makeint">Потребитель makeInt</a></li>
+    <li class="level1 nav-leaf"><a href="#использование-match-выражений">Использование match выражений</a></li>
+    <li class="level1 nav-leaf"><a href="#использование-for-выражений">Использование for выражений</a></li>
+    <li class="level1 nav-leaf"><a href="#восприятие-option-как-контейнера">Восприятие Option, как контейнера</a></li>
+    <li class="level1 nav-leaf"><a href="#использование-option-для-замены-null">Использование Option для замены null</a></li>
+    <li class="level1 nav-leaf"><a href="#option-не-единственное-решение">Option — не единственное решение</a></li>
+    <li class="level1 nav-leaf"><a href="#краткое-ревью">Краткое ревью</a></li>
+  </ul>
+
+  <p class="footer"><a href="https://github.com/artemkorsakov/scalabook/blob/master/docs/scala/fp/functional-error-handling.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Редактировать страницу</a></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="функциональная-обработка-ошибок" class="title">Функциональная обработка ошибок</h1>
+        <p>Функциональное программирование похоже на написание ряда алгебраических уравнений, 
+        и поскольку алгебра не имеет <code>null</code> значений или исключений, эти функции не используются в ФП. 
+        Это поднимает интересный вопрос: 
+        что делать в ситуациях, когда в коде ООП обычно используются <code>null</code> значение или исключение?</p>
+        <p>Решение Scala заключается в использовании конструкций, подобных классам <code>Option</code>/<code>Some</code>/<code>None</code>. </p>
+        <p>Примечание:</p>
+        <ul>
+          <li>классы <code>Some</code> и <code>None</code> являются подклассами <code>Option</code></li>
+          <li>вместо того чтобы многократно повторять &quot;<code>Option</code>/<code>Some</code>/<code>None</code>&quot;, 
+          следующий текст обычно просто ссылается на &quot;<code>Option</code>&quot; или на &quot;классы <code>Option</code>&quot;</li>
+        </ul>
+        
+        <h3 id="первый-пример" class="section"><a class="anchor-link left" href="#первый-пример"><i class="icofont-laika link">&#xef71;</i></a>Первый пример</h3>
+        <p>Хотя этот первый пример не имеет дело с <code>null</code> значениями, это хороший способ познакомиться с классами <code>Option</code>.</p>
+        <p>Представим, что нужно написать метод, который упрощает преобразование строк в целочисленные значения. 
+        И нужен элегантный способ обработки исключения, которое возникает, когда метод получает строку типа <code>&quot;Hello&quot;</code> вместо <code>&quot;1&quot;</code>. 
+        Первое предположение о таком методе может выглядеть следующим образом:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">makeInt</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Int</span><span> =
+  </span><span class="keyword">try</span><span>
+    </span><span class="type-name">Integer</span><span>.</span><span class="identifier">parseInt</span><span>(</span><span class="identifier">s</span><span>.</span><span class="identifier">trim</span><span>)
+  </span><span class="keyword">catch</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">Exception</span><span> =&gt; </span><span class="number-literal">0</span></code></pre>
+        <p>Если преобразование работает, метод возвращает правильное значение <code>Int</code>, но в случае сбоя метод возвращает <code>0</code>. 
+        Для некоторых целей это может быть хорошо, но не совсем точно. 
+        Например, метод мог получить <code>&quot;0&quot;</code>, но мог также получить <code>&quot;foo&quot;</code>, <code>&quot;bar&quot;</code> 
+        или бесконечное количество других строк, которые выдадут исключение. 
+        Это реальная проблема: как определить, когда метод действительно получил <code>&quot;0&quot;</code>, а когда получил что-то еще? 
+        При таком подходе нет способа узнать правильный ответ наверняка.</p>
+        
+        <h3 id="использование-option-some-none" class="section"><a class="anchor-link left" href="#использование-option-some-none"><i class="icofont-laika link">&#xef71;</i></a>Использование Option/Some/None</h3>
+        <p>Распространенным решением этой проблемы в Scala является использование классов, известных как <code>Option</code>, <code>Some</code> и <code>None</code>. 
+        Классы <code>Some</code> и <code>None</code> являются подклассами <code>Option</code>, поэтому решение работает следующим образом:</p>
+        <ul>
+          <li>объявляется, что <code>makeInt</code> возвращает тип <code>Option</code></li>
+          <li>если <code>makeInt</code> получает строку, которую он может преобразовать в <code>Int</code>, ответ помещается внутрь <code>Some</code></li>
+          <li>если <code>makeInt</code> получает строку, которую не может преобразовать, то возвращает <code>None</code></li>
+        </ul>
+        <p>Вот доработанная версия <code>makeInt</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">makeInt</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Int</span><span>] =
+  </span><span class="keyword">try</span><span>
+    </span><span class="type-name">Some</span><span>(</span><span class="type-name">Integer</span><span>.</span><span class="identifier">parseInt</span><span>(</span><span class="identifier">s</span><span>.</span><span class="identifier">trim</span><span>))
+  </span><span class="keyword">catch</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">Exception</span><span> =&gt; </span><span class="type-name">None</span></code></pre>
+        <p>Этот код можно прочитать следующим образом: 
+        &quot;Когда данная строка преобразуется в целое число, верните значение <code>Int</code>, заключенное в <code>Some</code>, например <code>Some(1)</code>. 
+        Когда строка не может быть преобразована в целое число и генерируется исключение, метод возвращает значение <code>None</code>.&quot;</p>
+        <p>Эти примеры показывают, как работает <code>makeInt</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">a</span><span> = </span><span class="identifier">makeInt</span><span>(</span><span class="string-literal">&quot;1&quot;</span><span>)  
+</span><span class="comment">// a: Option[Int] = Some(value = 1)  
+</span><span class="keyword">val</span><span> </span><span class="identifier">b</span><span> = </span><span class="identifier">makeInt</span><span>(</span><span class="string-literal">&quot;one&quot;</span><span>)
+</span><span class="comment">// b: Option[Int] = None</span></code></pre>
+        <p>Как показано, строка <code>&quot;1&quot;</code> приводится к <code>Some(1)</code>, а строка <code>&quot;one&quot;</code> - к <code>None</code>. 
+        В этом суть альтернативного подхода к обработке ошибок. 
+        Данная техника используется для того, чтобы методы могли возвращать значения вместо исключений. 
+        В других ситуациях значения <code>Option</code> также используются для замены <code>null</code> значений.</p>
+        <p>Примечание:</p>
+        <ul>
+          <li>этот подход используется во всех классах библиотеки Scala, а также в сторонних библиотеках Scala</li>
+          <li>ключевым моментом примера является то, что функциональные методы не генерируют исключения; 
+          вместо этого они возвращают такие значения, как <code>Option</code></li>
+        </ul>
+        
+        <h3 id="потребитель-makeint" class="section"><a class="anchor-link left" href="#потребитель-makeint"><i class="icofont-laika link">&#xef71;</i></a>Потребитель makeInt</h3>
+        <p>Теперь представим, что мы являемся потребителем метода <code>makeInt</code>. 
+        Известно, что он возвращает подкласс <code>Option[Int]</code>, поэтому возникает вопрос: 
+        как работать с этими возвращаемыми типами?</p>
+        <p>Есть два распространенных ответа, в зависимости от потребностей:</p>
+        <ul>
+          <li>использование <code>match</code> выражений</li>
+          <li>использование <code>for</code> выражений</li>
+        </ul>
+        
+        <h3 id="использование-match-выражений" class="section"><a class="anchor-link left" href="#использование-match-выражений"><i class="icofont-laika link">&#xef71;</i></a>Использование match выражений</h3>
+        <p>Одним из возможных решений является использование выражения <code>match</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">makeInt</span><span>(</span><span class="identifier">x</span><span>) </span><span class="keyword">match</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">i</span><span>) =&gt; </span><span class="identifier">println</span><span>(</span><span class="identifier">i</span><span>)
+  </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt; </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;That didn’t work.&quot;</span><span>)</span></code></pre>
+        <p>В этом примере, если <code>x</code> можно преобразовать в <code>Int</code>, вычисляется выражение в правой части первого предложения <code>case</code>; 
+        если <code>x</code> не может быть преобразован в <code>Int</code>, оценивается выражение в правой части второго предложения <code>case</code>.</p>
+        
+        <h3 id="использование-for-выражений" class="section"><a class="anchor-link left" href="#использование-for-выражений"><i class="icofont-laika link">&#xef71;</i></a>Использование for выражений</h3>
+        <p>Другим распространенным решением является использование выражения <code>for</code>, то есть комбинации <code>for</code>/<code>yield</code>. 
+        Например, представим, что необходимо преобразовать три строки в целочисленные значения, а затем сложить их. 
+        Решение задачи с использованием выражения <code>for</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">y</span><span> = </span><span class="keyword">for</span><span>
+  </span><span class="identifier">a</span><span> &lt;- </span><span class="identifier">makeInt</span><span>(</span><span class="identifier">stringA</span><span>)
+  </span><span class="identifier">b</span><span> &lt;- </span><span class="identifier">makeInt</span><span>(</span><span class="identifier">stringB</span><span>)
+  </span><span class="identifier">c</span><span> &lt;- </span><span class="identifier">makeInt</span><span>(</span><span class="identifier">stringC</span><span>)
+</span><span class="keyword">yield</span><span>
+  </span><span class="identifier">a</span><span> + </span><span class="identifier">b</span><span> + </span><span class="identifier">c</span></code></pre>
+        <p>После выполнения этого выражения <code>y</code> может принять одно из двух значений:</p>
+        <ul>
+          <li>если <em>все</em> три строки конвертируются в значения <code>Int</code>, <code>y</code> будет равно <code>Some[Int]</code>, 
+          т. е. целым числом, обернутым внутри <code>Some</code></li>
+          <li>если <em>какая-либо</em> из трех строк не может быть преобразована в <code>Int</code>, <code>y</code> равен <code>None</code></li>
+        </ul>
+        <p>Это можно проверить на примере:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">stringA</span><span> = </span><span class="string-literal">&quot;1&quot;</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">stringB</span><span> = </span><span class="string-literal">&quot;2&quot;</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">stringC</span><span> = </span><span class="string-literal">&quot;3&quot;</span></code></pre>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">y</span><span> = </span><span class="keyword">for</span><span>
+  </span><span class="identifier">a</span><span> &lt;- </span><span class="identifier">makeInt</span><span>(</span><span class="identifier">stringA</span><span>)
+  </span><span class="identifier">b</span><span> &lt;- </span><span class="identifier">makeInt</span><span>(</span><span class="identifier">stringB</span><span>)
+  </span><span class="identifier">c</span><span> &lt;- </span><span class="identifier">makeInt</span><span>(</span><span class="identifier">stringC</span><span>)
+</span><span class="keyword">yield</span><span>
+  </span><span class="identifier">a</span><span> + </span><span class="identifier">b</span><span> + </span><span class="identifier">c</span><span>
+</span><span class="comment">// y: Option[Int] = Some(value = 6)</span></code></pre>
+        <p>Чтобы увидеть негативный кейс, достаточно изменить любую из строк на что-то, что нельзя преобразовать в целое число. 
+        В этом случае <code>y</code> равно <code>None</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">y</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">None</span></code></pre>
+        
+        <h3 id="восприятие-option-как-контейнера" class="section"><a class="anchor-link left" href="#восприятие-option-как-контейнера"><i class="icofont-laika link">&#xef71;</i></a>Восприятие Option, как контейнера</h3>
+        <p>Для лучшего восприятия <code>Option</code>, его можно представить как контейнер:</p>
+        <ul>
+          <li><code>Some</code> представляет собой контейнер с одним элементом</li>
+          <li><code>None</code> не является контейнером, в нем ничего нет</li>
+        </ul>
+        <p>Если предпочтительнее думать об <code>Option</code> как о ящике, то <code>None</code> подобен пустому ящику. 
+        Что-то в нём могло быть, но нет.</p>
+        
+        <h3 id="использование-option-для-замены-null" class="section"><a class="anchor-link left" href="#использование-option-для-замены-null"><i class="icofont-laika link">&#xef71;</i></a>Использование Option для замены null</h3>
+        <p>Возвращаясь к значениям <code>null</code>, место, где <code>null</code> значение может незаметно проникнуть в код, — класс, подобный этому:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">Address</span><span>(
+  </span><span class="keyword">var</span><span> </span><span class="identifier">street1</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="keyword">var</span><span> </span><span class="identifier">street2</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="keyword">var</span><span> </span><span class="identifier">city</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="keyword">var</span><span> </span><span class="identifier">state</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="keyword">var</span><span> </span><span class="identifier">zip</span><span>: </span><span class="type-name">String</span><span>
+)</span></code></pre>
+        <p>Хотя каждый адрес имеет значение <code>street1</code>, значение <code>street2</code> не является обязательным. 
+        В результате полю <code>street2</code> можно присвоить значение <code>null</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">santa</span><span> = </span><span class="type-name">Address</span><span>(
+  </span><span class="string-literal">&quot;1 Main Street&quot;</span><span>,
+  </span><span class="literal-value">null</span><span>,            
+  </span><span class="string-literal">&quot;North Pole&quot;</span><span>,
+  </span><span class="string-literal">&quot;Alaska&quot;</span><span>,
+  </span><span class="string-literal">&quot;99705&quot;</span><span>
+)</span></code></pre>
+        <p>Исторически сложилось так, что в этой ситуации разработчики использовали пустые строки и значения <code>null</code>, 
+        оба из которых &quot;взламывают&quot; решения основной проблемы: <code>street2</code> - необязательное поле. 
+        В Scala и других современных языках правильное решение состоит в том, 
+        чтобы заранее объявить, что <code>street2</code> является необязательным:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">Address</span><span>(
+  </span><span class="keyword">var</span><span> </span><span class="identifier">street1</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="keyword">var</span><span> </span><span class="identifier">street2</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>],  
+  </span><span class="keyword">var</span><span> </span><span class="identifier">city</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="keyword">var</span><span> </span><span class="identifier">state</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="keyword">var</span><span> </span><span class="identifier">zip</span><span>: </span><span class="type-name">String</span><span>
+)</span></code></pre>
+        <p>Теперь можно написать более точный код:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">santa</span><span> = </span><span class="type-name">Address</span><span>(
+  </span><span class="string-literal">&quot;1 Main Street&quot;</span><span>,
+  </span><span class="type-name">None</span><span>,         
+  </span><span class="string-literal">&quot;North Pole&quot;</span><span>,
+  </span><span class="string-literal">&quot;Alaska&quot;</span><span>,
+  </span><span class="string-literal">&quot;99705&quot;</span><span>
+)</span></code></pre>
+        <p>или так:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">santa</span><span> = </span><span class="type-name">Address</span><span>(
+  </span><span class="string-literal">&quot;123 Main Street&quot;</span><span>,
+  </span><span class="type-name">Some</span><span>(</span><span class="string-literal">&quot;Apt. 2B&quot;</span><span>),
+  </span><span class="string-literal">&quot;Talkeetna&quot;</span><span>,
+  </span><span class="string-literal">&quot;Alaska&quot;</span><span>,
+  </span><span class="string-literal">&quot;99676&quot;</span><span>
+)</span></code></pre>
+        
+        <h3 id="option-не-единственное-решение" class="section"><a class="anchor-link left" href="#option-не-единственное-решение"><i class="icofont-laika link">&#xef71;</i></a>Option — не единственное решение</h3>
+        <p>В этом разделе основное внимание уделялось <code>Option</code> классам, но у Scala есть несколько других альтернатив.</p>
+        <p>Например, три класса, известные как <code>Try</code>/<code>Success</code>/<code>Failure</code>, работают также, 
+        но (а) эти классы в основном используются, когда код может генерировать исключения, 
+        и (б) когда желательно использовать класс <code>Failure</code>, потому что он дает доступ к сообщению об исключении. 
+        Например, классы <code>Try</code> обычно используются при написании методов, 
+        которые взаимодействуют с файлами, базами данных или интернет-службами, 
+        поскольку эти функции могут легко создавать исключения.</p>
+        
+        <h3 id="краткое-ревью" class="section"><a class="anchor-link left" href="#краткое-ревью"><i class="icofont-laika link">&#xef71;</i></a>Краткое ревью</h3>
+        <ul>
+          <li>функциональные программисты не используют <code>null</code> значения</li>
+          <li>основной заменой <code>null</code> значениям является использование классов <code>Option</code></li>
+          <li>функциональные методы не выдают исключений; вместо этого они возвращают такие значения, как <code>Option</code>, <code>Try</code> или <code>Either</code></li>
+          <li>распространенными способами работы со значениями <code>Option</code> являются выражения <code>match</code> и <code>for</code></li>
+          <li><code>Option</code> можно рассматривать как контейнеры с одним элементом (<code>Some</code>) и без элементов (<code>None</code>)</li>
+          <li><code>Option</code> также можно использовать для дополнительных параметров конструктора или метода</li>
+        </ul>
+        <hr>
+        <p><strong>Ссылки:</strong></p>
+        <ul>
+          <li><a href="https://docs.scala-lang.org/scala3/book/fp-functional-error-handling.html">Scala3 book</a></li>
+        </ul>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

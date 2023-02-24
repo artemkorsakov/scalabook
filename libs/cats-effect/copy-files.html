@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ru">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Laika 0.19.0 + Helium Theme" />
+  <title>Копирование файлов</title>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  <meta name="author" content="Artem Korsakov"/>
+  
+  
+  <meta name="description" content="Функциональная разработка на Scala"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tonsky/FiraCode@1.207/distr/fira_code.css">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+  <script src="../../helium/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="icon-link glyph-link" href="../../"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
+
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://github.com/artemkorsakov/scalabook"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+    <a class="button-link" href="https://scalabook.gitflic.space">Scalabook на gitflic</a>
+    
+    <a class="button-link" href="https://github.com/artemkorsakov/scalabook">Github</a>
+    
+    <a class="button-link" href="https://gitflic.ru/project/artemkorsakov/scalabook">Gitflic</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../">Домашняя</a></li>
+    <li class="level1 nav-header">Блог</li>
+    <li class="level2 nav-leaf"><a href="../../blog/2023-01-09-architecture-problems.html">Ошибки при наследовании</a></li>
+    <li class="level1 nav-header">Scala</li>
+    <li class="level2 nav-leaf"><a href="../../scala/">Обзор Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/getting-started.html">С чего начать?</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/hello_world.html">Hello, world!</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/repl.html">REPL</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/types.html">Типы данных</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/structures.html">Структуры управления</a></li>
+    <li class="level2 nav-header">Структуры управления</li>
+    <li class="level3 nav-leaf"><a href="../../scala/structures/ifelse.html">if/else</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/structures/for.html">for</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/structures/match.html">match expressions</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/structures/others.html">while and try</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/modeling.html">Моделирование данных</a></li>
+    <li class="level2 nav-header">Моделирование данных</li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/classes.html">Классы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/objects.html">Объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/companion-objects.html">Сопутствующие объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/traits.html">Трейты</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/abstract-class.html">Абстрактные классы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/enums.html">Перечисления</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/case-class.html">Кейс классы и объекты</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/oop.html">Моделирование ООП</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/modeling/fp.html">Моделирование ФП</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/methods.html">Методы</a></li>
+    <li class="level2 nav-header">Методы</li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/method-features.html">Определение методов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/default-parameters.html">Параметры по умолчанию</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/named-parameters.html">Именованные параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/by-name-parameter.html">Параметры по имени</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/partially-applied-functions.html">Каррирование</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/vararg-parameters.html">Методы с неопределенным количеством параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/generic-parameter.html">Generic параметры</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/extension-methods.html">Методы расширения</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/methods/main-methods.html">main методы</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/functions.html">Функции</a></li>
+    <li class="level2 nav-header">Функции</li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/anonymous.html">Анонимные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/variables.html">Параметры функции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/eta.html">Eta расширение</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/hofs.html">Функции высшего порядка</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/write-map.html">Написание своего собственного метода map</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/functions/returns-function.html">Возврат функции в методе</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/packaging.html">Пакеты и импорт</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/toplevel-definitions.html">Верхнеуровневые определения</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/collections.html">Коллекции</a></li>
+    <li class="level2 nav-header">Коллекции</li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/classes.html">Типы коллекций</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/list.html">List</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/lazylist.html">LazyList</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/array-seq.html">ArraySeq</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/vector.html">Vector</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/array-buffer.html">ArrayBuffer</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/maps.html">Maps</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/set.html">Работа с множествами</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/range.html">Диапазон (Range)</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/tuple.html">Tuple (кортежи)</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/queue.html">Queue</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/collections/methods.html">Методы в коллекциях</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/fp.html">Функциональное программирование</a></li>
+    <li class="level2 nav-header">ФП</li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/what-is-fp.html">Что такое функциональное программирование?</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/immutable-values.html">Неизменяемые значения</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/pure-functions.html">Чистые функции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/functions-are-values.html">Функции - это значения</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/fp/functional-error-handling.html">Функциональная обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/type-system.html">Система типов</a></li>
+    <li class="level2 nav-header">Система типов</li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-inferred.html">Определение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-generics.html">Generics типы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/upper-type-bounds.html">Верхнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/lower-type-bounds.html">Нижнее ограничение типа</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-intersection.html">Пересечение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-union.html">Объединение типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-adts.html">Алгебраические типы данных (ADT)</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-variance.html">Ковариантность типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-opaque.html">Непрозрачные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-structural.html">Структурные типы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-dependent-function.html">Зависимые типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/type-lambdas.html">Лямбда-типы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/match-types.html">Типы match</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/polymorphic-function-types.html">Полиморфные типы функций</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/type-system/types-others.html">Другие типы</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/abstractions.html">Контекстуальные абстракции</a></li>
+    <li class="level2 nav-header">Абстракции</li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-given.html">Экземпляры given</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-using.html">Предложения using</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/type-classes.html">Класс типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-context-bounds.html">Контекстные границы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-given-imports.html">Given imports</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-extension-methods.html">Методы расширения - детали</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-type-classes.html">Имплементация type классов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-type-class-derivation.html">Type Class Derivation</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-multiversal-equality.html">Многостороннее равенство</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/context-functions.html">Контекстные функции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-implicit-conversions.html">Неявные преобразования типов</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/abstractions/ca-by-name-parameters.html">Контекстные параметры по имени</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/details.html">Детали</a></li>
+    <li class="level2 nav-header">Детали</li>
+    <li class="level3 nav-leaf"><a href="../../scala/details/export-causes.html">Предложения export</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/details/parameter-untupling.html">Распаковка параметров</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/details/type-test.html">Проверка типа</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/details/pattern-matching.html">Сопоставление с образцом</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/concurrency.html">Параллелизм</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/tools.html">Утилиты</a></li>
+    <li class="level2 nav-header">Утилиты</li>
+    <li class="level3 nav-leaf"><a href="../../scala/tools/tools-sbt.html">Сборка и тестирование проектов Scala с помощью Sbt</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/tools/tools-worksheets.html">Worksheet</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/with_java.html">Взаимодействие с Java</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/metaprogramming.html">Метапрограммирование</a></li>
+    <li class="level2 nav-header">Metaprogramming</li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/inline.html">Inline</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/compile-time-ops.html">Операции во время компиляции</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/macros.html">Макросы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/quoted-code.html">Quoted Code</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/runtime-staging.html">Runtime Staging</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/reflection.html">Reflection</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/metaprogramming/tasty-inspection.html">TASTy Inspection</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/soft-keywords.html">Soft Keywords</a></li>
+    <li class="level2 nav-leaf"><a href="../../scala/scaladoc.html">Scaladoc</a></li>
+    <li class="level2 nav-header">Scaladoc</li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/docstrings.html">Документы</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/linking.html">Связующая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/static-site.html">Статическая документация</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/blog.html">Встроенный блог</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/site-versioning.html">Версионность сайта</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/search-engine.html">Поиск по типу</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/snippet-compiler.html">Проверка фрагмента</a></li>
+    <li class="level3 nav-leaf"><a href="../../scala/scaladoc/settings.html">Настройки</a></li>
+    <li class="level1 nav-header">Функциональное программирование</li>
+    <li class="level2 nav-leaf"><a href="../../fp/">Функциональное программирование</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/data-structures.html">Функциональная структура данных</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/handling-errors.html">Обработка ошибок</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/laziness.html">Ленивые вычисления</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/state.html">Функциональное состояние</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monoids.html">Monoids</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/monads.html">Monads</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/writer.html">Функциональный журнал</a></li>
+    <li class="level2 nav-leaf"><a href="../../fp/non-empty-list.html">Непустой связанный список</a></li>
+    <li class="level1 nav-header">Теория категорий</li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/">Теория категорий</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/equal.html">Группа Equal</a></li>
+    <li class="level2 nav-header">Группа Equal</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/equal.html">Equal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/order.html">Order</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/enum.html">Enum</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/equal/bounded.html">Bounded</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monoid.html">Группа Monoid</a></li>
+    <li class="level2 nav-header">Группа Monoid</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/semigroup.html">Semigroup</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/monoid.html">Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/band.html">Band</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/idempotent-monoid.html">Idempotent Monoid</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monoid/group.html">Group</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/monad.html">Группа Monad</a></li>
+    <li class="level2 nav-header">Группа Monad</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-functor.html">Invariant Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/functor.html">Functor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/invariant-applicative.html">Invariant Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/semigroupal.html">Semigroupal</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/apply.html">Apply</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative.html">Applicative</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/bind.html">Bind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad.html">Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus.html">Plus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/plus-empty.html">PlusEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/applicative-plus.html">ApplicativePlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-plus.html">MonadPlus</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/is-empty.html">IsEmpty</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/foldable.html">Foldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/traverse.html">Traverse</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/contravariant-functor.html">Контравариантный функтор</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divide.html">Divide</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/divisible.html">Divisible</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-bind.html">CoBind</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/co-monads.html">Co-Monad</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/monad-transformer.html">Monad Transformer</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/monad/free-monads.html">Free Monad</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/arrow.html">Группа Arrow</a></li>
+    <li class="level2 nav-header">Группа Arrow</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/compose.html">Compose</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/category.html">Category</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/split.html">Split</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/profunctor.html">Profunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/strong.html">Strong</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/arrow/arrow.html">Arrow</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/bifunctor.html">Группа Bifunctor</a></li>
+    <li class="level2 nav-header">Группа Bifunctor</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifunctor.html">Bifunctor</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bifoldable.html">Bifoldable</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/bifunctor/bitraverse.html">Bitraverse</a></li>
+    <li class="level2 nav-leaf"><a href="../../typeclass/other.html">Вне группы</a></li>
+    <li class="level2 nav-header">Вне группы</li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/show.html">Show</a></li>
+    <li class="level3 nav-leaf"><a href="../../typeclass/other/read.html">Read</a></li>
+    <li class="level1 nav-header">Алгоритмы и структуры</li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/">Структуры данных и алгоритмы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/fundamental.html">Фундаментальные алгоритмы</a></li>
+    <li class="level2 nav-header">Фундаментальные алгоритмы</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/numerical.html">Численные алгоритмы</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/primes.html">Простые числа</a></li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/fundamental/fibonacci.html">Числа Фибоначчи</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/lists.html">Связанные списки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/arrays.html">Массивы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/stacks.html">Стеки</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/queues.html">Очереди</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/trees.html">Деревья</a></li>
+    <li class="level2 nav-header">Двоичное дерево</li>
+    <li class="level3 nav-leaf"><a href="../../algorithms/trees/binary-tree.html">Двоичное дерево</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/hash-tables.html">Хеш-таблицы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/sort.html">Сортировка</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/search.html">Поиск</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/graphs.html">Графы</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/ackermann.html">Функция Аккермана</a></li>
+    <li class="level2 nav-leaf"><a href="../../algorithms/newton.html">Метод Ньютона</a></li>
+    <li class="level1 nav-header">Scala библиотеки</li>
+    <li class="level2 nav-leaf"><a href="../">Scala библиотеки</a></li>
+    <li class="level2 nav-leaf"><a href="../refined.html">Уточняющие типы в Scala</a></li>
+    <li class="level2 nav-leaf"><a href="../cats-effect.html">Cats effect</a></li>
+    <li class="level2 nav-header">Cats effect</li>
+    <li class="level3 active nav-leaf"><a href="#">Копирование файлов</a></li>
+    <li class="level3 nav-leaf"><a href="producer-consumer-problem.html">Проблема производитель-потребитель — параллелизм и волокна</a></li>
+    <li class="level2 nav-leaf"><a href="../http4s.html">Http4s</a></li>
+    <li class="level1 nav-header">Паттерны проектирования</li>
+    <li class="level2 nav-leaf"><a href="../../patterns/">Паттерны проектирования</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/creational.html">Порождающие шаблоны</a></li>
+    <li class="level2 nav-header">Порождающие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/factory-method.html">Фабричный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/abstract-factory.html">Абстрактная фабрика</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/builder.html">Строитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/prototype.html">Прототип</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/creational/singleton.html">Одиночка</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/structural.html">Структурные шаблоны</a></li>
+    <li class="level2 nav-header">Структурные шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/adapter.html">Адаптер</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/bridge.html">Мост</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/composite.html">Компоновщик</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/decorator.html">Декоратор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/facade.html">Фасад</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/flyweight.html">Приспособленец</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/structural/proxy.html">Заместитель</a></li>
+    <li class="level2 nav-leaf"><a href="../../patterns/behavioral.html">Поведенческие шаблоны</a></li>
+    <li class="level2 nav-header">Поведенческие шаблоны</li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/interpreter.html">Интерпретатор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/template-method.html">Шаблонный метод</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/chain-of-responsibility.html">Цепочка обязанностей</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/command.html">Команда</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/iterator.html">Итератор</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/mediator.html">Посредник</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/memento.html">Хранитель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/observer.html">Наблюдатель</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/state.html">Состояние</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/strategy.html">Стратегия</a></li>
+    <li class="level3 nav-leaf"><a href="../../patterns/behavioral/visitor.html">Посетитель</a></li>
+    <li class="level1 nav-header">Упражнения из книг</li>
+    <li class="level2 nav-leaf"><a href="../../books/">Упражнения из книг</a></li>
+    <li class="level2 nav-header">Structure and Interpretation</li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/">Структура и интерпретация компьютерных программ</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_6.html">Глава 1.1.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_7.html">Глава 1.1.7</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_1_8.html">Глава 1.1.8</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_1.html">Глава 1.2.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_2.html">Глава 1.2.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_3.html">Глава 1.2.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_4.html">Глава 1.2.4</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_5.html">Глава 1.2.5</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_2_6.html">Глава 1.2.6</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_1.html">Глава 1.3.1</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_2.html">Глава 1.3.2</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_3.html">Глава 1.3.3</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/sicp/chapter1_3_4.html">Глава 1.3.4</a></li>
+    <li class="level2 nav-header">Scala Puzzlers</li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/">Головоломки на Scala</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/hi-there.html">Hi There!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/upstairs.html">UPSTAIRS downstairs</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/location.html">Location, Location, Location</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/now-you-see-me.html">Now You See Me, Now You Don&#39;t</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-missing-list.html">The Missing List</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/arg-arrgh.html">Arg Arrgh!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/captured-by-closures.html">Captured by Closures</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/map-comprehension.html">Map Comprehension</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/init-you-init-me.html">Init You, Init Me</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-equality.html">A Case of Equality</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/if-at-first.html">If At First You Don&#39;t Succeed...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/to-map-or-not-to-map.html">To Map, or Not to Map</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/private-lives.html">Private Lives</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/self-see-self.html">Self - See &#39;Self&#39;</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-egg-or-two.html">One Egg or Two..?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/return-to-me.html">Return to Me!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/implicitly-surprising.html">Implicitly Surprising</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-bound-two-to-go.html">One Bound, Two to Go</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/count-me-now-count-me-later.html">Count Me Now, Count Me Later</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/whats-in-a-name.html">What&#39;s in a Name?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/i-can-has-padding.html">I Can Has Padding?</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/cast-away.html">Cast Away</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/pick-an-int-any-int.html">Pick an Int, Any Int!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-case-of-string.html">A Case of Strings</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-view-to-a-shill.html">A View to a Shill</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/accepts-any-args.html">Accepts Any Args</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/the-devil-is-in-the-defaults.html">The Devil is in the Defaults</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/one-two-skip-a-few.html">One, Two, Skip a Few</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/oddly-enough.html">Oddly Enough</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/splitting-headache.html">Splitting Headache</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-result-finally.html">A Result, Finally!</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/heads-you-win.html">Heads You Win...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/ex-stream-surprise.html">(Ex)Stream Surprise</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/a-matter-of-context.html">A Matter of Context</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/inference.html">Inference Hindrance</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/for-each-step.html">For Each Step...</a></li>
+    <li class="level3 nav-leaf"><a href="../../books/puzzlers/beep-beep-reversing.html">Beep Beep...Reversing</a></li>
+    <li class="level1 nav-leaf"><a href="../../extra.html">Дополнительные материалы</a></li>
+    <li class="level1 nav-header">Дополнительные материалы</li>
+    <li class="level2 nav-leaf"><a href="../../extra/one_star.html">✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/two_stars.html">✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/three_stars.html">✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/four_stars.html">✯✯✯✯</a></li>
+    <li class="level2 nav-leaf"><a href="../../extra/five_stars.html">✯✯✯✯✯</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Копирование файлов</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#основные-понятия-обработка-ресурсов-и-отмена">Основные понятия, обработка ресурсов и отмена</a></li>
+    <li class="level1 nav-leaf"><a href="#получение-и-освобождение-ресурсов">Получение и освобождение ресурсов</a></li>
+    <li class="level1 nav-leaf"><a href="#что-насчет-bracket">Что насчет bracket?</a></li>
+    <li class="level1 nav-leaf"><a href="#копирование-данных">Копирование данных</a></li>
+    <li class="level1 nav-leaf"><a href="#работа-с-отменой">Работа с отменой</a></li>
+    <li class="level1 nav-leaf"><a href="#ioapp-для-итоговой-программы">IOApp для итоговой программы</a></li>
+    <li class="level1 nav-leaf"><a href="#полиморфный-код-с-cats-effect">Полиморфный код с cats-effect</a></li>
+  </ul>
+
+  <p class="footer"><a href="https://github.com/artemkorsakov/scalabook/blob/master/docs/libs/cats-effect/copy-files.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Редактировать страницу</a></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="копирование-файлов" class="title">Копирование файлов</h1>
+        
+        <h2 id="основные-понятия-обработка-ресурсов-и-отмена" class="section"><a class="anchor-link left" href="#основные-понятия-обработка-ресурсов-и-отмена"><i class="icofont-laika link">&#xef71;</i></a>Основные понятия, обработка ресурсов и отмена</h2>
+        <p>Наша цель — создать программу, которая копирует файлы. 
+        Сначала мы поработаем над функцией, выполняющей такую задачу, а затем создадим программу, 
+        которую можно будет вызывать из оболочки и использовать эту функцию.</p>
+        <p>Прежде всего, мы должны написать функцию, которая копирует содержимое из файла в другой файл. 
+        Функция принимает исходный и конечный файлы в качестве параметров. 
+        Но это функциональное программирование! 
+        Таким образом, вызов функции ничего не копирует, вместо этого он возвращает <code>IO</code> экземпляр, 
+        который инкапсулирует все задействованные побочные эффекты (открытие/закрытие файлов, чтение/запись содержимого), 
+        таким образом сохраняется чистота и отсутствие side effects. 
+        Только когда этот <code>IO</code> экземпляр будет выполнен, будут запущены все эти действия с побочными эффектами. 
+        В нашей реализации <code>IO</code> экземпляр будет возвращать количество байтов, скопированных при выполнении, 
+        но это всего лишь дизайнерское решение. 
+        Конечно могут возникать ошибки, но при работе с любыми <code>IO</code> их следует закладывать в <code>IO</code> пример. 
+        То есть никакое исключение не возникает за пределами <code>IO</code> 
+        и поэтому при использовании функции не нужно использовать <code>try</code> (или подобное), 
+        вместо этого выполнение <code>IO</code> завершится ошибкой и <code>IO</code> экземпляр будет её содержать.</p>
+        <p>Сигнатура функции выглядит так:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">io</span><span>.</span><span class="type-name">File</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">copy</span><span>(</span><span class="identifier">origin</span><span>: </span><span class="type-name">File</span><span>, </span><span class="identifier">destination</span><span>: </span><span class="type-name">File</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Long</span><span>] = ???</span></code></pre>
+        <p>Функция просто возвращает <code>IO</code> экземпляр. При запуске все побочные эффекты будут фактически выполнены, 
+        и IO экземпляр вернет количество скопированных байтов в виде <code>Long</code> 
+        (обратите внимание, что <code>IO</code> параметризовано типом возвращаемого значения). 
+        Теперь приступим к реализации функции. </p>
+        <p>Во-первых, нужно открыть два потока, которые будут читать и записывать содержимое файла.</p>
+        
+        <h2 id="получение-и-освобождение-ресурсов" class="section"><a class="anchor-link left" href="#получение-и-освобождение-ресурсов"><i class="icofont-laika link">&#xef71;</i></a>Получение и освобождение ресурсов</h2>
+        <p>Мы рассматриваем открытие потока как действие с побочным эффектом, 
+        поэтому мы должны инкапсулировать эти действия в их собственных <code>IO</code> экземплярах. 
+        Мы можем просто встроить действия, вызвав <code>IO(action)</code>, 
+        но при работе с действиями ввода/вывода рекомендуется использовать вместо этого <code>IO.blocking(action)</code>. 
+        Таким образом, мы помогаем cats-effect лучше спланировать, как назначать потоки действиям. </p>
+        <p>Также воспользуемся cats-effect <code>Resource</code>. 
+        Это позволяет упорядоченно создавать, использовать, а затем высвобождать ресурсы. </p>
+        <p>См. код:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.{</span><span class="type-name">IO</span><span>, </span><span class="type-name">Resource</span><span>}
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">io</span><span>.*
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">inputStream</span><span>(</span><span class="identifier">f</span><span>: </span><span class="type-name">File</span><span>): </span><span class="type-name">Resource</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">FileInputStream</span><span>] =
+  </span><span class="type-name">Resource</span><span>.</span><span class="identifier">make</span><span> {
+    </span><span class="type-name">IO</span><span>.</span><span class="identifier">blocking</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">FileInputStream</span><span>(</span><span class="identifier">f</span><span>))                         </span><span class="comment">// построение
+</span><span>  } { </span><span class="identifier">inStream</span><span> =&gt;
+    </span><span class="type-name">IO</span><span>.</span><span class="identifier">blocking</span><span>(</span><span class="identifier">inStream</span><span>.</span><span class="identifier">close</span><span>()).</span><span class="identifier">handleErrorWith</span><span>(</span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">IO</span><span>.</span><span class="identifier">unit</span><span>) </span><span class="comment">// высвобождение
+</span><span>  }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">outputStream</span><span>(</span><span class="identifier">f</span><span>: </span><span class="type-name">File</span><span>): </span><span class="type-name">Resource</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">FileOutputStream</span><span>] =
+  </span><span class="type-name">Resource</span><span>.</span><span class="identifier">make</span><span> {
+    </span><span class="type-name">IO</span><span>.</span><span class="identifier">blocking</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">FileOutputStream</span><span>(</span><span class="identifier">f</span><span>))                         </span><span class="comment">// построение
+</span><span>  } { </span><span class="identifier">outStream</span><span> =&gt;
+    </span><span class="type-name">IO</span><span>.</span><span class="identifier">blocking</span><span>(</span><span class="identifier">outStream</span><span>.</span><span class="identifier">close</span><span>()).</span><span class="identifier">handleErrorWith</span><span>(</span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">IO</span><span>.</span><span class="identifier">unit</span><span>) </span><span class="comment">// высвобождение
+</span><span>  }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">inputOutputStreams</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">File</span><span>, </span><span class="identifier">out</span><span>: </span><span class="type-name">File</span><span>): </span><span class="type-name">Resource</span><span>[</span><span class="type-name">IO</span><span>, (</span><span class="type-name">InputStream</span><span>, </span><span class="type-name">OutputStream</span><span>)] =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">inStream</span><span>  &lt;- </span><span class="identifier">inputStream</span><span>(</span><span class="identifier">in</span><span>)
+    </span><span class="identifier">outStream</span><span> &lt;- </span><span class="identifier">outputStream</span><span>(</span><span class="identifier">out</span><span>)
+  } </span><span class="keyword">yield</span><span> (</span><span class="identifier">inStream</span><span>, </span><span class="identifier">outStream</span><span>)</span></code></pre>
+        <p>Мы хотим гарантировать, что потоки будут закрыты после того, как мы закончим их использовать, несмотря ни на что. 
+        Именно поэтому мы используем <code>Resource</code> в обоих функциях <code>inputStream</code> и <code>outputStream</code>, 
+        каждая из которых возвращает ту <code>Resource</code>, которая инкапсулирует действия по открытию и закрытию каждого потока. 
+        <code>inputOutputStreams</code> инкапсулирует оба ресурса в один экземпляр <code>Resource</code>, 
+        который будет доступен после успешного создания обоих потоков и только в этом случае. 
+        Как видно из приведенного выше кода, экземпляры <code>Resource</code> могут быть объединены в <em>for-comprehensions</em>. 
+        Также обратите внимание, что при освобождении ресурсов мы должны позаботиться о любой возможной ошибке 
+        во время самого выполнения, например, с вызовом <code>.handleErrorWith</code>, как мы делаем в приведенном выше коде. 
+        В этом случае мы просто игнорируем ошибку, но обычно она должна быть хотя бы запротоколирована. 
+        Часто вы увидите, что <code>.attempt.void</code> используется для получения того же поведения - «проглотить и игнорировать ошибки».</p>
+        <p>При желании мы могли бы использовать <code>Resource.fromAutoCloseable</code> для определения наших ресурсов, 
+        этот метод создает экземпляры объектов <code>Resource</code>, которые реализуют интерфейс <code>java.lang.AutoCloseable</code>, 
+        без необходимости определять, как освобождается ресурс. 
+        Итак, наша функция <code>inputStream</code> будет выглядеть так:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.{</span><span class="type-name">IO</span><span>, </span><span class="type-name">Resource</span><span>}
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">io</span><span>.{</span><span class="type-name">File</span><span>, </span><span class="type-name">FileInputStream</span><span>}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">inputStream</span><span>(</span><span class="identifier">f</span><span>: </span><span class="type-name">File</span><span>): </span><span class="type-name">Resource</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">FileInputStream</span><span>] =
+  </span><span class="type-name">Resource</span><span>.</span><span class="identifier">fromAutoCloseable</span><span>(</span><span class="type-name">IO</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">FileInputStream</span><span>(</span><span class="identifier">f</span><span>)))</span></code></pre>
+        <p>Этот код намного проще, но с ним мы не можем контролировать, что произойдет, если операция закрытия вызовет исключение. 
+        Также может случиться так, что мы хотим знать, когда выполняются операции закрытия, например, используя журналы. 
+        Напротив, использование <code>Resource.make</code> позволяет легко контролировать действия фазы выпуска.</p>
+        <p>Вернемся к нашей функции <code>copy</code>, которая теперь выглядит так:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.{</span><span class="type-name">IO</span><span>, </span><span class="type-name">Resource</span><span>}
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">io</span><span>.*
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">inputStream</span><span>(</span><span class="identifier">f</span><span>: </span><span class="type-name">File</span><span>): </span><span class="type-name">Resource</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">FileInputStream</span><span>] =
+  </span><span class="type-name">Resource</span><span>.</span><span class="identifier">make</span><span> {
+    </span><span class="type-name">IO</span><span>.</span><span class="identifier">blocking</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">FileInputStream</span><span>(</span><span class="identifier">f</span><span>))
+  } { </span><span class="identifier">inStream</span><span> =&gt;
+    </span><span class="type-name">IO</span><span>.</span><span class="identifier">blocking</span><span>(</span><span class="identifier">inStream</span><span>.</span><span class="identifier">close</span><span>()).</span><span class="identifier">handleErrorWith</span><span>(</span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">IO</span><span>.</span><span class="identifier">unit</span><span>)
+  }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">outputStream</span><span>(</span><span class="identifier">f</span><span>: </span><span class="type-name">File</span><span>): </span><span class="type-name">Resource</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">FileOutputStream</span><span>] =
+  </span><span class="type-name">Resource</span><span>.</span><span class="identifier">make</span><span> {
+    </span><span class="type-name">IO</span><span>.</span><span class="identifier">blocking</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">FileOutputStream</span><span>(</span><span class="identifier">f</span><span>))
+  } { </span><span class="identifier">outStream</span><span> =&gt;
+    </span><span class="type-name">IO</span><span>.</span><span class="identifier">blocking</span><span>(</span><span class="identifier">outStream</span><span>.</span><span class="identifier">close</span><span>()).</span><span class="identifier">handleErrorWith</span><span>(</span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">IO</span><span>.</span><span class="identifier">unit</span><span>)
+  }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">inputOutputStreams</span><span>(</span><span class="identifier">in</span><span>: </span><span class="type-name">File</span><span>, </span><span class="identifier">out</span><span>: </span><span class="type-name">File</span><span>): </span><span class="type-name">Resource</span><span>[</span><span class="type-name">IO</span><span>, (</span><span class="type-name">InputStream</span><span>, </span><span class="type-name">OutputStream</span><span>)] =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">inStream</span><span>  &lt;- </span><span class="identifier">inputStream</span><span>(</span><span class="identifier">in</span><span>)
+    </span><span class="identifier">outStream</span><span> &lt;- </span><span class="identifier">outputStream</span><span>(</span><span class="identifier">out</span><span>)
+  } </span><span class="keyword">yield</span><span> (</span><span class="identifier">inStream</span><span>, </span><span class="identifier">outStream</span><span>)
+
+</span><span class="comment">// transfer будет выполнять всю работу
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">transfer</span><span>(</span><span class="identifier">origin</span><span>: </span><span class="type-name">InputStream</span><span>, </span><span class="identifier">destination</span><span>: </span><span class="type-name">OutputStream</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Long</span><span>] = ???
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">copy</span><span>(</span><span class="identifier">origin</span><span>: </span><span class="type-name">File</span><span>, </span><span class="identifier">destination</span><span>: </span><span class="type-name">File</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Long</span><span>] =
+  </span><span class="identifier">inputOutputStreams</span><span>(</span><span class="identifier">origin</span><span>, </span><span class="identifier">destination</span><span>).</span><span class="identifier">use</span><span> { </span><span class="keyword">case</span><span> (</span><span class="identifier">in</span><span>, </span><span class="identifier">out</span><span>) =&gt;
+    </span><span class="identifier">transfer</span><span>(</span><span class="identifier">in</span><span>, </span><span class="identifier">out</span><span>)
+  }</span></code></pre>
+        <p>Новый метод <code>transfer</code> будет выполнять фактическое копирование данных после получения ресурсов (потоков). 
+        Когда они больше не нужны, независимо от исхода <code>transfer</code> (успеха или неудачи) оба потока будут закрыты. 
+        Если какой-то из потоков получить не удалось, то <code>transfer</code> запускаться не будет. 
+        Еще лучше, из-за семантики <code>Resource</code>, если есть какие-либо проблемы с открытием входного файла, 
+        выходной файл не будет открыт. 
+        С другой стороны, если при открытии выходного файла возникает проблема, входной поток будет закрыт.</p>
+        
+        <h2 id="что-насчет-bracket" class="section"><a class="anchor-link left" href="#что-насчет-bracket"><i class="icofont-laika link">&#xef71;</i></a>Что насчет bracket?</h2>
+        <p>Если вы знакомы с cats effect <code>Bracket</code>, вам может быть интересно, почему мы не используем его, 
+        поскольку он так похож на <code>Resource</code> (и для этого есть веская причина: <code>Resource</code> основан на <code>bracket</code>). 
+        Хорошо, прежде чем двигаться дальше, стоит взглянуть на <code>bracket</code>.</p>
+        <p>При использовании <code>bracket</code> есть три этапа: <em>приобретение ресурсов</em>, <em>использование</em> и <em>высвобождение</em>. 
+        Каждый этап определяется <code>IO</code> экземпляром. 
+        Фундаментальное свойство заключается в том, что этап высвобождения всегда будет выполняться независимо от того, 
+        завершился ли этап использования правильно или во время его выполнения возникло исключение. 
+        В нашем случае на этапе приобретения мы создадим потоки, затем на этапе использования скопируем содержимое 
+        и, наконец, на этапе высвобождения закроем потоки. 
+        Таким образом, мы могли бы определить нашу функцию <code>copy</code> следующим образом:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">io</span><span>.*
+
+</span><span class="comment">// функция inputOutputStreams не нужна
+</span><span>
+</span><span class="comment">// transfer будет выполнять всю работу
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">transfer</span><span>(</span><span class="identifier">origin</span><span>: </span><span class="type-name">InputStream</span><span>, </span><span class="identifier">destination</span><span>: </span><span class="type-name">OutputStream</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Long</span><span>] = ???
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">copy</span><span>(</span><span class="identifier">origin</span><span>: </span><span class="type-name">File</span><span>, </span><span class="identifier">destination</span><span>: </span><span class="type-name">File</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Long</span><span>] = {
+  </span><span class="keyword">val</span><span> </span><span class="identifier">inIO</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">InputStream</span><span>]   = </span><span class="type-name">IO</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">FileInputStream</span><span>(</span><span class="identifier">origin</span><span>))
+  </span><span class="keyword">val</span><span> </span><span class="identifier">outIO</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">OutputStream</span><span>] = </span><span class="type-name">IO</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">FileOutputStream</span><span>(</span><span class="identifier">destination</span><span>))
+
+  (</span><span class="identifier">inIO</span><span>, </span><span class="identifier">outIO</span><span>) </span><span class="comment">// Этап 1: получение ресурсов
+</span><span>    .</span><span class="identifier">tupled</span><span>     </span><span class="comment">// От (IO[InputStream], IO[OutputStream]) к IO[(InputStream, OutputStream)]
+</span><span>    .</span><span class="identifier">bracket</span><span> { (</span><span class="identifier">in</span><span>, </span><span class="identifier">out</span><span>) =&gt;
+      </span><span class="identifier">transfer</span><span>(</span><span class="identifier">in</span><span>, </span><span class="identifier">out</span><span>) </span><span class="comment">// Этап 2: использование ресурсов (в данном случае - для копирования данных)
+</span><span>    } { (</span><span class="identifier">in</span><span>, </span><span class="identifier">out</span><span>) =&gt;                           </span><span class="comment">// Этап 3: высвобождение ресурсов
+</span><span>      (</span><span class="type-name">IO</span><span>(</span><span class="identifier">in</span><span>.</span><span class="identifier">close</span><span>()), </span><span class="type-name">IO</span><span>(</span><span class="identifier">out</span><span>.</span><span class="identifier">close</span><span>())).</span><span class="identifier">tupled</span><span> </span><span class="comment">// От (IO[Unit], IO[Unit]) к IO[(Unit, Unit)]
+</span><span>        .</span><span class="identifier">void</span><span>.</span><span class="identifier">handleErrorWith</span><span>(</span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">IO</span><span>.</span><span class="identifier">unit</span><span>)
+    }
+}</span></code></pre>
+        <p>Новое определение <code>copy</code> более сложное, хотя код в целом намного короче, 
+        так как функция <code>inputOutputStreams</code> нам не нужна. 
+        Но в приведенном выше коде есть нюанс. 
+        При использовании <code>bracket</code>, если есть проблема с получением ресурсов на первом этапе, 
+        то этап высвобождения не запустится. 
+        В приведенном выше коде сначала открывается исходный файл, 
+        а затем файл назначения (<code>.tupled</code> просто реорганизует оба <code>IO</code> экземпляра в один). 
+        Итак, что произойдет, если мы успешно откроем исходный файл (т.е. при вычислении <code>inIO</code>), 
+        но затем возникнет исключение при открытии целевого файла (т.е. при вычислении <code>outIO</code>)? 
+        В этом случае исходный поток не будет закрыт! 
+        Чтобы решить эту проблему, мы должны сначала получить первый поток с одним вызовом <code>bracket</code>, 
+        а затем второй поток с другим вызовом <code>bracket</code> внутри первого. 
+        Но в каком-то смысле именно это мы и делаем, когда <code>flatMap</code>-им экземпляры <code>Resource</code>. 
+        И код тоже выглядит чище. 
+        Таким образом, несмотря на то, что прямое использование <code>bracket</code> имеет место, 
+        вероятно, <code>Resource</code> будет лучшим выбором при работе с несколькими ресурсами одновременно.</p>
+        
+        <h2 id="копирование-данных" class="section"><a class="anchor-link left" href="#копирование-данных"><i class="icofont-laika link">&#xef71;</i></a>Копирование данных</h2>
+        <p>Наконец-то стримы готовы! Сейчас мы должны сосредоточиться на кодировании <code>transfer</code>. 
+        Эта функция должна будет определить цикл, который на каждой итерации считывает данные из входного потока в буфер, 
+        а затем записывает содержимое буфера в выходной поток. 
+        В то же время цикл будет вести счетчик переданных байтов. 
+        Чтобы повторно использовать один и тот же буфер, мы должны определить его вне основного цикла 
+        и оставить фактическую передачу данных другой функции <code>transmit</code>, которая использует этот цикл. 
+        Что-то типа:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">io</span><span>.*
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">transfer</span><span>(</span><span class="identifier">origin</span><span>: </span><span class="type-name">InputStream</span><span>, </span><span class="identifier">destination</span><span>: </span><span class="type-name">OutputStream</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Long</span><span>] =
+  </span><span class="identifier">transmit</span><span>(</span><span class="identifier">origin</span><span>, </span><span class="identifier">destination</span><span>, </span><span class="keyword">new</span><span> </span><span class="type-name">Array</span><span>[</span><span class="type-name">Byte</span><span>](</span><span class="number-literal">1024</span><span> * </span><span class="number-literal">10</span><span>), </span><span class="number-literal">0L</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">transmit</span><span>(</span><span class="identifier">origin</span><span>: </span><span class="type-name">InputStream</span><span>, </span><span class="identifier">destination</span><span>: </span><span class="type-name">OutputStream</span><span>, </span><span class="identifier">buffer</span><span>: </span><span class="type-name">Array</span><span>[</span><span class="type-name">Byte</span><span>], </span><span class="identifier">acc</span><span>: </span><span class="type-name">Long</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Long</span><span>] =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">amount</span><span> &lt;- </span><span class="type-name">IO</span><span>.</span><span class="identifier">blocking</span><span>(</span><span class="identifier">origin</span><span>.</span><span class="identifier">read</span><span>(</span><span class="identifier">buffer</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="identifier">buffer</span><span>.</span><span class="identifier">length</span><span>))
+    </span><span class="identifier">count</span><span>  &lt;-
+      </span><span class="keyword">if</span><span> (</span><span class="identifier">amount</span><span> &gt; -</span><span class="number-literal">1</span><span>)
+        </span><span class="type-name">IO</span><span>.</span><span class="identifier">blocking</span><span>(</span><span class="identifier">destination</span><span>.</span><span class="identifier">write</span><span>(</span><span class="identifier">buffer</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="identifier">amount</span><span>)) &gt;&gt; </span><span class="identifier">transmit</span><span>(</span><span class="identifier">origin</span><span>, </span><span class="identifier">destination</span><span>, </span><span class="identifier">buffer</span><span>, </span><span class="identifier">acc</span><span> + </span><span class="identifier">amount</span><span>)
+      </span><span class="keyword">else</span><span> </span><span class="type-name">IO</span><span>.</span><span class="identifier">pure</span><span>(</span><span class="identifier">acc</span><span>) </span><span class="comment">// Достигнут конец потока чтения (по java.io.InputStream), нечего писать
+</span><span>  } </span><span class="keyword">yield</span><span> </span><span class="identifier">count</span><span>         </span><span class="comment">// Возвращает фактическое количество переданных байтов</span></code></pre>
+        <p>Взгляните на <code>transmit</code>, обратите внимание, что как входные, так и выходные действия создаются путем вызова <code>IO.blocking</code>, 
+        который возвращает действия, инкапсулированные в (приостановленные в) <code>IO</code>. 
+        Мы также можем просто встроить действия, вызвав <code>IO(action)</code>, 
+        но при работе с действиями ввода/вывода рекомендуется вместо этого использовать <code>IO.blocking(action)</code>. 
+        Таким образом, мы помогаем cats-effect лучше спланировать, как назначать потоки действиям. </p>
+        <p>Т.к. <code>IO</code> - монада, то мы можем упорядочить новые <code>IO</code> экземпляры, используя <em>for-comprehension</em>, чтобы создать другой <code>IO</code>. 
+        <em>for-comprehension</em> зацикливается до тех пор, пока вызов <code>read()</code> не возвращает отрицательное значение, 
+        которое сигнализировало бы о достижении конца потока. 
+        <code>&gt;&gt;</code> является оператором Cats для последовательности двух операций, где вывод первой не нужен второй 
+        (т.е. он эквивалентен <code>first.flatMap(_ =&gt; second)</code>). 
+        В приведенном выше коде это означает, что после каждой операции записи мы снова рекурсивно вызываем <code>transmit</code>, 
+        но поскольку <code>IO</code> безопасен для стека, нас не беспокоят проблемы переполнения. 
+        На каждой итерации мы увеличиваем счетчик <code>acc</code> на количество байтов, прочитанных на этой итерации.</p>
+        <p>Если во время работы возникнет какое-либо исключение в <code>transfer</code>, то потоки будут автоматически закрыты <code>Resource</code>. 
+        Но есть еще кое-что, что мы должны учитывать: выполнение экземпляров <code>IO</code> может быть отменено! 
+        И отмену не стоит игнорировать, так как это ключевая особенность cats-effect. </p>
+        
+        <h2 id="работа-с-отменой" class="section"><a class="anchor-link left" href="#работа-с-отменой"><i class="icofont-laika link">&#xef71;</i></a>Работа с отменой</h2>
+        <p>Отмена — мощная, но нетривиальная функция cats-effect. 
+        В cats-effect некоторые <code>IO</code> экземпляры могут быть отменены (например, другие <code>IO</code> экземпляры, работающие параллельно), 
+        что означает, что их оценка будет прервана. 
+        Если программист будет осторожен, альтернативная <code>IO</code> задача будет запущена при отмене, 
+        например, для обработки возможных действий по очистке.</p>
+        <p>К счастью, <code>Resource</code> упрощает отмену. Если внутри <code>IO</code> отменяется <code>Resource.use</code>, запускается высвобождение этого ресурса. 
+        В нашем примере это означает, что входной и выходной потоки будут правильно закрыты. 
+        Кроме того, cats-effect не отменяет код внутри <code>IO.blocking</code> экземпляров. 
+        В случае с функцией <code>transmit</code> это означает, что выполнение будет прервано только между двумя вызовами <code>IO.blocking</code>. 
+        Если мы хотим, чтобы выполнение экземпляра <code>IO</code> было прервано при отмене, не дожидаясь его завершения,
+        мы должны создать его экземпляр с помощью <code>IO.interruptible</code>.</p>
+        
+        <h2 id="ioapp-для-итоговой-программы" class="section"><a class="anchor-link left" href="#ioapp-для-итоговой-программы"><i class="icofont-laika link">&#xef71;</i></a>IOApp для итоговой программы</h2>
+        <p>Создадим программу, которая копирует файлы и принимает только два параметра: имя исходного и конечного файлов. 
+        Для кодирования будем использовать <code>IOApp</code>, 
+        так как она позволяет сохранить чистоту в наших определениях вплоть до основной функции программы.</p>
+        <p><code>IOApp</code> является своего рода «функциональным» эквивалентом Scala <code>App</code>, 
+        где вместо кодирования эффективного метода <code>main</code> мы кодируем чистую функцию <code>run</code>. 
+        При выполнении класса <code>main</code> метод, определенный в <code>IOApp</code>, вызовет функцию <code>run</code>, которую мы закодировали. 
+        Любое прерывание (например, нажатие Ctrl-c) будет рассматриваться как отмена запущенного <code>IO</code>.</p>
+        <p>При кодировании <code>IOApp</code> вместо функции <code>main</code> у нас есть функция <code>run</code>, 
+        которая создает <code>IO</code> экземпляр, формирующий программу. 
+        В нашем случае наш <code>run</code> метод может выглядеть так:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">io</span><span>.</span><span class="type-name">File</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">CopyingFiles</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">IOApp</span><span>:
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">run</span><span>(</span><span class="identifier">args</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">ExitCode</span><span>] =
+    </span><span class="keyword">for</span><span> {
+      </span><span class="identifier">_</span><span>     &lt;- </span><span class="keyword">if</span><span> (</span><span class="identifier">args</span><span>.</span><span class="identifier">length</span><span> &lt; </span><span class="number-literal">2</span><span>) </span><span class="type-name">IO</span><span>.</span><span class="identifier">raiseError</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">IllegalArgumentException</span><span>(</span><span class="string-literal">&quot;Need origin and destination files&quot;</span><span>))
+               </span><span class="keyword">else</span><span> </span><span class="type-name">IO</span><span>.</span><span class="identifier">unit</span><span>
+      </span><span class="identifier">orig</span><span>   = </span><span class="keyword">new</span><span> </span><span class="type-name">File</span><span>(</span><span class="identifier">args</span><span>.</span><span class="identifier">head</span><span>)
+      </span><span class="identifier">dest</span><span>   = </span><span class="keyword">new</span><span> </span><span class="type-name">File</span><span>(</span><span class="identifier">args</span><span>(</span><span class="number-literal">1</span><span>))
+      </span><span class="identifier">count</span><span> &lt;- </span><span class="identifier">copy</span><span>(</span><span class="identifier">orig</span><span>, </span><span class="identifier">dest</span><span>)
+      </span><span class="identifier">_</span><span>     &lt;- </span><span class="type-name">IO</span><span>.</span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;</span><span class="substitution">$count</span><span class="string-literal"> bytes copied from </span><span class="substitution">${orig.getPath}</span><span class="string-literal"> to </span><span class="substitution">${dest.getPath}</span><span class="string-literal">&quot;</span><span>)
+    } </span><span class="keyword">yield</span><span> </span><span class="type-name">ExitCode</span><span>.</span><span class="type-name">Success</span><span>
+
+  </span><span class="comment">// copy был определен выше
+</span><span>  </span><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">copy</span><span>(</span><span class="identifier">origin</span><span>: </span><span class="type-name">File</span><span>, </span><span class="identifier">destination</span><span>: </span><span class="type-name">File</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Long</span><span>] = ???</span></code></pre>
+        <p>Обратите внимание, как <code>run</code> проверяет переданный список <code>args</code>. Если аргументов меньше двух, возникает ошибка. 
+        Так как <code>IO</code> реализуют <code>MonadError</code>, то мы можем в любой момент вызвать <code>IO.raiseError</code>, 
+        чтобы прервать последовательность <code>IO</code> операций. 
+        Сообщение логов распечатываются удобным способом <code>IO.println</code>.</p>
+        <p>Можно возразить, что использование <code>IO{java.nio.file.Files.copy(...)}</code> даст <code>IO</code> те же характеристики чистоты, что и наша функция. 
+        Но есть разница: наш <code>IO</code> можно смело отменить! 
+        Таким образом, пользователь может остановить работающий код в любой момент, например, нажав Ctrl-c, 
+        наш код будет заниматься безопасным освобождением ресурсов (закрытием потоков) даже при таких обстоятельствах. 
+        То же самое будет применяться, если функция <code>copy</code> запускается из других модулей, которым требуется ее функциональность. 
+        Если возвращаемое этой функцией значение <code>IO</code> будет отменено во время выполнения, 
+        все равно ресурсы будут правильно освобождены.</p>
+        
+        <h2 id="полиморфный-код-с-cats-effect" class="section"><a class="anchor-link left" href="#полиморфный-код-с-cats-effect"><i class="icofont-laika link">&#xef71;</i></a>Полиморфный код с cats-effect</h2>
+        <p>Есть важная характеристика <code>IO</code>, о которой нужно знать. 
+        <code>IO</code> способен асинхронно приостанавливать побочные эффекты благодаря наличию экземпляра <code>Async[IO]</code>. 
+        Поскольку <code>Async extends Sync</code>, то <code>IO</code> также может синхронно приостанавливать побочные эффекты. 
+        Вдобавок к этому <code>Async</code> расширяет классы типов, такие как <code>MonadCancel</code>, <code>Concurrent</code> или <code>Temporal</code>, 
+        которые дают возможность отменить <code>IO</code> экземпляр, запустить несколько <code>IO</code> экземпляров одновременно, 
+        установить тайм-аут выполнения, заставить выполнение ждать (sleep) и т.д.</p>
+        <p><code>Sync</code> и <code>Async</code> может приостановить побочные эффекты. 
+        Мы использовали <code>IO</code> до сих пор в основном для этой цели. 
+        Теперь, возвращаясь к коду, который мы создали для копирования файлов, 
+        могли ли мы закодировать его функции в терминах some <code>F[_]: Sync</code> и <code>F[_]: Async</code> вместо <code>IO</code>? 
+        Мы могли бы определить полиморфную версию функции <code>transfer</code> с таким подходом, 
+        просто заменив любое использование <code>IO</code> вызовов на методы <code>delay</code> и <code>pure</code> экземпляра <code>Sync[F]</code>.</p>
+        <p>Только в <code>main</code> функции будем устанавливать <code>IO</code> как <code>F</code> для нашей программы. 
+        Для этого, конечно, экземпляр <code>Sync[IO]</code> должен быть в области видимости, но этот экземпляр передается прозрачно <code>IOApp</code>, 
+        поэтому нам не нужно беспокоиться об этом.</p>
+        <hr>
+        <p><strong>Ссылки:</strong></p>
+        <ul>
+          <li><a href="https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FCopyFiles.scala&plain=1">Исходный код</a></li>
+          <li><a href="https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FCopyFilesF.scala&plain=1">Исходный код с полиморфными методами</a></li>
+          <li><a href="https://typelevel.org/cats-effect/docs/tutorial#a-namecopyingfilesacopying-files---basic-concepts-resource-handling-and-cancelation">Cats effect documentation</a></li>
+        </ul>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

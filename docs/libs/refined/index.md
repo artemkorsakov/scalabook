@@ -1,6 +1,8 @@
-# Уточняющие типы в Scala
+# Библиотека refined
 
-В этой статье по умолчанию используется Scala 3 (версия `3.2.2`) c дублированием примеров на Scala 2 (версия `2.13.10`).
+## Deprecated!!!
+
+Эта статья посвящена библиотеке refined, но есть [более новая статья о библиотеке iron](refined/index.md)
 
 ## Введение
 
@@ -37,14 +39,12 @@ val str: String = "€‡™µ"
 и по-прежнему позволяют "подложить" невалидное значение.
 
 ```scala
-opaque type Name = String
+type Name = String
 val name: Name = "€‡™µ"
 // val name: Name = €‡™µ
 ```
 
-[Пример в Scastie](https://scastie.scala-lang.org/j3H5VznPQUOz6ylAQgFMoA)
-
-[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/4ojla7AbTCe4lw8EdHdTMw)
+[Пример в Scastie](https://scastie.scala-lang.org/keYiEtDCQkuOlfzZUVyXjQ)
 
 ```scala
 case class Name(value: String) extends AnyVal
@@ -53,8 +53,6 @@ val name: Name = Name("€‡™µ")
 ```
 
 [Пример в Scastie](https://scastie.scala-lang.org/CjZpe7ejSwW724prXkQLqg)
-
-[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/69prW6KjRG6MPcL9fJSObw)
 
 "Стандартное" решение - регулировать создание `Name` путем ограничения видимости конструктора по умолчанию
 и определения метода создания экземпляра `Name` в сопутствующем объекте:
@@ -101,9 +99,7 @@ Name.fromString("Алёна")    // Some(Name(Алёна))
 
 ## Уточняющие типы
 
-Ещё одним способом решения заданной проблемы могут стать библиотеки для работы с уточняющими типами:
-- [**iron**][iron lib] (для Scala 3)
-- [**refined**][refined lib] (для Scala 2)
+Ещё одним способом решения заданной проблемы может стать библиотека для работы с уточняющими типами [**refined**][refined lib].
 
 В [теории типов](https://en.wikipedia.org/wiki/Type_theory)
 [уточняющий тип (refinement type)](https://en.wikipedia.org/wiki/Refinement_type) —
@@ -118,12 +114,10 @@ Name.fromString("Алёна")    // Some(Name(Алёна))
 Концепция уточняющих типов была впервые введена Фриманом и Пфеннингом в работе 1991 года ["Уточняющие типы для ML"](https://www.cs.cmu.edu/~fp/papers/pldi91.pdf),
 в которой представлена система типов для языка Standard ML.
 
+Библиотека **refined** начиналась как переработка [библиотеки на Haskell Никиты Волкова](http://nikita-volkov.github.io/refined/).
+
 Самая идея выражения ограничений на уровне типов в виде библиотеки Scala была впервые исследована Flavio W. Brasil
-в библиотеке [**bond**](https://github.com/fwbrasil/bond).
-
-И довольно сильно усовершенствована в библиотеке [**refined**][refined lib], которая начиналась как переработка [библиотеки на Haskell Никиты Волкова](http://nikita-volkov.github.io/refined/).
-
-Библиотека [**iron**][iron lib] - это дальнейшее развитие идеи уточненных типов в Scala 3.
+в библиотеке [bond](https://github.com/fwbrasil/bond).
 
 Уточнение - это достаточно распространенная и естественная процедура в программировании.
 
@@ -136,20 +130,10 @@ Name.fromString("Алёна")    // Some(Name(Алёна))
 
 Каждый следующий тип в этом списке уточняет предыдущий.
 
-## Знакомство с библиотеками iron и refined
+## Знакомство с библиотекой refined
 
-Давайте рассмотрим решение исходной задачки с помощью **iron** (Scala 3) и **refined** (Scala 2).
-
-Вот так можно объявить уточненный тип с помощью **iron**:
-
-```scala
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.constraint.string.*
-
-opaque type Name = String :| Match["[А-ЯЁ][а-яё]+"]
-```
-
-А вот так - с помощью **refined**:
+Давайте рассмотрим решение исходной задачки с помощью **refined**.
+Вот так можно объявить уточненный тип:
 
 ```scala
 import eu.timepit.refined.api.Refined
@@ -158,61 +142,71 @@ import eu.timepit.refined.string.MatchesRegex
 type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
 ```
 
-Явное присваивание невалидного значения вызовет ошибку компиляции:
+В библиотеке **refined** есть класс `RefinedTypeOps`, реализующий методы конвертации из базового типа в уточненный.
+Давайте объявим объект `Name` для иссследования доступных методов:
 
 ```scala
-val name0: Name = "€‡™µ"    // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
-val name1: Name = "12345"   // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
-val name2: Name = "Alyona"  // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
-val name3: Name = "Алёна18" // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
-val name4: Name = "алёна"   // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
-val name5: Name = "Алёна"   // Компиляция проходит успешно
+object Name extends RefinedTypeOps[Name, String]
 ```
 
-[Пример в Scastie для **iron**](https://scastie.scala-lang.org/4zUXqnzARFWscb44XGlLBw)
-
-[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/OwN8IzucSCuJ3LsBmaxL7A)
-
-Библиотеки уточнения также позволяют преобразовывать базовое значение для более удобной работы в runtime
-в `Option` (`refineOption` для **iron** / `unapply` в **refined**):
+Метод `from` возвращает `Either[String, Name]`,
+где слева - ошибка, если входящее значение не удовлетворяет предикату,
+а справа - уточненный тип, если удовлетворяет:
 
 ```scala
-val name0: Option[Name] = "€‡™µ".refineOption     // None
-val name1: Option[Name] = "12345".refineOption    // None
-val name2: Option[Name] = "Alyona".refineOption   // None
-val name3: Option[Name] = "Алёна18".refineOption  // None
-val name4: Option[Name] = "алёна".refineOption    // None
-val name5: Option[Name] = "Алёна".refineOption    // Some("Алёна")
+Name.from("€‡™µ")     // Left(Predicate failed: "€‡™µ".matches("[А-ЯЁ][а-яё]+").)
+Name.from("12345")    // Left(Predicate failed: "12345".matches("[А-ЯЁ][а-яё]+").)
+Name.from("Alyona")   // Left(Predicate failed: "Alyona".matches("[А-ЯЁ][а-яё]+").)
+Name.from("Алёна18")  // Left(Predicate failed: "Алёна18".matches("[А-ЯЁ][а-яё]+").)
+Name.from("алёна")    // Left(Predicate failed: "алёна".matches("[А-ЯЁ][а-яё]+").)
+Name.from("Алёна")    // Right(Алёна)
 ```
 
-[Пример в Scastie для **iron**](https://scastie.scala-lang.org/w6nxgVi4RHySQg6wGglUlQ)
-
-[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/4q046xYGSGSJpyqft9pE8Q)
-
-и в `Either`, где слева будет ошибка валидации, (`refineEither` для **iron** / `from` в **refined**):
+`unsafeFrom` - небезопасная конвертация, бросающая исключение в невалидных случаях:
 
 ```scala
-val name0: Either[String, Name] = "€‡™µ".refineEither     // Left("Should match [А-ЯЁ][а-яё]+")
-val name1: Either[String, Name] = "12345".refineEither    // Left("Should match [А-ЯЁ][а-яё]+")
-val name2: Either[String, Name] = "Alyona".refineEither   // Left("Should match [А-ЯЁ][а-яё]+")
-val name3: Either[String, Name] = "Алёна18".refineEither  // Left("Should match [А-ЯЁ][а-яё]+")
-val name4: Either[String, Name] = "алёна".refineEither    // Left("Should match [А-ЯЁ][а-яё]+")
-val name5: Either[String, Name] = "Алёна".refineEither    // Right("Алёна")
+Name.unsafeFrom("€‡™µ")    // java.lang.IllegalArgumentException: Predicate failed: "€‡™µ".matches("[А-ЯЁ][а-яё]+").
+Name.unsafeFrom("12345")   // java.lang.IllegalArgumentException: Predicate failed: "12345".matches("[А-ЯЁ][а-яё]+").
+Name.unsafeFrom("Alyona")  // java.lang.IllegalArgumentException: Predicate failed: "Alyona".matches("[А-ЯЁ][а-яё]+").
+Name.unsafeFrom("Алёна18") // java.lang.IllegalArgumentException: Predicate failed: "Алёна18".matches("[А-ЯЁ][а-яё]+").
+Name.unsafeFrom("алёна")   // java.lang.IllegalArgumentException: Predicate failed: "алёна".matches("[А-ЯЁ][а-яё]+").
+Name.unsafeFrom("Алёна")
+// val res0: Name = Алёна
 ```
 
-[Пример в Scastie для **iron**](https://scastie.scala-lang.org/cXvITTPiT4a27t8pU9m0fg)
+В Scala 2 библиотека **refined** позволяла неявное преобразование типов `val name: Name = "€‡™µ"`,
+которое выдавало ошибку компиляции в случае, если значение базового типа не удовлетворяло предикату.
 
-[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/V9SYu9UcSx67hAcJMnRG7g)
+В Scala 3
+[неявные преобразования типов довольно сильно переработаны](https://docs.scala-lang.org/scala3/book/ca-implicit-conversions.html).
 
-#### Предопределенные типы
+Для того чтобы позволить неявное преобразование из `String` в `Name`
+нужно для начала определить соответствующий `given` экземпляр [как показано в документации](https://docs.scala-lang.org/scala3/book/ca-implicit-conversions.html)
 
-У библиотек достаточно большой набор предопределенных типов:
-- [предопределенные типы в **iron**](https://iltotore.github.io/iron/io/github/iltotore/iron/constraint.html)
-- [предопределенные типы в **refined**](https://github.com/fthomas/refined#provided-predicates)
+При этом преобразования типов будут происходить во время выполнения, а не компиляции, поэтому этот способ (из `String` в `Name`) небезопасен.
+Но можно определить неявное преобразование в `Option[Name]`, что позволяет выполнять такое присваивание:
 
-Вот несколько примеров использования библиотек:
-- [примеры в **iron**](https://iltotore.github.io/iron/docs/reference/refinement.html)
-- [примеры в **refined**](https://github.com/fthomas/refined#more-examples)
+```scala
+given Conversion[String, Option[Name]] = Name.unapply(_)
+
+val name0: Option[Name] = "€‡™µ"    // None 
+val name1: Option[Name] = "12345"   // None
+val name2: Option[Name] = "Alyona"  // None
+val name3: Option[Name] = "Алёна18" // None
+val name4: Option[Name] = "алёна"   // None
+val name5: Option[Name] = "Алёна"   // Some(Алёна)
+```
+
+[Пример в Scastie](https://scastie.scala-lang.org/0dUop1dQQLmAn0hfclbqTQ)
+
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FMotivation.worksheet.sc&plain=1)
+
+У библиотеки [достаточно большой набор предопределенных типов (69)](refined/types)
+и есть, например, метод `refineV`,
+возвращающий значение типа `Either[String, T]`, где, как уже упоминалось для `from`, слева содержится ошибка,
+если входящее значение не удовлетворяет предикату.
+
+[Вот несколько примеров использования библиотеки](https://github.com/fthomas/refined#more-examples)
 
 ## А в чем разница?
 
@@ -245,8 +239,8 @@ Name.fromString("Алёна").get.value
 Уточняющий тип же - это конкретный тип:
 
 ```scala
-val name: Name = "Алёна"
-// val name: Name = Алёна
+Name.unsafeFrom("Алёна") 
+// val res0: Name = Алёна
 ```
 
 И дальше по коду его можно использовать именно в качестве типа.
@@ -255,7 +249,7 @@ val name: Name = "Алёна"
 и его можно использовать там, где ожидается дочерний для базового тип:
 
 ```scala
-val name: Name = "Алёна"
+val name = Name.unsafeFrom("Алёна")
 def printT[T >: String](t: T): Unit = println(t)
 printT(name) // Печатает "Алёна"
 ```
@@ -264,24 +258,124 @@ printT(name) // Печатает "Алёна"
 
 #### Проверка во время компиляции
 
-Ещё одним значительным преимуществом является возможность проверки типов во время компиляции.
-
-Как уже было рассмотрено выше:
+Ещё одним значительным преимуществом являлось возможность проверки типов во время компиляции в Scala 2.
+Следующий код на Scala 2 (версия `2.13.10`) даже не скомпилится:
 
 ```scala
-val name0: Name = "€‡™µ"    // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
-val name1: Name = "12345"   // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
-val name2: Name = "Alyona"  // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
-val name3: Name = "Алёна18" // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
-val name4: Name = "алёна"   // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
-val name5: Name = "Алёна"   // Компиляция проходит успешно
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.auto._
+import eu.timepit.refined.string._
+
+object Example {
+  type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
+
+  val name0: Name = "€‡™µ"     // Compile error: Predicate failed: "€‡™µ".matches("[А-ЯЁ][а-яё]+").
+  val name1: Name = "12345"    // Compile error: Predicate failed: "12345".matches("[А-ЯЁ][а-яё]+").
+  val name2: Name = "Alyona"   // Compile error: Predicate failed: "Alyona".matches("[А-ЯЁ][а-яё]+").
+  val name3: Name = "Алёна18"  // Compile error: Predicate failed: "Алёна18".matches("[А-ЯЁ][а-яё]+").
+  val name4: Name = "алёна"    // Compile error: Predicate failed: "алёна".matches("[А-ЯЁ][а-яё]+").
+  val name5: Name = "Алёна"    // Ок
+}
 ```
 
-Скомпилируется только последний вариант, потому что строка `"Алёна"` удовлетворяет предикату уточненного типа.
+Скомпилится только последний вариант, потому что строка `"Алёна"` удовлетворяет предикату уточненного типа.
 
-[Пример в Scastie для **iron**](https://scastie.scala-lang.org/4zUXqnzARFWscb44XGlLBw)
+[Пример в Scastie](https://scastie.scala-lang.org/oqh3jUboQQqf3wKC8A5ZkA)
 
-[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/OwN8IzucSCuJ3LsBmaxL7A)
+В Scala 3 не все так просто.
+
+Проверка соответствия уточненным типам в Scala 3 во время компиляции
+пока ещё не реализована, но это лишь вопрос времени,
+учитывая мощную функциональность [метапрограммирования в Scala 3](https://docs.scala-lang.org/scala3/reference/metaprogramming/index.html).
+
+Например, используя [inline методы](https://docs.scala-lang.org/scala3/reference/metaprogramming/inline.html)
+реализовать уточнение типа `String` до `NonEmptyString` во время компиляции можно, например так:
+
+```scala
+import eu.timepit.refined.refineV
+import eu.timepit.refined.api.Refined
+import eu.timepit.refined.collection.NonEmpty
+import scala.compiletime.error
+
+type NonEmptyString = String Refined NonEmpty
+
+inline def refineToNonEmptyString(inline str: String): NonEmptyString =
+  inline str match
+    case null: Null | "" => error("String must be non empty")
+    case _               => refineV[NonEmpty].unsafeFrom(str)
+
+refineToNonEmptyString("")           // Не компилируется с ошибкой "String must be non empty"
+refineToNonEmptyString(null: String) // Не компилируется с ошибкой "String must be non empty"
+refineToNonEmptyString("Алёна")      // Компилируется успешно!
+// val res0: NonEmptyString = Алёна
+```
+
+[Пример в Scastie](https://scastie.scala-lang.org/nBe9eTIHTjqeGzHEMRu8jw)
+
+Уточнение `String` до `Name` (во время компиляции) можно реализовать с [помощью макросов](https://docs.scala-lang.org/scala3/reference/metaprogramming/macros.html):
+
+```scala
+import eu.timepit.refined.api.{Refined, RefinedTypeOps}
+import eu.timepit.refined.string.MatchesRegex
+import scala.quoted.{Expr, Quotes, ToExpr, quotes}
+
+type Name = String Refined MatchesRegex[Name.pattern.type]
+
+object Name:
+  val pattern: "[А-ЯЁ][а-яё]+" = "[А-ЯЁ][а-яё]+"
+
+  extension (inline str: String)
+    inline def toName: Name = ${ inspectNameCode('str) }
+
+  private given NameToExpr: ToExpr[Name] with
+    def apply(x: Name)(using Quotes) =
+      import quotes.reflect.*
+      Literal(StringConstant(x.toString)).asExpr.asInstanceOf[Expr[Name]]
+
+  private def inspectNameCode(x: Expr[String])(using Quotes): Expr[Name] =
+    val str        = x.valueOrAbort
+    if !pattern.r.matches(str) then
+      import quotes.reflect.*
+      report.errorAndAbort(s"'$str' does not match pattern '$pattern'")
+    val name: Name = RefinedTypeOps[Name, String].unsafeFrom(str)
+    Expr(name)
+```
+
+В `object Name` определяется встроенный (_inline_) метод расширения `toName`,
+принимающий на вход `String` и возвращающий `Name`.
+Преобразование безопасно, потому что выполняется во время компиляции.
+
+[Исходный код Name](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FName.scala&plain=1)
+
+Попытки вызвать этот метод на невалидных значениях приводят к ошибкам компиляции:
+
+```scala
+import libs.refined.Name.toName
+
+"€‡™µ".toName       // Не компилируется с ошибкой "'€‡™µ' does not match pattern '[А-ЯЁ][а-яё]+'"
+"12345".toName      // Не компилируется с ошибкой "'12345' does not match pattern '[А-ЯЁ][а-яё]+'"
+"Alyona".toName     // Не компилируется с ошибкой "'Alyona' does not match pattern '[А-ЯЁ][а-яё]+'"
+"Алёна18".toName    // Не компилируется с ошибкой "'Алёна18' does not match pattern '[А-ЯЁ][а-яё]+'"
+"алёна".toName      // Не компилируется с ошибкой "'алёна' does not match pattern '[А-ЯЁ][а-яё]+'"
+```
+
+[Исходный код невалидных примеров](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNameCompileErrorExamples.worksheet.sc&plain=1)
+
+Если же строка удовлетворяет предикату, то тип результата - это уже уточненный тип:
+
+```scala
+import libs.refined.Name.toName
+
+val name = "Алёна".toName
+// val name: Name = Алёна
+```
+
+[Исходный код валидного примера](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FNameExamples.worksheet.sc&plain=1)
+
+
+Таким образом добиться ошибок компиляции в Scala 3 сложнее, но тоже возможно.
+Конечно, хотелось бы, чтобы эта функциональность поставлялась "из коробки", но, думаю, это вопрос времени.
+
 
 Проверка во время компиляции открывает довольно обширные возможности:
 как минимум, значительную часть проверок можно переложить с модульных тестов на компилятор.
@@ -295,9 +389,9 @@ val name5: Name = "Алёна"   // Компиляция проходит усп
 Допустим у нас есть тип и некий предикат для значений заданного типа:
 
 ```scala
-opaque type Packed = Any
+type Packed = Any
 
-val predicate: Packed => Boolean =
+val nonEmpty: Packed => Boolean =
   case str: String => Option(str).exists(_.trim.nonEmpty)
   case num: Int    => num > 0
   case _           => false
@@ -306,63 +400,57 @@ val predicate: Packed => Boolean =
 Уточняющий тип `NonEmpty` для `Packed` можно определить по предикату:
 
 ```scala
-import io.github.iltotore.iron.{given, *}
-import io.github.iltotore.iron.constraint.all.*
+import eu.timepit.refined.*
+import eu.timepit.refined.api.*
+import eu.timepit.refined.boolean.*
+import eu.timepit.refined.collection.*
 
-final class NonEmpty
-
-given Constraint[Packed, NonEmpty] with
-
-  override inline def test(value: Packed): Boolean = predicate(value)
-
-  override inline def message: String = "Should be non empty"
+given Validate[Packed, NonEmpty] with
+  override type R = NonEmpty
+  override def validate(packed: Packed): Res    =
+    Result.fromBoolean(nonEmpty(packed), Not(Empty()))
+  override def showExpr(packed: Packed): String = s"Empty packed value: $packed"
 ```
 
-Здесь в методе `test` определяется предикат, который предполагается верным для всех значений заданного типа.
+Здесь в методе `validate` определяется предикат, который предполагается верным для всех значений заданного типа.
 
-Метод `message` определяет сообщение об ошибке, если переданное значение не удовлетворяет предикату.
+Метод `showExpr` определяет сообщение об ошибке, если переданное значение не удовлетворяет предикату.
 
 Пример использования уточняющего типа для `Packed`:
 
 ```scala
-(null: Packed).refineEither[NonEmpty]     // Left(Should be non empty)
-("": Packed).refineEither[NonEmpty]       // Left(Should be non empty)
-(" ": Packed).refineEither[NonEmpty]      // Left(Should be non empty)
-("   ": Packed).refineEither[NonEmpty]    // Left(Should be non empty)
-(0: Packed).refineEither[NonEmpty]        // Left(Should be non empty)
-(-42: Packed).refineEither[NonEmpty]      // Left(Should be non empty)
-(true: Packed).refineEither[NonEmpty]     // Left(Should be non empty)
+refineV[NonEmpty](null: Packed)    // Left(Predicate failed: Empty packed value: null.)
+refineV[NonEmpty]("": Packed)      // Left(Predicate failed: Empty packed value: .)
+refineV[NonEmpty](" ": Packed)     // Left(Predicate failed: Empty packed value:  .)
+refineV[NonEmpty]("   ": Packed)   // Left(Predicate failed: Empty packed value:    .)
+refineV[NonEmpty](0: Packed)       // Left(Predicate failed: Empty packed value: 0.)
+refineV[NonEmpty](-42: Packed)     // Left(Predicate failed: Empty packed value: -42.)
+refineV[NonEmpty](true: Packed)    // Left(Predicate failed: Empty packed value: true.)
 
-("value": Packed).refineEither[NonEmpty]  // Right(value)
-(42: Packed).refineEither[NonEmpty]       // Right(42)
+refineV[NonEmpty]("value": Packed) // Right(value)
+refineV[NonEmpty](42: Packed)      // Right(42)
 ```
 
-[Пример в Scastie для **iron**](https://scastie.scala-lang.org/oXHm4xGtQVqgcpoOGLCxEw)
+[Пример в Scastie](https://scastie.scala-lang.org/EIwWjHrMSyu6OxrznZN38g)
 
-[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/9ssdbLvETGytvfqves0xlQ)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FPackedExamples.worksheet.sc&plain=1)
 
 Уточнить можно любой тип, в том числе уточненный - в этом случае он становится базовым для другого типа,
 который будет его "уточнять".
+В библиотеке **refined** уточнение уточненного типа
+равносильно использованию типа `And[A, B]` - коньюнкции предикатов `A` и `B`.
 
-В библиотеке **iron** уточнение уточненного типа
-равносильно использованию типа `A & B` - коньюнкции предикатов `A` и `B`.
-
-В библиотеке **refined** - `And[A, B]`.
-
-[Пример в Scastie для **iron**](https://scastie.scala-lang.org/u8piqnZDQHuQNxqvlK4Ubw)
-
-[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/8rtUUguHSVOrGttlP5J7mQ)
+[Пример в Scastie](https://scastie.scala-lang.org/nfETvR0vSUGv77Fc984icw)
 
 Предельным непустым уточненным типом [является литеральный тип](https://docs.scala-lang.org/sips/42.type.html),
 добавленный в версии Scala 2.13.
 
 [Пример в Scastie](https://scastie.scala-lang.org/hEnqG1UxQkGeBpKX8wt40A)
 
-[Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/JefKM7P2S3GaJfvxNR9yxg)
 
 ## Накопление ошибок валидации
 
-Вариант использования `refineEither`, рассмотренный выше, довольно прост,
+Вариант использования `refineV`, рассмотренный выше, довольно прост,
 и с ним часто сталкиваются разработчики: получение данных от некоего входящего потока.
 Но прерывание процесса на первой обнаруженной ошибке нежелательно.
 Ведь на ошибки можно быстро реагировать и решать проблемы входящего потока пачками.
@@ -380,33 +468,36 @@ given Constraint[Packed, NonEmpty] with
 
 Это именно то, что можно сделать с `ValidatedNec` из библиотеки [cats](https://typelevel.org/cats/index.html).
 
-К счастью, **iron** предоставляет расширение [**iron-cats**](https://iltotore.github.io/iron/docs/modules/cats.html),
+К счастью, **refined** предоставляет расширение [**refined-cats**][refined cats],
 которое позволяет возвращать шаги проверки `ValidatedNec[String, A]` вместо `Either[String, A]`:
-
-Для библиотеки **refined** есть аналогичное расширение [**refined-cats**][refined cats]:
 
 ```scala
 import cats.data.ValidatedNec
-import cats.syntax.all.*
-
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.cats.*
-import io.github.iltotore.iron.constraint.all.*
+import cats.implicits.*
+import eu.timepit.refined.api.{Refined, RefinedTypeOps}
+import eu.timepit.refined.cats.syntax.*
+import eu.timepit.refined.numeric.Interval
+import eu.timepit.refined.refineV
+import eu.timepit.refined.string.*
 
 import java.util.UUID
 
-opaque type Name = String :| Match["[А-ЯЁ][а-яё]+"]
-opaque type Age  = Int :| Interval.Open[7, 77]
-opaque type Id   = String :| ValidUUID
+type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
+object Name extends RefinedTypeOps[Name, String]
+
+type Age = Int Refined Interval.ClosedOpen[7, 77]
+object Age extends RefinedTypeOps[Age, Int]
+
+type Id = String Refined Uuid
 
 final case class Person(name: Name, age: Age, id: Id)
 
 object Person:
   def refine(name: String, age: Int, id: String): ValidatedNec[String, Person] =
     (
-      name.refineValidatedNec[Match["[А-ЯЁ][а-яё]+"]],
-      age.refineValidatedNec[Interval.Open[7, 77]],
-      id.refineValidatedNec[ValidUUID]
+      Name.validateNec(name),
+      Age.validateNec(age),
+      refineV[Uuid](id).toValidatedNec
     ).mapN(Person.apply)
 ```
 
@@ -426,43 +517,48 @@ Person.refine("Андрей", 50, UUID.randomUUID().toString)
 ```scala
 Person.refine("Andrew", 150, "id")
 // Invalid(Chain(
-//   "Should match [А-ЯЁ][а-яё]+", 
-//   "Should be included in (7, 77)", 
-//   "Should be an UUID"
+//   Predicate failed: "Andrew".matches("[А-ЯЁ][а-яё]+")., 
+//   Right predicate of (!(150 < 7) && (150 < 77)) failed: Predicate failed: (150 < 77)., 
+//   Uuid predicate failed: Invalid UUID string: id
 // ))
 ```
 
-[Пример в Scastie для **iron**](https://scastie.scala-lang.org/4seolbH9SXeHosgAUNDzFw)
+[Пример в Scastie](https://scastie.scala-lang.org/ldZp5KvvSHKfieFPCefw7Q)
 
-[Тот же пример в Scastie на Scala 2 для **refined**](https://scastie.scala-lang.org/roViFMw2SsaCWXB1vkMDdA)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Frefined%2FRefinedWithCatsExamples.worksheet.sc&plain=1)
 
-## Итоги обзора библиотек уточенных типов **iron** и **refined**
 
-Подведем краткие итоги обзора библиотек **iron** и **refined**:
+## Итоги обзора библиотеки refined
 
-- К основным преимуществам библиотек относится:
+Подведем краткие итоги обзора библиотеки **refined**:
+
+- К основным преимуществам библиотеки **refined** относится:
   - Система типов
-  - Отлов ошибок во время компиляции
+  - Отлов ошибок во время компиляции (с определенными трудностями в Scala 3)
   - Единая декларативная валидация
 - К недостаткам:
   - При использовании нотации инфиксного типа необходимо проявлять осторожность
     и использовать скобки или неинфиксное определение типа:
-    - **iron**
-      - ~~String :| XXX & YYY~~
-      - String :| &[XXX, YYY]
-      - String :| (XXX & YYY)
-    - **refined**
-      - ~~String Refined XXX And YYY~~
-      - String Refined And[XXX, YYY]
-      - String Refined (XXX And YYY)
+    - ~~String Refined XXX And YYY~~
+    - String Refined And[XXX, YYY]
+    - String Refined (XXX And YYY)
   - Уточненные примитивы всегда упакованы
-  - Сообщения об ошибках валидации не всегда понятны
-- У библиотек **iron** и **refined** есть альтернативы:
+  - Сообщения об ошибках валидации не всегда понятны, а порой и просто ошибочны
+- У библиотеки **refined** есть альтернативы:
   - [Bond](https://github.com/fwbrasil/bond)
   - [Scalactic](https://www.scalactic.org/)
-- Интеграция с другими библиотеками:
-  - [**iron**](https://iltotore.github.io/iron/docs/modules/index.html)
-  - [**refined**](https://github.com/fthomas/refined#using-refined)
+- [Интеграция с другими библиотеками](https://github.com/fthomas/refined#using-refined)
+  - [refined-cats (Scala 3 + Scala 2)][refined cats]
+  - [refined-eval (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-eval?pre-releases=false)
+  - [refined-jsonpath (Scala 3 + Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-jsonpath?pre-releases=false)
+  - [refined-pureconfig (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-pureconfig?pre-releases=false)
+    - [Пример взаимодействия с pureconfig](refined/pureconfig)
+  - [refined-scalacheck (Scala 3 + Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-scalacheck?pre-releases=false)
+  - [refined-scalaz (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-scalaz?pre-releases=false)
+  - [refined-scodec (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-scodec?pre-releases=false)
+  - [refined-scopt (Scala 3 + Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-scopt?pre-releases=false)
+  - [refined-shapeless (только Scala 2)](https://index.scala-lang.org/fthomas/refined/artifacts/refined-shapeless?pre-releases=false)
+
 
 ## Заключение
 
@@ -495,8 +591,7 @@ Person.refine("Andrew", 150, "id")
 ---
 
 **Ссылки** (в алфавитном порядке):
-- [iron lib][iron lib]
-- [refined lib][refined lib]
+- [Refined lib][refined lib]
 - Видео:
   - [Better types = fewer tests - Raúl Raja](https://www.youtube.com/watch?v=TScwxX62uig)
   - [Combining Refined Types with Type Class Derivation in Scala - Lawrence Carvalho](https://www.youtube.com/watch?v=Hq2QWbUXKbE&t)
@@ -532,7 +627,6 @@ Person.refine("Andrew", 150, "id")
   - [Wtf is Refined? - Methrat0n](https://medium.com/@Methrat0n/wtf-is-refined-5008eb233194)
 
 
-[iron lib]: https://github.com/Iltotore/iron
 [refined lib]: https://github.com/fthomas/refined
 [refined cats]: https://index.scala-lang.org/fthomas/refined/artifacts/refined-cats?pre-releases=false
 [conversion]: refined/conversionInScala3

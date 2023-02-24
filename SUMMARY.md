@@ -198,8 +198,8 @@
   - [Метод Ньютона](docs/algorithms/newton.md)
 
 - [Scala библиотеки](docs/libs/index.md)
-  - [Iron](docs/libs/iron/index.md) 
-  - [Refined](docs/libs/refined.md)
+  - [Iron](docs/libs/refined.md) 
+    - [Refined](docs/libs/refined/index.md)
     - [Список refined типов](docs/libs/refined/types.md) 
     - [Refined + pureconfig](docs/libs/refined/pureconfig.md) 
   - [Cats effect](docs/libs/cats-effect.md)

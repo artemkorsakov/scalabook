@@ -29,4 +29,5 @@ Scala использует статический тип переменной д
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-024)

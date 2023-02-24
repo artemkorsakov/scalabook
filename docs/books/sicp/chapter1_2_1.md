@@ -115,4 +115,5 @@ functionAckermann(3, 3)
 ---
 
 **Ссылки:**
+
 - [Упражнение 1.9 - 1.10](https://web.mit.edu/6.001/6.037/sicp.pdf#page=74)

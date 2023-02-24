@@ -75,4 +75,5 @@ funcs2 foreach { f2 => println(f2()) }
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-008)

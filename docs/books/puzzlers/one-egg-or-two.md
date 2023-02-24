@@ -24,4 +24,5 @@ println(y1 == y2)
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-017)

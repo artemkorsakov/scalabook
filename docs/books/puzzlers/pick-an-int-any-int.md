@@ -38,4 +38,5 @@ scala> println(b.x: Int)
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-029)

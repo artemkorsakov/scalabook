@@ -20,4 +20,5 @@ sumSizes(Set(List(1, 2), Set(3, 4)))
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-006)

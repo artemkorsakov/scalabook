@@ -306,4 +306,5 @@ def productPrimesLessThanN(n: Int): Int =
 ---
 
 **Ссылки:**
+
 - [Упражнение 1.29 - 1.33](https://web.mit.edu/6.001/6.037/sicp.pdf#page=108)

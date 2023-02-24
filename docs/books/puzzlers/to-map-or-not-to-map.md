@@ -63,4 +63,5 @@ numerals foreach { num => print(s"${num.symbol} ") }
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-013)

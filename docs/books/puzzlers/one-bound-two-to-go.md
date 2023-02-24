@@ -45,4 +45,5 @@ def invert3: (Int, Int) => Unit
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-020)

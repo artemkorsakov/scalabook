@@ -22,4 +22,5 @@ acceptsAnyArgs (( "Psst" , "hey" , "world:" ))( 4 , 2 )
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-039)

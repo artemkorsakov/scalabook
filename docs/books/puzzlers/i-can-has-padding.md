@@ -85,4 +85,5 @@ println(farewell pad2 20)
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-027)

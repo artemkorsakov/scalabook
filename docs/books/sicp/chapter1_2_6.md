@@ -315,4 +315,5 @@ fastIsPrime(6601, 100) // false
 ---
 
 **Ссылки:**
+
 - [Упражнение 1.21 - 1.28](https://web.mit.edu/6.001/6.037/sicp.pdf#page=98)

@@ -7,6 +7,7 @@
 ---
 
 **Ссылки:**
+
 - [Phillips Andrew, Šerifović Nermin - Scala Puzzlers][Scala Puzzlers]
   
 [Scala Puzzlers]: https://scalapuzzlers.com/index.html 

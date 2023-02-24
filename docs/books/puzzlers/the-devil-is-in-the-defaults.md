@@ -31,4 +31,5 @@ println(baddies("under bed").dequeue)
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-042)

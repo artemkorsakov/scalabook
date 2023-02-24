@@ -247,4 +247,5 @@ def fixedPoint(f: Double => Double, firstGuess: Double): Double =
 ---
 
 **Ссылки:**
+
 - [Упражнение 1.40 - 1.46](https://web.mit.edu/6.001/6.037/sicp.pdf#page=131)

@@ -90,4 +90,5 @@ pascalsTriangle(4, 2) // 6
 ---
 
 **Ссылки:**
+
 - [Упражнение 1.11 - 1.13](https://web.mit.edu/6.001/6.037/sicp.pdf#page=81)

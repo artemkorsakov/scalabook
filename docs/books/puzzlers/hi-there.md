@@ -23,4 +23,5 @@ List(1, 2).map { println("Hi"); _ + 1 }
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-001)

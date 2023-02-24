@@ -31,4 +31,5 @@ println(if math.random > 0.5 then XY.X.value else XY.Y.value)
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-010)

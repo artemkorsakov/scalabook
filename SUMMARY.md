@@ -198,10 +198,7 @@
   - [Метод Ньютона](docs/algorithms/newton.md)
 
 - [Scala библиотеки](docs/libs/index.md)
-  - [Уточняющие типы](docs/libs/refined.md) 
-    - [Refined](docs/libs/refined/index.md)
-    - [Список refined типов](docs/libs/refined/types.md) 
-    - [Refined + pureconfig](docs/libs/refined/pureconfig.md) 
+  - [Уточняющие типы](docs/libs/refined.md)
   - [Cats effect](docs/libs/cats-effect.md)
     - [Копирование файлов](docs/libs/cats-effect/copy-files.md) 
     - [Производитель-потребитель](docs/libs/cats-effect/producer-consumer-problem.md) 

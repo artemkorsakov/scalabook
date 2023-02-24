@@ -34,4 +34,5 @@ if threeFour.nonEmpty then
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-048)

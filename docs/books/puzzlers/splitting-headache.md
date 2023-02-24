@@ -39,4 +39,5 @@ println(validDna(""))
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-055)

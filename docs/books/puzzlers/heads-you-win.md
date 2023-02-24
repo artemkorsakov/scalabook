@@ -33,4 +33,5 @@ Scala `CollectionConverters` превращает списки Java
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-061)

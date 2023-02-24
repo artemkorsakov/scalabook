@@ -31,4 +31,5 @@ println(tryEval(10 / 0))
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-059)

@@ -36,4 +36,5 @@ odds take 2 foreach println
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-063)

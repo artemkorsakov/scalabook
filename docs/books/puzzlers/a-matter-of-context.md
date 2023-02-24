@@ -38,4 +38,5 @@ StringContext("""\\builder\tmp-""").s(uniqueSuffix)
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-065)

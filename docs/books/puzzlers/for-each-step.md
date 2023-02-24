@@ -68,4 +68,5 @@ expr1 map { a => (a, vexpr) } flatMap { case (a, v) => expr2 flatMap ... }
 ---
 
 **Ссылки:**
+
 - [Scala Puzzlers](https://scalapuzzlers.com/index.html#pzzlr-068)

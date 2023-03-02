@@ -413,7 +413,7 @@
   <p class="header"><a href="#">Уточняющие типы в Scala</a></p>
 
   <ul class="nav-list">
-    <li class="level1 nav-leaf"><a href="#введение">Введение</a></li>
+    <li class="level1 nav-leaf"><a href="#стандартные-типы-данных-и-чистые-классы-значений">Стандартные типы данных и «чистые» классы значений</a></li>
     <li class="level1 nav-leaf"><a href="#уточняющие-типы">Уточняющие типы</a></li>
     <li class="level1 nav-node"><a href="#знакомство-с-библиотеками-iron-и-refined">Знакомство с библиотеками iron и refined</a></li>
     <li class="level2 nav-leaf"><a href="#предопределенные-типы">Предопределенные типы</a></li>
@@ -423,7 +423,7 @@
     <li class="level1 nav-leaf"><a href="#уточнение-произвольного-типа">Уточнение произвольного типа</a></li>
     <li class="level1 nav-leaf"><a href="#накопление-ошибок-валидации">Накопление ошибок валидации</a></li>
     <li class="level1 nav-leaf"><a href="#итоги-обзора-библиотек-уточенных-типов-iron-и-refined">Итоги обзора библиотек уточенных типов <strong>iron</strong> и <strong>refined</strong></a></li>
-    <li class="level1 nav-leaf"><a href="#заключение">Заключение</a></li>
+    <li class="level1 nav-leaf"><a href="#границы-применимости">Границы применимости</a></li>
   </ul>
 
   <p class="footer"><a href="https://github.com/artemkorsakov/scalabook/blob/master/docs/libs/refined.md"><i class="icofont-laika edit" title="Edit">&#xef10;</i>Редактировать страницу</a></p>
@@ -433,9 +433,20 @@
       <main class="content">
 
         <h1 id="уточняющие-типы-в-scala" class="title">Уточняющие типы в Scala</h1>
-        <p>В этой статье по умолчанию используется Scala 3 (версия <code>3.2.2</code>) c дублированием примеров на Scala 2 (версия <code>2.13.10</code>).</p>
+        <p>Статья вышла <a href="https://habr.com/ru/company/kryptonite/blog/719488/">в блоге компании &quot;Криптонит&quot; на хабре</a>.</p>
+        <p>Ни один программист не застрахован от ситуации, в которой его программа принимает на вход невалидные значения. 
+        Будь то пользовательский ввод или сырой массив данных — неважно. 
+        Главное, что в Scala есть ряд приёмов, позволяющих минимизировать возможность появления таких ошибок. 
+        Одним из них является использование уточнённых типов данных. 
+        Они имеют огромное значение, когда речь идёт о надёжности кода, и часто могут использоваться без дополнительных тестов.</p>
+        <p>Уточнение даёт более строгие, ограниченные типы данных для использования во всём нашем коде. 
+        Во время синтаксического анализа они гарантируют, 
+        что ни одной переменной не будет присвоено невалидное (непригодное для дальнейшей обработки) значение. 
+        Эта идея хорошо разобрана здесь.</p>
+        <p>По умолчанию в этой статье все примеры разбираются в Scala 3 (версия <code>3.2.2</code>) 
+        и большинство из них дублируются на Scala 2 (версия <code>2.13.10</code>).</p>
         
-        <h2 id="введение" class="section"><a class="anchor-link left" href="#введение"><i class="icofont-laika link">&#xef71;</i></a>Введение</h2>
+        <h2 id="стандартные-типы-данных-и-чистые-классы-значений" class="section"><a class="anchor-link left" href="#стандартные-типы-данных-и-чистые-классы-значений"><i class="icofont-laika link">&#xef71;</i></a>Стандартные типы данных и «чистые» классы значений</h2>
         <p>Набор стандартных типов весьма ограничен и покрывает только самые распространенные ситуации.
         Каждый стандартный тип данных - это достаточно общее множество значений и операций над этими значениями.
         Возьмем для примера <code>String</code> - строковый тип в Scala.
@@ -469,10 +480,13 @@
         <p><a href="https://scastie.scala-lang.org/69prW6KjRG6MPcL9fJSObw">Тот же пример в Scastie на Scala 2</a></p>
         <p>&quot;Стандартное&quot; решение - регулировать создание <code>Name</code> путем ограничения видимости конструктора по умолчанию
         и определения метода создания экземпляра <code>Name</code> в сопутствующем объекте:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Name</span><span> </span><span class="keyword">private</span><span> (</span><span class="identifier">value</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyVal</span><span>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">util</span><span>.</span><span class="identifier">matching</span><span>.</span><span class="type-name">Regex</span><span>
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Name</span><span> </span><span class="keyword">private</span><span> (</span><span class="identifier">value</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyVal</span><span>
+
 </span><span class="keyword">object</span><span> </span><span class="type-name">Name</span><span>:
-  </span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">util</span><span>.</span><span class="identifier">matching</span><span>.</span><span class="type-name">Regex</span><span>
-  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">pattern</span><span>: </span><span class="type-name">Regex</span><span>                = </span><span class="string-literal">&quot;[А-ЯЁ][а-яё]+&quot;</span><span>.</span><span class="identifier">r</span><span>
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">pattern</span><span>: </span><span class="type-name">Regex</span><span> = </span><span class="string-literal">&quot;[А-ЯЁ][а-яё]+&quot;</span><span>.</span><span class="identifier">r</span><span>
+
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">fromString</span><span>(</span><span class="identifier">str</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Name</span><span>] =
     </span><span class="keyword">if</span><span> </span><span class="identifier">pattern</span><span>.</span><span class="identifier">matches</span><span>(</span><span class="identifier">str</span><span>) </span><span class="keyword">then</span><span> </span><span class="type-name">Some</span><span>(</span><span class="type-name">Name</span><span>(</span><span class="identifier">str</span><span>))
     </span><span class="keyword">else</span><span> </span><span class="type-name">None</span></code></pre>
@@ -485,14 +499,14 @@
 </span><span class="type-name">Name</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="string-literal">&quot;Алёна18&quot;</span><span>)  </span><span class="comment">// None
 </span><span class="type-name">Name</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="string-literal">&quot;алёна&quot;</span><span>)    </span><span class="comment">// None
 </span><span class="type-name">Name</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="string-literal">&quot;Алёна&quot;</span><span>)    </span><span class="comment">// Some(Name(Алёна))</span></code></pre>
-        <p><a href="https://scastie.scala-lang.org/HvKxeWpVT22Cv50N8GnbCw">Пример в Scastie</a></p>
+        <p><a href="https://scastie.scala-lang.org/Esu8N76RQO6s0kORDsW1Kg">Пример в Scastie</a></p>
         <blockquote>
           <p>В Scala 2 этот способ можно &quot;взломать&quot; через метод <code>copy</code> (в Scala 3 эту лазейку убрали):</p>
           <p><code>Name.fromString(&quot;Алёна&quot;).map(_.copy(&quot;€‡™µ&quot;)) // Some(Name(€‡™µ))</code></p>
           <p>Для запрета на использование метода <code>copy</code> или переопределения через наследование
           в Scala 2 требовалось объявлять класс как <code>sealed abstract</code>, вот так:</p>
           <p><code>sealed abstract case class Name private (value: String) extends AnyVal</code></p>
-          <p><a href="https://scastie.scala-lang.org/9Uzl00WPTs6TJg8jW7GzOg">Пример &quot;взлома&quot; через copy в Scala 2 на Scastie</a></p>
+          <p><a href="https://scastie.scala-lang.org/JjnQcld3S9iPVoz1isQKqA">Пример &quot;взлома&quot; через copy в Scala 2 на Scastie</a></p>
         </blockquote>
         
         <h2 id="уточняющие-типы" class="section"><a class="anchor-link left" href="#уточняющие-типы"><i class="icofont-laika link">&#xef71;</i></a>Уточняющие типы</h2>
@@ -543,8 +557,8 @@
 </span><span class="keyword">val</span><span> </span><span class="identifier">name5</span><span>: </span><span class="type-name">Name</span><span> = </span><span class="string-literal">&quot;Алёна&quot;</span><span>   </span><span class="comment">// Компиляция проходит успешно</span></code></pre>
         <p><a href="https://scastie.scala-lang.org/4zUXqnzARFWscb44XGlLBw">Пример в Scastie для <strong>iron</strong></a></p>
         <p><a href="https://scastie.scala-lang.org/OwN8IzucSCuJ3LsBmaxL7A">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
-        <p>Библиотеки уточнения также позволяют преобразовывать базовое значение для более удобной работы в runtime
-        в <code>Option</code> (<code>refineOption</code> для <strong>iron</strong> / <code>unapply</code> в <strong>refined</strong>):</p>
+        <p>Библиотеки уточнения также позволяют преобразовывать базовое значение для более удобной работы 
+        в <a href="https://www.scala-lang.org/api/3.2.2/scala/Option.html"><code>Option[T]</code></a> (<code>refineOption</code> для <strong>iron</strong> / <code>unapply</code> в <strong>refined</strong>):</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">name0</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;€‡™µ&quot;</span><span>.</span><span class="identifier">refineOption</span><span>     </span><span class="comment">// None
 </span><span class="keyword">val</span><span> </span><span class="identifier">name1</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;12345&quot;</span><span>.</span><span class="identifier">refineOption</span><span>    </span><span class="comment">// None
 </span><span class="keyword">val</span><span> </span><span class="identifier">name2</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;Alyona&quot;</span><span>.</span><span class="identifier">refineOption</span><span>   </span><span class="comment">// None
@@ -552,8 +566,9 @@
 </span><span class="keyword">val</span><span> </span><span class="identifier">name4</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;алёна&quot;</span><span>.</span><span class="identifier">refineOption</span><span>    </span><span class="comment">// None
 </span><span class="keyword">val</span><span> </span><span class="identifier">name5</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;Алёна&quot;</span><span>.</span><span class="identifier">refineOption</span><span>    </span><span class="comment">// Some(&quot;Алёна&quot;)</span></code></pre>
         <p><a href="https://scastie.scala-lang.org/w6nxgVi4RHySQg6wGglUlQ">Пример в Scastie для <strong>iron</strong></a></p>
-        <p><a href="https://scastie.scala-lang.org/4q046xYGSGSJpyqft9pE8Q">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
-        <p>и в <code>Either</code>, где слева будет ошибка валидации, (<code>refineEither</code> для <strong>iron</strong> / <code>from</code> в <strong>refined</strong>):</p>
+        <p><a href="https://scastie.scala-lang.org/e1JE6BfaRBG8cBAEqvshYg">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
+        <p>и в <a href="https://www.scala-lang.org/api/3.2.2/scala/util/Either.html"><code>Either[String, T]</code></a>, 
+        где слева будет ошибка валидации, (<code>refineEither</code> для <strong>iron</strong> / <code>from</code> в <strong>refined</strong>):</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">name0</span><span>: </span><span class="type-name">Either</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;€‡™µ&quot;</span><span>.</span><span class="identifier">refineEither</span><span>     </span><span class="comment">// Left(&quot;Should match [А-ЯЁ][а-яё]+&quot;)
 </span><span class="keyword">val</span><span> </span><span class="identifier">name1</span><span>: </span><span class="type-name">Either</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;12345&quot;</span><span>.</span><span class="identifier">refineEither</span><span>    </span><span class="comment">// Left(&quot;Should match [А-ЯЁ][а-яё]+&quot;)
 </span><span class="keyword">val</span><span> </span><span class="identifier">name2</span><span>: </span><span class="type-name">Either</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;Alyona&quot;</span><span>.</span><span class="identifier">refineEither</span><span>   </span><span class="comment">// Left(&quot;Should match [А-ЯЁ][а-яё]+&quot;)
@@ -561,7 +576,7 @@
 </span><span class="keyword">val</span><span> </span><span class="identifier">name4</span><span>: </span><span class="type-name">Either</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;алёна&quot;</span><span>.</span><span class="identifier">refineEither</span><span>    </span><span class="comment">// Left(&quot;Should match [А-ЯЁ][а-яё]+&quot;)
 </span><span class="keyword">val</span><span> </span><span class="identifier">name5</span><span>: </span><span class="type-name">Either</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Name</span><span>] = </span><span class="string-literal">&quot;Алёна&quot;</span><span>.</span><span class="identifier">refineEither</span><span>    </span><span class="comment">// Right(&quot;Алёна&quot;)</span></code></pre>
         <p><a href="https://scastie.scala-lang.org/cXvITTPiT4a27t8pU9m0fg">Пример в Scastie для <strong>iron</strong></a></p>
-        <p><a href="https://scastie.scala-lang.org/V9SYu9UcSx67hAcJMnRG7g">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
+        <p><a href="https://scastie.scala-lang.org/GHkxyKFNRzCttHVgwSiFbw">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
         
         <h4 id="предопределенные-типы" class="section"><a class="anchor-link left" href="#предопределенные-типы"><i class="icofont-laika link">&#xef71;</i></a>Предопределенные типы</h4>
         <p>У библиотек достаточно большой набор предопределенных типов:</p>
@@ -656,14 +671,14 @@
 </span><span>
 (</span><span class="string-literal">&quot;value&quot;</span><span>: </span><span class="type-name">Packed</span><span>).</span><span class="identifier">refineEither</span><span>[</span><span class="type-name">NonEmpty</span><span>]  </span><span class="comment">// Right(value)
 </span><span>(</span><span class="number-literal">42</span><span>: </span><span class="type-name">Packed</span><span>).</span><span class="identifier">refineEither</span><span>[</span><span class="type-name">NonEmpty</span><span>]       </span><span class="comment">// Right(42)</span></code></pre>
-        <p><a href="https://scastie.scala-lang.org/oXHm4xGtQVqgcpoOGLCxEw">Пример в Scastie для <strong>iron</strong></a></p>
-        <p><a href="https://scastie.scala-lang.org/9ssdbLvETGytvfqves0xlQ">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
+        <p><a href="https://scastie.scala-lang.org/6MsuJONXTHWZcV5h7pLhJQ">Пример в Scastie для <strong>iron</strong></a></p>
+        <p><a href="https://scastie.scala-lang.org/F7Qf7XD8SGKdfVG3OmffDg">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
         <p>Уточнить можно любой тип, в том числе уточненный - в этом случае он становится базовым для другого типа,
         который будет его &quot;уточнять&quot;.</p>
         <p>В библиотеке <strong>iron</strong> уточнение уточненного типа
         равносильно использованию типа <code>A &amp; B</code> - коньюнкции предикатов <code>A</code> и <code>B</code>.</p>
         <p>В библиотеке <strong>refined</strong> - <code>And[A, B]</code>.</p>
-        <p><a href="https://scastie.scala-lang.org/u8piqnZDQHuQNxqvlK4Ubw">Пример в Scastie для <strong>iron</strong></a></p>
+        <p><a href="https://scastie.scala-lang.org/QdC8NLLJS8OZLygJaN8pMA">Пример в Scastie для <strong>iron</strong></a></p>
         <p><a href="https://scastie.scala-lang.org/8rtUUguHSVOrGttlP5J7mQ">Тот же пример в Scastie на Scala 2 для <strong>refined</strong></a></p>
         <p>Предельным непустым уточненным типом <a href="https://docs.scala-lang.org/sips/42.type.html">является литеральный тип</a>,
         добавленный в версии Scala 2.13.</p>
@@ -744,27 +759,13 @@
             <ul>
               <li>
                 При использовании нотации инфиксного типа необходимо проявлять осторожность
-                и использовать скобки или неинфиксное определение типа:
+                и использовать скобки или неинфиксное определение типа (только у <strong>refined</strong>):
                 <ul>
-                  <li>
-                    <strong>iron</strong>
-                    <ul>
-                      <li><del>String :| XXX &amp; YYY</del></li>
-                      <li><code>String :| &amp;[XXX, YYY]</code></li>
-                      <li><code>String :| (XXX &amp; YYY)</code></li>
-                    </ul>
-                  </li>
-                  <li>
-                    <strong>refined</strong>
-                    <ul>
-                      <li><del>String Refined XXX And YYY</del></li>
-                      <li><code>String Refined And[XXX, YYY]</code></li>
-                      <li><code>String Refined (XXX And YYY)</code></li>
-                    </ul>
-                  </li>
+                  <li><del>String Refined XXX And YYY</del></li>
+                  <li><code>String Refined And[XXX, YYY]</code></li>
+                  <li><code>String Refined (XXX And YYY)</code></li>
                 </ul>
               </li>
-              <li>Уточненные примитивы всегда упакованы</li>
               <li>Сообщения об ошибках валидации не всегда понятны</li>
             </ul>
           </li>
@@ -784,26 +785,20 @@
           </li>
         </ul>
         
-        <h2 id="заключение" class="section"><a class="anchor-link left" href="#заключение"><i class="icofont-laika link">&#xef71;</i></a>Заключение</h2>
-        <p>Методов борьбы с ошибками в программном обеспечении очень много ввиду критичности проблемы.
-        Тестирование программного обеспечения
-        является важным (если не самым важным) этапом выпуска продукта.
-        Почти в каждой компании есть выделенное подразделение QA, порой по численности, знаниям и компетентности
-        не уступающее подразделению разработки.
-        Кодовая база тестов порой превышает тестируемый код.</p>
-        <p>Уточненные типы - безусловно не панацея, а ещё один способ повысить качество выпускаемого продукта.
-        Уточненные типы имеют огромное значение, когда речь идет о возможности уверенности в нашем коде,
-        и часто они могут использоваться без дополнительных тестов.</p>
-        <p>Уточнение во время синтаксического анализа не только гарантирует, что мы не забудем о невалидных данных,
-        но также дает более точные, ограниченные типы для использования во всем нашем коде.
-        Эта идея хорошо разобрана <a href="https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate">в следующей статье</a>.</p>
-        <p>Однако необходимо помнить, что <em>больше - не всегда лучше</em>, когда дело доходит до набора текста.
-        Иногда лучше оставить универсальный тип или обобщить его до чего-то более простого,
+        <h2 id="границы-применимости" class="section"><a class="anchor-link left" href="#границы-применимости"><i class="icofont-laika link">&#xef71;</i></a>Границы применимости</h2>
+        <p>Методов борьбы с ошибками в программном обеспечении очень много ввиду критичности проблемы. 
+        Тестирование программного обеспечения является важным (если не самым важным) этапом выпуска продукта. 
+        Почти в каждой компании есть выделенное подразделение QA, порой по численности, 
+        знаниям и компетентности не уступающее подразделению разработки. 
+        Кодовая база тестов иногда превышает тестируемый код.</p>
+        <p>Уточнённые типы — безусловно не панацея, но ещё один способ повысить качество выпускаемого продукта. 
+        Однако необходимо помнить, что <em>больше — не всегда лучше</em>, когда дело доходит до набора текста. 
+        Иногда лучше оставить универсальный тип или обобщить его до чего-то более простого, 
         когда нижестоящая логика на самом деле не требует уточнения этого типа.</p>
-        <p>В противном случае ваша логика становится тесно связанной с тем, что вы делаете в данный момент,
+        <p>В противном случае ваша логика становится тесно связанной с тем, что вы делаете в данный момент, 
         и вы теряете возможность повторного использования, которая так дорога функциональным программистам.</p>
-        <p>Эмпирическое правило таково: всегда кодируйте то, что нужно вашей логике, а не только то, что вы можете.
-        И не бойтесь ослаблять ограничения в дальнейшем.</p>
+        <p>Эмпирическое правило таково: <em>всегда кодируйте то, что нужно вашей логике, а не только то, что вы можете</em>. 
+        Да, и не бойтесь ослаблять ограничения в дальнейшем!</p>
         <hr>
         <p><strong>Ссылки</strong> (в алфавитном порядке):</p>
         <ul>

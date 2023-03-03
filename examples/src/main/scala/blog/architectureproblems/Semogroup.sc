@@ -1,0 +1,2 @@
+trait Semogroup[A]:
+  def |+|

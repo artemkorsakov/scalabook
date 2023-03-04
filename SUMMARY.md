@@ -2,7 +2,6 @@
 
 - [Блог]()
   - [Ошибки при наследовании](docs/blog/architecture-problems.md)
-  - [Декомпозиция в Scala 3](docs/blog/decomposition_in_Scala_3.md) 
 
 - [Scala](docs/scala/index.md)
   - [С чего начать?](docs/scala/getting-started.md)

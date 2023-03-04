@@ -85,7 +85,7 @@
   <ul class="nav-list">
     <li class="level1 nav-leaf"><a href="../">Домашняя</a></li>
     <li class="level1 nav-header">Блог</li>
-    <li class="level2 nav-leaf"><a href="../blog/2023-01-09-architecture-problems.html">Ошибки при наследовании</a></li>
+    <li class="level2 nav-leaf"><a href="../blog/architecture-problems.html">Ошибки при наследовании</a></li>
     <li class="level1 nav-header">Scala</li>
     <li class="level2 nav-leaf"><a href="../scala/">Обзор Scala</a></li>
     <li class="level2 nav-leaf"><a href="../scala/getting-started.html">С чего начать?</a></li>
@@ -430,7 +430,7 @@
       <main class="content">
 
         <h1 id="monoids" class="title">Monoids</h1>
-        <p><code>(M, +)</code> является <a href="https://scalabook.gitflic.space/typeclass/monoid/monoid">моноидом</a> 
+        <p><code>(M, +)</code> является <a href="https://scalabook.gitflic.space/docs/typeclass/monoid/monoid">моноидом</a> 
         для заданного множества <code>M</code> и операции <code>+</code>,
         если удовлетворяет следующим свойствам для любых <code>x, y, z ∈ M</code>:</p>
         <ul>
@@ -520,7 +520,7 @@
         
         <h2 id="foldable" class="section"><a class="anchor-link left" href="#foldable"><i class="icofont-laika link">&#xef71;</i></a>Foldable</h2>
         <p>Операция <em>fold</em> позволяет агрегировать.
-        Она берет начальный элемент и объединяет его с типом <a href="https://scalabook.gitflic.space/typeclass/monad/foldable"><em>Foldable</em></a>, 
+        Она берет начальный элемент и объединяет его с типом <a href="https://scalabook.gitflic.space/docs/typeclass/monad/foldable"><em>Foldable</em></a>, 
         следуя способу, предоставленному методом <code>f</code>.</p>
         <p><em>Foldable</em> может быть выражен так:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Foldable</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]]:

@@ -85,7 +85,7 @@
   <ul class="nav-list">
     <li class="level1 nav-leaf"><a href="../">Домашняя</a></li>
     <li class="level1 nav-header">Блог</li>
-    <li class="level2 nav-leaf"><a href="../blog/2023-01-09-architecture-problems.html">Ошибки при наследовании</a></li>
+    <li class="level2 nav-leaf"><a href="../blog/architecture-problems.html">Ошибки при наследовании</a></li>
     <li class="level1 nav-header">Scala</li>
     <li class="level2 nav-leaf"><a href="../scala/">Обзор Scala</a></li>
     <li class="level2 nav-leaf"><a href="../scala/getting-started.html">С чего начать?</a></li>
@@ -443,7 +443,7 @@
         <h1 id="monads" class="title">Monads</h1>
         
         <h2 id="functor" class="section"><a class="anchor-link left" href="#functor"><i class="icofont-laika link">&#xef71;</i></a>Functor</h2>
-        <p><a href="https://scalabook.gitflic.space/typeclass/monad/functor">Функтор</a> — это преобразование из категории <code>A</code> в категорию <code>B</code>.
+        <p><a href="https://scalabook.gitflic.space/docs/typeclass/monad/functor">Функтор</a> — это преобразование из категории <code>A</code> в категорию <code>B</code>.
         Такие преобразования часто изображаются стрелкой: <code>A -&gt; B</code> (или через метод <code>map</code>).</p>
         <p>Функтор можно описать с помощью <code>trait</code>:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]]:
@@ -468,7 +468,7 @@
         Эта универсальная функция распаковки работает с любым функтором! </p>
         
         <h2 id="applicative" class="section"><a class="anchor-link left" href="#applicative"><i class="icofont-laika link">&#xef71;</i></a>Applicative</h2>
-        <p><a href="https://scalabook.gitflic.space/typeclass/monad/applicative">Applicative</a> расширяет <code>Functor</code> и позволяет работать с несколькими «ящиками».
+        <p><a href="https://scalabook.gitflic.space/docs/typeclass/monad/applicative">Applicative</a> расширяет <code>Functor</code> и позволяет работать с несколькими «ящиками».
         В аппликативных функторах примитивами являются <code>unit</code> и <code>map2</code>.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] </span><span class="keyword">extends</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>]:
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">unit</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">a</span><span>: =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]
@@ -530,9 +530,9 @@
   </span><span class="identifier">fa</span><span>.</span><span class="identifier">map2</span><span>(</span><span class="identifier">fb</span><span>)((</span><span class="identifier">a</span><span>, </span><span class="identifier">b</span><span>) =&gt; (</span><span class="identifier">a</span><span>, </span><span class="identifier">b</span><span>))</span></code></pre>
         
         <h2 id="monad" class="section"><a class="anchor-link left" href="#monad"><i class="icofont-laika link">&#xef71;</i></a>Monad</h2>
-        <p><a href="https://scalabook.gitflic.space/typeclass/monad/monad">Монада</a> - 
-        это <a href="https://scalabook.gitflic.space/typeclass/monad/applicative">Applicative</a> 
-        (а значит и <a href="https://scalabook.gitflic.space/typeclass/monad/functor">Functor</a>)
+        <p><a href="https://scalabook.gitflic.space/docs/typeclass/monad/monad">Монада</a> - 
+        это <a href="https://scalabook.gitflic.space/docs/typeclass/monad/applicative">Applicative</a> 
+        (а значит и <a href="https://scalabook.gitflic.space/docs/typeclass/monad/functor">Functor</a>)
         с дополнительной функцией: <code>flatten</code> (сведение: <code>F[F[A]] -&gt; F[A]</code>).
         Что позволяет определить <code>flatMap</code> — <code>map</code>, за которой следует <code>flatten</code>.</p>
         

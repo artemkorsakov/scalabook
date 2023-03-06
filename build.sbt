@@ -53,7 +53,9 @@ lazy val examples = (project in file("examples"))
         refined.core,
         scalaz.core,
         scalaz.effect,
-        scalaz.iteratee
+        scalaz.iteratee,
+        spark.core,
+        spark.sql
       ),
     libraryDependencies ++=
       Seq(

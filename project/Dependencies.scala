@@ -21,6 +21,18 @@ object Dependencies {
     val iron            = "io.github.iltotore" %% "iron"      % version
     val cats            = "io.github.iltotore" %% "iron-cats" % version
   }
+
+  object spark {
+    private val version = "3.3.1"
+
+    val core = ("org.apache.spark" %% "spark-core" % version).cross(
+      CrossVersion.for3Use2_13
+    )
+    val sql = ("org.apache.spark" %% "spark-sql" % version).cross(
+      CrossVersion.for3Use2_13
+    )
+  }
+
   object munit {
     private val version = "0.7.29"
     val core            = "org.scalameta" %% "munit"               % version

@@ -168,8 +168,8 @@ val x = Set(if (condition) Val else Var)
 
 [Пример на Scastie](https://scastie.scala-lang.org/cZ3GfNz9T0O3c2Vp1nxOaw)
 
-Scala 3 позволяет помечать `trait` примеси как `transparent`, что означает, что он может быть подавлен при выводе типа.
-Вот пример, который повторяет строки приведенного выше кода, но теперь с новым `transparent trait S` вместо `Product`:
+Scala 3 позволяет помечать `trait` как _прозрачный_, что означает, что он может быть подавлен при выводе типа.
+Например:
 
 ```scala
 transparent trait S

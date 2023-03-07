@@ -196,9 +196,4 @@ val x = Set(if condition then Val else Var)
 - [StrictOptimizedSeqOps](https://scala-lang.org/api/3.x/scala/collection/StrictOptimizedSeqOps.html),
   который оптимизирует некоторые из этих реализаций для последовательностей с эффективной индексацией.
 
-Как правило, любой `trait`, расширяемый рекурсивно, является хорошим кандидатом на объявление `transparent`.
-
-Правила вывода типов говорят, что `transparent trait` удаляются из пересечений, где это возможно.
-
-
 

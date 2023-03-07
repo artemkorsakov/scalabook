@@ -179,7 +179,7 @@ object Val extends Kind, S
 val x = Set(if condition then Val else Var)
 ```
 
-Теперь `x` предположил тип `Set[Kind]`. Общий `transparent trait S` не появляется в выводимом типе.
+Теперь `x` имеет тип `Set[Kind]`. Общий `transparent trait S` не появляется в выводимом типе.
 
 `Trait`-ы [scala.Product](https://scala-lang.org/api/3.x/scala/Product.html),
 [java.io.Serializable](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Serializable.html)

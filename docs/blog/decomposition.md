@@ -63,7 +63,7 @@ class FormalEnglishGreeting extends EnglishGreeting, Greeting("Robert")
 
 ```scala
 trait Greeting(val name: String):
-lazy val msg: String = s"Hello $name"
+  lazy val msg: String = s"Hello $name"
 
 trait EnglishGreeting extends Greeting("Bob")
 // trait EnglishGreeting may not call constructor of trait Greeting

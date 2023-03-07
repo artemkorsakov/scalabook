@@ -29,8 +29,8 @@ object EnglishGreeting extends Greeting("Bob"), Hello
 EnglishGreeting.msg  // Hello Bob
 ```
 
-Объект `EnglishGreeting` расширяет параметризованный `trait` и "подмешивает" `trait Hello`, 
-реализующий абстрактный элемент.
+Объект `EnglishGreeting` расширяет параметризованный `trait Greeting` и "подмешивает" `trait Hello`, 
+реализующий абстрактный (для `Greeting`) параметр.
 
 При расширении параметризованного `trait`-а действуют следующие правила:
 

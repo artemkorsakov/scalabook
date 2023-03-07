@@ -160,7 +160,7 @@ trait Kind
 case object Var extends Kind
 case object Val extends Kind
 val condition: Boolean = true
-Set(if (condition) Val else Var)
+val x = Set(if (condition) Val else Var)
 // Type: Set[Product with King with Serializable]
 ```
 

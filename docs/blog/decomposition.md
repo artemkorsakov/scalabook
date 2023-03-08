@@ -203,7 +203,7 @@ val x = Set(if condition then Val else Var)
 [java.io.Serializable](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Serializable.html)
 и [java.lang.Comparable](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Comparable.html)
 автоматически считаются `transparent`.
-Другие трейты превращаются в `transparent trait` с помощью модификатора `transparent`.
+Для остальных необходимо указывать модификатор `transparent`.
 
 Как правило, `transparent trait` — это `trait`-ы, влияющие на реализацию наследуемых классов,
 и `trait`-ы, которые сами по себе обычно не используются как типы.
@@ -213,7 +213,6 @@ val x = Set(if condition then Val else Var)
   который предоставляет реализации методов для [Iterable](https://scala-lang.org/api/3.x/scala/collection/Iterable.html).
 - [StrictOptimizedSeqOps](https://scala-lang.org/api/3.x/scala/collection/StrictOptimizedSeqOps.html),
   который оптимизирует некоторые из этих реализаций для последовательностей с эффективной индексацией.
-
 
 ### Открытые классы
 

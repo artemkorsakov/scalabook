@@ -141,6 +141,7 @@ given ImpliedName = ImpliedName("Bob")
 // How do you do, Bob
 ```
 
+
 ### Прозрачные trait-ы
 
 `Trait`-ы используются в двух случаях:
@@ -196,6 +197,7 @@ val x = Set(if condition then Val else Var)
 - [StrictOptimizedSeqOps](https://scala-lang.org/api/3.x/scala/collection/StrictOptimizedSeqOps.html),
   который оптимизирует некоторые из этих реализаций для последовательностей с эффективной индексацией.
 
+
 ### Открытые классы
 
 Поскольку `trait`-ы разработаны как основное средство декомпозиции, 
@@ -243,8 +245,8 @@ class EncryptedWriter[T: Encryptable] extends Writer[T]:
 
 [Подробности об open классах](https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html).
 
-### export
 
+### export
 
 Предложение `export` определяет псевдонимы для выбранных членов объекта.
 
@@ -300,6 +302,58 @@ copier.print(copier.scan())
 
 
 ### Типовые классы
+
+Ещё одним мощным средством декомпозиции являются _type classes_ (типовые классы).
+Типовой класс — это абстрактный параметризованный тип,
+который позволяет добавлять новое поведение к любому закрытому типу данных без использования подтипов.
+
+В статье ["Type Classes as Objects and Implicits"][TypeClasses] (2010 г.)
+обсуждаются основные идеи, лежащие в основе типовых классов в Scala.
+
+Этот стиль программирования полезен во многих случаях, например:
+
+- выражение того, как тип, которым вы не владеете, например, из стандартной или сторонней библиотеки,
+  соответствует такому поведению
+- добавление поведения к нескольким типам без введения отношений подтипов между этими типами
+  (например, когда один расширяет другой)
+
+В Scala 3 типовые классы — это просто `trait`-ы с одним или несколькими параметрами типа.
+Их не следует путать с "обычными" классами и ключевым словом `class`.
+
+Например:
+
+```scala
+trait Show[A]:
+  extension (a: A) def show: String
+```
+
+И использование:
+
+```scala
+case class Person(firstName: String, lastName: String)
+
+given Show[Person] with
+  extension (p: Person)
+    def show: String =
+      s"${p.firstName} ${p.lastName}"
+
+def showAll[S: Show](xs: List[S]): Unit =
+  xs.foreach(x => println(x.show))
+
+showAll(List(Person("Jane", "Jackson"), Person("Mary", "Jameson")))
+// Jane Jackson
+// Mary Jameson
+```
+
+Основное различие между полиморфизмом подтипа и специальным полиморфизмом с типовыми классами заключается в том, 
+как реализуется определение типового класса по отношению к типу, на который он действует. 
+В случае типового класса его реализация для конкретного типа выражается через определение экземпляра `given`, 
+предоставляемый как неявный аргумент вместе со значением, на которое он действует. 
+При полиморфизме подтипов реализация смешивается с родительскими элементами класса, 
+и для выполнения полиморфной операции требуется только один терм. 
+Решение типовых классов требует больше усилий для настройки, но оно более расширяемо: 
+добавление нового интерфейса в класс требует изменения исходного кода этого класса. 
+Напротив, экземпляры типовых классов могут быть определены где угодно.
 
 
 ### For comprehensions
@@ -443,7 +497,8 @@ trait Monoid[A] extends Semigroup[A]:
 - [Scala 3 Book](https://docs.scala-lang.org/scala3/book/introduction.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/index.html)
 - ["Functional Programming in Scala"][red book]
+- ["Type Classes as Objects and Implicits"][TypeClasses]
 
-
+[TypeClasses]: https://infoscience.epfl.ch/record/150280/files/TypeClasses.pdf
 [red book]: https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition
 

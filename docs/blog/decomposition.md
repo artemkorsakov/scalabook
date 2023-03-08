@@ -243,6 +243,71 @@ class EncryptedWriter[T: Encryptable] extends Writer[T]:
 
 [Подробности об open классах](https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html).
 
+### export
+
+
+Предложение `export` определяет псевдонимы для выбранных членов объекта.
+
+Например:
+
+```scala
+class BitMap
+class InkJet
+
+class Printer:
+  type PrinterType
+  def print(bits: BitMap): Unit = println("Printer.print()")
+  def status: List[String] = ???
+
+class Scanner:
+  def scan(): BitMap =
+    println("Scanner.scan()")
+    BitMap()
+  def status: List[String] = ???
+
+class Copier:
+  private val printUnit = new Printer { type PrinterType = InkJet }
+  private val scanUnit = new Scanner
+
+  export scanUnit.scan
+  export printUnit.{status as _, *}
+
+  def status: List[String] = printUnit.status ++ scanUnit.status
+```
+
+Два пункта `export` определяют следующие псевдонимы экспорта в классе `Copier`:
+
+```scala
+final def scan(): BitMap            = scanUnit.scan()
+final def print(bits: BitMap): Unit = printUnit.print(bits)
+final type PrinterType              = printUnit.PrinterType
+```
+
+Доступ к ним возможен как изнутри `Copier`, так и снаружи:
+
+```scala
+val copier = new Copier
+copier.print(copier.scan())
+// Scanner.scan()
+// Printer.print()
+```
+
+Предложения `export` особенно полезны, когда мы собираем модуль из элементов, изменить которые мы не можем.
+Например, потому что они публичные и определены во внешней библиотеке.
+
+
+### Ошибки при декомпозиции
+
+Отдельно хотелось бы остановиться на ошибках, которые возникают при декомпозиции.
+
+```scala
+null
+Exception
+_
+???
+None: Option[A]
+```
+
 
 ## Заключение
 

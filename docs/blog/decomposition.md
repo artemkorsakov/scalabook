@@ -32,7 +32,7 @@
 
 ```scala
 trait Greeting(val name: String):
-  protected val firstPart: String
+  val firstPart: String
   def msg = s"$firstPart $name"
 
 trait Hello:

@@ -296,6 +296,48 @@ copier.print(copier.scan())
 Например, потому что они публичные и определены во внешней библиотеке.
 
 
+### Ковариантность и контравариантность
+
+
+### Типовые классы
+
+
+### For comprehensions
+
+Показательно, что одна из самых распространенных конструкций Scala - _for comprehension_ зависит от поведения,
+а не от самого объекта.
+
+Рассмотрим пример:
+
+```scala
+case class Container[A](value: A):
+  def flatMap[B](f: A => Container[B]): Container[B] = f(value)
+  def map[B](f: A => B): Container[B]                = Container(f(value))
+
+val f: Int => Container[Boolean] = i => Container(i % 2 == 0)
+val g: Boolean => String         = b => if b then "четное" else "нечетное"
+
+for
+  a <- Container(7)
+  b <- f(a)
+yield g(b)
+
+// Эквивалентно: Container(7).flatMap(f).map(g)
+```
+
+Пример выше показывает, что любая структура, обладающая заданным поведением,
+может использоваться в _for comprehension_.
+
+Если конструкция заданным поведением не обладает (переименуем `flatMap` в `flatMap1`), то будет выдана ошибка компиляции:
+
+```text
+2 |  a <- Container(7)
+  |       ^^^^^^^^^^^^
+  |value flatMap is not a member of Container[Int] - did you mean Container[Int].flatMap1?
+1 error found
+```
+
+
 ### Ошибки при декомпозиции
 
 Отдельно хотелось бы остановиться на ошибках, которые возникают при декомпозиции.

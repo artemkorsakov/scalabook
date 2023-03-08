@@ -241,17 +241,6 @@ class EncryptedWriter[T: Encryptable] extends Writer[T]:
 Это называется контрактом расширения класса (_extension contract_).
 Он отличается от внешнего контракта (_external contract_) между классом и его пользователями.
 
-Классы без модификатора `open` все же могут быть расширены,
-но только при соблюдении хотя бы одного из двух альтернативных условий:
-
-- Расширяющий класс находится в том же исходном файле, что и расширенный класс.
-  В этом случае расширение обычно является внутренним вопросом реализации.
-- Для класса расширения включена языковая функция
-  [adhocExtensions](https://scala-lang.org/api/3.x/scala/runtime/stdLibPatches/language$$adhocExtensions$.html).
-  Обычно она включается предложением импорта в исходном файле расширения: `import scala.language.adhocExtensions`
-  Кроме того, эту функцию можно включить с помощью опции компилятора `-language:adhocExtensions`.
-  Если эта функция не включена, компилятор выдаст  "feature" warning.
-
 [Подробности об open классах](https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html).
 
 

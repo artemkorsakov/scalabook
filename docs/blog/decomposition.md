@@ -408,7 +408,7 @@ yield g(b)
 
 ```scala
 trait Monoid[A]:
-  val empty: A
+  def empty: A
   def compose(a1: A, a2: A): A
 ```
 
@@ -456,7 +456,7 @@ object MonoidWithException extends Monoid[NonEmptyList[Int]]:
 
 ```scala
 trait Monoid[A]:
-  val empty: Option[A]
+  def empty: Option[A]
   def compose(a1: A, a2: A): A
 
 final case class NonEmptyList[A](head: A, tail: List[A])
@@ -486,7 +486,7 @@ trait Semigroup[A]:
   def compose(a1: A, a2: A): A
 
 trait Monoid[A] extends Semigroup[A]:
-  val empty: A
+  def empty: A
 ```
 
 

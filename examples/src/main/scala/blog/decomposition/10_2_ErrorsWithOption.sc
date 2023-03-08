@@ -1,5 +1,5 @@
 trait Monoid[A]:
-  val empty: Option[A]
+  def empty: Option[A]
   def compose(a1: A, a2: A): A
 
 final case class NonEmptyList[A](head: A, tail: List[A])

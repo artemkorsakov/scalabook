@@ -258,7 +258,7 @@ class EncryptedWriter[T: Encryptable] extends Writer[T]:
 
 [Подробности об open классах](https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html).
 
-## export
+## Экспортирование элементов
 
 Предложение `export` определяет псевдонимы для выбранных членов объекта.
 

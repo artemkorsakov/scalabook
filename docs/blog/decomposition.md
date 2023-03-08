@@ -341,17 +341,95 @@ yield g(b)
 ### Ошибки при декомпозиции
 
 Отдельно хотелось бы остановиться на ошибках, которые возникают при декомпозиции.
+Рассмотрим типовой класс `Monoid`:
 
 ```scala
-null
-Exception
-_
-???
-None: Option[A]
+trait Monoid[A]:
+  val empty: A
+  def compose(a1: A, a2: A): A
+```
+
+Что если в определенный момент возникла необходимость реализовать `Monoid` для `NonEmptyList`?
+
+```scala
+final case class NonEmptyList[A](head: A, tail: List[A])
+```
+
+Есть несколько распространенных ошибок, совершаемых разработчиком, когда
+необходимо реализовать поведение для структуры, которая этим поведением не обладает.
+
+```scala
+object NonEmptyListMonoid extends Monoid[NonEmptyList[Int]]:
+  val empty: NonEmptyList[Int] = ...
+  def compose(l1: NonEmptyList[Int], l2: NonEmptyList[Int]): NonEmptyList[Int] =
+    NonEmptyList(head = l1.head, tail = l1.tail ++ (l2.head :: l2.tail))
+```
+
+1) Выдача исключения:
+
+Одной из самых распространенных ошибок в этом случае является использование исключения или 
+отсутствие реализации:
+
+```scala
+object MonoidWithException extends Monoid[NonEmptyList[Int]]:
+  val empty: NonEmptyList[Int] = ???
+  val empty1: NonEmptyList[Int] = throw new Exception("")
+  var empty2: NonEmptyList[Int] = _
+  val empty3: NonEmptyList[Int] = null
+  def compose(l1: NonEmptyList[Int], l2: NonEmptyList[Int]): NonEmptyList[Int] =
+    NonEmptyList(head = l1.head, tail = l1.tail ++ (l2.head :: l2.tail))
+```
+
+В этом случае происходит как бы перекладывание ответственности за использование такого "моноида"
+на разработчика-клиента.
+Здесь происходит попытка "сделать вид", что `NonEmptyList` обладает заданным поведением, хотя это не так.
+
+2) Ещё одним способом "взломать систему" является использование `Option`,
+что, вроде как, является "чисто функциональным" и даже выглядить как-то "по-скаловски":
+
+```scala
+trait Monoid[A]:
+  val empty: Option[A]
+  def compose(a1: A, a2: A): A
+
+final case class NonEmptyList[A](head: A, tail: List[A])
+
+object MonoidWithOption extends Monoid[NonEmptyList[Int]]:
+  val empty: Option[NonEmptyList[Int]] = None
+  def compose(l1: NonEmptyList[Int], l2: NonEmptyList[Int]): NonEmptyList[Int] =
+    NonEmptyList(head = l1.head, tail = l1.tail ++ (l2.head :: l2.tail))
+```
+
+Но в этом случае получается, что дочерняя структура пытается "заглушить" часть функциональности,
+которой обладает "родитель".
+
+##### Исправление ошибок
+
+Одним из самых мощных средств декомпозиции является умение (и желание) выделять
+более общие структуры из уже имеющихся.
+Необходимо помнить, что ключевое слово _extends_ означает "расширение",
+когда дочерняя структура расширяет родительскую: т.е. обладает в точности тем же поведением,
+что и родитель, плюс добавляет ещё что-то.
+
+В продуктовом коде довольно часто приходится видеть ситуации, описанные выше,
+когда разработчик пытается "заглушить" расширение.
+
+Но в данном случае следовало бы определить более общую структуру:
+
+```scala
+trait Semigroup[A]:
+  def compose(a1: A, a2: A): A
+
+trait Monoid[A] extends Semigroup[A]:
+  val empty: A
 ```
 
 
 ## Заключение
 
 `Trait`-ы отлично подходят для модуляции компонентов и описания интерфейсов (обязательных и предоставляемых). 
+
+- Описание поведения, а не структуры объекта.
+- Разделение поведения от реализации.
+- Возможность "отсечь лишнее" (export, transparent)
 

@@ -38,7 +38,7 @@ trait Greeting(val name: String):
 trait Hello:
   val firstPart: String = "Hello"
 
-object EnglishGreeting extends Greeting("Bob"), Hello
+object EnglishGreeting extends Greeting("Bob"), Hello  // можно указать в любом порядке
 
 EnglishGreeting.msg  // Hello Bob
 ```

@@ -386,7 +386,7 @@ object MonoidWithException extends Monoid[NonEmptyList[Int]]:
 Здесь происходит попытка "сделать вид", что `NonEmptyList` обладает заданным поведением, хотя это не так.
 
 Почему не стоит использовать в коде исключения, null или изменяемые переменные очень подробно описано в 
-замечательной книжке ["Functional Programming in Scala"](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
+замечательной книжке ["Functional Programming in Scala"][red book]
 и во многих других книгах о функциональном программировании.
 
 2) Ещё одним способом "взломать систему" является использование `Option`,
@@ -437,4 +437,13 @@ trait Monoid[A] extends Semigroup[A]:
 - Описание поведения, а не структуры объекта.
 - Разделение поведения от реализации.
 - Возможность "отсечь лишнее" (export, transparent)
+
+## Список литературы
+
+- [Scala 3 Book](https://docs.scala-lang.org/scala3/book/introduction.html)
+- [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/index.html)
+- ["Functional Programming in Scala"][red book]
+
+
+[red book]: https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition
 

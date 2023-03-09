@@ -86,6 +86,31 @@ trait EnglishGreeting extends Greeting("Bob")
 Возможность передавать параметры в `trait` продолжают тенденцию отхода от формирования структур (`abstract class`)
 к описанию поведений (`trait`-ы).
 
+## Контекстные параметры
+
+`Trait`-ы могут принимать и контекстные параметры.
+В этом случае классам, расширяющим `trait`, необязательно явно передавать параметры конструктора -
+это можно сделать неявно.
+
+Например:
+
+```scala
+trait Greeting(using val name: String):
+  val firstPart: String
+  def msg = s"$firstPart $name"
+
+trait Hello:
+  val firstPart: String = "Hello"
+
+given String = "Bob"
+
+object EnglishGreeting extends Greeting, Hello
+
+EnglishGreeting.msg
+// Hello Bob
+```
+
+
 ## Расширение нескольких trait-ов
 
 Классы, объекты и `trait`-ы могут расширять несколько `trait`-ов, в отличие от расширения нескольких классов,
@@ -132,30 +157,7 @@ Third.hello
 когда необходимо создавать экземпляры определенного типа, 
 и `trait`-ы, когда желательно декомпозировать/разложить и повторно использовать поведение.
 
-## Контекстные параметры
-
-`Trait`-ы могут принимать параметры контекста. 
-В этом случае классам, расширяющим `trait` необязательно явно передавать параметры конструктора.
-Это можно сделать неявно.
-
-Например:
-
-```scala
-case class ImpliedName(name: String):
-  override def toString = name
-
-trait ImpliedGreeting(using val iname: ImpliedName):
-  def msg = s"How are you, $iname"
-
-trait ImpliedFormalGreeting extends ImpliedGreeting:
-  override def msg = s"How do you do, $iname"
-
-class F(using iname: ImpliedName) extends ImpliedFormalGreeting
-
-given ImpliedName = ImpliedName("Bob")
-(new F).msg
-// How do you do, Bob
-```
+Что ещё, кроме основной функциональности могут предложить trait-ы в Scala 3?
 
 ## Прозрачные trait-ы
 

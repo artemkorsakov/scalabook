@@ -415,15 +415,15 @@
 
   <ul class="nav-list">
     <li class="level1 nav-leaf"><a href="#параметры-конструктора">Параметры конструктора</a></li>
-    <li class="level1 nav-leaf"><a href="#расширение-нескольких-trait-ов">Расширение нескольких trait-ов</a></li>
     <li class="level1 nav-leaf"><a href="#контекстные-параметры">Контекстные параметры</a></li>
+    <li class="level1 nav-leaf"><a href="#расширение-нескольких-trait-ов">Расширение нескольких trait-ов</a></li>
     <li class="level1 nav-leaf"><a href="#прозрачные-trait-ы">Прозрачные trait-ы</a></li>
-    <li class="level1 nav-leaf"><a href="#открытые-классы">Открытые классы</a></li>
     <li class="level1 nav-leaf"><a href="#экспортирование-элементов">Экспортирование элементов</a></li>
     <li class="level1 nav-leaf"><a href="#типовые-классы">Типовые классы</a></li>
     <li class="level1 nav-leaf"><a href="#for-comprehensions">For comprehensions</a></li>
     <li class="level1 nav-leaf"><a href="#ковариантность-и-контравариантность">Ковариантность и контравариантность</a></li>
     <li class="level1 nav-leaf"><a href="#ошибки-при-декомпозиции">Ошибки при декомпозиции</a></li>
+    <li class="level1 nav-leaf"><a href="#открытые-классы">Открытые классы</a></li>
     <li class="level1 nav-leaf"><a href="#заключение">Заключение</a></li>
     <li class="level1 nav-leaf"><a href="#список-литературы">Список литературы</a></li>
   </ul>
@@ -503,60 +503,65 @@
         <p>Возможность передавать параметры в <code>trait</code> продолжают тенденцию отхода от формирования структур (<code>abstract class</code>)
         к описанию поведений (<code>trait</code>-ы).</p>
         
+        <h2 id="контекстные-параметры" class="section"><a class="anchor-link left" href="#контекстные-параметры"><i class="icofont-laika link">&#xef71;</i></a>Контекстные параметры</h2>
+        <p><code>Trait</code>-ы могут принимать и контекстные параметры.
+        В этом случае классам, расширяющим <code>trait</code>, необязательно явно передавать параметры конструктора -
+        это можно сделать неявно.</p>
+        <p>Например:</p>
+        <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Greeting</span><span>(</span><span class="keyword">using</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">firstPart</span><span>: </span><span class="type-name">String</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">msg</span><span> = </span><span class="string-literal">s&quot;</span><span class="substitution">$firstPart</span><span class="string-literal"> </span><span class="substitution">$name</span><span class="string-literal">&quot;</span><span>
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Hello</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">firstPart</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Hello&quot;</span><span>
+
+</span><span class="keyword">given</span><span> </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Bob&quot;</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">EnglishGreeting</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Greeting</span><span>, </span><span class="type-name">Hello</span><span>
+
+</span><span class="type-name">EnglishGreeting</span><span>.</span><span class="identifier">msg</span><span>
+</span><span class="comment">// Hello Bob</span></code></pre>
+        
         <h2 id="расширение-нескольких-trait-ов" class="section"><a class="anchor-link left" href="#расширение-нескольких-trait-ов"><i class="icofont-laika link">&#xef71;</i></a>Расширение нескольких trait-ов</h2>
         <p>Классы, объекты и <code>trait</code>-ы могут расширять несколько <code>trait</code>-ов, в отличие от расширения нескольких классов,
         что делает <code>trait</code>-ы более мощным средством декомпозиции.</p>
         <p>Расширение нескольких <code>trait</code>-ов называется &quot;смешанной композицией&quot; (<em>mixin composition</em>).</p>
         <p>При этом должна соблюдаться сигнатура методов:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">GreetingService</span><span>:
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">translate</span><span>(</span><span class="identifier">text</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">String</span><span>
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">sayHello</span><span> = </span><span class="identifier">translate</span><span>(</span><span class="string-literal">&quot;Hello&quot;</span><span>)
-  
-</span><span class="keyword">trait</span><span> </span><span class="type-name">TranslationService</span><span>:
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">translate</span><span>(</span><span class="identifier">text</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Long</span><span> = </span><span class="number-literal">123L</span><span>
+        <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Greeting</span><span>(</span><span class="keyword">using</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">firstPart</span><span>: </span><span class="type-name">Long</span><span>                    </span><span class="comment">// Заменим на Long
+</span><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">msg</span><span> = </span><span class="string-literal">s&quot;</span><span class="substitution">$firstPart</span><span class="string-literal"> </span><span class="substitution">$name</span><span class="string-literal">&quot;</span><span>
 
-</span><span class="keyword">trait</span><span> </span><span class="type-name">ComposedService</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">GreetingService</span><span>, </span><span class="type-name">TranslationService</span><span>
-</span><span class="comment">// error overriding method translate in trait GreetingService of type (text: String): String;
-// method translate in trait TranslationService of type (text: String): Long has incompatible type</span></code></pre>
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Hello</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">firstPart</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Hello&quot;</span><span>
+
+</span><span class="keyword">given</span><span> </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Bob&quot;</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">EnglishGreeting</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Greeting</span><span>, </span><span class="type-name">Hello</span><span>
+
+</span><span class="type-name">EnglishGreeting</span><span>.</span><span class="identifier">msg</span><span>
+</span><span class="comment">// error overriding value firstPart in trait Greeting of type Long;
+// value firstPart in trait Hello of type String has incompatible type</span></code></pre>
         <p>Если же оба <code>trait</code>-а реализуют метод с идентичной сигнатурой, то в смешанной композиции его нужно будет переопределить:</p>
-        <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">First</span><span>:
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">hello</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;First&quot;</span><span>
+        <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Greeting</span><span>(</span><span class="keyword">using</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">firstPart</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Hi&quot;</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">msg</span><span> = </span><span class="string-literal">s&quot;</span><span class="substitution">$firstPart</span><span class="string-literal"> </span><span class="substitution">$name</span><span class="string-literal">&quot;</span><span>
 
-</span><span class="keyword">trait</span><span> </span><span class="type-name">Second</span><span>:
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">hello</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Second&quot;</span><span>
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Hello</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">firstPart</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Hello&quot;</span><span>
 
-</span><span class="keyword">trait</span><span> </span><span class="type-name">Third</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">First</span><span>, </span><span class="type-name">Second</span><span>:
-  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">hello</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Third&quot;</span><span>
+</span><span class="keyword">given</span><span> </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Bob&quot;</span><span>
 
-</span><span class="keyword">object</span><span> </span><span class="type-name">Third</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Third</span><span>
+</span><span class="keyword">object</span><span> </span><span class="type-name">EnglishGreeting</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Greeting</span><span>, </span><span class="type-name">Hello</span><span>:
+  </span><span class="keyword">override</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">firstPart</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Good day&quot;</span><span>
 
-</span><span class="type-name">Third</span><span>.</span><span class="identifier">hello</span><span>
-</span><span class="comment">// Third</span></code></pre>
+</span><span class="type-name">EnglishGreeting</span><span>.</span><span class="identifier">msg</span><span>
+</span><span class="comment">// Good day Bob</span></code></pre>
         <p><code>trait</code>-ы более гибки в составлении, потому что можно смешивать (наследовать) несколько <code>trait</code>-ов. 
         В большинстве случаев их следует предпочитать классам и абстрактным классам.
         Правило выбора состоит в том, чтобы использовать классы всякий раз, 
         когда необходимо создавать экземпляры определенного типа, 
         и <code>trait</code>-ы, когда желательно декомпозировать/разложить и повторно использовать поведение.</p>
-        
-        <h2 id="контекстные-параметры" class="section"><a class="anchor-link left" href="#контекстные-параметры"><i class="icofont-laika link">&#xef71;</i></a>Контекстные параметры</h2>
-        <p><code>Trait</code>-ы могут принимать параметры контекста. 
-        В этом случае классам, расширяющим <code>trait</code> необязательно явно передавать параметры конструктора.
-        Это можно сделать неявно.</p>
-        <p>Например:</p>
-        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">ImpliedName</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>):
-  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">toString</span><span> = </span><span class="identifier">name</span><span>
-
-</span><span class="keyword">trait</span><span> </span><span class="type-name">ImpliedGreeting</span><span>(</span><span class="keyword">using</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">iname</span><span>: </span><span class="type-name">ImpliedName</span><span>):
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">msg</span><span> = </span><span class="string-literal">s&quot;How are you, </span><span class="substitution">$iname</span><span class="string-literal">&quot;</span><span>
-
-</span><span class="keyword">trait</span><span> </span><span class="type-name">ImpliedFormalGreeting</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">ImpliedGreeting</span><span>:
-  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">msg</span><span> = </span><span class="string-literal">s&quot;How do you do, </span><span class="substitution">$iname</span><span class="string-literal">&quot;</span><span>
-
-</span><span class="keyword">class</span><span> </span><span class="type-name">F</span><span>(</span><span class="keyword">using</span><span> </span><span class="identifier">iname</span><span>: </span><span class="type-name">ImpliedName</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">ImpliedFormalGreeting</span><span>
-
-</span><span class="keyword">given</span><span> </span><span class="type-name">ImpliedName</span><span> = </span><span class="type-name">ImpliedName</span><span>(</span><span class="string-literal">&quot;Bob&quot;</span><span>)
-(</span><span class="keyword">new</span><span> </span><span class="type-name">F</span><span>).</span><span class="identifier">msg</span><span>
-</span><span class="comment">// How do you do, Bob</span></code></pre>
+        <p>Что ещё, кроме основной функциональности могут предложить <code>trait</code>-ы в Scala 3?</p>
         
         <h2 id="прозрачные-trait-ы" class="section"><a class="anchor-link left" href="#прозрачные-trait-ы"><i class="icofont-laika link">&#xef71;</i></a>Прозрачные trait-ы</h2>
         <p><code>Trait</code>-ы используются в двух случаях:</p>
@@ -603,73 +608,29 @@
           который оптимизирует некоторые из этих реализаций для последовательностей с эффективной индексацией.</li>
         </ul>
         
-        <h2 id="открытые-классы" class="section"><a class="anchor-link left" href="#открытые-классы"><i class="icofont-laika link">&#xef71;</i></a>Открытые классы</h2>
-        <p>Поскольку <code>trait</code>-ы разработаны как основное средство декомпозиции, 
-        класс, определенный в одном файле, не может быть расширен в другом файле. 
-        Чтобы разрешить это, базовый класс должен быть помечен как открытый:</p>
-        <pre><code>open class Person(name: String)</code></pre>
-        <p>Маркировка классов с помощью <code>open</code> - это новая функция Scala 3.
-        Необходимость явно помечать классы как открытые позволяет избежать многих распространенных ошибок.
-        В частности, это требует, чтобы разработчики библиотек явно планировали расширение
-        и, например, документировали классы, помеченные как открытые.</p>
-        <p>Пример:</p>
-        <pre><code class="nohighlight"><span class="comment">// File Writer.scala
-</span><span class="keyword">package</span><span> </span><span class="identifier">p</span><span>
-
-</span><span class="keyword">open</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Writer</span><span>[</span><span class="type-name">T</span><span>]:
-
-  </span><span class="comment">/** Sends to stdout, can be overridden */</span><span>
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">send</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>) = </span><span class="identifier">println</span><span>(</span><span class="identifier">x</span><span>)
-
-  </span><span class="comment">/** Sends all arguments using `send` */</span><span>
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">sendAll</span><span>(</span><span class="identifier">xs</span><span>: </span><span class="type-name">T</span><span>*) = </span><span class="identifier">xs</span><span>.</span><span class="identifier">foreach</span><span>(</span><span class="identifier">send</span><span>)
-</span><span class="identifier">end</span><span> </span><span class="type-name">Writer</span><span>
-
-</span><span class="comment">// File EncryptedWriter.scala
-</span><span class="keyword">package</span><span> </span><span class="identifier">p</span><span>
-
-</span><span class="keyword">class</span><span> </span><span class="type-name">EncryptedWriter</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Encryptable</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">Writer</span><span>[</span><span class="type-name">T</span><span>]:
-  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">send</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>) = </span><span class="keyword">super</span><span>.</span><span class="identifier">send</span><span>(</span><span class="identifier">encrypt</span><span>(</span><span class="identifier">x</span><span>))</span></code></pre>
-        <p>Открытый класс обычно поставляется с некоторой документацией,
-        описывающей внутренние шаблоны вызовов между методами класса, а также хуки, которые можно переопределить.
-        Это называется контрактом расширения класса (<em>extension contract</em>).
-        Он отличается от внешнего контракта (<em>external contract</em>) между классом и его пользователями.</p>
-        <p><a href="https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html">Подробности об open классах</a>.</p>
-        
         <h2 id="экспортирование-элементов" class="section"><a class="anchor-link left" href="#экспортирование-элементов"><i class="icofont-laika link">&#xef71;</i></a>Экспортирование элементов</h2>
-        <p>Предложение <code>export</code> определяет псевдонимы для выбранных членов объекта.</p>
+        <p>Иногда возникают ситуации, когда нежелательно предоставлять доступ ко всем публичным элементам
+        родительских <code>trait</code>-ов или классов, и хочется избежать наследования.</p>
+        <p>В этом случае можно:</p>
+        <ul>
+          <li>либо выделить из родительских структур только нужные элементы в новый <code>trait</code></li>
+          <li>либо, если первое невозможно, собрать из них модуль и через него предоставить доступ только к нужным элементам.</li>
+        </ul>
+        <p>Во втором случае особенно полезно предложение <code>export</code>,
+        которое определяет псевдонимы для выбранных членов объекта.</p>
         <p>Например:</p>
-        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">BitMap</span><span>
-</span><span class="keyword">class</span><span> </span><span class="type-name">InkJet</span><span>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Greeting</span><span>(</span><span class="keyword">val</span><span> </span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>):
+  </span><span class="keyword">val</span><span> </span><span class="identifier">firstPart</span><span>: </span><span class="type-name">String</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">msg</span><span> = </span><span class="string-literal">s&quot;</span><span class="substitution">$firstPart</span><span class="string-literal"> </span><span class="substitution">$name</span><span class="string-literal">&quot;</span><span>
 
-</span><span class="keyword">class</span><span> </span><span class="type-name">Printer</span><span>:
-  </span><span class="keyword">type</span><span> </span><span class="type-name">PrinterType</span><span>
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">print</span><span>(</span><span class="identifier">bits</span><span>: </span><span class="type-name">BitMap</span><span>): </span><span class="type-name">Unit</span><span> = </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Printer.print()&quot;</span><span>)
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">status</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>] = ???
+</span><span class="keyword">object</span><span> </span><span class="type-name">EnglishGreetingModule</span><span>:
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">greeting</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Greeting</span><span>(</span><span class="string-literal">&quot;Bob&quot;</span><span>):
+    </span><span class="keyword">override</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">firstPart</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;Hi&quot;</span><span>
 
-</span><span class="keyword">class</span><span> </span><span class="type-name">Scanner</span><span>:
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scan</span><span>(): </span><span class="type-name">BitMap</span><span> =
-    </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Scanner.scan()&quot;</span><span>)
-    </span><span class="type-name">BitMap</span><span>()
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">status</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>] = ???
+  </span><span class="keyword">export</span><span> </span><span class="identifier">greeting</span><span>.</span><span class="identifier">msg</span><span>
 
-</span><span class="keyword">class</span><span> </span><span class="type-name">Copier</span><span>:
-  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">printUnit</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Printer</span><span> { </span><span class="keyword">type</span><span> </span><span class="type-name">PrinterType</span><span> = </span><span class="type-name">InkJet</span><span> }
-  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">scanUnit</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Scanner</span><span>
-
-  </span><span class="keyword">export</span><span> </span><span class="identifier">scanUnit</span><span>.</span><span class="identifier">scan</span><span>
-  </span><span class="keyword">export</span><span> </span><span class="identifier">printUnit</span><span>.{</span><span class="identifier">status</span><span> </span><span class="keyword">as</span><span> </span><span class="identifier">_</span><span>, *}
-
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">status</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="identifier">printUnit</span><span>.</span><span class="identifier">status</span><span> ++ </span><span class="identifier">scanUnit</span><span>.</span><span class="identifier">status</span></code></pre>
-        <p>Два пункта <code>export</code> определяют следующие псевдонимы экспорта в классе <code>Copier</code>:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">scan</span><span>(): </span><span class="type-name">BitMap</span><span>            = </span><span class="identifier">scanUnit</span><span>.</span><span class="identifier">scan</span><span>()
-</span><span class="keyword">final</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">print</span><span>(</span><span class="identifier">bits</span><span>: </span><span class="type-name">BitMap</span><span>): </span><span class="type-name">Unit</span><span> = </span><span class="identifier">printUnit</span><span>.</span><span class="identifier">print</span><span>(</span><span class="identifier">bits</span><span>)
-</span><span class="keyword">final</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">PrinterType</span><span>              = </span><span class="identifier">printUnit</span><span>.</span><span class="type-name">PrinterType</span></code></pre>
-        <p>Доступ к ним возможен как изнутри <code>Copier</code>, так и снаружи:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">copier</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Copier</span><span>
-</span><span class="identifier">copier</span><span>.</span><span class="identifier">print</span><span>(</span><span class="identifier">copier</span><span>.</span><span class="identifier">scan</span><span>())
-</span><span class="comment">// Scanner.scan()
-// Printer.print()</span></code></pre>
+</span><span class="type-name">EnglishGreetingModule</span><span>.</span><span class="identifier">msg</span><span> 
+</span><span class="comment">// Hi Bob</span></code></pre>
         <p>Предложения <code>export</code> особенно полезны при сборе модуля из элементов, изменить которые возможности нет.
         Например, потому что они публичные и определены во внешней библиотеке.</p>
         
@@ -801,6 +762,39 @@
 
 </span><span class="keyword">trait</span><span> </span><span class="type-name">Monoid</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">A</span><span>]:
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">empty</span><span>: </span><span class="type-name">A</span></code></pre>
+        
+        <h2 id="открытые-классы" class="section"><a class="anchor-link left" href="#открытые-классы"><i class="icofont-laika link">&#xef71;</i></a>Открытые классы</h2>
+        <p>Поскольку <code>trait</code>-ы разработаны как основное средство декомпозиции,
+        класс, определенный в одном файле, не может быть расширен в другом файле.
+        Чтобы разрешить это, базовый класс должен быть помечен как открытый:</p>
+        <pre><code>open class Person(name: String)</code></pre>
+        <p>Маркировка классов с помощью <code>open</code> - это новая функция Scala 3.
+        Необходимость явно помечать классы как открытые позволяет избежать многих распространенных ошибок.
+        В частности, это требует, чтобы разработчики библиотек явно планировали расширение
+        и, например, документировали классы, помеченные как открытые.</p>
+        <p>Пример:</p>
+        <pre><code class="nohighlight"><span class="comment">// File Writer.scala
+</span><span class="keyword">package</span><span> </span><span class="identifier">p</span><span>
+
+</span><span class="keyword">open</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Writer</span><span>[</span><span class="type-name">T</span><span>]:
+
+  </span><span class="comment">/** Sends to stdout, can be overridden */</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">send</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>) = </span><span class="identifier">println</span><span>(</span><span class="identifier">x</span><span>)
+
+  </span><span class="comment">/** Sends all arguments using `send` */</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">sendAll</span><span>(</span><span class="identifier">xs</span><span>: </span><span class="type-name">T</span><span>*) = </span><span class="identifier">xs</span><span>.</span><span class="identifier">foreach</span><span>(</span><span class="identifier">send</span><span>)
+</span><span class="identifier">end</span><span> </span><span class="type-name">Writer</span><span>
+
+</span><span class="comment">// File EncryptedWriter.scala
+</span><span class="keyword">package</span><span> </span><span class="identifier">p</span><span>
+
+</span><span class="keyword">class</span><span> </span><span class="type-name">EncryptedWriter</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">Encryptable</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">Writer</span><span>[</span><span class="type-name">T</span><span>]:
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">send</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">T</span><span>) = </span><span class="keyword">super</span><span>.</span><span class="identifier">send</span><span>(</span><span class="identifier">encrypt</span><span>(</span><span class="identifier">x</span><span>))</span></code></pre>
+        <p>Открытый класс обычно поставляется с некоторой документацией,
+        описывающей внутренние шаблоны вызовов между методами класса, а также хуки, которые можно переопределить.
+        Это называется контрактом расширения класса (<em>extension contract</em>).
+        Он отличается от внешнего контракта (<em>external contract</em>) между классом и его пользователями.</p>
+        <p><a href="https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html">Подробности об open классах</a>.</p>
         
         <h2 id="заключение" class="section"><a class="anchor-link left" href="#заключение"><i class="icofont-laika link">&#xef71;</i></a>Заключение</h2>
         <ul>

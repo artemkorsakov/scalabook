@@ -221,50 +221,6 @@ val x = Set(if condition then Val else Var)
 - [StrictOptimizedSeqOps](https://scala-lang.org/api/3.x/scala/collection/StrictOptimizedSeqOps.html),
   который оптимизирует некоторые из этих реализаций для последовательностей с эффективной индексацией.
 
-## Открытые классы
-
-Поскольку `trait`-ы разработаны как основное средство декомпозиции, 
-класс, определенный в одном файле, не может быть расширен в другом файле. 
-Чтобы разрешить это, базовый класс должен быть помечен как открытый:
-
-```
-open class Person(name: String)
-```
-
-Маркировка классов с помощью `open` - это новая функция Scala 3.
-Необходимость явно помечать классы как открытые позволяет избежать многих распространенных ошибок.
-В частности, это требует, чтобы разработчики библиотек явно планировали расширение
-и, например, документировали классы, помеченные как открытые.
-
-Пример:
-
-```scala
-// File Writer.scala
-package p
-
-open class Writer[T]:
-
-  /** Sends to stdout, can be overridden */
-  def send(x: T) = println(x)
-
-  /** Sends all arguments using `send` */
-  def sendAll(xs: T*) = xs.foreach(send)
-end Writer
-
-// File EncryptedWriter.scala
-package p
-
-class EncryptedWriter[T: Encryptable] extends Writer[T]:
-  override def send(x: T) = super.send(encrypt(x))
-```
-
-Открытый класс обычно поставляется с некоторой документацией,
-описывающей внутренние шаблоны вызовов между методами класса, а также хуки, которые можно переопределить.
-Это называется контрактом расширения класса (_extension contract_).
-Он отличается от внешнего контракта (_external contract_) между классом и его пользователями.
-
-[Подробности об open классах](https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html).
-
 ## Экспортирование элементов
 
 Предложение `export` определяет псевдонимы для выбранных членов объекта.
@@ -496,6 +452,50 @@ trait Semigroup[A]:
 trait Monoid[A] extends Semigroup[A]:
   def empty: A
 ```
+
+## Открытые классы
+
+Поскольку `trait`-ы разработаны как основное средство декомпозиции,
+класс, определенный в одном файле, не может быть расширен в другом файле.
+Чтобы разрешить это, базовый класс должен быть помечен как открытый:
+
+```
+open class Person(name: String)
+```
+
+Маркировка классов с помощью `open` - это новая функция Scala 3.
+Необходимость явно помечать классы как открытые позволяет избежать многих распространенных ошибок.
+В частности, это требует, чтобы разработчики библиотек явно планировали расширение
+и, например, документировали классы, помеченные как открытые.
+
+Пример:
+
+```scala
+// File Writer.scala
+package p
+
+open class Writer[T]:
+
+  /** Sends to stdout, can be overridden */
+  def send(x: T) = println(x)
+
+  /** Sends all arguments using `send` */
+  def sendAll(xs: T*) = xs.foreach(send)
+end Writer
+
+// File EncryptedWriter.scala
+package p
+
+class EncryptedWriter[T: Encryptable] extends Writer[T]:
+  override def send(x: T) = super.send(encrypt(x))
+```
+
+Открытый класс обычно поставляется с некоторой документацией,
+описывающей внутренние шаблоны вызовов между методами класса, а также хуки, которые можно переопределить.
+Это называется контрактом расширения класса (_extension contract_).
+Он отличается от внешнего контракта (_external contract_) между классом и его пользователями.
+
+[Подробности об open классах](https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html).
 
 ## Заключение
 

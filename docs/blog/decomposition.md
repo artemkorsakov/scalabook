@@ -121,34 +121,39 @@ EnglishGreeting.msg
 При этом должна соблюдаться сигнатура методов:
 
 ```scala
-trait GreetingService:
-  def translate(text: String): String
-  def sayHello = translate("Hello")
-  
-trait TranslationService:
-  def translate(text: String): Long = 123L
+trait Greeting(using val name: String):
+  val firstPart: Long                    // Заменим на Long
+  def msg = s"$firstPart $name"
 
-trait ComposedService extends GreetingService, TranslationService
-// error overriding method translate in trait GreetingService of type (text: String): String;
-// method translate in trait TranslationService of type (text: String): Long has incompatible type
+trait Hello:
+  val firstPart: String = "Hello"
+
+given String = "Bob"
+
+object EnglishGreeting extends Greeting, Hello
+
+EnglishGreeting.msg
+// error overriding value firstPart in trait Greeting of type Long;
+// value firstPart in trait Hello of type String has incompatible type
 ```
 
 Если же оба `trait`-а реализуют метод с идентичной сигнатурой, то в смешанной композиции его нужно будет переопределить:
 
 ```scala
-trait First:
-  def hello: String = "First"
+trait Greeting(using val name: String):
+  val firstPart: String = "Hi"
+  def msg = s"$firstPart $name"
 
-trait Second:
-  def hello: String = "Second"
+trait Hello:
+  val firstPart: String = "Hello"
 
-trait Third extends First, Second:
-  override def hello: String = "Third"
+given String = "Bob"
 
-object Third extends Third
+object EnglishGreeting extends Greeting, Hello:
+  override val firstPart: String = "Good day"
 
-Third.hello
-// Third
+EnglishGreeting.msg
+// Good day Bob
 ```
 
 `trait`-ы более гибки в составлении, потому что можно смешивать (наследовать) несколько `trait`-ов. 

@@ -241,9 +241,6 @@ trait Greeting(val name: String):
   val firstPart: String
   def msg = s"$firstPart $name"
 
-trait Hello:
-  val firstPart: String = "Hello"
-
 object EnglishGreetingModule:
   private val greeting = new Greeting("Bob"):
     override val firstPart: String = "Hi"

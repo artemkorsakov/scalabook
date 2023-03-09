@@ -223,50 +223,35 @@ val x = Set(if condition then Val else Var)
 
 ## Экспортирование элементов
 
-Предложение `export` определяет псевдонимы для выбранных членов объекта.
+Иногда возникают ситуации, когда нежелательно предоставлять доступ ко всем публичным элементам
+родительских `trait`-ов или классов, и хочется избежать наследования.
+
+В этом случае можно:
+
+- либо выделить из родительских структур только нужные элементы в новый `trait`
+- либо, если первое невозможно, собрать из них модуль и через него предоставить доступ только к нужным элементам.
+
+Во втором случае особенно полезно предложение `export`,
+которое определяет псевдонимы для выбранных членов объекта.
 
 Например:
 
 ```scala
-class BitMap
-class InkJet
+trait Greeting(val name: String):
+  val firstPart: String
+  def msg = s"$firstPart $name"
 
-class Printer:
-  type PrinterType
-  def print(bits: BitMap): Unit = println("Printer.print()")
-  def status: List[String] = ???
+trait Hello:
+  val firstPart: String = "Hello"
 
-class Scanner:
-  def scan(): BitMap =
-    println("Scanner.scan()")
-    BitMap()
-  def status: List[String] = ???
+object EnglishGreetingModule:
+  private val greeting = new Greeting("Bob"):
+    override val firstPart: String = "Hi"
 
-class Copier:
-  private val printUnit = new Printer { type PrinterType = InkJet }
-  private val scanUnit = new Scanner
+  export greeting.msg
 
-  export scanUnit.scan
-  export printUnit.{status as _, *}
-
-  def status: List[String] = printUnit.status ++ scanUnit.status
-```
-
-Два пункта `export` определяют следующие псевдонимы экспорта в классе `Copier`:
-
-```scala
-final def scan(): BitMap            = scanUnit.scan()
-final def print(bits: BitMap): Unit = printUnit.print(bits)
-final type PrinterType              = printUnit.PrinterType
-```
-
-Доступ к ним возможен как изнутри `Copier`, так и снаружи:
-
-```scala
-val copier = new Copier
-copier.print(copier.scan())
-// Scanner.scan()
-// Printer.print()
+EnglishGreetingModule.msg 
+// Hi Bob
 ```
 
 Предложения `export` особенно полезны при сборе модуля из элементов, изменить которые возможности нет.

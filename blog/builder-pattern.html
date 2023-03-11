@@ -506,11 +506,11 @@
 </span><span class="identifier">end</span><span> </span><span class="type-name">ConnectionConfig</span></code></pre>
         <p>Здесь есть несколько моментов, на которые стоит обратить внимание:</p>
         <ul>
-          <li>Метод <code>builder()</code> создает сам конструктор объекта</li>
+          <li>В сопутствующем объекте <code>ConnectionConfigBuilder</code> определен конфиг по умолчанию</li>
+          <li>Метод <code>builder()</code> создает конструктор из конфига по умолчанию</li>
+          <li>Сопутствующий объект приватный для того, чтобы доступ к конфигу по умолчанию осуществлялся только через <code>builder()</code></li>
           <li>В конструкторе <code>ConnectionConfigBuilder</code> объявлены методы <code>with...</code> для установки каждого параметра</li>
           <li>Метод <code>build()</code> отдает итоговый конфиг</li>
-          <li>В сопутствующем объекте <code>ConnectionConfigBuilder</code> определен конфиг по умолчанию</li>
-          <li>Сопутствующий объект приватный для того, чтобы доступ к конфигу по умолчанию осуществлялся только через <code>builder()</code></li>
           <li>У <code>ConnectionConfigBuilder</code> приватные параметры конструктора в первую очередь для того, 
           чтобы пользователь &quot;видел&quot; только методы установки значений <code>with...</code>,
           а итоговое состояние конфига получал только через <code>build()</code></li>
@@ -560,6 +560,8 @@
         если для заданного параметра значение по умолчанию отсутствует и требуется его установка пользователем.</p>
         <p>Например:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">validatedPassword</span><span> = </span><span class="type-name">Validated</span><span>.</span><span class="type-name">Invalid</span><span>(</span><span class="type-name">NonEmptyList</span><span>.</span><span class="identifier">one</span><span>(</span><span class="string-literal">&quot;Invalid password&quot;</span><span>))</span></code></pre>
+        <p>Или:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">validatedPassword</span><span> = </span><span class="string-literal">&quot;&quot;</span><span>.</span><span class="identifier">refineValidatedNel</span><span>[</span><span class="type-name">PasswordRule</span><span>]</span></code></pre>
         <p>Остается только определить метод <code>build()</code>:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">build</span><span>(): </span><span class="type-name">ValidatedNel</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">ConnectionConfig</span><span>] =
   (
@@ -577,10 +579,7 @@
   .</span><span class="identifier">withPassword</span><span>(</span><span class="string-literal">&quot;&quot;</span><span>)
   .</span><span class="identifier">build</span><span>()
 
-</span><span class="comment">// Invalid host
-// Invalid port
-// Invalid user
-// Invalid password</span></code></pre>
+</span><span class="comment">// Invalid(NonEmptyList(Invalid host, Invalid port, Invalid user, Invalid password))</span></code></pre>
         <p>Либо корректный конфиг:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">validConfig</span><span> = </span><span class="type-name">ConnectionConfig</span><span>
   .</span><span class="identifier">builder</span><span>()
@@ -590,7 +589,7 @@
   .</span><span class="identifier">withPassword</span><span>(</span><span class="string-literal">&quot;password&quot;</span><span>)
   .</span><span class="identifier">build</span><span>()
 
-</span><span class="comment">// ConnectionConfig(127.0.0.1,8081,user,password)</span></code></pre>
+</span><span class="comment">// Valid(ConnectionConfig(127.0.0.1,8081,user,password))</span></code></pre>
         <p><a href="https://scastie.scala-lang.org/zalqhllqTu23ngxmD3nl4w">Полный пример доступен на Scastie</a></p>
 
         

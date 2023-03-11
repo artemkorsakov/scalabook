@@ -16,4 +16,3 @@ object Builder:
       .withPassword("12345")
       .build()
     println(s"Config = $cfg")
-

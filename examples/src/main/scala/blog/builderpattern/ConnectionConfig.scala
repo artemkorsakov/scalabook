@@ -23,7 +23,7 @@ object ConnectionConfig:
 
   def builder(): ConnectionConfigBuilder = ConnectionConfigBuilder()
 
-  case class ConnectionConfigBuilder private (
+  final case class ConnectionConfigBuilder private (
       private val host: String,
       private val port: Int,
       private val timeout: Int,

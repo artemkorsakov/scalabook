@@ -1,23 +1,36 @@
 package blog.builderpattern
 
+import _root_.cats.data.*
 import blog.builderpattern.ConnectionConfig.*
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 
 object Builder:
   @main def run(): Unit =
-    val cfg0 = ConnectionConfig
+    val invalidConfig = ConnectionConfig
       .builder()
+      .withHost("")
+      .withPort(-1)
+      .withUser("")
+      .withPassword("")
       .build()
-    println(s"Config = $cfg0")
+    printConfig(invalidConfig)
 
-    val cfg = ConnectionConfig
+    val validConfig = ConnectionConfig
       .builder()
       .withHost("127.0.0.1")
       .withPort(8081)
-      .withTimeout(20000)
-      .withConnectionRetry(5)
       .withUser("user")
       .withPassword("password")
       .build()
-    println(s"Config = $cfg")
+    printConfig(validConfig)
+
+  private def printConfig(
+      config: ValidatedNel[String, ConnectionConfig]
+  ): Unit =
+    config match
+      case Validated.Valid(cfg) => println(s"Valid config:\n$cfg")
+      case Validated.Invalid(errors) =>
+        println("Invalid config:")
+        errors.iterator.foreach(println)
+        println("")

@@ -12,8 +12,6 @@
 final case class ConnectionConfig (
     host: String,
     port: Int,
-    timeout: Int,
-    connectionRetry: Int,
     user: String,
     password: String
 )
@@ -25,8 +23,6 @@ final case class ConnectionConfig (
 
 - `host` - строка от 4 символов
 - `port` - число от 1024 до 65535
-- `timeout` - неотрицательное число
-- `connectionRetry` - от 1 до 10
 - `user` - строка, содержащая только буквы и цифры
 - `password` - строка, содержащая только буквы и цифры, длиной от 8 до 16 символов
 
@@ -36,8 +32,6 @@ final case class ConnectionConfig (
 final case class ConnectionConfig(
     host: Host,
     port: Port,
-    timeout: Timeout,
-    connectionRetry: Retry,
     user: User,
     password: Password
 )
@@ -45,8 +39,6 @@ final case class ConnectionConfig(
 object ConnectionConfig:
   opaque type Host     = String :| MinLength[4]
   opaque type Port     = Int :| GreaterEqual[1024] & LessEqual[65535]
-  opaque type Timeout  = Int :| Positive
-  opaque type Retry    = Int :| GreaterEqual[1] & LessEqual[10]
   opaque type User     = String :| Alphanumeric
   opaque type Password = String :| Alphanumeric & MinLength[8] & MaxLength[16]
 ```
@@ -66,8 +58,6 @@ object ConnectionConfig:
   final case class ConnectionConfigBuilder private (
       private val host: String,
       private val port: Int,
-      private val timeout: Int,
-      private val connectionRetry: Int,
       private val user: String,
       private val password: String
   ):
@@ -79,14 +69,6 @@ object ConnectionConfig:
     def withPort(port: Int): ConnectionConfigBuilder =
       copy(port = port)
 
-    def withTimeout(timeout: Int): ConnectionConfigBuilder =
-      copy(timeout = timeout)
-
-    def withConnectionRetry(
-        connectionRetry: Int
-    ): ConnectionConfigBuilder =
-      copy(connectionRetry = connectionRetry)
-
     def withUser(user: String): ConnectionConfigBuilder =
       copy(user = user)
 
@@ -97,8 +79,6 @@ object ConnectionConfig:
       new ConnectionConfig(
         host = ???,
         port = ???,
-        timeout = ???,
-        connectionRetry = ???,
         user = ???,
         password = ???
       )
@@ -109,8 +89,6 @@ object ConnectionConfig:
       new ConnectionConfigBuilder(
         host = "localhost",
         port = 8080,
-        timeout = 10000,
-        connectionRetry = 3,
         user = "root",
         password = "root"
       )
@@ -126,7 +104,8 @@ end ConnectionConfig
 - В сопутствующем объекте `ConnectionConfigBuilder` определен конфиг по умолчанию
 - Сопутствующий объект приватный для того, чтобы доступ к конфигу по умолчанию осуществлялся только через `builder()`
 - У `ConnectionConfigBuilder` приватные параметры конструктора в первую очередь для того, 
-  чтобы пользователь "видел" только методы установки значений `with...`
+  чтобы пользователь "видел" только методы установки значений `with...`,
+  а итоговое состояние конфига получал только через `build()`
 - Метод `copy` недоступен за пределами `case class ConnectionConfigBuilder` из-за приватного конструктора,
   что опять же позволяет задавать параметры только через `with...`
 
@@ -137,8 +116,6 @@ ConnectionConfig
   .builder()
   .withHost("localhost")
   .withPort(9090)
-  .withTimeout(1000)
-  .withConnectionRetry(1)
   .withUser("user")
   .withPassword("12345")
   .build()
@@ -152,15 +129,16 @@ ConnectionConfig
 а затем либо выдавать корректный результат, либо - список ошибок.
 Поэтому пойдем по тому же пути, что и в указанной статье.
 
-Из типа `Host` выделим тип, описывающий уточняющие правила:
+Из типа `Host` выделим тип, описывающий уточняющие правила 
+и, если необходимо, переопределим сообщение об ошибке:
 
 ```scala
-opaque type HostRule     = MinLength[4]
-opaque type Host         = String :| HostRule
+opaque type HostRule = MinLength[4] DescribedAs "Invalid host"
+opaque type Host     = String :| HostRule
 ```
 
 В конструкторе `ConnectionConfigBuilder` заменим тип параметра `host` на `ValidatedNel[String, Host]` 
-и переименуем на `validatedHost: ValidatedNel[String, Host]`.
+и переименуем его на `validatedHost`.
 Тогда метод установки значения можно заменить на:
 
 ```scala
@@ -176,26 +154,76 @@ Builder примет следующий вид:
 final case class ConnectionConfigBuilder private (
     private val validatedHost: ValidatedNel[String, Host],
     private val validatedPort: ValidatedNel[String, Port],
-    private val validatedTimeout: ValidatedNel[String, Timeout],
-    private val validatedConnectionRetry: ValidatedNel[String, Retry],
     private val validatedUser: ValidatedNel[String, User],
     private val validatedPassword: ValidatedNel[String, Password]
 )
 ```
 
-Конфиг по умолчанию примет вид:
+Конфиг по умолчанию станет равным:
 
 ```scala
 def apply(): ConnectionConfigBuilder =
   new ConnectionConfigBuilder(
     validatedHost = Validated.Valid("localhost"),
     validatedPort = Validated.Valid(8080),
-    validatedTimeout = Validated.Valid(10000),
-    validatedConnectionRetry = Validated.Valid(3),
     validatedUser = Validated.Valid("root"),
     validatedPassword = Validated.Valid("password")
   )
 ```
+
+При этом в конфиге по умолчанию также можно указать и невалидные значения, 
+если для заданного параметра значение по умолчанию отсутствует и требуется его установка пользователем.
+
+Например:
+
+```scala
+validatedPassword = Validated.Invalid(NonEmptyList.one("Invalid password"))
+```
+
+Остается только определить метод `build()`:
+
+```scala
+def build(): ValidatedNel[String, ConnectionConfig] =
+  (
+    validatedHost,
+    validatedPort,
+    validatedUser,
+    validatedPassword
+  ).mapN(ConnectionConfig.apply)
+```
+
+В результате использования паттерна Строитель будет выведены либо список всех ошибок:
+
+```scala
+val invalidConfig = ConnectionConfig
+  .builder()
+  .withHost("")
+  .withPort(-1)
+  .withUser("")
+  .withPassword("")
+  .build()
+
+// Invalid host
+// Invalid port
+// Invalid user
+// Invalid password
+```
+
+Либо корректный конфиг:
+
+```scala
+val validConfig = ConnectionConfig
+  .builder()
+  .withHost("127.0.0.1")
+  .withPort(8081)
+  .withUser("user")
+  .withPassword("password")
+  .build()
+
+// ConnectionConfig(127.0.0.1,8081,user,password)
+```
+
+[Полный пример доступен на Scastie](https://scastie.scala-lang.org/dRHKVnHGQCKqbS0le8IDQg)
 
 
 ---

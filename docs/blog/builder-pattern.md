@@ -136,7 +136,7 @@ opaque type Host     = String :| HostRule
 ```
 
 В конструкторе `ConnectionConfigBuilder` заменим тип параметра `host` на `ValidatedNel[String, Host]` 
-и переименуем его на `validatedHost`.
+и переименуем его в `validatedHost`.
 Тогда метод установки значения можно заменить на:
 
 ```scala

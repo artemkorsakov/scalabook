@@ -5,6 +5,8 @@
 Отделение построения сложного объекта от его представления, 
 чтобы один и тот же процесс построения мог создавать разные представления.
 
+[Более детализированное рассмотрение шаблона](https://scalabook.gitflic.space/docs/blog/builder-pattern)
+
 #### Диаграмма
 
 ![Builder](https://upload.wikimedia.org/wikipedia/ru/2/28/Builder.gif)

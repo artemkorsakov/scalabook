@@ -1,7 +1,7 @@
 package blog.builderpattern
 
-import _root_.cats.data.*
-import _root_.cats.syntax.all.*
+import cats.data.*
+import cats.syntax.all.*
 import blog.builderpattern.ConnectionConfig.*
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.{*, given}

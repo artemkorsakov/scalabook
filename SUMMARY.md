@@ -3,6 +3,7 @@
 - [Блог]()
   - [Ошибки при наследовании](docs/blog/architecture-problems.md)
   - [Декомпозиция в Scala 3](docs/blog/decomposition.md)
+  - [Шаблон Строитель в Scala 3](docs/blog/builder-pattern.md)
 
 - [Scala](docs/scala/index.md)
   - [С чего начать?](docs/scala/getting-started.md)

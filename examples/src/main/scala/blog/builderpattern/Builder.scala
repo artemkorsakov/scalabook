@@ -1,17 +1,21 @@
-# Строитель
+package blog.builderpattern
 
-#### Назначение
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
 
-Отделение построения сложного объекта от его представления, 
-чтобы один и тот же процесс построения мог создавать разные представления.
+object Builder:
+  @main def run(): Unit =
+    val cfg = ConnectionConfig
+      .builder()
+      .withHost("localhost")
+      .withPort(9090)
+      .withTimeout(1000)
+      .withConnectionRetry(1)
+      .withUser("user")
+      .withPassword("12345")
+      .build()
+    println(s"Config = $cfg")
 
-#### Диаграмма
-
-![Builder](https://upload.wikimedia.org/wikipedia/ru/2/28/Builder.gif)
-
-#### Пример
-
-```scala
 final case class ConnectionConfig private (
     host: String,
     port: Int,
@@ -22,6 +26,10 @@ final case class ConnectionConfig private (
 )
 
 object ConnectionConfig {
+  opaque type Host = String :| MinLength[4]
+  opaque type Port = Int :| GreaterEqual[1024] & LessEqual[65535]
+  opaque type User = String :| Alphanumeric
+  opaque type Password = String :| Match["\\S{8, 16}"]
   def builder(): ConnectionConfigBuilder = ConnectionConfigBuilder()
 
   case class ConnectionConfigBuilder private (
@@ -78,28 +86,3 @@ object ConnectionConfig {
       )
   }
 }
-```
-
-Использование паттерна строитель:
-
-```scala
-val cfg = ConnectionConfig
-  .builder()
-  .withHost("localhost")
-  .withPort(9090)
-  .withTimeout(1000)
-  .withConnectionRetry(1)
-  .withUser("user")
-  .withPassword("12345")
-  .build()
-println(s"Config = $cfg")
-// Config = ConnectionConfig(localhost,9090,1000,1,user,12345)
-```
-
-
----
-
-**Ссылки:**
-
-- [Scala & Design Patterns by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf)
-- [Wikipedia](https://en.wikipedia.org/wiki/Builder_pattern)

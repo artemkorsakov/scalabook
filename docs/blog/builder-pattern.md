@@ -44,7 +44,7 @@ object ConnectionConfig:
 ```
 
 У case class-а `ConnectionConfig` конструктор можно определить как приватный, 
-чтобы ограничить создание конфига только через Строитель. 
+чтобы ограничить создание конфига только по шаблону. 
 
 Тогда сам шаблон Строитель можно определить вот так:
 
@@ -61,8 +61,6 @@ object ConnectionConfig:
       private val user: String,
       private val password: String
   ):
-    import ConnectionConfigBuilder.*
-
     def withHost(host: String): ConnectionConfigBuilder =
       copy(host = host)
 
@@ -109,7 +107,7 @@ end ConnectionConfig
 - Метод `copy` недоступен за пределами `case class ConnectionConfigBuilder` из-за приватного конструктора,
   что опять же позволяет задавать параметры только через `with...`
 
-Тогда этим Строителем можно пользоваться вот так:
+Таким образом построить `ConnectionConfig` по шаблону можно так:
 
 ```scala
 ConnectionConfig
@@ -121,7 +119,7 @@ ConnectionConfig
   .build()
 ```
 
-Других способов создания `ConnectionConfig` нет, как нет и других методов работы с `ConnectionConfigBuilder`.
+Другие способы создания `ConnectionConfig` недоступны, как нет и других методов работы с `ConnectionConfigBuilder`.
 
 ### А как же валидация параметров?
 
@@ -225,12 +223,6 @@ val validConfig = ConnectionConfig
 
 [Полный пример доступен на Scastie](https://scastie.scala-lang.org/dRHKVnHGQCKqbS0le8IDQg)
 
-
----
-
-**Ссылки:**
-
-- [Wikipedia][Wiki]
 
 [Wiki]: https://ru.wikipedia.org/wiki/%D0%A1%D1%82%D1%80%D0%BE%D0%B8%D1%82%D0%B5%D0%BB%D1%8C_(%D1%88%D0%B0%D0%B1%D0%BB%D0%BE%D0%BD_%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F)
 [habr]: https://habr.com/ru/company/kryptonite/blog/719488/

@@ -1,9 +1,7 @@
 package blog.builderpattern
 
-import _root_.cats.data.*
+import cats.data.*
 import blog.builderpattern.ConnectionConfig.*
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.constraint.all.*
 
 object Builder:
   @main def run(): Unit =

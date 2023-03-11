@@ -2,9 +2,9 @@ package blog.builderpattern
 
 import cats.data.*
 import cats.syntax.all.*
-import blog.builderpattern.ConnectionConfig.*
+import ConnectionConfig.*
 import io.github.iltotore.iron.*
-import io.github.iltotore.iron.cats.{*, given}
+import io.github.iltotore.iron.cats.*
 import io.github.iltotore.iron.constraint.all.*
 
 final case class ConnectionConfig private (

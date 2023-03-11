@@ -28,7 +28,7 @@ final case class ConnectionConfig (
 - `timeout` - неотрицательное число
 - `connectionRetry` - от 1 до 10
 - `user` - строка, содержащая только буквы и цифры
-- `password` - строка без пробелов длиной от 8 до 16 символов
+- `password` - строка, содержащая только буквы и цифры, длиной от 8 до 16 символов
 
 Весьма удобно использовать для этого уточняющие типы:
 
@@ -46,9 +46,9 @@ object ConnectionConfig:
   opaque type Host     = String :| MinLength[4]
   opaque type Port     = Int :| GreaterEqual[1024] & LessEqual[65535]
   opaque type Timeout  = Int :| Positive
-  opaque type Retry    = Int :| GreaterEqual[1024] & LessEqual[65535]
+  opaque type Retry    = Int :| GreaterEqual[1] & LessEqual[10]
   opaque type User     = String :| Alphanumeric
-  opaque type Password = String :| Match["\\S{8, 16}"]
+  opaque type Password = String :| Alphanumeric & MinLength[8] & MaxLength[16]
 ```
 
 У case class-а `ConnectionConfig` конструктор можно определить как приватный, 
@@ -144,10 +144,58 @@ ConnectionConfig
   .build()
 ```
 
-Других способов создания `ConnectionConfig` нет.
+Других способов создания `ConnectionConfig` нет, как нет и других методов работы с `ConnectionConfigBuilder`.
 
 ### А как же валидация параметров?
 
+Как уже упоминалось [в статье об уточняющих типах][habr] желательно сохранять все ошибки валидации,
+а затем либо выдавать корректный результат, либо - список ошибок.
+Поэтому пойдем по тому же пути, что и в указанной статье.
+
+Из типа `Host` выделим тип, описывающий уточняющие правила:
+
+```scala
+opaque type HostRule     = MinLength[4]
+opaque type Host         = String :| HostRule
+```
+
+В конструкторе `ConnectionConfigBuilder` заменим тип параметра `host` на `ValidatedNel[String, Host]` 
+и переименуем на `validatedHost: ValidatedNel[String, Host]`.
+Тогда метод установки значения можно заменить на:
+
+```scala
+def withHost(host: String): ConnectionConfigBuilder =
+  copy(validatedHost = host.refineValidatedNel[HostRule])
+```
+
+Проделаем точно такие же изменения для остальных параметров.
+
+Builder примет следующий вид:
+
+```scala
+final case class ConnectionConfigBuilder private (
+    private val validatedHost: ValidatedNel[String, Host],
+    private val validatedPort: ValidatedNel[String, Port],
+    private val validatedTimeout: ValidatedNel[String, Timeout],
+    private val validatedConnectionRetry: ValidatedNel[String, Retry],
+    private val validatedUser: ValidatedNel[String, User],
+    private val validatedPassword: ValidatedNel[String, Password]
+)
+```
+
+Конфиг по умолчанию примет вид:
+
+```scala
+def apply(): ConnectionConfigBuilder =
+  new ConnectionConfigBuilder(
+    validatedHost = Validated.Valid("localhost"),
+    validatedPort = Validated.Valid(8080),
+    validatedTimeout = Validated.Valid(10000),
+    validatedConnectionRetry = Validated.Valid(3),
+    validatedUser = Validated.Valid("root"),
+    validatedPassword = Validated.Valid("password")
+  )
+```
 
 
 ---

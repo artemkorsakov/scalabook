@@ -23,7 +23,7 @@ final case class ConnectionConfig (
 
 - `host` - строка от 4 символов
 - `port` - число от 1024 до 65535
-- `user` - строка, содержащая только буквы и цифры
+- `user` - непустая строка, содержащая только буквы и цифры
 - `password` - строка, содержащая только буквы и цифры, длиной от 8 до 16 символов
 
 Весьма удобно использовать для этого уточняющие типы:
@@ -39,7 +39,7 @@ final case class ConnectionConfig(
 object ConnectionConfig:
   opaque type Host     = String :| MinLength[4]
   opaque type Port     = Int :| GreaterEqual[1024] & LessEqual[65535]
-  opaque type User     = String :| Alphanumeric
+  opaque type User     = String :| Alphanumeric & MinLength[1]
   opaque type Password = String :| Alphanumeric & MinLength[8] & MaxLength[16]
 ```
 

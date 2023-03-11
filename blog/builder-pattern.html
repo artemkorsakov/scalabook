@@ -425,7 +425,7 @@
       <main class="content">
 
         <h1 id="шаблон-строитель-в-scala-3" class="title">Шаблон Строитель в Scala 3</h1>
-        <p>Как известно, шаблон <a href="https://ru.wikipedia.org/wiki/%D0%A1%D1%82%D1%80%D0%BE%D0%B8%D1%82%D0%B5%D0%BB%D1%8C_(%D1%88%D0%B0%D0%B1%D0%BB%D0%BE%D0%BD_%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F)">Строитель (Builder)</a> отделяет конструирование сложного объекта от его представления,
+        <p>По определению шаблон <a href="https://ru.wikipedia.org/wiki/%D0%A1%D1%82%D1%80%D0%BE%D0%B8%D1%82%D0%B5%D0%BB%D1%8C_(%D1%88%D0%B0%D0%B1%D0%BB%D0%BE%D0%BD_%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F)">Строитель (Builder)</a> отделяет конструирование сложного объекта от его представления,
         что особенно хорошо, когда нужно провести валидацию параметров перед получением итогового экземпляра.
         Особенно удобно комбинировать шаблон Строитель с <a href="https://habr.com/ru/company/kryptonite/blog/719488/">уточняющими типами</a>.</p>
         <p>Рассмотрим использование Строителя на Scala версии <code>&quot;3.2.2&quot;</code>.</p>
@@ -437,12 +437,12 @@
     </span><span class="identifier">password</span><span>: </span><span class="type-name">String</span><span>
 )</span></code></pre>
         <p>И мы хотим предоставить пользователю возможность создавать конфиг различными способами, но 
-        при этом валидировать значения перед формированием итогового конфига.
+        при этом валидировать значения перед формированием итогового результата.
         Например, по следующим правилам:</p>
         <ul>
           <li><code>host</code> - строка от 4 символов</li>
           <li><code>port</code> - число от 1024 до 65535</li>
-          <li><code>user</code> - строка, содержащая только буквы и цифры</li>
+          <li><code>user</code> - непустая строка, содержащая только буквы и цифры</li>
           <li><code>password</code> - строка, содержащая только буквы и цифры, длиной от 8 до 16 символов</li>
         </ul>
         <p>Весьма удобно использовать для этого уточняющие типы:</p>
@@ -456,7 +456,7 @@
 </span><span class="keyword">object</span><span> </span><span class="type-name">ConnectionConfig</span><span>:
   </span><span class="keyword">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">Host</span><span>     = </span><span class="type-name">String</span><span> :| </span><span class="type-name">MinLength</span><span>[</span><span class="number-literal">4</span><span>]
   </span><span class="keyword">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">Port</span><span>     = </span><span class="type-name">Int</span><span> :| </span><span class="type-name">GreaterEqual</span><span>[</span><span class="number-literal">1024</span><span>] &amp; </span><span class="type-name">LessEqual</span><span>[</span><span class="number-literal">65535</span><span>]
-  </span><span class="keyword">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">User</span><span>     = </span><span class="type-name">String</span><span> :| </span><span class="type-name">Alphanumeric</span><span>
+  </span><span class="keyword">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">User</span><span>     = </span><span class="type-name">String</span><span> :| </span><span class="type-name">Alphanumeric</span><span> &amp; </span><span class="type-name">MinLength</span><span>[</span><span class="number-literal">1</span><span>]
   </span><span class="keyword">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">Password</span><span> = </span><span class="type-name">String</span><span> :| </span><span class="type-name">Alphanumeric</span><span> &amp; </span><span class="type-name">MinLength</span><span>[</span><span class="number-literal">8</span><span>] &amp; </span><span class="type-name">MaxLength</span><span>[</span><span class="number-literal">16</span><span>]</span></code></pre>
         <p>У case class-а <code>ConnectionConfig</code> конструктор можно определить как приватный, 
         чтобы ограничить создание конфига только через Строитель. </p>

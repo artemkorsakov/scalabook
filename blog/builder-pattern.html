@@ -536,7 +536,7 @@
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">HostRule</span><span> = </span><span class="type-name">MinLength</span><span>[</span><span class="number-literal">4</span><span>] </span><span class="type-name">DescribedAs</span><span> </span><span class="string-literal">&quot;Invalid host&quot;</span><span>
 </span><span class="keyword">opaque</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">Host</span><span>     = </span><span class="type-name">String</span><span> :| </span><span class="type-name">HostRule</span></code></pre>
         <p>В конструкторе <code>ConnectionConfigBuilder</code> заменим тип параметра <code>host</code> на <code>ValidatedNel[String, Host]</code> 
-        и переименуем его на <code>validatedHost</code>.
+        и переименуем его в <code>validatedHost</code>.
         Тогда метод установки значения можно заменить на:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">withHost</span><span>(</span><span class="identifier">host</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">ConnectionConfigBuilder</span><span> =
   </span><span class="identifier">copy</span><span>(</span><span class="identifier">validatedHost</span><span> = </span><span class="identifier">host</span><span>.</span><span class="identifier">refineValidatedNel</span><span>[</span><span class="type-name">HostRule</span><span>])</span></code></pre>

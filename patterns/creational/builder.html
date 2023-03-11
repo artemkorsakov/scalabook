@@ -87,6 +87,7 @@
     <li class="level1 nav-header">Блог</li>
     <li class="level2 nav-leaf"><a href="../../blog/architecture-problems.html">Ошибки при наследовании</a></li>
     <li class="level2 nav-leaf"><a href="../../blog/decomposition.html">Декомпозиция в Scala 3</a></li>
+    <li class="level2 nav-leaf"><a href="../../blog/builder-pattern.html">Шаблон Строитель в Scala 3</a></li>
     <li class="level1 nav-header">Scala</li>
     <li class="level2 nav-leaf"><a href="../../scala/">Обзор Scala</a></li>
     <li class="level2 nav-leaf"><a href="../../scala/getting-started.html">С чего начать?</a></li>
@@ -435,49 +436,84 @@
         <p><img src="https://upload.wikimedia.org/wikipedia/ru/2/28/Builder.gif" alt="Builder"></p>
         
         <h4 id="пример" class="section"><a class="anchor-link left" href="#пример"><i class="icofont-laika link">&#xef71;</i></a>Пример</h4>
-        <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">Pizza</span><span>(</span><span class="keyword">var</span><span> </span><span class="identifier">dough</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;&quot;</span><span>, </span><span class="keyword">var</span><span> </span><span class="identifier">sauce</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;&quot;</span><span>, </span><span class="keyword">var</span><span> </span><span class="identifier">topping</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;&quot;</span><span>):
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">outputReceipt</span><span>(): </span><span class="type-name">Unit</span><span> =
-    </span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;Dough: </span><span class="substitution">$dough</span><span class="escape-sequence">\n</span><span class="string-literal">Sauce: </span><span class="substitution">$sauce</span><span class="escape-sequence">\n</span><span class="string-literal">Topping: </span><span class="substitution">$topping</span><span class="string-literal">&quot;</span><span>)
-</span><span class="keyword">trait</span><span> </span><span class="type-name">PizzaBuilder</span><span>:
-  </span><span class="keyword">private</span><span> </span><span class="keyword">var</span><span> </span><span class="identifier">maybePizza</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Pizza</span><span>] = </span><span class="type-name">None</span><span>
-  
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">getPizza</span><span>: </span><span class="type-name">Pizza</span><span> = </span><span class="identifier">maybePizza</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="keyword">throw</span><span> </span><span class="keyword">new</span><span> </span><span class="type-name">Exception</span><span>(</span><span class="string-literal">&quot;Pizza has not been created yet&quot;</span><span>))
-  
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">createPizza</span><span>(): </span><span class="type-name">Unit</span><span> =
-    </span><span class="identifier">maybePizza</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">Pizza</span><span>)
-    
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">buildDough</span><span>(</span><span class="identifier">dough</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Unit</span><span> =
-    </span><span class="identifier">getPizza</span><span>.</span><span class="identifier">dough</span><span> = </span><span class="identifier">dough</span><span>
-    
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">buildSauce</span><span>(</span><span class="identifier">sauce</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Unit</span><span> =
-    </span><span class="identifier">getPizza</span><span>.</span><span class="identifier">sauce</span><span> = </span><span class="identifier">sauce</span><span>
-    
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">buildTopping</span><span>(</span><span class="identifier">topping</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Unit</span><span> =
-    </span><span class="identifier">getPizza</span><span>.</span><span class="identifier">topping</span><span> = </span><span class="identifier">topping</span><span>
-</span><span class="identifier">end</span><span> </span><span class="type-name">PizzaBuilder</span></code></pre>
+        <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">ConnectionConfig</span><span> </span><span class="keyword">private</span><span> (
+    </span><span class="identifier">host</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">port</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">timeout</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">connectionRetry</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">user</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">password</span><span>: </span><span class="type-name">String</span><span>
+)
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">ConnectionConfig</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">builder</span><span>(): </span><span class="type-name">ConnectionConfigBuilder</span><span> = </span><span class="type-name">ConnectionConfigBuilder</span><span>()
+
+  </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">ConnectionConfigBuilder</span><span> </span><span class="keyword">private</span><span> (
+      </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">host</span><span>: </span><span class="type-name">String</span><span>,
+      </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">port</span><span>: </span><span class="type-name">Int</span><span>,
+      </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">timeout</span><span>: </span><span class="type-name">Int</span><span>,
+      </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">connectionRetry</span><span>: </span><span class="type-name">Int</span><span>,
+      </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">user</span><span>: </span><span class="type-name">String</span><span>,
+      </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">password</span><span>: </span><span class="type-name">String</span><span>
+  ) {
+    </span><span class="keyword">import</span><span> </span><span class="type-name">ConnectionConfigBuilder</span><span>.*
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">withHost</span><span>(</span><span class="identifier">host</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">ConnectionConfigBuilder</span><span> =
+      </span><span class="identifier">copy</span><span>(</span><span class="identifier">host</span><span> = </span><span class="identifier">host</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">withPort</span><span>(</span><span class="identifier">port</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">ConnectionConfigBuilder</span><span> =
+      </span><span class="identifier">copy</span><span>(</span><span class="identifier">port</span><span> = </span><span class="identifier">port</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">withTimeout</span><span>(</span><span class="identifier">timeout</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">ConnectionConfigBuilder</span><span> =
+      </span><span class="identifier">copy</span><span>(</span><span class="identifier">timeout</span><span> = </span><span class="identifier">timeout</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">withConnectionRetry</span><span>(
+        </span><span class="identifier">connectionRetry</span><span>: </span><span class="type-name">Int</span><span>
+    ): </span><span class="type-name">ConnectionConfigBuilder</span><span> =
+      </span><span class="identifier">copy</span><span>(</span><span class="identifier">connectionRetry</span><span> = </span><span class="identifier">connectionRetry</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">withUser</span><span>(</span><span class="identifier">user</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">ConnectionConfigBuilder</span><span> =
+      </span><span class="identifier">copy</span><span>(</span><span class="identifier">user</span><span> = </span><span class="identifier">user</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">withPassword</span><span>(</span><span class="identifier">password</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">ConnectionConfigBuilder</span><span> =
+      </span><span class="identifier">copy</span><span>(</span><span class="identifier">password</span><span> = </span><span class="identifier">password</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">build</span><span>(): </span><span class="type-name">ConnectionConfig</span><span> = {
+      </span><span class="keyword">new</span><span> </span><span class="type-name">ConnectionConfig</span><span>(
+        </span><span class="identifier">host</span><span> = </span><span class="identifier">host</span><span>,
+        </span><span class="identifier">port</span><span> = </span><span class="identifier">port</span><span>,
+        </span><span class="identifier">timeout</span><span> = </span><span class="identifier">timeout</span><span>,
+        </span><span class="identifier">connectionRetry</span><span> = </span><span class="identifier">connectionRetry</span><span>,
+        </span><span class="identifier">user</span><span> = </span><span class="identifier">user</span><span>,
+        </span><span class="identifier">password</span><span> = </span><span class="identifier">password</span><span>
+      )
+    }
+  }
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">ConnectionConfigBuilder</span><span> {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(): </span><span class="type-name">ConnectionConfigBuilder</span><span> =
+      </span><span class="keyword">new</span><span> </span><span class="type-name">ConnectionConfigBuilder</span><span>(
+        </span><span class="identifier">host</span><span> = </span><span class="string-literal">&quot;localhost&quot;</span><span>,
+        </span><span class="identifier">port</span><span> = </span><span class="number-literal">8080</span><span>,
+        </span><span class="identifier">timeout</span><span> = </span><span class="number-literal">10000</span><span>,
+        </span><span class="identifier">connectionRetry</span><span> = </span><span class="number-literal">3</span><span>,
+        </span><span class="identifier">user</span><span> = </span><span class="string-literal">&quot;root&quot;</span><span>,
+        </span><span class="identifier">password</span><span> = </span><span class="string-literal">&quot;root&quot;</span><span>
+      )
+  }
+}</span></code></pre>
         <p>Использование паттерна строитель:</p>
-        <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">HawaiianPizzaBuilder</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">PizzaBuilder</span><span>:
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">createHawaiianPizza</span><span>(): </span><span class="type-name">Pizza</span><span> =
-    </span><span class="identifier">createPizza</span><span>()
-    </span><span class="identifier">buildDough</span><span>(</span><span class="string-literal">&quot;cross&quot;</span><span>)
-    </span><span class="identifier">buildSauce</span><span>(</span><span class="string-literal">&quot;mild&quot;</span><span>)
-    </span><span class="identifier">buildTopping</span><span>(</span><span class="string-literal">&quot;ham+pineapple&quot;</span><span>)
-    </span><span class="identifier">getPizza</span><span>
-</span><span class="keyword">object</span><span> </span><span class="type-name">SpicyPizzaBuilder</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">PizzaBuilder</span><span>:
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">createSpicyPizza</span><span>(): </span><span class="type-name">Pizza</span><span> =
-    </span><span class="identifier">createPizza</span><span>()
-    </span><span class="identifier">buildDough</span><span>(</span><span class="string-literal">&quot;pan baked&quot;</span><span>)
-    </span><span class="identifier">buildSauce</span><span>(</span><span class="string-literal">&quot;hot&quot;</span><span>)
-    </span><span class="identifier">buildTopping</span><span>(</span><span class="string-literal">&quot;pepperoni+salami&quot;</span><span>)
-    </span><span class="identifier">getPizza</span><span>
-</span><span class="type-name">HawaiianPizzaBuilder</span><span>.</span><span class="identifier">createHawaiianPizza</span><span>().</span><span class="identifier">outputReceipt</span><span>()
-</span><span class="comment">// Dough: cross
-// Sauce: mild
-// Topping: ham+pineapple
-</span><span class="type-name">SpicyPizzaBuilder</span><span>.</span><span class="identifier">createSpicyPizza</span><span>().</span><span class="identifier">outputReceipt</span><span>()
-</span><span class="comment">// Dough: pan baked
-// Sauce: hot
-// Topping: pepperoni+salami</span></code></pre>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">cfg</span><span> = </span><span class="type-name">ConnectionConfig</span><span>
+  .</span><span class="identifier">builder</span><span>()
+  .</span><span class="identifier">withHost</span><span>(</span><span class="string-literal">&quot;localhost&quot;</span><span>)
+  .</span><span class="identifier">withPort</span><span>(</span><span class="number-literal">9090</span><span>)
+  .</span><span class="identifier">withTimeout</span><span>(</span><span class="number-literal">1000</span><span>)
+  .</span><span class="identifier">withConnectionRetry</span><span>(</span><span class="number-literal">1</span><span>)
+  .</span><span class="identifier">withUser</span><span>(</span><span class="string-literal">&quot;user&quot;</span><span>)
+  .</span><span class="identifier">withPassword</span><span>(</span><span class="string-literal">&quot;12345&quot;</span><span>)
+  .</span><span class="identifier">build</span><span>()
+</span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;Config = </span><span class="substitution">$cfg</span><span class="string-literal">&quot;</span><span>)
+</span><span class="comment">// Config = ConnectionConfig(localhost,9090,1000,1,user,12345)</span></code></pre>
         <hr>
         <p><strong>Ссылки:</strong></p>
         <ul>

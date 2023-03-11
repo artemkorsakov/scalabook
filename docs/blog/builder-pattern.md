@@ -178,6 +178,12 @@ def apply(): ConnectionConfigBuilder =
 validatedPassword = Validated.Invalid(NonEmptyList.one("Invalid password"))
 ```
 
+Или:
+
+```scala
+validatedPassword = "".refineValidatedNel[PasswordRule]
+```
+
 Остается только определить метод `build()`:
 
 ```scala
@@ -201,10 +207,7 @@ val invalidConfig = ConnectionConfig
   .withPassword("")
   .build()
 
-// Invalid host
-// Invalid port
-// Invalid user
-// Invalid password
+// Invalid(NonEmptyList(Invalid host, Invalid port, Invalid user, Invalid password))
 ```
 
 Либо корректный конфиг:
@@ -218,7 +221,7 @@ val validConfig = ConnectionConfig
   .withPassword("password")
   .build()
 
-// ConnectionConfig(127.0.0.1,8081,user,password)
+// Valid(ConnectionConfig(127.0.0.1,8081,user,password))
 ```
 
 [Полный пример доступен на Scastie](https://scastie.scala-lang.org/zalqhllqTu23ngxmD3nl4w)

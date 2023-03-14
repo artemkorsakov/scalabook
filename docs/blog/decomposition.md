@@ -342,7 +342,7 @@ for
   a <- Container(7)
   b <- f(a)
 yield g(b)
-
+// val res0: Container[String] = Container(нечетное)
 // Эквивалентно: Container(7).flatMap(f).map(g)
 ```
 

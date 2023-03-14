@@ -31,7 +31,7 @@
 Например:
 
 ```scala
-trait Greeting(val name: String):
+trait Greeting(name: String):
   val firstPart: String
   def msg = s"$firstPart $name"
 

@@ -57,7 +57,7 @@ EnglishGreeting.msg  // Hello Bob
 Т.е. следующие примеры вызовут ошибку компилятора:
 
 ```scala
-trait Greeting(val name: String):
+trait Greeting(name: String):
   lazy val msg: String = s"Hello $name"
 
 class EnglishGreeting extends Greeting
@@ -65,7 +65,7 @@ class EnglishGreeting extends Greeting
 ```
 
 ```scala
-trait Greeting(val name: String):
+trait Greeting(name: String):
   lazy val msg: String = s"Hello $name"
 
 class EnglishGreeting extends Greeting("Bob")
@@ -76,7 +76,7 @@ class FormalEnglishGreeting extends EnglishGreeting, Greeting("Robert")
 ```
 
 ```scala
-trait Greeting(val name: String):
+trait Greeting(name: String):
   lazy val msg: String = s"Hello $name"
 
 trait EnglishGreeting extends Greeting("Bob")

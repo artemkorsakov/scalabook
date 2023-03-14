@@ -1,4 +1,4 @@
-trait Greeting(using val name: String):
+trait Greeting(using name: String):
   val firstPart: String
   def msg = s"$firstPart $name"
 

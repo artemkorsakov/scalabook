@@ -121,7 +121,7 @@ EnglishGreeting.msg
 При этом должна соблюдаться сигнатура методов:
 
 ```scala
-trait Greeting(using val name: String):
+trait Greeting(using name: String):
   val firstPart: Long                    // Заменим на Long
   def msg = s"$firstPart $name"
 
@@ -140,7 +140,7 @@ EnglishGreeting.msg
 Если же оба `trait`-а реализуют метод с идентичной сигнатурой, то в смешанной композиции его нужно будет переопределить:
 
 ```scala
-trait Greeting(using val name: String):
+trait Greeting(using name: String):
   val firstPart: String = "Hi"
   def msg = s"$firstPart $name"
 

@@ -401,8 +401,7 @@ object MonoidWithException extends Monoid[NonEmptyList[Int]]:
   val empty1: NonEmptyList[Int] = throw new Exception("")
   var empty2: NonEmptyList[Int] = _
   val empty3: NonEmptyList[Int] = null
-  def compose(l1: NonEmptyList[Int], l2: NonEmptyList[Int]): NonEmptyList[Int] =
-    NonEmptyList(head = l1.head, tail = l1.tail ++ (l2.head :: l2.tail))
+  def compose ...
 ```
 
 В этом случае происходит как бы перекладывание ответственности за использование такого "моноида"
@@ -425,8 +424,7 @@ final case class NonEmptyList[A](head: A, tail: List[A])
 
 object MonoidWithOption extends Monoid[NonEmptyList[Int]]:
   val empty: Option[NonEmptyList[Int]] = None
-  def compose(l1: NonEmptyList[Int], l2: NonEmptyList[Int]): NonEmptyList[Int] =
-    NonEmptyList(head = l1.head, tail = l1.tail ++ (l2.head :: l2.tail))
+  def compose ...
 ```
 
 Но в этом случае получается, что дочерняя структура пытается "заглушить" часть функциональности,

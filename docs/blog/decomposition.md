@@ -110,6 +110,7 @@ EnglishGreeting.msg
 // Hello Bob
 ```
 
+
 ## Различие параметров конструктора от параметров в теле
 
 Параметры конструктора инициализируются до инициализации параметров в теле.
@@ -161,6 +162,18 @@ GreetingSecond.msg     // GreetingSecond Bob
 что делает `trait`-ы более мощным средством декомпозиции.
 
 Расширение нескольких `trait`-ов называется "смешанной композицией" (_mixin composition_).
+
+```scala
+trait Greeting(name: String):
+  val firstPart: String
+  def msg = s"$firstPart $name"
+
+trait Hello(val firstPart: String)
+
+object EnglishGreeting extends Greeting("Bob"), Hello("Hello")
+
+EnglishGreeting.msg  // Hello Bob
+```
 
 При этом должна соблюдаться сигнатура методов:
 

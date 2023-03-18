@@ -1,13 +1,9 @@
-trait Greeting(using name: String):
-  val firstPart: String = "Hi"
+trait Greeting(name: String):
+  val firstPart: String
   def msg = s"$firstPart $name"
 
-trait Hello:
-  val firstPart: String = "Hello"
+trait Hello(val firstPart: String)
 
-given String = "Bob"
-
-object EnglishGreeting extends Greeting, Hello:
-  override val firstPart: String = "Good day"
+object EnglishGreeting extends Greeting("Bob"), Hello("Hello")
 
 EnglishGreeting.msg

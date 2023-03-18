@@ -36,25 +36,43 @@ def sum(ints: IndexedSeq[Int]): Int =
   которое могло бы оценить его в отдельном потоке.
 - `def get[A](a: Par[A]): A`, для извлечения результирующего значения из параллельного вычисления.
 
+Тогда сумму можно реализовать так:
+
 ```scala
-import java.util.concurrent.*
-
-object Par:
-  opaque type Par[A] = ExecutorService => Future[A]
-
-  extension [A](pa: Par[A]) def run(s: ExecutorService): Future[A] = pa(s)
-
-  def unit[A](a: A): Par[A] =
-    es => UnitFuture(a)
-
-  private case class UnitFuture[A](get: A) extends Future[A]:
-    val isDone: Boolean      = true
-    val isCancelled: Boolean = false
-
-    def get(timeout: Long, units: TimeUnit): A  = this.get
-    def cancel(evenIfRunning: Boolean): Boolean = false
+def sum(ints: IndexedSeq[Int]): Int =
+  if ints.size <= 1 then
+    ints.headOption.getOrElse(0)
+  else
+    val (l, r) = ints.splitAt(ints.size / 2)
+    val sumL: Par[Int] = Par.unit(sum(l))
+    val sumR: Par[Int] = Par.unit(sum(r))
+    Par.get(sumL) + Par.get(sumR)
 ```
 
+Здесь возникает проблема в том, что вычисления в реальности не параллелятся: в момент вызова `Par.get(sumL)`
+мы будем вынуждены ждать окончания вычисления `sumL`.
+
+Необходимо объединять параллельные вычисления и отложить вызов `get` до финального этапа:
+
+```scala
+def sum(ints: IndexedSeq[Int]): Par[Int] =
+  if ints.size <= 1 then
+    Par.unit(ints.headOption.getOrElse(0))
+  else
+    val (l, r) = ints.splitAt(ints.size / 2)
+    Par.map2(sum(l), sum(r))(_ + _)
+```
+
+Здесь возникает необходимость в определении функции `map2`: 
+
+```scala
+// Через метод расширения
+extension [A](pa: Par[A]) 
+  def map2[B, C](pb: Par[B])(f: (A, B) => C): Par[C]
+
+// Стандартная функция
+def map2[A, B, C](pa: Par[A], pb: Par[B])(f: (A, B) => C): Par[C]
+```
 
 
 

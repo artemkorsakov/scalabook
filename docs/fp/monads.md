@@ -180,7 +180,7 @@ trait Monad[F[_]] extends Functor[F]:
 
 #### Monad с `map`, `join` и `unit`
 
-Монада может быть определена с помощью `map`, `join` и `unit`.
+Монада может быть определена с помощью `map`, `join` (другое имя - `flatten`) и `unit`.
 В этом случае `flatMap` и `compose` могут быть определены так:
 
 ```scala

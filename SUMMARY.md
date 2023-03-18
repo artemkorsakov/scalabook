@@ -128,7 +128,7 @@
   - [Ленивые вычисления](docs/fp/laziness.md)
   - [Функциональное состояние](docs/fp/state.md)
   - [Функциональный журнал](docs/fp/writer.md)
-  - [Параллелизм](parallelism.md)
+  - [Параллелизм](docs/fp/parallelism.md)
   - [Monoids](docs/fp/monoids.md)
   - [Monads](docs/fp/monads.md)
   

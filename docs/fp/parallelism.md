@@ -58,8 +58,11 @@ def sum(ints: IndexedSeq[Int]): Par[Int] =
     Par.map2(sum(l), sum(r))(_ + _)
 ```
 
+При этом для параллельных вычислений должен выполняться следующий закон:
 
-
+```scala
+unit(x).map(f) == unit(f(x))
+```
 
 
 ---

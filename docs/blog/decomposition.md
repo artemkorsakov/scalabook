@@ -155,6 +155,10 @@ GreetingSecond.name    // Bob
 GreetingSecond.msg     // GreetingSecond Bob
 ```
 
+Объяснение почему так происходит можно найти 
+[здесь](https://scalapuzzlers.com/index.html#pzzlr-004) 
+и [здесь](https://scalapuzzlers.com/index.html#pzzlr-005).
+
 
 ## Расширение нескольких trait-ов
 

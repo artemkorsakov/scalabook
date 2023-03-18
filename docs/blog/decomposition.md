@@ -110,6 +110,50 @@ EnglishGreeting.msg
 // Hello Bob
 ```
 
+## Различие параметров конструктора от параметров в теле
+
+Параметры конструктора инициализируются до инициализации параметров в теле.
+
+Рассмотрим пример:
+
+```scala
+trait GreetingFirst(name: String):
+  val msg = s"GreetingFirst $name"
+
+object GreetingFirst extends GreetingFirst("Bob")
+
+GreetingFirst.msg      // GreetingFirst Bob
+```
+
+Аналогичный пример с использованием параметра в теле trait-а приводит к некорректной инициализации.
+
+```scala
+trait GreetingSecond:
+  val name: String
+  val msg = s"GreetingSecond $name"
+
+object GreetingSecond extends GreetingSecond:
+  override val name: String = "Bob"
+  
+GreetingSecond.name    // Bob
+GreetingSecond.msg     // GreetingSecond null
+```
+
+По этой причине практически никто и никогда не использует абстрактные константы в trait-ах 
+и объявляет их либо `def`, либо `lazy val`, например так:
+
+```scala
+trait GreetingSecond:
+  def name: String
+  val msg = s"GreetingSecond $name"
+
+object GreetingSecond extends GreetingSecond:
+  override lazy val name: String = "Bob"
+  
+GreetingSecond.name    // Bob
+GreetingSecond.msg     // GreetingSecond Bob
+```
+
 
 ## Расширение нескольких trait-ов
 

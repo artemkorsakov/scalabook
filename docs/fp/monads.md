@@ -49,10 +49,7 @@ trait Applicative[F[_]] extends Functor[F]:
     def map2[B,C](fb: F[B])(f: (A, B) => C): F[C]
 
     def map[B](f: A => B): F[B] =
-      fa.map2(unit(()))((a, _) => f(a))
-  
-  def apply[A, B](fab: F[A => B])(fa: F[A]): F[B] =
-    fab.map2(fa)((f, a) => f(a))    
+      fa.map2(unit(()))((a, _) => f(a)) 
 ```
 
 `map` можно реализовать с помощью `unit` и `map2`, что говорит о том, что все `Applicative` являются функторами.
@@ -60,8 +57,8 @@ trait Applicative[F[_]] extends Functor[F]:
 ### Законы Applicative
 
 Для `Applicative` должны соблюдаться следующие законы:
-- `map(apply(x))(f) == apply(f(x))`
-- `map2(apply(x), apply(y)) == apply((x, y))`
+- `map(unit(x))(f) == unit(f(x))`
+- `map2(unit(x), unit(y)) == unit((x, y))`
 
 ### Виды Applicative
 
@@ -132,8 +129,8 @@ def product[A, B](fa: F[A], fb: F[B]): F[(A,B)] =
 
 Для `Monad` должны соблюдаться следующие законы (помимо законов Функтора):
 - identities:
-    - `flatMap(apply(x))(fn) == fn(x)`
-    - `flatMap(m)(apply _) == m`
+    - `flatMap(unit(x))(fn) == fn(x)`
+    - `flatMap(m)(unit _) == m`
 - associativity на flatMap:
     - `flatMap(flatMap(m)(f))(g) == flatMap(m) { x => flatMap(f(x))(g) }`
 

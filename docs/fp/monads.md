@@ -50,6 +50,9 @@ trait Applicative[F[_]] extends Functor[F]:
 
     def map[B](f: A => B): F[B] =
       fa.map2(unit(()))((a, _) => f(a))
+  
+  def apply[A, B](fab: F[A => B])(fa: F[A]): F[B] =
+    fab.map2(fa)((f, a) => f(a))    
 ```
 
 `map` можно реализовать с помощью `unit` и `map2`, что говорит о том, что все `Applicative` являются функторами.

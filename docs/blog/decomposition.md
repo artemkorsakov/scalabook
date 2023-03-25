@@ -20,6 +20,7 @@
 
 Рассмотрим, что могут предложить `trait`-ы в Scala 3.
 
+
 ## Параметры конструктора
 
 `trait`-ы могут содержать:
@@ -85,6 +86,7 @@ trait EnglishGreeting extends Greeting("Bob")
 
 Возможность передавать параметры в `trait` продолжают тенденцию отхода от формирования структур (`abstract class`)
 к описанию поведений (`trait`-ы).
+
 
 ## Контекстные параметры
 
@@ -228,6 +230,7 @@ EnglishGreeting.msg
 
 Что ещё, кроме основной функциональности могут предложить `trait`-ы в Scala 3?
 
+
 ## Прозрачные trait-ы
 
 `Trait`-ы используются в двух случаях:
@@ -284,6 +287,7 @@ val x = Set(if condition then Val else Var)
   который предоставляет реализации методов для [Iterable](https://scala-lang.org/api/3.x/scala/collection/Iterable.html).
 - [StrictOptimizedSeqOps](https://scala-lang.org/api/3.x/scala/collection/StrictOptimizedSeqOps.html),
   который оптимизирует некоторые из этих реализаций для последовательностей с эффективной индексацией.
+
 
 ## Экспортирование элементов
 
@@ -384,43 +388,51 @@ type class-ы позволяют рассматривать поведение �
 Пользователь в первую очередь изучает поведение, реализованное в библиотеке. 
 А не данные, к которым это поведение можно применить.
 
-## For comprehensions
 
-Показательно, что одна из самых распространенных конструкций Scala - _for comprehension_ зависит от поведения,
-а не от самого объекта.
+## Открытые классы
 
-Рассмотрим пример:
+Поскольку `trait`-ы разработаны как основное средство декомпозиции,
+класс, определенный в одном файле, не может быть расширен в другом файле.
+Чтобы разрешить это, базовый класс должен быть помечен как открытый:
 
 ```scala
-case class Container[A](value: A):
-  def flatMap[B](f: A => Container[B]): Container[B] = f(value)
-  def map[B](f: A => B): Container[B]                = Container(f(value))
-
-val f: Int => Container[Boolean] = i => Container(i % 2 == 0)
-val g: Boolean => String         = b => if b then "четное" else "нечетное"
-
-for
-  a <- Container(7)
-  b <- f(a)
-yield g(b)
-// val res0: Container[String] = Container(нечетное)
-
-// Эквивалентно: Container(7).flatMap(f).map(g)
+open class Person(name: String)
 ```
 
-Пример выше показывает, что любая структура, обладающая [монадическим поведением](https://typelevel.org/cats/typeclasses/monad.html)
-(реализация `flatMap`, `map` и, опционально, `withFilter` для `if`),
-может использоваться в _for comprehension_.
+Маркировка классов с помощью `open` - это новая функция Scala 3.
+Необходимость явно помечать классы как открытые позволяет избежать многих распространенных ошибок.
+В частности, это требует, чтобы разработчики библиотек явно планировали расширение
+и, например, документировали классы, помеченные как открытые.
 
-Если конструкция заданным поведением не обладает (переименуем `flatMap` в `flatMap1`), 
-то при попытке использовать _for comprehension_ будет выдана ошибка компиляции:
+Пример:
 
-```text
-2 |  a <- Container(7)
-  |       ^^^^^^^^^^^^
-  |value flatMap is not a member of Container[Int] - did you mean Container[Int].flatMap1?
-1 error found
+```scala
+// File Writer.scala
+package p
+
+open class Writer[T]:
+
+  /** Sends to stdout, can be overridden */
+  def send(x: T) = println(x)
+
+  /** Sends all arguments using `send` */
+  def sendAll(xs: T*) = xs.foreach(send)
+end Writer
+
+// File EncryptedWriter.scala
+package p
+
+class EncryptedWriter[T: Encryptable] extends Writer[T]:
+  override def send(x: T) = super.send(encrypt(x))
 ```
+
+Открытый класс обычно поставляется с некоторой документацией,
+описывающей внутренние шаблоны вызовов между методами класса, а также хуки, которые можно переопределить.
+Это называется контрактом расширения класса (_extension contract_).
+Он отличается от внешнего контракта (_external contract_) между классом и его пользователями.
+
+[Подробности об open классах](https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html).
+
 
 ## Ошибки при декомпозиции
 
@@ -525,50 +537,6 @@ def foldMonoid[A](list: List[A])(using m: Monoid[A]): A =
 
 Пользователь явно видит, какую информацию ему необходимо предоставить и не получает "сюрприза" в виде exception.
 
-
-## Открытые классы
-
-Поскольку `trait`-ы разработаны как основное средство декомпозиции,
-класс, определенный в одном файле, не может быть расширен в другом файле.
-Чтобы разрешить это, базовый класс должен быть помечен как открытый:
-
-```scala
-open class Person(name: String)
-```
-
-Маркировка классов с помощью `open` - это новая функция Scala 3.
-Необходимость явно помечать классы как открытые позволяет избежать многих распространенных ошибок.
-В частности, это требует, чтобы разработчики библиотек явно планировали расширение
-и, например, документировали классы, помеченные как открытые.
-
-Пример:
-
-```scala
-// File Writer.scala
-package p
-
-open class Writer[T]:
-
-  /** Sends to stdout, can be overridden */
-  def send(x: T) = println(x)
-
-  /** Sends all arguments using `send` */
-  def sendAll(xs: T*) = xs.foreach(send)
-end Writer
-
-// File EncryptedWriter.scala
-package p
-
-class EncryptedWriter[T: Encryptable] extends Writer[T]:
-  override def send(x: T) = super.send(encrypt(x))
-```
-
-Открытый класс обычно поставляется с некоторой документацией,
-описывающей внутренние шаблоны вызовов между методами класса, а также хуки, которые можно переопределить.
-Это называется контрактом расширения класса (_extension contract_).
-Он отличается от внешнего контракта (_external contract_) между классом и его пользователями.
-
-[Подробности об open классах](https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html).
 
 ## Заключение
 

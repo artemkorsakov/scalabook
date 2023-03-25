@@ -123,13 +123,14 @@
 
 - [Функц программирование](docs/fp/index.md)
   - [Функц. структура данных](docs/fp/data-structures.md)
+  - [Non-empty list](docs/fp/non-empty-list.md)
   - [Обработка ошибок](docs/fp/handling-errors.md)
   - [Ленивые вычисления](docs/fp/laziness.md)
   - [Функциональное состояние](docs/fp/state.md)
+  - [Функциональный журнал](docs/fp/writer.md)
+  - [Параллелизм](docs/fp/parallelism.md)
   - [Monoids](docs/fp/monoids.md)
   - [Monads](docs/fp/monads.md)
-  - [Функциональный журнал](docs/fp/writer.md)
-  - [Non-empty list](docs/fp/non-empty-list.md)
   
 - [Теория категорий](docs/typeclass/index.md)
   - [Группа Equal](docs/typeclass/equal.md)

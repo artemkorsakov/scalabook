@@ -49,7 +49,7 @@ trait Applicative[F[_]] extends Functor[F]:
     def map2[B,C](fb: F[B])(f: (A, B) => C): F[C]
 
     def map[B](f: A => B): F[B] =
-      fa.map2(unit(()))((a, _) => f(a))
+      fa.map2(unit(()))((a, _) => f(a)) 
 ```
 
 `map` можно реализовать с помощью `unit` и `map2`, что говорит о том, что все `Applicative` являются функторами.
@@ -57,8 +57,8 @@ trait Applicative[F[_]] extends Functor[F]:
 ### Законы Applicative
 
 Для `Applicative` должны соблюдаться следующие законы:
-- `map(apply(x))(f) == apply(f(x))`
-- `map2(apply(x), apply(y)) == apply((x, y))`
+- `map(unit(x))(f) == unit(f(x))`
+- `map2(unit(x), unit(y)) == unit((x, y))`
 
 ### Виды Applicative
 
@@ -112,7 +112,7 @@ def traverse[A,B](as: List[A])(f: A => F[B]): F[List[B]] =
 def replicateM[A](n: Int, fa: F[A]): F[List[A]] =
   sequence(List.fill(n)(fa))
 
-def product[A, B](fa: F[A], fb: F[A]): F[(A,B)] =
+def product[A, B](fa: F[A], fb: F[B]): F[(A,B)] =
   fa.map2(fb)((a, b) => (a, b))
 ```
 
@@ -129,8 +129,8 @@ def product[A, B](fa: F[A], fb: F[A]): F[(A,B)] =
 
 Для `Monad` должны соблюдаться следующие законы (помимо законов Функтора):
 - identities:
-    - `flatMap(apply(x))(fn) == fn(x)`
-    - `flatMap(m)(apply _) == m`
+    - `flatMap(unit(x))(fn) == fn(x)`
+    - `flatMap(m)(unit _) == m`
 - associativity на flatMap:
     - `flatMap(flatMap(m)(f))(g) == flatMap(m) { x => flatMap(f(x))(g) }`
 
@@ -180,7 +180,7 @@ trait Monad[F[_]] extends Functor[F]:
 
 #### Monad с `map`, `join` и `unit`
 
-Монада может быть определена с помощью `map`, `join` и `unit`.
+Монада может быть определена с помощью `map`, `join` (другое имя - `flatten`) и `unit`.
 В этом случае `flatMap` и `compose` могут быть определены так:
 
 ```scala

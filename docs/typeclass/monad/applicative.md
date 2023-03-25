@@ -13,6 +13,11 @@
 - `fa.map(f) == apply(unit(f))(fa)`
 - Homomorphism: `apply(unit(f))(unit(x)) == unit(f(x))`
 - Interchange: `apply(f)(unit(a)) == apply(unit((f: A => B) => f(a)))(f)`
+- Left Identity: `unit(()).map2(fa)((_, a) => a) == fa`
+- Right Identity: `fa.map2(unit(()))((a, _) => a) == fa`
+- Associativity: `fa.product(fb).product(fc) == fa.product(fb.product(fc)).map(assoc)`, где
+  `def assoc[A, B, C](p: (A, (B, C))): ((A, B), C) = p match { case (a, (b, c)) => ((a, b), c) }`
+- Naturality: `fa.map2(fb)((a, b) => (f(a), g(b))) == fa.map(f).product(fb.map(g))`
 
 
 ## Описание 
@@ -30,6 +35,9 @@ trait Applicative[F[_]] extends Apply[F] with InvariantApplicative[F] :
 
     def map2[B, C](fb: F[B])(f: (A, B) => C): F[C] =
       apply(apply(unit(f.curried))(fa))(fb)
+
+    def product[B](fb: F[B]): F[(A, B)] =
+      fa.map2(fb)((a, b) => (a, b))  
 ```
 
 ## Примеры
@@ -220,6 +228,7 @@ Applicative[Option].pure(1)  // Some(1)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/applicative.html)
 - [Applicative Programming with Effects](https://www.staff.city.ac.uk/~ross/papers/Applicative.html)
 - [Cats](https://typelevel.org/cats/typeclasses/applicative.html)
+- [Functional Programming in Scala, Second Edition](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Applicative.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Applicative.html)

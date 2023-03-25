@@ -8,6 +8,9 @@
 но интерпретацию определенных функциональных приложений идиоматически.
 
 С помощью `traverse` можно выразить и `map`, и `foldRight`, а также `sequence`, отображающий `F[G[A]]` в `G[F[A]]`.
+По этой причине `Traverse` иногда называют "обходными функторами".
+`Traverse` расширяет [`Functor`](https://scalabook.gitflic.space/docs/typeclass/monad/functor)
+и [`Foldable`](https://scalabook.gitflic.space/docs/typeclass/monad/foldable)
 
 `Traversable` должен удовлетворять следующим законам:
 

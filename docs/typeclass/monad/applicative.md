@@ -8,11 +8,16 @@
 
 Для `Applicative` должны соблюдаться следующие законы (помимо законов родительских типовых классов):
 
-- Identity: `apply(unit(identity))(fa) == fa`
+- Identity: `apply(unit(identity))(fa) == fa` (`unit` функции идентичности - это идентичность для `apply`)
 - `unit(x).map(f) == unit(f(x))`
 - `fa.map(f) == apply(unit(f))(fa)`
-- Homomorphism: `apply(unit(f))(unit(x)) == unit(f(x))`
+- Homomorphism: `apply(unit(f))(unit(x)) == unit(f(x))` 
+  (Другими словами, применение идиоматической функции к `unit` такое же, как и к `unit` обычного применения функции. 
+  Точнее, `unit` — это гомоморфизм из `A` в `F[A]` в отношении применения функции.)
 - Interchange: `apply(f)(unit(a)) == apply(unit((f: A => B) => f(a)))(f)`
+  (Этот закон, по сути, говорит о том, что `unit` не разрешено воздействовать на любую реализацию аппликативного функтора. 
+  Если один аргумент, который нужно применить, является `unit`, то другой может появиться в любой позиции. 
+  Другими словами, не должно иметь значения, когда мы выполняем `unit`.)
 - Left Identity: `unit(()).map2(fa)((_, a) => a) == fa`
 - Right Identity: `fa.map2(unit(()))((a, _) => a) == fa`
 - Associativity: `fa.product(fb).product(fc) == fa.product(fb.product(fc)).map(assoc)`, где
@@ -229,6 +234,7 @@ Applicative[Option].pure(1)  // Some(1)
 - [Applicative Programming with Effects](https://www.staff.city.ac.uk/~ross/papers/Applicative.html)
 - [Cats](https://typelevel.org/cats/typeclasses/applicative.html)
 - [Functional Programming in Scala, Second Edition](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
+- [Functional Programming in Scala, Second Edition, Wiki](https://github.com/fpinscala/fpinscala/wiki/Chapter-12:-Applicative-and-traversable-functors)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Applicative.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Applicative.html)

@@ -23,6 +23,9 @@
 - Associativity: `fa.product(fb).product(fc) == fa.product(fb.product(fc)).map(assoc)`, где
   `def assoc[A, B, C](p: (A, (B, C))): ((A, B), C) = p match { case (a, (b, c)) => ((a, b), c) }`
 - Naturality: `fa.map2(fb)((a, b) => (f(a), g(b))) == fa.map(f).product(fb.map(g))`
+- Composition: `apply(u, apply(v, w)) == apply(apply(apply(unit(f => g => f compose g), u), v), w)`
+  (Применить `v` к `w`, а затем применить `u` к этому — то же самое, 
+  что применить композицию к `u`, затем `v`, а затем применить составную функцию к `w`.) 
 
 
 ## Описание 

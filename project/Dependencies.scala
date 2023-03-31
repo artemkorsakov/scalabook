@@ -1,4 +1,4 @@
-import sbt._
+import sbt.*
 
 object Dependencies {
   val Scala = "3.2.2"
@@ -12,25 +12,14 @@ object Dependencies {
   }
 
   object http4s {
-    val blaze = "org.http4s" %% "http4s-blaze-server" % "0.23.13"
-    val dsl   = "org.http4s" %% "http4s-dsl"          % "0.23.16"
+    val blaze = "org.http4s" %% "http4s-blaze-server" % "0.23.14"
+    val dsl   = "org.http4s" %% "http4s-dsl"          % "0.23.18"
   }
 
   object iron {
     private val version = "2.0.0"
     val iron            = "io.github.iltotore" %% "iron"      % version
     val cats            = "io.github.iltotore" %% "iron-cats" % version
-  }
-
-  object spark {
-    private val version = "3.3.1"
-
-    val core = ("org.apache.spark" %% "spark-core" % version).cross(
-      CrossVersion.for3Use2_13
-    )
-    val sql = ("org.apache.spark" %% "spark-sql" % version).cross(
-      CrossVersion.for3Use2_13
-    )
   }
 
   object munit {
@@ -41,7 +30,7 @@ object Dependencies {
   }
 
   object refined {
-    private val version = "0.10.1"
+    private val version = "0.10.3"
     val core            = "eu.timepit" %% "refined"      % version
     val cats            = "eu.timepit" %% "refined-cats" % version
   }

@@ -1,7 +1,7 @@
-import Dependencies._
-import laika.ast._
-import laika.ast.Path._
-import laika.helium.config._
+import Dependencies.*
+import laika.ast.*
+import laika.ast.Path.*
+import laika.helium.config.*
 
 ThisBuild / organization     := "ru.gitflic.artemkorsakov"
 ThisBuild / organizationName := "Artem Korsakov"
@@ -53,9 +53,7 @@ lazy val examples = (project in file("examples"))
         refined.core,
         scalaz.core,
         scalaz.effect,
-        scalaz.iteratee,
-        spark.core,
-        spark.sql
+        scalaz.iteratee
       ),
     libraryDependencies ++=
       Seq(

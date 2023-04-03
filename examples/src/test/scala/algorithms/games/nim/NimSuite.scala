@@ -1,7 +1,6 @@
 package algorithms.games.nim
 
 import munit.FunSuite
-import algorithms.games.nim.Nim
 
 class NimSuite extends FunSuite:
   test("Nim.getX") {

@@ -1,7 +1,6 @@
 package algorithms.numbers
 
 import munit.FunSuite
-import algorithms.numbers.ComplexNumber
 
 class ComplexNumberSuite extends FunSuite:
   test("add, sub, mul") {

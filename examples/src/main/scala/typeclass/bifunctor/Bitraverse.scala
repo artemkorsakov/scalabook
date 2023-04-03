@@ -1,7 +1,7 @@
 package typeclass.bifunctor
 
 import typeclass.common.*
-import typeclass.monad.{Applicative, Foldable, Functor, Traverse}
+import typeclass.monad.{Applicative, Traverse}
 import typeclass.monoid.Monoid
 
 trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:

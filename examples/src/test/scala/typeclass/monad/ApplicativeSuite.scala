@@ -6,7 +6,6 @@ import typeclass.Functions.given
 import typeclass.common.*
 import typeclass.common.Runner1.stateRunner
 import typeclass.monad.Applicative.given
-import typeclass.monad.Functor.given
 
 class ApplicativeSuite extends ScalaCheckSuite, ApplicativeLaw:
   property("idApplicative должен удовлетворять законам Applicative") {

@@ -1,7 +1,6 @@
 package algorithms.games.dice
 
 import munit.FunSuite
-import algorithms.games.dice.Dice
 import algorithms.numbers.RationalNumber
 
 class DiceSuite extends FunSuite:

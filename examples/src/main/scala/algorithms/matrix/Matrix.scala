@@ -1,7 +1,5 @@
 package algorithms.matrix
 
-import algorithms.matrix.Vector
-
 /** Matrix m * n.
   *
   * @see

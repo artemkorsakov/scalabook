@@ -1,7 +1,6 @@
 package algorithms.matrix
 
 import munit.FunSuite
-import algorithms.matrix.Matrix
 import algorithms.matrix.Vector.*
 
 class VectorSuite extends FunSuite:

@@ -1,7 +1,6 @@
 package algorithms.equations
 
 import munit.FunSuite
-import algorithms.equations.*
 import algorithms.numbers.*
 
 class QuadraticEquationSuite extends FunSuite:

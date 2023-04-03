@@ -1,8 +1,6 @@
 package algorithms.matrix
 
 import munit.FunSuite
-import algorithms.combinatorics.BinomialCoefficient
-import algorithms.matrix.{Matrix, Vector}
 
 class MatrixSuite extends FunSuite:
   test("rows, columns, diagonals") {

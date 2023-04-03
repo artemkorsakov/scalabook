@@ -1,9 +1,8 @@
 package algorithms.others
 
-import munit.FunSuite
 import algorithms.others.PointOnTriangleType.*
-import algorithms.others.Triangle
 import algorithms.others.Triangle.*
+import munit.FunSuite
 
 class TriangleSuite extends FunSuite:
   test("getPointOnTriangleType") {

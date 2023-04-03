@@ -1,7 +1,7 @@
 package typeclass.monad
 
 import algorithms.trees.BinaryTree
-import munit.{Assertions, ScalaCheckSuite}
+import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.Functions.given
 import typeclass.common.*

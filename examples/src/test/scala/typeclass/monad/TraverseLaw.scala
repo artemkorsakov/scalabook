@@ -1,10 +1,7 @@
 package typeclass.monad
 
-import munit.Assertions
 import typeclass.common.Id
 import typeclass.monad.Applicative.given
-import typeclass.monad.Functor.given
-import typeclass.monoid.Monoid
 
 trait TraverseLaw extends FunctorLaw:
   def checkTraverseLaw[F[_]: Traverse, G[_]: Applicative, H[

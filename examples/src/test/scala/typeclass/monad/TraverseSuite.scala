@@ -1,7 +1,6 @@
 package typeclass.monad
 
 import munit.ScalaCheckSuite
-import org.scalacheck.Gen
 import org.scalacheck.Prop.*
 import typeclass.Functions.given
 import typeclass.common.*

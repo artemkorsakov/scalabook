@@ -1,8 +1,7 @@
 package algorithms.numbers
 
-import munit.FunSuite
 import algorithms.numbers.PythagoreanDeuce.*
-import algorithms.numbers.PythagoreanTriplet
+import munit.FunSuite
 
 class PythagoreanDeuceSuite extends FunSuite:
   private val nextDeuces = primitivePythagoreanDeuce.nextPythagoreanDeuce

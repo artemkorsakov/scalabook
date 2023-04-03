@@ -2,7 +2,6 @@ package typeclass.monoid
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
-import typeclass.monoid.Semigroup
 import typeclass.monoid.Semigroup.given
 
 class SemigroupSuite extends ScalaCheckSuite, SemigroupLaw:

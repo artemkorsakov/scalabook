@@ -1,6 +1,6 @@
 package typeclass.monad
 
-import munit.{Assertions, ScalaCheckSuite}
+import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.common.*
 import typeclass.monad.MonadTransformer.given

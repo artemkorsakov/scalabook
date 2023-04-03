@@ -1,7 +1,6 @@
 package algorithms.str
 
 import munit.FunSuite
-import algorithms.str.Lcs
 
 class LcsSuite extends FunSuite:
   test("lcs") {

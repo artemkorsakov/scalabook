@@ -1,6 +1,6 @@
 package libs.cats.effect
 
-import cats.effect.{IO, SyncIO}
+import cats.effect.IO
 import munit.CatsEffectSuite
 
 class ExampleSuite extends CatsEffectSuite:

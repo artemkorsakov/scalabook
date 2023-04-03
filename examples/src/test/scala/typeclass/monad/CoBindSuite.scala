@@ -4,7 +4,6 @@ import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.Functions.given
 import typeclass.common.*
-import typeclass.monad.Bind.given
 
 class CoBindSuite extends ScalaCheckSuite, CoBindLaw:
   private val f: Int => String     = given_Conversion_Int_String.apply

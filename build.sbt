@@ -22,11 +22,9 @@ ThisBuild / scalacOptions ++=
   Seq(
     "-deprecation",
     "-explain",
-    "-feature",
-    "-language:implicitConversions",
+    "-Wunused:imports",
     "-unchecked",
-    "-Xfatal-warnings",
-    "-Ykind-projector"
+    "-Xfatal-warnings"
   )
 
 lazy val root = (project in file("."))
@@ -38,7 +36,6 @@ lazy val root = (project in file("."))
 
 lazy val examples = (project in file("examples"))
   .settings(name := "scalabook-examples")
-  .settings(commonSettings)
   .settings(
     libraryDependencies ++=
       Seq(
@@ -63,16 +60,6 @@ lazy val examples = (project in file("examples"))
         munit.scalacheck,
         scalaz.scalacheck
       ).map(_ % Test)
-  )
-
-lazy val commonSettings =
-  Seq(
-    Compile / console / scalacOptions --= Seq(
-      "-Wunused:_",
-      "-Xfatal-warnings"
-    ),
-    Test / console / scalacOptions :=
-      (Compile / console / scalacOptions).value
   )
 
 lazy val docs = project

@@ -4,7 +4,6 @@ import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.Functions.given
 import typeclass.bifunctor.Bifunctor.given
-import typeclass.bifunctor.BifunctorLaw
 import typeclass.common.*
 
 class BifunctorSuite extends ScalaCheckSuite, BifunctorLaw:

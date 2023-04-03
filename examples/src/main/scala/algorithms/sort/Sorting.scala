@@ -1,7 +1,6 @@
 package algorithms.sort
 
 import scala.reflect.ClassTag
-import scala.runtime.stdLibPatches.Predef.summon
 
 object Sorting:
   def bubbleSort[T: Ordering](array: Array[T]): Unit =

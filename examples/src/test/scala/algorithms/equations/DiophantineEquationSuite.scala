@@ -1,7 +1,6 @@
 package algorithms.equations
 
 import munit.FunSuite
-import algorithms.equations.DiophantineEquation
 
 class DiophantineEquationSuite extends FunSuite:
   test("minimalEquation and isSuccess") {

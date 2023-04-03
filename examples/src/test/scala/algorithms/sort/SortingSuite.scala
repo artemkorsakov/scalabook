@@ -2,7 +2,6 @@ package algorithms.sort
 
 import algorithms.sort.Sorting.*
 import munit.ScalaCheckSuite
-import org.scalacheck.Gen
 import org.scalacheck.Prop.*
 
 class SortingSuite extends ScalaCheckSuite:

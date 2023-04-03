@@ -1,7 +1,6 @@
 package algorithms.matrix
 
 import munit.FunSuite
-import algorithms.matrix.SquaredMatrix
 import algorithms.numbers.RationalNumber
 import algorithms.numbers.RationalNumber.RationalNumberIsIntegral
 

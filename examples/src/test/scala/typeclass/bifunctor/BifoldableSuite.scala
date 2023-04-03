@@ -3,8 +3,6 @@ package typeclass.bifunctor
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import typeclass.bifunctor.Bifoldable.given
-import typeclass.bifunctor.BifoldableLaw
-import typeclass.common.*
 import typeclass.monoid.Monoid.given
 
 class BifoldableSuite extends ScalaCheckSuite, BifoldableLaw:

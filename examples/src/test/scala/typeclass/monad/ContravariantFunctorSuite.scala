@@ -2,7 +2,6 @@ package typeclass.monad
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
-import typeclass.monad.ContravariantFunctor.predicateContravariantFunctor
 
 class ContravariantFunctorSuite extends ScalaCheckSuite:
   property(

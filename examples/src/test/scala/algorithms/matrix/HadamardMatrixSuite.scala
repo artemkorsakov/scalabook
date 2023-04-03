@@ -1,7 +1,6 @@
 package algorithms.matrix
 
 import munit.FunSuite
-import algorithms.matrix.HadamardMatrix
 
 class HadamardMatrixSuite extends FunSuite:
   test("isHadamardMatrix") {

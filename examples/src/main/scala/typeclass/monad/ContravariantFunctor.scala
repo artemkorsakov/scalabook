@@ -1,7 +1,5 @@
 package typeclass.monad
 
-import typeclass.common.Id
-
 trait ContravariantFunctor[F[_]] extends InvariantFunctor[F]:
   self =>
 

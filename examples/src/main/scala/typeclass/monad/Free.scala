@@ -1,7 +1,5 @@
 package typeclass.monad
 
-import scala.annotation.tailrec
-
 sealed trait Free[F[_], A]
 final case class UnitF[F[_], A](a: A) extends Free[F, A]
 final case class FlatMap[F[_], A, B](a: Free[F, A], fx: A => Free[F, B])

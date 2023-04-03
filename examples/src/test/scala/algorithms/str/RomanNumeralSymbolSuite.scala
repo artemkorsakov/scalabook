@@ -1,8 +1,7 @@
 package algorithms.str
 
-import munit.FunSuite
-import algorithms.str.RomanNumeralSymbol
 import algorithms.str.RomanNumeralSymbol.*
+import munit.FunSuite
 
 class RomanNumeralSymbolSuite extends FunSuite:
   test("RomanNumeralSymbol enum") {

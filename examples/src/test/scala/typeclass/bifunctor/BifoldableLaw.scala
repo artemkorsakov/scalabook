@@ -1,7 +1,6 @@
 package typeclass.bifunctor
 
-import munit.Assertions
-import typeclass.monad.{Foldable, FoldableLaw}
+import typeclass.monad.FoldableLaw
 import typeclass.monoid.Monoid
 
 trait BifoldableLaw extends FoldableLaw:

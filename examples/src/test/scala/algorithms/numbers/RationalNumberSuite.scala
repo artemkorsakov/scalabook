@@ -1,8 +1,7 @@
 package algorithms.numbers
 
-import munit.FunSuite
-import algorithms.numbers.RationalNumber
 import algorithms.numbers.RationalNumber.*
+import munit.FunSuite
 
 class RationalNumberSuite extends FunSuite:
   private val x = RationalNumber(1, 3)

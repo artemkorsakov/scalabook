@@ -1,7 +1,6 @@
 package typeclass.bifunctor
 
-import typeclass.common.Id
-import typeclass.monad.{Applicative, FunctorLaw, Traverse, TraverseLaw}
+import typeclass.monad.{Applicative, Traverse, TraverseLaw}
 import typeclass.monoid.Monoid
 
 trait BitraverseLaw extends TraverseLaw, BifoldableLaw, BifunctorLaw:

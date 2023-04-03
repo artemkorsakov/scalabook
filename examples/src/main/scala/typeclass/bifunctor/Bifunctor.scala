@@ -1,7 +1,7 @@
 package typeclass.bifunctor
 
 import typeclass.common.*
-import typeclass.monad.{Functor, InvariantFunctor}
+import typeclass.monad.Functor
 
 trait Bifunctor[F[_, _]]:
   extension [A, B](fab: F[A, B])

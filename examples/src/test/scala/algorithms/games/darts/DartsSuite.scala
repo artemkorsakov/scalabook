@@ -1,7 +1,6 @@
 package algorithms.games.darts
 
 import munit.FunSuite
-import algorithms.games.darts.Darts
 
 class DartsSuite extends FunSuite:
   test("allDistinctWaysToCheckOut") {

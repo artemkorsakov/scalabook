@@ -1,7 +1,6 @@
 package algorithms.games.poker
 
 import munit.FunSuite
-import algorithms.games.poker.Poker
 
 class PokerSuite extends FunSuite:
   test("doesPlayer1Win") {

@@ -13,22 +13,19 @@ trait Bifunctor[F[_, _]]:
     def rightMap[D](g: B => D): F[A, D] = fab.bimap(identity, g)
 
   /** Extract the Functor on the first param. */
-  def leftFunctor[R]: Functor[[X] =>> F[X, R]] =
-    new Functor[[X] =>> F[X, R]]:
-      extension [A](fax: F[A, R])
-        override def map[B](f: A => B): F[B, R] = leftMap(fax)(f)
+  def leftFunctor[R]: Functor[[X] =>> F[X, R]] = new:
+    extension [A](fax: F[A, R])
+      override def map[B](f: A => B): F[B, R] = leftMap(fax)(f)
 
   /** Extract the Functor on the second param. */
-  def rightFunctor[L]: Functor[[X] =>> F[L, X]] =
-    new Functor[[X] =>> F[L, X]]:
-      extension [A](fax: F[L, A])
-        override def map[B](f: A => B): F[L, B] = rightMap(fax)(f)
+  def rightFunctor[L]: Functor[[X] =>> F[L, X]] = new:
+    extension [A](fax: F[L, A])
+      override def map[B](f: A => B): F[L, B] = rightMap(fax)(f)
 
   /** Unify the functor over both params. */
-  def uFunctor: Functor[[X] =>> F[X, X]] =
-    new Functor[[X] =>> F[X, X]]:
-      extension [A](fax: F[A, A])
-        override def map[B](f: A => B): F[B, B] = umap(fax)(f)
+  def uFunctor: Functor[[X] =>> F[X, X]] = new:
+    extension [A](fax: F[A, A])
+      override def map[B](f: A => B): F[B, B] = umap(fax)(f)
 
   def umap[A, B](faa: F[A, A])(f: A => B): F[B, B] =
     bimap(faa)(f, f)

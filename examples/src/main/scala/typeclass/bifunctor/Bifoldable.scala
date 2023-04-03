@@ -20,25 +20,22 @@ trait Bifoldable[F[_, _]]:
       )(z)
 
   /** Выделение Foldable из первого параметра. */
-  def leftFoldable[R]: Foldable[[X] =>> F[X, R]] =
-    new Foldable[[X] =>> F[X, R]]:
-      extension [A](fa: F[A, R])
-        override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
-          fa.bifoldMap[B](f)(_ => mb.empty)
+  def leftFoldable[R]: Foldable[[X] =>> F[X, R]] = new:
+    extension [A](fa: F[A, R])
+      override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
+        fa.bifoldMap[B](f)(_ => mb.empty)
 
   /** Выделение Foldable из второго параметра. */
-  def rightFoldable[L]: Foldable[[X] =>> F[L, X]] =
-    new Foldable[[X] =>> F[L, X]]:
-      extension [A](fa: F[L, A])
-        override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
-          fa.bifoldMap[B](_ => mb.empty)(f)
+  def rightFoldable[L]: Foldable[[X] =>> F[L, X]] = new:
+    extension [A](fa: F[L, A])
+      override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
+        fa.bifoldMap[B](_ => mb.empty)(f)
 
   /** Унифицирование Foldable на обоих параметрах. */
-  def uFoldable: Foldable[[X] =>> F[X, X]] =
-    new Foldable[[X] =>> F[X, X]]:
-      extension [A](fa: F[A, A])
-        override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
-          fa.bifoldMap[B](f)(f)
+  def uFoldable: Foldable[[X] =>> F[X, X]] = new:
+    extension [A](fa: F[A, A])
+      override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
+        fa.bifoldMap[B](f)(f)
 
 object Bifoldable:
   def apply[F[_, _]: Bifoldable]: Bifoldable[F] = summon[Bifoldable[F]]

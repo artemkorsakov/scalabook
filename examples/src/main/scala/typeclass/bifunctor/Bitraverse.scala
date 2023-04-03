@@ -25,25 +25,22 @@ trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:
     x.bitraverse(fa => fa, fb => fb)
 
   /** Extract the Traverse on the first param. */
-  def leftTraverse[R]: Traverse[[X] =>> F[X, R]] =
-    new Traverse[[X] =>> F[X, R]]:
-      extension [A](fab: F[A, R])
-        override def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[B, R]] =
-          fab.bitraverse(f, Applicative[G].unit)
+  def leftTraverse[R]: Traverse[[X] =>> F[X, R]] = new:
+    extension [A](fab: F[A, R])
+      override def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[B, R]] =
+        fab.bitraverse(f, Applicative[G].unit)
 
   /** Extract the Traverse on the second param. */
-  def rightTraverse[L]: Traverse[[X] =>> F[L, X]] =
-    new Traverse[[X] =>> F[L, X]]:
-      extension [A](fab: F[L, A])
-        override def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[L, B]] =
-          fab.bitraverse(Applicative[G].unit, f)
+  def rightTraverse[L]: Traverse[[X] =>> F[L, X]] = new:
+    extension [A](fab: F[L, A])
+      override def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[L, B]] =
+        fab.bitraverse(Applicative[G].unit, f)
 
   /** Unify the traverse over both params. */
-  def uTraverse: Traverse[[X] =>> F[X, X]] =
-    new Traverse[[X] =>> F[X, X]]:
-      extension [A](fab: F[A, A])
-        override def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[B, B]] =
-          fab.bitraverse(f, f)
+  def uTraverse: Traverse[[X] =>> F[X, X]] = new:
+    extension [A](fab: F[A, A])
+      override def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[B, B]] =
+        fab.bitraverse(f, f)
 
 object Bitraverse:
   def apply[F[_, _]: Bitraverse]: Bitraverse[F] = summon[Bitraverse[F]]

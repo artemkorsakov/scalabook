@@ -28,7 +28,9 @@
 | [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) | Scala 2 |  En  | 2015 |             |
 | [Scala - Your First Programming Language](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                                | Scala 2 |  En  | 2022 |             |
 | [Scala Collections](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE)                                                      | Scala 2 |  En  | 2020 |             |
+| [The Typeclass Pattern - An Alternative to Inheritance](https://www.youtube.com/watch?v=yYo0gANYViE)                                               | Scala 2 |  En  | 2012 |             |
 | [Tutorial: Typeclasses in Scala with Dan Rosen](https://www.youtube.com/watch?v=sVMES4RZF-8)                                                       | Scala 2 |  En  | 2012 |             |
+| [Why are Type Classes useful in Scala? - Rock the JVM](https://www.youtube.com/watch?v=bupBZKJT0EA)                                                | Scala 2 |  En  | 2020 |             |
 
 ### Курсы
 

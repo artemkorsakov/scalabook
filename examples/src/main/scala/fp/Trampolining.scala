@@ -13,16 +13,31 @@ case class State[S, +A](runS: S => (A, S)):
       f(a).runS(s1)
     }
 
-object TrampoliningStackOverflowError:
-  val f: Int => Int = (i: Int) => i
+object State:
+  def getState[S]: State[S, S] =
+    State(s => (s, s))
 
-  val g: Int => Int =
-    List.fill(10000)(f).foldLeft(f)((a, b) => x => b(a(x)))
+  def setState[S](s: S): State[S, Unit] =
+    State(_ => ((), s))
 
-@main def runStackOverflowError(): Unit =
-  import TrampoliningStackOverflowError.*
-  val gFortyTwo = g(42)
-  println("run(g(42)) = " + gFortyTwo)
+  def pureState[S, A](a: A): State[S, A] =
+    State(s => (a, s))
+
+  def zipIndex[A](as: List[A]): List[(Int, A)] =
+    as.foldLeft(pureState[Int, List[(Int, A)]](List())) { (acc, a) =>
+      for {
+        xs <- acc
+        n  <- getState
+        _  <- setState(n + 1)
+      } yield (n, a) :: xs
+    }.runS(0)
+      ._1
+      .reverse
+
+@main def runStateZipIndex(): Unit =
+  import State.*
+  val list = zipIndex[String](List.fill(10000)("el"))
+  println("zipped list = " + list)
 
 object TrampoliningInTailCalls:
   import scala.util.control.TailCalls.*

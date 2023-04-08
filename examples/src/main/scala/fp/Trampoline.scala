@@ -11,9 +11,9 @@ sealed trait Trampoline[+A]:
       case FlatMap(a, f) =>
         a match
           case Done(v) => f(v).resume
-          case More(k) => Left(() => FlatMap(k(), f))
+          case More(k) => Left(() => k().flatMap(f))
           case FlatMap(b, g) =>
-            FlatMap(b, x => FlatMap(g(x), f)).resume
+            b.flatMap(x => g(x).flatMap(f)).resume
 
   @annotation.tailrec
   final def runT: A =
@@ -21,8 +21,13 @@ sealed trait Trampoline[+A]:
       case Right(a) => a
       case Left(k)  => k().runT
 
-  def flatMap[B](f: A => Trampoline[B]): More[B] =
-    More[B](() => f(runT))
+  def flatMap[B](f: A => Trampoline[B]): Trampoline[B] =
+    self match
+      case FlatMap(a, g) => FlatMap(a, x => g(x).flatMap(f))
+      case x             => FlatMap(x, f)
+
+  def map[B](f: A => B): Trampoline[B] =
+    flatMap(a => Done(f(a)))
 
 case class Done[+A](result: A)              extends Trampoline[A]
 case class More[+A](k: () => Trampoline[A]) extends Trampoline[A]

@@ -688,7 +688,7 @@ def zipIndex[A](as: List[A]): List[(Int, A)] =
 ### 7.1 Батуты
 
 Использование "батутных" функций для реализации хвостовых вызовов в языках, ориентированных на стек, — 
-хорошо известная техника, реализованная во многих языках в виде библиотек или компиляторов [6].
+[хорошо известная техника][Trampolined Style], реализованная во многих языках в виде библиотек или компиляторов.
 
 
 
@@ -701,8 +701,9 @@ def zipIndex[A](as: List[A]): List[(Int, A)] =
 - [Functional Programming in Scala, Second Edition, Chapter 13](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Scala API][API]
 - [Stackless Scala With Free Monads - Runar Oli Bjarnason][trampolines]
-- [Trampolined Style - Steven E. Ganz and Daniel P. Friedman and Mitchell Wand](https://dl.acm.org/doi/abs/10.1145/317636.317779)
+- [Trampolined Style - Steven E. Ganz and Daniel P. Friedman and Mitchell Wand][Trampolined Style]
 
 [API]: https://www.scala-lang.org/api/3.2.2/scala/util/control/TailCalls$.html
 [S. Awodey, Category Theory]: https://books.google.ru/books/about/Category_Theory.html?hl=ru&id=AIhUtQAACAAJ&redir_esc=y
 [trampolines]: https://blog.higher-order.com/assets/trampolines.pdf
+[Trampolined Style]: https://dl.acm.org/doi/abs/10.1145/317636.317779

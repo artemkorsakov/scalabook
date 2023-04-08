@@ -42,3 +42,5 @@ object FreeExample:
 
   case class Done[S[+_], A](a: A)             extends Free[S, A]
   case class More[S[+_], A](k: S[Free[S, A]]) extends Free[S, A]
+
+  type List[A] = Free[[X] =>> (A, X), Unit]

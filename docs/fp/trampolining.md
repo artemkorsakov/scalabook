@@ -1,7 +1,6 @@
 # Stackless Scala
 
 Перевод статьи Runar Oli Bjarnason ["Stackless Scala With Free Monads"][trampolines] с небольшими отступлениями.
-Добавлено несколько примеров из [стандартной Scala библиотеки][API].
 
 
 ## Для понимания
@@ -683,6 +682,13 @@ def zipIndex[A](as: List[A]): List[(Int, A)] =
 
 ## 7. Существующая работа
 
+Ничто из представленного здесь не является особенно оригинальным, хотя части взяты из разных источников 
+и, насколько мне известно, ранее не собирались таким образом, особенно в Scala (2012 год - на момент написания статьи).
+
+### 7.1 Батуты
+
+Использование "батутных" функций для реализации хвостовых вызовов в языках, ориентированных на стек, — 
+хорошо известная техника, реализованная во многих языках в виде библиотек или компиляторов [6].
 
 
 
@@ -691,11 +697,11 @@ def zipIndex[A](as: List[A]): List[(Int, A)] =
 **Ссылки:**
 
 - [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ffp)
+- [Category Theory - S. Awodey][S. Awodey, Category Theory]
 - [Functional Programming in Scala, Second Edition, Chapter 13](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
-- [Runar Oli Bjarnason - Stackless Scala With Free Monads][trampolines]
 - [Scala API][API]
-- [S. Awodey, Category Theory][S. Awodey, Category Theory]
-
+- [Stackless Scala With Free Monads - Runar Oli Bjarnason][trampolines]
+- [Trampolined Style - Steven E. Ganz and Daniel P. Friedman and Mitchell Wand](https://dl.acm.org/doi/abs/10.1145/317636.317779)
 
 [API]: https://www.scala-lang.org/api/3.2.2/scala/util/control/TailCalls$.html
 [S. Awodey, Category Theory]: https://books.google.ru/books/about/Category_Theory.html?hl=ru&id=AIhUtQAACAAJ&redir_esc=y

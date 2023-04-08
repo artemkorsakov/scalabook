@@ -585,7 +585,7 @@ type BinTree[+A] = Free[Pair, A]
 мы должны разветвляться с помощью функтора `List`:
 
 ```scala
-type Tree [+A] = Free[List, A]
+type Tree[+A] = Free[List, A]
 ```
 
 Действительно, сам `List` может быть выражен как приложение `Free`:
@@ -604,13 +604,93 @@ type List[A] = Free[[X] =>> (A, X), Unit]
 
 ### 6.3 Свободная монада для State
 
+Хотя примеры свободных монад, представленные здесь, очень просты, 
+приостановочный функтор для свободной монады может быть произвольной сложности. 
+Он может производить выходные данные и ожидать входные данные в любой мыслимой комбинации. 
+Мы могли бы, например, смоделировать `State` как небольшой язык, где мы можем получить и установить состояние:
+
+```scala
+sealed trait StateF[S, +A]
+case class Get[S, A](f: S => A)  extends StateF[S, A]
+case class Put[S, A](s: S, a: A) extends StateF[S, A]
+```
+
+В конструкторе `Get` `f` — это функция, которая ожидает на вход текущее значение состояния. 
+В конструкторе `Put` `s` — это новое состояние, 
+а `a` — остальная часть вычислений (которые предположительно могут что-то сделать с этим состоянием).
+Нам понадобятся доказательства того, что наш тип данных на самом деле является функтором:
+
+```scala
+given statefFun[S]: Functor[[X] =>> StateF[S, X]] = new:
+  def map[A, B](m: StateF[S, A])(f: A => B): StateF[S, B] =
+    m match
+      case Get(g)    => Get(s => f(g(s)))
+      case Put(s, a) => Put(s, f(a))
+```
+
+Затем мы можем закодировать монаду, подобную `State`, 
+непосредственно как свободную монаду, сгенерированную нашим функтором `StateF`:
+
+```scala
+type FreeState[S, A] = Free[[X] =>> StateF[S, X], A]
+```
+
+Комбинатор `pureState` из раздела 1 поставляется "бесплатно" с конструктором `Done` нашей свободной монады.
+
+```scala
+def pureState[S, A](a: A): FreeState[S, A] = Done(a)
+```
+
+А два других, для получения и установки состояния, легко определить:
+
+```scala
+def getState[S]: FreeState[S, S] = More(Get(s => Done(s)))
+
+def setState[S](s: S): FreeState[S, Unit] = More(Put(s, Done(())))
+```
+
+Для запуска действия с заданным начальным состоянием используется простой цикл:
+
+```scala
+def evalS[S, A](s: S, t: FreeState[S, A]): A =
+  t.resume match
+    case Left(Get(f))    => evalS(s, f(s))
+    case Left(Put(n, a)) => evalS(n, a)
+    case Right(a)        => a
+```
+
+Теперь мы можем писать чистые функции, сохраняющие некоторое состояние в этой монаде. 
+Например, вот `zipIndex` из раздела 1, на этот раз с использованием нашей монады `FreeState`:
+
+```scala
+def zipIndex[A](as: List[A]): List[(Int, A)] =
+  evalS(
+    0,
+    as.foldLeft(pureState[Int, List[(Int, A)]](List())) { (acc, a) =>
+      for
+        xs <- acc
+        n  <- getState
+        _  <- setState(n + 1)
+      yield (n, a) :: xs
+    }
+  ).reverse
+```
+
+Реализация почти идентична, и она работает в постоянном стеке без необходимости проходить через `Trampoline`. 
+Вывод состоит в том, что не всегда необходимо или желательно изменять существующую структуру данных. 
+Мы можем изобретать новые свободные монады собственного дизайна a la carte (см. 7.4) и пожинать те же плоды.
+
+
+## 7. Существующая работа
+
+
 
 
 ---
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ffp%2Ftrampolining)
+- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ffp)
 - [Functional Programming in Scala, Second Edition, Chapter 13](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Runar Oli Bjarnason - Stackless Scala With Free Monads][trampolines]
 - [Scala API][API]

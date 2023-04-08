@@ -489,9 +489,13 @@ val hello: Trampoline[Unit] =
 Если абстрагироваться от конструктора типа, то получим следующий тип данных:
 
 ```scala
-sealed trait Free[S[+_], A]:
-  private case class FlatMap[B](a: Free[S, A], f: A => Free[S, B])
-      extends Free[S, B]
+sealed trait Free[S[+_], A]
+
+object Free:
+  private case class FlatMap[S[+_], A, B](
+      a: Free[S, A],
+      f: A => Free[S, B]
+  ) extends Free[S, B]
 
 case class Done[S[+_], A](a: A)             extends Free[S, A]
 case class More[S[+_], A](k: S[Free[S, A]]) extends Free[S, A]

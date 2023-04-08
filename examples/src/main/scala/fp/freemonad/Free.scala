@@ -6,7 +6,12 @@ trait Functor[F[_]]:
   def map[A, B](fa: F[A])(f: A => B): F[B]
 
 sealed trait Free[S[+_], A]:
-  def flatMap[B](f: A => Free[S, B]): Free[S, B] = ???
+  self =>
+
+  def flatMap[B](f: A => Free[S, B]): Free[S, B] =
+    self match
+      case FlatMap(a, g) => FlatMap(a, x => g(x).flatMap(f))
+      case x             => FlatMap(x, f)
 
   def map[B](f: A => B): Free[S, B] =
     flatMap(a => Done(f(a)))

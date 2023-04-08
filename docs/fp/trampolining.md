@@ -690,7 +690,7 @@ def zipIndex[A](as: List[A]): List[(Int, A)] =
 Использование "батутных" функций для реализации хвостовых вызовов в языках, ориентированных на стек, — 
 [хорошо известная техника][Trampolined Style], реализованная во многих языках в виде библиотек или компиляторов.
 
-Стандартная библиотека Scala (на момент написания статьи, в версии `3.2.2`) включает объект [TailCalls][API], 
+Стандартная библиотека Scala (в версии `3.2.2`) включает объект [TailCalls][API], 
 предоставляющий структуру данных `TailRec`.
 
 ### 7.2 Операционные монады
@@ -728,7 +728,51 @@ Swierstra использует свободную монаду для созда
 из побочного произведения произвольных функторов и классов типов Haskell 
 для обработки диспетчеризации в различных случаях побочного произведения.
 
+### 7.5 Кодовая плотность
 
+Акт связывания всех монадических связей справа можно понимать 
+как [применение кодовой плотности (application of codensity)][Category Theory]. 
+Это ключевое понимание пришло из обсуждения с Эдом Кметтом [его работы][Free Monads for Less] 
+со структурой данных ввода-вывода, выраженной в виде свободной монады.
+
+Janis Voigtlander обсуждает коденсальность свободных монад в своей статье 
+["Асимптотическое улучшение вычислений над свободными монадами"][Asymptotic Improvement of Computations over Free Monads], 
+хотя он не называет понятие "коплотность" явным образом. 
+Цель его статьи — не экономия места в стеке как такового, а повышение производительности.
+
+Voigtlander объясняет, как спуск в левоассоциированные связывания в свободной монаде 
+имеет квадратичные накладные расходы, 
+и он продолжает устранять эти накладные расходы, используя монаду кодовой плотности.
+
+### 7.6 Итерации
+
+Безопасный и модульный инкрементный ввод-вывод уже давно недостижим в чисто функциональных языках, таких как Haskell. 
+[Олег Киселев][Kiselyov, Incremental] и [Джон Лато][Lato, Iteratee] обсуждают идею итерации, 
+чистого автомата, который потребляет входные данные, 
+производит эффекты и может поддерживать некоторое внутреннее состояние.
+
+`Iteratees` — это не совсем свободные монады, 
+но они представляют собой композицию свободной монады с другим функтором, 
+поэтому их можно выразить как приложение `Free`. 
+Тип `IterV` в статье Лато можно очень грубо выразить следующим образом:
+
+```scala
+type IterV[I, O] = Free[[X] =>> I => X, (I, O)]
+```
+
+Поскольку `IterV` отслеживает оставшуюся часть ввода (во многом как синтаксический анализатор), 
+технически он не является свободным. 
+Но в статье также обсуждается "внутренний итератор", который они называют enumeratee, 
+преобразующий один поток входных данных в поток выходных данных, 
+и этот тип проще выразить как свободную монаду:
+
+```scala
+type Enumeratee[I, O, A] = Free[[X] =>> Either[I => X, (O, X)], A]
+```
+
+Этот тип сопрограммы представляет собой преобразователь потока, который может либо запрашивать ввод типа `I`, 
+либо выдавать вывод типа `O` каждый раз, когда он возобновляет работу, 
+и завершается со значением типа `A`.
 
 
 
@@ -738,19 +782,30 @@ Swierstra использует свободную монаду для созда
 **Ссылки:**
 
 - [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ffp)
-- [The Operational Monad Tutorial - Heinrich Apfelmus][Apfelmus]
+- [Asymptotic Improvement of Computations over Free Monads - Janis Voigtlander][Asymptotic Improvement of Computations over Free Monads]
 - [Category Theory - S. Awodey][Category Theory]
 - [Data types a la carte - Wouter Swierstra][Swierstra]
+- [Free Monads for Less - E. A. Kmett][Free Monads for Less]
 - [Functional Programming in Scala, Second Edition, Chapter 13](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
+- [Incremental multi-level input processing and collection enumeration - O. Kiselyov][Kiselyov, Incremental]
+- [Iteratee: Teaching an Old Fold New Tricks - J. W. Lato][Lato, Iteratee]
 - [Scala API][API]
 - [Stackless Scala With Free Monads - Runar Oli Bjarnason][Trampolines]
 - [The Monad.Reader Issue 19][The monad reader]
+- [The Operational Monad Tutorial - Heinrich Apfelmus][Apfelmus]
 - [Trampolined Style - Steven E. Ganz and Daniel P. Friedman and Mitchell Wand][Trampolined Style]
 
 [API]: https://www.scala-lang.org/api/3.2.2/scala/util/control/TailCalls$.html
 [Apfelmus]: https://apfelmus.nfshost.com/articles/operational-monad.html
+[Asymptotic Improvement of Computations over Free Monads]: https://janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf
 [Category Theory]: https://books.google.ru/books/about/Category_Theory.html?hl=ru&id=AIhUtQAACAAJ&redir_esc=y
+[Kiselyov, Incremental]: https://okmij.org/ftp/Streams.html
+[Lato, Iteratee]: https://themonadreader.files.wordpress.com/2010/05/issue16.pdf
+[Free Monads for Less]: http://comonad.com/reader/2011/free-monads-for-less/
 [Swierstra]: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.101.4131&rep=rep1&type=pdf
 [The monad reader]: https://themonadreader.files.wordpress.com/2011/10/issue19.pdf
 [Trampolined Style]: https://dl.acm.org/doi/abs/10.1145/317636.317779
 [Trampolines]: https://blog.higher-order.com/assets/trampolines.pdf
+
+
+

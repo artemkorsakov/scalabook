@@ -390,12 +390,107 @@ def map[B](f: A => B): Trampoline[B] =
 
 ### 4.4 Stackless Scala
 
+Предыдущий метод `zipIndex` теперь может выполняться без `StackOverflowError` 
+для любого размера входного списка с помощью монады `State`.
+
+Представленный здесь `Trampoline` — это общее решение для устранения stack frame в Scala. 
+Теперь мы можем переписать любую программу так, чтобы вообще не использовать пространство стека. 
+Рассмотрим программу такого вида:
+
+```scala
+val x = f()
+val y = g(x)
+h(y)
+```
+
+Она может быть легко переписана в следующий вид:
+
+```scala
+for 
+  x <- f()
+  y <- g(x)
+  z <- h(y)
+yield z
+```
+
+если учесть следующее неявное преобразование:
+
+```scala
+given conv[A]: Conversion[A, Trampoline[A]] with
+  def apply(a: A): Trampoline[A] = More(() => Done(a))
+```
+
+Единственный тип вызова, для которого ступенчатое преобразование не подходит (и неслучайно), — это саморекурсивный вызов. 
+Их легко обнаружить, и в этих случаях мы могли бы вызвать конструктор `More` явно, 
+как в этой рекурсивной функции для нахождения n-го числа Фибоначчи:
+
+```scala
+def fib(n: Int): Trampoline[Int] =
+  if n <= 1 then Done(n)
+  else
+    for
+      x <- More(() => fib(n - 1))
+      y <- More(() => fib(n - 2))
+    yield x + y
+```
+
+Поскольку это преобразование полностью механическое, мы можем представить, 
+что можно было бы написать подключаемый модуль компилятора 
+или иным образом расширить компилятор Scala для преобразования всех программ таким образом.
+
+
+## 5. Совместная многозадачность
+
+Мы видели, как можно последовательно составлять вычисления `Trampoline` с помощью `flatMap`. 
+Но также возможно составить их параллельно путем чередования вычислений:
+
+```scala
+def zip[B](b: Trampoline[B]): Trampoline[(A, B)] =
+  (self.resume, b.resume) match
+    case (Right(a), Right(b)) =>
+      Done((a, b))
+    case (Left(a), Left(b)) =>
+      More(() => a() zip b())
+    case (Left(a), Right(b)) =>
+      More(() => a() zip Done(b))
+    case (Right(a), Left(b)) =>
+      More(() => Done(a) zip b())
+```
+
+Чтобы увидеть всё это в действии, можно ввести побочные эффекты для вывода на консоль:
+
+```scala
+val hello: Trampoline[Unit] =
+  for
+    _ <- print(" Hello , ")
+    _ <- println(" World !")
+  yield ()
+```
+
+Можно увидеть, что произойдет, если чередуется это вычисление с самим собой:
+
+```scala
+(hello zip hello).runT
+// Hello ,  Hello ,  World !
+// World !
+```
+
+Хотя это параллелизм с одним потоком, легко представить распределение работы между многими потоками. 
+Для набора выполняемых батутов любой батут, который не находится в состоянии `Done`, 
+может быть возобновлен любым доступным потоком.
+
+Оказывается, это обобщается на модель полных симметричных сопрограмм. 
+Мы обсудим это обобщение в следующем разделе.
+
+
+
+
 
 ---
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ffp)
+- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ffp%2Ftrampolining)
 - [Functional Programming in Scala, Second Edition, Chapter 13](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Runar Oli Bjarnason - Stackless Scala With Free Monads][trampolines]
 - [Scala API][API]

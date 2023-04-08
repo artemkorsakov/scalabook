@@ -24,7 +24,8 @@ ThisBuild / scalacOptions ++=
     "-explain",
     "-Wunused:imports",
     "-unchecked",
-    "-Xfatal-warnings"
+    "-Xfatal-warnings",
+    "-feature"
   )
 
 lazy val root = (project in file("."))

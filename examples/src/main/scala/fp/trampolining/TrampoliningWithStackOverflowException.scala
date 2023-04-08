@@ -1,4 +1,4 @@
-package fp
+package fp.trampolining
 
 object TrampoliningWithStackOverflowException:
   case class State[S, +A](runS: S => (A, S)):

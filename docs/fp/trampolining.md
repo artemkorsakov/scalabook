@@ -1,6 +1,6 @@
 # Stackless Scala
 
-Перевод статьи Runar Oli Bjarnason ["Stackless Scala With Free Monads"][trampolines] с небольшими отступлениями.
+Перевод статьи Runar Oli Bjarnason ["Stackless Scala With Free Monads"][Trampolines] с небольшими отступлениями.
 
 
 ## Для понимания
@@ -56,7 +56,7 @@ def pureState[S, A](a: A): State[S, A] =
   State(s => (a, s))
 ```
 
-Обратите внимание, что `pureState` и `flatMap` вместе [составляют `State` монаду][S. Awodey, Category Theory].
+Обратите внимание, что `pureState` и `flatMap` вместе [составляют `State` монаду][Category Theory].
 
 В качестве простой демонстрации давайте напишем функцию, которая использует `State` для нумерации всех элементов в списке. 
 Не потому, что это убедительный пример использования `State`, а потому, что он прост и демонстрирует переполнение стека.
@@ -690,6 +690,47 @@ def zipIndex[A](as: List[A]): List[(Int, A)] =
 Использование "батутных" функций для реализации хвостовых вызовов в языках, ориентированных на стек, — 
 [хорошо известная техника][Trampolined Style], реализованная во многих языках в виде библиотек или компиляторов.
 
+Стандартная библиотека Scala (на момент написания статьи, в версии `3.2.2`) включает объект [TailCalls][API], 
+предоставляющий структуру данных `TailRec`.
+
+### 7.2 Операционные монады
+
+Реализация свободных монад в этой статье имеет монадическую привязку, 
+конкретизированную на куче как конструкторе данных, а не на вызове метода в стеке. 
+Это позволило манипулировать привязками как данными и выполнять повторную ассоциацию. 
+Можно назвать эту технику использованием операционной монады, основанной на работе [Heinrich Apfelmus][Apfelmus]. 
+Он обсуждает монады, представляющие программы с явно овеществленным стеком, 
+но не свободные монады или трамплины, представленные здесь.
+
+Наша монада `FreeState` также является операционной монадой, явно овеществляющей две операции `Get` и `Put`.
+
+### 7.3 Свободные монады и сопрограммы
+
+Идея обобщения батутов пришла из _Coroutine Pipelines_ Блажевича в октябрьском выпуске ["The Monad Reader" за 2011 год][The monad reader]. 
+Хотя он не делает явных ссылок на свободные структуры, ясно, 
+что его тип `Coroutine` является преобразованием Free monad. 
+В текущей реализации на Scala необходимо отказаться от параметризации дополнительной монады, 
+чтобы сохранить удаление хвостовых вызовов. 
+Вместо того, чтобы быть написанным как монадный преобразователь, 
+`Free` может быть преобразован монадным преобразователем для того же эффекта. 
+Например, `Coroutine[A, [X] =>> State[S, X], B]` становится `StateT[S, [X] =>> Free[A, X], B]`, 
+учитывая: `case class StateT[S, M[_], A](run: S => M[(A, S)])`
+
+Обсуждение Блажевича гораздо более подробно описывает 
+"виды взаимодействующих сопрограмм, которые могут быть выражены как свободные монады 
+с производителями, потребителями и преобразователями между ними".
+
+### 7.4 Проблема выражения
+
+Идея монады `FreeState`, моделирующей переходы состояний с помощью побочного продукта `Get` и `Put`, 
+взята из статьи Wouter Swierstra 2008 года ["Типы данных на заказ"][Swierstra].
+Swierstra использует свободную монаду для создания специальных рекурсивных типов данных 
+из побочного произведения произвольных функторов и классов типов Haskell 
+для обработки диспетчеризации в различных случаях побочного произведения.
+
+
+
+
 
 
 ---
@@ -697,13 +738,19 @@ def zipIndex[A](as: List[A]): List[(Int, A)] =
 **Ссылки:**
 
 - [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ffp)
-- [Category Theory - S. Awodey][S. Awodey, Category Theory]
+- [The Operational Monad Tutorial - Heinrich Apfelmus][Apfelmus]
+- [Category Theory - S. Awodey][Category Theory]
+- [Data types a la carte - Wouter Swierstra][Swierstra]
 - [Functional Programming in Scala, Second Edition, Chapter 13](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Scala API][API]
-- [Stackless Scala With Free Monads - Runar Oli Bjarnason][trampolines]
+- [Stackless Scala With Free Monads - Runar Oli Bjarnason][Trampolines]
+- [The Monad.Reader Issue 19][The monad reader]
 - [Trampolined Style - Steven E. Ganz and Daniel P. Friedman and Mitchell Wand][Trampolined Style]
 
 [API]: https://www.scala-lang.org/api/3.2.2/scala/util/control/TailCalls$.html
-[S. Awodey, Category Theory]: https://books.google.ru/books/about/Category_Theory.html?hl=ru&id=AIhUtQAACAAJ&redir_esc=y
-[trampolines]: https://blog.higher-order.com/assets/trampolines.pdf
+[Apfelmus]: https://apfelmus.nfshost.com/articles/operational-monad.html
+[Category Theory]: https://books.google.ru/books/about/Category_Theory.html?hl=ru&id=AIhUtQAACAAJ&redir_esc=y
+[Swierstra]: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.101.4131&rep=rep1&type=pdf
+[The monad reader]: https://themonadreader.files.wordpress.com/2011/10/issue19.pdf
 [Trampolined Style]: https://dl.acm.org/doi/abs/10.1145/317636.317779
+[Trampolines]: https://blog.higher-order.com/assets/trampolines.pdf

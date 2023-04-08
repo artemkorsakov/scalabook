@@ -236,7 +236,7 @@ even(list).runT
 ## 4. Превращение каждого вызова в хвостовой вызов
 
 Давайте посмотрим, сможем ли мы применить решение `Trampoline` к проблеме обхода списка со `State`. 
-Нам нужно изменить представление действий `State`, 
+Нам нужно изменить запуск состояния `State`, 
 чтобы вернуть `Trampoline`, который мы можем запускать хвостовой рекурсией:
 
 ```scala
@@ -302,6 +302,7 @@ def flatMap[B](f: A => Trampoline[B]): More[B] =
 
 **Ссылки:**
 
+- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ffp)
 - [Functional Programming in Scala, Second Edition, Chapter 13](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Runar Oli Bjarnason - Stackless Scala With Free Monads][trampolines]
 - [Scala API][API]

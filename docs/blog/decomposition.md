@@ -6,12 +6,13 @@
 
 Так вот, мне написала незнакомый рекрутер и предложила работу в молодой и очень перспективной компании.
 Она была достаточно настойчива и довольно долго описывала прелести работы в этой компании.
-Достаточно знакомая для всех IT-шников ситуация.
-Когда её запал иссяк она, наконец-то, сообщила название этой компании и дала ссылку на вакансию.
+Знакомая для всех IT-шников ситуация.
+Когда её запал иссяк она, наконец-то, сообщила название этой компании...
 Я думаю, вы догадываетесь, работу в какой именно компании она мне предложила.
 
-Когда я ответил ей, что рад был бы устроиться на работу в компанию "Криптонит",
-но на этом пути есть одно непреодолимое препятствие - я уже там работаю и только-только прошел испытательный срок...
+Когда я ответил ей, что был бы рад устроиться на работу в компанию "Криптонит",
+но на этом пути есть одно непреодолимое препятствие -
+я уже там работаю и только-только прошел испытательный срок...
 
 Давайте представим, что я все же согласился на "двойной" заход в "Криптонит",
 пришел на техническое собеседование и мне предложили сделать что-нибудь с таким `trait`-ом:
@@ -33,146 +34,119 @@ object IntCombinator extends Combinator[Int]:
   override val empty: Int                     = 0
   override def combine(a1: Int, a2: Int): Int = a1 + a2
 
-IntCombinator.combineAll(List.empty)
-// val res0: Int = 0
-IntCombinator.combineAll(List(1))
-// val res1: Int = 1
-IntCombinator.combineAll(List(1, 2, 3))
-// val res2: Int = 6
+IntCombinator.combineAll(List.empty)    // 0
+IntCombinator.combineAll(List(1))       // 1
+IntCombinator.combineAll(List(1, 2, 3)) // 6
 ```
 
 ## Параметры конструктора
 
-`trait`-ы могут содержать:
-
-- абстрактные методы, поля и типы
-- конкретные методы, поля и типы
-- могут иметь параметры конструктора, как и классы
-
-Например:
+А ещё можно вынести переменную [в параметр конструктора](https://scastie.scala-lang.org/yT58r4nNTsqNvalB1TqFSQ):
 
 ```scala
-trait Greeting(name: String):
-  val firstPart: String
-  def msg = s"$firstPart $name"
+trait Combinator[A](empty: A):
+  def combine(a1: A, a2: A): A
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
 
-trait Hello:
-  val firstPart: String = "Hello"
+object IntCombinator extends Combinator[Int](0):
+  def combine(a1: Int, a2: Int): Int = a1 + a2
 
-object EnglishGreeting extends Greeting("Bob"), Hello  // можно указать в любом порядке
-
-EnglishGreeting.msg  // Hello Bob
+IntCombinator.combineAll(List.empty)    // 0
+IntCombinator.combineAll(List(1))       // 1
+IntCombinator.combineAll(List(1, 2, 3)) // 6
 ```
 
-Объект `EnglishGreeting` расширяет параметризованный `trait Greeting` и "подмешивает" `trait Hello`,
-реализующий абстрактный (для `Greeting`) параметр.
+Конечно, с параметрами конструктора не все так просто, нужно следовать правилам:
 
-При расширении параметризованного `trait`-а действуют следующие правила:
-
-- Если класс `C` расширяет параметризованный `trait` `T`,
-  а его суперкласс — нет, то `C` должен передать аргументы в `T`.
-- Если класс `C` расширяет параметризованный `trait` `T`
-  и его суперкласс тоже, то `C` не должен передавать аргументы в `T`.
-- `trait`-ы никогда не должны передавать аргументы родительским `trait`-ам.
+- `trait`-ы не передают аргументы родительским `trait`-ам.
+- первый и только первый дочерний класс `C` должен передать аргументы в `T`.
 
 Т.е. следующие примеры вызовут ошибку компилятора:
 
 ```scala
-trait Greeting(name: String):
-  lazy val msg: String = s"Hello $name"
+trait Combinator[A](empty: A):
+  def combine(a1: A, a2: A): A
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
 
-class EnglishGreeting extends Greeting
-// missing argument for parameter name of constructor Greeting in trait Greeting: (name: String)
+object IntCombinator extends Combinator[Int]:
+  def combine(a1: Int, a2: Int): Int = a1 + a2
+// missing argument for parameter empty of constructor Combinator 
+// in trait Combinator: (empty: Int): Playground.Combinator[Int]
 ```
 
 ```scala
-trait Greeting(name: String):
-  lazy val msg: String = s"Hello $name"
+trait Combinator[A](empty: A):
+  def combine(a1: A, a2: A): A
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
 
-class EnglishGreeting extends Greeting("Bob")
-
-class FormalEnglishGreeting extends EnglishGreeting, Greeting("Robert")
-// trait Greeting is already implemented by superclass EnglishGreeting,
-// its constructor cannot be called again
+trait IntCombinator extends Combinator[Int](0):
+  def combine(a1: Int, a2: Int): Int = a1 + a2
+// trait IntCombinator may not call constructor of trait Combinator
 ```
-
-```scala
-trait Greeting(name: String):
-  lazy val msg: String = s"Hello $name"
-
-trait EnglishGreeting extends Greeting("Bob")
-// trait EnglishGreeting may not call constructor of trait Greeting
-```
-
-Возможность передавать параметры в `trait` продолжают тенденцию отхода от формирования структур (`abstract class`)
-к описанию поведений (`trait`-ы).
 
 ## Контекстные параметры
 
-`Trait`-ы могут принимать и контекстные параметры.
-В этом случае классам, расширяющим `trait`, необязательно явно передавать параметры конструктора -
-это можно сделать неявно.
+Параметры можно задавать и неявно - тогда их можно и не указывать при расширении,
+если этот неявный параметр доступен в области видимости.
 
-Например:
+[Например](https://scastie.scala-lang.org/nlKQs01KT6yWb0z85gOykA):
 
 ```scala
-trait Greeting(using name: String):
-  val firstPart: String
-  def msg = s"$firstPart $name"
+trait Combinator[A](using empty: A):
+  def combine(a1: A, a2: A): A
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
 
-trait Hello:
-  val firstPart: String = "Hello"
+given Int = 0
 
-given String = "Bob"
+object IntCombinator extends Combinator[Int]:
+  def combine(a1: Int, a2: Int): Int = a1 + a2
 
-object EnglishGreeting extends Greeting, Hello
-
-EnglishGreeting.msg
-// Hello Bob
+IntCombinator.combineAll(List.empty)    // 0
+IntCombinator.combineAll(List(1))       // 1
+IntCombinator.combineAll(List(1, 2, 3)) // 6
 ```
 
-## Различие параметров конструктора от параметров в теле
+## А в чем разница от параметров в теле?
 
 Параметры конструктора инициализируются до инициализации параметров в теле.
 
-Рассмотрим пример:
+[Рассмотрим пример](https://scastie.scala-lang.org/zmV0nmMXRoWbBjOhKrDJlQ):
 
 ```scala
-trait GreetingFirst(name: String):
-  val msg = s"GreetingFirst $name"
+trait Combinator[A](empty: A):
+  println(s"Пустое значение - $empty")
 
-object GreetingFirst extends GreetingFirst("Bob")
+object StringCombinator extends Combinator[String]("пусто")
 
-GreetingFirst.msg      // GreetingFirst Bob
+StringCombinator
+// Пустое значение - пусто
 ```
 
-Аналогичный пример с использованием параметра в теле trait-а приводит к некорректной инициализации.
+Аналогичный пример с использованием параметра в теле trait-а
+[приводит к некорректной инициализации](https://scastie.scala-lang.org/SqdW2r1eTwqIuoEHzFVOIA).
 
 ```scala
-trait GreetingSecond:
-  val name: String
-  val msg = s"GreetingSecond $name"
+trait Combinator[A]:
+  val empty: A
+  println(s"Пустое значение - $empty")
 
-object GreetingSecond extends GreetingSecond:
-  override val name: String = "Bob"
-  
-GreetingSecond.name    // Bob
-GreetingSecond.msg     // GreetingSecond null
-```
+object StringCombinator extends Combinator[String]:
+  val empty: String = ""
 
-По этой причине практически никто и никогда не использует абстрактные константы в trait-ах
-и объявляет их либо `def`, либо `lazy val`, например так:
-
-```scala
-trait GreetingSecond:
-  def name: String
-  val msg = s"GreetingSecond $name"
-
-object GreetingSecond extends GreetingSecond:
-  override lazy val name: String = "Bob"
-  
-GreetingSecond.name    // Bob
-GreetingSecond.msg     // GreetingSecond Bob
+StringCombinator
+// Пустое значение - null
 ```
 
 Объяснение почему так происходит можно найти

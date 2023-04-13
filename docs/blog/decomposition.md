@@ -545,7 +545,7 @@ given Combinator[NonEmptyList[Int]] with
   val empty1: NonEmptyList[Int] = throw new Exception("")
   var empty2: NonEmptyList[Int] = _
   val empty3: NonEmptyList[Int] = ???
-  def compose ...
+  def combine ...
 ```
 
 В этом случае происходит как бы перекладывание ответственности за использование такого "комбинатора"
@@ -568,7 +568,7 @@ case class NonEmptyList[A](head: A, tail: List[A])
 
 given Combinator[NonEmptyList[Int]] with
   val empty: Option[NonEmptyList[Int]] = None
-  def compose ...
+  def combine ...
 ```
 
 Но в этом случае получается, что дочерняя структура пытается "заглушить" часть функциональности,
@@ -584,27 +584,27 @@ given Combinator[NonEmptyList[Int]] with
 В коде довольно часто приходится видеть ситуации, описанные выше,
 когда разработчик пытается "заглушить" расширение.
 
-Но в данном случае следовало бы определить более общую структуру и использовать её:
+Но в данном случае
+следовало [бы определить более общую структуру и использовать её](https://scastie.scala-lang.org/TDgsqmaqQraKaLGN8deJjw):
 
 ```scala
-trait Semigroup[A]:
-  def compose(a1: A, a2: A): A
+trait Combinator[A]:
+  def combine(a1: A, a2: A): A
 
-trait Monoid[A] extends Semigroup[A]:
-  def empty: A
+trait FullCombinator[A] extends Combinator[A]:
+  val empty: A
 ```
 
 В этом случае можно "запросить" недостающую информацию у пользователя:
 
 ```scala
-def foldSemigroup[A](list: List[A], empty: A)(using m: Semigroup[A]): A =
+def combineAll[A](list: List[A], empty: A)(using c: Combinator[A]): A =
   list match
-    case Nil      => empty
-    case h :: Nil => h
-    case h :: t   => m.compose(h, foldSemigroup(t, empty))
+    case Nil    => empty
+    case h :: t => c.combine(h, combineAll(t, empty))
 
-def foldMonoid[A](list: List[A])(using m: Monoid[A]): A =
-  foldSemigroup(list, m.empty)
+def combineAll[A](list: List[A])(using c: FullCombinator[A]): A =
+  combineAll(list, c.empty)
 ```
 
 Пользователь явно видит, какую информацию ему необходимо предоставить и не получает "сюрприза" в виде exception.

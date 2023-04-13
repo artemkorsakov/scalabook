@@ -492,19 +492,36 @@ type class-ы позволяют рассматривать поведение �
 
 ## Ошибки при декомпозиции
 
-Отдельно хотелось бы остановиться на ошибках, которые возникают при декомпозиции.
-Рассмотрим type class `Monoid`:
+Ревьюер не отстает и говорит: "С числами так каждый сможет написать компаратор. А что на счет коллекций?"
 
 ```scala
-trait Monoid[A]:
-  def empty: A
-  def compose(a1: A, a2: A): A
+combineAll(List(List()))             
+combineAll(List(List(1), List(1, 2, 3, 4, 5)))
 ```
 
-Что если в определенный момент возникла необходимость реализовать `Monoid` для `NonEmptyList`?
+[Да легко](https://scastie.scala-lang.org/QfiiXNTNT5GVUPeRQUoXKg):
 
 ```scala
-final case class NonEmptyList[A](head: A, tail: List[A])
+given list[A]: Combinator[List[A]] with
+  val empty: List[A]                             = List.empty[A]
+  def combine(a1: List[A], a2: List[A]): List[A] = a1 ++ a2
+
+combineAll(List(List.empty[Int]))              // List()
+combineAll(List(List(1), List(1, 2, 3, 4, 5))) // List(1, 1, 2, 3, 4, 5)
+```
+
+Рано или поздно, когда мы привыкаем к какой-нибудь конструкции, например, такой:
+
+```scala
+trait Combinator[A]:
+  val empty: A
+  def combine(a1: A, a2: A): A
+```
+
+приходит Некто, вечно вставляющий палки в колеса, и говорит: "А реализуй `Combinator` для `NonEmptyList`?"
+
+```scala
+case class NonEmptyList[A](head: A, tail: List[A])
 ```
 
 Есть несколько распространенных ошибок, совершаемых разработчиком, когда

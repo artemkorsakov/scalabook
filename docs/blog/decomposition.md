@@ -528,9 +528,9 @@ case class NonEmptyList[A](head: A, tail: List[A])
 необходимо реализовать поведение для структуры, которая этим поведением не обладает.
 
 ```scala
-object NonEmptyListMonoid extends Monoid[NonEmptyList[Int]]:
+given Combinator[NonEmptyList[Int]] with
   val empty: NonEmptyList[Int] = ...
-  def compose(l1: NonEmptyList[Int], l2: NonEmptyList[Int]): NonEmptyList[Int] =
+  def combine(l1: NonEmptyList[Int], l2: NonEmptyList[Int]): NonEmptyList[Int] =
     NonEmptyList(head = l1.head, tail = l1.tail ++ (l2.head :: l2.tail))
 ```
 
@@ -540,15 +540,15 @@ object NonEmptyListMonoid extends Monoid[NonEmptyList[Int]]:
 отсутствие реализации:
 
 ```scala
-object MonoidWithException extends Monoid[NonEmptyList[Int]]:
-  val empty: NonEmptyList[Int] = ???
+given Combinator[NonEmptyList[Int]] with
+  val empty: NonEmptyList[Int] = null
   val empty1: NonEmptyList[Int] = throw new Exception("")
   var empty2: NonEmptyList[Int] = _
-  val empty3: NonEmptyList[Int] = null
+  val empty3: NonEmptyList[Int] = ???
   def compose ...
 ```
 
-В этом случае происходит как бы перекладывание ответственности за использование такого "моноида"
+В этом случае происходит как бы перекладывание ответственности за использование такого "комбинатора"
 на разработчика-клиента.
 Здесь происходит попытка "сделать вид", что `NonEmptyList` обладает заданным поведением, хотя это не так.
 
@@ -560,13 +560,13 @@ object MonoidWithException extends Monoid[NonEmptyList[Int]]:
    что, вроде как, является "чисто функциональным" и даже выглядит как-то "по-Scala":
 
 ```scala
-trait Monoid[A]:
-  def empty: Option[A]
-  def compose(a1: A, a2: A): A
+trait Combinator[A]:
+  val empty: Option[A]
+  def combine(a1: A, a2: A): A
 
-final case class NonEmptyList[A](head: A, tail: List[A])
+case class NonEmptyList[A](head: A, tail: List[A])
 
-object MonoidWithOption extends Monoid[NonEmptyList[Int]]:
+given Combinator[NonEmptyList[Int]] with
   val empty: Option[NonEmptyList[Int]] = None
   def compose ...
 ```
@@ -584,8 +584,7 @@ object MonoidWithOption extends Monoid[NonEmptyList[Int]]:
 В коде довольно часто приходится видеть ситуации, описанные выше,
 когда разработчик пытается "заглушить" расширение.
 
-Но в данном случае следовало бы определить более общую структуру
-(в теории категорий моноид без единичного элемента - это полугруппа) и использовать её:
+Но в данном случае следовало бы определить более общую структуру и использовать её:
 
 ```scala
 trait Semigroup[A]:

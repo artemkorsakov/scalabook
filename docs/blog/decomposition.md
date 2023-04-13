@@ -236,37 +236,71 @@ IntCombinator.combineAll(List(1, 2, 3)) // 6
 Некоторые `trait`-ы используются преимущественно в первой роли, и обычно их нежелательно видеть в выводимых типах.
 Примером может служить [`trait Product`](https://scala-lang.org/api/3.x/scala/Product.html),
 который компилятор добавляет в качестве примеси к каждому `case class`-у или `case object`-у.
-В Scala 2 этот родительский `trait` иногда делает выводимые типы более сложными, чем они должны быть.
-Пример:
+
+[Или, например, кастомные реализации](https://scastie.scala-lang.org/Js2raBLxTtqSynlLpUHyhw):
 
 ```scala
-trait Kind
-case object Var extends Kind
-case object Val extends Kind
+trait IntCombine:
+  def combine(a1: Int, a2: Int): Int = a1 + a2
+
+trait EmptyInt1:
+  val empty: Int = -1
+
+trait EmptyInt2:
+  val empty: Int = 1
+
+trait Combinator[A]:
+  def combine(a1: A, a2: A): A
+  val empty: A
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
+
+object IntCombinator1 extends Combinator[Int], EmptyInt1, IntCombine
+object IntCombinator2 extends Combinator[Int], EmptyInt2, IntCombine
+
 val condition: Boolean = true
-val x = Set(if (condition) Val else Var)
-// Type: Set[Product with King with Serializable]
+val x = Set(if condition then IntCombinator1 else IntCombinator2)
+// Тип х - Set[Combinator[Int] & IntCombine]
 ```
 
-Здесь предполагаемый тип `x` равен `Set[Kind & Product & Serializable]`,
-тогда как можно было бы надеяться, что это будет `Set[Kind]`.
-
-[Пример на Scastie](https://scastie.scala-lang.org/cZ3GfNz9T0O3c2Vp1nxOaw)
+Здесь предполагаемый тип `x` равен `Set[Combinator[Int] & IntCombine]`,
+тогда как иногда желательно не видеть детали реализации в типе, например `IntCombine`.
 
 Безусловно тип можно не выводить, а указывать конкретный,
 но есть и другой вариант:
 Scala 3 позволяет помечать `trait` как _прозрачный_, что означает, что он может быть подавлен при выводе типа.
-Например:
+
+[Например](https://scastie.scala-lang.org/kKNsIEoqRJGAjfGBI9zWpg):
 
 ```scala
-transparent trait S
-trait Kind
-object Var extends Kind, S
-object Val extends Kind, S
-val x = Set(if condition then Val else Var)
+transparent trait IntCombine:
+  def combine(a1: Int, a2: Int): Int = a1 + a2
+
+transparent trait EmptyInt1:
+  val empty: Int = -1
+
+transparent trait EmptyInt2:
+  val empty: Int = 1
+
+trait Combinator[A]:
+  def combine(a1: A, a2: A): A
+  val empty: A
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
+
+object IntCombinator1 extends Combinator[Int], EmptyInt1, IntCombine
+object IntCombinator2 extends Combinator[Int], EmptyInt2, IntCombine
+
+val condition: Boolean = true
+val x = Set(if condition then IntCombinator1 else IntCombinator2)
+// Тип х - Set[Combinator[Int]]
 ```
 
-Теперь `x` имеет тип `Set[Kind]`. Общий `transparent trait S` не появляется в выводимом типе.
+Теперь `x` имеет тип `Set[Combinator[Int]]`. Общий `transparent trait IntCombine` не появляется в выводимом типе.
 
 `Trait`-ы [scala.Product](https://scala-lang.org/api/3.x/scala/Product.html),
 [java.io.Serializable](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Serializable.html)

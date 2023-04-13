@@ -162,56 +162,51 @@ StringCombinator
 Классы, объекты и `trait`-ы могут расширять несколько `trait`-ов, в отличие от расширения нескольких классов,
 что делает `trait`-ы более мощным средством декомпозиции.
 
-Расширение нескольких `trait`-ов называется "смешанной композицией" (_mixin composition_).
+[Расширение нескольких `trait`-](https://scastie.scala-lang.org/us6LAIfaQayWMKRvMsKyuQ)
+называется "смешанной композицией" (_mixin composition_).
 
 ```scala
-trait Greeting(name: String):
-  val firstPart: String
-  def msg = s"$firstPart $name"
+trait Empty[A](val empty: A)
 
-trait Hello(val firstPart: String)
+trait Combinator[A](combine: (A, A) => A):
+  val empty: A
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
 
-object EnglishGreeting extends Greeting("Bob"), Hello("Hello")
+object IntCombinator extends Combinator[Int](_ + _), Empty(0)
 
-EnglishGreeting.msg  // Hello Bob
+IntCombinator.combineAll(List.empty)    // 0
+IntCombinator.combineAll(List(1))       // 1
+IntCombinator.combineAll(List(1, 2, 3)) // 6
 ```
 
-При этом должна соблюдаться сигнатура методов:
+Если же оба `trait`-а реализуют метод с идентичной сигнатурой,
+[то в смешанной композиции его нужно будет переопределить](https://scastie.scala-lang.org/gZs4vOfKQZmjHQGay7WuPQ):
 
 ```scala
-trait Greeting(using name: String):
-  val firstPart: Long                    // Заменим на Long
-  def msg = s"$firstPart $name"
+trait EmptyInt1:
+  val empty: Int = -1
 
-trait Hello:
-  val firstPart: String = "Hello"
+trait EmptyInt2:
+  val empty: Int = 1
 
-given String = "Bob"
+trait Combinator[A]:
+  def combine(a1: A, a2: A): A
+  val empty: A
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
 
-object EnglishGreeting extends Greeting, Hello
+object IntCombinator extends Combinator[Int], EmptyInt1, EmptyInt2:
+  override val empty: Int = 0
+  def combine(a1: Int, a2: Int): Int = a1 + a2
 
-EnglishGreeting.msg
-// error overriding value firstPart in trait Greeting of type Long;
-// value firstPart in trait Hello of type String has incompatible type
-```
-
-Если же оба `trait`-а реализуют метод с идентичной сигнатурой, то в смешанной композиции его нужно будет переопределить:
-
-```scala
-trait Greeting(using name: String):
-  val firstPart: String = "Hi"
-  def msg = s"$firstPart $name"
-
-trait Hello:
-  val firstPart: String = "Hello"
-
-given String = "Bob"
-
-object EnglishGreeting extends Greeting, Hello:
-  override val firstPart: String = "Good day"
-
-EnglishGreeting.msg
-// Good day Bob
+IntCombinator.combineAll(List.empty)    // 0
+IntCombinator.combineAll(List(1))       // 1
+IntCombinator.combineAll(List(1, 2, 3)) // 6
 ```
 
 > При использовании `super.firstPart` будет браться элемент из последнего `trait`-а в списке наследования.

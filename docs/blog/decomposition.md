@@ -266,7 +266,7 @@ val x = Set(if condition then IntCombinator1 else IntCombinator2)
 ```
 
 Здесь предполагаемый тип `x` равен `Set[Combinator[Int] & IntCombine]`,
-тогда как иногда желательно не видеть детали реализации в типе, например `IntCombine`.
+тогда как иногда желательно не видеть детали реализации в типе, например, такие как `IntCombine`.
 
 Безусловно тип можно не выводить, а указывать конкретный,
 но есть и другой вариант:
@@ -331,21 +331,27 @@ val x = Set(if condition then IntCombinator1 else IntCombinator2)
 Во втором случае особенно полезно предложение `export`,
 которое определяет псевдонимы для выбранных членов объекта.
 
-Например:
+[Например](https://scastie.scala-lang.org/JobduOVQSieuJzt0CeM3Ng):
 
 ```scala
-trait Greeting(val name: String):
-  val firstPart: String
-  def msg = s"$firstPart $name"
+trait Combinator[A]:
+  def combine(a1: A, a2: A): A
+  val empty: A
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
 
-object EnglishGreetingModule:
-  private val greeting = new Greeting("Bob"):
-    override val firstPart: String = "Hi"
+object IntCombinator:
+  private val combinator: Combinator[Int] = new:
+    val empty: Int                     = 0
+    def combine(a1: Int, a2: Int): Int = a1 + a2
 
-  export greeting.msg
+  export combinator.combineAll
 
-EnglishGreetingModule.msg 
-// Hi Bob
+IntCombinator.combineAll(List.empty)    // 0
+IntCombinator.combineAll(List(1))       // 1
+IntCombinator.combineAll(List(1, 2, 3)) // 6
 ```
 
 Предложения `export` особенно полезны при сборе модуля из элементов, изменить которые возможности нет.

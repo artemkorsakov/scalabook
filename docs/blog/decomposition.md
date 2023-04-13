@@ -265,7 +265,7 @@ val x = Set(if condition then IntCombinator1 else IntCombinator2)
 ```
 
 Здесь предполагаемый тип `x` равен `Set[Combinator[Int] & IntCombine]`,
-тогда как иногда желательно не видеть детали реализации в типе, например, такие как `IntCombine`.
+тогда как желательно не видеть детали реализации в типе, например, такие как `IntCombine`.
 
 Безусловно тип можно не выводить, а указывать конкретный,
 но есть и другой вариант:
@@ -305,7 +305,7 @@ val x = Set(if condition then IntCombinator1 else IntCombinator2)
 [java.io.Serializable](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Serializable.html)
 и [java.lang.Comparable](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Comparable.html)
 автоматически считаются `transparent`.
-Для остальных необходимо указывать модификатор `transparent`.
+Для остальных необходимо указывать этот модификатор.
 
 Как правило, `transparent trait` — это `trait`-ы, влияющие на реализацию наследуемых классов,
 и `trait`-ы, которые сами по себе обычно не используются как типы.
@@ -316,6 +316,42 @@ val x = Set(if condition then IntCombinator1 else IntCombinator2)
   для [Iterable](https://scala-lang.org/api/3.x/scala/collection/Iterable.html).
 - [StrictOptimizedSeqOps](https://scala-lang.org/api/3.x/scala/collection/StrictOptimizedSeqOps.html),
   который оптимизирует некоторые из этих реализаций для последовательностей с эффективной индексацией.
+
+## Открытые классы
+
+Поскольку `trait`-ы разработаны как основное средство декомпозиции,
+класс, определенный в одном файле, не может быть расширен в другом файле.
+Чтобы разрешить это, базовый класс должен быть помечен как открытый.
+Маркировка классов с помощью `open` - это новая функция Scala 3.
+Необходимость явно помечать классы как открытые позволяет избежать многих распространенных ошибок.
+В частности, это требует, чтобы разработчики библиотек явно планировали расширение
+и, например, документировали классы, помеченные как открытые.
+
+[Пример](https://scastie.scala-lang.org/OkrUeaF1ROKdiKEO7MPv2A):
+
+```scala
+// File Combinator.scala
+open class Combinator[A](empty: A, combine: (A, A) => A):
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
+
+// File IntCombinator.scala
+object IntCombinator extends Combinator[Int](0, _ + _)
+
+// Где-то ещё
+IntCombinator.combineAll(List.empty)    // 0
+IntCombinator.combineAll(List(1))       // 1
+IntCombinator.combineAll(List(1, 2, 3)) // 6
+```
+
+Открытый класс обычно поставляется с некоторой документацией,
+описывающей внутренние шаблоны вызовов между методами класса, а также хуки, которые можно переопределить.
+Это называется контрактом расширения класса (_extension contract_).
+Он отличается от внешнего контракта (_external contract_) между классом и его пользователями.
+
+[Подробности об open классах](https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html).
 
 ## Экспортирование элементов
 
@@ -355,42 +391,6 @@ IntCombinator.combineAll(List(1, 2, 3)) // 6
 
 Предложения `export` особенно полезны при сборе модуля из элементов, изменить которые возможности нет.
 Например, потому что они публичные и определены во внешней библиотеке.
-
-## Открытые классы
-
-Поскольку `trait`-ы разработаны как основное средство декомпозиции,
-класс, определенный в одном файле, не может быть расширен в другом файле.
-Чтобы разрешить это, базовый класс должен быть помечен как открытый.
-Маркировка классов с помощью `open` - это новая функция Scala 3.
-Необходимость явно помечать классы как открытые позволяет избежать многих распространенных ошибок.
-В частности, это требует, чтобы разработчики библиотек явно планировали расширение
-и, например, документировали классы, помеченные как открытые.
-
-[Пример](https://scastie.scala-lang.org/OkrUeaF1ROKdiKEO7MPv2A):
-
-```scala
-// File Combinator.scala
-open class Combinator[A](empty: A, combine: (A, A) => A):
-  def combineAll(list: List[A]): A =
-    list match
-      case Nil    => empty
-      case h :: t => combine(h, combineAll(t))
-
-// File IntCombinator.scala
-object IntCombinator extends Combinator[Int](0, _ + _)
-
-// Где-то ещё
-IntCombinator.combineAll(List.empty)    // 0
-IntCombinator.combineAll(List(1))       // 1
-IntCombinator.combineAll(List(1, 2, 3)) // 6
-```
-
-Открытый класс обычно поставляется с некоторой документацией,
-описывающей внутренние шаблоны вызовов между методами класса, а также хуки, которые можно переопределить.
-Это называется контрактом расширения класса (_extension contract_).
-Он отличается от внешнего контракта (_external contract_) между классом и его пользователями.
-
-[Подробности об open классах](https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html).
 
 ## А где же Scala?
 

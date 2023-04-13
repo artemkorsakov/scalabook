@@ -418,7 +418,7 @@ Type class — это абстрактный параметризованный 
 
 В Scala 3 type class-ы — это просто `trait`-ы с одним или несколькими параметрами типа.
 
-Например:
+[Например](https://scastie.scala-lang.org/nU8Rd8z3Roq1n6e2xJrVCg):
 
 ```scala
 trait Combinator[A]:
@@ -473,6 +473,15 @@ type class-ы позволяют рассматривать поведение �
 - Добавление поведения без изменения исходного класса
 - Определение поведения без данных
 - Добавление более 1 поведения к данным
+  Например, мы можем сворачивать
+  коллекцию, [перемножив элементы](https://scastie.scala-lang.org/hwbBr4xpT1OkHrNu2CvLHQ):
+  ```scala
+  given Combinator[Int] with
+    val empty: Int = 1
+    def combine(a1: Int, a2: Int): Int = a1 * a2
+
+  combineAll(List(1, 2, 3, 4, 5)) // 120
+  ```
 
 Подробнее о type-class-ах:
 

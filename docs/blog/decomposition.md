@@ -397,14 +397,7 @@ IntCombinator.combineAll(List(1, 2, 3)) // 6
 
 [Подробнее об export](https://scalabook.gitflic.space/docs/scala/details/export-causes)
 
-## А где же Scala?
-
-Функциональное программирование
-
-- Данные
-- Операции над данными
-
-## Типовые классы
+## Type class
 
 В Scala самым мощным средством декомпозиции являются **type class**-ы.
 **Type class** — это абстрактный параметризованный тип,

@@ -1,21 +1,18 @@
 # Декомпозиция в Scala 3
 
-Я достаточно давно по IT-меркам работаю в компании "Криптонит" (с октября 2020)
+По IT-меркам я достаточно давно работаю в компании "Криптонит" (с октября 2020)
 и недавно мне вспомнился довольно забавный случай, произошедший со мной аккурат на следующий день
-после прохождения мной испытательного срока в "Криптоните".
-
+после прохождения мной испытательного срока.  
 Так вот, мне написала незнакомый рекрутер и предложила работу в молодой и очень перспективной компании.
-Она была достаточно настойчива и довольно долго описывала прелести работы в этой компании.
-Знакомая для всех IT-шников ситуация.
+Она была достаточно настойчива и довольно долго описывала прелести работы именно там.
 Когда её запал иссяк она, наконец-то, сообщила название этой компании...
-Я думаю, вы догадываетесь, работу в какой именно компании она мне предложила.
-
-Когда я ответил ей, что был бы рад устроиться на работу в компанию "Криптонит",
-но на этом пути есть одно непреодолимое препятствие -
-я уже там работаю и только-только прошел испытательный срок...
+Я думаю, вы уже догадались, работу в какой именно компании она мне предложила.
+И тогда я ответил ей, что был бы рад устроиться на работу в компанию "Криптонит",
+но на этом пути есть одно непреодолимое препятствие - я уже там работаю...
 
 Давайте представим, что я все же согласился на "двойной" заход в "Криптонит",
-пришел на техническое собеседование и мне предложили сделать что-нибудь с таким `trait`-ом:
+пришел на техническое собеседование и ревьюер предложил мне
+сделать что-нибудь с таким `trait`-ом:
 
 ```scala
 trait Combinator[A]:
@@ -553,7 +550,7 @@ given Combinator[NonEmptyList[Int]] with
 Здесь происходит попытка "сделать вид", что `NonEmptyList` обладает заданным поведением, хотя это не так.
 
 Почему не стоит использовать в коде исключения, `null` или изменяемые переменные очень подробно описано в
-замечательной книге ["Functional Programming in Scala"][red book]
+замечательной книге ["Functional Programming in Scala"][Red book]
 и в других книгах/статьях/докладах о функциональном программировании.
 
 2) Ещё одним способом "взломать систему" является использование `Option`,
@@ -624,12 +621,19 @@ def combineAll[A](list: List[A])(using c: FullCombinator[A]): A =
 
 - [Scala 3 Book](https://docs.scala-lang.org/scala3/book/introduction.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/index.html)
-- ["Functional Programming in Scala"][red book]
+- ["Functional Programming in Scala"][Red book]
 - ["Type Classes as Objects and Implicits"][TypeClasses]
+
+## Слайды с митапа
+
+[Ссылка на митап](https://kryptonitecompany.timepad.ru/event/2383352/)
+
+[Ссылка на слайды](https://slides.com/artemkorsakov/decomposition/fullscreen)
+
 
 [TypeClasses]: https://infoscience.epfl.ch/record/150280/files/TypeClasses.pdf
 
-[red book]: https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition
+[Red book]: https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition
 
 [Cats]: https://typelevel.org/cats/typeclasses.html
 

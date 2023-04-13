@@ -393,6 +393,13 @@ IntCombinator.combineAll(List(1, 2, 3)) // 6
 
 [Подробности об open классах](https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html).
 
+## А где же Scala?
+
+Функциональное программирование
+
+- Данные
+- Операции над данными
+
 ## Типовые классы
 
 Ещё одним мощным средством декомпозиции являются _type classes_.
@@ -414,26 +421,26 @@ Type class — это абстрактный параметризованный 
 Например:
 
 ```scala
-trait Show[A]:
-  extension (a: A) def show: String
+trait Combinator[A]:
+  val empty: A
+  def combine(a1: A, a2: A): A
 ```
 
 И использование:
 
 ```scala
-case class Person(firstName: String, lastName: String)
+given Combinator[Int] with
+  val empty: Int = 0
+  def combine(a1: Int, a2: Int): Int = a1 + a2
 
-given Show[Person] with
-  extension (p: Person)
-    def show: String =
-      s"${p.firstName} ${p.lastName}"
+def combineAll[A](list: List[A])(using c: Combinator[A]): A =
+  list match
+    case Nil    => c.empty
+    case h :: t => c.combine(h, combineAll(t))
 
-def showAll[S: Show](xs: List[S]): Unit =
-  xs.foreach(x => println(x.show))
-
-showAll(List(Person("Jane", "Jackson"), Person("Mary", "Jameson")))
-// Jane Jackson
-// Mary Jameson
+combineAll(List.empty)    // 0
+combineAll(List(1))       // 1
+combineAll(List(1, 2, 3)) // 6
 ```
 
 Основное различие между полиморфизмом подтипа и специальным полиморфизмом с type class-ами заключается в том,
@@ -455,9 +462,24 @@ type class-ы позволяют рассматривать поведение �
 исследовать законы, которым удовлетворяет заданное поведение,
 и на основе них усложнять поведение.
 
-Например, библиотека [Cats effect][Cats effect].
+Например, библиотеки [Cats][Cats] и [ScalaZ](https://scalaz.github.io/7/typeclass/).
 Пользователь в первую очередь изучает поведение, реализованное в библиотеке.
 А не данные, к которым это поведение можно применить.
+
+#### Для чего нужны type class-ы?
+
+- Отделение поведения от данных
+- Добавление поведения к "недоступным" данным
+- Добавление поведения без изменения исходного класса
+- Определение поведения без данных
+- Добавление более 1 поведения к данным
+
+Подробнее о type-class-ах:
+
+- [The Typeclass Pattern - An Alternative to Inheritance](https://www.youtube.com/watch?v=yYo0gANYViE)
+- [Tutorial: Typeclasses in Scala with Dan Rosen](https://www.youtube.com/watch?v=sVMES4RZF-8)
+- [Why are Type Classes useful in Scala? - Rock the JVM](https://www.youtube.com/watch?v=bupBZKJT0EA)
+- [Typeclasses in Scala 3 - Colombia Scala meetup/Scala at the Sea](https://www.youtube.com/watch?app=desktop&v=co4LSvVoX-s)
 
 ## Ошибки при декомпозиции
 
@@ -583,5 +605,7 @@ def foldMonoid[A](list: List[A])(using m: Monoid[A]): A =
 [TypeClasses]: https://infoscience.epfl.ch/record/150280/files/TypeClasses.pdf
 
 [red book]: https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition
+
+[Cats]: https://typelevel.org/cats/typeclasses.html
 
 [Cats effect]: https://typelevel.org/cats-effect/docs/typeclasses

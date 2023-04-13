@@ -361,37 +361,29 @@ IntCombinator.combineAll(List(1, 2, 3)) // 6
 
 Поскольку `trait`-ы разработаны как основное средство декомпозиции,
 класс, определенный в одном файле, не может быть расширен в другом файле.
-Чтобы разрешить это, базовый класс должен быть помечен как открытый:
-
-```scala
-open class Person(name: String)
-```
-
+Чтобы разрешить это, базовый класс должен быть помечен как открытый.
 Маркировка классов с помощью `open` - это новая функция Scala 3.
 Необходимость явно помечать классы как открытые позволяет избежать многих распространенных ошибок.
 В частности, это требует, чтобы разработчики библиотек явно планировали расширение
 и, например, документировали классы, помеченные как открытые.
 
-Пример:
+[Пример](https://scastie.scala-lang.org/OkrUeaF1ROKdiKEO7MPv2A):
 
 ```scala
-// File Writer.scala
-package p
+// File Combinator.scala
+open class Combinator[A](empty: A, combine: (A, A) => A):
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
 
-open class Writer[T]:
+// File IntCombinator.scala
+object IntCombinator extends Combinator[Int](0, _ + _)
 
-  /** Sends to stdout, can be overridden */
-  def send(x: T) = println(x)
-
-  /** Sends all arguments using `send` */
-  def sendAll(xs: T*) = xs.foreach(send)
-end Writer
-
-// File EncryptedWriter.scala
-package p
-
-class EncryptedWriter[T: Encryptable] extends Writer[T]:
-  override def send(x: T) = super.send(encrypt(x))
+// Где-то ещё
+IntCombinator.combineAll(List.empty)    // 0
+IntCombinator.combineAll(List(1))       // 1
+IntCombinator.combineAll(List(1, 2, 3)) // 6
 ```
 
 Открытый класс обычно поставляется с некоторой документацией,

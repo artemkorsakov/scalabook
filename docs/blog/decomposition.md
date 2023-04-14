@@ -487,14 +487,14 @@ combineAll(List(1, 2, 3)) // 6
 
 ## Ошибки при декомпозиции
 
-"С числами каждый сможет написать "компаратор". А что на счет коллекций?"
+А что на счет коллекций?
 
 ```scala
 combineAll(List(List()))             
 combineAll(List(List(1), List(1, 2, 3, 4, 5)))
 ```
 
-[Да легко](https://scastie.scala-lang.org/QfiiXNTNT5GVUPeRQUoXKg):
+[Допустим так](https://scastie.scala-lang.org/QfiiXNTNT5GVUPeRQUoXKg):
 
 ```scala
 given list[A]: Combinator[List[A]] with

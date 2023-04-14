@@ -494,7 +494,7 @@ combineAll(List(List()))
 combineAll(List(List(1), List(1, 2, 3, 4, 5)))
 ```
 
-[Допустим так](https://scastie.scala-lang.org/QfiiXNTNT5GVUPeRQUoXKg):
+[Можно и для коллекции определить "комбинатор"](https://scastie.scala-lang.org/QfiiXNTNT5GVUPeRQUoXKg):
 
 ```scala
 given list[A]: Combinator[List[A]] with
@@ -515,7 +515,7 @@ trait Combinator[A]:
   def combine(a1: A, a2: A): A
 ```
 
-приходит Некто, вечно вставляющий палки в колеса, и говорит: "А реализуй `Combinator` для `NonEmptyList`?"
+приходит Некто, вечно вставляющий палки в колеса, и говорит: "А реализуй-ка `Combinator` для `NonEmptyList`?"
 
 ```scala
 case class NonEmptyList[A](head: A, tail: List[A])

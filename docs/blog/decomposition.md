@@ -28,8 +28,8 @@ trait Combinator[A]:
 
 ```scala
 object IntCombinator extends Combinator[Int]:
-  override val empty: Int                     = 0
-  override def combine(a1: Int, a2: Int): Int = a1 + a2
+  val empty: Int                     = 0
+  def combine(a1: Int, a2: Int): Int = a1 + a2
 
 IntCombinator.combineAll(List.empty)    // 0
 IntCombinator.combineAll(List(1))       // 1

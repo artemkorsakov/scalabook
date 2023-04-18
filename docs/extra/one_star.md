@@ -56,7 +56,10 @@
 
 ### Статьи
 
-...
+| Название                                                                                                                                 |  Версия  | Язык | Дата | Комментарий |
+|------------------------------------------------------------------------------------------------------------------------------------------|:--------:|:----:|------|-------------|
+| [I hate NULL and all its variants!](https://alexn.org/blog/2010/05/25/i-hate-null) | Scala 2  |  En  | 2010 |       |
+| [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes)                                              | Scala 2  |  En  | 2012 |       |
 
 --- 
 

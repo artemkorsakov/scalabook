@@ -239,3 +239,4 @@ def catchNonFatal[A](a: => A): Either[Throwable, A] =
 **Ссылки:**
 
 - [Functional Programming in Scala, Second Edition, Chapter 4](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
+- [I hate NULL and all its variants!](https://alexn.org/blog/2010/05/25/i-hate-null/)

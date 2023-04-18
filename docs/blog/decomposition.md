@@ -514,7 +514,7 @@ trait Combinator[A]:
   def combine(a1: A, a2: A): A
 ```
 
-приходит Некто, вечно вставляющий палки в колеса, и говорит: "А реализуй-ка `Combinator` для `NonEmptyList`?"
+появляется структура, обладающая **почти** заданным поведением:
 
 ```scala
 case class NonEmptyList[A](head: A, tail: List[A])

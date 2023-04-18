@@ -157,8 +157,9 @@ StringCombinator
 
 А ещё можно наследоваться от нескольких `trait`-ов, что делает их более мощным средством декомпозиции.
 
-[Расширение нескольких `trait`-ов](https://scastie.scala-lang.org/us6LAIfaQayWMKRvMsKyuQ)
-называется "смешанной композицией" (_mixin composition_).
+Расширение нескольких `trait`-ов называется "смешанной композицией" (_mixin composition_).
+
+[Пример](https://scastie.scala-lang.org/us6LAIfaQayWMKRvMsKyuQ):
 
 ```scala
 trait Empty[A](val empty: A)

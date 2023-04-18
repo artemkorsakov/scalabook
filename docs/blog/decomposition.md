@@ -22,7 +22,7 @@ trait Combinator[A]:
       case h :: t => combine(h, combineAll(t))
 ```
 
-Что я могу с ним сделать? [Я могу его реализовать...](https://scastie.scala-lang.org/UdEjmfOzQcmeP16PGVWPOQ)
+Что с ним можно сделать? [Его можно реализовать реализовать...](https://scastie.scala-lang.org/UdEjmfOzQcmeP16PGVWPOQ)
 
 ```scala
 object IntCombinator extends Combinator[Int]:

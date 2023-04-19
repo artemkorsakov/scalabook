@@ -545,18 +545,17 @@ given Combinator[NonEmptyList[Int]] with
 книге ["Functional Programming in Scala"][Red book]
 и в других книгах, статьях, докладах о функциональном программировании.
 
-1) Ещё одним способом "взломать систему" является использование `Option`,
+2) Ещё одним способом "взломать систему" является использование `Option`,
    что, вроде как, является "чисто функциональным" и даже выглядит как-то "по-Scala":
 
 ```scala
 trait Combinator[A]:
-  val empty: Option[A]
+  val empty: Option[A] = None
   def combine(a1: A, a2: A): A
 
 case class NonEmptyList[A](head: A, tail: List[A])
 
 given Combinator[NonEmptyList[Int]] with
-  val empty: Option[NonEmptyList[Int]] = None
   def combine ...
 ```
 

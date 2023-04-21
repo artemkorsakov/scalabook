@@ -1,5 +1,7 @@
 # Декомпозиция в Scala 3
 
+[Доклад был представлен на Scala Meetup-е в Музее криптографии 20 апреля 2023][Meetup]
+
 В этой статье разберем, что может предложить Scala 3 в плане декомпозиции.
 
 Что можно сделать с таким `trait`-ом,
@@ -144,6 +146,10 @@ StringCombinator
 Объяснение почему так происходит можно найти
 [здесь](https://scalapuzzlers.com/index.html#pzzlr-004)
 и [здесь](https://scalapuzzlers.com/index.html#pzzlr-005).
+
+> Обновление от 21-04-2023: как правильно подсказали [в комментариях к митапу][Meetup] 
+> существует флаг компилятора `-Ysafe-init`, предупреждающий о попытке обращения к неинициализированной переменной.
+> [Пример с предупреждением компилятора](https://scastie.scala-lang.org/u6YgYFgKRXeonRl4RjzdyA)
 
 ## Расширение нескольких trait-ов
 
@@ -629,3 +635,5 @@ def combineAll[A](list: List[A])(using c: FullCombinator[A]): A =
 [Cats]: https://typelevel.org/cats/typeclasses.html
 
 [Cats effect]: https://typelevel.org/cats-effect/docs/typeclasses
+
+[Meetup]: https://www.youtube.com/watch?v=1W3BHh4vQqs

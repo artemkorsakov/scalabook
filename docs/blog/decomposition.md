@@ -757,8 +757,91 @@ x.productArity // 1
 
 ### Вопрос 4: Какое практическое применение прозрачных trait-ов?
 
+1) В качестве практического применения прозрачных `trait`-ов может служить [использование специального `trait`-а для логирования](https://github.com/hseeberger/slf4s/blob/main/src/main/scala/rocks/heikoseeberger/slf4s/Logging.scala),
+который нежелательно видеть в выходном типе продуктового кода. 
 
+2) Также необходимость в использовании прозрачных `trait`-ов может возникнуть в следующей ситуации:
 
+Представим, что у нас есть полугруппа, способная "складывать" два объекта произвольного типа:
+
+```scala
+trait Semigroup[A]:
+  def combine(x: A, y: A): A
+
+def combine[A: Semigroup](a1: A, a2: A): A =
+  summon[Semigroup[A]].combine(a1, a2)
+```
+
+И есть контейнер, способный хранить значения произвольного типа `A`.
+Причем, если в области видимости доступна `Semigroup[A]` 
+и метод, способный "оборачивать" значения произвольного типа в контейнер,
+то мы можем реализовать полугруппу для контейнера:
+
+```scala
+trait Container[A](val a: A)
+
+given [A](using Semigroup[A])(using unit: A => Container[A]): Semigroup[Container[A]] with
+  def combine(x: Container[A], y: Container[A]): Container[A] = 
+    unit(summon[Semigroup[A]].combine(x.a, y.a))
+```
+
+В отдельном файле объявляется список всех возможных контейнеров в системе, 
+а также метод создания дефолтного контейнера:
+
+```scala
+sealed trait CanBeContainer
+
+case class DefaultContainer[A](value: A) extends Container[A](value), CanBeContainer
+case class OtherContainer[A](value: A) extends Container[A](value), CanBeContainer
+given [A]: (A => Container[A]) = a => DefaultContainer(a)
+```
+
+В этом случае при попытке сложить два контейнера определенного типа,
+если в области видимости доступна полугруппа этого типа,
+выводится ошибка компилятора о том, что не определена полугруппа для `Semigroup[(Container[Int] & CanBeContainer)]`:
+
+```scala
+given Semigroup[Int] with
+  def combine(x: Int, y: Int): Int = x * y
+
+combine(DefaultContainer[Int](2), OtherContainer[Int](3)).a
+// No given instance of type Semigroup[(Container[Int] & CanBeContainer)] 
+// was found for an implicit parameter of method combine in object Playground
+```
+
+[Рассмотренный пример в Scastie](https://scastie.scala-lang.org/BzrEw3RQTtqUhXXPx6W2eQ)
+
+Но ведь это не так: у нас есть полугруппа для контейнеров, мы умеем их "складывать", 
+а `CanBeContainer` никаким образом на "сложение" не влияет - это технический `trait`, 
+созданный только лишь для того, чтобы можно было контролировать список возможных контейнеров.
+Например, в сопоставлении с шаблоном.
+
+В результате, чтобы "сложить" два контейнера приходится создавать лишние переменные "правильного" по мнению компилятора типа,
+чтобы получить необходимый результат:
+
+```scala
+val x: Container[Int] = DefaultContainer[Int](2)
+val y: Container[Int] = OtherContainer[Int](3)
+combine(x, y).a // 6
+```
+
+[Рассмотренный пример в Scastie](https://scastie.scala-lang.org/l40En0fIR9ymueRkWG82oA)
+
+Но создавать "технические" переменные не всегда удобно и не всегда возможно.
+
+В этом случае очень выручает возможность объявить технический `trait` в качестве прозрачного:
+`transparent sealed trait CanBeContainer`
+
+Тогда мы сможем "складывать" контейнеры без выделения лишних переменных:
+
+```scala
+given Semigroup[Int] with
+  def combine(x: Int, y: Int): Int = x * y
+
+combine(DefaultContainer[Int](2), OtherContainer[Int](3)).a // 6
+```
+
+[Рассмотренный пример в Scastie](https://scastie.scala-lang.org/B7TefzEkSU6gXppLVQwdug)
 
 ## Список литературы
 

@@ -297,7 +297,7 @@ val x = Set(if condition then IntCombinator1 else IntCombinator2)
 
 Теперь `x` имеет тип `Set[Combinator[Int]]`. Общий `transparent trait IntCombine` не появляется в выводимом типе.
 
-`Trait`-ы [scala.Product](https://scala-lang.org/api/3.x/scala/Product.html),
+`Trait`-ы [scala.Product][Product],
 [java.io.Serializable](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Serializable.html)
 и [java.lang.Comparable](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Comparable.html)
 автоматически считаются `transparent`.
@@ -726,6 +726,35 @@ IntCombinator.combineAll(List(1, 2, 3)) // 6
 
 #### Вопрос 3: Можно ли пользоваться методами прозрачных trait-ов?
 
+Да, несмотря на то, что прозрачные trait-ы не выводятся в типе, все их элементы доступны для использования.
+
+Рассмотрим пример:
+
+```scala
+transparent trait IntCombine:
+  def combine(a1: Int, a2: Int): Int = a1 + a2
+
+case class Empty(empty: Int)
+
+trait Combinator[A]:
+  def combine(a1: A, a2: A): A
+  val empty: A
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
+
+object IntCombinator extends Empty(0), Combinator[Int], IntCombine
+
+val x = IntCombinator
+x.productArity // 1
+```
+
+`IntCombinator` наследуется от `case class Empty`, который в свою очередь наследуется от [scala.Product][Product].
+Несмотря на то, что `Product` прозрачный, все его методы доступны. Например, как `productArity` в коде выше.
+
+[Рассмотренный пример в Scastie](https://scastie.scala-lang.org/MWVJoJb6QMGjJ6a6NuyYQg)
+
 #### Вопрос 4: Какое практическое применение прозрачных trait-ов?
 
 
@@ -754,3 +783,5 @@ IntCombinator.combineAll(List(1, 2, 3)) // 6
 [Cats effect]: https://typelevel.org/cats-effect/docs/typeclasses
 
 [Meetup]: https://www.youtube.com/watch?v=1W3BHh4vQqs
+
+[Product]: https://scala-lang.org/api/3.x/scala/Product.html

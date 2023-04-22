@@ -687,6 +687,43 @@ object IntCombinator extends Combinator[Int]:
 
 [Рассмотренный пример в Scastie](https://scastie.scala-lang.org/cIppAzZvSN264IXAPXAYLQ)
 
+Также можно использовать переименование экспортируемых элементов для того, чтобы 
+"дополнить" необходимую реализацию. Рассмотрим следующий пример:
+
+```scala
+trait Monoid[A]:
+  def compose(a1: A, a2: A): A
+  val empty: A
+
+trait Combinator[A]:
+  def combine(a1: A, a2: A): A
+  def empty: A
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
+
+object IntCombinator extends Combinator[Int]:
+  private val monoid: Monoid[Int] = new:
+    val empty: Int = 0
+    def compose(a1: Int, a2: Int): Int = a1 + a2
+
+  export monoid.{empty, compose as combine}
+
+IntCombinator.combineAll(List.empty)    // 0
+IntCombinator.combineAll(List(1))       // 1
+IntCombinator.combineAll(List(1, 2, 3)) // 6
+```
+
+Здесь `IntCombinator`-у нужно реализовать методы `def empty: Int` и `def combine(a1: Int, a2: Int): Int`, 
+но у него есть только приватный экземпляр `monoid`.
+При экспорте элементов приватной переменной, переименовывается метод `compose` для того, 
+чтобы добиться нужной для `Combinator` сигнатуры методов.
+В результате, `IntCombinator` получает реализацию всех абстрактных членов 
+и ему нет необходимости что-то "доопределять".
+
+[Рассмотренный пример в Scastie](https://scastie.scala-lang.org/jHBtvQJQSeO5NuBbwxN1Og)
+
 #### Вопрос 3: Можно ли пользоваться методами прозрачных trait-ов?
 
 #### Вопрос 4: Какое практическое применение прозрачных trait-ов?

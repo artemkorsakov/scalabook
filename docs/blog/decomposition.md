@@ -615,6 +615,85 @@ def combineAll[A](list: List[A])(using c: FullCombinator[A]): A =
 - при построении архитектуры желательно избегать "ложного наследования": попытки отсечь часть родительской
   функциональности
 
+## Ответы на вопросы
+
+Хотелось бы более детально ответить на вопросы, прозвучавшие на [Meetup-е][Meetup].
+
+#### Вопрос 1: type class instances?
+
+
+
+#### Вопрос 2: Можно ли export использовать в паттерне делегирование?
+
+Да, экспортирование можно использовать [в паттерне делегирование](https://ru.wikipedia.org/wiki/%D0%A8%D0%B0%D0%B1%D0%BB%D0%BE%D0%BD_%D0%B4%D0%B5%D0%BB%D0%B5%D0%B3%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F), 
+но только в части делегирования методов, потому что все элементы при экспортировании технически становятся методами,
+включая константы.
+
+Рассмотрим пример:
+
+```scala
+trait Combinator[A]:
+  def combine(a1: A, a2: A): A
+  def empty: A
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
+
+object IntCombinator extends Combinator[Int]:
+  private val combinator: Combinator[Int] = new:
+    val empty: Int = 0
+    def combine(a1: Int, a2: Int): Int = a1 + a2
+
+  export combinator.*
+
+IntCombinator.combineAll(List.empty)    // 0
+IntCombinator.combineAll(List(1))       // 1
+IntCombinator.combineAll(List(1, 2, 3)) // 6
+```
+
+Здесь объект `IntCombinator` наследуется от `Combinator[Int]` и должен реализовать два абстрактных метода.
+Эти методы реализуются путем экспортирования методов с той же самой сигнатурой из приватного элемента `combinator`.
+
+[Рассмотренный пример в Scastie](https://scastie.scala-lang.org/RAAnbSkpR0msPI6iOGzeAA)
+
+Но с абстрактными параметрами делегирование не пройдет, потому что, [согласно документации](https://docs.scala-lang.org/scala3/reference/other-new-features/export.html), экспортируемые элементы чисто технически - это методы.
+Поэтому компилятор выдаст ошибку конфликта имен если необходимо реализовать абстрактную константу, 
+даже если экспортируется реализация константы с той же сигнатурой, потому что она экспортируется как метод.
+
+Пример:
+
+```scala
+trait Combinator[A]:
+  def combine(a1: A, a2: A): A
+  val empty: A
+  def combineAll(list: List[A]): A =
+    list match
+      case Nil    => empty
+      case h :: t => combine(h, combineAll(t))
+
+object IntCombinator extends Combinator[Int]:
+  private val combinator: Combinator[Int] = new:
+    val empty: Int = 0
+    def combine(a1: Int, a2: Int): Int = a1 + a2
+
+  export combinator.*
+// Compile error:
+// error overriding value empty in trait Combinator of type Int; 
+// method empty of type => Int needs to be a stable, immutable value
+```
+
+Константа `empty` при экспорте становится методом `empty`.
+
+[Рассмотренный пример в Scastie](https://scastie.scala-lang.org/cIppAzZvSN264IXAPXAYLQ)
+
+#### Вопрос 3: Можно ли пользоваться методами прозрачных trait-ов?
+
+#### Вопрос 4: Какое практическое применение прозрачных trait-ов?
+
+
+
+
 ## Список литературы
 
 - [Scala 3 Book](https://docs.scala-lang.org/scala3/book/introduction.html)
@@ -622,11 +701,11 @@ def combineAll[A](list: List[A])(using c: FullCombinator[A]): A =
 - ["Functional Programming in Scala"][Red book]
 - ["Type Classes as Objects and Implicits"][TypeClasses]
 
-## Слайды с митапа
+## Meetup
 
-[Ссылка на митап](https://kryptonitecompany.timepad.ru/event/2383352/)
+[Запись meetup на Youtube][Meetup]
 
-[Ссылка на слайды](https://slides.com/artemkorsakov/decomposition/fullscreen)
+[Слайды с meetup-а](https://slides.com/artemkorsakov/decomposition/fullscreen)
 
 
 [TypeClasses]: https://infoscience.epfl.ch/record/150280/files/TypeClasses.pdf

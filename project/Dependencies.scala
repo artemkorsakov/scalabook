@@ -17,7 +17,7 @@ object Dependencies {
   }
 
   object iron {
-    private val version = "2.0.0"
+    private val version = "2.1.0"
     val iron            = "io.github.iltotore" %% "iron"      % version
     val cats            = "io.github.iltotore" %% "iron-cats" % version
   }

@@ -2,9 +2,11 @@
 
 [Доклад был представлен на Scala Meetup-е в Музее криптографии 20 апреля 2023][Meetup]
 
+[Компактная версия выступления][MeetupShort]
+
 В этой статье разберем, что может предложить Scala 3 в плане декомпозиции.
 
-Что можно сделать с таким `trait`-ом,
+Что можно сделать с таким `trait`-ом,
 
 ```scala
 trait Combinator[A]:
@@ -391,7 +393,7 @@ IntCombinator.combineAll(List(1, 2, 3)) // 6
 Предложения `export` особенно полезны при сборе модуля из элементов, изменить которые возможности нет.
 Например, потому что они публичные и определены во внешней библиотеке.
 
-[Подробнее об export](https://scalabook.gitflic.space/docs/scala/details/export-causes)
+[Подробнее об export](https://docs.scala-lang.org/scala3/reference/other-new-features/export.html)
 
 ## Type class
 
@@ -853,9 +855,9 @@ combine(DefaultContainer[Int](2), OtherContainer[Int](3)).a // 6
 
 ## Meetup
 
-[Запись meetup на Youtube][Meetup]
-
-[Слайды с meetup-а](https://slides.com/artemkorsakov/decomposition/fullscreen)
+- [Запись meetup на Youtube][Meetup]
+- [Компактная версия выступления][MeetupShort]
+- [Слайды с meetup-а](https://slides.com/artemkorsakov/decomposition/fullscreen)
 
 
 [TypeClasses]: https://infoscience.epfl.ch/record/150280/files/TypeClasses.pdf
@@ -867,5 +869,7 @@ combine(DefaultContainer[Int](2), OtherContainer[Int](3)).a // 6
 [Cats effect]: https://typelevel.org/cats-effect/docs/typeclasses
 
 [Meetup]: https://www.youtube.com/watch?v=1W3BHh4vQqs
+
+[MeetupShort]: https://www.youtube.com/watch?v=t_rNLXrChm0
 
 [Product]: https://scala-lang.org/api/3.x/scala/Product.html

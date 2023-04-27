@@ -2,8 +2,9 @@ import Dependencies.*
 import laika.ast.*
 import laika.ast.Path.*
 import laika.helium.config.*
+import laika.theme.config.*
 
-ThisBuild / organization     := "ru.gitflic.artemkorsakov"
+ThisBuild / organization     := "ru.scalabook"
 ThisBuild / organizationName := "Artem Korsakov"
 ThisBuild / startYear        := Some(2022)
 ThisBuild / licenses         := Seq(License.Apache2)
@@ -78,19 +79,23 @@ lazy val docs = project
           language = Some("ru"),
           version = Some("0.1.0")
         )
+        .all
+        .themeColors(
+          primary = Color.hex("007c99"),
+          secondary = Color.hex("2A8D9C"),
+          primaryMedium = Color.hex("a7d4de"),
+          primaryLight = Color.hex("ebf6f7"),
+          text = Color.hex("000000"),
+          background = Color.hex("ffffff"),
+          bgGradient = (Color.hex("095269"), Color.hex("007c99"))
+        )
         .site
         .topNavigationBar(
           homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
           navLinks = Seq(
-            ButtonLink.external(
-              "https://scalabook.gitflic.space",
-              "Scalabook на gitflic"
-            ),
-            ButtonLink
-              .external("https://github.com/artemkorsakov/scalabook", "Github"),
-            ButtonLink.external(
-              "https://gitflic.ru/project/artemkorsakov/scalabook",
-              "Gitflic"
+            IconLink.external(
+              url = "https://gitflic.ru/project/artemkorsakov/scalabook",
+              icon = HeliumIcon.edit
             )
           )
         )
@@ -104,19 +109,21 @@ lazy val docs = project
         .site
         .pageNavigation(
           enabled = true,
-          depth = 3,
-          sourceBaseURL =
-            Some("https://github.com/artemkorsakov/scalabook/blob/master/docs"),
+          depth = 1,
+          sourceBaseURL = Some(
+            "https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=docs"
+          ),
           sourceLinkText = "Редактировать страницу"
         )
         .site
         .footer(Text(""))
 //        .site
 //        .downloadPage(
-//          title = "Книга в PDF и EPUB",
+//          title = "Книга в EPUB",
 //          description = Some(
 //            "На этой странице находятся ссылки для скачивания рабочей тетради в формате PDF и EPUB."
-//          )
+//          ),
+//          includePDF = false
 //        )
   )
   .enablePlugins(TypelevelSitePlugin)

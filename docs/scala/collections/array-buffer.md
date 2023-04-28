@@ -7,7 +7,7 @@
 
 Чтобы использовать `ArrayBuffer`, в отличие от предыдущих рассмотренных классов, его нужно вначале импортировать:
 
-```scala
+```scala mdoc
 import scala.collection.mutable.ArrayBuffer
 ```
 
@@ -43,17 +43,10 @@ val people = ArrayBuffer(
 Также можно использовать текстовый аналог: `append`, `appendAll`, `insert`, `insertAll`, `prepend` и `prependAll`.
 Вот несколько примеров с `+=` и `++=`:
 
-```scala
+```scala mdoc
 val nums = ArrayBuffer(1, 2, 3)
-// nums: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3)
-```
-```scala
 nums += 4
-// res0: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3, 4)
-```
-```scala
 nums ++= List(5, 6)
-// res1: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3, 4, 5, 6)
 ```
 
 #### Удаление элементов из ArrayBuffer
@@ -61,40 +54,26 @@ nums ++= List(5, 6)
 `ArrayBuffer` является изменяемым, поэтому у него есть такие методы, как `-=`, `--=`, `clear`, `remove` и другие.
 Примеры с `-=` и `--=`:
 
-```scala
+```scala mdoc
 val a = ArrayBuffer.range('a', 'h')
-// a: ArrayBuffer[Char] = ArrayBuffer('a', 'b', 'c', 'd', 'e', 'f', 'g')
-```
-```scala
 a -= 'a'
-// res2: ArrayBuffer[Char] = ArrayBuffer('b', 'c', 'd', 'e', 'f', 'g')
-```
-```scala
 a --= Seq('b', 'c')
-// res3: ArrayBuffer[Char] = ArrayBuffer('d', 'e', 'f', 'g')
-```
-```scala
 a --= Set('d', 'e')
-// res4: ArrayBuffer[Char] = ArrayBuffer('f', 'g')
 ```
 
 #### Обновление элементов в ArrayBuffer
 
 Элементы в `ArrayBuffer` можно обновлять, либо переназначать:
 
-```scala
-val a = ArrayBuffer.range(1,5)
-// a: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3, 4)
+```scala mdoc:reset:invisible
+import scala.collection.mutable.ArrayBuffer
 ```
-```scala
+```scala mdoc
+val a = ArrayBuffer.range(1,5)
 a(2) = 50
 println(a)
-// ArrayBuffer(1, 2, 50, 4)
-```
-```scala
 a.update(0, 10)
 println(a)
-// ArrayBuffer(10, 2, 50, 4)
 ```
 
 

@@ -42,7 +42,7 @@ type TL2  =  [X >: L2 <: U2] =>> R2
 - `R1 <: R2`
 
 Предполагается, что частично применяемый конструктор типа `List` 
-эквивалентен его [Eta Expansion](https://scalabook.gitflic.space/docs/scala/functions/eta). 
+эквивалентен его [Eta Expansion](../functions/eta.md). 
 Т.е. `List = [X] =>> List[X]`.
 Это позволяет сравнивать конструкторы типов с лямбда-выражениями типов.
 

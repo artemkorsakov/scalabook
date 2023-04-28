@@ -12,22 +12,15 @@
 
 Вот несколько способов создания `Vector`:
 
-```scala
+```scala mdoc
 val nums = Vector(1, 2, 3, 4, 5)
-// nums: Vector[Int] = Vector(1, 2, 3, 4, 5)
 val strings = Vector("one", "two")
-// strings: Vector[String] = Vector("one", "two")
 case class Person(name: String)
 val people = Vector(
   Person("Bert"),
   Person("Ernie"),
   Person("Grover")
 )
-// people: Vector[Person] = Vector(
-//   Person(name = "Bert"),
-//   Person(name = "Ernie"),
-//   Person(name = "Grover")
-// )
 ```
 
 Поскольку `Vector` неизменяем, в него нельзя добавить новые элементы.
@@ -36,24 +29,18 @@ val people = Vector(
 
 Например, так элементы добавляются в конец:
 
-```scala
+```scala mdoc
 val a = Vector(1,2,3)
-// a: Vector[Int] = Vector(1, 2, 3)
 val b = a :+ 4
-// b: Vector[Int] = Vector(1, 2, 3, 4)
 val c = a ++ Vector(4, 5)
-// c: Vector[Int] = Vector(1, 2, 3, 4, 5)
 ```
 
 А так - в начало `Vector`-а:
 
-```scala
+```scala mdoc:reset
 val a = Vector(1,2,3)
-// a: Vector[Int] = Vector(1, 2, 3)
 val b = 0 +: a
-// b: Vector[Int] = Vector(0, 1, 2, 3)
 val c = Vector(-1, 0) ++: a
-// c: Vector[Int] = Vector(-1, 0, 1, 2, 3)
 ```
 
 В дополнение к быстрому произвольному доступу и обновлениям,
@@ -64,13 +51,9 @@ val c = Vector(-1, 0) ++: a
 
 Наконец, `Vector` в цикле `for` используется точно так же, как `List`, `ArrayBuffer` или любая другая последовательность:
 
-```scala
+```scala mdoc
 val names = Vector("Joel", "Chris", "Ed")
-// names: Vector[String] = Vector("Joel", "Chris", "Ed")
 for name <- names do println(s"My name is $name")
-// My name is Joel
-// My name is Chris
-// My name is Ed
 ```
 
 
@@ -97,9 +80,8 @@ for name <- names do println(s"My name is $name")
 и быстрым случайным обновлением элементов, 
 они используются в качестве реализации неизменяемых индексированных последовательностей:
 
-```scala
+```scala mdoc
 collection.immutable.IndexedSeq(1, 2, 3)
-// res2: IndexedSeq[Int] = Vector(1, 2, 3)
 ```
 
 

@@ -17,11 +17,9 @@
 и необходимо найти все имена, начинающиеся с буквы `"j"`, чтобы затем сделать первые буквы заглавными. 
 В ФП код будет выглядеть так:
 
-```scala
+```scala mdoc
 val a = List("jane", "jon", "mary", "joe")
-// a: List[String] = List("jane", "jon", "mary", "joe")
 val b = a.filter(_.startsWith("j")).map(_.capitalize)
-// b: List[String] = List("Jane", "Jon", "Joe")
 ```
 
 Как показано, исходный список `a` не меняется. 
@@ -37,26 +35,24 @@ class Person(var firstName: String, var lastName: String)
 
 Вместо этого обычно создаются `case class`-ы, чьи параметры конструктора по умолчанию неизменяемые (`val`):
 
-```scala
+```scala mdoc:silent
 case class Person(firstName: String, lastName: String)
 ```
 
 Теперь можно создать экземпляр `Person` как поле `val`:
 
-```scala
+```scala mdoc
 val reginald = Person("Reginald", "Dwight")
-// reginald: Person = Person(firstName = "Reginald", lastName = "Dwight")
 ```
 
 Затем, при необходимости внести изменения в данные, используется метод `copy`, 
 который поставляется с `case class`-ом, чтобы "обновлять данные через создание копии", например:
 
-```scala
+```scala mdoc
 val elton = reginald.copy(
   firstName = "Elton",   
   lastName = "John"      
 )
-// elton: Person = Person(firstName = "Elton", lastName = "John")
 ```
 
 Существуют множество других приёмов работы с неизменяемыми коллекциями и переменными.

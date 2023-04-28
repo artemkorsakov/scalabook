@@ -29,35 +29,21 @@
 Для общего представления в примерах ниже показаны некоторые из наиболее часто используемых методов коллекций. 
 Вот несколько методов, которые не используют лямбда-выражения:
 
-```scala
+```scala mdoc
 val a = List(10, 20, 30, 40, 10)
-// a: List[Int] = List(10, 20, 30, 40, 10)
 a.distinct                      
-// res0: List[Int] = List(10, 20, 30, 40)                      
 a.drop(2)                
-// res1: List[Int] = List(30, 40, 10)                
 a.dropRight(2)             
-// res2: List[Int] = List(10, 20, 30)             
 a.head                            
-// res3: Int = 10                            
 a.headOption                      
-// res4: Option[Int] = Some(value = 10)                      
 a.init                       
-// res5: List[Int] = List(10, 20, 30, 40)                       
 a.intersect(List(19, 20, 21))  
-// res6: List[Int] = List(20)  
 a.last                       
-// res7: Int = 10                       
 a.lastOption                 
-// res8: Option[Int] = Some(value = 10)                 
 a.slice(2, 4)                 
-// res9: List[Int] = List(30, 40)                 
 a.tail                       
-// res10: List[Int] = List(20, 30, 40, 10)                       
 a.take(3)                    
-// res11: List[Int] = List(10, 20, 30)                    
 a.takeRight(2)               
-// res12: List[Int] = List(40, 10)               
 ```
 
 #### Функции высшего порядка и лямбда-выражения
@@ -67,15 +53,11 @@ a.takeRight(2)
 Для начала приведем несколько вариантов лямбда-синтаксиса, начиная с самой длинной формы, 
 поэтапно переходящей к наиболее сжатой:
 
-```scala
+```scala mdoc
 a.filter((i: Int) => i < 25)
-// res13: List[Int] = List(10, 20, 10)
 a.filter((i) => i < 25)     
-// res14: List[Int] = List(10, 20, 10)     
 a.filter(i => i < 25)       
-// res15: List[Int] = List(10, 20, 10)       
 a.filter(_ < 25)            
-// res16: List[Int] = List(10, 20, 10)           
 ```
 
 В этих примерах:
@@ -90,31 +72,23 @@ a.filter(_ < 25)
 
 Примеры других HOF, использующих краткий лямбда-синтаксис:
 
-```scala
+```scala mdoc
 a.dropWhile(_ < 25)
-// res17: List[Int] = List(30, 40, 10)
 a.filter(_ > 35)  
-// res18: List[Int] = List(40)  
 a.filterNot(_ < 25)
-// res19: List[Int] = List(30, 40)
 a.find(_ > 20)     
-// res20: Option[Int] = Some(value = 30)     
 a.takeWhile(_ < 30)
-// res21: List[Int] = List(10, 20)
 ```
 
 Важно отметить, что HOF также принимают в качестве параметров методы и функции, а не только лямбда-выражения. 
 Вот несколько примеров, в которых используется метод с именем `double`. 
 Снова показаны несколько вариантов лямбда-выражений:
 
-```scala
+```scala mdoc
 def double(i: Int) = i * 2
 a.map(i => double(i))
-// res22: List[Int] = List(20, 40, 60, 80, 20)
 a.map(double(_))
-// res23: List[Int] = List(20, 40, 60, 80, 20)
 a.map(double)                        
-// res24: List[Int] = List(20, 40, 60, 80, 20)                       
 ```
 
 В последнем примере, когда анонимная функция состоит из одного вызова функции, принимающей один аргумент, 
@@ -122,11 +96,10 @@ a.map(double)
 
 Наконец, HOF можно комбинировать:
 
-```scala
+```scala mdoc
 a.filter(_ < 40)
  .takeWhile(_ < 30)
  .map(_ * 10)                        
-// res25: List[Int] = List(100, 200)                      
 ```
 
 > **P.S.** Пример призван показать только то, как принято последовательно вызывать функции на неизменяемых коллекциях.
@@ -136,11 +109,9 @@ a.filter(_ < 40)
 
 В следующих разделах используются такие списки:
 
-```scala
+```scala mdoc:reset
 val oneToTen = (1 to 10).toList
-// oneToTen: List[Int] = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 val names = List("adam", "brandy", "chris", "david")                         
-// names: List[String] = List("adam", "brandy", "chris", "david")                     
 ```
 
 ### map
@@ -150,29 +121,24 @@ val names = List("adam", "brandy", "chris", "david")
 
 Вот пример применения метода `map` к списку `oneToTen`:
 
-```scala
+```scala 
 val doubles = oneToTen.map(_ * 2)    
-// doubles: List[Int] = List(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)                     
 ```
 
 Также можно писать анонимные функции, используя более длинную форму, например:
 
 ```scala
 val doubles = oneToTen.map(i => i * 2)    
-// doubles: List[Int] = List(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)                   
 ```
 
 Однако в этом документе будет всегда использоваться первая, более короткая форма.
 
 Вот еще несколько примеров применения метода `map` к `oneToTen` и `names`:
 
-```scala
+```scala mdoc
 val capNames = names.map(_.capitalize)
-// capNames: List[String] = List("Adam", "Brandy", "Chris", "David")
 val nameLengthsMap = names.map(s => (s, s.length)).toMap
-// nameLengthsMap: Map[String, Int] = Map("adam" -> 4, "brandy" -> 6, "chris" -> 5, "david" -> 5)
 val isLessThanFive = oneToTen.map(_ < 5)                       
-// isLessThanFive: List[Boolean] = List(true, true, true, true, false, false, false, false, false, false)                      
 ```
 
 Как показано в последних двух примерах, совершенно законно (и распространено) использование `map` 
@@ -184,22 +150,18 @@ val isLessThanFive = oneToTen.map(_ < 5)
 Предикат или условие — это функция, которая возвращает `Boolean` (`true` или `false`). 
 Вот несколько примеров:
 
-```scala
+```scala mdoc
 val lessThanFive = oneToTen.filter(_ < 5)
-// lessThanFive: List[Int] = List(1, 2, 3, 4)
 val evens = oneToTen.filter(_ % 2 == 0)
-// evens: List[Int] = List(2, 4, 6, 8, 10)
 val shortNames = names.filter(_.length <= 4)                         
-// shortNames: List[String] = List("adam")                        
 ```
 
 Отличительной особенностью функциональных методов коллекций является то, 
 что их можно объединять вместе для решения задач. 
 Например, в этом примере показано, как связать `filter` и `map`:
 
-```scala
+```scala mdoc
 oneToTen.filter(_ < 4).map(_ * 10)
-// res26: List[Int] = List(10, 20, 30)
 ```
 
 > Если `filter` используется перед `map`, `flatMap` или `foreach`, 
@@ -212,12 +174,8 @@ oneToTen.filter(_ < 4).map(_ * 10)
 Стоит обратить внимание, что `foreach` используется для побочных эффектов, таких как печать информации. 
 Вот пример с `names`:
 
-```scala
-names.foreach(println)                         
-// adam
-// brandy
-// chris
-// david                        
+```scala mdoc
+names.foreach(println)                          
 ```
 
 ### head
@@ -225,44 +183,36 @@ names.foreach(println)
 Метод `head` взят из Lisp и других более ранних языков функционального программирования. 
 Он используется для доступа к первому элементу (головному (head) элементу) списка:
 
-```scala
+```scala mdoc
 oneToTen.head 
-// res28: Int = 1 
 names.head                        
-// res29: String = "adam"                       
 ```
 
 `String` можно рассматривать как последовательность символов, 
 т.е. строка также является коллекцией, а значит содержит соответствующие методы. 
 Вот как `head` работает со строками:
 
-```scala
+```scala mdoc
 "foo".head 
-// res30: Char = 'f' 
 "bar".head                    
-// res31: Char = 'b'                    
 ```
 
 На пустой коллекции `head` выдает исключение:
 
-```scala
+```scala mdoc
 val emptyList = List[Int]()
-// emptyList: List[Int] = List()
 ```
 ```scala
 emptyList.head                         
 // java.util.NoSuchElementException: head of empty list
-// 	at scala.collection.immutable.Nil$.head(List.scala:662)
-// 	at scala.collection.immutable.Nil$.head(List.scala:661)
-// 	at repl.MdocSession$App.$init$$$anonfun$17(methods.md:252)                        
+// 	at scala.collection.immutable.Nil$.head(List.scala:662) 
 ```
 
 Чтобы не натыкаться на исключение вместо `head` желательно использовать `headOption`,
 особенно при разработке в функциональном стиле:
 
-```scala
+```scala mdoc
 emptyList.headOption
-// res32: Option[Int] = None                        
 ```
 
 `headOption` не генерирует исключение, а возвращает тип `Option` со значением `None`. 
@@ -273,25 +223,19 @@ emptyList.headOption
 
 Метод `tail` также взят из Lisp и используется для вывода всех элементов в списке после `head`. 
 
-```scala
+```scala mdoc
 oneToTen.head
-// res33: Int = 1
 oneToTen.tail
-// res34: List[Int] = List(2, 3, 4, 5, 6, 7, 8, 9, 10)
 
 names.head   
-// res35: String = "adam"   
 names.tail                 
-// res36: List[String] = List("brandy", "chris", "david")                 
 ```
 
 Так же, как и `head`, `tail` можно использовать со строками:
 
-```scala
+```scala mdoc
 "foo".tail
-// res37: String = "oo"
 "bar".tail
-// res38: String = "ar"
 ```
 
 `tail` выбрасывает исключение `java.lang.UnsupportedOperationException`, если список пуст, 
@@ -322,39 +266,29 @@ def sum(list: List[Int]): Int = list match
 Методы `take`, `takeRight` и `takeWhile` предоставляют удобный способ "брать" (take) элементы из списка 
 для создания нового. Примеры `take` и `takeRight`:
 
-```scala
+```scala mdoc
 oneToTen.take(1)      
-// res39: List[Int] = List(1)      
 oneToTen.take(2)      
-// res40: List[Int] = List(1, 2)      
 
 oneToTen.takeRight(1) 
-// res41: List[Int] = List(10) 
 oneToTen.takeRight(2)                        
-// res42: List[Int] = List(9, 10)                       
 ```
 
 Обратите внимание, как эти методы работают с «пограничными» случаями, 
 когда запрашивается больше элементов, чем есть в последовательности, или запрашивается ноль элементов:
 
-```scala
+```scala mdoc
 oneToTen.take(Int.MaxValue)     
-// res43: List[Int] = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)     
 oneToTen.takeRight(Int.MaxValue)
-// res44: List[Int] = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 oneToTen.take(0)                
-// res45: List[Int] = List()                
 oneToTen.takeRight(0)           
-// res46: List[Int] = List()          
 ```
 
 А это `takeWhile`, который работает с функцией-предикатом:
 
-```scala
+```scala mdoc
 oneToTen.takeWhile(_ < 5)    
-// res47: List[Int] = List(1, 2, 3, 4)    
 names.takeWhile(_.length < 5)
-// res48: List[String] = List("adam")
 ```
 
 ### drop, dropRight, dropWhile
@@ -362,38 +296,28 @@ names.takeWhile(_.length < 5)
 `drop`, `dropRight` и `dropWhile` удаляют элементы из списка и, по сути, противоположны своим аналогам "take". 
 Вот некоторые примеры:
 
-```scala
+```scala mdoc
 oneToTen.drop(1)     
-// res49: List[Int] = List(2, 3, 4, 5, 6, 7, 8, 9, 10)     
 oneToTen.drop(5)     
-// res50: List[Int] = List(6, 7, 8, 9, 10)     
 
 oneToTen.dropRight(8)
-// res51: List[Int] = List(1, 2)
 oneToTen.dropRight(7)
-// res52: List[Int] = List(1, 2, 3)
 ```
 
 Пограничные случаи:
 
-```scala
+```scala mdoc
 oneToTen.drop(Int.MaxValue)     
-// res53: List[Int] = List()     
 oneToTen.dropRight(Int.MaxValue)
-// res54: List[Int] = List()
 oneToTen.drop(0)                
-// res55: List[Int] = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)                
 oneToTen.dropRight(0)           
-// res56: List[Int] = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)         
 ```
 
 А это `dropWhile`, который работает с функцией-предикатом:
 
-```scala
+```scala mdoc
 oneToTen.dropWhile(_ < 5)    
-// res57: List[Int] = List(5, 6, 7, 8, 9, 10)    
 names.dropWhile(_ != "chris")
-// res58: List[String] = List("chris", "david")
 ```
 
 ### reduce
@@ -405,7 +329,7 @@ names.dropWhile(_ != "chris")
 Например, метод `add`, который складывает вместе два целых числа, 
 а также предоставляет хороший вывод отладочной информации:
 
-```scala
+```scala mdoc:silent
 def add(x: Int, y: Int): Int =
   val theSum = x + y
   println(s"received $x and $y, their sum is $theSum")
@@ -414,18 +338,14 @@ def add(x: Int, y: Int): Int =
 
 Рассмотрим список:
 
-```scala
+```scala mdoc:silent
 val a = List(1,2,3,4)                         
 ```
 
 вот что происходит, когда в `reduce` передается метод `add`:
 
-```scala
-a.reduce(add)                        
-// received 1 and 2, their sum is 3
-// received 3 and 3, their sum is 6
-// received 6 and 4, their sum is 10
-// res59: Int = 10                        
+```scala mdoc
+a.reduce(add)                         
 ```
 
 Как видно из результата, функция `reduce` использует `add` для сокращения списка `a` до единственного значения, 
@@ -433,16 +353,14 @@ a.reduce(add)
 
 `reduce` можно использовать с анонимными функциями:
 
-```scala
+```scala mdoc
 a.reduce(_ + _)     
-// res60: Int = 10                   
 ```
 
 Аналогично можно использовать другие функции, например, умножение:
 
-```scala
+```scala mdoc
 a.reduce(_ * _)  
-// res61: Int = 24                    
 ```
 
 ### Дальнейшее изучение коллекций

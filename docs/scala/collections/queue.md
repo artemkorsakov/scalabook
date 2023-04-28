@@ -8,17 +8,12 @@
 
 Вот как можно создать пустую неизменяемую очередь:
 
-```scala
+```scala mdoc
 import scala.collection.immutable.Queue
 val empty = Queue[Int]()
-// empty: Queue[Int] = Queue()
 val has1 = empty.enqueue(1)
-// has1: Queue[Int] = Queue(1)
 val has123 = has1.enqueueAll(List(2, 3))
-// has123: Queue[Int] = Queue(1, 2, 3)
 val (element, has23) = has123.dequeue
-// element: Int = 1
-// has23: Queue[Int] = Queue(2, 3)
 ```
 
 Обратите внимание, что `dequeue` возвращает пару, состоящую из удаленного элемента и остальной части очереди.

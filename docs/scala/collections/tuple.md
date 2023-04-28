@@ -3,46 +3,36 @@
 Scala `tuple` - это тип, который позволяет помещать коллекцию разных типов в один и тот же контейнер.
 Например, учитывая `case class Person`:
 
-```scala
+```scala mdoc:silent
 case class Person(name: String)
 ```
 
 можно построить кортеж, содержащий `Int`, `String` и `Person`:
 
-```scala
+```scala mdoc
 val t = (11, "eleven", Person("Eleven"))
-// t: Tuple3[Int, String, Person] = (11, "eleven", Person(name = "Eleven"))
 ```
 
 Доступ к значениям кортежа осуществляется через индекс (начиная с 0):
 
-```scala
+```scala mdoc
 t(0)
-// res0: Int = 11
 t(1)
-// res1: String = "eleven"
 t(2)
-// res2: Person = Person(name = "Eleven")
 ```
 
 либо через методы вида `._i`, где `i` - порядковый номер (начиная с 1, в отличие от индекса)
 
-```scala
+```scala mdoc
 t._1
-// res3: Int = 11
 t._2
-// res4: String = "eleven"
 t._3
-// res5: Person = Person(name = "Eleven")
 ```
 
 Также можно использовать `extractor` для присвоения переменным значений полей кортежа:
 
-```scala
+```scala mdoc
 val (num, str, person) = t
-// num: Int = 11
-// str: String = "eleven"
-// person: Person = Person(name = "Eleven")
 ```
 
 Кортежи хороши для случаев, когда необходимо поместить коллекцию разнородных типов

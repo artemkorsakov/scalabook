@@ -110,9 +110,9 @@ property("Множество чисел НЕ образует полугрупп
 либо оформить их в виде документации.
 Но важно их знать, чтобы поддерживать четкую структуру архитектуры.
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fblog%2Farchitectureproblems%2FSemigroup.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fru%2Fscalabook%2Fblog%2Farchitectureproblems%2FSemigroup.scala&branch=master)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Fblog%2Farchitectureproblems%2FSemigroupSuite.scala)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Fru%2Fscalabook%2Farchitectureproblems%2FSemigroupSuite.scala&branch=master)
 
 
 ## Моноид
@@ -143,9 +143,9 @@ object Monoid:
 а вот то же множество с той же операцией, но единичным элементом равным `0` - не моноид,
 потому что единичный элемент не удовлетворяет закону _"Тождественность"_ (`0 * x != x` для всех `x != 0`).
 
-[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fblog%2Farchitectureproblems%2FMonoid.scala&plain=1)
+[Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fru%2Fscalabook%2Fblog%2Farchitectureproblems%2FMonoid.scala&branch=master)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Fblog%2Farchitectureproblems%2FMonoidSuite.scala)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Fru%2Fscalabook%2Farchitectureproblems%2FMonoidSuite.scala&branch=master)
 
 ## Проблемы архитектуры
 

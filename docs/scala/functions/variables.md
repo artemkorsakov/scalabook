@@ -32,25 +32,22 @@ val double = (i: Int) => i * 2
 Как можно видеть ниже, `double` имеет тип `Int => Int`, что означает, 
 что он принимает один параметр `Int` и возвращает `Int`:
 
-```scala
+```scala mdoc
 val double = (i: Int) => i * 2
-// double: Int => Int = ...
 ```
 
 #### Вызов метода
 
 Функция `double` может быть вызвана так:
 
-```scala
+```scala mdoc
 val x = double(2)
-// x: Int = 4
 ```
 
 `double` также можно передать в вызов `map`:
 
-```scala
+```scala mdoc
 List(1, 2, 3).map(double)
-// res0: List[Int] = List(2, 4, 6)
 ```
 
 Кроме того, когда есть другие функции типа `Int => Int`:

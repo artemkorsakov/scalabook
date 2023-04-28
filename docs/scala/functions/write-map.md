@@ -59,7 +59,7 @@ def map[A](f: (Int) => A, xs: List[Int]): List[A] =
 Обратим внимание, что выражение `for` не делает ничего, что зависит от типа `Int` внутри списка. 
 Следовательно, можно заменить `Int` в сигнатуре типа параметром универсального типа `B`:
 
-```scala
+```scala mdoc:silent
 def map[A, B](f: (B) => A, xs: List[B]): List[A] =
   for x <- xs yield f(x)
 ```
@@ -68,14 +68,12 @@ def map[A, B](f: (B) => A, xs: List[B]): List[A] =
 
 Демонстрация работы получившегося `map`:
 
-```scala
+```scala mdoc
 def double(i : Int) = i * 2
 def strlen(s: String) = s.length
 
 map(double, List(1, 2, 3))
-// res0: List[Int] = List(2, 4, 6)           
 map(strlen, List("a", "bb", "ccc"))
-// res1: List[Int] = List(1, 2, 3)
 ```
 
 Теперь, когда рассмотрены методы, принимающие функции в качестве входных параметров, 

@@ -223,12 +223,10 @@ import java.lang.Math.*
 Теперь можно получить доступ к статическим методам класса `Math`, таким как `sin` и `cos`, 
 без необходимости предварять их именем класса:
 
-```scala
+```scala mdoc
 import java.lang.Math.*
 val a = sin(0)
-// a: Double = 0.0 
 val b = cos(PI)
-// b: Double = -1.0
 ```
 
 #### Пакеты, импортированные по умолчанию

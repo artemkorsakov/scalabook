@@ -61,7 +61,7 @@ greetFunction("Joe")
 Метод `greet()` был бы более полезным, если бы была возможность задавать приветствие. 
 Например, передать его в качестве параметра методу `greet()` и использовать внутри `println`:
 
-```scala
+```scala mdoc:silent
 def greet(theGreeting: String): String => Unit = 
   (name: String) => println(s"$theGreeting, $name")
 ```
@@ -69,7 +69,7 @@ def greet(theGreeting: String): String => Unit =
 Теперь, при вызове этого метода, процесс становится более гибким, потому что приветствие можно изменить. 
 Вот как это выглядит, когда создается функция из этого метода:
 
-```scala
+```scala mdoc:silent
 val sayHello = greet("Hello")
 ```
 
@@ -77,21 +77,18 @@ val sayHello = greet("Hello")
 которая принимает входной параметр `String` и возвращает `Unit`. 
 Так что теперь, при передаче `sayHello` строки, печатается приветствие:
 
-```scala
+```scala mdoc
 sayHello("Joe")
-// Hello, Joe
 ```
 
 Приветствие можно менять для создания новых функций:
 
-```scala
+```scala mdoc
 val sayCiao = greet("Ciao")
 sayCiao("Isabella")
-// Ciao, Isabella
 
 val sayHola = greet("Hola")
 sayHola("Carlos")
-// Hola, Carlos
 ```
 
 ### Более реалистичный пример
@@ -135,7 +132,7 @@ val frenchGreeting = (name: String) => println(s"Bonjour, $name")
 и вернуть `frenchGreeting`, если `desiredLanguage` — французский. 
 Один из способов сделать это - pattern matching:
 
-```scala
+```scala mdoc:silent:reset
 def createGreetingFunction(desiredLanguage: String): String => Unit =
   val englishGreeting = (name: String) => println(s"Hello, $name")
   val frenchGreeting = (name: String) => println(s"Bonjour, $name")
@@ -149,18 +146,16 @@ def createGreetingFunction(desiredLanguage: String): String => Unit =
 
 Вот как `createGreetingFunction` создает функцию приветствия на французском языке:
 
-```scala
+```scala mdoc
 val greetInFrench = createGreetingFunction("french")
 greetInFrench("Jonathan")
-// Bonjour, Jonathan
 ```
 
 И вот как - на английском:
 
-```scala
+```scala mdoc
 val greetInEnglish = createGreetingFunction("english")
 greetInEnglish("Joe")
-// Hello, Joe
 ```
 
 

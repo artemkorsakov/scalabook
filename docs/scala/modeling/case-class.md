@@ -17,15 +17,10 @@ Scala `case class` позволяет моделировать концепци�
 
 Этот код демонстрирует несколько функций `case class`:
 
-```scala
+```scala mdoc
 case class Person(name: String, vocation: String)
 val person = Person("Reginald Kenneth Dwight", "Singer")
-// person: Person = Person(
-//   name = "Reginald Kenneth Dwight",
-//   vocation = "Singer"
-// )
 person.name
-// res1: String = "Reginald Kenneth Dwight"
 ```
 
 Необходимо помнить, что поля в `case class`-е неизменяемые:
@@ -36,28 +31,19 @@ person.name = "Joe" // error: Reassignment to val name
 
 Остальные возможности продемонстрированы в коде:
 
-```scala
+```scala mdoc
 println(person)
-// Person(Reginald Kenneth Dwight,Singer)
+
 person match
   case Person(n, r) => println("name is " + n)
-// name is Reginald Kenneth Dwight
+
 val elton = Person("Elton John", "Singer")
-// elton: Person = Person(name = "Elton John", vocation = "Singer")
+
 person == elton
-// res4: Boolean = false
 
 case class BaseballTeam(name: String, lastWorldSeriesWin: Int)
 val cubs1908 = BaseballTeam("Chicago Cubs", 1908)
-// cubs1908: BaseballTeam = BaseballTeam(
-//   name = "Chicago Cubs",
-//   lastWorldSeriesWin = 1908
-// )
 val cubs2016 = cubs1908.copy(lastWorldSeriesWin = 2016)
-// cubs2016: BaseballTeam = BaseballTeam(
-//   name = "Chicago Cubs",
-//   lastWorldSeriesWin = 2016
-// )
 ```
 
 #### Поддержка функционального программирования

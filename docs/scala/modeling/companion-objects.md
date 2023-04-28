@@ -12,7 +12,7 @@
 А его сопутствующий объект содержит метод с именем `calculateArea`, 
 который (а) не специфичен для экземпляра и (б) доступен для каждого экземпляра:
 
-```scala
+```scala mdoc
 import scala.math.*
 case class Circle(radius: Double):
   import Circle.*
@@ -21,7 +21,6 @@ object Circle:
   private def calculateArea(radius: Double): Double = Pi * pow(radius, 2.0)
 val circle = Circle(5.0)
 circle.area
-// res0: Double = 78.53981633974483
 ```
 
 В этом примере метод `area`, доступный для каждого экземпляра `Circle`, использует метод `calculateArea`, 
@@ -43,7 +42,7 @@ circle.area
 
 Вот краткий обзор того, как методы `apply` можно использовать в качестве фабричных методов для создания новых объектов:
 
-```scala
+```scala mdoc
 class Person:
   var name = ""
   var age = 0
@@ -63,9 +62,7 @@ object Person:
 end Person
 
 val joe = Person("Joe")
-// joe: Person = Joe is 0 years old
 val fred = Person("Fred", 29)
-// fred: Person = Fred is 29 years old
 ```
 
 

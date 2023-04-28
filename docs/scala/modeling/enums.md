@@ -9,7 +9,7 @@
 
 В качестве примера, рассмотрим перечисления, определяющие наборы атрибутов, связанных с пиццами:
 
-```scala
+```scala mdoc:silent
 enum CrustSize:
   case Small, Medium, Large
 
@@ -22,29 +22,28 @@ enum Topping:
 
 Для использования в коде `enum` необходимо импортировать:
 
-```scala
+```scala mdoc:silent
 import CrustSize.*
 val currentCrustSize = Small
 ```
 
 Значения `enum`-ов можно сравнивать и использовать в матчинге:
 
-```scala
+```scala mdoc
 if (currentCrustSize == Small)
   println("If you buy a large pizza, you'll get a prize!")
-// If you buy a large pizza, you'll get a prize!
+
 currentCrustSize match
   case Small => println("small")
   case Medium => println("medium")
   case Large => println("large")
-// small
 ```
 
 #### Параметризованные перечисления
 
 Перечисления могут иметь параметры конструктора:
 
-```scala
+```scala mdoc:reset
 enum Color(val rgb: Int):
   case Red   extends Color(0xFF0000)
   case Green extends Color(0x00FF00)
@@ -56,10 +55,9 @@ enum Color(val rgb: Int):
 Значения enum соответствуют уникальным целым числам. 
 Целое число, связанное со значением перечисления, возвращается методом `ordinal`:
 
-```scala
+```scala mdoc
 val red = Color.Red
 red.ordinal
-// res2: Int = 0
 ```
 
 Сопутствующий объект перечисления определяет также три служебных метода. 

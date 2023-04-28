@@ -4,7 +4,7 @@
 Они указываются с помощью символа "стрелка" - `=>` 
 Пример:
 
-```scala
+```scala mdoc
 def or(a: Boolean, b: => Int): Int =
   if a then 1 else b
 
@@ -13,10 +13,7 @@ def b: Int =
   2
 
 or(true, b)
-// res0: Int = 1
 or(false, b)
-// I'm calculated
-// res1: Int = 2
 ```
 
 В первом случае `b` не вычислялся, потому что он не используется при `a = true`.

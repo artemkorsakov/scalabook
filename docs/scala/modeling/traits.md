@@ -11,7 +11,7 @@
 В базовом использовании `trait` может использоваться как интерфейс, 
 определяющий только абстрактные члены, которые будут реализованы другими классами:
 
-```scala
+```scala mdoc:silent
 trait Employee:
   def id: Int
   def firstName: String
@@ -20,13 +20,13 @@ trait Employee:
 
 `traits` также могут содержать определенные методы:
 
-```scala
+```scala mdoc:silent
 trait HasLegs:
   def numLegs: Int
   def walk(): Unit
   def stop() = println("Stopped walking")
 ```
-```scala
+```scala mdoc:silent
 trait HasTail:
   def tailColor: String
   def wagTail() = println("Tail is wagging")
@@ -35,7 +35,7 @@ trait HasTail:
 
 Классы и объекты могут расширять несколько `traits`, что позволяет с их помощью создавать небольшие модули.
 
-```scala
+```scala mdoc:silent
 class IrishSetter(name: String) extends HasLegs, HasTail:
   val numLegs = 4
   val tailColor = "Red"
@@ -45,9 +45,8 @@ class IrishSetter(name: String) extends HasLegs, HasTail:
 
 В классе `IrishSetter` реализованы все абстрактные параметры и методы, поэтому можно создать его экземпляр:
 
-```scala
+```scala mdoc
 val d = IrishSetter("Big Red")
-// d: IrishSetter = Big Red is a Dog
 ```
 
 Класс также может переопределять методы `trait`-ов при необходимости.
@@ -59,7 +58,7 @@ val d = IrishSetter("Big Red")
 Одна потенциальная проблема с параметрами `trait` заключается в том, как предотвратить двусмысленность. 
 Например, можно попробовать расширить `Greeting` дважды с разными параметрами:
 
-```scala
+```scala mdoc:reset
 trait Greeting(val name: String):
   def msg = s"How are you, $name"
 
@@ -82,22 +81,20 @@ class D extends C, Greeting("Bill")
 
 Вот трейт, расширяющий параметризованный трейт `Greeting`.
 
-```scala
+```scala mdoc:silent
 trait FormalGreeting extends Greeting:
   override def msg = s"How do you do, $name"
 ```
 
 Правильный способ создания класса `E`, расширяющего оба - `Greeting` и `FormalGreeting` (в любом порядке) - такой:
 
-```scala
+```scala mdoc:silent
 class E extends Greeting("Bob"), FormalGreeting
 ```
 
-```scala
+```scala mdoc
 (new C).msg
-// res1: String = "How are you, Bob"
 (new E).msg
-// res2: String = "How do you do, Bob"
 ```
 
 ### Trait-ы с параметрами контекста
@@ -106,7 +103,7 @@ class E extends Greeting("Bob"), FormalGreeting
 В этом случае ссылка на трейт неявно вставляется как дополнительный родитель с выводимыми аргументами. 
 Например, вот вариант `Greeting`, где адресат является параметром контекста типа `ImpliedName`:
 
-```scala
+```scala mdoc:reset
 case class ImpliedName(name: String):
   override def toString = name
 
@@ -131,10 +128,9 @@ class F(using iname: ImpliedName) extends
 Обратите внимание на вставленную ссылку на `ImpliedFormalGreeting` - родительский `trait ImpliedGreeting`, 
 которая не упоминалась явно.
 
-```scala
+```scala mdoc
 given ImpliedName = ImpliedName("Bob")
 (new F).msg
-// res3: String = "How do you do, Bob"
 ```
 
 
@@ -155,7 +151,7 @@ Trait-ы используются в двух случаях:
 trait Kind
 case object Var extends Kind
 case object Val extends Kind
-val x = Set(if condition then Val else Var)
+val x = Set(if false then Val else Var)
 ```
 
 Здесь предполагаемый тип `x` равен `Set[Kind & Product & Serializable]`, 
@@ -171,12 +167,12 @@ val x = Set(if condition then Val else Var)
 Scala 3 позволяет помечать trait примеси как `transparent`, что означает, что он может быть подавлен при выводе типа. 
 Вот пример, который повторяет строки приведенного выше кода, но теперь с новым `transparent trait S` вместо `Product`:
 
-```scala
+```scala mdoc:reset
 transparent trait S
 trait Kind
 object Var extends Kind, S
 object Val extends Kind, S
-val x = Set(if condition then Val else Var)
+val x = Set(if true then Val else Var)
 ```
 
 Теперь `x` предположил тип `Set[Kind]`. Общий `transparent trait S` не появляется в выводимом типе.

@@ -200,7 +200,7 @@ class EncryptedWriter[T: Encryptable] extends Writer[T]:
 
 Как и в других языках с поддержкой ООП, `trait`-ы и классы в Scala могут определять изменяемые поля:
 
-```scala
+```scala mdoc:silent
 class Counter:
   private var currentCount = 0
 
@@ -211,14 +211,12 @@ class Counter:
 Каждый экземпляр класса `Counter` имеет собственное приватное состояние, 
 которое можно наблюдать только через метод `count`, как показано в следующем примере:
 
-```scala
+```scala mdoc
 val c1 = Counter()
 c1.count
-// res1: Int = 0
 c1.tick()
 c1.tick()
 c1.count
-// res4: Int = 2
 ```
 
 #### Модификаторы доступа
@@ -242,7 +240,7 @@ c1.count
 Конкретно, следующий код определяет компонент `SubjectObserver` как `trait` с двумя членами абстрактного типа, 
 `S` (для субъектов) и `O` (для наблюдателей):
 
-```scala
+```scala mdoc:reset
 trait SubjectObserver:
   type S <: Subject
   type O <: Observer
@@ -293,7 +291,7 @@ trait SubjectObserver:
 
 Теперь можно реализовать вышеуказанный компонент и определить члены абстрактного типа как конкретные типы:
 
-```scala
+```scala mdoc:silent
 object SensorReader extends SubjectObserver:
   type S = Sensor
   type O = Display
@@ -331,7 +329,7 @@ object SensorReader extends SubjectObserver:
 
 Наконец, следующий код иллюстрирует, как использовать компонент `SensorReader`:
 
-```scala
+```scala mdoc
 import SensorReader.*
 // настройка сети
 val s1 = Sensor("sensor1")
@@ -343,10 +341,7 @@ s1.subscribe(d2)
 s2.subscribe(d1)
 // распространение обновлений по сети
 s1.changeValue(2)
-// sensor1 has value 2.0
-// sensor1 has value 2.0
 s2.changeValue(3)
-// sensor2 has value 3.0
 ```
 
 Имея под рукой все утилиты объектно-ориентированного программирования, 

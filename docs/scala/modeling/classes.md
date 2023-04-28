@@ -3,7 +3,7 @@
 Как и в других языках, класс в Scala — это шаблон для создания экземпляров объекта. 
 Вот несколько примеров классов:
 
-```scala
+```scala mdoc:silent
 class Person(var name: String, var vocation: String)
 class Book(var title: String, var author: String, var year: Int)
 class Movie(var name: String, var director: String, var year: Int)
@@ -17,18 +17,16 @@ class Movie(var name: String, var director: String, var year: Int)
 Новый экземпляр класса создается следующим образом 
 (без ключевого слова `new`, благодаря универсальным `apply` методам, см. ниже):
 
-```scala
+```scala mdoc:silent
 val p = Person("Robert Allen Zimmerman", "Harmonica Player")
 ```
 
 Если есть экземпляр класса, такого как `p`, то можно получить доступ к его полям, 
 которые в этом примере являются параметрами конструктора:
 
-```scala
+```scala mdoc
 p.name
-// res0: String = "Robert Allen Zimmerman"
 p.vocation
-// res1: String = "Harmonica Player"
 ```
 
 Как уже упоминалось, все эти параметры были созданы как поля `var`, поэтому их можно изменять:
@@ -43,7 +41,7 @@ p.vocation = "Musician"
 Классы также могут иметь методы и дополнительные поля, не являющиеся частью конструкторов. 
 Они определены в теле класса. Тело инициализируется как часть конструктора по умолчанию:
 
-```scala
+```scala mdoc:silent:reset
 class Person(var firstName: String, var lastName: String):
   println("initialization begins")
   val fullName = s"$firstName $lastName"
@@ -57,13 +55,9 @@ class Person(var firstName: String, var lastName: String):
 
 Пример демонстрирует, как происходит инициализация класса:
 
-```scala
+```scala mdoc
 val john = Person("John", "Doe")
-// initialization begins
-// John Doe
-// initialization ends
 john.printFullName
-// John Doe
 ```
 
 Классы также могут расширять `trait`-ы и абстрактные классы, которые будут рассмотрены в специальных разделах ниже.
@@ -72,7 +66,7 @@ john.printFullName
 
 Параметры конструктора класса также могут иметь значения по умолчанию:
 
-```scala
+```scala mdoc:reset:silent
 class Socket(val timeout: Int = 5_000, val linger: Int = 5_000):
   override def toString = s"timeout: $timeout, linger: $linger"
 ```
@@ -80,29 +74,21 @@ class Socket(val timeout: Int = 5_000, val linger: Int = 5_000):
 Отличительной особенностью этой функции является то, что она позволяет пользователям кода создавать классы 
 различными способами, как если бы у класса были альтернативные конструкторы:
 
-```scala
+```scala mdoc
 Socket()                
-// res6: Socket = timeout: 5000, linger: 5000                
 Socket(2_500)           
-// res7: Socket = timeout: 2500, linger: 5000           
 Socket(10_000, 10_000)  
-// res8: Socket = timeout: 10000, linger: 10000  
 Socket(timeout = 10_000)
-// res9: Socket = timeout: 10000, linger: 5000
 Socket(linger = 10_000)
-// res10: Socket = timeout: 5000, linger: 10000
 ```
 
 При создании нового экземпляра класса также можно использовать именованные параметры. 
 Это приветствуется и особенно полезно, когда параметры имеют одинаковый тип:
 
-```scala
+```scala mdoc
 Socket(10_000, 10_001)
-// res11: Socket = timeout: 10000, linger: 10001
 Socket(timeout = 10_000, linger = 10_001)
-// res12: Socket = timeout: 10000, linger: 10001
 Socket(linger = 10_000, timeout = 10_001)
-// res13: Socket = timeout: 10001, linger: 10000
 ```
 
 #### Вспомогательные конструкторы

@@ -52,7 +52,7 @@
 Данные, которые просто состоят из различных вариантов, таких как размер корочки, тип корочки и начинка, 
 кратко моделируются с помощью конструкции `enum`:
 
-```scala
+```scala mdoc:silent
 enum CrustSize:
   case Small, Medium, Large
   
@@ -72,7 +72,7 @@ enum Topping:
 Мы можем использовать `case class`, чтобы описать, что пицца состоит из размеров корки, типа корки 
 и, возможно, нескольких начинок:
 
-```scala
+```scala mdoc:silent
 import CrustSize.*
 import CrustType.*
 import Topping.*
@@ -92,15 +92,9 @@ case class Pizza(
 Модель данных легко читается, как объявление дизайна для реляционной базы данных. 
 Также очень легко создавать значения нашей модели данных и проверять их:
 
-```scala
+```scala mdoc
 val myFavPizza = Pizza(Small, Regular, Seq(Cheese, Pepperoni))
-// myFavPizza: Pizza = Pizza(
-//   crustSize = Small,
-//   crustType = Regular,
-//   toppings = List(Cheese, Pepperoni)
-// )
 println(myFavPizza.crustType)
-// Regular
 ```
 
 ##### Подробнее о модели данных
@@ -266,7 +260,7 @@ Pizza.price(pizza1)
 Первое, о чем следует подумать, — это "поведение" `Pizza`. 
 Делая это, определяем `trait` `PizzaServiceInterface` следующим образом:
 
-```scala
+```scala mdoc:silent
 trait PizzaServiceInterface:
 
   def price(p: Pizza): Double
@@ -310,7 +304,7 @@ val p4 = updateCrustSize(p3, Large)
 Теперь, когда известно, как выглядит `PizzaServiceInterface`, можно создать конкретную реализацию, 
 написав тело для всех методов, определенных в интерфейсе:
 
-```scala
+```scala mdoc:silent
 object PizzaService extends PizzaServiceInterface:
 
   def price(p: Pizza): Double = p match
@@ -350,20 +344,14 @@ end PizzaService
 
 Когда все готово, можно использовать `Pizza` и `PizzaService`:
 
-```scala
+```scala mdoc
 import PizzaService.*
 val p = Pizza(Small, Thin, Seq(Cheese))
-// p: Pizza = Pizza(crustSize = Small, crustType = Thin, toppings = List(Cheese))
 val p1 = addTopping(p, Pepperoni)
-// p1: Pizza = Pizza(crustSize = Small, crustType = Thin, toppings = List(Cheese, Pepperoni))
 val p2 = addTopping(p1, Onions)
-// p2: Pizza = Pizza(crustSize = Small, crustType = Thin, toppings = List(Cheese, Pepperoni, Onions))
 val p3 = updateCrustType(p2, Thick)
-// p3: Pizza = Pizza(crustSize = Small, crustType = Thick, toppings = List(Cheese, Pepperoni, Onions))
 val p4 = updateCrustSize(p3, Large)
-// p4: Pizza = Pizza(crustSize = Large, crustType = Thick, toppings = List(Cheese, Pepperoni, Onions))
 println(price(p4))
-// 8.75
 ```
 
 #### Функциональные объекты

@@ -39,14 +39,11 @@ val x = add(1, 2)
 
 Коллекции Scala имеют десятки встроенных методов. Эти примеры показывают, как их вызывать:
 
-```scala
+```scala mdoc
 val x = List(1, 2, 3)
 x.size
-// res1: Int = 3
 x.contains(1)
-// res2: Boolean = true
 x.map(_ * 10)
-// res3: List[Int] = List(10, 20, 30)
 ```
 
 Внимание:
@@ -59,12 +56,11 @@ x.map(_ * 10)
 
 Если метод длиннее одной строки, начинайте тело метода со второй строки с отступом вправо:
 
-```scala
+```scala mdoc
 def addThenDouble(a: Int, b: Int): Int =
   val sum = a + b
   sum * 2
 addThenDouble(1, 1)  
-// res5: Int = 4  
 ```
 
 В этом методе:
@@ -140,7 +136,7 @@ speak()   // prints "hi"
 Поскольку выражения `if`/`else` возвращают значение, их можно использовать в качестве тела метода. 
 Вот метод с именем `isTruthy`, реализующий Perl-определения `true` и `false`:
 
-```scala
+```scala mdoc
 def isTruthy(a: Any) =
   if a == 0 || a == "" || a == false then
     false
@@ -152,13 +148,9 @@ def isTruthy(a: Any) =
 
 ```scala
 isTruthy(0)   
-// res6: Boolean = false   
 isTruthy("")  
-// res7: Boolean = false  
 isTruthy("hi")
-// res8: Boolean = true
 isTruthy(1.0) 
-// res9: Boolean = true
 ```
 
 ### Использование match в качестве тела метода
@@ -181,12 +173,11 @@ def isTruthy(a: Matchable) = a match
 В классах, объектах, `trait`-ах и `enum`-ах методы Scala по умолчанию общедоступны, 
 поэтому созданный здесь экземпляр `Dog` может получить доступ к методу `speak`:
 
-```scala
+```scala mdoc
 class Dog:
   def speak() = println("Woof")
 val d = new Dog
 d.speak()
-// Woof
 ```
 
 Также методы можно помечать как `private`. 
@@ -252,7 +243,7 @@ end StringUtils
 
 Методы суперкласса можно вызвать через ключевое слово `super.`, как показано в примере:
 
-```scala
+```scala mdoc
 class Animal:
   def speak() = println("Hello?")
 
@@ -263,8 +254,6 @@ class Cat extends Animal:
 
 val cat = new Cat
 cat.speak()
-// Hello?
-// Meow
 ```
 
 

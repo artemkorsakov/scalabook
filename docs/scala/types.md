@@ -233,26 +233,20 @@ println(interpolation)
 
 Многострочные строки создаются путем включения строки в три двойные кавычки:
 
-```scala
+```scala mdoc
 println("""The essence of Scala:
                Fusion of functional and object-oriented
-               programming in a typed setting.""")              
-// The essence of Scala:
-//                      Fusion of functional and object-oriented
-//                      programming in a typed setting.             
+               programming in a typed setting.""")
 ```
 
 Одним из недостатков базового подхода является то, что строки после первой имеют отступ.
 
 Если важно исключить отступ, можно поставить символ `|` перед всеми строками после первой и вызвать метод `stripMargin` после строки:
 
-```scala
+```scala mdoc
 println("""The essence of Scala:
                |Fusion of functional and object-oriented
-               |programming in a typed setting.""".stripMargin)               
-// The essence of Scala:
-// Fusion of functional and object-oriented
-// programming in a typed setting.           
+               |programming in a typed setting.""".stripMargin)
 ```
 
 Теперь все строки выравниваются по левому краю. 

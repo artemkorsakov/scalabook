@@ -205,7 +205,7 @@ def crustPrice(s: CrustSize, t: CrustType): Double =
 
 Первый подход — определить поведение (функции) в сопутствующем объекте.
 
-> Как обсуждалось в разделе ["Companion objects"](https://scalabook.gitflic.space/docs/scala/modeling/companion-objects), 
+> Как обсуждалось в разделе ["Companion objects"](companion-objects.md), 
 > сопутствующий объект — это объект с тем же именем, что и у класса, и объявленный в том же файле, что и класс.
 
 При таком подходе в дополнение к `enum` или `case class` также определяется companion object с таким же именем, 

@@ -50,7 +50,7 @@ val res2: Int = 4
 Также можно использовать игровую среду на основе браузера [scastie.scala-lang.org](https://scastie.scala-lang.org/).
 
 Если вы предпочитаете писать код в текстовом редакторе, а не в консоли, 
-то можно использовать [worksheet](https://scalabook.gitflic.space/docs/scala/tools/tools-worksheets).
+то можно использовать [worksheet](tools/tools-worksheets.md).
 
 
 ---

@@ -8,7 +8,7 @@
 
 Что можно сделать с таким `trait`-ом,
 
-```scala
+```scala mdoc
 trait Combinator[A]:
   def combine(a1: A, a2: A): A
   val empty: A
@@ -20,14 +20,14 @@ trait Combinator[A]:
 
 [Его можно реализовать реализовать...](https://scastie.scala-lang.org/UdEjmfOzQcmeP16PGVWPOQ)
 
-```scala
+```scala mdoc
 object IntCombinator extends Combinator[Int]:
   val empty: Int                     = 0
   def combine(a1: Int, a2: Int): Int = a1 + a2
 
-IntCombinator.combineAll(List.empty)    // 0
-IntCombinator.combineAll(List(1))       // 1
-IntCombinator.combineAll(List(1, 2, 3)) // 6
+IntCombinator.combineAll(List.empty)    
+IntCombinator.combineAll(List(1))       
+IntCombinator.combineAll(List(1, 2, 3))
 ```
 
 Уже неплохо: теперь можно сворачивать числовые коллекции.
@@ -36,7 +36,7 @@ IntCombinator.combineAll(List(1, 2, 3)) // 6
 
 А ещё [переменную empty можно вынести в параметр конструктора](https://scastie.scala-lang.org/yT58r4nNTsqNvalB1TqFSQ):
 
-```scala
+```scala mdoc:reset
 trait Combinator[A](empty: A):
   def combine(a1: A, a2: A): A
   def combineAll(list: List[A]): A =
@@ -47,9 +47,9 @@ trait Combinator[A](empty: A):
 object IntCombinator extends Combinator[Int](0):
   def combine(a1: Int, a2: Int): Int = a1 + a2
 
-IntCombinator.combineAll(List.empty)    // 0
-IntCombinator.combineAll(List(1))       // 1
-IntCombinator.combineAll(List(1, 2, 3)) // 6
+IntCombinator.combineAll(List.empty)   
+IntCombinator.combineAll(List(1))       
+IntCombinator.combineAll(List(1, 2, 3)) 
 ```
 
 На этом остановимся чуть подробнее...
@@ -95,7 +95,7 @@ trait IntCombinator extends Combinator[Int](0):
 
 [Например](https://scastie.scala-lang.org/nlKQs01KT6yWb0z85gOykA):
 
-```scala
+```scala mdoc:reset
 trait Combinator[A](using empty: A):
   def combine(a1: A, a2: A): A
   def combineAll(list: List[A]): A =
@@ -108,9 +108,9 @@ given Int = 0
 object IntCombinator extends Combinator[Int]:
   def combine(a1: Int, a2: Int): Int = a1 + a2
 
-IntCombinator.combineAll(List.empty)    // 0
-IntCombinator.combineAll(List(1))       // 1
-IntCombinator.combineAll(List(1, 2, 3)) // 6
+IntCombinator.combineAll(List.empty)  
+IntCombinator.combineAll(List(1))     
+IntCombinator.combineAll(List(1, 2, 3))
 ```
 
 ## А в чем разница?
@@ -120,20 +120,19 @@ IntCombinator.combineAll(List(1, 2, 3)) // 6
 
 [Рассмотрим пример](https://scastie.scala-lang.org/zmV0nmMXRoWbBjOhKrDJlQ):
 
-```scala
+```scala mdoc:reset
 trait Combinator[A](empty: A):
   println(s"Пустое значение - $empty")
 
 object StringCombinator extends Combinator[String]("пусто")
 
 StringCombinator
-// Пустое значение - пусто
 ```
 
 [Аналогичный пример](https://scastie.scala-lang.org/SqdW2r1eTwqIuoEHzFVOIA)
 с использованием параметра в теле `trait`-а приводит к некорректной инициализации.
 
-```scala
+```scala mdoc:reset
 trait Combinator[A]:
   val empty: A
   println(s"Пустое значение - $empty")
@@ -142,7 +141,6 @@ object StringCombinator extends Combinator[String]:
   val empty: String = ""
 
 StringCombinator
-// Пустое значение - null
 ```
 
 Объяснение почему так происходит можно найти
@@ -162,7 +160,7 @@ StringCombinator
 
 [Пример](https://scastie.scala-lang.org/us6LAIfaQayWMKRvMsKyuQ):
 
-```scala
+```scala mdoc:reset
 trait Empty[A](val empty: A)
 
 trait Combinator[A](combine: (A, A) => A):
@@ -174,15 +172,15 @@ trait Combinator[A](combine: (A, A) => A):
 
 object IntCombinator extends Combinator[Int](_ + _), Empty(0)
 
-IntCombinator.combineAll(List.empty)    // 0
-IntCombinator.combineAll(List(1))       // 1
-IntCombinator.combineAll(List(1, 2, 3)) // 6
+IntCombinator.combineAll(List.empty)   
+IntCombinator.combineAll(List(1))      
+IntCombinator.combineAll(List(1, 2, 3))
 ```
 
 Если же оба `trait`-а реализуют метод с идентичной сигнатурой,
 [то в смешанной композиции его нужно будет переопределить](https://scastie.scala-lang.org/gZs4vOfKQZmjHQGay7WuPQ):
 
-```scala
+```scala mdoc:reset
 trait EmptyInt1:
   val empty: Int = -1
 
@@ -201,9 +199,9 @@ object IntCombinator extends Combinator[Int], EmptyInt1, EmptyInt2:
   override val empty: Int = 0
   def combine(a1: Int, a2: Int): Int = a1 + a2
 
-IntCombinator.combineAll(List.empty)    // 0
-IntCombinator.combineAll(List(1))       // 1
-IntCombinator.combineAll(List(1, 2, 3)) // 6
+IntCombinator.combineAll(List.empty)   
+IntCombinator.combineAll(List(1))       
+IntCombinator.combineAll(List(1, 2, 3)) 
 ```
 
 > При использовании `super.empty` будет браться элемент из последнего `trait`-а в списке наследования.
@@ -236,7 +234,7 @@ IntCombinator.combineAll(List(1, 2, 3)) // 6
 
 [Или, например, кастомные реализации](https://scastie.scala-lang.org/Js2raBLxTtqSynlLpUHyhw):
 
-```scala
+```scala mdoc:reset
 trait IntCombine:
   def combine(a1: Int, a2: Int): Int = a1 + a2
 
@@ -257,9 +255,7 @@ trait Combinator[A]:
 object IntCombinator1 extends Combinator[Int], EmptyInt1, IntCombine
 object IntCombinator2 extends Combinator[Int], EmptyInt2, IntCombine
 
-val condition: Boolean = true
-val x = Set(if condition then IntCombinator1 else IntCombinator2)
-// Тип х - Set[Combinator[Int] & IntCombine]
+val x = Set(if true then IntCombinator1 else IntCombinator2)
 ```
 
 Здесь предполагаемый тип `x` равен `Set[Combinator[Int] & IntCombine]`,
@@ -271,7 +267,7 @@ Scala 3 позволяет помечать `trait` как _прозрачный
 
 [Например](https://scastie.scala-lang.org/kKNsIEoqRJGAjfGBI9zWpg):
 
-```scala
+```scala mdoc:reset
 transparent trait IntCombine:
   def combine(a1: Int, a2: Int): Int = a1 + a2
 
@@ -292,9 +288,7 @@ trait Combinator[A]:
 object IntCombinator1 extends Combinator[Int], EmptyInt1, IntCombine
 object IntCombinator2 extends Combinator[Int], EmptyInt2, IntCombine
 
-val condition: Boolean = true
-val x = Set(if condition then IntCombinator1 else IntCombinator2)
-// Тип х - Set[Combinator[Int]]
+val x = Set(if true then IntCombinator1 else IntCombinator2)
 ```
 
 Теперь `x` имеет тип `Set[Combinator[Int]]`. Общий `transparent trait IntCombine` не появляется в выводимом типе.
@@ -327,7 +321,7 @@ val x = Set(if condition then IntCombinator1 else IntCombinator2)
 
 [Пример](https://scastie.scala-lang.org/OkrUeaF1ROKdiKEO7MPv2A):
 
-```scala
+```scala mdoc:reset
 // File Combinator.scala
 open class Combinator[A](empty: A, combine: (A, A) => A):
   def combineAll(list: List[A]): A =
@@ -339,9 +333,9 @@ open class Combinator[A](empty: A, combine: (A, A) => A):
 object IntCombinator extends Combinator[Int](0, _ + _)
 
 // Где-то ещё
-IntCombinator.combineAll(List.empty)    // 0
-IntCombinator.combineAll(List(1))       // 1
-IntCombinator.combineAll(List(1, 2, 3)) // 6
+IntCombinator.combineAll(List.empty)    
+IntCombinator.combineAll(List(1))      
+IntCombinator.combineAll(List(1, 2, 3))
 ```
 
 Открытый класс обычно поставляется с некоторой документацией,
@@ -369,7 +363,7 @@ IntCombinator.combineAll(List(1, 2, 3)) // 6
 
 [Например](https://scastie.scala-lang.org/JobduOVQSieuJzt0CeM3Ng):
 
-```scala
+```scala mdoc:reset
 trait Combinator[A]:
   def combine(a1: A, a2: A): A
   val empty: A
@@ -385,9 +379,9 @@ object IntCombinator:
 
   export combinator.combineAll
 
-IntCombinator.combineAll(List.empty)    // 0
-IntCombinator.combineAll(List(1))       // 1
-IntCombinator.combineAll(List(1, 2, 3)) // 6
+IntCombinator.combineAll(List.empty)    
+IntCombinator.combineAll(List(1))       
+IntCombinator.combineAll(List(1, 2, 3))
 ```
 
 Предложения `export` особенно полезны при сборе модуля из элементов, изменить которые возможности нет.
@@ -415,7 +409,7 @@ IntCombinator.combineAll(List(1, 2, 3)) // 6
 
 [Например](https://scastie.scala-lang.org/nU8Rd8z3Roq1n6e2xJrVCg):
 
-```scala
+```scala mdoc:reset
 trait Combinator[A]:
   val empty: A
   def combine(a1: A, a2: A): A
@@ -423,7 +417,7 @@ trait Combinator[A]:
 
 И использование:
 
-```scala
+```scala mdoc
 given Combinator[Int] with
   val empty: Int = 0
   def combine(a1: Int, a2: Int): Int = a1 + a2
@@ -433,9 +427,8 @@ def combineAll[A](list: List[A])(using c: Combinator[A]): A =
     case Nil    => c.empty
     case h :: t => c.combine(h, combineAll(t))
 
-combineAll(List.empty)    // 0
-combineAll(List(1))       // 1
-combineAll(List(1, 2, 3)) // 6
+combineAll(List(1))       
+combineAll(List(1, 2, 3))
 ```
 
 Основное различие между полиморфизмом подтипа и специальным полиморфизмом с **type class**-ами заключается в том,
@@ -496,13 +489,13 @@ combineAll(List(List(1), List(1, 2, 3, 4, 5)))
 
 [Можно и для коллекции определить "комбинатор"](https://scastie.scala-lang.org/QfiiXNTNT5GVUPeRQUoXKg):
 
-```scala
+```scala mdoc
 given list[A]: Combinator[List[A]] with
   val empty: List[A]                             = List.empty[A]
   def combine(a1: List[A], a2: List[A]): List[A] = a1 ++ a2
 
-combineAll(List(List.empty[Int]))              // List()
-combineAll(List(List(1), List(1, 2, 3, 4, 5))) // List(1, 1, 2, 3, 4, 5)
+combineAll(List(List(0)))             
+combineAll(List(List(1), List(1, 2, 3, 4, 5)))
 ```
 
 Допустим!
@@ -634,7 +627,7 @@ def combineAll[A](list: List[A])(using c: FullCombinator[A]): A =
 
 Рассмотрим пример:
 
-```scala
+```scala mdoc:reset
 trait Combinator[A]:
   def combine(a1: A, a2: A): A
   def empty: A
@@ -650,9 +643,9 @@ object IntCombinator extends Combinator[Int]:
 
   export combinator.*
 
-IntCombinator.combineAll(List.empty)    // 0
-IntCombinator.combineAll(List(1))       // 1
-IntCombinator.combineAll(List(1, 2, 3)) // 6
+IntCombinator.combineAll(List.empty)   
+IntCombinator.combineAll(List(1))      
+IntCombinator.combineAll(List(1, 2, 3))
 ```
 
 Здесь объект `IntCombinator` наследуется от `Combinator[Int]` и должен реализовать два абстрактных метода.
@@ -693,7 +686,7 @@ object IntCombinator extends Combinator[Int]:
 Также можно использовать переименование экспортируемых элементов для того, чтобы 
 "дополнить" необходимую реализацию. Рассмотрим следующий пример:
 
-```scala
+```scala mdoc:reset
 trait Monoid[A]:
   def compose(a1: A, a2: A): A
   val empty: A
@@ -713,9 +706,9 @@ object IntCombinator extends Combinator[Int]:
 
   export monoid.{empty, compose as combine}
 
-IntCombinator.combineAll(List.empty)    // 0
-IntCombinator.combineAll(List(1))       // 1
-IntCombinator.combineAll(List(1, 2, 3)) // 6
+IntCombinator.combineAll(List.empty)   
+IntCombinator.combineAll(List(1))      
+IntCombinator.combineAll(List(1, 2, 3))
 ```
 
 Здесь `IntCombinator`-у нужно реализовать методы `def empty: Int` и `def combine(a1: Int, a2: Int): Int`, 

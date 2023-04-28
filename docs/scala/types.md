@@ -6,18 +6,16 @@
 
 Переменная может быть неизменяемой или изменяемой:
 
-| Тип           | Описание                                                                                                                                                                       |
-|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `val`           | Создает неизменяемую переменную, подобную `final` в Java. Согласно стандартам Scala и функционального программирования желательно всегда создавать переменную с помощью `val`. |
-| `var`           | Создает изменяемую переменную. Практически не используется в Scala, т.к. изменяемая переменная противоречит принципам функционального программирования.                        |
+| Тип            | Описание                                                                                                                                                                       |
+|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `val`          | Создает неизменяемую переменную, подобную `final` в Java. Согласно стандартам Scala и функционального программирования желательно всегда создавать переменную с помощью `val`. |
+| `var`          | Создает изменяемую переменную. Практически не используется в Scala, т.к. изменяемая переменная противоречит принципам функционального программирования.                        |
 
 В примере показано, как создавать `val` и `var` переменные:
 
-```scala
+```scala mdoc
 val a = 0
-// a: Int = 0
 var b = 1
-// b: Int = 1
 ```
 
 Значение `val` не может быть переназначено. 
@@ -34,12 +32,10 @@ msg = "Aloha"
 
 И наоборот, `var` может быть переназначен:
 
-```scala
+```scala mdoc:reset
 var msg = "Hello, world"
-// msg: String = "Hello, world"
 msg = "Aloha"
 msg
-// res1: String = "Aloha"
 ```
 
 #### Объявление типов переменных
@@ -54,13 +50,10 @@ val x = 1
 Вторая форма известна как вывод типа (_type inference_), и это отличный способ помочь сохранить код кратким. 
 Компилятор Scala обычно может определить тип данных, как показано в выходных данных этих примеров:
 
-```scala
+```scala mdoc
 val x = 1
-// x: Int = 1
 val s = "a string"
-// s: String = "a string"
 val nums = List(1, 2, 3)
-// nums: List[Int] = List(1, 2, 3)
 ```
 
 Всегда можно явно объявить тип переменной, но в простых примерах, подобных этим, в этом нет необходимости:
@@ -113,7 +106,7 @@ def printIt(a: Any): Unit = println(a)
 Вот пример, демонстрирующий, что строки, целые числа, символы, логические значения и функции являются экземплярами `Any` 
 и могут обрабатываться так же, как и любой другой объект:
 
-```scala
+```scala mdoc
 val list: List[Any] = List(
   "a string",
   732,  
@@ -121,13 +114,6 @@ val list: List[Any] = List(
   true, 
   () => "an anonymous function returning a string"
 )
-// list: List[Any] = List(
-//   "a string",
-//   732,
-//   'c',
-//   true,
-//   <function>
-// )
 ```
 
 Код определяет список значений типа `List[Any]`. 
@@ -155,44 +141,35 @@ val f: Float = 3.0
 
 Поскольку `Int` и `Double` являются числовыми типами по умолчанию, их можно создавать без явного объявления типа данных:
 
-```scala
+```scala mdoc
 val i = 123
-// i: Int = 123
 val j = 1.0
-// j: Double = 1.0
 ```
 
 Также можно добавить символы `L`, `D`, and `F` (или их эквивалент в нижнем регистре) для того, 
 чтобы задать `Long`, `Double`, или `Float` значения:
 
-```scala
+```scala mdoc:reset
 val x = 1_000L
-// x: Long = 1000L
 val y = 2.2D 
-// y: Double = 2.2 
 val z = 3.3F
-// z: Float = 3.3F
 ```
 
 В Scala также есть типы `String` (значение заключается в двойные кавычки или три двойных) 
 и `Char` (значение заключается в одинарные кавычки):
 
-```scala
+```scala mdoc
 val name = "Bill"
-// name: String = "Bill"
 val c = 'a'    
-// c: Char = 'a'  
 ```
 
 #### BigInt и BigDecimal
 
 Для действительно больших чисел можно использовать типы `BigInt` и `BigDecimal`:
 
-```scala
+```scala mdoc
 var a = BigInt(1_234_567_890_987_654_321L)
-// a: BigInt = 1234567890987654321
 var b = BigDecimal(123_456.789)
-// b: BigDecimal = 123456.789
 ```
 
 Где `Double` и `Float` являются приблизительными десятичными числами, 
@@ -200,13 +177,10 @@ var b = BigDecimal(123_456.789)
 
 `BigInt` и `BigDecimal` поддерживают все привычные числовые операторы:
 
-```scala
+```scala mdoc:reset
 val b = BigInt(1234567890)
-// b: BigInt = 1234567890
 val c = b + b             
-// c: BigInt = 2469135780             
 val d = b * b            
-// d: BigInt = 1524157875019052100           
 ```
 
 #### Строки
@@ -220,7 +194,7 @@ val d = b * b
 Интерполяция строк обеспечивает очень удобный способ использования переменных внутри строк. 
 Например, учитывая эти три переменные:
 
-```scala
+```scala mdoc:silent
 val firstName = "John"
 val mi = 'C'
 val lastName = "Doe"
@@ -228,22 +202,18 @@ val lastName = "Doe"
 
 их комбинацию можно получить так:
 
-```scala
+```scala mdoc
 s"Name: $firstName $mi $lastName"
-// res4: String = "Name: John C Doe"
 ```
 
 Достаточно поставить перед строкой букву `s`, а затем - символ `$` перед именами переменных внутри строки. 
 
 Чтобы вставить произвольные выражения в строку, они заключаются в фигурные скобки:
 
-```scala
+```scala mdoc:reset
 s"2 + 2 = ${2 + 2}"
-// res6: String = "2 + 2 = 4"
 val x = -1
-// x: Int = -1
 s"x.abs = ${x.abs}"
-// res7: String = "x.abs = 1"
 ```
 
 Символ `s`, помещенный перед строкой, является лишь одним из возможных интерполяторов. 
@@ -253,13 +223,10 @@ s"x.abs = ${x.abs}"
 
 Для экранирования символа `"` в интерполяции используется символ `$`:
 
-```scala
+```scala mdoc
 val inventor = "Thomas Edison"
-// inventor: String = "Thomas Edison"
 val interpolation = s"as $inventor said: $"The three great essentials to achieve anything worth while are: Hard work, Stick-to-itiveness, and Common sense.$""
-// interpolation: String = "as Thomas Edison said: \"The three great essentials to achieve anything worth while are: Hard work, Stick-to-itiveness, and Common sense.\""
 println(interpolation)
-// as Thomas Edison said: "The three great essentials to achieve anything worth while are: Hard work, Stick-to-itiveness, and Common sense."
 ```
 
 ##### Multiline strings
@@ -301,15 +268,11 @@ println("""The essence of Scala:
 
 Например:
 
-```scala
+```scala mdoc:reset
 val x: Int = 987654321
-// x: Int = 987654321
 val y: Long = x
-// y: Long = 987654321L
 val face: Char = '☺'
-// face: Char = '☺'
 val number: Int = face
-// number: Int = 9786
 ```
 
 Приведение типов однонаправленное, следующий код не будет компилиться:

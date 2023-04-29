@@ -10,7 +10,7 @@
 
 Односвязный список можно определить так:
 
-```scala
+```scala mdoc:silent
 enum List[+A]:
   case Nil
   case Cons(head: A, tail: List[A])
@@ -33,21 +33,17 @@ object List:
 
 Создать список можно следующим образом:
 
-```scala
+```scala mdoc
 val ex1: List[Double] = Nil
-// ex1: List[Double] = Nil
 val ex2: List[Int] = Cons(1, Nil)
-// ex2: List[Int] = Cons(head = 1, tail = Nil)
 val ex3: List[String] = Cons("a", Cons("b", Nil))
-// ex3: List[String] = Cons(head = "a", tail = Cons(head = "b", tail = Nil))
 val ex4: List[String] = List.apply("a", "b")
-// ex4: List[String] = Cons(head = "a", tail = Cons(head = "b", tail = Nil))
 ```
 
 ## Операции над односвязным списком
 
 Над этой функциональной структурой данных можно определить, например, следующие операции суммы и произведения,
-которые используют [сопоставление с образцом](https://scalabook.gitflic.space/docs/scala/structures/match):
+которые используют [сопоставление с образцом](../scala/structures/match.md):
 
 ```scala
 def sum(ints: List[Int]): Int = ints match

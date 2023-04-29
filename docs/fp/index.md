@@ -1,6 +1,6 @@
 # Функциональное программирование
 
-[Функциональное программирование - FP](https://scalabook.gitflic.space/docs/scala/fp/what-is-fp) -
+[Функциональное программирование - FP](../scala/fp/what-is-fp.md) -
 это способ написания программных приложений, использующих только чистые функции и неизменяемые значения. 
 _Чистая функция_ означает, что вывод функции зависит только от ее входных параметров
 и она не имеет _побочных эффектов_.
@@ -19,33 +19,31 @@ _Чистая функция_ означает, что вывод функции
 
 В IP подходе сумма чисел вычислялась бы так:
 
-```scala
+```scala mdoc
 def sum(ints: List[Int]): Int =
   var sum = 0
   for i <- ints do sum += i
   sum
 sum(List(1, 2, 3))
-// res0: Int = 6
 ```
 
 Этот код изменяет поле `var` в цикле `for` - использует изменяемое состояние.
 
 Подход FP может выглядеть так:
 
-```scala
+```scala mdoc:reset
 def sum(xs: List[Int]): Int =
   xs match
     case Nil => 0
     case x :: tail => x + sum(tail)
 sum(List(1, 2, 3))
-// res2: Int = 6
 ```
 
 В FP подходе не используется изменяемое состояние.
 
 В FP на Scala следует придерживаться следующих правил:
 
-- [не использовать `null`](https://scalabook.gitflic.space/docs/scala/types#nothing-%D0%B8-null)
+- [не использовать `null`](../scala/types.md)
 - использовать только чистые функции
 - использовать только `val` переменные
 - не использовать class-ы, инкапсулирующие данные и поведение
@@ -60,7 +58,7 @@ sum(List(1, 2, 3))
 
 ## Функция высшего порядка
 
-[Функция высшего порядка (_Higher-Order Function_ - HOF)](https://scalabook.gitflic.space/docs/scala/functions/hofs)
+[Функция высшего порядка (_Higher-Order Function_ - HOF)](../scala/functions/hofs.md)
 часто определяется как функция, которая
 
 - принимает другие функции в качестве входных параметров или
@@ -69,7 +67,7 @@ sum(List(1, 2, 3))
 Рассмотрим пример: допустим, необходимо написать функцию `formatResult`, 
 вычисляющую модуль числа или его факториал и выводящую результат.
 
-```scala
+```scala mdoc:silent
 def abs(n: Int): Int =
   if n < 0 then -n
   else n
@@ -95,17 +93,15 @@ def formatResult(name: String, n: Int, f: Int => Int): String =
 Точно так же `factorial` соответствует типу `Int => Int`. 
 Поэтому можно передать `abs` или `factorial` в качестве аргумента `f` в `formatResult`:
 
-```scala
+```scala mdoc
 formatResult("absolute value", -42, abs)
-// res3: String = "The absolute value of -42 is 42."
 formatResult("factorial", 7, factorial)  
-// res4: String = "The factorial of 7 is 5040."
 ```
 
 ## Анонимная функция
 
 При использовании HOF часто удобно иметь возможность вызывать эти функции 
-с помощью [анонимных функций](https://scalabook.gitflic.space/docs/scala/functions/anonymous) или функциональных литералов, 
+с помощью [анонимных функций](../scala/functions/anonymous.md) или функциональных литералов, 
 вместо того, чтобы предоставлять какую-либо существующую именованную функцию.
 
 Лямбда-исчисление (также записываемое как λ-исчисление) -
@@ -114,7 +110,7 @@ formatResult("factorial", 7, factorial)
 
 Пример использования анонимных функций:
 
-```scala
+```scala mdoc
 def findFirst[A](as: Array[A], p: A => Boolean): Int =
   @annotation.tailrec
   def loop(n: Int): Int =
@@ -125,7 +121,6 @@ def findFirst[A](as: Array[A], p: A => Boolean): Int =
   loop(0)
 
 findFirst(Array(7, 9, 13), (x: Int) => x == 9)
-// res5: Int = 1
 ```
 
 Синтаксис `(x: Int) => x == 9` представляет собой литерал функции или анонимную функцию.

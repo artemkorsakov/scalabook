@@ -349,7 +349,7 @@ final def runT: A =
 что левоассоциированное вложение при его построении было хорошо типизировано.
 Эта повторная ассоциация использует законы монад. 
 `Trampoline` — это монада, а монады по определению ассоциативны. 
-Поэтому [правоассоциированные продолжения всегда в точности эквивалентны левоассоциированным](https://scalabook.gitflic.space/docs/typeclass/monad/monad).
+Поэтому [правоассоциированные продолжения всегда в точности эквивалентны левоассоциированным](../typeclass/monad/monad.md).
 
 ### 4.3 Легкий способ ошибиться
 
@@ -508,7 +508,7 @@ type Trampoline[A] = Free[Function0, A]
 
 Как видно из приведенных выше конструкторов данных `Done` и `FlatMap`, 
 `Free[S,A]` является монадой для любого ковариантного функтора `S`. 
-С точки зрения теории категорий это в точности [свободная монада (Free Monad), порожденная функтором `S`](https://scalabook.gitflic.space/docs/typeclass/monad/free-monads).
+С точки зрения теории категорий это в точности [свободная монада (Free Monad), порожденная функтором `S`](../typeclass/monad/free-monads.md).
 
 Когда мы говорим, что `S` должен быть функтором, то имеем в виду, что должен существовать экземпляр `Functor[S]`:
 
@@ -801,7 +801,7 @@ type Enumeratee[I, O, A] = Free[[X] =>> Either[I => X, (O, X)], A]
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ffp)
+- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Fru%2Fscalabook%2Ffp%2Ftrampolining&branch=master)
 - [Asymptotic Improvement of Computations over Free Monads - Janis Voigtlander][Asymptotic Improvement of Computations over Free Monads]
 - [Category Theory - S. Awodey][Category Theory]
 - [Data types a la carte - Wouter Swierstra][Swierstra]

@@ -1,6 +1,6 @@
 # Monoids
 
-`(M, +)` является [моноидом](https://scalabook.gitflic.space/docs/typeclass/monoid/monoid) 
+`(M, +)` является [моноидом](../typeclass/monoid/monoid.md) 
 для заданного множества `M` и операции `+`,
 если удовлетворяет следующим свойствам для любых `x, y, z ∈ M`:
 
@@ -14,7 +14,7 @@
 
 Monoid может быть выражен с помощью `trait`:
 
-```scala
+```scala mdoc:silent
 trait Monoid[A]:
  def combine(a1: A, a2: A): A
  def empty: A 
@@ -29,42 +29,38 @@ trait Monoid[A]:
 
 ### Множество - `String`, операция - конкатенация, пустой элемент - пустая строка
 
-```scala
+```scala mdoc
 val stringMonoid: Monoid[String] = new:
   def combine(a1: String, a2: String) = a1 + a2
   val empty = ""
 stringMonoid.combine("ab", "cd")
-// res0: String = "abcd"
 ```
 
 ### Множество - `List`, операция - конкатенация, пустой элемент - `Nil`
 
-```scala
+```scala mdoc
 def listMonoid[A]: Monoid[List[A]] = new:
   def combine(a1: List[A], a2: List[A]): List[A] = a1 ++ a2
   val empty: List[A] = Nil
 listMonoid.combine(List(1, 2), List(3, 4))
-// res1: List[Int] = List(1, 2, 3, 4)
 ```
 
 ### Множество - `Int`, операция - умножение, пустой элемент - 1
 
-```scala
+```scala mdoc
 val intMultiplication: Monoid[Int] = new:
   def combine(a1: Int, a2: Int): Int = a1 * a2
   val empty: Int = 1
 intMultiplication.combine(5, 6)
-// res2: Int = 30 
 ```
 
 ### Множество - `Boolean`, операция - логическое И (`&&`), пустой элемент - `true`
 
-```scala
+```scala mdoc
 val booleanAnd: Monoid[Boolean] = new:
   def combine(a1: Boolean, a2: Boolean): Boolean = a1 && a2
   val empty: Boolean = true
 booleanAnd.combine(true, false)
-// res3: Boolean = false
 ```
 
 ## Использование моноидов
@@ -72,11 +68,10 @@ booleanAnd.combine(true, false)
 Моноиды тесно связаны со списками.
 Например, вот как можно свернуть список, используя моноид:
 
-```scala
+```scala mdoc
 def combineAll[A](as: List[A], m: Monoid[A]): A =
   as.foldLeft(m.empty)(m.combine)
 combineAll(List(1, 2, 3, 4), intMultiplication)
-// res4: Int = 24
 ```
 
 Тот факт, что операция `combine` моноида является ассоциативной, означает, что можно выбирать, 
@@ -128,7 +123,7 @@ List().foldLeft("loremipsumdolorsit")(_ + _)
 ## Foldable
 
 Операция _fold_ позволяет агрегировать.
-Она берет начальный элемент и объединяет его с типом [_Foldable_](https://scalabook.gitflic.space/docs/typeclass/monad/foldable), 
+Она берет начальный элемент и объединяет его с типом [_Foldable_](../typeclass/monad/foldable.md), 
 следуя способу, предоставленному методом `f`.
 
 _Foldable_ может быть выражен так:

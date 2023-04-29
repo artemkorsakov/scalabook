@@ -35,14 +35,14 @@ given productSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x * y
 given stringSemigroupInstance: Semigroup[String] = (x: String, y: String) => x + y
 ```
 
-### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections) образует полугруппу относительно операции объединения
+### [Последовательность](../../scala/collections.md) образует полугруппу относительно операции объединения
 
 ```scala
 given listSemigroupInstance[T]: Semigroup[List[T]] =
   (x: List[T], y: List[T]) => x ++ y
 ```
 
-### [Кортеж](https://scalabook.gitflic.space/docs/scala/collections/tuple) от двух и более полугрупп также является полугруппой
+### [Кортеж](../../scala/collections/tuple.md) от двух и более полугрупп также является полугруппой
 
 ```scala
 given nestedSemigroupInstance[A, B](using aSemigroup: Semigroup[A], bSemigroup: Semigroup[B]): Semigroup[(A, B)] =
@@ -76,8 +76,6 @@ import cats.implicits.*
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FSemigroup.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FSemigroupSuite.scala)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/semigroup.html)
 - [Cats](https://typelevel.org/cats/typeclasses/semigroup.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Semigroup.html)

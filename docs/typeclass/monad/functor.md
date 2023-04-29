@@ -5,7 +5,7 @@
 
 Функтор создает новые экземпляры классов типов, добавляя функцию в цепочку преобразований.
 
-Функтор (F) расширяет [инвариантный функтор](https://scalabook.gitflic.space/docs/typeclass/monad/invariant-functor) 
+Функтор (F) расширяет [инвариантный функтор](invariant-functor.md) 
 и должен следовать следующим законам 
 (помимо законов инвариантного функтора):
 
@@ -52,7 +52,7 @@ given idFunctor: Functor[Id] with
     override def map[B](f: A => B): Id[B] = Id(f(as.value))
 ```
 
-### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
+### Option
 
 ```scala
 given optionFunctor: Functor[Option] with
@@ -63,7 +63,7 @@ given optionFunctor: Functor[Option] with
         case None    => None
 ```
 
-### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections)
+### Последовательность
 
 ```scala
 given listFunctor: Functor[List] with
@@ -71,7 +71,7 @@ given listFunctor: Functor[List] with
     override def map[B](f: A => B): List[B] = as.map(f)
 ```
 
-### [Either](https://scalabook.gitflic.space/docs/fp/handling-errors)
+### Either
 
 ```scala
 given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
@@ -82,7 +82,7 @@ given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
         case Left(e)  => Left(e)
 ```
 
-### [Writer](https://scalabook.gitflic.space/docs/fp/writer) - функциональный журнал
+### Writer - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))
@@ -94,7 +94,7 @@ given writerFunctor[W]: Functor[[x] =>> Writer[W, x]] with
       Writer[W, B](() => (w, f(a)))
 ```
 
-### [State](https://scalabook.gitflic.space/docs/fp/state) - функциональное состояние
+### State - функциональное состояние
 
 ```scala
 case class State[S, +A](run: S => (S, A))
@@ -202,8 +202,6 @@ liftedFunc(Option(1))                        // Some(2)
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FFunctor.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFunctorSuite.scala)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/functor.html)
 - [Cats](https://typelevel.org/cats/typeclasses/functor.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Functor.html)

@@ -18,16 +18,14 @@ def square(x: Double): Double = x * x
 встречающиеся во многих языках программирования, включая Scala, не являются строгими.
 Функция `&&` принимает два логических аргумента, но оценивает второй аргумент только в том случае, если первый истинен:
 
-```scala 
+```scala mdoc
 false && { println("!!"); true }
-// res0: Boolean = false
 ```
 
 Аналогично `||` оценивает свой второй аргумент, только если первый `false`:
 
-```scala 
+```scala mdoc
 true || { println("!!"); false }
-// res1: Boolean = true
 ```
 
 Еще одним примером нестрогости является управляющая конструкция `if` в Scala:
@@ -38,12 +36,9 @@ val result = if input.isEmpty then sys.error("empty input") else input
 
 Нестрогие вычисления не кэшируются и вычисляются каждый раз при вызове:
 
-```scala
+```scala mdoc
 def maybeTwice(b: Boolean, i: => Int) = if b then i + i else 0
 val x = maybeTwice(true, { println("hi"); 1 + 41 })
-// hi
-// hi
-// x: Int = 84
 ```
 
 ## Lazy List

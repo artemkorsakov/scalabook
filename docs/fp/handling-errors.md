@@ -140,7 +140,7 @@ def filter(f: A => Boolean): Option[A]
 
 Пример:
 
-```scala
+```scala mdoc
 case class Employee(name: String, department: String, manager: Option[Employee])
 def lookupByName(name: String): Option[Employee] =
   name match
@@ -148,11 +148,7 @@ def lookupByName(name: String): Option[Employee] =
     case "Joe"  => Some(Employee("Joe", "department2", lookupByName("Jack")))
     case _      => None
 lookupByName("Joe").map(_.department)
-// res1: Option[String] = Some(value = "department2")
 lookupByName("Joe").flatMap(_.manager)
-// res2: Option[Employee] = Some(
-//   value = Employee(name = "Jack", department = "department1", manager = None)
-// )
 ```
 
 `filter` можно использовать для преобразования успехов в неудачи, 
@@ -160,12 +156,11 @@ lookupByName("Joe").flatMap(_.manager)
 Распространенным шаблоном является преобразование `Option` через вызовы `map`, `flatMap` и/или `filter`, 
 а затем использование `getOrElse` для обработки ошибок в конце:
 
-```scala
+```scala mdoc
 lookupByName("Joe")
   .map(_.department)
   .filter(_ != "department2")
   .getOrElse("Default Dept")
-// res3: String = "Default Dept"  
 ```
 
 `getOrElse` используется для преобразования из `Option[String]` в `String`, 

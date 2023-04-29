@@ -1,6 +1,6 @@
 # Monoid
 
-Моноид (_monoid_) — это [полугруппа](https://scalabook.gitflic.space/docs/typeclass/monoid/semigroup) с единичным элементом.
+Моноид (_monoid_) — это [полугруппа](semigroup.md) с единичным элементом.
 
 Более формально: `(M, +)` является моноидом для заданного множества `M` и операции `+` (`combine` с типом `(A, A) => A`),
 если удовлетворяет следующим свойствам для любых `x, y, z ∈ M`:
@@ -49,7 +49,7 @@ given stringMonoidInstance: Monoid[String] with
   def combine(x: String, y: String): String = x + y
 ```
 
-### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections)
+### [Последовательность](../../scala/collections.md)
 
 ```scala
 given listMonoidInstance[T]: Monoid[List[T]] with
@@ -57,7 +57,7 @@ given listMonoidInstance[T]: Monoid[List[T]] with
   def combine(x: List[T], y: List[T]): List[T] = x ++ y
 ```
 
-### [Кортеж](https://scalabook.gitflic.space/docs/scala/collections/tuple) от двух и более моноидов
+### [Кортеж](../../scala/collections/tuple.md) от двух и более моноидов
 
 ```scala
 given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): Monoid[(A, B)] with
@@ -65,7 +65,7 @@ given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): 
   def combine(x: (A, B), y: (A, B)): (A, B) = (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
 ```
 
-### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
+### [Option](../../scala/fp/functional-error-handling.md)
 
 `Option` является моноидом, если его параметр типа - полугруппа, например:
 
@@ -106,8 +106,6 @@ Monoid[Int].combine(1, Monoid[Int].empty)   // 1
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FMonoid.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FMonoidSuite.scala)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monoid.html)
 - [Cats](https://typelevel.org/cats/typeclasses/monoid.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Monoid.html)

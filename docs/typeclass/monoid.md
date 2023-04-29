@@ -50,8 +50,8 @@ trait Semigroup[A]:
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid)
+- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Fru%2Fscalabook%2Ftypeclass%2Fmonoid&branch=master)
+- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Ftest%2Fscala%2Fru%2Fscalabook%2Ftypeclass%2Fmonoid&branch=master)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/sum+function.html)
 - [Scala with Cats][Scala with Cats]
 

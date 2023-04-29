@@ -1,7 +1,7 @@
 # Idempotent Monoid
 
-_IdempotentMonoid_ — это [моноид](https://scalabook.gitflic.space/docs/typeclass/monoid/monoid), 
-который также является [идемпотентным](https://scalabook.gitflic.space/docs/typeclass/monoid/band),
+_IdempotentMonoid_ — это [моноид](monoid.md), 
+который также является [идемпотентным](band.md),
 т.е. добавление значения к самому себе приводит к тому же значению.
 
 `IdempotentMonoid` должен удовлетворять законам своих "родителей": `Monoid`, `Band`, `Semigroup`.
@@ -36,6 +36,3 @@ given setIdempotentMonoidInstance[A]: IdempotentMonoid[Set[A]] with
 ---
 
 **Ссылки:**
-
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FIdempotentMonoid.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FIdempotentMonoidSuite.scala)

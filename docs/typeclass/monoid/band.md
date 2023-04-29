@@ -1,6 +1,6 @@
 # Band
 
-_Band_ — это [полугруппа](https://scalabook.gitflic.space/docs/typeclass/monoid/semigroup), которая также является идемпотентной, 
+_Band_ — это [полугруппа](semigroup.md), которая также является идемпотентной, 
 т.е. добавление значения к самому себе приводит к тому же значению.
 
 `Band` должна удовлетворять следующим законам (+ закон `Semigroup`):
@@ -34,6 +34,4 @@ given setBandInstance[A]: Band[Set[A]] =
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FBand.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FBandSuite.scala)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Band.html)

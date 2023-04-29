@@ -1,6 +1,6 @@
 # Group
 
-Группа **G** — это [моноид](https://scalabook.gitflic.space/docs/typeclass/monoid/monoid) 
+Группа **G** — это [моноид](monoid.md) 
 с обратным **g^(−1)** для каждого элемента **g**. 
 Таким образом, **G** — категория с одним объектом, в которой каждая стрелка — изоморфизм.
 
@@ -42,6 +42,4 @@ assert((1 |+| 1.inverse()) === Monoid[Int].empty)
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonoid%2FGroup.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonoid%2FGroupSuite.scala)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Grp.html)

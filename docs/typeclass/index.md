@@ -5,7 +5,7 @@
 
 **Класс типов** (или **типовой класс**, _type class_) — это абстрактный параметризованный тип, 
 который позволяет добавлять новое поведение к любому закрытому типу данных без использования подтипов.
-Подробнее о классах типов [описано в основной документации](https://scalabook.gitflic.space/docs/scala/abstractions/type-classes), 
+Подробнее о классах типов [описано в основной документации](../scala/abstractions/type-classes.md), 
 а также в главе [1.1 Anatomy of a Type Class][Scala with Cats]
 книги _"Scala with Cats by Noel Welsh and Dave Gurnell"_.
 
@@ -17,12 +17,12 @@
 
 Классы типов сгруппированы по "семействам":
 
-- [Группа Equal](https://scalabook.gitflic.space/docs/typeclass/equal)
-- [Группа Monoid](https://scalabook.gitflic.space/docs/typeclass/monoid)
-- [Группа Monad](https://scalabook.gitflic.space/docs/typeclass/monad)
-- [Группа Arrow](https://scalabook.gitflic.space/docs/typeclass/arrow)
-- [Группа Bifunctor](https://scalabook.gitflic.space/docs/typeclass/bifunctor)
-- [Вне группы](https://scalabook.gitflic.space/docs/typeclass/other)
+- [Группа Equal](equal.md)
+- [Группа Monoid](monoid.md)
+- [Группа Monad](monad.md)
+- [Группа Arrow](arrow.md)
+- [Группа Bifunctor](bifunctor.md)
+- [Вне группы](other.md)
 
 ---
 

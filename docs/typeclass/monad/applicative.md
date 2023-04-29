@@ -1,7 +1,6 @@
 # Applicative
 
-`Applicative` расширяет [`Apply`](https://scalabook.gitflic.space/docs/typeclass/monad/apply) 
-(и [`InvariantApplicative`](https://scalabook.gitflic.space/docs/typeclass/monad/invariant-applicative)) 
+`Applicative` расширяет [`Apply`](apply.md) (и [`InvariantApplicative`](invariant-applicative.md)) 
 и позволяет работать с несколькими «ящиками».
 `Applicative`, дополнительно к операциям `Apply`, реализует операцию `unit` (другие названия: `point`, `pure`),
 оборачивающую значение произвольного типа `A` в `Applicative`.
@@ -98,7 +97,7 @@ given idApplicative: Applicative[Id] with
   override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab.value(fa.value))
 ```
 
-### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
+### Option
 
 ```scala
 given optionApplicative: Applicative[Option] with
@@ -110,7 +109,7 @@ given optionApplicative: Applicative[Option] with
       case _                     => None
 ```
 
-### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections)
+### Последовательность
 
 ```scala
 given listApplicative: Applicative[List] with
@@ -120,7 +119,7 @@ given listApplicative: Applicative[List] with
     fab.flatMap { aToB => fa.map(aToB) }
 ```
 
-### [Either](https://scalabook.gitflic.space/docs/fp/handling-errors)
+### Either
 
 ```scala
 given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
@@ -133,7 +132,7 @@ given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
       case (_, Left(l))          => Left(l)
 ```
 
-### [Writer](https://scalabook.gitflic.space/docs/fp/writer) - функциональный журнал
+### Writer - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))
@@ -156,7 +155,7 @@ given writerApplicative[W](using monoid: Monoid[W]): Applicative[[x] =>> Writer[
     }
 ```
 
-### [State](https://scalabook.gitflic.space/docs/fp/state) - функциональное состояние
+### State - функциональное состояние
 
 ```scala
 case class State[S, +A](run: S => (S, A))
@@ -231,8 +230,6 @@ Applicative[Option].pure(1)  // Some(1)
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FApplicative.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FApplicativeSuite.scala)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/applicative.html)
 - [Applicative Programming with Effects](https://www.staff.city.ac.uk/~ross/papers/Applicative.html)
 - [Cats](https://typelevel.org/cats/typeclasses/applicative.html)

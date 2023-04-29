@@ -58,7 +58,7 @@ given idFoldable: Foldable[Id] with
       f(fa.value, init)
 ```
 
-### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
+### Option
 
 ```scala
 given Foldable[Option] with
@@ -75,7 +75,7 @@ given Foldable[Option] with
         case Some(a) => f(a)
 ```
 
-### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections)
+### Последовательность
 
 ```scala
 given Foldable[List] with
@@ -87,7 +87,7 @@ given Foldable[List] with
     override def toList: List[A] = as
 ```
 
-### [Кортеж](https://scalabook.gitflic.space/docs/scala/collections/tuple) от двух и более элементов
+### Кортеж от двух и более элементов
 
 ```scala
 given tuple2Foldable: Foldable[[X] =>> (X, X)] with
@@ -106,7 +106,7 @@ given tuple3Foldable: Foldable[[X] =>> (X, X, X)] with
       f(a0, b1)
 ```
 
-### [Either](https://scalabook.gitflic.space/docs/fp/handling-errors)
+### Either
 
 ```scala
 given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
@@ -162,8 +162,6 @@ Foldable[List].foldMap(List(1, 2, 3))(_.toString)  // 123
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FFoldable.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFoldableSuite.scala)
 - [Cats](https://typelevel.org/cats/typeclasses/foldable.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/using-monoids-to-fold.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)

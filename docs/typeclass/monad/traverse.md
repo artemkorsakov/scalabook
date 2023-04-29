@@ -9,8 +9,7 @@
 
 С помощью `traverse` можно выразить и `map`, и `foldRight`, а также `sequence`, отображающий `F[G[A]]` в `G[F[A]]`.
 По этой причине `Traverse` иногда называют "обходными функторами".
-`Traverse` расширяет [`Functor`](https://scalabook.gitflic.space/docs/typeclass/monad/functor)
-и [`Foldable`](https://scalabook.gitflic.space/docs/typeclass/monad/foldable)
+`Traverse` расширяет [`Functor`](functor.md) и [`Foldable`](foldable.md)
 
 `Traversable` должен удовлетворять следующим законам:
 
@@ -71,7 +70,7 @@ given Traverse[Id] with
       f(fa.value).map(b => Id(b))
 ```
 
-### [Кортеж](https://scalabook.gitflic.space/docs/scala/collections/tuple) от двух и более элементов
+### Кортеж от двух и более элементов
 
 ```scala
 given Traverse[[X] =>> (X, X)] with
@@ -89,7 +88,7 @@ given Traverse[[X] =>> (X, X, X)] with
       g.apply(g.apply(g.apply(func)(f(fa._1)))(f(fa._2)))(f(fa._3))
 ```
 
-### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
+### Option
 
 ```scala
 given Traverse[Option] with
@@ -100,7 +99,7 @@ given Traverse[Option] with
         case None    => summon[Applicative[G]].unit(None)
 ```
 
-### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections)
+### Последовательность
 
 ```scala
 given Traverse[List] with
@@ -127,7 +126,7 @@ tree.traverse(a => Id(a + 1))
 // val res0: Id[Tree[Int]] = Id(Tree(1,List(Tree(2,List(Tree(3,List()))))))
 ```
 
-### [Map](https://scalabook.gitflic.space/docs/scala/collections/maps)
+### Map
 
 ```scala
 given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
@@ -178,8 +177,6 @@ Await.result(allUptimes, 1.second)  // List(1020, 960, 840)
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FTraverse.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FTraverseSuite.scala)
 - [Cats](https://typelevel.org/cats/typeclasses/traverse.html)
 - [Functional Programming in Scala, Second Edition](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Traverse.html)

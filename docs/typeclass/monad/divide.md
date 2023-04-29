@@ -1,6 +1,6 @@
 # Divide
 
-`Divide` - контравариантный аналог [`Apply`](https://scalabook.gitflic.space/docs/typeclass/monad/apply). 
+`Divide` - контравариантный аналог [`Apply`](apply.md). 
 Он расширяет ковариантный функтор и дополнительно реализует
 операцию `divide`: `def divide[A, B, C](fa: => F[A], fb: => F[B])(f: C => (A, B)): F[C]`
 
@@ -40,6 +40,4 @@ given functionDivide[R: Monoid]: Divide[[X] =>> Function1[X, R]] with
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FDivide.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FDivideSuite.scala)
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Divide.html)

@@ -29,9 +29,7 @@ given freeMonad[F[_]]: Monad[[X] =>> Free[F, X]] with
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FFree.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FFreeSuite.scala)
 - [Free Monads Are Simple](https://underscore.io/blog/posts/2015/04/14/free-monads-are-simple.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Free-monads.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
-- [Stackless Scala](https://scalabook.gitflic.space/docs/fp/trampolining)
+- [Stackless Scala](../../fp/trampolining.md)

@@ -1,7 +1,7 @@
 # IsEmpty
 
 `IsEmpty` - класс типов, позволяющий проверить, действительно ли какой-либо тип с пустым представлением является пустым.
-Расширяет [`PlusEmpty`](https://scalabook.gitflic.space/docs/typeclass/monad/plus-empty).
+Расширяет [`PlusEmpty`](plus-empty.md).
 
 `IsEmpty` должен удовлетворять следующим законам (помимо законов родителей): 
 
@@ -45,7 +45,5 @@ summon[IsEmpty[List]].isEmpty(List.empty[Int]) // true
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FIsEmpty.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FIsEmptySuite.scala)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/MonadPlus.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/IsEmpty.html)

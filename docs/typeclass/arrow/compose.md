@@ -1,8 +1,8 @@
 # Compose
 
 `Compose` объединяет две функции в одну.
-Функция `compose` позволяет реализовать [Semigroup](https://scalabook.gitflic.space/docs/typeclass/monoid/semigroup) 
-и [Plus](https://scalabook.gitflic.space/docs/typeclass/monad/plus) в терминах объединения функций.
+Функция `compose` позволяет реализовать [Semigroup](../monoid/semigroup.md) 
+и [Plus](../monad/plus.md) в терминах объединения функций.
 
 `Compose` должен удовлетворять следующим законам:
 
@@ -73,8 +73,6 @@ lazy val g = (_:Int) * 100
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Farrow%2FCompose.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FComposeSuite.scala)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Arrow.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Compose.html)

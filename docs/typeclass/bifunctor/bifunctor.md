@@ -1,6 +1,6 @@
 # Bifunctor
 
-`Bifunctor` - тип, порождающий два несвязанных [функтора](https://scalabook.gitflic.space/docs/typeclass/monad/functor).
+`Bifunctor` - тип, порождающий два несвязанных [функтора](../monad/functor.md).
 
 
 ## Описание
@@ -37,7 +37,7 @@ trait Bifunctor[F[_, _]]:
 
 ## Примеры
 
-### [Either](https://scalabook.gitflic.space/docs/fp/handling-errors)
+### Either
 
 ```scala
 given Bifunctor[Either] with
@@ -47,7 +47,7 @@ given Bifunctor[Either] with
       case Left(value)  => Left(f(value))
 ```
 
-### [Writer](https://scalabook.gitflic.space/docs/fp/writer) - функциональный журнал
+### Writer - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))
@@ -125,7 +125,5 @@ Bifunctor[Tuple2].umap((2,3))(_ * 3)                                            
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fbifunctor%2FBifunctor.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fbifunctor%2FBifunctorSuite.scala&plain=1)
 - [Herding Cats](http://eed3si9n.com/herding-cats/datatype-generic-programming.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bifunctor.html)

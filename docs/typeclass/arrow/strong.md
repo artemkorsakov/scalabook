@@ -1,10 +1,10 @@
 # Strong
 
-`Strong` - сила в объединении. `Strong` расширяет [`Profunctor`](https://scalabook.gitflic.space/docs/typeclass/arrow/profunctor) и добавляет операции `first` и `second`,
+`Strong` - сила в объединении. `Strong` расширяет [`Profunctor`](profunctor.md) и добавляет операции `first` и `second`,
 добавляющие заданное значение слева или справа от функции 
 `A =>: B => (A, C) =>: (B, C)` или `A =>: B => (C, A) =>: (C, B)`.
 
-`Strong` должен [удовлетворять следующим законам](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FStrongLaw.scala):
+`Strong` должен удовлетворять следующим законам:
 
 - при отображении функции swap слева и справа на `second` получим `first`: `dimap(second)(_.swap)(_.swap) == first`
 - верно и обратное: `dimap(first)(_.swap)(_.swap) == second`
@@ -75,8 +75,6 @@ f_second((1, 1))
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Farrow%2FStrong.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FStrongSuite.scala)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Arrow.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Strong.html)

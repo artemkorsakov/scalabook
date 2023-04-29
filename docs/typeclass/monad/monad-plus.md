@@ -1,7 +1,7 @@
 # MonadPlus
 
-Класс типов `MonadPlus` предназначен для [монад](https://scalabook.gitflic.space/docs/typeclass/monad/monad), 
-которые также могут действовать как [моноиды](https://scalabook.gitflic.space/docs/typeclass/monoid/monoid).
+Класс типов `MonadPlus` предназначен для [монад](monad.md), 
+которые также могут действовать как [моноиды](../monoid/monoid.md).
 
 `MonadPlus` должен удовлетворять законам монад и моноидов.
 
@@ -58,7 +58,5 @@ List(1, 2, 3) filter {_ > 2}                     // List(3)
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FMonadPlus.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FMonadPlusSuite.scala)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/MonadPlus.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/MonadPlus.html)

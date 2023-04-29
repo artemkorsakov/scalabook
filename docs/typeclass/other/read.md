@@ -1,6 +1,6 @@
 # Read
 
-`Read` — это класс типов, противоположный [`Show`](https://scalabook.gitflic.space/docs/typeclass/other/show). 
+`Read` — это класс типов, противоположный [`Show`](show.md). 
 Функция `read` принимает строку и возвращает тип, который является членом `Read`.
 
 ## Описание

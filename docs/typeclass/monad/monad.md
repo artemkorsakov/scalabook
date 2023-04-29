@@ -1,7 +1,7 @@
 # Monad
 
-Монада (_monad_) - это [`Applicative`](https://scalabook.gitflic.space/docs/typeclass/monad/applicative), 
-который также поддерживает [`Bind`](https://scalabook.gitflic.space/docs/typeclass/monad/bind), 
+Монада (_monad_) - это [`Applicative`](applicative.md), 
+который также поддерживает [`Bind`](bind.md), 
 ограниченный законами монады.
 
 Монады являются естественным расширением аппликативных функторов, они обеспечивают решение следующей проблемы: 
@@ -41,7 +41,7 @@ given idMonad: Monad[Id] with
   extension [A](fa: Id[A]) override def flatMap[B](f: A => Id[B]): Id[B] = f(fa.value)
 ```
 
-### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
+### Option
 
 ```scala
 given optionMonad: Monad[Option] with
@@ -54,7 +54,7 @@ given optionMonad: Monad[Option] with
         case None    => None
 ```
 
-### [Последовательность](https://scalabook.gitflic.space/docs/scala/collections)
+### Последовательность
 
 ```scala
 given listMonad: Monad[List] with
@@ -63,7 +63,7 @@ given listMonad: Monad[List] with
   extension [A](fa: List[A]) override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
 ```
 
-### [Either](https://scalabook.gitflic.space/docs/fp/handling-errors)
+### Either
 
 ```scala
 given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
@@ -76,7 +76,7 @@ given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
         case Left(e)  => Left(e)
 ```
 
-### [Writer](https://scalabook.gitflic.space/docs/fp/writer) - функциональный журнал
+### Writer - функциональный журнал
 
 ```scala
 case class Writer[W, A](run: () => (W, A))
@@ -100,7 +100,7 @@ given writerMonad[W](using monoid: Monoid[W]): Monad[[x] =>> Writer[W, x]] with
       }
 ```
 
-### [State](https://scalabook.gitflic.space/docs/fp/state) - функциональное состояние
+### State - функциональное состояние
 
 ```scala
 case class State[S, +A](run: S => (S, A))
@@ -167,8 +167,6 @@ val list3 = Monad[List].map(list2)(a => a + 123)                     // List(124
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FMonad.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FMonadSuite.scala)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monad.html)
 - [Cats](https://typelevel.org/cats/typeclasses/monad.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Monad.html)

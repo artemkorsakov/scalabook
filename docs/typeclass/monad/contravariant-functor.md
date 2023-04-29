@@ -1,6 +1,6 @@
 # Контравариантный функтор
 
-Контравариантный функтор (`F`) похож на [функтор](https://scalabook.gitflic.space/docs/typeclass/monad/functor), 
+Контравариантный функтор (`F`) похож на [функтор](functor.md), 
 только с противоположной операцией `cmap`:
 
 - `cmap(b: F[B])(f: A => B): F[A]`.
@@ -76,8 +76,6 @@ showString
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FContravariantFunctor.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FContravariantFunctorSuite.scala)
 - [Cats](https://typelevel.org/cats/typeclasses/contravariant.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#contravariant)

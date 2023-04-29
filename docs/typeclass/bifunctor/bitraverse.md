@@ -1,8 +1,7 @@
 # Bitraverse
 
-`Bitraverse` - тип, порождающий два несвязанных [`Traverse`](https://scalabook.gitflic.space/docs/typeclass/monad/traverse).
-Расширяет [`Bifoldable`](https://scalabook.gitflic.space/docs/typeclass/bifunctor/bifoldable) 
-и [`Bifunctor`](https://scalabook.gitflic.space/docs/typeclass/bifunctor/bifunctor).
+`Bitraverse` - тип, порождающий два несвязанных [`Traverse`](../monad/traverse.md).
+Расширяет [`Bifoldable`](bifoldable.md) и [`Bifunctor`](bifunctor.md).
 
 
 ## Описание
@@ -46,7 +45,7 @@ trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:
 
 ## Примеры
 
-### [Either](https://scalabook.gitflic.space/docs/fp/handling-errors)
+### Either
 
 ```scala
 given Bitraverse[Either] with
@@ -62,6 +61,4 @@ given Bitraverse[Either] with
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fbifunctor%2FBitraverse.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fbifunctor%2FBitraverseSuite.scala&plain=1)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bitraverse.html)

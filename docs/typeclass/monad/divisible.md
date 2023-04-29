@@ -1,8 +1,7 @@
 # Divisible
 
-`Divisible` - контравариантный аналог [`Applicative`](https://scalabook.gitflic.space/docs/typeclass/monad/applicative). 
-Он расширяет [`Divide`](https://scalabook.gitflic.space/docs/typeclass/monad/divide) 
-и [`InvariantApplicative`](https://scalabook.gitflic.space/docs/typeclass/monad/invariant-applicative).
+`Divisible` - контравариантный аналог [`Applicative`](applicative.md). 
+Он расширяет [`Divide`](divide.md) и [`InvariantApplicative`](invariant-applicative.md).
 
 Законы `Divisible`:
 
@@ -42,6 +41,4 @@ given functionDivisible[R: Monoid]: Divisible[[X] =>> Function1[X, R]] with
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FDivisible.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FDivisibleSuite.scala)
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Divisible.html)

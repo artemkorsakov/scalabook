@@ -3,8 +3,7 @@
 `Apply` реализует операцию `apply`
 (также встречаются названия `join`, `sequence`, `joinWith`, `ap`, `applicate` - названия взаимозаменяемы),
 которая объединяет `F[A]` и `F[A => B]` в `F[B]`.
-`Apply` расширяет [`Functor`](https://scalabook.gitflic.space/docs/typeclass/monad/functor) 
-и [`Semigroupal`](https://scalabook.gitflic.space/docs/typeclass/monad/semigroupal).
+`Apply` расширяет [`Functor`](functor.md) и [`Semigroupal`](semigroupal.md).
 
 Об `apply` можно думать как о своего рода усиленной `map`. 
 В то время как `map` берет функцию и функтор и применяет функцию внутри значения функтора,
@@ -52,7 +51,7 @@ given idApply: Apply[Id] with
   extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as.value))
 ```
 
-### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
+### Option
 
 ```scala
 given Apply[Option] with
@@ -115,8 +114,6 @@ Apply[Option].ap({ none[String => String] })("woot".some)       // None
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FApply.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FApplySuite.scala)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Apply.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Applicative.html)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#apply-and-applicative)

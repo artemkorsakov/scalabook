@@ -1,8 +1,8 @@
 # Category
 
-`Category` - это [`Compose`](https://scalabook.gitflic.space/docs/typeclass/arrow/compose) с операцией `identity`.
-`Category` можно трансформировать в [Monoid](https://scalabook.gitflic.space/docs/typeclass/monoid/monoid) 
-и [PlusEmpty](https://scalabook.gitflic.space/docs/typeclass/monad/plus-empty).
+`Category` - это [`Compose`](compose.md) с операцией `identity`.
+`Category` можно трансформировать в [Monoid](../monoid/monoid.md) 
+и [PlusEmpty](../monad/plus-empty.md).
 
 `Category` должен удовлетворять следующим законам (помимо законов родительских типовых классов):
 
@@ -48,8 +48,6 @@ import Scalaz.*
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Farrow%2FCategory.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FCategorySuite.scala)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Arrow.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Category.html)

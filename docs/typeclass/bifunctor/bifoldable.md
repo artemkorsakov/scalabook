@@ -1,6 +1,6 @@
 # Bifoldable
 
-`Bifoldable` - тип, порождающий два несвязанных [`Foldable`](https://scalabook.gitflic.space/docs/typeclass/monad/foldable).
+`Bifoldable` - тип, порождающий два несвязанных [`Foldable`](../monad/foldable.md).
 
 
 ## Описание
@@ -43,7 +43,7 @@ trait Bifoldable[F[_, _]]:
 
 ## Примеры
 
-### [Either](https://scalabook.gitflic.space/docs/fp/handling-errors)
+### Either
 
 ```scala
 given eitherBifoldable: Bifoldable[Either] with
@@ -59,6 +59,4 @@ given eitherBifoldable: Bifoldable[Either] with
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fbifunctor%2FBifoldable.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fbifunctor%2FBifoldableSuite.scala&plain=1)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bifoldable.html)

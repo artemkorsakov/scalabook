@@ -29,7 +29,7 @@ given idtMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransformer[Id
     IdT[M, A](ma.map(Id(_)))
 ```
 
-### [Option](https://scalabook.gitflic.space/docs/scala/fp/functional-error-handling)
+### Option
 
 ```scala
 final case class OptionT[M[_], A](run: M[Option[A]])
@@ -52,7 +52,7 @@ given optionTMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransforme
     OptionT[M, A](ma.map(Some(_)))      
 ```
 
-### [Writer](https://scalabook.gitflic.space/docs/fp/writer) - функциональный журнал
+### Writer - функциональный журнал
 
 ```scala
 final case class WriterT[M[_], W, A](run: () => M[(W, A)])
@@ -77,7 +77,7 @@ given writerTMonadTransformer[M[_], W](using
     WriterT[M, W, A](() => ma.map(a => (outerMonoid.empty, a)))      
 ```
 
-### [State](https://scalabook.gitflic.space/docs/fp/state) - функциональное состояние
+### State - функциональное состояние
 
 ```scala
 final case class StateT[M[_], S, A](run: S => M[(S, A)])
@@ -101,7 +101,5 @@ given stateTMonadTransformer[M[_], S](using outerMonad: Monad[M]): MonadTransfor
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Fmonad%2FMonadTransformer.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Fmonad%2FMonadTransformerSuite.scala)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad+transformers.html)

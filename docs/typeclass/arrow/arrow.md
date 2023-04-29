@@ -2,12 +2,10 @@
 
 `Arrow` ("стрелка") — это термин, используемый в теории категорий как абстрактное понятие вещи, 
 которая ведет себя как функция. "Стрелки", могут быть полезны, если нужно добавить некоторый контекст к функциям и парам.
-Каждая "стрелка" образует [`Contravariant`](https://scalabook.gitflic.space/docs/typeclass/monad/contravariant-functor) 
-в одном параметре типа и [`Applicative`](https://scalabook.gitflic.space/docs/typeclass/monad/applicative)
+Каждая "стрелка" образует [`Contravariant`](../monad/contravariant-functor.md) 
+в одном параметре типа и [`Applicative`](../monad/applicative.md)
 в другом, как и в случае с обычными функциями.
-`Arrow` расширяет [`Split`](https://scalabook.gitflic.space/docs/typeclass/arrow/split), 
-[`Strong`](https://scalabook.gitflic.space/docs/typeclass/arrow/strong) 
-и [`Category`](https://scalabook.gitflic.space/docs/typeclass/arrow/category).
+`Arrow` расширяет [`Split`](split.md), [`Strong`](strong.md) и [`Category`](category.md).
 
 `Arrow` должен удовлетворять законам расширяемых трейтов.
 
@@ -105,8 +103,6 @@ val f2 = (_:Int) * 100
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Ftypeclass%2Farrow%2FArrow.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Ftypeclass%2Farrow%2FArrowSuite.scala)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Arrow.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Arrow.html)

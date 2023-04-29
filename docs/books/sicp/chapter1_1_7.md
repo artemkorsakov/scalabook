@@ -89,7 +89,7 @@ sqrt(1000000)
 
 Процедура вычисления кубического корня:
 
-```scala mdoc
+```scala mdoc:reset
 def square(x: Double): Double = x * x
 
 def goodEnough(guess: Double, next: Double): Boolean = 

@@ -1,6 +1,6 @@
 # A Matter of Context
 
-```scala
+```scala mdoc
 def tmpDir(uniqueSuffix: String): String =
   """\\builder\tmp-""" + uniqueSuffix
 def tmpDir2(uniqueSuffix: String): String =
@@ -9,11 +9,8 @@ def tmpDir3(uniqueSuffix: String): String =
   s"\\builder\tmp-$uniqueSuffix"
 
 println(tmpDir("42"))
-// \\builder\tmp-42
 println(tmpDir2("42"))
-// \builder	mp-42
 println(tmpDir3("42"))
-// \builder	mp-42
 ```
 
 При использовании строкового интерполятора `s` или любого другого метода интерполяции 

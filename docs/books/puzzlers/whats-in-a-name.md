@@ -1,6 +1,6 @@
 # What's in a Name?
 
-```scala
+```scala mdoc:silent
 class C:
   def sum(x: Int = 1, y: Int = 2): Int = x + y
   
@@ -9,10 +9,10 @@ class D extends C:
 
 val d: D = new D
 val c: C = d
+```
+```scala mdoc
 c.sum(x = 0)
-// res0: Int = 4
 d.sum(x = 0)
-// res1: Int = 3
 ```
 
 Scala использует статический тип переменной для привязки имен параметров, 

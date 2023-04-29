@@ -1,14 +1,16 @@
 # A View to a Shill
 
-```scala
+```scala mdoc:silent
 val ints = Map(1 -> List(1, 2, 3, 4, 5))
 val bits = ints.map { case (k, v) => (k, v.iterator) }
 val nits = ints.view.mapValues(_.iterator)
 
 s"${bits(1).next}${bits(1).next}"
-// res0: String = "12"
 s"${nits(1).next}${nits(1).next}"
-// res1: String = "11"
+```
+```scala mdoc
+s"${bits(1).next}${bits(1).next}"
+s"${nits(1).next}${nits(1).next}"
 ```
 
 Как объясняется [в этом тикете](https://github.com/scala/bug/issues/4776) и в Скаладоке, 

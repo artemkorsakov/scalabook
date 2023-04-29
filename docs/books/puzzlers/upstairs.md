@@ -1,13 +1,9 @@
 # UPSTAIRS downstairs
 
-```scala
+```scala mdoc
 val ij: (Int, Int) = (3, 4)
-// ij: Tuple2[Int, Int] = (3, 4)
 val (i, j): (Int, Int) = (3, 4)
-// i: Int = 3
-// j: Int = 4
 val IJ: (Int, Int) = (3, 4)
-// IJ: Tuple2[Int, Int] = (3, 4)
 ```
 
 ```scala

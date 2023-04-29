@@ -1,6 +1,6 @@
 # A Case of Equality
 
-```scala
+```scala mdoc:silent
 trait SpyOnEquals:
   override def equals(x: Any) =
     println("DEBUG: In equals")
@@ -13,17 +13,12 @@ val cc1 = new CC() with SpyOnEquals
 val cc2 = new CC() with SpyOnEquals
 val ccspy1 = CCSpy()
 val ccspy2 = CCSpy()
-
+```
+```scala mdoc
 println(cc1 == cc2)
-// DEBUG: In equals
-// true
-println(cc1.## == cc2.##) // null-safe hashCode()
-// true // null-safe hashCode()
+println(cc1.## == cc2.##)
 println(ccspy1 == ccspy2)
-// DEBUG: In equals
-// false
 println(ccspy1.## == ccspy2.##)
-// true
 ```
 
 Для case классов генерируются методы `equals`, `hashCode` и `toString`, 

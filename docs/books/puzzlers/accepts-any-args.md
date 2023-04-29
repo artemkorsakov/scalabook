@@ -1,13 +1,12 @@
 # Accepts Any Args
 
-```scala
+```scala mdoc:silent
 def acceptsAnyArgs(any1: Any)(any2: Any*): Unit =
   println(any1)
   println(any2)
-
+```
+```scala mdoc
 acceptsAnyArgs("Psst", "hey", "world:")(4, 2)
-// (Psst,hey,world:)
-// ArraySeq(4, 2)
 ```
 
 Возможно, это не широко известно и не разглашается, но Scala поддерживает "автоматическую корректировку" аргументов. 

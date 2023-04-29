@@ -1,6 +1,6 @@
 # Arg Arrgh!
 
-```scala
+```scala mdoc:silent
 def square[T : Numeric](n: T) = summon[Numeric[T]].times(n, n)
 
 def twiceA[T](f: T => T, a: T) = f(f(a))
@@ -9,24 +9,14 @@ def twiceC[T](a: T, f: T => T) = f(f(a))
 def twiceD[T](a: T)(f: T => T) = f(f(a))
 ```
 
-```scala
+```scala mdoc:fail
 twiceA(square, 2)
-// error:
-// No implicit Ordering defined for Any.
-// twiceA(square, 2)
-//              ^
 twiceB(square)(2)
-// error:
-// No implicit Ordering defined for Any.
-// twiceB(square)(2)
-//              ^
 ```
 
-```scala
+```scala mdoc
 twiceC(2, square)
-// res1: Int = 16
 twiceD(2)(square)
-// res2: Int = 16
 ```
 
 Чтобы `square` можно было использовать в качестве аргумента, 

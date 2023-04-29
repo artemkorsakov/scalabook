@@ -1,6 +1,6 @@
 # A Result, Finally!
 
-```scala
+```scala mdoc
 var errCount: Int = 0
 def incErrs(): Int = { errCount += 1; errCount }
 
@@ -11,9 +11,7 @@ def tryEval(expr: => Double) =
   finally res
 
 println(tryEval(10 / 4))
-// ()
 println(tryEval(10 / 0))
-// 1
 ```
 
 В Scala, если функция не завершается с помощью явного возвращаемого выражения, 

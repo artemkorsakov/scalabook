@@ -228,7 +228,7 @@ def productIter(
 
 Решение на Scala:
 
-```scala mdoc:reset:compile
+```scala
 def filteredAccumulateRec(
     combiner: (Double, Double) => Double,
     nullValue: Double,

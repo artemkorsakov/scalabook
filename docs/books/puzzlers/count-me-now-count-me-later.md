@@ -1,6 +1,6 @@
 ## Count Me Now, Count Me Later
 
-```scala
+```scala mdoc:silent
 var x = 0
 def counter = 
   x += 1
@@ -8,16 +8,13 @@ def counter =
 def add(a: Int)(b: Int) = a + b
 val adder1 = add(counter)(_)
 val adder2 = add(counter) _
+```
+```scala mdoc
 println("x = " + x)
-// x = 1
 println(adder1(10))
-// 12
 println("x = " + x)
-// x = 2
 println(adder2(10))
-// 11
 println("x = " + x)
-// x = 2
 ```
 
 `f(a) _` и `f(a)(_)` имеют разные значения, регулируемые разными разделами спецификации языка Scala. 

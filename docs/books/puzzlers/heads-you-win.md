@@ -1,6 +1,6 @@
 # Heads You Win...
 
-```scala
+```scala mdoc:silent
 import java.util.{List as JList, LinkedList}
 import scala.jdk.CollectionConverters.*
 
@@ -14,11 +14,10 @@ def printHeadOrEmpty(s: collection.Seq[_]): Unit =
   s match
     case hd :: _ => println(hd)
     case _       => println("Empty :-(")
-
+```
+```scala mdoc
 printHeadOrEmpty(listFromJava.asScala)
-// Empty :-(
 printHeadOrEmpty(listFromJava.asScala.toSeq)
-// 1
 ```
 
 Scala `CollectionConverters` превращает списки Java 

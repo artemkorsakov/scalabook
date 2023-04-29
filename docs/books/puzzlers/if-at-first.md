@@ -1,6 +1,6 @@
 # If At First You Don't Succeed...
 
-```scala
+```scala mdoc
 var x = 0
 lazy val y = 1 / x
 
@@ -8,8 +8,7 @@ try println(y)
 catch
   case _: Throwable =>
     x = 1
-    println(y)
-// 1    
+    println(y) 
 ```
 
 Одна из самых интересных особенностей ленивых значений (кроме того, что они откладывают фактическое вычисление) 

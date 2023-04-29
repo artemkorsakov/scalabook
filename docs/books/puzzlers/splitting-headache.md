@@ -1,21 +1,18 @@
 # Splitting Headache
 
-```scala
+```scala mdoc:silent
 def validDna(maybeDna: String) = {
   def containsOnly(s: String, chars: Array[Char]) =
     s.split(chars).isEmpty
 
   containsOnly(maybeDna, Array('A', 'C', 'G', 'T'))
 }
-
+```
+```scala mdoc
 println(validDna("SAT"))
-// false
 println(validDna("AT"))
-// true
 println(validDna("A"))
-// true
 println(validDna(""))
-// false
 ```
 
 Метод `split(separators: Array[Char])` предоставляется `StringOps` и

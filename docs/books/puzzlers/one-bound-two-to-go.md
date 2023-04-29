@@ -1,13 +1,13 @@
 # One Bound, Two to Go
 
-```scala
+```scala mdoc:silent
 def invert(v3: Int)(v2: Int = 2, v1: Int = 1): Unit =
   println(s"$v1, $v2, $v3")
   
 def invert3 = invert(3) _
-
+```
+```scala mdoc
 invert3(v1 = 2, v2 = 1)
-// 1, 2, 3
 ```
 
 ```scala

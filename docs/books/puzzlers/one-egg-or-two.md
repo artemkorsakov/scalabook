@@ -1,13 +1,13 @@
 # One Egg or Two..?
 
-```scala
+```scala mdoc:silent
 class C
 val x1, x2 = new C
 val y1 @ y2 = new C
+```
+```scala mdoc
 println(x1 == x2)
-// false
 println(y1 == y2)
-// true
 ```
 
 Согласно SLS (§4.1), определение значения `val p1, . . . , pn : T = e` — 

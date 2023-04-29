@@ -1,6 +1,6 @@
 # Now You See Me, Now You Don't
 
-```scala
+```scala mdoc:silent
 trait A:
   val foo: Int
   val bar = 10
@@ -13,11 +13,9 @@ class B extends A:
 class C extends B:
   override val bar = 99
   println(s"In C: foo: $foo, bar: $bar")
-
+```
+```scala mdoc
 new C
-// In A: foo: 0, bar: 0
-// In B: foo: 25, bar: 0
-// In C: foo: 25, bar: 99
 ```
 
 Обратите внимание, что `bar` — это `val`, переопределяемый в `C`. 

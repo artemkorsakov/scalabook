@@ -12,13 +12,13 @@ val addTo1 = addTo(1)
 addTo1(2)
 // val res0: Int = 5
 addTo1(2)(3)
--- [E050] Type Error: ----------------------------------------------------------
-1 |addTo1(2)(3)
-|^^^^^^^^^
-|method apply in trait Function1 does not take more parameters
-|
-| longer explanation available when compiling with `-explain`
-1 error found
+// -- [E050] Type Error: ----------------------------------------------------------
+// 1 |addTo1(2)(3)
+// |^^^^^^^^^
+// |method apply in trait Function1 does not take more parameters
+// |
+// | longer explanation available when compiling with `-explain`
+// 1 error found
 ```
 
 Когда eta расширение применяется к методу `add`, результатом является функция типа `Int => Int`, 
@@ -31,11 +31,11 @@ scala> def add(x: Int)(y: Int)(using z: Int) = x + y + z
 def add(x: Int)(y: Int)(using z: Int): Int
 
 scala> add(1) _
--- Error: ----------------------------------------------------------------------
-1 |add(1) _
-  |      ^
-  |     no given instance of type Int was found for parameter z of method add
-1 error found
+// -- Error: ----------------------------------------------------------------------
+// 1 |add(1) _
+//   |      ^
+//   |     no given instance of type Int was found for parameter z of method add
+// 1 error found
 ```
 
 Можно также указать явное значение для `z`, если в текущем контексте не определено неявное значение, 

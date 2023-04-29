@@ -1,6 +1,6 @@
 # Location, Location, Location
 
-```scala
+```scala mdoc:silent
 trait A:
   val audience: String
   println(s"Hello $audience")
@@ -11,13 +11,10 @@ class BMember(a: String = "World") extends A:
 
 class BConstructor(val audience: String = "World") extends A:
   println(s"I repeat: Hello $audience")
-
+```
+```scala mdoc
 BMember("Readers")
-// Hello null
-// I repeat: Hello Readers
 BConstructor("Readers")
-// Hello Readers
-// I repeat: Hello Readers
 ```
 
 При создании экземпляров суперклассов или трейтов 

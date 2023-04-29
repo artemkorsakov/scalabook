@@ -1,12 +1,12 @@
 # Beep Beep...Reversing
 
-```scala
+```scala mdoc:silent
 import collection.SortedSet
 val ints = SortedSet(-1, 1, 2)(summon[Ordering[Int]].reverse)
+```
+```scala mdoc
 println(ints.filter(_ > 0).head)
-// 2
 println(ints.collect { case n if n > 0 => n }.head)
-// 1
 ```
 
 И `Set.filter`, и `Set.collect` сохраняют тип исходной коллекции и возвращают новые отсортированные наборы. 
@@ -14,19 +14,17 @@ println(ints.collect { case n if n > 0 => n }.head)
 такие как `map` и `flatMap`, метод `collect` не сохраняет порядок исходной коллекции. 
 Есть перегруженные методы, принимающие `Ordering`, например, `Set.collect`:
 
-```scala
+```scala mdoc
 println(ints.collect { case n if n > 0 => n }(summon[Ordering[Int]].reverse).head)
-// 2
 ```
 
 или
 
-```scala
+```scala mdoc:reset
 import collection.SortedSet
 given Ordering[Int] = math.Ordering.Int.reverse
 val ints = SortedSet(-1, 1, 2)
 ints.collect { case n if n > 0 => n }.head
-// res4: Int = 2
 ```
 
 

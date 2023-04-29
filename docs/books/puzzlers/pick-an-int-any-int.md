@@ -1,6 +1,6 @@
 # Pick an Int, Any Int!
 
-```scala
+```scala mdoc:silent
 class A:
   type X // equivalent to X <: Any
   var x: X = _
@@ -9,11 +9,11 @@ class B extends A:
   type X = Int
   
 val b = new B
-println(b.x)
-// null
 val bX = b.x
+```
+```scala mdoc
+println(b.x)
 println(bX)
-// 0
 ```
 
 Поле `x` на уровне байт-кода является объектом (оно было объявлено в `A` и унаследовано). 

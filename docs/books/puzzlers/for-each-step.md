@@ -1,16 +1,22 @@
 # For Each Step...
 
-```scala mdoc
+```scala
 for
   x <- 1 to 2
   y <- { println("DEBUG 1: x: " + x); x to 1 }
 do println(x + y)
+// DEBUG 1: x: 1
+// 2
+// DEBUG 1: x: 2
 
 for
   x <- 1 to 2
   _ = println("DEBUG 2: x: " + x)
   y <- x to 1
 do println(x + y)
+// DEBUG 2: x: 1
+// DEBUG 2: x: 2
+// 2
 ```
 
 Несколько генераторов в `for comprehensions` и `for loops` приводят к вложенным вызовам `flatMap` (SLS §6.19): 

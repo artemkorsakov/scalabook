@@ -42,7 +42,7 @@ funcs2 foreach { f2 => println(f2()) }
 
 Исключения можно избежать, «зафиксировав» возвращаемое значение:
 
-```scala mdoc:silent
+```scala
 val funcs1 = collection.mutable.Buffer[() => Int]()
 val funcs2 = collection.mutable.Buffer[() => Int]()
 
@@ -58,9 +58,15 @@ val funcs2 = collection.mutable.Buffer[() => Int]()
 }
 ```
 
-```scala mdoc
+```scala
 funcs1 foreach { f1 => println(f1()) }
+// 100
+// 110
+// 120
 funcs2 foreach { f2 => println(f2()) }
+// 100
+// 110
+// 120
 ```
 
 Присвоение значения выполняется немедленно и, таким образом, «захватывает» предполагаемый элемент значений.

@@ -1,14 +1,14 @@
 # Init You, Init Me
 
-```scala mdoc:silent
+```scala
 object XY:
   object X:
     val value: Int = Y.value + 1
   object Y:
     val value: Int = X.value + 1
-```
-```scala mdoc
+
 println(if math.random > 0.5 then XY.X.value else XY.Y.value)
+// 2
 ```
 
 Рекурсивное определение двух полей `X.value` и `Y.value` допустимо и компилируется, 

@@ -50,20 +50,18 @@ val str: String = "€‡™µ"
 не подходят, потому что они представляют собой только "оболочку" над `String`,
 и по-прежнему позволяют "подложить" невалидное значение.
 
-```scala
+```scala mdoc
 opaque type Name = String
 val name: Name = "€‡™µ"
-// val name: Name = €‡™µ
 ```
 
 [Пример в Scastie](https://scastie.scala-lang.org/j3H5VznPQUOz6ylAQgFMoA)
 
 [Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/4ojla7AbTCe4lw8EdHdTMw)
 
-```scala
-case class Name(value: String) extends AnyVal
+```scala mdoc:reset
+case class Name(value: String)
 val name: Name = Name("€‡™µ")
-// val name: Name = Name(€‡™µ)
 ```
 
 [Пример в Scastie](https://scastie.scala-lang.org/CjZpe7ejSwW724prXkQLqg)
@@ -73,10 +71,10 @@ val name: Name = Name("€‡™µ")
 "Стандартное" решение - регулировать создание `Name` путем ограничения видимости конструктора по умолчанию
 и определения метода создания экземпляра `Name` в сопутствующем объекте:
 
-```scala
+```scala mdoc:reset:silent
 import scala.util.matching.Regex
 
-final case class Name private (value: String) extends AnyVal
+final case class Name private (value: String)
 
 object Name:
   private val pattern: Regex = "[А-ЯЁ][а-яё]+".r
@@ -94,13 +92,13 @@ val name: Name = Name("€‡™µ") // не скомпилируется
 
 А его использование происходит так, как было задумано:
 
-```scala
-Name.fromString("€‡™µ")     // None
-Name.fromString("12345")    // None
-Name.fromString("Alyona")   // None
-Name.fromString("Алёна18")  // None
-Name.fromString("алёна")    // None
-Name.fromString("Алёна")    // Some(Name(Алёна))
+```scala mdoc
+Name.fromString("€‡™µ")     
+Name.fromString("12345")    
+Name.fromString("Alyona")   
+Name.fromString("Алёна18")  
+Name.fromString("алёна")    
+Name.fromString("Алёна")    
 ```
 
 [Пример в Scastie](https://scastie.scala-lang.org/Esu8N76RQO6s0kORDsW1Kg)

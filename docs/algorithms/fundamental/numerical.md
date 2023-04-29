@@ -60,11 +60,13 @@ gcd(4851, 3003)
 
 Генератор можно реализовать на Scala так:
 
-```scala mdoc
+```scala mdoc:silent
 val A = 7
 val B = 5
 val M = 11
 val generator = LazyList.iterate(0)(x => (A * x + B) % M)
+```
+```scala mdoc
 generator.take(11).toList
 ```
 

@@ -17,7 +17,7 @@
 - Для каждого следующего числа `x`, начиная с `3`, берем этот же список простых чисел до корня из `x` 
   и проверяем, что ни одно из них не является делителем `x`.
 
-```scala
+```scala mdoc
 lazy val primes: LazyList[Int] =
   2 #:: LazyList
     .from(3)
@@ -26,8 +26,7 @@ lazy val primes: LazyList[Int] =
       sqrtOfPrimes.forall(p => x % p != 0)
     }
 
-primes.take(15).toList
-// List(2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47)
+primes.take(10).toList
 ```
 
 ## Проверка, простое ли заданное число
@@ -41,7 +40,7 @@ primes.take(15).toList
 - Все простые числа, кроме `2`, нечетны. 
 - Все простые числа больше `3` можно записать в виде `6k ± 1`
 
-```scala
+```scala mdoc
 def isPrime(n: Long): Boolean =
   if n < 2 then false
   else if n < 4 then true // 2 и 3 - простые
@@ -49,7 +48,7 @@ def isPrime(n: Long): Boolean =
   else if n < 9 then true // мы уже исключили 4,6 и 8
   else if n % 3 == 0 then false
   else
-    val limit = math.ceil(math.sqrt(n)).toLong
+    val limit = math.ceil(math.sqrt(n.toDouble)).toLong
 
     @annotation.tailrec
     def loop(f: Long): Boolean =
@@ -60,7 +59,6 @@ def isPrime(n: Long): Boolean =
     loop(5)
 
 isPrime(999_999_000_001L)
-// true
 ```
 
 #### Тест простоты Ферма
@@ -94,7 +92,7 @@ def isProbablyPrime(p: Long, max_test: Int): Boolean =
 
 [Решето Эратосфена][sieve] на Scala можно реализовать следующим образом:
 
-```scala
+```scala mdoc
 def sieveOfEratosthenes(n: Int): Array[Boolean] =
   val result = Array.fill(n + 1)(true)
   result(0) = false
@@ -108,7 +106,6 @@ def sieveOfEratosthenes(n: Int): Array[Boolean] =
   result
 
 sieveOfEratosthenes(10)
-// val res0: Array[Boolean] = Array(false, false, true, true, false, true, false, true, false, false, false)
 ```
 
 
@@ -116,7 +113,7 @@ sieveOfEratosthenes(10)
 
 Простые множители числа можно найти следующим образом:
 
-```scala
+```scala mdoc
 def primeFactorsWithPow(n: Long): Map[Long, Long] =
   var number = n
 
@@ -129,7 +126,7 @@ def primeFactorsWithPow(n: Long): Map[Long, Long] =
 
   // Ищем нечетные множители
   var i = 3L
-  while i <= math.sqrt(number) do
+  while i <= math.sqrt(number.toDouble) do
     var pow = 0L
     while number              % i == 0 do
       number /= i
@@ -140,7 +137,7 @@ def primeFactorsWithPow(n: Long): Map[Long, Long] =
   // Если от числа что-то осталось, то остаток тоже множитель
   if number > 1 then map + (number -> 1) else map
 
-primeFactorsWithPow(777111) // Map(3 -> 1, 37 -> 1, 7001 -> 1)
+primeFactorsWithPow(777111)
 ```
 
 

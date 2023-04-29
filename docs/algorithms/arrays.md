@@ -17,21 +17,12 @@
 Вставка элемента в полный массив требует создания нового массива большей емкости, 
 копирования всех элементов старого массива и вставки нового элемента.
 
-```scala
+```scala mdoc
 val vowels = Array('a', 'e', 'i', 'o', 'u')
-// val vowels: Array[Char] = Array(a, e, i, o, u)
-
 vowels(2)
-// val res0: Char = i
-
 val vowelsReversed = vowels.reverse
-// val vowelsReversed: Array[Char] = Array(u, o, i, e, a)
-
 vowelsReversed(2)
-// val res1: Char = i
-
 vowels.length
-// val res2: Int = 5
 ```
 
 

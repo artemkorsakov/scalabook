@@ -10,13 +10,10 @@ val y: Double = 1
 В этих примерах типы явно объявлены как `Int` и `Double` соответственно. 
 Однако в Scala обычно не нужно объявлять тип при объявлении переменной:
 
-```scala
+```scala mdoc
 val a = 1
-// a: Int = 1
 val b = List(1, 2, 3)
-// b: List[Int] = List(1, 2, 3)
 val m = Map(1 -> "one", 2 -> "two")
-// m: Map[Int, String] = Map(1 -> "one", 2 -> "two")
 ```
 
 Scala сама выводит типы, как показано выше.

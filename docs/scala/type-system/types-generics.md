@@ -5,7 +5,7 @@
 Затем этот тип можно использовать внутри класса по мере необходимости 
 для параметров экземпляра метода или для возвращаемых типов:
 
-```scala
+```scala mdoc:silent
 // здесь мы объявляем параметр типа A
 //          v
 class Stack[A]:
@@ -27,16 +27,14 @@ class Stack[A]:
 
 Пример создания и использования `Stack[Int]`:
 
-```scala
+```scala mdoc:silent
 val stack = Stack[Int]
 stack.push(1)
 stack.push(2)
 ```
-```scala
+```scala mdoc
 println(stack.pop())
-// 2
 println(stack.pop())
-// 1
 ```
 
 > Подробности о том, как выразить ковариантность с помощью универсальных типов, см. в разделе ["Ковариантность"](types-variance.md).

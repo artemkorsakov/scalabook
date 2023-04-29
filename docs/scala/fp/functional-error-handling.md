@@ -47,7 +47,7 @@ def makeInt(s: String): Int =
 
 Вот доработанная версия `makeInt`:
 
-```scala
+```scala mdoc:silent
 def makeInt(s: String): Option[Int] =
   try
     Some(Integer.parseInt(s.trim))
@@ -61,11 +61,9 @@ def makeInt(s: String): Option[Int] =
 
 Эти примеры показывают, как работает `makeInt`:
 
-```scala
+```scala mdoc
 val a = makeInt("1")  
-// a: Option[Int] = Some(value = 1)  
 val b = makeInt("one")
-// b: Option[Int] = None
 ```
 
 Как показано, строка `"1"` приводится к `Some(1)`, а строка `"one"` - к `None`. 
@@ -126,19 +124,18 @@ yield
 
 Это можно проверить на примере:
 
-```scala
+```scala mdoc:silent
 val stringA = "1"
 val stringB = "2"
 val stringC = "3"
 ```
-```scala
+```scala mdoc
 val y = for
   a <- makeInt(stringA)
   b <- makeInt(stringB)
   c <- makeInt(stringC)
 yield
   a + b + c
-// y: Option[Int] = Some(value = 6)
 ```
 
 Чтобы увидеть негативный кейс, достаточно изменить любую из строк на что-то, что нельзя преобразовать в целое число. 

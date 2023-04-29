@@ -68,7 +68,7 @@ class C extends A, B:
 
 #### Пример
 
-```scala
+```scala mdoc:silent
 trait Book:
   def title: String
 
@@ -96,35 +96,15 @@ class AudiobookLibrary(titles: String*) extends Library, Album:
 val al = AudiobookLibrary("Пушкин", "Толстой", "Достоевский")
 ```
 
-```scala
+```scala mdoc
 val book: Book = al.first
-// book: Book = AudioBook(title = "Пушкин", track = "empty")
 println(book.title)
-// Пушкин
 val books: List[Book] = al.items
-// books: List[Book] = List(
-//   BookAudio(title = "empty", track = "Пушкин"),
-//   BookAudio(title = "empty", track = "Толстой"),
-//   BookAudio(title = "empty", track = "Достоевский")
-// )
 books.foreach(b => println(b.title))
-// empty
-// empty
-// empty
 val audio: Audio = al.first
-// audio: Audio = AudioBook(title = "Пушкин", track = "empty")
 println(audio.track)
-// empty
 val audios: List[Audio] = al.items
-// audios: List[Audio] = List(
-//   BookAudio(title = "empty", track = "Пушкин"),
-//   BookAudio(title = "empty", track = "Толстой"),
-//   BookAudio(title = "empty", track = "Достоевский")
-// )
 audios.foreach(a => println(a.track))
-// Пушкин
-// Толстой
-// Достоевский
 ```
 
 ### Детали

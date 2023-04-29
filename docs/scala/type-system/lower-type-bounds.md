@@ -33,7 +33,7 @@ case class Nil[+B]() extends Node[B]:
 Чтобы исправить это, необходимо перевернуть вариантность типа параметра `elem` в `prepend`.
 Для этого вводится новый тип для параметра `U`, у которого тип `B` указан в качестве нижней границы типа.
 
-```scala
+```scala mdoc:silent
 trait Node[+B]:
   def prepend[U >: B](elem: U): Node[U]
 case class ListNode[+B](h: B, t: Node[B]) extends Node[B]:
@@ -46,22 +46,13 @@ case class Nil[+B]() extends Node[B]:
 
 Теперь можно сделать следующее:
 
-```scala
+```scala mdoc
 trait Bird
 case class AfricanSwallow() extends Bird
 case class EuropeanSwallow() extends Bird
 val africanSwallowList = ListNode[AfricanSwallow](AfricanSwallow(), Nil())
-// africanSwallowList: ListNode[AfricanSwallow] = ListNode(
-//   h = AfricanSwallow(),
-//   t = Nil()
-// )
 val birdList: Node[Bird] = africanSwallowList
-// birdList: Node[Bird] = ListNode(h = AfricanSwallow(), t = Nil())
 birdList.prepend(EuropeanSwallow())
-// res7: Node[Bird] = ListNode(
-//   h = EuropeanSwallow(),
-//   t = ListNode(h = AfricanSwallow(), t = Nil())
-// )
 ```
 
 Переменной с типом `Node[Bird]` можно присвоить значение `africanSwallowList`, а затем добавить и `EuropeanSwallow`.

@@ -200,7 +200,7 @@ def test(x: A | B) = x.hello // error: value `hello` is not a member of A | B
 
 С другой стороны, допускается следующее:
 
-```scala
+```scala mdoc:silent
 trait D
 trait E
 trait C { def hello: String }
@@ -213,18 +213,16 @@ def test(x: A | B) = x.hello // ok, т.к. `hello` - элемент объеди
 При этом необходимо отметить, что в метод `test` нельзя передать экземпляр `С`, 
 потому что `A | B` - подтип `C`, но не наоборот:
 
-```scala
+```scala mdoc:silent
 val a: A = new A:
   def hello = "Hello, A!"
 val b: B = new B:
   def hello = "Hello, B!"
 ```
 
-```scala
+```scala mdoc
 test(a)
-// res1: String = "Hello, A!"
 test(b)
-// res2: String = "Hello, B!"
 ```
 
 ```scala

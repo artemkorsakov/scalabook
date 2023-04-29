@@ -1,4 +1,4 @@
-package ru.scalabook.effect
+package ru.scalabook.libs.cats.effect
 
 import cats.effect.IO
 import munit.CatsEffectSuite

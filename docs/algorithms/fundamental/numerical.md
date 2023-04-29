@@ -10,14 +10,16 @@
 - `НОД(r, 0) = r` для любого ненулевого `r` (так как 0 делится на любое целое число).
 - Пусть `a = b*q + r`, тогда `НОД (a, b) = НОД (b, r)`.
 
-
-```scala
+```scala mdoc:invisible
+import scala.annotation.tailrec
+```
+```scala mdoc
 @tailrec
-def gcdByEuclideanAlgorithm(a: Long, b: Long): Long =
+final def gcdByEuclideanAlgorithm(a: Long, b: Long): Long =
   if b == 0 then a
   else gcdByEuclideanAlgorithm(b, a % b)
   
-gcdByEuclideanAlgorithm(4851, 3003) // 231  
+gcdByEuclideanAlgorithm(4851, 3003)
 ```
 
 ### Алгоритм НОД на основе четности чисел
@@ -30,7 +32,7 @@ gcdByEuclideanAlgorithm(4851, 3003) // 231
 - Если числа имеют разную четность, то НОД этих двух чисел равен НОД нечетному и четному, разделенному на 2.
 - Если оба нечетные, то можно воспользоваться алгоритмом Евклида.
 
-```scala
+```scala mdoc
 def gcd(a: Long, b: Long): Long =
   val u = math.abs(a)
   val v = math.abs(b)
@@ -44,7 +46,7 @@ def gcd(a: Long, b: Long): Long =
       case (0, 1) => gcd(u, v >> 1)
       case (_, _) => if (u > v) gcd(u - v, v) else gcd(v - u, u)
   
-gcd(4851, 3003) // 231  
+gcd(4851, 3003)  
 ```
 
 
@@ -58,13 +60,12 @@ gcd(4851, 3003) // 231
 
 Генератор можно реализовать на Scala так:
 
-```scala
+```scala mdoc
 val A = 7
 val B = 5
 val M = 11
 val generator = LazyList.iterate(0)(x => (A * x + B) % M)
 generator.take(11).toList
-// val res0: List[Int] = List(0, 5, 7, 10, 9, 2, 8, 6, 3, 4, 0)
 ```
 
 
@@ -168,8 +169,6 @@ def cubeRootOf(x: Double): Double =
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Falgorithms%2Ffundamental%2FNumerical.scala&plain=1)
-- [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Falgorithms%2Ffundamental%2FNumericalSuite.scala)
 - [Алгоритм Евклида](https://ru.wikipedia.org/wiki/%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%D0%95%D0%B2%D0%BA%D0%BB%D0%B8%D0%B4%D0%B0)
 - [Род Стивенс - Алгоритмы. Теория и практическое применение. Глава 2. Численные алгоритмы](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)

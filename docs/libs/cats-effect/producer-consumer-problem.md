@@ -709,5 +709,4 @@ def consumer[F[_]: Async: Console](id: Int, stateR: Ref[F, State[F, Int]]): F[Un
 
 **Ссылки:**
 
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Flibs%2Fcats%2Feffect%2FProducerConsumer.scala&plain=1)
 - [Cats effect documentation](https://typelevel.org/cats-effect/docs/tutorial#a-nameproducerconsumeraproducer-consumer-problem---concurrency-and-fibers)

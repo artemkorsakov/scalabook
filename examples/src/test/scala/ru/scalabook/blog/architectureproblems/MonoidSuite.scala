@@ -1,10 +1,9 @@
-package ru.scalabook.architectureproblems
+package ru.scalabook.blog.architectureproblems
 
 import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
 import org.scalacheck.Gen
+import org.scalacheck.Prop.*
 import ru.scalabook.blog.architectureproblems.Monoid.doTheMonoidLawsHold
-import ru.scalabook.blog.architectureproblems.Monoid
 
 class MonoidSuite extends ScalaCheckSuite:
   private val smallNumber = Gen.choose[Int](-100, 100)

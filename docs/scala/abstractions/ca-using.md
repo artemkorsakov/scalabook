@@ -6,10 +6,30 @@
 Здесь могут помочь параметры контекста, поскольку они позволяют компилятору синтезировать повторяющиеся аргументы 
 вместо того, чтобы каждый раз записывать их явно.
 
-Например, с [экземплярами given intOrd и listOrd](https://scalabook.gitflic.space/docs/scala/abstractions/ca-given) функция `max`, 
+Например, с [экземплярами given intOrd и listOrd](ca-given.md) функция `max`, 
 которая работает для любых аргументов с возможностью упорядочивания, может быть определена следующим образом:
 
-```scala
+```scala mdoc:invisible
+trait Ord[T]:
+  def compare(x: T, y: T): Int
+  extension (x: T) def < (y: T) = compare(x, y) < 0
+  extension (x: T) def > (y: T) = compare(x, y) > 0
+
+given intOrd: Ord[Int] with
+  def compare(x: Int, y: Int) =
+    if x < y then -1 else if x > y then +1 else 0
+
+given listOrd[T](using ord: Ord[T]): Ord[List[T]] with
+
+  def compare(xs: List[T], ys: List[T]): Int = (xs, ys) match
+    case (Nil, Nil) => 0
+    case (Nil, _) => -1
+    case (_, Nil) => +1
+    case (x :: xs1, y :: ys1) =>
+      val fst = ord.compare(x, y)
+      if fst != 0 then fst else compare(xs1, ys1)
+```
+```scala mdoc:silent
 def max[T](x: T, y: T)(using ord: Ord[T]): T =
   if ord.compare(x, y) < 0 then y else x
 ```
@@ -20,20 +40,17 @@ def max[T](x: T, y: T)(using ord: Ord[T]): T =
 Таким образом, компилятор Scala выполняет вывод терминов (**term inference**).
 Функцию `max` можно применить следующим образом:
 
-```scala
+```scala mdoc
 max(2, 3)(using intOrd)
-// res0: Int = 3
 ```
 
 Часть `(using intOrd)` передает `intOrd` как аргумент для параметра `ord`. 
 Но смысл параметров контекста в том, что этот аргумент также можно опустить (и это обычно так и есть).
 Таким образом, следующие выражения валидны:
 
-```scala
+```scala mdoc
 max(2, 3)
-// res1: Int = 3
 max(List(1, 2, 3), Nil)
-// res2: List[Int] = List(1, 2, 3)
 ```
 
 В вызове `max(2, 3)` компилятор Scala видит, что в области действия есть терм типа `Ord[Int]`,
@@ -45,7 +62,7 @@ max(List(1, 2, 3), Nil)
 поскольку оно используется только в синтезированных аргументах для других параметров контекста. 
 В этом случае можно не задавать имя параметра и указать только его тип. Например:
 
-```scala
+```scala mdoc:silent
 //                  не нужно придумывать имя параметра
 //                          vvvvvvvvvvvv
 def maximum[T](xs: List[T])(using Ord[T]): T =
@@ -56,9 +73,8 @@ def maximum[T](xs: List[T])(using Ord[T]): T =
 чтобы передать его в качестве предполагаемого аргумента в `max`. 
 Имя параметра опущено.
 
-```scala
+```scala mdoc
 maximum(List(1, 2, 3))
-// res3: Int = 3
 ```
 
 Как правило, параметры контекста могут быть определены 
@@ -71,9 +87,8 @@ maximum(List(1, 2, 3))
 Подобно тому, как задается раздел параметров с `using`,
 контекстные аргументы можно указать явно с помощью того же `using`:
 
-```scala
+```scala mdoc
 maximum(List(1, 2, 3))(using intOrd)
-// res4: Int = 3
 ```
 
 Явное предоставление контекстных параметров может быть полезно,
@@ -96,7 +111,7 @@ class GivenIntBox2(using givenInt: Int):
   //def n = summon[Int] // неопределенность
 ```
 
-Элемент `given` можно импортировать, как описано в разделе об [импорте givens](https://scalabook.gitflic.space/docs/scala/abstractions/ca-given-imports):
+Элемент `given` можно импортировать, как описано в разделе об [импорте givens](ca-given-imports.md):
 
 ```scala
 val b = GivenIntBox(using 23)
@@ -111,7 +126,7 @@ import b.*
 
 Вот два других метода, которые используют контекстный параметр типа `Ord[T]`:
 
-```scala
+```scala mdoc:silent
 def descending[T](using asc: Ord[T]): Ord[T] = new Ord[T]:
   def compare(x: T, y: T) = asc.compare(y, x)
 
@@ -122,17 +137,12 @@ def minimum[T](xs: List[T])(using Ord[T]) =
 Тело метода `minimum` передает `descending` как явный аргумент в `maximum(xs)`. 
 С этой настройкой все следующие вызовы нормализуются так:
 
-```scala
+```scala mdoc
 val xs = List(List(1,2,3), Nil)
-// xs: List[List[Int]] = List(List(1, 2, 3), List())
 minimum(xs)
-// res5: List[Int] = List()
 maximum(xs)(using descending)
-// res6: List[Int] = List()
 maximum(xs)(using descending(using listOrd))
-// res7: List[Int] = List()
 maximum(xs)(using descending(using listOrd(using intOrd)))
-// res8: List[Int] = List()
 ```
 
 ### Несколько using
@@ -141,14 +151,14 @@ maximum(xs)(using descending(using listOrd(using intOrd)))
 и using предложения можно свободно смешивать с обычными предложениями параметров.
 Пример:
 
-```
+```scala
 def f(u: Universe)(using ctx: u.Context)(using s: ctx.Symbol, k: ctx.Kind) = ...
 ```
 
 В коде несколько using предложений сопоставляются слева направо. 
 Пример:
 
-```
+```scala
 object global extends Universe { type Context = ... }
 given ctx : global.Context with { type Symbol = ...; type Kind = ... }
 given sym : ctx.Symbol
@@ -157,7 +167,7 @@ given kind: ctx.Kind
 
 Тогда все следующие вызовы действительны (и нормализуются до последнего)
 
-```
+```scala
 f(global)
 f(global)(using ctx)
 f(global)(using ctx)(using sym, kind)
@@ -170,13 +180,13 @@ f(global)(using ctx)(using sym, kind)
 Метод `summon` в `Predef` возвращает given определенного типа. 
 Например, вот как можно вызвать given экземпляр для `Ord[List[Int]]`:
 
-```
+```scala
 summon[Ord[List[Int]]]  // сводится к listOrd(using intOrd)
 ```
 
 Метод `summon` определяется как (нерасширяющая) функция идентификации по параметру контекста.
 
-```
+```scala
 def summon[T](using x: T): x.type = x
 ```
 

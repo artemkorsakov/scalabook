@@ -4,7 +4,7 @@
 т.е. позволяют добавлять новые методы в закрытые классы. 
 Например, предположим, что кто-то другой создал класс `Circle`:
 
-```scala
+```scala mdoc:silent
 case class Circle(x: Double, y: Double, radius: Double)
 ```
 
@@ -12,21 +12,21 @@ case class Circle(x: Double, y: Double, radius: Double)
 До того как концепция вывода терминов была введена в языки программирования, 
 единственное, что можно было сделать, это написать метод в отдельном классе или объекте, подобном этому:
 
-```scala
+```scala mdoc:silent
 object CircleHelpers:
   def circumference(c: Circle): Double = c.radius * math.Pi * 2
 ```
 
 Затем этот метод можно было использовать следующим образом:
 
-```scala
+```scala mdoc
 val aCircle = Circle(2, 3, 5)
 CircleHelpers.circumference(aCircle)
 ```
 
 Методы расширения позволяют создать метод `circumference` для работы с экземплярами `Circle`:
 
-```scala
+```scala mdoc
 extension (c: Circle)
   def circumference: Double = c.radius * math.Pi * 2
 ```
@@ -38,7 +38,7 @@ extension (c: Circle)
 
 Затем в коде метод `circumference` можно использовать так же, как если бы он был изначально определен в классе `Circle`:
 
-```scala
+```scala mdoc
 aCircle.circumference
 ```
 
@@ -94,34 +94,34 @@ extension [T: Numeric](x: T)
 
 Параметры типа в расширениях также можно комбинировать с параметрами типа в самих методах:
 
-```
+```scala
 extension [T](xs: List[T])
   def sumBy[U: Numeric](f: T => U): U = ...
 ```
 
 Аргументы типа, соответствующие параметрам типа метода, передаются стандартно:
 
-```
+```scala
 List("a", "bb", "ccc").sumBy[Int](_.length)
 ```
 
 Напротив, аргументы типа, соответствующие параметрам типа `extension`, могут быть переданы, 
 только если на метод ссылаются как на метод без расширения:
 
-```
+```scala
 sumBy[String](List("a", "bb", "ccc"))(_.length)
 ```
 
 Или при передаче обоих аргументов типа:
 
-```
+```scala
 sumBy[String](List("a", "bb", "ccc"))[Int](_.length)
 ```
 
 Расширения также могут принимать предложения `using`. 
 Например, приведенное выше расширение `+` можно было бы записать с предложения `using`:
 
-```
+```scala
 extension [T](x: T)(using n: Numeric[T])
   def + (y: T): T = n.plus(x, y)
 ```
@@ -157,7 +157,7 @@ extension (c: Circle)
 Коллективные расширения также могут принимать параметры типа и содержать предложения `using`. 
 Пример:
 
-```
+```scala
 extension [T](xs: List[T])(using Ordering[T])
   def smallest(n: Int): List[T] = xs.sorted.take(n)
   def smallestIndices(n: Int): List[Int] =
@@ -217,7 +217,7 @@ given ops1: IntOps()  // приносит safeMod в область видимо
 если он находится в неявной области действия типа получателя или в экземпляре `given` в этой области. 
 Пример:
 
-```
+```scala
 class List[T]:
   ...
 object List:

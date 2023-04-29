@@ -4,7 +4,7 @@
 обычно используемый для оптимизации производительности. 
 Концепция встраивания предоставляет собой точку входа в программирование с помощью макросов.
 
-1. Вводится `inline` как [мягкий модификатор](https://scalabook.gitflic.space/docs/scala/soft-keywords).
+1. Вводится `inline` как [мягкий модификатор](../soft-keywords.md).
 2. Гарантируется, что встраивание происходит на самом деле, а не с "максимальной эффективностью".
 3. Вводятся операции, которые гарантированно оцениваются во время компиляции.
 
@@ -12,7 +12,7 @@
 
 Простейшей формой встраивания является встраивание констант в программы:
 
-```scala
+```scala mdoc:silent
 inline val pi = 3.141592653589793
 inline val pie = "🥧"
 ```
@@ -20,11 +20,9 @@ inline val pie = "🥧"
 Использование ключевого слова `inline` в определениях значений гарантирует, 
 что все ссылки на `pi` и `pie` являются встроенными:
 
-```scala
+```scala mdoc
 val pi2 = pi + pi
-// pi2: Double = 6.283185307179586
 val pie2 = pie + pie
-// pie2: String = "🥧🥧"
 ```
 
 В приведенном выше коде ссылки `pi` и `pie` встроены. 
@@ -95,7 +93,7 @@ res
 
 Встроенные методы всегда должны применяться полностью. Например, вызов
 
-```
+```scala
 logged[String](1, "some message")
 ```
 
@@ -103,7 +101,7 @@ logged[String](1, "some message")
 Однако можно передавать аргументы с подстановочными знаками.
 Например,
 
-```
+```scala
 logged[String](1, "some message")(_)
 ```
 
@@ -129,7 +127,7 @@ logged[String](1, "some message")(_)
 
 Например, рассмотрим следующий код:
 
-```scala
+```scala mdoc:silent
 class Logger:
   def log(x: Any): Unit = println(x)
 
@@ -145,18 +143,16 @@ inline def logged[T](logger: Logger, x: T): Unit =
 
 Теперь, учитывая следующий код:
 
-```scala
+```scala mdoc
 logged(new RefinedLogger, "✔")
-// Any: ✔
 ```
 
 Он расширяется до:
 
-```scala
+```scala mdoc
 val logger = new RefinedLogger
 val x = "✔"
 logger.log(x)
-// String: ✔
 ```
 
 Несмотря на то, что теперь известно, что `x` - это `String`, 
@@ -444,7 +440,7 @@ power(2, unknownNumber) // error
 
 Рассмотрим следующий пример:
 
-```scala
+```scala mdoc:silent:reset
 trait Logger:
   def log(x: Any): Unit
 
@@ -458,16 +454,14 @@ class PrintLogger extends Logger:
 
 Например:
 
-```scala
+```scala mdoc:silent
 val pl: PrintLogger = new PrintLogger
 val l: Logger = pl
 ```
 
-```scala
+```scala mdoc
 pl.log("msg")
-// msg
 l.log("msg")
-// msg
 ```
 
 Встроенные вызовы и динамически отправленные вызовы дают одинаковые результаты.
@@ -580,18 +574,16 @@ object Constants extends InlineConstants:
 на основе точного типа встроенного выражения. 
 Говоря языком Scala 2, прозрачность отражает суть "макросов белого ящика".
 
-```scala
+```scala mdoc:silent
 transparent inline def default(inline name: String): Any =
   inline if name == "Int" then 0
   else inline if name == "String" then ""
   else ???
 ```
 
-```scala
+```scala mdoc
 val n0: Int = default("Int")
-// n0: Int = 0
 val s0: String = default("String")
-// s0: String = ""
 ```
 
 Обратите внимание, что даже если возвращаемый тип метода `default` — `Any`, 
@@ -681,16 +673,14 @@ A `transparent inline given` может добавить описание тип
 В приведенном ниже примере определяется встроенный метод с одним встроенным выражением соответствия,
 которое выбирает case на основе его статического типа:
 
-```scala
+```scala mdoc
 transparent inline def g(x: Any): Any =
   inline x match
     case x: String => (x, x) // Tuple2[String, String](x, x)
     case x: Double => x
 
 g(1.0d)   // Has type 1.0d which is a subtype of Double
-// res5: Double = 1.0 
 g("test") // Has type (String, String)
-// res6: Tuple2[String, String] = ("test", "test")
 ```
 
 `x` проверяется статически, и встроенное совпадение сокращается,
@@ -738,7 +728,7 @@ val intTwo: 2 = natTwo
 
 ### scala.compiletime
 
-[Пакет scala.compiletime](https://scalabook.gitflic.space/docs/scala/metaprogramming/compile-time-ops) 
+[Пакет scala.compiletime](../metaprogramming/compile-time-ops.md) 
 предоставляет полезные абстракции метапрограммирования, 
 которые можно использовать в `inline` методах для обеспечения пользовательской семантики.
 
@@ -746,7 +736,7 @@ val intTwo: 2 = natTwo
 ### Макросы
 
 Встраивание также является основным механизмом, используемым для написания макросов. 
-[Макросы](https://scalabook.gitflic.space/docs/scala/metaprogramming/macros) позволяют управлять генерацией и анализом кода после встроенного вызова.
+[Макросы](../metaprogramming/macros.md) позволяют управлять генерацией и анализом кода после встроенного вызова.
 
 ```scala
 inline def power(x: Double, inline n: Int) =

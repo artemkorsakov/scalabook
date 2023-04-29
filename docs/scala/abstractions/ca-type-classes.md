@@ -25,7 +25,7 @@
 который имеет один или несколько абстрактных методов. 
 Поскольку у `Showable` есть только один метод с именем `show`, он написан так:
 
-```scala
+```scala mdoc:silent
 // Класс типа
 trait Showable[A]:
   extension(a: A) def show: String
@@ -55,14 +55,14 @@ trait Show:
 Следующий шаг — определить, для каких классов должен работать `Showable`, а затем реализовать это поведение. 
 Например, чтобы реализовать `Showable` для данного класса `Person`:
 
-```scala
+```scala mdoc:silent
 case class Person(firstName: String, lastName: String)
 ```
 
 нужно определить `given` значение для `Showable[Person]`. 
 Этот код предоставляет конкретный экземпляр `Showable` для класса `Person`:
 
-```scala
+```scala mdoc:silent
 given Showable[Person] with
   extension(p: Person) def show: String =
     s"${p.firstName} ${p.lastName}"
@@ -75,11 +75,9 @@ given Showable[Person] with
 
 Этот класс типа можно использовать следующим образом:
 
-```scala
+```scala mdoc
 val person = Person("John", "Doe")
-// person: Person = Person(firstName = "John", lastName = "Doe")
 println(person.show)
-// John Doe
 ```
 
 Опять же, если бы в Scala не было метода `toString`, доступного для каждого класса, 
@@ -90,12 +88,10 @@ println(person.show)
 
 Как и в случае с наследованием, можно определить методы, использующие `Showable` в качестве параметра типа:
 
-```scala
+```scala mdoc
 def showAll[S: Showable](xs: List[S]): Unit =
   xs.foreach(x => println(x.show))
 showAll(List(Person("Jane", "Jackson"), Person("Mary", "Jameson")))
-// Jane Jackson
-// Mary Jameson
 ```
 
 #### Класс типов с несколькими методами
@@ -205,7 +201,7 @@ assertTransformation(List("a1", "b1"), List("a", "b"), elt => s"${elt}1")
 
 Это первый шаг, но на практике желательно, чтобы функция `map` была методом, доступным непосредственно для типа `F`. 
 Чтобы можно было экземплярам `F` напрямую обращаться к `map` и избавиться от части `summon[Functor[F]]`. 
-Как и в предыдущем примере моноидов, в этом помогают [extension методы](https://scalabook.gitflic.space/docs/scala/abstractions/ca-extension-methods). 
+Как и в предыдущем примере моноидов, в этом помогают [extension методы](ca-extension-methods.md). 
 Переопределим класс типов `Functor` с помощью методов расширения.
 
 ```scala
@@ -347,7 +343,7 @@ given configDependentMonad: Monad[ConfigDependent] with
 end configDependentMonad
 ```
 
-Тип `ConfigDependent` может быть записан с использованием [лямбда-выражений типа](https://scalabook.gitflic.space/docs/scala/type-system/type-lambdas):
+Тип `ConfigDependent` может быть записан с использованием [лямбда-выражений типа](../type-system/type-lambdas.md):
 
 ```scala
 type ConfigDependent = [Result] =>> Config => Result

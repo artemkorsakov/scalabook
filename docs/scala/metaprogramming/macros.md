@@ -13,7 +13,7 @@
 
 Более детально о типе `Expr[T]`, а также различные способы анализа и построения экземпляров, 
 будут раскрыты в главах [Quoted Code][quoted-code] 
-и [Reflection](https://scalabook.gitflic.space/docs/scala/metaprogramming/reflection). 
+и [Reflection](../metaprogramming/reflection.md). 
 Пока достаточно знать, что макросы — это метапрограммы, которые манипулируют выражениями типа `Expr[T]`.
 
 Следующая реализация макроса просто печатает выражение предоставленного аргумента:
@@ -239,7 +239,7 @@ def sumCode(nums: Expr[Seq[Int]])(using Quotes): Expr[Int] =
 
 - дополнительные конструкторы, такие как `Expr.apply`,
 - [сопоставление с образцом в цитатах][quoted-code],
-- [reflection API](https://scalabook.gitflic.space/docs/scala/metaprogramming/reflection);
+- [reflection API](../metaprogramming/reflection.md);
 
 каждый из них усложняется и потенциально теряет гарантии безопасности. 
 Обычно рекомендуется чаще использовать простые API. 
@@ -307,5 +307,5 @@ def value(boolExpr: Expr[Boolean]): Option[Boolean] =
 - [Scala 3 Guide](https://docs.scala-lang.org/scala3/guides/macros/macros.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/metaprogramming/macros.html)
 
-[quoted-code]: https://scalabook.gitflic.space/docs/scala/metaprogramming/quoted-code
-[inline]: https://scalabook.gitflic.space/docs/scala/metaprogramming/inline
+[quoted-code]: ../metaprogramming/quoted-code.md
+[inline]: ../metaprogramming/inline.md

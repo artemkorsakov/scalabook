@@ -18,7 +18,7 @@ inline def error(inline msg: String): Nothing
 Если встроенное расширение приводит к вызову `error(msgStr)`,
 компилятор выдает сообщение об ошибке, содержащее заданный `msgStr`.
 
-```scala
+```scala mdoc:silent
 import scala.compiletime.error
 
 inline def doSomething(inline mode: Boolean): Unit =
@@ -27,11 +27,9 @@ inline def doSomething(inline mode: Boolean): Unit =
   else error("Mode must be a known value")
 ```
 
-```scala
+```scala mdoc
 doSomething(true)
-// true
 doSomething(false)
-// false
 ```
 
 ```scala
@@ -271,7 +269,7 @@ val dAny: None.type = defaultValue[Any]
 
 В качестве другого примера рассмотрим приведенную ниже версию на уровне типов `toInt`: 
 для заданного типа, представляющего число Пеано, вернуть соответствующее ему целочисленное значение. 
-Рассмотрим определения чисел, как в разделе ["inline match"](https://scalabook.gitflic.space/docs/scala/metaprogramming/inline#%D0%92%D1%81%D1%82%D1%80%D0%BE%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5-match). 
+Рассмотрим определения чисел, как в разделе ["inline match"](../metaprogramming/inline.md). 
 Вот как можно определить `toIntT`:
 
 ```scala

@@ -1,10 +1,10 @@
 # Экземпляры given
 
 _Given instances_ (или просто "givens") определяют "канонические" значения определенных типов, 
-которые служат для синтеза аргументов [в параметрах контекста](https://scalabook.gitflic.space/docs/scala/abstractions/ca-using). 
+которые служат для синтеза аргументов [в параметрах контекста](ca-using.md). 
 Пример:
 
-```scala
+```scala mdoc:silent
 trait Ord[T]:
   def compare(x: T, y: T): Int
   extension (x: T) def < (y: T) = compare(x, y) < 0
@@ -31,15 +31,14 @@ given listOrd[T](using ord: Ord[T]): Ord[List[T]] with
 которые поставляются с `given` экземпляром `Ord[T]`. 
 Предложение `using` в `listOrd` определяет условие: 
 для существования `given` типа `Ord[List[T]]` должен существовать `given` тип `Ord[T]`. 
-Такие условия расширяются компилятором [до параметров контекста](https://scalabook.gitflic.space/docs/scala/abstractions/ca-using).
+Такие условия расширяются компилятором [до параметров контекста](ca-using.md).
 
 Результат:
 
-```scala
+```scala mdoc
 def sort[T](lists: List[List[T]])(using ord: Ord[List[T]]): List[List[T]] =
   lists.sortWith((l1, l2) => ord.compare(l1, l2) < 0)
 sort(List(List(1, 3, 4), List(1, 2), List(1, 2, 3, 4, 5)))
-// res0: List[List[Int]] = List(List(1, 2), List(1, 2, 3, 4, 5), List(1, 3, 4))
 ```
 
 ### Анонимные givens
@@ -91,7 +90,7 @@ given (using config: Config): Factory = MemoizingFactory(config)
 
 ### Given макросы
 
-Псевдонимы given могут иметь [модификаторы `inline` и `transparent`](https://scalabook.gitflic.space/docs/scala/metaprogramming/inline).
+Псевдонимы given могут иметь [модификаторы `inline` и `transparent`](../metaprogramming/inline.md).
 Пример:
 
 ```scala
@@ -153,7 +152,7 @@ pair match
 Для любого типа запроса `Q`, `NotGiven[Q]` выполняется успешно тогда и только тогда, 
 когда неявный поиск `Q` терпит неудачу, например:
 
-```scala
+```scala mdoc:silent
 import scala.util.NotGiven
 
 trait Tagged[A]
@@ -166,11 +165,9 @@ object Foo:
 given Tagged[Int]()
 ```
 
-```scala
+```scala mdoc
 summon[Foo[Int]].value
-// res1: String = "fooTagged is found"
 summon[Foo[String]].value
-// res2: String = "fooNotTagged is found"
 ```
 
 

@@ -90,7 +90,7 @@ type Typeable[T] = TypeTest[Any, T]
 
 Этот псевдоним можно использовать так:
 
-```scala
+```scala mdoc
 import scala.reflect.Typeable
 
 def f[T: Typeable]: Boolean =
@@ -99,9 +99,7 @@ def f[T: Typeable]: Boolean =
     case _ => false
 
 f[String]
-// res0: Boolean = true
 f[Int]
-// res1: Boolean = false
 ```
 
 ### Пример
@@ -109,7 +107,7 @@ f[Int]
 Учитывая следующее абстрактное определение чисел Пеано, 
 которое предоставляет два given экземпляра типов `TypeTest[Nat, Zero]` и `TypeTest[Nat, Succ]`:
 
-```scala
+```scala mdoc:silent
 import scala.reflect.*
 
 trait Peano:
@@ -132,7 +130,7 @@ trait Peano:
 
 вместе с реализацией чисел Пеано на основе типа `Int`:
 
-```scala
+```scala mdoc:silent
 object PeanoInt extends Peano:
   type Nat  = Int
   type Zero = Int
@@ -157,7 +155,7 @@ object PeanoInt extends Peano:
 
 можно написать следующую программу:
 
-```scala
+```scala mdoc
 import PeanoInt.*
 
 def divOpt(m: Nat, n: Nat): Option[(Nat, Nat)] =
@@ -166,16 +164,11 @@ def divOpt(m: Nat, n: Nat): Option[(Nat, Nat)] =
     case s @ Succ(_) => Some(safeDiv(m, s))
 
 val two = Succ(Succ(Zero))
-// two: Int = 2
 val five = Succ(Succ(Succ(two)))
-// five: Int = 5
 
 println(divOpt(five, two))
-// Some((2,1))
 println(divOpt(two, five))
-// Some((0,2))
 println(divOpt(two, Zero))
-// None
 ```
 
 Обратите внимание, что без `TypeTest[Nat, Succ]` паттерн `Succ.unapply(nat: Succ)` был бы `unchecked`.

@@ -4,7 +4,7 @@
 
 Например:
 
-```scala
+```scala mdoc:silent
 class BitMap
 class InkJet
 
@@ -39,11 +39,9 @@ final type PrinterType              = printUnit.PrinterType
 
 Доступ к ним возможен как изнутри `Copier`, так и снаружи:
 
-```scala
+```scala mdoc
 val copier = new Copier
 copier.print(copier.scan())
-// Scanner.scan()
-// Printer.print()
 ```
 
 Предложение `export` имеет тот же формат, что и предложение импорта. Его общая форма:

@@ -56,7 +56,7 @@
 
 Можно предложить следующую реализацию:
 
-```scala
+```scala mdoc
 def goodEnough(guess: Double, next: Double): Boolean = 
   math.abs(guess - next) < 0.001
 
@@ -73,12 +73,10 @@ def sqrtIter(guess: Double, x: Double): Double =
 def sqrt(x: Double): Double = sqrtIter(1.0, x)
 
 sqrt(2.0)
-// res0: Double = 1.4142156862745097
 sqrt(1000000) 
-// res1: Double = 1000.0001533016629
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-7.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/9m6naSpLQMKkqMvJeGvjNw)
 
 #### Упражнение 1.8
 
@@ -91,7 +89,7 @@ sqrt(1000000)
 
 Процедура вычисления кубического корня:
 
-```scala
+```scala mdoc
 def square(x: Double): Double = x * x
 
 def goodEnough(guess: Double, next: Double): Boolean = 
@@ -108,12 +106,10 @@ def cubeIter(guess: Double, x: Double): Double =
 def cubeOf(x: Double): Double = cubeIter(1.0, x)
 
 cubeOf(2.0)
-// res0: Double = 1.2599210500177698
 cubeOf(1000000)
-// res1: Double = 100.00000000005313 
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-8.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/MPOYyJyFRoGnIYUbxzTHMw)
 
 ---
 

@@ -84,7 +84,7 @@
 
 Функцию Аккермана можно определить так:
 
-```scala
+```scala mdoc
 def functionAckermann(x: Int, y: Int): Int =
   if y == 0 then 0
   else if x == 0 then 2 * y
@@ -92,11 +92,8 @@ def functionAckermann(x: Int, y: Int): Int =
   else functionAckermann(x - 1, functionAckermann(x, y - 1))
 
 functionAckermann(1, 10)
-// res0: Int = 1024
 functionAckermann(2, 4)
-// res1: Int = 65536
 functionAckermann(3, 3)
-// res2: Int = 65536
 ```
 
 > Рассмотрим следующие процедуры, где `A` — процедура, определенная выше:
@@ -112,7 +109,7 @@ functionAckermann(3, 3)
 - `g <=> 2^n`
 - `h <=> 2^2^...^2 (n раз)`
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-10.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/AaBfKhBDTI6LT8PayhkQlg)
 
 ---
 

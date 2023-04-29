@@ -21,7 +21,7 @@
 
 Решение на Scala:
 
-```scala
+```scala mdoc
 def simpsonRule(f: Double => Double, a: Double, b: Double, n: Int): Double =
   val h = (b - a) / n
   def y(k: Int): Double =
@@ -30,11 +30,11 @@ def simpsonRule(f: Double => Double, a: Double, b: Double, n: Int): Double =
 
   (0 to n).foldLeft(0.0)((acc, k) => acc + y(k)) * h / 3
 
-simpsonRule(cube, 0.0, 1.0, 100)   // 0.25000000000000006
-simpsonRule(cube, 0.0, 1.0, 1000)  // 0.25000000000000006
+simpsonRule(cube, 0.0, 1.0, 100)   
+simpsonRule(cube, 0.0, 1.0, 1000)  
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-29.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/4ZbXwD7YR7eMwKtOrLCALg)
 
 
 #### Упражнение 1.30
@@ -54,7 +54,7 @@ simpsonRule(cube, 0.0, 1.0, 1000)  // 0.25000000000000006
 
 Решение на Scala:
 
-```scala
+```scala mdoc
 def cube(a: Double): Double = a * a * a
 
 def sum(
@@ -72,11 +72,11 @@ def integral(f: Double => Double, a: Double, b: Double, dx: Double): Double =
   def addDx(x: Double): Double = x + dx
   sum(f, a + dx / 2, addDx, b) * dx
 
-integral(cube, 0.0, 1.0, 0.01)  // 0.24998750000000042
-integral(cube, 0.0, 1.0, 0.001) // 0.24999987500000073
+integral(cube, 0.0, 1.0, 0.01)  
+integral(cube, 0.0, 1.0, 0.001) 
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-30.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/MdvSkJvWT0qfjA9UgrGceg)
 
 
 #### Упражнение 1.31
@@ -94,7 +94,7 @@ integral(cube, 0.0, 1.0, 0.001) // 0.24999987500000073
 
 Решение на Scala:
 
-```scala
+```scala mdoc:reset
 val identity: Double => Double = x => x
 val nextNum: Double => Double = x => x + 1
 val square: Double => Double = x => x * x
@@ -116,8 +116,8 @@ def factorialRec(n: Int): Int =
 def calculatePiRec(n: Int): Double =
   4 * productRec(piFraction, 1, nextNum, n)
 
-factorialRec(10)     // 3628800
-calculatePiRec(1000) // 3.142377365093882
+factorialRec(10)     
+calculatePiRec(1000) 
 
 def productIter(
     term: Double => Double,
@@ -136,11 +136,11 @@ def factorialIter(n: Int): Int =
 def calculatePiIter(n: Int): Double =
   4 * productIter(piFraction, 1, nextNum, n)
 
-factorialIter(10)     // 3628800
-calculatePiIter(1000) // 3.1423773650938855
+factorialIter(10)     
+calculatePiIter(1000) 
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-31.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/csS3FdhYQxuUZC12CbgqrQ)
 
 
 #### Упражнение 1.32
@@ -160,7 +160,7 @@ calculatePiIter(1000) // 3.1423773650938855
 
 Решение на Scala:
 
-```scala
+```scala mdoc:reset
 def accumulateRec(
     combiner: (Double, Double) => Double,
     nullValue: Double,
@@ -206,7 +206,7 @@ def productIter(
   accumulateIter(_ * _, 1.0, term, a, next, b)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-32.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/DkL9dDr2S8aQdjwTs2p0OQ)
 
 
 #### Упражнение 1.33
@@ -228,7 +228,7 @@ def productIter(
 
 Решение на Scala:
 
-```scala
+```scala mdoc:reset:compile
 def filteredAccumulateRec(
     combiner: (Double, Double) => Double,
     nullValue: Double,
@@ -302,7 +302,7 @@ def productPrimesLessThanN(n: Int): Int =
   )
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-33.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/KXhnTQAvTeW7NsV9Wy3hRg)
 
 
 ---

@@ -20,7 +20,7 @@
 
 На Scala эта программа будет выглядеть так:
 
-```scala
+```scala mdoc
 def power(b: Long, n: Long): BigInt =
   @scala.annotation.tailrec
   def loop(base: BigInt, power: Long, acc: BigInt): BigInt =
@@ -29,10 +29,10 @@ def power(b: Long, n: Long): BigInt =
     else loop(base, power - 1, base * acc)
   loop(b, n, 1)
 
-power(2, 10) // 1024
+power(2, 10)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-16.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/Vwu5s7IbS8upuU83PIWiJA)
 
 
 #### Упражнение 1.17
@@ -56,7 +56,7 @@ power(2, 10) // 1024
 
 На Scala эта программа будет выглядеть так:
 
-```scala
+```scala mdoc
 def double(n: Long): Long =
   n << 1
 
@@ -68,10 +68,10 @@ def fastMul(a: Long, b: Long): Long =
   else if b % 2 == 0 then double(fastMul(a, halve(b)))
   else a + fastMul(a, b - 1)
 
-fastMul(22, 10) // 220
+fastMul(22, 10)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-17.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/v7bXGTUPRpi6YMrDC7LnUg)
 
 
 #### Упражнение 1.18
@@ -82,7 +82,7 @@ fastMul(22, 10) // 220
 
 На Scala эта программа будет выглядеть так:
 
-```scala
+```scala mdoc:reset
 def double(n: Long): Long =
   n << 1
 
@@ -97,10 +97,10 @@ def fastMul(a: Long, b: Long): Long =
     else loop(base, times - 1, base + acc)
   loop(a, b, 0)
 
-fastMul(22, 10) // 220
+fastMul(22, 10)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-18.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/MNMMlUBVTuejpjevIBuz3g)
 
 
 #### Упражнение 1.19
@@ -155,7 +155,7 @@ fastMul(22, 10) // 220
 
 Что позволяет реализовать программу так:
 
-```scala
+```scala mdoc
 def fastFib(n: Int): BigInt =
   @scala.annotation.tailrec
   def loop(a: BigInt, b: BigInt, p: BigInt, q: BigInt, count: Int): BigInt =
@@ -166,10 +166,10 @@ def fastFib(n: Int): BigInt =
 
   loop(1, 0, 0, 1, n)
 
-fastFib(30) // 832040
+fastFib(30)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-19.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/B4ptJqqXS3CEsvtC9rsHtw)
 
 
 ---

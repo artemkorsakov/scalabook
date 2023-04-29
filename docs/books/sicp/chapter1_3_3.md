@@ -15,7 +15,7 @@
 
 Решение на Scala:
 
-```scala
+```scala mdoc
 val tolerance = 0.00001
 
 def fixedPoint(f: Double => Double, firstGuess: Double): Double =
@@ -27,10 +27,10 @@ def fixedPoint(f: Double => Double, firstGuess: Double): Double =
     else tryGuess(next)
   tryGuess(firstGuess)
 
-fixedPoint(x => 1 + (1.0 / x), 1.0)  // 1.6180327868852458
+fixedPoint(x => 1 + (1.0 / x), 1.0) 
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-35.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/kyMNERl5SnK8o9ePk1vrzg)
 
 #### Упражнение 1.36
 
@@ -118,7 +118,7 @@ res1: Double = 4.555536206185039
 // 4.555536206185039
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-36.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/GixzWz6oQRuj4BWMrbU4hw)
 
 #### Упражнение 1.37
 
@@ -153,29 +153,29 @@ res1: Double = 4.555536206185039
 
 Рекурсивный процесс: 
 
-```scala
+```scala mdoc
 def contFracRec(n: Int => Double, d: Int => Double, k: Int): Double =
   def loop(i: Int): Double =
     if i == k then n(i) / d(i)
     else n(i) / (d(i) + loop(i + 1))
   loop(1)
 
-contFracRec(_ => 1.0, _ => 1.0, 11) // 0.6180(5)
+contFracRec(_ => 1.0, _ => 1.0, 11)
 ```
 
 Итеративный процесс:
 
-```scala
+```scala mdoc:reset
 def contFracIter(n: Int => Double, d: Int => Double, k: Int): Double =
   def loop(i: Int, result: Double): Double =
     if i == 0 then result
     else loop(i - 1, n(i) / (d(i) + result))
   loop(k, 0.0)
 
-contFracIter(_ => 1.0, _ => 1.0, 11) // 0.6180(5)
+contFracIter(_ => 1.0, _ => 1.0, 11)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-37.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/o4M3kiklSiStzl3LUN91lg)
 
 #### Упражнение 1.38
 
@@ -188,7 +188,7 @@ contFracIter(_ => 1.0, _ => 1.0, 11) // 0.6180(5)
 
 Решение на Scala:
 
-```scala
+```scala mdoc:reset
 def contFracIter(n: Int => Double, d: Int => Double, k: Int): Double =
   def loop(i: Int, result: Double): Double =
     if i == 0 then result
@@ -204,7 +204,7 @@ val d: Int => Double = i =>
 contFracIter(n, d, 1000) // 0.7182818284590453
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-38.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/usu62Nt0TsqHQHYA97wZBA)
 
 #### Упражнение 1.39
 
@@ -220,7 +220,7 @@ contFracIter(n, d, 1000) // 0.7182818284590453
 
 Решение на Scala:
 
-```scala
+```scala mdoc:reset
 def contFracIter(n: Int => Double, d: Int => Double, k: Int): Double =
   def loop(i: Int, result: Double): Double =
     if i == 0 then result
@@ -236,10 +236,10 @@ val d: Int => Double = i => 2 * (i - 1) + 1
 def tanCf(x: Double, k: Int): Double =
   contFracIter(n(x), d, k)
 
-tanCf(1.0, 100) // 1.557407724654902
+tanCf(1.0, 100)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-39.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/lZ9YXPg8S9ij3UZBAz8tUw)
 
 
 ---

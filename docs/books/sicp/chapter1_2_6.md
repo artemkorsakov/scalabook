@@ -12,7 +12,7 @@
 
 Решение на Scala:
 
-```scala
+```scala mdoc
 def divides(a: Long, b: Long): Boolean = a % b == 0
 
 def findDivisor(n: Long, d: Long): Long =
@@ -22,12 +22,12 @@ def findDivisor(n: Long, d: Long): Long =
 
 def smallestDivisor(n: Long): Long = findDivisor(n, 2)
 
-smallestDivisor(199)    // 199
-smallestDivisor(1999)   // 1999
-smallestDivisor(19999)  // 7
+smallestDivisor(199)   
+smallestDivisor(1999) 
+smallestDivisor(19999)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-21.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/1kSbB13fQhG0DhEOngZFEQ)
 
 
 #### Упражнение 1.22
@@ -109,7 +109,7 @@ searchForPrimes(100000, 100000 + 1000)    // Vector(100003, 100019, 100043, ...)
 searchForPrimes(1000000, 1000000 + 1000)  // Vector(1000003, 1000033, 1000037, ...)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-22.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/JOA2TWkATHiF4t3P9V7l8Q)
 
 
 #### Упражнение 1.23
@@ -131,7 +131,7 @@ searchForPrimes(1000000, 1000000 + 1000)  // Vector(1000003, 1000033, 1000037, .
 
 На Scala эта программа будет выглядеть так:
 
-```scala
+```scala mdoc:reset
 def divides(a: Long, b: Long): Boolean = a % b == 0
 
 def next(a: Long): Long =
@@ -150,7 +150,7 @@ Seq(1009, 1013, 1019, 10007, 10009, 10037, 100003, 100019, 100043, 1000003,
   1000033, 1000037).forall(isPrime)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-23.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/xE0njNosQWK9zjDUHgw7aQ)
 
 
 #### Упражнение 1.24
@@ -228,7 +228,7 @@ Seq(1009, 1013, 1019, 10007, 10009, 10037, 100003, 100019, 100043, 1000003,
 
 На Scala эта программа будет выглядеть так:
 
-```scala
+```scala mdoc
 def expmod(base: Long, exp: Long, m: Long): Long =
   if exp == 0 then 1
   else if exp % 2 == 0 then
@@ -241,15 +241,15 @@ def expmod(base: Long, exp: Long, m: Long): Long =
 def fermatTest(n: Long): Boolean =
   (2L until n).forall(a => expmod(a, n, n) == a)
 
-fermatTest(561)   // true
-fermatTest(1105)  // true
-fermatTest(1729)  // true
-fermatTest(2465)  // true
-fermatTest(2821)  // true
-fermatTest(6601)  // true
+fermatTest(561)  
+fermatTest(1105) 
+fermatTest(1729) 
+fermatTest(2465) 
+fermatTest(2821) 
+fermatTest(6601) 
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-27.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/YAeohITfTfCb1kwDB9VNGw)
 
 
 #### Упражнение 1.28
@@ -300,19 +300,19 @@ def fermatTest(n: Long): Boolean =
 def fastIsPrime(n: Long, times: Int): Boolean =
   (times <= 0) || (fermatTest(n) && fastIsPrime(n, times - 1))
 
-fastIsPrime(19, 100)   // true
-fastIsPrime(199, 100)  // true
-fastIsPrime(1999, 100) // true
+fastIsPrime(19, 100)   
+fastIsPrime(199, 100)  
+fastIsPrime(1999, 100) 
 
-fastIsPrime(561, 100)  // false
-fastIsPrime(1105, 100) // false
-fastIsPrime(1729, 100) // false
-fastIsPrime(2465, 100) // false
-fastIsPrime(2821, 100) // false
-fastIsPrime(6601, 100) // false
+fastIsPrime(561, 100)  
+fastIsPrime(1105, 100) 
+fastIsPrime(1729, 100) 
+fastIsPrime(2465, 100) 
+fastIsPrime(2821, 100) 
+fastIsPrime(6601, 100) 
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-28.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/DRqIItJmTxmmhIDoRYaTzw)
 
 ---
 

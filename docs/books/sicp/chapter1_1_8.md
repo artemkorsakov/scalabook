@@ -6,7 +6,7 @@
 
 ### 1.1.8. Процедуры как абстракции типа «черный ящик»
 
-```scala
+```scala mdoc
 def sqrt(x: Double): Double = 
   def goodEnough(guess: Double, next: Double): Boolean =  math.abs(guess - next) < 0.001
 
@@ -22,9 +22,7 @@ def sqrt(x: Double): Double =
   sqrtIter(1.0)
 
 sqrt(2.0)
-// res0: Double = 1.4142156862745097
 sqrt(1000000) 
-// res1: Double = 1000.0001533016629
 ```
 
 

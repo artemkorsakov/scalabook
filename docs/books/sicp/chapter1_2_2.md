@@ -33,7 +33,7 @@ def iteration(n: Int): Int =
   loop(2, 1, 0, n)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-11.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/H7ln1CFmTrusvslOjsHgBw)
 
 #### Упражнение 1.12
 
@@ -56,15 +56,15 @@ def iteration(n: Int): Int =
 > 
 > Напишите процедуру, вычисляющую элементы треугольника Паскаля с помощью рекурсивного процесса.
 
-```scala
+```scala mdoc
 def pascalsTriangle(n: Int, k: Int): Int =
   if n == 0 || k == n || k == 0 then 1
   else pascalsTriangle(n - 1, k - 1) + pascalsTriangle(n - 1, k)
 
-pascalsTriangle(4, 2) // 6
+pascalsTriangle(4, 2)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-12.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/qxmgWhSsS2exUsfTtboTkA)
 
 #### Упражнение 1.13
 

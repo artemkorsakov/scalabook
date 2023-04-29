@@ -24,7 +24,7 @@ def cubic(a: Double, b: Double, c: Double): Double => Double = x =>
   cube(x) + a * square(x) + b * x + c
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-40.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/5K8VDuv3QhqbnVbO955asw)
 
 
 #### Упражнение 1.41
@@ -39,17 +39,17 @@ def cubic(a: Double, b: Double, c: Double): Double => Double = x =>
 
 Решение на Scala:
 
-```scala
+```scala mdoc
 val inc: Int => Int = _ + 1
 
 def double[T](f: T => T): T => T = x => f(f(x))
 
 // (((double (double double)) inc) 5)
 val f: (Int => Int) => (Int => Int) = double(double(double))
-f(inc)(5) // 21
+f(inc)(5)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-41.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/GwhY4i7zTse1kU4xAw6LKQ)
 
 
 #### Упражнение 1.42
@@ -67,16 +67,16 @@ f(inc)(5) // 21
 
 Решение на Scala:
 
-```scala
+```scala mdoc:reset
 def compose[A, B, C](f: B => C, g: A => B): A => C = x => f(g(x))
 
 val square: Int => Int = x => x * x
 val inc: Int => Int = x => x + 1
 
-compose(square, inc)(6) // 49
+compose(square, inc)(6)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-42.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/hKt6WdQETDCLqfafsx7uHQ)
 
 
 #### Упражнение 1.43
@@ -102,7 +102,7 @@ compose(square, inc)(6) // 49
 
 Решение на Scala:
 
-```scala
+```scala mdoc:reset
 def compose[A, B, C](f: B => C, g: A => B): A => C = x => f(g(x))
 
 def repeated[A](f: A => A, n: Int): A => A =
@@ -111,10 +111,10 @@ def repeated[A](f: A => A, n: Int): A => A =
 
 val square: Int => Int = x => x * x
 
-repeated(square, 2)(5) // 625
+repeated(square, 2)(5)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-43.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/YnKFqK1dTEaThXI09u1s1A)
 
 
 #### Упражнение 1.44
@@ -142,7 +142,7 @@ def nFoldSmoothedFunction(f: Double => Double, n: Int): Double => Double =
   repeated(smooth, n)(f)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-44.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/ofcf1izRRLKiYkw2dGP0zA)
 
 
 #### Упражнение 1.45
@@ -166,7 +166,7 @@ def nFoldSmoothedFunction(f: Double => Double, n: Int): Double => Double =
 
 Решение на Scala:
 
-```scala
+```scala mdoc:reset
 def compose[A, B, C](f: B => C, g: A => B): A => C = x => f(g(x))
 
 def repeated[A](f: A => A, n: Int): A => A =
@@ -196,10 +196,10 @@ def nRoot(x: Double, n: Int): Double =
   val f: Double => Double = y => (x / math.pow(y, n - 1))
   fixedPoint(nFoldAverageFunction(f, math.log(n).toInt + 1), 1.0)
 
-nRoot(math.pow(2, 100), 100) // 2.0079006560360497
+nRoot(math.pow(2, 100), 100)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-45.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/tm9BwnTRTJ2iFzNuzBVKDA)
 
 
 #### Упражнение 1.46
@@ -243,7 +243,7 @@ def fixedPoint(f: Double => Double, firstGuess: Double): Double =
   iterativeImprove(doesCloseEnough, f)(firstGuess)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-46.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/WyKYYyNVSBeB0tzxRl5t2Q)
 
 
 ---

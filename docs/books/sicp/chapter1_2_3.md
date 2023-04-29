@@ -113,7 +113,7 @@
 
 На Scala эта программа будет выглядеть так:
 
-```scala
+```scala mdoc
 def cube(x: Double): Double = x * x * x
 
 def p(x: Double): Double =
@@ -130,7 +130,7 @@ sine(12.15)
 
 б) Количество шагов будет равняться `2 * roundUp(a / 3)`, столько же будет использование памяти.
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-15.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/4qEcEUi1Q7GDvTDGrkAbQQ)
 
 ---
 

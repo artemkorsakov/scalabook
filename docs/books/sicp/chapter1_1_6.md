@@ -12,29 +12,29 @@
 > Какой результат напечатает интерпретатор в ответ на каждое из них? 
 > Предполагается, что выражения вводятся в том же порядке, в каком они написаны.
 
-```scala
-10                    // 10
-(5 + 3 + 4)           // 12
-(9 - 1)               // 8
-(6 / 2)               // 3
-((2 * 4) + (4 - 6))   // 6
+```scala mdoc
+10                    
+(5 + 3 + 4)           
+(9 - 1)               
+(6 / 2)               
+((2 * 4) + (4 - 6))   
 val a = 3
-val b = a + 1         // 4
-(a + b + (a * b))     // 19
-(a == b)              // false
+val b = a + 1        
+(a + b + (a * b))    
+(a == b)             
 
-if (b > a) && (b < (a * b)) then b else a                  // 4
+if (b > a) && (b < (a * b)) then b else a                  
 
 if a == 4 then 6
 else if b == 4 then 6 + 7 + a
-else 25                                                    // 16
+else 25                                                    
  
-2 + (if (b > a) then b else a)                             // 6
+2 + (if (b > a) then b else a)                             
 
-((if a > b then a else if a < b then b else -1) * (a + 1)) // 16
+((if a > b then a else if a < b then b else -1) * (a + 1)) 
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-1.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/ADHhKgP4S6q1CWdlWSqRfQ)
 
 #### Упражнение 1.2
 
@@ -54,7 +54,7 @@ else 25                                                    // 16
 > Определите процедуру, которая принимает в качестве аргументов три числа и возвращает сумму
 > квадратов двух больших из них.
 
-```scala
+```scala mdoc
 def square(x: Int): Int = x * x
 
 def sumOfSquares(x: Int, y: Int): Int = square(x) + square(y)
@@ -64,10 +64,10 @@ def f(a: Int, b: Int, c: Int): Int =
   else if b <= c then sumOfSquares(a, c)
   else sumOfSquares(a, b)
 
-f(5, 3, 4)  // 41
+f(5, 3, 4)
 ```
 
-[Scala worksheet](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fbooks%2Fsicp%2FExercise1-3.worksheet.sc)
+[Scala worksheet](https://scastie.scala-lang.org/i5pFJYMHTjurWwltcAkjNA)
 
 #### Упражнение 1.4
 

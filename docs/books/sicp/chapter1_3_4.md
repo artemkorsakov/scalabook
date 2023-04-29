@@ -39,13 +39,16 @@ def cubic(a: Double, b: Double, c: Double): Double => Double = x =>
 
 Решение на Scala:
 
-```scala mdoc
+```scala mdoc:silent
 val inc: Int => Int = _ + 1
 
 def double[T](f: T => T): T => T = x => f(f(x))
 
 // (((double (double double)) inc) 5)
 val f: (Int => Int) => (Int => Int) = double(double(double))
+f(inc)(5)
+```
+```scala mdoc
 f(inc)(5)
 ```
 
@@ -67,12 +70,15 @@ f(inc)(5)
 
 Решение на Scala:
 
-```scala mdoc:reset
+```scala mdoc:reset:silent
 def compose[A, B, C](f: B => C, g: A => B): A => C = x => f(g(x))
 
 val square: Int => Int = x => x * x
 val inc: Int => Int = x => x + 1
 
+compose(square, inc)(6)
+```
+```scala mdoc
 compose(square, inc)(6)
 ```
 
@@ -102,7 +108,7 @@ compose(square, inc)(6)
 
 Решение на Scala:
 
-```scala mdoc:reset
+```scala mdoc:reset:silent
 def compose[A, B, C](f: B => C, g: A => B): A => C = x => f(g(x))
 
 def repeated[A](f: A => A, n: Int): A => A =
@@ -110,7 +116,8 @@ def repeated[A](f: A => A, n: Int): A => A =
   else repeated(compose(f, f), n - 1)
 
 val square: Int => Int = x => x * x
-
+```
+```scala mdoc
 repeated(square, 2)(5)
 ```
 

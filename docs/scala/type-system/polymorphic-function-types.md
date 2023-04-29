@@ -34,7 +34,7 @@ val bar: [A] => List[A] => List[A] = [A] => (xs: List[A]) => foo[A](xs)
 Например, рассмотрим ситуацию, когда есть тип данных для представления выражений простого языка 
 (состоящего только из переменных и приложений функций) в строго типизированном виде:
 
-```scala
+```scala mdoc:silent
 enum Expr[A]:
   case Var(name: String)
   case Apply[A, B](fun: Expr[B => A], arg: Expr[B]) extends Expr[A]
@@ -44,7 +44,10 @@ enum Expr[A]:
 Это требует, чтобы данная функция была полиморфной, поскольку каждое подвыражение может иметь свой тип. 
 Вот как это реализовать с помощью полиморфных типов функций:
 
-```scala
+```scala mdoc:invisible
+import Expr.*
+```
+```scala mdoc:silent
 def mapSubexpressions[A](e: Expr[A])(f: [B] => Expr[B] => Expr[B]): Expr[A] =
   e match
     case Apply(fun, arg) => Apply(f(fun), f(arg))
@@ -54,13 +57,12 @@ def mapSubexpressions[A](e: Expr[A])(f: [B] => Expr[B] => Expr[B]): Expr[A] =
 А вот как использовать эту функцию для переноса каждого подвыражения 
 в данное выражение с вызовом некоторой функции `wrap`, определенной как переменная:
 
-```scala
+```scala mdoc:silent
 val e0 = Apply(Var("f"), Var("a"))
 val e1 = mapSubexpressions(e0)([B] => (se: Expr[B]) => Apply(Var[B => B]("wrap"), se))
 ```
-```scala
+```scala mdoc
 println(e1)
-// Apply(Apply(Var(wrap),Var(f)),Apply(Var(wrap),Var(a)))
 ```
 
 #### Связь с лямбда-выражениями типа

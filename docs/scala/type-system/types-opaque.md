@@ -10,7 +10,7 @@
 
 Поскольку важно отличать "обычные" `Double` от чисел, хранящихся в виде их логарифмов, введем класс `Logarithm`:
 
-```scala
+```scala mdoc:silent
 class Logarithm(protected val underlying: Double):
   def toDouble: Double = math.exp(underlying)
   def + (that: Logarithm): Logarithm =
@@ -26,15 +26,13 @@ object Logarithm:
 Метод `apply` сопутствующего объекта позволяет создавать значения типа `Logarithm`, 
 которые можно использовать следующим образом:
 
-```scala
+```scala mdoc:silent
 val l2 = Logarithm(2.0)
 val l3 = Logarithm(3.0)
 ```
-```scala
+```scala mdoc
 println((l2 * l3).toDouble)
-// 6.0
 println((l2 + l3).toDouble)
-// 4.999999999999999
 ```
 
 В то время как класс `Logarithm` предлагает хорошую абстракцию для значений `Double`, 
@@ -125,7 +123,7 @@ def someComputation(L: Logarithms)(init: L.Logarithm): L.Logarithm = ...
 Вместо того чтобы вручную разбивать компонент `Logarithms` на абстрактную часть и на конкретную реализацию, 
 можно просто использовать `opaque` типы для достижения аналогичного эффекта:
 
-```scala
+```scala mdoc:silent:reset
 object MyMath:
   // !!!
   opaque type Logarithm = Double
@@ -161,16 +159,12 @@ end MyMath
 и операции `+` и `*` определяются как методы расширения над значениями `Logarithm`. 
 Следующие операции допустимы, поскольку они используют функциональные возможности, реализованные в объекте `MyMath`.
 
-```scala
+```scala mdoc
 import MyMath.Logarithm
 val l = Logarithm(1.0)
-// l: Logarithm = 0.0
 val l2 = Logarithm(2.0)
-// l2: Logarithm = 0.6931471805599453
 val l3 = l * l2
-// l3: Logarithm = 0.6931471805599453
 val l4 = l + l2
-// l4: Logarithm = 1.0986122886681098
 ```
 
 Но следующие операции приведут к ошибкам типа:

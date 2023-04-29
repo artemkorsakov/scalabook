@@ -218,7 +218,7 @@ val u = idepfun(using c)
 
 В следующем примере тип зависимости `f.Eff` относится к типу `CanThrow`:
 
-```scala
+```scala mdoc:silent
 trait Effect
 
 // Type X => Y
@@ -260,7 +260,7 @@ val i2s = new I2S
 val s2i = new S2I
 ```
 
-```scala
+```scala mdoc
 mapFn(i2s)(List(1, 2, 3)).mkString
 // res0: String = "123"
 composeFn(i2s)(s2i)(22)

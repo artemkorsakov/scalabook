@@ -18,8 +18,6 @@
 производная `Dg` функции `g` есть функция, 
 значение которой в каждой точке `x` описывается формулой (при `dx`, стремящемся к нулю):
 
-![](https://latex.codecogs.com/svg.image?Dg(x)%20=%20\frac{g(x%20+%20\mathrm{d}%20x)%20-%20g(x)%20}{\mathrm{d}%20x})
-
 ```scala
 object NewtonsMethod:
   private val dx = 1e-6

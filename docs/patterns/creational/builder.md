@@ -5,7 +5,7 @@
 Отделение построения сложного объекта от его представления, 
 чтобы один и тот же процесс построения мог создавать разные представления.
 
-[Более детализированное рассмотрение шаблона](../../blog/builder-pattern.md)
+[Более детализированное рассмотрение шаблона][Builder]
 
 #### Диаграмма
 
@@ -103,5 +103,8 @@ println(s"Config = $cfg")
 
 **Ссылки:**
 
+- [Более детализированное рассмотрение шаблона][Builder]
 - [Scala & Design Patterns by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf)
 - [Wikipedia](https://en.wikipedia.org/wiki/Builder_pattern)
+
+[Builder]: ../../blog/builder-pattern.md

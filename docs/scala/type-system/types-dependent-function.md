@@ -88,7 +88,7 @@ type DB = (k: Key) => Option[k.Value]
 Зависимый тип функции (_dependent function type_) — это тип функции, результат которой зависит от параметров функции. 
 Например:
 
-```
+```scala
 trait Entry { type Key; val key: Key }
 
 def extractKey(e: Entry): e.Key = e.key          // зависимый метод
@@ -104,7 +104,7 @@ val extractor: (e: Entry) => e.Key = extractKey  // значение завис�
 Зависимые функции также представлены как экземпляры этих трейтов, но они получают дополнительное уточнение. 
 На самом деле, зависимый тип функции выше — это просто синтаксический сахар для
 
-```
+```scala
 Function1[Entry, Entry#Key]:
   def apply(e: Entry): e.Key
 ```

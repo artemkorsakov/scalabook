@@ -329,13 +329,15 @@ object SensorReader extends SubjectObserver:
 
 Наконец, следующий код иллюстрирует, как использовать компонент `SensorReader`:
 
-```scala mdoc
+```scala mdoc:silent
 import SensorReader.*
 // настройка сети
 val s1 = Sensor("sensor1")
 val s2 = Sensor("sensor2")
 val d1 = Display()
 val d2 = Display()
+```
+```scala mdoc
 s1.subscribe(d1)
 s1.subscribe(d2)
 s2.subscribe(d1)

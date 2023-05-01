@@ -4,7 +4,7 @@
 
 Например:
 
-```
+```scala
 // полиморфный метод:
 def foo[A](xs: List[A]): List[A] = xs.reverse
 

@@ -83,12 +83,14 @@ sayHello("Joe")
 
 Приветствие можно менять для создания новых функций:
 
-```scala mdoc
+```scala
 val sayCiao = greet("Ciao")
 sayCiao("Isabella")
+// Ciao, Isabella
 
 val sayHola = greet("Hola")
 sayHola("Carlos")
+// Hola, Carlos
 ```
 
 ### Более реалистичный пример
@@ -146,16 +148,18 @@ def createGreetingFunction(desiredLanguage: String): String => Unit =
 
 Вот как `createGreetingFunction` создает функцию приветствия на французском языке:
 
-```scala mdoc
+```scala
 val greetInFrench = createGreetingFunction("french")
 greetInFrench("Jonathan")
+// Bonjour, Jonathan
 ```
 
 И вот как - на английском:
 
-```scala mdoc
+```scala
 val greetInEnglish = createGreetingFunction("english")
 greetInEnglish("Joe")
+// Hello, Joe
 ```
 
 

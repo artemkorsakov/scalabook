@@ -4,9 +4,6 @@
 val ints = Map(1 -> List(1, 2, 3, 4, 5))
 val bits = ints.map { case (k, v) => (k, v.iterator) }
 val nits = ints.view.mapValues(_.iterator)
-
-s"${bits(1).next}${bits(1).next}"
-s"${nits(1).next}${nits(1).next}"
 ```
 ```scala mdoc
 s"${bits(1).next}${bits(1).next}"

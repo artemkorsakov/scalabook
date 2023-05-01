@@ -94,13 +94,14 @@ integral(cube, 0.0, 1.0, 0.001)
 
 Решение на Scala:
 
-```scala mdoc:reset
+```scala mdoc:reset:silent
 val identity: Double => Double = x => x
 val nextNum: Double => Double = x => x + 1
 val square: Double => Double = x => x * x
 val piFraction: Double => Double = k =>
   (2 * k) * (2 * k + 2) / square(2 * k + 1)
-
+```
+```scala mdoc
 def productRec(
     term: Double => Double,
     a: Double,

@@ -188,7 +188,7 @@ contFracIter(_ => 1.0, _ => 1.0, 11)
 
 Решение на Scala:
 
-```scala mdoc:reset
+```scala mdoc:reset:silent
 def contFracIter(n: Int => Double, d: Int => Double, k: Int): Double =
   def loop(i: Int, result: Double): Double =
     if i == 0 then result
@@ -200,8 +200,9 @@ val n: Int => Double = _ => 1.0
 val d: Int => Double = i =>
   if i % 3 == 2 then (i / 3 + 1) * 2
   else 1.0
-
-contFracIter(n, d, 1000) // 0.7182818284590453
+```
+```scala mdoc
+contFracIter(n, d, 1000)
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/usu62Nt0TsqHQHYA97wZBA)
@@ -220,7 +221,7 @@ contFracIter(n, d, 1000) // 0.7182818284590453
 
 Решение на Scala:
 
-```scala mdoc:reset
+```scala mdoc:reset:silent
 def contFracIter(n: Int => Double, d: Int => Double, k: Int): Double =
   def loop(i: Int, result: Double): Double =
     if i == 0 then result
@@ -235,7 +236,8 @@ val d: Int => Double = i => 2 * (i - 1) + 1
 
 def tanCf(x: Double, k: Int): Double =
   contFracIter(n(x), d, k)
-
+```
+```scala mdoc
 tanCf(1.0, 100)
 ```
 

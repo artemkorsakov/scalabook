@@ -58,9 +58,9 @@ inline def doSomething(inline mode: Boolean): Unit =
 
 val bool: Boolean = true
 doSomething(bool)
-  |doSomething(bool)
-  |^^^^^^^^^^^^^^^^^
-  |Mode must be a known value but got: bool
+//  |doSomething(bool)
+//  |^^^^^^^^^^^^^^^^^
+//  |Mode must be a known value but got: bool
 ```
 
 

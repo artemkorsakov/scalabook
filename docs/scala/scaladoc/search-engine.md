@@ -5,7 +5,7 @@
 
 Рассмотрим следующее определение метода расширения:
 
-```
+```scala
 extension [T](arr: IArray[T]) def span(p: T => Boolean): (IArray[T], IArray[T]) = ...
 ```
 
@@ -60,7 +60,7 @@ extension [T](arr: IArray[T]) def span(p: T => Boolean): (IArray[T], IArray[T]) 
 
 Итак, по запросу `Num => Int => Int => Int` должны быть найдены следующие объявления:
 
-```text
+```scala
 class Num():
   def a(i: Int, j: Int): Int
   def b(i: Int)(j: Int): Int

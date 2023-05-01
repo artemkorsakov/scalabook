@@ -57,6 +57,7 @@ trait Applicative[F[_]] extends Functor[F]:
 ### Законы Applicative
 
 Для `Applicative` должны соблюдаться следующие законы:
+
 - `map(unit(x))(f) == unit(f(x))`
 - `map2(unit(x), unit(y)) == unit((x, y))`
 
@@ -128,6 +129,7 @@ def product[A, B](fa: F[A], fb: F[B]): F[(A,B)] =
 ### Законы монады
 
 Для `Monad` должны соблюдаться следующие законы (помимо законов Функтора):
+
 - identities:
     - `flatMap(unit(x))(fn) == fn(x)`
     - `flatMap(m)(unit _) == m`
@@ -172,6 +174,7 @@ trait Monad[F[_]] extends Functor[F]:
 ```
 
 В этом случае законы Монады примут вид:
+
 - identities:
   - `compose(f, unit) == f`
   - `compose(unit, f) == f`

@@ -614,10 +614,62 @@ def combineAll[A](list: List[A])(using c: FullCombinator[A]): A =
 
 Хотелось бы более детально ответить на вопросы, прозвучавшие на [Meetup-е][Meetup].
 
-### Вопрос 1: Ошибки с type class-ами
+### Вопрос 1: Orphan Instances in Scala
 
-К сожалению, я пока не разобрался [с первым вопросом, прозвучавшем на докладе](https://youtu.be/1W3BHh4vQqs?t=6525).
-Буду рад получить любую рекомендацию по вопросу на почту - `artemkorsakov@mail.ru`.
+[Первым вопрос, прозвучавший на докладе](https://youtu.be/1W3BHh4vQqs?t=6525).
+
+Потерянный экземпляр (_Orphan Instances_) - это экземпляр type class-а для класса `C` и типа `T`, 
+который не определен ни в модуле, где определен `C`, ни в модуле, где определен `T`.
+Подробное описание можно найти в статье [Orphan Instances in Scala][Orphan] 
+или wiki-статье [Orphan instance](https://wiki.haskell.org/Orphan_instance).
+
+В Scala 3 по-прежнему можно определить потерянный экземпляр и получить весь список сопутствующих проблем.
+
+Пример _orphan instances_ в Scala 3:
+
+```scala
+object FooPackage:
+  case class Foo(msg: String)
+
+object DoFooPackage:
+  trait DoFoo[A]:
+    def doSomething(f: A): String
+
+  object DoFoo:
+    def apply[A](implicit ev: DoFoo[A]): DoFoo[A] = ev
+
+object InstanceFoo:
+  import DoFooPackage.DoFoo
+  import FooPackage.Foo
+
+  given fooInst: DoFoo[Foo] =
+    (f: Foo) => s"I am a Foo! My msg is: ${f.msg}"
+
+object InstanceFooV2:
+  import DoFooPackage.DoFoo
+  import FooPackage.Foo
+
+  given fooInst2: DoFoo[Foo] =
+    (f: Foo) => s"I am a second version of Foo! I say: ${f.msg}"
+
+{
+  import DoFooPackage.DoFoo
+  import FooPackage.Foo
+  import InstanceFoo.given
+  DoFoo[Foo].doSomething(Foo("Hello, World!")) 
+  // I am a Foo! My msg is: Hello, World!
+}
+
+{
+  import DoFooPackage.DoFoo
+  import FooPackage.Foo
+  import InstanceFooV2.given
+  DoFoo[Foo].doSomething(Foo("Hello, World!"))
+  // I am a second version of Foo! I say: Hello, World!
+}
+```
+
+[Рассмотренный пример в Scastie](https://scastie.scala-lang.org/29gXfITOTIeFl1Pa9X8ZoQ)
 
 ### Вопрос 2: Можно ли export использовать в паттерне делегирование?
 
@@ -844,6 +896,7 @@ combine(DefaultContainer[Int](2), OtherContainer[Int](3)).a // 6
 - [Scala 3 Book](https://docs.scala-lang.org/scala3/book/introduction.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/index.html)
 - ["Functional Programming in Scala"][Red book]
+- [Orphan Instances in Scala][Orphan]
 - ["Type Classes as Objects and Implicits"][TypeClasses]
 
 ## Meetup
@@ -852,17 +905,11 @@ combine(DefaultContainer[Int](2), OtherContainer[Int](3)).a // 6
 - [Компактная версия выступления][MeetupShort]
 - [Слайды с meetup-а](https://slides.com/artemkorsakov/decomposition/fullscreen)
 
-
-[TypeClasses]: https://infoscience.epfl.ch/record/150280/files/TypeClasses.pdf
-
-[Red book]: https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition
-
 [Cats]: https://typelevel.org/cats/typeclasses.html
-
 [Cats effect]: https://typelevel.org/cats-effect/docs/typeclasses
-
 [Meetup]: https://www.youtube.com/watch?v=1W3BHh4vQqs
-
 [MeetupShort]: https://www.youtube.com/watch?v=t_rNLXrChm0
-
+[Orphan]: https://pjrt.medium.com/orphan-instances-in-scala-322caa78e382
 [Product]: https://scala-lang.org/api/3.x/scala/Product.html
+[Red book]: https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition
+[TypeClasses]: https://infoscience.epfl.ch/record/150280/files/TypeClasses.pdf

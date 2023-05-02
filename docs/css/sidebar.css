@@ -1,5 +1,5 @@
 /* left navigation bar =========================================== */
 
-#sidebar .nav-list .nav-header {
+#sidebar .nav-list li.nav-header {
   display: none;
 }

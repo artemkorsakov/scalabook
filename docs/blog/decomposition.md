@@ -616,7 +616,7 @@ def combineAll[A](list: List[A])(using c: FullCombinator[A]): A =
 
 ### Вопрос 1: Orphan Instances in Scala
 
-[Первым вопрос, прозвучавший на докладе](https://youtu.be/1W3BHh4vQqs?t=6525).
+[Первый вопрос, прозвучавший на докладе](https://youtu.be/1W3BHh4vQqs?t=6525).
 
 Потерянный экземпляр (_Orphan Instances_) - это экземпляр type class-а для класса `C` и типа `T`, 
 который не определен ни в модуле, где определен `C`, ни в модуле, где определен `T`.

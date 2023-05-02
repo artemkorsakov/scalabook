@@ -107,6 +107,8 @@ lazy val docs = project
           appendLinks = Seq()
         )
         .site
+        .autoLinkCSS(Root / "css" / "sidebar.css")
+        .site
         .pageNavigation(
           enabled = true,
           depth = 1,

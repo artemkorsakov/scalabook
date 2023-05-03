@@ -152,5 +152,6 @@ object Color:
 
 **Ссылки:**
 
+- [Functional Data Modeling in Scala](https://scalajobs.com/blog/functional-data-modeling-in-scala/)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-adts-gadts.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/enums/adts.html)

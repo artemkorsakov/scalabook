@@ -481,6 +481,7 @@ sbt:HelloScalaTest> test
 **Ссылки:**
 
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/tools-sbt.html)
+- [Unlocking the Power of SBT](https://yadukrishnan.live/unlocking-the-power-of-sbt-a-beginners-guide-to-understanding-not-so-common-features)
 
 [Sbt]: https://www.scala-sbt.org/
 [Sbt download]: https://www.scala-sbt.org/download.html

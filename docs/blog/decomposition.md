@@ -623,53 +623,49 @@ def combineAll[A](list: List[A])(using c: FullCombinator[A]): A =
 Подробное описание можно найти в статье [Orphan Instances in Scala][Orphan] 
 или wiki-статье [Orphan instance](https://wiki.haskell.org/Orphan_instance).
 
-В Scala 3 по-прежнему можно определить потерянный экземпляр и получить весь список сопутствующих проблем.
+В Scala 3 по-прежнему можно определить потерянный экземпляр и получить весь спектр сопутствующих проблем.
+[Пример из статьи в Scastie для Scala 3](https://scastie.scala-lang.org/29gXfITOTIeFl1Pa9X8ZoQ)
 
-Пример _orphan instances_ в Scala 3:
+И здесь возникает проблема: с одной стороны [функциональное программирование](../scala/fp.md)
+говорит о том, что все функции должны быть "чистыми", 
+т.е. вызов одной и той же функции с одними и теми же параметрами несколько раз должен возвращать один и тот же результат.
+С другой стороны "потерянный экземпляр" позволяет управлять результатом функции через... `import`!!!
+
+Пример:
 
 ```scala
-object FooPackage:
-  case class Foo(msg: String)
+trait Semigroup[A]:
+  def combine(x: A, y: A): A
 
-object DoFooPackage:
-  trait DoFoo[A]:
-    def doSomething(f: A): String
+object Somewhere1:
+  given Semigroup[Int] with
+    def combine(x: Int, y: Int): Int = x + y
 
-  object DoFoo:
-    def apply[A](implicit ev: DoFoo[A]): DoFoo[A] = ev
+object Somewhere2:
+  given Semigroup[Int] with
+    def combine(x: Int, y: Int): Int = x - y
 
-object InstanceFoo:
-  import DoFooPackage.DoFoo
-  import FooPackage.Foo
-
-  given fooInst: DoFoo[Foo] =
-    (f: Foo) => s"I am a Foo! My msg is: ${f.msg}"
-
-object InstanceFooV2:
-  import DoFooPackage.DoFoo
-  import FooPackage.Foo
-
-  given fooInst2: DoFoo[Foo] =
-    (f: Foo) => s"I am a second version of Foo! I say: ${f.msg}"
+def combine[A: Semigroup](x: A, y: A): A = summon[Semigroup[A]].combine(x, y)
 
 {
-  import DoFooPackage.DoFoo
-  import FooPackage.Foo
-  import InstanceFoo.given
-  DoFoo[Foo].doSomething(Foo("Hello, World!")) 
-  // I am a Foo! My msg is: Hello, World!
-}
+  import Somewhere1.given
+  combine(1, 2)
+} // 3
 
 {
-  import DoFooPackage.DoFoo
-  import FooPackage.Foo
-  import InstanceFooV2.given
-  DoFoo[Foo].doSomething(Foo("Hello, World!"))
-  // I am a second version of Foo! I say: Hello, World!
-}
+  import Somewhere2.given
+  combine(1, 2)
+} // -1
 ```
 
-[Рассмотренный пример в Scastie](https://scastie.scala-lang.org/29gXfITOTIeFl1Pa9X8ZoQ)
+[Рассмотренный пример в Scastie](https://scastie.scala-lang.org/pVRXfALzSKGEuIuXgYiCvA)
+
+Получается все функции, использующие потерянные экземпляры, "нечистые"?!
+Строго говоря, такого эффекта можно добиться с любым неявным параметром,
+но "потерянные экземпляры" "плохи" тем, что сложно найти места их объявления.
+
+Scala 3 делает небольшой шаг по пути облегчения поиска "потерянных экземпляров",
+[выделяя импорт неявных экземпляров](../scala/abstractions/ca-given-imports.md).
 
 ### Вопрос 2: Можно ли export использовать в паттерне делегирование?
 

@@ -576,6 +576,7 @@ object Macro3:
 
 **Ссылки:**
 
+- [Автоматическая генерация type classes в Scala 3](https://habr.com/ru/articles/536372)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual/derivation.html)
 - [Scala 3 Reference, Derivation macros](https://docs.scala-lang.org/scala3/reference/contextual/derivation-macro.html)
 

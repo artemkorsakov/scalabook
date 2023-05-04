@@ -57,10 +57,13 @@
 
 ### Статьи
 
-| Название                                                                                                                                 |  Версия  | Язык | Дата | Комментарий |
-|------------------------------------------------------------------------------------------------------------------------------------------|:--------:|:----:|------|-------------|
-| [I hate NULL and all its variants!](https://alexn.org/blog/2010/05/25/i-hate-null) | Scala 2  |  En  | 2010 |       |
-| [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes)                                              | Scala 2  |  En  | 2012 |       |
+| Название                                                                                                                         | Версия  | Язык | Дата | Комментарий |
+|----------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
+| [Exploring Scala CLI — the new scala runner](https://medium.com/virtuslab/exploring-scala-cli-the-new-scala-runner-4b958245c2e0) | Scala 3 |  En  | 2023 |             |
+| [I hate NULL and all its variants!](https://alexn.org/blog/2010/05/25/i-hate-null)                                               | Scala 2 |  En  | 2010 |             |
+| [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes) | Scala 2 |  En  | 2012 |             |
+
+
 
 --- 
 

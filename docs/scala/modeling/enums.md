@@ -158,6 +158,7 @@ Color.Red.compareTo(Color.Green)
 
 **Ссылки:**
 
+- [Concise enumeration in Scala](https://scalajobs.com/blog/concise-enumeration-in-scala)
 - [Scala3 book, domain modeling tools](https://docs.scala-lang.org/scala3/book/domain-modeling-tools.html)
 - [Scala3 book, taste modeling](https://docs.scala-lang.org/scala3/book/taste-modeling.html)
 - [Scala3 book, taste objects](https://docs.scala-lang.org/scala3/book/taste-objects.html)

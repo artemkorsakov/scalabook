@@ -802,6 +802,7 @@ type Enumeratee[I, O, A] = Free[[X] =>> Either[I => X, (O, X)], A]
 **Ссылки:**
 
 - [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Fru%2Fscalabook%2Ffp%2Ftrampolining&branch=master)
+- [Эффекты, трамплины и зачем нам это надо - Алексей Шуксто, Scala Meetup 20.04.23](https://www.youtube.com/watch?v=4jSi6RRIaCk)
 - [Asymptotic Improvement of Computations over Free Monads - Janis Voigtlander][Asymptotic Improvement of Computations over Free Monads]
 - [Category Theory - S. Awodey][Category Theory]
 - [Data types a la carte - Wouter Swierstra][Swierstra]
@@ -811,6 +812,8 @@ type Enumeratee[I, O, A] = Free[[X] =>> Either[I => X, (O, X)], A]
 - [Iteratee: Teaching an Old Fold New Tricks - J. W. Lato][Lato, Iteratee]
 - [Scala API][API]
 - [Stackless Scala With Free Monads - Runar Oli Bjarnason][Trampolines]
+- [Stackless Scala with Free Monads - hearding cats](http://eed3si9n.com/herding-cats/stackless-scala-with-free-monads.html)
+- [Stackless Scala with Free Monads - learning ScalaZ](http://eed3si9n.com/learning-scalaz/Stackless+Scala+with+Free+Monads.html)
 - [The Monad.Reader Issue 19][The monad reader]
 - [The Operational Monad Tutorial - Heinrich Apfelmus][Apfelmus]
 - [Trampolined Style - Steven E. Ganz and Daniel P. Friedman and Mitchell Wand][Trampolined Style]

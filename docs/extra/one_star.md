@@ -45,6 +45,7 @@
 | [Scala & Functional Programming Essentials - Rock the JVM](https://rockthejvm.com/p/scala)                                                           | Scala 3 |  En  | 2022 | [Udemy link](https://www.udemy.com/course/rock-the-jvm-scala-for-beginners/) |
 | [Введение в Scala](https://stepik.org/course/16243/promo)                                                                                            | Scala 2 |  Ру  | 2019 |                                                                              |
 | [Основы Scala](https://stepik.org/course/89974/promo)                                                                                                | Scala 2 |  Ру  | 2021 |                                                                              |
+| [Scala Tutorial](https://stepik.org/course/55498/promo)                                                                                              | Scala 2 |  En  | 2021 |                                                                              |
 
 ### Упражнения
 

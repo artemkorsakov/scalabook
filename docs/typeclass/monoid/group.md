@@ -26,8 +26,9 @@ given Group[Int] with
   extension (a: Int) override def inverse: Int = -a
 ```
 
+## Реализация
 
-## Реализация в Cats
+### Реализация в Cats
 
 ```scala
 import cats.*, cats.syntax.all.*
@@ -36,7 +37,6 @@ import cats.*, cats.syntax.all.*
 
 assert((1 |+| 1.inverse()) === Monoid[Int].empty)
 ```
-
 
 ---
 

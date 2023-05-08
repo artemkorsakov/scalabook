@@ -15,6 +15,13 @@ trait Semigroup[A]:
   def combine(x: A, y: A): A
 ```
 
+Для операции сложения встречаются следующие наименования: `combine`, `append`.
+
+Законы полугруппы принимают следующий вид:
+
+- замыкание следует из определения функции `combine` - тип результата тот же, что и тип переменных
+- ассоциативность формулируется так: `m.combine(x, m.combine(y, z)) == m.combine(m.combine(x, y), z)`
+
 ## Примеры
 
 ### Натуральные числа N образуют полугруппу относительно сложения
@@ -35,33 +42,23 @@ given productSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x * y
 given stringSemigroupInstance: Semigroup[String] = (x: String, y: String) => x + y
 ```
 
-### [Последовательность](../../scala/collections.md) образует полугруппу относительно операции объединения
+### Последовательность образует полугруппу относительно операции объединения
 
 ```scala
 given listSemigroupInstance[T]: Semigroup[List[T]] =
   (x: List[T], y: List[T]) => x ++ y
 ```
 
-### [Кортеж](../../scala/collections/tuple.md) от двух и более полугрупп также является полугруппой
+### Кортеж от двух и более полугрупп также является полугруппой
 
 ```scala
 given nestedSemigroupInstance[A, B](using aSemigroup: Semigroup[A], bSemigroup: Semigroup[B]): Semigroup[(A, B)] =
   (x: (A, B), y: (A, B)) => (aSemigroup.combine(x._1, y._1), bSemigroup.combine(x._2, y._2))
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
-
-```scala
-import scalaz.*
-import Scalaz.*
-
-List(1, 2) |+| List(3)      // List(1, 2, 3)
-List(1, 2) mappend List(3)  // List(1, 2, 3)
-1 |+| 2                     // 3
-```
-
-## Реализация в Cats
+### Реализация в Cats
 
 ```scala
 import cats.*
@@ -71,6 +68,16 @@ import cats.implicits.*
 ("hello", 123) |+| ("world", 321)           // ("helloworld",444)
 ```
 
+### Реализация в ScalaZ
+
+```scala
+import scalaz.*
+import Scalaz.*
+
+List(1, 2) |+| List(3)      // List(1, 2, 3)
+List(1, 2) mappend List(3)  // List(1, 2, 3)
+1 |+| 2                     // 3
+```
 
 ---
 

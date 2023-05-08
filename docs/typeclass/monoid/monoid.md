@@ -2,14 +2,12 @@
 
 Моноид (_monoid_) — это [полугруппа](semigroup.md) с единичным элементом.
 
-Более формально: `(M, +)` является моноидом для заданного множества `M` и операции `+` (`combine` с типом `(A, A) => A`),
+Более формально: `(M, +)` является моноидом для заданного множества `M` и операции `+`,
 если удовлетворяет следующим свойствам для любых `x, y, z ∈ M`:
 
 - Closure (замыкание): `x + y ∈ M`
-- Associativity (ассоциативность): `(x + y) + z = x + (y + z)` или 
-  `m.combine(x, m.combine(y, z)) == m.combine(m.combine(x, y), z)`
+- Associativity (ассоциативность): `(x + y) + z = x + (y + z)`
 - Identity (тождественность): существует `e ∈ M` (`empty: A`) такой, что `e + x = x + e = x` 
-  или `(m.combine(x, m.empty) == x) && (m.combine(m.empty, x) == x)`
 
 Также говорится, что _M — моноид относительно +_.
 
@@ -23,9 +21,23 @@ trait Monoid[A] extends Semigroup[A]:
   def empty: A
 ```
 
+Для операции сложения встречаются следующие наименования: `combine`, `append`.
+Для единичного элемента встречаются следующие наименования: `empty`.
+
+Законы моноида принимают следующий вид:
+
+- замыкание следует из определения функции `combine` - тип результата тот же, что и тип переменных
+- ассоциативность формулируется так: `m.combine(x, m.combine(y, z)) == m.combine(m.combine(x, y), z)`
+- тождественность формулируется так: `(m.combine(x, m.empty) == x) && (m.combine(m.empty, x) == x)`
+
 ## Примеры
 
 ### Числа относительно сложения с 0
+
+`Int` относительно сложения с `0` образуют моноид, потому что: 
+
+- сложение ассоциативно: `(a + b) + c = a + (b + c)`
+- `0` - это единичный элемент относительно сложения: `0 + a = a + 0 = a`
 
 ```scala
 given sumMonoidInstance: Monoid[Int] with
@@ -35,6 +47,11 @@ given sumMonoidInstance: Monoid[Int] with
 
 ### Числа относительно умножения с 1
 
+`Int` относительно умножения с единичным элементом `1` образуют моноид, потому что:
+
+- умножение ассоциативно: `(a * b) * c = a * (b * c)`
+- `1` - это единичный элемент относительно сложения: `1*a = a*1 = a`
+
 ```scala
 given productMonoidInstance: Monoid[Int] with
   val empty = 1
@@ -43,13 +60,19 @@ given productMonoidInstance: Monoid[Int] with
 
 ### Строки
 
+`String` относительно конкатенации строк с единичным элементом пустой строкой `""` образуют моноид, потому что:
+
+- конкатенация строк ассоциативна: `(a + b) + c = a + (b + c)`
+    - `"мама" + ("мыла" + "раму") = ("мама" + "мыла") + "раму" = "мамамылараму"`
+- `""` - это единичный элемент относительно конкатенации: `"" + a = a + "" = a`
+
 ```scala
 given stringMonoidInstance: Monoid[String] with
   val empty = ""
   def combine(x: String, y: String): String = x + y
 ```
 
-### [Последовательность](../../scala/collections.md)
+### Последовательность
 
 ```scala
 given listMonoidInstance[T]: Monoid[List[T]] with
@@ -57,7 +80,7 @@ given listMonoidInstance[T]: Monoid[List[T]] with
   def combine(x: List[T], y: List[T]): List[T] = x ++ y
 ```
 
-### [Кортеж](../../scala/collections/tuple.md) от двух и более моноидов
+### Кортеж от двух и более моноидов
 
 ```scala
 given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): Monoid[(A, B)] with
@@ -65,7 +88,7 @@ given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): 
   def combine(x: (A, B), y: (A, B)): (A, B) = (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
 ```
 
-### [Option](../../scala/fp/functional-error-handling.md)
+### Option
 
 `Option` является моноидом, если его параметр типа - полугруппа, например:
 
@@ -81,17 +104,9 @@ given optionMonoidInstance[A: Semigroup]: Monoid[Option[A]] with
       case (None, None)         => None
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
-
-```scala
-import scalaz.*
-import Scalaz.*
-
-mzero[List[Int]]             // List()
-```
-
-## Реализация в Cats
+### Реализация в Cats
 
 ```scala
 import cats.*
@@ -101,12 +116,21 @@ Monoid[Int].combine(1, Monoid[Int].empty)   // 1
 "Hi " |+| "there" |+| Monoid[String].empty  // Hi there
 ```
 
+### Реализация в ScalaZ
+
+```scala
+import scalaz.*
+import Scalaz.*
+
+mzero[List[Int]]             // List()
+```
 
 ---
 
 **Ссылки:**
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monoid.html)
+- [Category Theory for Programmers - Bartosz Milewski](https://bartoszmilewski.com/2014/12/05/categories-great-and-small)
 - [Cats](https://typelevel.org/cats/typeclasses/monoid.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Monoid.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)

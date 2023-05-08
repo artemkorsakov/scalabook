@@ -18,6 +18,8 @@
 - для пары морфизмов **f ∈ Hom(A,B)** и **g ∈ Hom(B,C)** определена композиция **g∘f ∈ Hom(A,C)**
 - для каждого объекта **A** задан тождественный морфизм **id ∈ Hom(A,A)** (стрелка от объекта к самому себе)
 
+![Commutative diagram for morphism](https://upload.wikimedia.org/wikipedia/commons/e/ef/Commutative_diagram_for_morphism.svg)
+
 причём выполняются две аксиомы:
 
 - операция композиции ассоциативна: если есть три морфизма, **f**, **g** и **h**, 
@@ -25,9 +27,7 @@
   то не имеет значения порядок компоновки: **h∘(g∘f)=(h∘g)∘f=h∘g∘f**
 - тождественный морфизм действует тривиально: **f∘id=id∘f=f** для **f ∈ Hom(A,B)**
 
-Композиция ассоциативна. 
-
-![Commutative diagram for morphism](https://upload.wikimedia.org/wikipedia/commons/e/ef/Commutative_diagram_for_morphism.svg)
+![Category laws](https://upload.wikimedia.org/wikipedia/commons/b/bd/Diag_ax_cat.gif)
 
 В Scala это определение можно выразить так:
 
@@ -60,7 +60,7 @@ trait Laws[A, B, C, D]:
 
 **Ссылки:**
 
-- Milewski - Category Theory for Programmers:
+- Bartosz Milewski - Category Theory for Programmers:
     - [Теория категорий для программистов](https://henrychern.wordpress.com/2022/09/15/%d1%82%d0%b5%d0%be%d1%80%d0%b8%d1%8f-%d0%ba%d0%b0%d1%82%d0%b5%d0%b3%d0%be%d1%80%d0%b8%d0%b9-%d0%b4%d0%bb%d1%8f-%d0%bf%d1%80%d0%be%d0%b3%d1%80%d0%b0%d0%bc%d0%bc%d0%b8%d1%81%d1%82%d0%be%d0%b2/)
     - [Category Theory for Programmers](https://bartoszmilewski.com/2014/11/04/category-the-essence-of-composition)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#anatomy-of-a-type-class)

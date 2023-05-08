@@ -59,6 +59,7 @@ val (log, result) = a.run
 
 **Ссылки:**
 
+- [Category Theory for Programmers - Bartosz Milewski](https://bartoszmilewski.com/2014/12/23/kleisli-categories/)
 - [Cats](https://typelevel.org/cats/datatypes/writer.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Writer.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Writer.html)

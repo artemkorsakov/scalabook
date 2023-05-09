@@ -109,6 +109,8 @@ lazy val docs = project
         .site
         .autoLinkCSS(Root / "css" / "sidebar.css")
         .site
+        .autoLinkJS(Root / "js" / "tex-mml-chtml.js")
+        .site
         .pageNavigation(
           enabled = true,
           depth = 1,

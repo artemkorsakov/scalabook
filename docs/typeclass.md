@@ -156,7 +156,7 @@ def cocompose[A, B, C](f: B => A, g: C => B): C => A = g andThen f
 
 ## Произведение и сумма объектов
 
-#### Произведение
+### Произведение
 
 Произведение (пары) объектов **A** и **B** — это объект \\(A \times B\\) с морфизмами \\(p\_{1}:A \times B \to A\\)
 и \\(p\_{2}:A \times B \to B\\) такими, 
@@ -174,30 +174,75 @@ val product: (String, Int) = ("product", 42)
 val (str, num) = product
 ```
 
-#### Копроизведение
+### Копроизведение
 
 Двойственно определяется сумма или копроизведение **A + B** объектов **A** и **B**. 
 Соответствующие морфизмы \\(\imath\_{A}: A \to A + B\\) и \\(\imath\_{B}: B \to A + B\\) называются вложениями. 
 Несмотря на своё название, в общем случае они могут и не быть мономорфизмами.
 
-В Scala примером копроизведений может служить [Either](fp/handling-errors.md).
-Например, данная функция расчета среднего возвращает копроизведение:
+В Scala примером копроизведений могут служить такие структуры: 
+[Option, Either](fp/handling-errors.md) и [List](fp/data-structures.md).
 
 ```scala
-def mean(xs: Seq[Double]): Either[String, Double] =
-  if xs.isEmpty then Left("Пустой список!")
-  else Right(xs.sum / xs.length)
+enum Option[+A]:
+  case Some(get: A)
+  case None
+
+enum Either[+E, +A]:
+  case Left(value: E)
+  case Right(value: A)
+  
+enum List[+A]:
+  case Nil
+  case Cons(head: A, tail: List[A])
 ```
 
-Если произведение и копроизведение существуют, то они определяются однозначно с точностью до изоморфизма.
+Данные типы изоморфны друг другу, например:
 
-#### Примеры
+```scala
+enum List[+A]:
+  self =>
+
+  case Nil
+  case Cons(head: A, tail: List[A])
+
+  val toOption: Option[List[A]] =
+    self match
+      case Nil => Option.None
+      case _   => Option.Some(self)
+
+  val toEither: Either[Unit, List[A]] =
+    self match
+      case Nil => Either.Left(())
+      case _   => Either.Right(self)
+```
+
+### Примеры в различных категориях
+
+Если произведение и копроизведение существуют, то они определяются однозначно с точностью до изоморфизма.
 
 - Пример: В категории **Set** произведение **A** и **B** — это прямое произведение в смысле теории множеств \\(A \times B\\), 
   а сумма — дизъюнктное объединение \\(A \sqcup B\\).
 - Пример: В категории колец **Ring** сумма — это тензорное произведение \\(A \otimes B\\), 
   а произведение — прямая сумма колец \\(A \oplus B\\).
 - Пример: В категории **VectK** (конечные) произведение и сумма изоморфны — это прямая сумма векторных пространств \\(A \oplus B\\).
+
+### Алгебра типов
+
+Для произведения и ко-произведения выполняется дистибутивный закон `a * (b + c) = a * b + a * c` с точностью до изоморфизма:
+
+```scala
+val leftside: (A, Either[B, C]) = ???
+val rightside: Either[(A, B), (A, C)] =
+  leftside match
+    case (a, Left(b))  => Left((a, b))
+    case (a, Right(c)) => Right((a, c))
+
+rightside match
+  case Left((a, b))  => (a, Left(b))
+  case Right((a, c)) => (a, Right(c))
+```
+
 
 ---
 
@@ -206,7 +251,8 @@ def mean(xs: Seq[Double]): Either[String, Double] =
 - Bartosz Milewski - Category Theory for Programmers:
     - [Теория категорий для программистов](https://henrychern.wordpress.com/2022/09/15/%d1%82%d0%b5%d0%be%d1%80%d0%b8%d1%8f-%d0%ba%d0%b0%d1%82%d0%b5%d0%b3%d0%be%d1%80%d0%b8%d0%b9-%d0%b4%d0%bb%d1%8f-%d0%bf%d1%80%d0%be%d0%b3%d1%80%d0%b0%d0%bc%d0%bc%d0%b8%d1%81%d1%82%d0%be%d0%b2/)
     - [Category Theory for Programmers, Category: The Essence of Composition](https://bartoszmilewski.com/2014/11/04/category-the-essence-of-composition)
-    - [Category Theory for Programmers, Products and Coproducts](https://bartoszmilewski.com/2015/01/07/products-and-coproducts/)
+    - [Category Theory for Programmers, Products and Coproducts](https://bartoszmilewski.com/2015/01/07/products-and-coproducts)
+    - [Category Theory for Programmers, Simple Algebraic Data Types](https://bartoszmilewski.com/2015/01/13/simple-algebraic-data-types)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#anatomy-of-a-type-class)
 - [Type classes in Algebird](https://twitter.github.io/algebird/typeclasses.html)
 - [Type classes in Cats](https://github.com/tpolecat/cats-infographic)

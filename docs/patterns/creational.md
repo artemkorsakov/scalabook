@@ -16,7 +16,7 @@
 
 #### Пример
 
-```scala
+```scala mdoc:silent
 trait Document:
   def open(): Unit
   def close(): Unit
@@ -28,7 +28,7 @@ trait Application:
 
 Использование паттерна фабричный метод:
 
-```scala
+```scala mdoc
 class ElectronicDocument extends Document:
   def open(): Unit = println("Open an e-doc")
   def close(): Unit = println("Close an e-doc")
@@ -38,7 +38,6 @@ object ElectronicApplication extends Application:
   def createDocument: D = new ElectronicDocument
 
 ElectronicApplication.createDocument.open()
-// Open an e-doc
 ```
 
 ## Абстрактная фабрика
@@ -79,7 +78,7 @@ ElectronicApplication.createDocument.open()
 Абстрактные фабричные методы `createWindow` и `createScrollbar`
 скрывают фактический код создания экземпляра от клиентов.
 
-```scala
+```scala mdoc:silent:reset
 trait WindowFactory:
   type aWindow <: Window
   type aScrollbar <: Scrollbar
@@ -95,7 +94,7 @@ trait WindowFactory:
 Конкретная фабрика в данном примере - это объект singleton, содержащий protected nested классы.
 Это конкретная реализация. Поскольку они protected, они скрыты от клиентов.
 
-```scala
+```scala mdoc:silent
 object VistaFactory extends WindowFactory:
   type aWindow = VistaWindow
   type aScrollbar = VistaScrollbar
@@ -117,11 +116,11 @@ object VistaFactory extends WindowFactory:
 Это позволяет расширить `Window` и `Scrollbar` в модуле,
 где в противном случае они не были бы видны в области видимости.
 
-```scala
-trait VistaWidgets { self: WindowFactory =>
+```scala mdoc:silent
+trait VistaWidgets:
+  self: WindowFactory =>
   protected class VistaWindow(s: aScrollbar) extends Window(s)
   protected class VistaScrollbar extends Scrollbar
-}
 ```
 
 Вложенность классов полезна для инкапсуляции определенных типов.
@@ -145,7 +144,7 @@ trait VistaWidgets { self: WindowFactory =>
 
 #### Пример
 
-```scala
+```scala mdoc:silent:reset
 final case class ConnectionConfig private (
     host: String,
     port: Int,
@@ -155,7 +154,7 @@ final case class ConnectionConfig private (
     password: String
 )
 
-object ConnectionConfig {
+object ConnectionConfig:
   def builder(): ConnectionConfigBuilder = ConnectionConfigBuilder()
 
   case class ConnectionConfigBuilder private (
@@ -165,9 +164,7 @@ object ConnectionConfig {
       private val connectionRetry: Int,
       private val user: String,
       private val password: String
-  ) {
-    import ConnectionConfigBuilder.*
-
+  ):
     def withHost(host: String): ConnectionConfigBuilder =
       copy(host = host)
 
@@ -188,7 +185,7 @@ object ConnectionConfig {
     def withPassword(password: String): ConnectionConfigBuilder =
       copy(password = password)
 
-    def build(): ConnectionConfig = {
+    def build(): ConnectionConfig =
       new ConnectionConfig(
         host = host,
         port = port,
@@ -197,10 +194,9 @@ object ConnectionConfig {
         user = user,
         password = password
       )
-    }
-  }
+  end ConnectionConfigBuilder
 
-  private object ConnectionConfigBuilder {
+  private object ConnectionConfigBuilder:
     def apply(): ConnectionConfigBuilder =
       new ConnectionConfigBuilder(
         host = "localhost",
@@ -210,14 +206,14 @@ object ConnectionConfig {
         user = "root",
         password = "root"
       )
-  }
-}
+  end ConnectionConfigBuilder
+end ConnectionConfig
 ```
 
 Использование паттерна строитель:
 
-```scala
-val cfg = ConnectionConfig
+```scala mdoc
+ConnectionConfig
   .builder()
   .withHost("localhost")
   .withPort(9090)
@@ -226,8 +222,6 @@ val cfg = ConnectionConfig
   .withUser("user")
   .withPassword("12345")
   .build()
-println(s"Config = $cfg")
-// Config = ConnectionConfig(localhost,9090,1000,1,user,12345)
 ```
 
 ## Прототип
@@ -268,20 +262,18 @@ println(s"Config = $cfg")
 
 #### Пример
 
-```scala
+```scala mdoc:reset:silent
 class A(var state: Int)
 extension (a: A) def copy = new A(a.state)
 ```
 
 Использование паттерна фабричный метод:
 
-```scala
+```scala mdoc
 def a = new A(2)
 println(a.state)
-// 2
 def aCopy = a.copy
 println(a.state)
-// 2
 ```
 
 ## Одиночка
@@ -300,7 +292,7 @@ Scala позволяет создавать одноэлементные объ�
 По сути, одноэлементный объект создается автоматически при первом использовании,
 и всегда существует только один экземпляр.
 
-```scala
+```scala mdoc:reset:silent
 object Singleton
 val s = Singleton
 ```
@@ -309,7 +301,7 @@ val s = Singleton
 Эта реализация актуальна только в том случае, если нам нужно иметь возможность усовершенствовать синглтон.
 В противном случае предпочтительнее краткое решение с использованием одноэлементного объекта (`object`).
 
-```scala
+```scala mdoc:reset
 class Singleton private () // private constructor
 
 object Singleton:

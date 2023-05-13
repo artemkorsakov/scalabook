@@ -16,7 +16,7 @@
 
 #### Пример
 
-```scala
+```scala mdoc:silent
 class Context:
   import scala.collection.mutable
   val result: mutable.Stack[String] = mutable.Stack.empty[String]
@@ -42,7 +42,7 @@ trait OperatorExpression extends Expression:
 end OperatorExpression
 ```
 
-```scala
+```scala mdoc:silent
 trait EqualsExpression extends OperatorExpression:
   protected override def doInterpret(context: Context, leftValue: String, rightValue: String): Unit =
     context.result.push(if leftValue == rightValue then "true" else "false")
@@ -58,7 +58,7 @@ trait MyExpression extends Expression:
     context.result.push(value)
 ```
 
-```scala
+```scala mdoc
 val context = Context()
 val input = new MyExpression() { var value = "" }
 
@@ -76,12 +76,10 @@ var expression = new OrExpression {
 input.value = "четыре"
 expression.interpret(context)
 context.result.pop()
-// res0: String = "true"
 
 input.value = "44"
 expression.interpret(context)
 context.result.pop()
-// res1: String = "false"
 ```
 
 ## Шаблонный метод

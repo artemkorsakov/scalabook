@@ -285,11 +285,14 @@ object CharacterFactory extends FlyWeightFactory[Char, Character]:
   def createFlyWeight(c: Char) = new Character(c)
 ```
 
-```scala mdoc
+```scala mdoc:silent
 val f1 = CharacterFactory('a')
 val f2 = CharacterFactory('b')
 val f3 = CharacterFactory('a')
 val f4 = new Character('a')
+```
+
+```scala mdoc
 f1.draw()
 f2.draw()
 f3.draw()

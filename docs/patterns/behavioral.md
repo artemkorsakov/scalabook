@@ -95,7 +95,7 @@ context.result.pop()
 
 #### Пример
 
-```scala
+```scala mdoc:silent:reset
 trait Template extends (Unit => Int):
   def subStepA(): Unit
   def subStepB: Int
@@ -122,7 +122,7 @@ trait Template extends (Unit => Int):
 
 #### Пример
 
-```scala
+```scala mdoc:silent:reset
 trait Handler[T]:
   var successor: Option[Handler[T]] = None
 
@@ -136,7 +136,7 @@ trait Handler[T]:
 end Handler
 ```
 
-```scala
+```scala mdoc:silent
 class Sensor extends Handler[Int]:
   var value = 0
   def changeValue(v: Int): Unit =
@@ -151,7 +151,7 @@ class Display1 extends Handler[Int]:
 
 Другое решение, специфичный для шаблона код хранится в отдельном trait.
 
-```scala
+```scala mdoc:silent
 class Display2:
   def show(v: Int): Unit = println(s"Display2 prints $v")
 
@@ -160,16 +160,14 @@ trait Display2Handler extends Display2 with Handler[Int]:
   override def handlingCriteria(v: Int): Boolean = v >= 4
 ```
 
-```scala
+```scala mdoc
 val sensor = new Sensor
 val display1 = new Display1
 val display2 = new Display2 with Display2Handler
 sensor.successor = Some(display1)
 display1.successor = Some(display2)
 sensor.changeValue(2)
-// Display1 prints 2
 sensor.changeValue(4)
-// Display2 prints 4
 ```
 
 ## Команда
@@ -187,11 +185,10 @@ sensor.changeValue(4)
 
 Класс `Button` ожидает функцию обратного вызова, которую он будет выполнять при вызове метода `click`.
 
-```scala
+```scala mdoc:reset
 class Button(val click: () => Unit)
 val button = new Button(() => println("click!"))
 button.click()
-// click!
 ```
 
 ## Итератор
@@ -207,7 +204,7 @@ button.click()
 
 #### Пример
 
-```scala
+```scala mdoc:reset:silent
 trait Iterator[A]:
   def first: A
 
@@ -238,7 +235,7 @@ trait Iterator[A]:
 Это простой пример взаимодействия объектов.
 Обратите внимание, что коллеги совершенно не знают о посреднике и, следовательно, о самой схеме.
 
-```scala
+```scala mdoc:reset:silent
 // Widgets
 class ListBox:
   def getSelection: String = "selected"
@@ -266,12 +263,11 @@ class DialogDirector:
 end DialogDirector
 ```
 
-```scala
+```scala mdoc
 val dialog = new DialogDirector
 val listBox = dialog.listBox
 val entryField = dialog.entryField
 listBox.click()
-// selected
 ```
 
 ## Хранитель
@@ -287,15 +283,14 @@ listBox.click()
 
 #### Пример
 
-```scala
+```scala mdoc:silent
 trait Originator:
-def createMemento: Memento
-
-def setMemento(m: Memento): Unit
+  def createMemento: Memento
+  def setMemento(m: Memento): Unit
 
 trait Memento:
-def getState: Originator
-def setState(originator: Originator): Unit
+  def getState: Originator
+  def setState(originator: Originator): Unit
 ```
 
 ## Наблюдатель
@@ -318,8 +313,10 @@ def setState(originator: Originator): Unit
 
 #### Пример
 
-```scala
-trait Subject[T] { self: T =>
+```scala mdoc:silent
+trait Subject[T]:
+  self: T =>
+
   import scala.collection.mutable
   private val observers: mutable.ListBuffer[T => Unit] =
     mutable.ListBuffer.empty[T => Unit]
@@ -331,34 +328,34 @@ trait Subject[T] { self: T =>
     observers.subtractOne(obs)
 
   protected def publish(): Unit = observers.foreach(obs => obs(self))
-}
 ```
 
-```scala
+```scala mdoc:silent
 trait Sensor(val label: String):
-var value: Double = _
-def changeValue(v: Double): Unit = value = v
+  var value: Double = _
+  def changeValue(v: Double): Unit = value = v
 
 // Pattern specific code
 trait SensorSubject extends Sensor with Subject[Sensor]:
-override def changeValue(v: Double): Unit =
-  super.changeValue(v)
-publish()
+  override def changeValue(v: Double): Unit =
+    super.changeValue(v)
+  publish()
 
 class Display(label: String):
-def notify(s: Sensor): Unit =
-  println(s"$label ${s.label} ${s.value}")
+  def notify(s: Sensor): Unit =
+    println(s"$label ${s.label} ${s.value}")
 ```
 
-```scala
+```scala mdoc:silent
 val s1: SensorSubject = new Sensor("s1") with SensorSubject
 val d1: Display = new Display("d1")
 val d2: Display = new Display("d2")
+```
+
+```scala mdoc
 s1.subscribe(d1.notify)
 s1.subscribe(d2.notify)
 s1.changeValue(10)
-// d1 s1 10.0
-// d2 s1 10.0
 ```
 
 ## Состояние
@@ -374,36 +371,34 @@ s1.changeValue(10)
 
 #### Пример
 
-```scala
+```scala mdoc:silent:reset
 class Context:
-private var currentState: State = State1
+  private var currentState: State = State1
 
-def operation(): Unit = currentState.operation()
+  def operation(): Unit = currentState.operation()
 
-trait State:
-def operation(): Unit
+  trait State:
+    def operation(): Unit
 
-private object State1 extends State:
-def operation(): Unit =
-  println("State1")
-currentState = State2
+  private object State1 extends State:
+    def operation(): Unit =
+      println("State1")
+  
+  currentState = State2
 
-private object State2 extends State:
-def operation(): Unit =
-  println("State2")
-currentState = State1
+  private object State2 extends State:
+    def operation(): Unit =
+      println("State2")
+  currentState = State1
 
 end Context
 ```
 
-```scala
+```scala mdoc
 val c = new Context
 c.operation()
-// State1
 c.operation()
-// State2
 c.operation()
-// State1
 ```
 
 ## Стратегия
@@ -422,48 +417,45 @@ c.operation()
 `Strategy` определяет интерфейс алгоритма.
 `Context` поддерживает ссылку на текущий объект `Strategy` и перенаправляет запросы от клиентов конкретному алгоритму.
 
-```scala
+```scala mdoc:silent
 object FileMatcher:
-private val filesHere: Seq[String] =
-  Seq(
-    "example.txt",
-    "file.txt.png",
-    "1txt"
-  )
+  private val filesHere: Seq[String] =
+    Seq(
+      "example.txt",
+      "file.txt.png",
+      "1txt"
+    )
 
-// Strategy selection
-def filesContaining(query: String): Seq[String] =
-  filesMatching(_.contains(query)) // inline strategy
+  // Strategy selection
+  def filesContaining(query: String): Seq[String] =
+    filesMatching(_.contains(query)) // inline strategy
 
-def filesRegex(query: String): Seq[String] =
-  filesMatching(matchRegex(query)) // using a method
+  def filesRegex(query: String): Seq[String] =
+    filesMatching(matchRegex(query)) // using a method
 
-def filesEnding(query: String): Seq[String] =
-  filesMatching(new FilesEnding(query).matchEnding) // lifting a method
+  def filesEnding(query: String): Seq[String] =
+    filesMatching(new FilesEnding(query).matchEnding) // lifting a method
 
-// matcher is a strategy
-private def filesMatching(matcher: String => Boolean): Seq[String] =
-  for
-    file <- filesHere
-if matcher(file)
-yield file
+  // matcher is a strategy
+  private def filesMatching(matcher: String => Boolean): Seq[String] =
+    for
+      file <- filesHere
+      if matcher(file)
+    yield file
 
-// Strategies
-private def matchRegex(query: String): String => Boolean =
-  (s: String) => s.matches(query)
+  // Strategies
+  private def matchRegex(query: String): String => Boolean =
+    (s: String) => s.matches(query)
 
-private class FilesEnding(query: String):
-def matchEnding(s: String): Boolean = s.endsWith(query)
+  private class FilesEnding(query: String):
+    def matchEnding(s: String): Boolean = s.endsWith(query)
 ```
 
-```scala
+```scala mdoc
 val query = ".txt"
 FileMatcher.filesContaining(query)
-// res0: Seq[String] = List("example.txt", "file.txt.png")
 FileMatcher.filesRegex(query)
-// res1: Seq[String] = List("1txt")
 FileMatcher.filesEnding(query)
-// res2: Seq[String] = List("example.txt")
 ```
 
 ## Посетитель
@@ -479,31 +471,29 @@ Visitor позволяет определить новую операцию бе
 
 #### Пример
 
-```scala
+```scala mdoc:reset:silent
 trait Expr
 case class Num(n: Int) extends Expr
 case class Sum(l: Expr, r: Expr) extends Expr
 
 def prettyPrint(e: Expr): Unit =
   e match
-case Num(n) => print(n)
-case Sum(l, r) =>
-prettyPrint(l)
-print(" + ")
-prettyPrint(r)
+    case Num(n) => print(n)
+    case Sum(l, r) =>
+      prettyPrint(l)
+      print(" + ")
+      prettyPrint(r)
 
 def eval(e: Expr): Int =
   e match
-case Num(n)    => n
-case Sum(l, r) => eval(l) + eval(r)
+    case Num(n)    => n
+    case Sum(l, r) => eval(l) + eval(r)
 ```
 
-```scala
+```scala mdoc
 val e1 = Sum(Sum(Num(1), Num(2)), Num(3))
 prettyPrint(e1)
-// 1 + 2 + 3
 print(eval(e1))
-// 6
 ```
 
 ---

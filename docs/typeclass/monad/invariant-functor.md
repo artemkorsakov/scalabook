@@ -13,7 +13,7 @@
 
 - Identity (тождественность): Если определен метод идентификации `identity` такой, что: `identity(a) == a`,
   тогда `xmap(ma)(identity, identity) == ma`.
-- Composition (композиция) - `xmap(xmap(ma, f1, g1), f2, g2) == xmap(ma, f2 compose f1, g1, compose g2)`
+- Composition (композиция) - `xmap(xmap(ma, f1, g1), f2, g2) == xmap(ma, f2 compose f1, g1 compose g2)`
 
 Также известен как экспоненциальный функтор.
 
@@ -38,6 +38,15 @@ given InvariantFunctor[Id] with
     override def xmap[B](f: A => B, g: B => A): Id[B] = Id(f(fa.value))
 ```
 
+Докажем, что `Id` удовлетворяет законам инвариантного функтора.
+
+- тождественность: `xmap(ma)(identity, identity) == ma`
+    - по определению метода `xmap` получим: `Id(a).xmap(identity, identity) == Id(identity(a)) == Id(a)`
+- композиция: `xmap(xmap(ma, f1, g1), f2, g2) == xmap(ma, f2 compose f1, g1 compose g2)`
+    - по определению метода `xmap` получим:
+      `Id(a).xmap(f1, g1).xmap(f2, g2) == Id(f1(a)).xmap(f2, g2) == Id(f2(f1(a)))` 
+      и `Id(a).xmap(f2 compose f1, g1 compose g2) == Id(f2(f1(a)))`
+
 ### Codec
 
 Зачастую инвариантный функтор используется в кодеках, кодирующих и декодирующих строки.
@@ -56,7 +65,27 @@ given InvariantFunctor[Codec] with
         def decode(value: String): B = f(fa.decode(value))
 ```
 
+Докажем, что `Codec` удовлетворяет законам инвариантного функтора.
 
+- тождественность: `xmap(ma)(identity, identity) == ma`
+    - по определению метода `xmap` получим: `fa.xmap(identity, identity) ==`
+      ```scala
+      def encode(value: A): String = fa.encode(identity(value)) = fa.encode(value)
+      def decode(value: String): A = identity(fa.decode(value)) = = fa.decode(value)
+      ```
+      Это эквивалентно исходному `fa` (в случае использования чистых функций) - проксируются его методы.
+- композиция: `xmap(xmap(ma, f1, g1), f2, g2) == xmap(ma, f2 compose f1, g1 compose g2)`
+    - по определению метода `xmap` получим `xmap(xmap(ma, f1, g1), f2, g2) ==`:
+        ```scala
+        def encode(value: C): String = fb.encode(g2(value)) = fa.encode(g1(g2(value)))
+        def decode(value: String): C = f2(fb.decode(value)) = f2(f1(fa.decode(value)))
+        ```
+        `xmap(ma, f2 compose f1, g1 compose g2) ==`:
+        ```scala
+        def encode(value: C): String = fa.encode(g1 compose g2) = fa.encode(g1(g2(value)))
+        def decode(value: String): C = (f2 compose f1)(fa.decode(value)) = f2(f1(fa.decode(value)))
+        ```
+  
 ---
 
 **Ссылки:**

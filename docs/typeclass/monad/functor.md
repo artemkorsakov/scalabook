@@ -2,6 +2,7 @@
 
 Функтор — это преобразование из категории `A` в категорию `B`. 
 Такие преобразования часто изображаются стрелкой: `A -> B` (или через метод `map`).
+Функтор сохраняет структуру: что было связано в исходной категории, будет связано и в целевой.
 
 Функтор создает новые экземпляры классов типов, добавляя функцию в цепочку преобразований.
 
@@ -16,7 +17,8 @@
   Другими словами: композиция двух функций и последующее отображение результирующей функции на функтор 
   должно быть таким же, как сначала отображение одной функции на функтор, а затем отображение другой.
 
-  
+> Стоит отметить, что здесь и далее речь идет только о [чистых функциях](../../scala/fp/pure-functions.md) `identity`, `f` и `g`.
+
 ## Описание
 
 ```scala
@@ -52,6 +54,14 @@ given idFunctor: Functor[Id] with
     override def map[B](f: A => B): Id[B] = Id(f(as.value))
 ```
 
+Докажем, что `Id` удовлетворяет функториальным законам.
+
+- сохраняет единичные морфизмы: `map(fa)(identity) == fa`
+    - по определению метода `map` получим: `Id(a).map(identity) == Id(identity(a)) == Id(a)`
+- сохраняет композицию: `fa.map(f).map(g) == fa.map(g(f(_)))`
+    - по определению метода `map` получим:
+      `Id(a).map(f).map(g) == Id(f(a)).map(g) == Id(g(f(a)))` и `Id(a).map(g(f(_))) == Id(g(f(a)))`
+  
 ### Option
 
 ```scala
@@ -62,6 +72,18 @@ given optionFunctor: Functor[Option] with
         case Some(a) => Some(f(a))
         case None    => None
 ```
+
+Докажем, что `Option` удовлетворяет функториальным законам.
+
+- сохраняет единичные морфизмы: `map(fa)(identity) == fa`
+    - если `fa` равно `None`, то по определению метода `map` получим: `None.map(identity) == None`
+    - если `fa` равно `Some(a)`, то по определению метода `map` получим: 
+      `Some(a).map(identity) == Some(identity(a)) == Some(a)`
+- сохраняет композицию: `fa.map(f).map(g) == fa.map(g(f(_)))`
+    - если `fa` равно `None`, то по определению метода `map` получим:
+      `None.map(f).map(g) == None.map(g) == None` и `None.map(g(f(_))) == None` 
+    - если `fa` равно `Some(a)`, то по определению метода `map` получим:
+      `Some(a).map(f).map(g) == Some(f(a)).map(g) == Some(g(f(a)))` и `Some(a).map(g(f(_))) == Some(g(f(a)))`
 
 ### Последовательность
 
@@ -141,8 +163,23 @@ given Functor[BinaryTree] with
       case Branch(a, left, right) => Branch(f(a), left.map(f), right.map(f))
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
+### Реализация в Cats
+
+```scala
+import cats.*
+import cats.implicits.*
+
+val list1 = List(1, 2, 3)
+val list2 = Functor[List].map(list1)(_ * 2)  // List(2, 4, 6)
+
+val func = (x: Int) => x + 1
+val liftedFunc = Functor[Option].lift(func)
+liftedFunc(Option(1))                        // Some(2)
+```
+
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*
@@ -183,26 +220,14 @@ val listOpt = Functor[List] compose Functor[Option]
 listOpt.map(List(Some(1), None, Some(3)))(_ + 1)   // List(Some(2), None, Some(4))
 ```
 
-## Реализация в Cats
-
-```scala
-import cats.*
-import cats.implicits.*
-
-val list1 = List(1, 2, 3)
-val list2 = Functor[List].map(list1)(_ * 2)  // List(2, 4, 6)
-
-val func = (x: Int) => x + 1
-val liftedFunc = Functor[Option].lift(func)
-liftedFunc(Option(1))                        // Some(2)
-```
-
-
 ---
 
 **Ссылки:**
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/functor.html)
+- Category Theory for Programmers - Bartosz Milewski:
+    - [Теория категорий для программистов](https://henrychern.wordpress.com/2022/09/15/%d1%82%d0%b5%d0%be%d1%80%d0%b8%d1%8f-%d0%ba%d0%b0%d1%82%d0%b5%d0%b3%d0%be%d1%80%d0%b8%d0%b9-%d0%b4%d0%bb%d1%8f-%d0%bf%d1%80%d0%be%d0%b3%d1%80%d0%b0%d0%bc%d0%bc%d0%b8%d1%81%d1%82%d0%be%d0%b2/)
+    - [Category Theory for Programmers, Functors](https://bartoszmilewski.com/2015/01/20/functors)
 - [Cats](https://typelevel.org/cats/typeclasses/functor.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Functor.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)

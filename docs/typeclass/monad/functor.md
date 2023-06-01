@@ -89,8 +89,10 @@ given optionFunctor: Functor[Option] with
 
 ```scala
 given listFunctor: Functor[List] with
-  extension [A](as: List[A]) 
-    override def map[B](f: A => B): List[B] = as.map(f)
+  extension [A](as: List[A])
+    override def map[B](f: A => B): List[B] = as match
+      case Nil    => Nil
+      case h :: t => f(h) :: t.map(f)
 ```
 
 ### Either

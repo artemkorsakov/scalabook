@@ -132,27 +132,14 @@ given stateFunctor[S]: Functor[[x] =>> State[S, x]] with
       }
 ```
 
-### Nested - два вложенных функтора образуют новый функтор
-
-```scala
-final case class Nested[F[_], G[_], A](value: F[G[A]])
-
-given nestedFunctor[F[_], G[_]](using functorF: Functor[F], functorG: Functor[G]): Functor[[X] =>> Nested[F, G, X]]
-  with
-  extension [A](fga: Nested[F, G, A])
-    override def map[B](f: A => B): Nested[F, G, B] =
-      Nested[F, G, B] {
-        functorF.map(fga.value)(ga => functorG.map(ga)(f))
-      }
-```
-
 ### IO
 
 ```scala
 final case class IO[R](run: () => R)
 
 given ioFunctor: Functor[IO] with
-  extension [A](as: IO[A]) override def map[B](f: A => B): IO[B] = IO { () => f(as.run()) }
+  extension [A](as: IO[A]) 
+    override def map[B](f: A => B): IO[B] = IO { () => f(as.run()) }
 ```
 
 ### Бинарное дерево
@@ -164,6 +151,51 @@ given Functor[BinaryTree] with
       case Leaf                   => Leaf
       case Branch(a, left, right) => Branch(f(a), left.map(f), right.map(f))
 ```
+
+## Композиция функторов
+
+Композиция двух функторов - это функтор, для которого `map` - есть композиция соответствующих `map`.
+Композиция функторов - категория, в которой объекты — это категории, а морфизмы — это функторы.
+
+Рассмотрим пример:
+
+```scala mdoc:invisible
+trait Functor[F[_]]:
+  extension [A](fa: F[A]) def map[B](f: A => B): F[B]
+
+given optionFunctor: Functor[Option] with
+  extension [A](optA: Option[A])
+    override def map[B](f: A => B): Option[B] =
+      optA match
+        case Some(a) => Some(f(a))
+        case None    => None
+
+given listFunctor: Functor[List] with
+  extension [A](as: List[A])
+    override def map[B](f: A => B): List[B] = as match
+      case Nil    => Nil
+      case h :: t => f(h) :: t.map(f)
+```
+
+```scala mdoc:silent
+final case class Nested[F[_], G[_], A](value: F[G[A]])
+
+given nf[F[_]: Functor, G[_]: Functor]: Functor[[X] =>> Nested[F, G, X]] with
+  extension [A](fga: Nested[F, G, A])
+    override def map[B](f: A => B): Nested[F, G, B] =
+      Nested[F, G, B](fga.value.map(_.map(f)))
+```
+
+```scala mdoc
+Nested(Some(List(1, 2))).map(_ + 10)
+```
+
+Композиция функторов удовлетворяет функториальным законам:
+
+- сохраняет единичные морфизмы: `map(fa)(identity) == fa`
+    - `fga.map(ga => ga.map(identity)) == fga.map(ga => ga) == fga.map(identity) == fga`
+- сохраняет композицию: `fa.map(f).map(g) == fa.map(g(f(_)))`
+    - `fga.map(ga => ga.map(f)).map(ga => ga.map(g)) == fga.map(ga => ga.map(f).map(g)) == fga.map(ga => ga.map(g(f(_))))`
 
 ## Реализация
 

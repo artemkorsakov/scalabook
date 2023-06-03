@@ -42,4 +42,8 @@ object Dependencies {
     val iteratee        = "org.scalaz" %% "scalaz-iteratee"           % version
     val scalacheck      = "org.scalaz" %% "scalaz-scalacheck-binding" % version
   }
+
+  object zio {
+    val core = "dev.zio" %% "zio" % "2.0.14"
+  }
 }

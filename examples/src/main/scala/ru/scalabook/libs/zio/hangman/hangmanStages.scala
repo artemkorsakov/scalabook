@@ -1,6 +1,6 @@
 package ru.scalabook.libs.zio.hangman
 
-val hangmanStages = List(
+val hangmanStages = IndexedSeq(
   """
     #   --------
     #   |      |

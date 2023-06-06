@@ -148,5 +148,8 @@ def compose[A, B, C](f: B => C, g: A => B): A => C =
 
 **Ссылки:**
 
+- [A bite of functional programming (in Scala)](https://scalac.io/blog/functional-programming-in-scala/)
+- [Business benefits of functional programming and how to make it work for your company](https://www.youtube.com/watch?v=EcGZdzECmIk)
 - [Functional Programming by Alexander Alvin](https://alvinalexander.com/photos/functional-programming-simplied-free-pdf-preview/)
 - [Functional Programming in Scala, Second Edition, Chapter 1-2](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
+- [What is functional programming and why it matters for your business?](https://scalac.io/blog/benefits-of-functional-programming/)

@@ -58,13 +58,42 @@
 
 ### Статьи
 
-| Название                                                                                                                         | Версия  | Язык | Дата | Комментарий |
-|----------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
-| [Exploring Scala CLI — the new scala runner](https://medium.com/virtuslab/exploring-scala-cli-the-new-scala-runner-4b958245c2e0) | Scala 3 |  En  | 2023 |             |
-| [I hate NULL and all its variants!](https://alexn.org/blog/2010/05/25/i-hate-null)                                               | Scala 2 |  En  | 2010 |             |
-| [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes) | Scala 2 |  En  | 2012 |             |
+| Название                                                                                                                          | Версия  | Язык | Дата | Комментарий |
+|-----------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
+| [Exploring Scala CLI — the new scala runner](https://medium.com/virtuslab/exploring-scala-cli-the-new-scala-runner-4b958245c2e0)  | Scala 3 |  En  | 2023 |             |
+| [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes)  | Scala 2 |  En  | 2012 |             |
 
+--- 
 
+## Функциональное программирование
+
+### Книги и документация
+
+...
+
+### Видео
+
+| Название                                                                                                                            | Язык | Дата | Комментарий |
+|-------------------------------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
+| [Business benefits of functional programming and how to make it work for your company](https://www.youtube.com/watch?v=EcGZdzECmIk) |  En  | 2020 |             |
+
+### Курсы
+
+...
+
+### Упражнения
+
+...
+
+### Статьи
+
+| Название                                                                                                                                                                          | Язык | Дата | Комментарий |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
+| [A bite of functional programming (in Scala)](https://scalac.io/blog/functional-programming-in-scala/)                                                                            |  En  | 2020 |             |
+| [What is functional programming and why it matters for your business?](https://scalac.io/blog/benefits-of-functional-programming)                                                 |  En  | 2020 |             |
+| [I hate NULL and all its variants!](https://alexn.org/blog/2010/05/25/i-hate-null)                                                                                                |  En  | 2010 |             |
+| [Making something out of nothing (or, why None is better than NaN and NULL)](https://blog.janestreet.com/making-something-out-of-nothing-or-why-none-is-better-than-nan-and-null) |  En  | 2010 |             |
+| [Null, NullPointerException and dealing with it](https://scalac.io/blog/null-pointer-exception-npe/)                                                                              |  En  | 2015 |             |
 
 --- 
 

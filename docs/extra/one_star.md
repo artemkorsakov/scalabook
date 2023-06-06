@@ -73,9 +73,10 @@
 
 ### Видео
 
-| Название                                                                                                                            | Язык | Дата | Комментарий |
-|-------------------------------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
-| [Business benefits of functional programming and how to make it work for your company](https://www.youtube.com/watch?v=EcGZdzECmIk) |  En  | 2020 |             |
+| Название                                                                                                                                 | Язык | Дата | Комментарий |
+|------------------------------------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
+| [Business benefits of functional programming and how to make it work for your company](https://www.youtube.com/watch?v=EcGZdzECmIk)      |  En  | 2020 |             |
+| [Null References: The Billion Dollar Mistake](https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare) |  En  | 2009 |             |
 
 ### Курсы
 

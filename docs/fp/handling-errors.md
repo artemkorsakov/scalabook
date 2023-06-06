@@ -237,3 +237,4 @@ def catchNonFatal[A](a: => A): Either[Throwable, A] =
 - [I hate NULL and all its variants!](https://alexn.org/blog/2010/05/25/i-hate-null/)
 - [Making something out of nothing (or, why None is better than NaN and NULL)](https://blog.janestreet.com/making-something-out-of-nothing-or-why-none-is-better-than-nan-and-null/)
 - [Null, NullPointerException and dealing with it](https://scalac.io/blog/null-pointer-exception-npe/)
+- [Null References: The Billion Dollar Mistake](https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare)

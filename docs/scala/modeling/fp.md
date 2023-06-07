@@ -487,5 +487,6 @@ Pizza(Small, Thin, Seq(Cheese))
 - [Scala3 book, domain modeling fp](https://docs.scala-lang.org/scala3/book/domain-modeling-fp.html)
 - [Scala3 book, taste modeling](https://docs.scala-lang.org/scala3/book/taste-modeling.html)
 - [Scala3 book, taste objects](https://docs.scala-lang.org/scala3/book/taste-objects.html)
+- [Functional Programming vs OOP](https://scalac.io/blog/functional-programming-vs-oop/)
 
 [programming_in_scala]: https://www.artima.com/shop/programming_in_scala_5ed

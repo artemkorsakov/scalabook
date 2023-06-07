@@ -358,5 +358,6 @@ s2.changeValue(3)
 - [Scala3 book, taste objects](https://docs.scala-lang.org/scala3/book/taste-objects.html)
 - [Odersky and Zenger. Scalable component abstractions][Odersky and Zenger]
 - [Scala 3 Reference, Open classes](https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html)
+- [Functional Programming vs OOP](https://scalac.io/blog/functional-programming-vs-oop/)
 
 [Odersky and Zenger]: https://dl.acm.org/doi/10.1145/1103845.1094815

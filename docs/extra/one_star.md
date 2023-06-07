@@ -91,10 +91,11 @@
 | Название                                                                                                                                                                          | Язык | Дата | Комментарий |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
 | [A bite of functional programming (in Scala)](https://scalac.io/blog/functional-programming-in-scala/)                                                                            |  En  | 2020 |             |
-| [What is functional programming and why it matters for your business?](https://scalac.io/blog/benefits-of-functional-programming)                                                 |  En  | 2020 |             |
+| [Functional Programming vs OOP](https://scalac.io/blog/functional-programming-vs-oop/)                                                                                            |  En  | 2022 |             |
 | [I hate NULL and all its variants!](https://alexn.org/blog/2010/05/25/i-hate-null)                                                                                                |  En  | 2010 |             |
 | [Making something out of nothing (or, why None is better than NaN and NULL)](https://blog.janestreet.com/making-something-out-of-nothing-or-why-none-is-better-than-nan-and-null) |  En  | 2010 |             |
 | [Null, NullPointerException and dealing with it](https://scalac.io/blog/null-pointer-exception-npe/)                                                                              |  En  | 2015 |             |
+| [What is functional programming and why it matters for your business?](https://scalac.io/blog/benefits-of-functional-programming)                                                 |  En  | 2020 |             |
 
 --- 
 

@@ -28,8 +28,14 @@ ZIO позволяет создавать масштабируемые, усто
 
 **Ссылки:**
 
-- [ZIO Homepage](https://zio.dev)
-- [ZIO GitHub](https://github.com/zio/zio)
+- Официальная документация:
+    - [ZIO Homepage](https://zio.dev)
+    - [ZIO GitHub](https://github.com/zio/zio)
 - [7 ZIO experts share why they choose ZIO](https://scalac.io/blog/zio-experts-share-why-they-choose-zio-scala)
 - [Why Developers Should Pay Attention to ZIO in 2023](https://scalac.io/blog/why-developers-should-pay-attention-to-zio-in-2023)
 - [Why you should choose ZIO in your next project. Benefits of functional programming in ZIO](https://www.youtube.com/watch?v=xpHY43VuOLo)
+- Primeros pasos con ZIO - Первые шаги с ZIO:
+    - [Primeros pasos con ZIO. Part 1](https://emanuelpeg.blogspot.com/2023/05/primeros-pasos-con-zio.html)
+    - [Primeros pasos con ZIO. Part 2](https://emanuelpeg.blogspot.com/2023/05/primeros-pasos-con-zio-parte-2.html)
+    - [Primeros pasos con ZIO. Part 3](https://emanuelpeg.blogspot.com/2023/06/primeros-pasos-con-zio-parte-3.html)
+    - [Primeros pasos con ZIO. Part 4](https://emanuelpeg.blogspot.com/2023/06/primeros-pasos-con-zio-parte-4.html)

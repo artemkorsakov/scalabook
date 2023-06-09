@@ -158,8 +158,10 @@ Color.Red.compareTo(Color.Green)
 
 **Ссылки:**
 
+- Официальная документация:
+    - [Scala3 book, domain modeling tools](https://docs.scala-lang.org/scala3/book/domain-modeling-tools.html)
+    - [Scala3 book, taste modeling](https://docs.scala-lang.org/scala3/book/taste-modeling.html)
+    - [Scala3 book, taste objects](https://docs.scala-lang.org/scala3/book/taste-objects.html)
+    - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/enums/enums.html)
 - [Concise enumeration in Scala](https://scalajobs.com/blog/concise-enumeration-in-scala)
-- [Scala3 book, domain modeling tools](https://docs.scala-lang.org/scala3/book/domain-modeling-tools.html)
-- [Scala3 book, taste modeling](https://docs.scala-lang.org/scala3/book/taste-modeling.html)
-- [Scala3 book, taste objects](https://docs.scala-lang.org/scala3/book/taste-objects.html)
-- [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/enums/enums.html)
+- [Scala 3 Enums](https://alexn.org/blog/2023/05/25/scala-enums/)

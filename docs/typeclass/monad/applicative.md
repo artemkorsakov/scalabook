@@ -30,11 +30,14 @@
 ## Описание 
 
 ```scala
-trait Applicative[F[_]] extends Apply[F] with InvariantApplicative[F] :
+trait Applicative[F[_]] extends Apply[F], InvariantApplicative[F]:
   def unit[A](a: => A): F[A]
   override def xunit0[A](a: => A): F[A] = unit(a)
 
   def apply[A, B](fab: F[A => B])(fa: F[A]): F[B]
+
+  override def product[A, B](fa: F[A], fb: F[B]): F[(A, B)] =
+    fa.map2(fb)((a, b) => (a, b))
 
   extension [A](fa: F[A])
     def map[B](f: A => B): F[B] =
@@ -42,9 +45,6 @@ trait Applicative[F[_]] extends Apply[F] with InvariantApplicative[F] :
 
     def map2[B, C](fb: F[B])(f: (A, B) => C): F[C] =
       apply(apply(unit(f.curried))(fa))(fb)
-
-    def product[B](fb: F[B]): F[(A, B)] =
-      fa.map2(fb)((a, b) => (a, b))  
 ```
 
 ## Примеры
@@ -203,8 +203,18 @@ given ioApplicative: Applicative[IO] with
   override def apply[A, B](fab: IO[A => B])(fa: IO[A]): IO[B] = IO(() => fab.run()(fa.run()))
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
+### Реализация в Cats
+
+```scala
+import cats.*, cats.data.*, cats.syntax.all.*
+
+Applicative[List].pure(1)    // List(1)
+Applicative[Option].pure(1)  // Some(1)
+```
+
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*
@@ -215,16 +225,6 @@ import Scalaz.*
 1.point[List]                                         // List(1)
 1.η[List]                                             // List(1)
 ```
-
-## Реализация в Cats
-
-```scala
-import cats.*, cats.data.*, cats.syntax.all.*
-
-Applicative[List].pure(1)    // List(1)
-Applicative[Option].pure(1)  // Some(1)
-```
-
 
 ---
 

@@ -58,10 +58,11 @@
 
 ### Статьи
 
-| Название                                                                                                                          | Версия  | Язык | Дата | Комментарий |
-|-----------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
-| [Exploring Scala CLI — the new scala runner](https://medium.com/virtuslab/exploring-scala-cli-the-new-scala-runner-4b958245c2e0)  | Scala 3 |  En  | 2023 |             |
-| [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes)  | Scala 2 |  En  | 2012 |             |
+| Название                                                                                                                         | Версия  | Язык | Дата | Комментарий                 |
+|----------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-----------------------------|
+| [Build your vocabulary with Scala affixes](https://rossabaker.com/blog/scala-affixes)                                            | Scala 3 |  En  | 2023 | Префиксы и суффиксы в Scala |
+| [Exploring Scala CLI — the new scala runner](https://medium.com/virtuslab/exploring-scala-cli-the-new-scala-runner-4b958245c2e0) | Scala 3 |  En  | 2023 |                             |
+| [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes) | Scala 2 |  En  | 2012 |                             |
 
 --- 
 

@@ -19,3 +19,6 @@ add2(42)
 **Ссылки:**
 
 - [Scala3 book, Method Features](https://docs.scala-lang.org/scala3/book/methods-most.html)
+- Category Theory for Programmers - Bartosz Milewski:
+    - [Теория категорий для программистов](https://henrychern.files.wordpress.com/2023/05/mil-ct3.pdf#page=149)
+    - [Category Theory for Programmers, Function Types](https://bartoszmilewski.com/2015/03/13/function-types/)

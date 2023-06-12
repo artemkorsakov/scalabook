@@ -60,8 +60,9 @@ given Bifunctor[Writer] with
     }
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*
@@ -125,5 +126,9 @@ Bifunctor[Tuple2].umap((2,3))(_ * 3)                                            
 
 **Ссылки:**
 
+- Category Theory for Programmers - Bartosz Milewski:
+    - [Теория категорий для программистов](https://henrychern.files.wordpress.com/2023/05/mil-ct3.pdf#page=123)
+    - [Category Theory for Programmers, Functoriality](https://bartoszmilewski.com/2015/02/03/functoriality)
 - [Herding Cats](http://eed3si9n.com/herding-cats/datatype-generic-programming.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bifunctor.html)
+ 

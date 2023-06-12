@@ -1,11 +1,10 @@
 # Функциональный журнал
 
 `Writer` предназначен для результатов, к которым присоединено другое значение, действующее как своего рода журнал.
-Одним из распространенных применений для `Writers` является запись последовательностей шагов в многопоточных вычислениях, 
-где стандартные методы императивной регистрации могут привести к чередованию сообщений из разных контекстов. 
-При этом лог для вычислений `Writer` привязан к результату, 
+Одним из распространенных применений для `Writers` является запись последовательностей шагов в многопоточных вычислениях,
+где стандартные методы императивной регистрации могут привести к чередованию сообщений из разных контекстов.
+При этом лог для вычислений `Writer` привязан к результату,
 поэтому можно запускать параллельные вычисления без смешивания логов.
-
 
 ```scala
 final case class Writer[W, A](run: () => (W, A))
@@ -38,8 +37,9 @@ unit[String, Int](42).run()
 // res0: Tuple2[String, Int] = ("", 42)
 ```
 
+## Реализация
 
-## Реализация в Cats
+### Реализация в Cats
 
 ```scala
 import cats.data.Writer
@@ -54,14 +54,15 @@ val (log, result) = a.run
 // val result: Int = 1859
 ```
 
-
 ---
 
 **Ссылки:**
 
-- [Category Theory for Programmers - Bartosz Milewski](https://bartoszmilewski.com/2014/12/23/kleisli-categories/)
+- Category Theory for Programmers - Bartosz Milewski:
+    - [Теория категорий для программистов](https://henrychern.files.wordpress.com/2023/05/mil-ct3.pdf#page=134)
+    - [Category Theory for Programmers, Functoriality](https://bartoszmilewski.com/2015/02/03/functoriality)
+    - [Category Theory for Programmers, Kleisli Categories](https://bartoszmilewski.com/2014/12/23/kleisli-categories)
 - [Cats](https://typelevel.org/cats/datatypes/writer.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Writer.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Writer.html)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#writer-monad)
-  

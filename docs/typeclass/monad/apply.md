@@ -67,8 +67,19 @@ given Apply[Option] with
         case None    => None
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
+### Реализация в Cats
+
+```scala
+import cats.*, cats.data.*, cats.syntax.all.*
+
+Apply[Option].ap({{(_: Int) + 3}.some })(10.some)               // Some(13)
+Apply[Option].ap({{(_: String) + "hahah"}.some })(none[String]) // None
+Apply[Option].ap({ none[String => String] })("woot".some)       // None
+```
+
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*
@@ -97,18 +108,6 @@ Apply[List].lift2 {(_: Int) * (_: Int)} (List(1, 2), List(3, 4)) // List(3, 4, 6
 1.some *> 2.some                                                 // Some(2)
 (3.some |@| 5.some) {_ + _}                                      // Some(8)
 ```
-
-
-## Реализация в Cats
-
-```scala
-import cats.*, cats.data.*, cats.syntax.all.*
-
-Apply[Option].ap({{(_: Int) + 3}.some })(10.some)               // Some(13)
-Apply[Option].ap({{(_: String) + "hahah"}.some })(none[String]) // None
-Apply[Option].ap({ none[String => String] })("woot".some)       // None
-```
-
 
 ---
 

@@ -38,7 +38,9 @@ trait Enum[F] extends Order[F]:
   def max: Option[F]
 ```
 
-## Реализация в ScalaZ
+## Реализация
+
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*
@@ -52,7 +54,6 @@ import Scalaz.*
 Enum[Int].min  // Some(-2147483648)
 Enum[Int].max  // Some(2147483647)
 ```
-
 
 ---
 

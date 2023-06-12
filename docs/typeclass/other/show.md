@@ -9,7 +9,9 @@ trait Show[A]:
   def show(a: A): String
 ```
 
-## Реализация в Cats
+## Реализация
+
+### Реализация в Cats
 
 ```scala
 import cats.*
@@ -18,7 +20,7 @@ import cats.implicits.*
 "abc".show   // abc
 ```
 
-## Реализация в ScalaZ
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*

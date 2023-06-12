@@ -9,7 +9,9 @@ sealed trait IO[+A]:
   private[effect] def apply(rw: World[RealWorld]): Trampoline[(World[RealWorld], A)]
 ```
 
-## Реализация в ScalaZ
+## Реализация
+
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*

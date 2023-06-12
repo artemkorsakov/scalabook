@@ -57,7 +57,21 @@ trait Order[F] extends Equal[F]:
     override def reverseOrder = self
 ```
 
-## Реализация в ScalaZ
+## Реализация
+
+### Реализация в Cats
+
+```scala
+import cats.*
+import cats.implicits.*
+
+1.0 compare 2.0
+// val res0: Int = -1
+1.0 max 2.0
+// val res1: Double = 2.0
+```
+
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*
@@ -72,20 +86,6 @@ import Scalaz.*
 ```
 
 Метод `?|?` в ScalaZ возвращает результат сравнения `Ordering: LT, GT или EQ`. 
-
-
-## Реализация в Cats
-
-```scala
-import cats.*
-import cats.implicits.*
-
-1.0 compare 2.0
-// val res0: Int = -1
-1.0 max 2.0
-// val res1: Double = 2.0
-```
-
 
 ---
 

@@ -66,8 +66,9 @@ given Bind[Option] with
         case None    => None
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*
@@ -78,7 +79,6 @@ import Scalaz.*
 3.some >> 4.some                      // Some(4)
 List(List(1, 2), List(3, 4)).join     // List(1, 2, 3, 4)
 ```
-
 
 ---
 

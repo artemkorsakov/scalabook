@@ -33,16 +33,9 @@ trait Equal[F]:
     (a1: G, a2: G) => self.equal(f(a1), f(a2))
 ```
 
-## Реализация в ScalaZ
+## Реализация
 
-```scala
-import scalaz.*
-import Scalaz.*
-List(1, 2, 3) === List(1, 2, 3) // true
-List(1, 2, 3) =/= List(1, 2, 4) // true
-```
-
-## Реализация в Cats
+### Реализация в Cats
 
 ```scala
 import cats.*
@@ -67,6 +60,14 @@ val cat2 = Cat("Heathcliff", 32, "orange and black")
 cat1 === cat2         // false
 ```
 
+### Реализация в ScalaZ
+
+```scala
+import scalaz.*
+import Scalaz.*
+List(1, 2, 3) === List(1, 2, 3) // true
+List(1, 2, 3) =/= List(1, 2, 4) // true
+```
 
 ---
 

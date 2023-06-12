@@ -36,8 +36,9 @@ given Semigroupal[Option] with
       case _                  => None
 ```
 
+## Реализация
 
-## Реализация в Cats
+### Реализация в Cats
 
 ```scala
 import cats.Semigroupal

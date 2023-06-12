@@ -28,8 +28,9 @@ given IsEmpty[List] with
   override def empty[A]: List[A] = List.empty[A]
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*
@@ -39,7 +40,6 @@ import Scalaz.*
 
 summon[IsEmpty[List]].isEmpty(List.empty[Int]) // true
 ```
-
 
 ---
 

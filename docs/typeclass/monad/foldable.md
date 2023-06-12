@@ -117,26 +117,9 @@ given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
         case Left(_)  => init
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
-
-```scala
-import scalaz.*
-import Scalaz.*
-
-List(1, 2, 3).foldRight (0) {_ - _}                        // 2
-List(1, 2, 3).foldLeft (0) {_ - _}                         // -6
-
-val trues: LazyList[Boolean] = LazyList.continually(true)
-def lazyOr(x: Boolean)(y: => Boolean) = x || y
-Foldable[LazyList].foldr(trues, false)(lazyOr)             // true
-
-val digits = List(0,1,2,3,4,5,6,7,8,9)
-Foldable[List].fold(digits)                                // 45
-```
-
-
-## Реализация в Cats
+### Реализация в Cats
 
 ```scala
 import cats.Foldable
@@ -157,6 +140,22 @@ Foldable[List].combineAll(List(1, 2, 3))           // 6
 Foldable[List].foldMap(List(1, 2, 3))(_.toString)  // 123
 ```
 
+### Реализация в ScalaZ
+
+```scala
+import scalaz.*
+import Scalaz.*
+
+List(1, 2, 3).foldRight (0) {_ - _}                        // 2
+List(1, 2, 3).foldLeft (0) {_ - _}                         // -6
+
+val trues: LazyList[Boolean] = LazyList.continually(true)
+def lazyOr(x: Boolean)(y: => Boolean) = x || y
+Foldable[LazyList].foldr(trues, false)(lazyOr)             // true
+
+val digits = List(0,1,2,3,4,5,6,7,8,9)
+Foldable[List].fold(digits)                                // 45
+```
 
 ---
 

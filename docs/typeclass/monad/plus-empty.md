@@ -32,8 +32,9 @@ given PlusEmpty[List] with
   def empty[A]: List[A] = List.empty[A]
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*
@@ -43,7 +44,6 @@ import Scalaz.*
 
 (PlusEmpty[List].empty: List[Int])                  // List()
 ```
-
 
 ---
 

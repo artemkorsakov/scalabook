@@ -150,6 +150,128 @@ case class OptionT[F[_], A](value: F[Option[A]]):
 
 ## Суффиксы 
 
+### -A
+
+`-A` для операций [Applicative](monad/applicative.md).
+
+```scala
+trait Applicative[F[_]]:
+  def replicateA[A](n: Int, fa: F[A]): F[List[A]]
+  def unlessA[A](cond: Boolean)(f: => F[A]): F[Unit]
+  def whenA[A](cond: Boolean)(f: => F[A]): F[Unit]
+```
+
+### -F
+
+`-F` для операций [Functor-а](monad/functor.md).
+
+```scala
+trait Functor[F[_]]:
+  def ifF[A](fb: F[Boolean])(ifTrue: => A, ifFalse: => A): F[A]
+```
+
+`-F` также используется для преобразования значений в более сложный тип. 
+В этом случае лучше думать об **F-"эффекте"**.
+Иногда `Functor` - это все, что нужно. Иногда необходимо нечто большее.
+
+```scala
+object Kleisli:
+  def liftF[F[_], A, B](x: F[B]): Kleisli[F, A, B]
+
+object OptionT:
+  def liftF[F[_], A](fa: F[A])(F: Functor[F]): OptionT[F, A]
+
+object IorT:
+  def liftF[F[_], A, B](fb: F[B])(F: Applicative[F]): IorT[F, A, B]
+
+object ContT:
+  def liftF[F[_], A, B](mb: M[B])(M: FlatMap[M]): ContT[M, A, B]
+```
+
+Вещи, называемые `eval` в Cats-Effect и FS2, очень похожи на `liftF`, но нарушает нашу этимологию.
+
+```scala
+object Resource:
+  def eval[F[_], A](fa: F[A]): Resource[F, A]
+
+object Stream:
+  def eval[F[_], O](fo: F[O]): Stream[F, O]
+```
+
+### -K 
+
+`-K` предназначен для "высшего рода" и, как правило, не зависит от того, "что внутри коробки".
+
+[MonoidK](https://typelevel.org/cats/typeclasses/monoidk.html) и [Monoid](monoid/monoid.md):
+
+```scala
+trait Monoid[A]:
+  def combine(x: A, y: A): A
+
+trait MonoidK[F[_]]:
+  def combineK[A](x: F[A], y: F[A]): F[A]
+```
+
+**FunctionK** и **Function**:
+
+```scala
+trait Function1[-T1, +R]: // или =>
+  def apply(v1: T1): R
+
+trait FunctionK[F[_], G[_]]: // или ~>
+  def apply[A](fa: F[A]): G[A]
+```
+
+### -L, -R
+
+`-L` и `-R` обозначают `Left` и `Right`.
+
+```scala
+trait Applicative[F[_]]:
+  // Более известно как `<*`
+  def productL[A, B](fa: F[A])(fb: F[B]): F[A]
+  // Более известно как `*>`
+  def productR[A, B](fa: F[A])(fb: F[B]): F[B]
+```
+
+### -M
+
+`-M` для монадических операций.
+
+```scala
+trait Monad[F[_]]:
+  def ifM(fa: F[Boolean])(ifTrue: => F[B], ifFalse: => F[B]): F[B]
+  def untilM[G[_], A](f: F[A])(cond: => F[Boolean])(implicit G: Alternative[G]): F[G[A]]
+  def whileM[G[_], A](p: F[Boolean])(body: => F[A])(implicit G: Alternative[G]): F[G[A]]
+```
+
+### -T
+
+`-T` предназначен для преобразователей монад.
+
+```scala
+final case class EitherT[F[_], A, B](value: F[Either[A, B]])
+final case class IdT[F[_], A](value: F[A])
+final case class IorT[F[_], A, B](value: F[Ior[A, B]])
+final case class OptionT[F[_], A](value: F[Option[A]])
+final case class WriterT[F[_], L, V](run: F[(L, V)])
+// И еще несколько псевдонимов
+type ReaderT[F[_], -A, B] = Kleisli[F, A, B]
+type StateT[F[_], S, A] = IndexedStateT[F, S, S, A]
+type StoreT[W[_], S, A] = RepresentableStoreT[W, [β$2$](S) => β$2$, S, A]
+```
+
+### _-
+
+Суффикс подчеркивания обычно означает, что мы говорим: "Меня волнует эффект, а не результат внутри".
+Реализации могут быть оптимизированы, если известно, что вызывающий объект все равно проигнорирует это.
+
+```scala
+trait Traverse[F[_]]:
+  def traverse [G[_]: Applicative, A, B](fa: F[A])(f: A => G[B]): G[F[B]]
+  def traverse_[G[_]: Applicative, A, B](fa: F[A])(f: A => G[B]): G[Unit]
+```
+
 ---
 
 **Ссылки:**

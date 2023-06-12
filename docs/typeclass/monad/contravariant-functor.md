@@ -59,7 +59,7 @@ given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X,
 
 ## Реализация
 
-## Реализация в Cats
+### Реализация в Cats
 
 ```scala
 import cats.syntax.contravariant.*

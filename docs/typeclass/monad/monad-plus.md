@@ -40,8 +40,9 @@ given MonadPlus[List] with
   extension [A](fa: List[A]) override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*

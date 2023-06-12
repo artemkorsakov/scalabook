@@ -128,22 +128,9 @@ given ioMonad: Monad[IO] with
   extension [A](fa: IO[A]) override def flatMap[B](f: A => IO[B]): IO[B] = f(fa.run())
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
-
-```scala
-import scalaz.*
-import Scalaz.*
-
-// ... Все операции родителей
-
-for { n <- List(1, 2); ch <- List('a', 'b') } yield (n, ch)     // List((1,a), (1,b), (2,a), (2,b))
-(for { a <- (_: Int) * 2; b <- (_: Int) + 10 } yield a + b)(3)  // 19
-List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 2), List(1), List(2), List())
-```
-
-
-## Реализация в Cats
+### Реализация в Cats
 
 ```scala
 import cats.Monad
@@ -162,6 +149,18 @@ val list3 = Monad[List].map(list2)(a => a + 123)                     // List(124
 1.pure[List]                                                         // List(1)
 ```
 
+### Реализация в ScalaZ
+
+```scala
+import scalaz.*
+import Scalaz.*
+
+// ... Все операции родителей
+
+for { n <- List(1, 2); ch <- List('a', 'b') } yield (n, ch)     // List((1,a), (1,b), (2,a), (2,b))
+(for { a <- (_: Int) * 2; b <- (_: Int) + 10 } yield a + b)(3)  // 19
+List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 2), List(1), List(2), List())
+```
 
 ---
 

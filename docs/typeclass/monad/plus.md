@@ -25,8 +25,9 @@ given Plus[List] with
   def plus[A](fa1: List[A], fa2: => List[A]): List[A] = fa1 ++ fa2
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*
@@ -34,7 +35,6 @@ import Scalaz.*
 
 List(1, 2) <+> List(3, 4)                   // List(1, 2, 3, 4)
 ```
-
 
 ---
 

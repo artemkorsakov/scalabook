@@ -137,20 +137,9 @@ given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
       }
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
-
-```scala
-import scalaz.*
-import Scalaz.*
-
-List(1, 2, 3) traverse { x => (x > 0) option (x + 1) }  // Some(List(2, 3, 4))
-List(1.some, 2.some).sequence                           // Some(List(1, 2))
-1.success[String].leaf.sequenceU map {_.drawTree}       // Success(1)
-```
-
-
-## Реализация в Cats
+### Реализация в Cats
 
 ```scala
 import scala.concurrent.*
@@ -172,6 +161,16 @@ val allUptimes: Future[List[Int]] =
 Await.result(allUptimes, 1.second)  // List(1020, 960, 840)
 ```
 
+### Реализация в ScalaZ
+
+```scala
+import scalaz.*
+import Scalaz.*
+
+List(1, 2, 3) traverse { x => (x > 0) option (x + 1) }  // Some(List(2, 3, 4))
+List(1.some, 2.some).sequence                           // Some(List(1, 2))
+1.success[String].leaf.sequenceU map {_.drawTree}       // Success(1)
+```
 
 ---
 

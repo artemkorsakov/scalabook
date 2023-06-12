@@ -28,8 +28,9 @@ given ApplicativePlus[List] with
   override def empty[A]: List[A] = List.empty[A]
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*

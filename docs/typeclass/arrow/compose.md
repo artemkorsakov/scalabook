@@ -38,22 +38,9 @@ given Compose[Function1] with
   override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
-
-```scala
-import scalaz.*
-import Scalaz.*
-
-val f1 = (_:Int) + 1
-val f2 = (_:Int) * 100
-
-(f1 >>> f2)(2)   // 300
-(f1 <<< f2)(2)   // 201
-```
-
-
-## Реализация в Cats
+### Реализация в Cats
 
 ```scala
 import cats.*, cats.data.*, cats.syntax.all.*
@@ -68,6 +55,18 @@ lazy val g = (_:Int) * 100
 // res1: Int = 201
 ```
 
+### Реализация в ScalaZ
+
+```scala
+import scalaz.*
+import Scalaz.*
+
+val f1 = (_:Int) + 1
+val f2 = (_:Int) * 100
+
+(f1 >>> f2)(2)   // 300
+(f1 <<< f2)(2)   // 201
+```
 
 ---
 

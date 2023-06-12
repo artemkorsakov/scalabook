@@ -25,18 +25,9 @@ object Split:
       (a, c) => (f(a), g(c))
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
-
-```scala
-import scalaz.*
-import Scalaz.*
-
-// ... Все операции родителей
-```
-
-
-## Реализация в Cats
+### Реализация в Cats
 
 ```scala
 import cats.*, cats.data.*, cats.syntax.all.*
@@ -48,6 +39,14 @@ lazy val g = (_:Int) * 100
 // res0: (Int, Int) = (2, 100)
 ```
 
+### Реализация в ScalaZ
+
+```scala
+import scalaz.*
+import Scalaz.*
+
+// ... Все операции родителей
+```
 
 ---
 

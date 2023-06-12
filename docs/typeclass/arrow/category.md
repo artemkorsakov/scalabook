@@ -33,8 +33,9 @@ given Category[Function1] with
   override def id[A]: A => A = a => a
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*
@@ -42,7 +43,6 @@ import Scalaz.*
 
 // ... Все операции родителей
 ```
-
 
 ---
 

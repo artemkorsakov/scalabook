@@ -56,7 +56,9 @@ given Profunctor[Function1] with
   override def mapsnd[A, B, C](fab: A => B)(f: B => C): A => C = fab andThen f
 ```
 
-## Реализация в ScalaZ
+## Реализация
+
+### Реализация в ScalaZ
 
 ```scala
 import scalaz.*
@@ -64,7 +66,6 @@ import Scalaz.*
 
 // ... Все операции родителей
 ```
-
 
 ---
 

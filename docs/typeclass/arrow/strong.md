@@ -41,21 +41,9 @@ given Strong[Function1] with
   override def second[A, B, C](fa: A => B): ((C, A)) => (C, B) = (c, a) => (c, fa(a))
 ```
 
+## Реализация
 
-## Реализация в ScalaZ
-
-```scala
-import scalaz.*
-import Scalaz.*
-
-val plus1 = (_: Int) + 1
-
-plus1.first apply (7 -> "abc")    // (8,abc)
-plus1.second apply ("def" -> 14)  // (def,15)
-```
-
-
-## Реализация в Cats
+### Реализация в Cats
 
 ```scala
 import cats.*, cats.data.*, cats.syntax.all.*
@@ -70,6 +58,17 @@ f_second((1, 1))
 // res1: (Int, Int) = (1, 2)
 ```
 
+### Реализация в ScalaZ
+
+```scala
+import scalaz.*
+import Scalaz.*
+
+val plus1 = (_: Int) + 1
+
+plus1.first apply (7 -> "abc")    // (8,abc)
+plus1.second apply ("def" -> 14)  // (def,15)
+```
 
 ---
 

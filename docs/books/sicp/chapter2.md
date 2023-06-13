@@ -52,8 +52,6 @@ Rational.makeRat(-5, 7) / Rational.makeRat(3, 7)
 Rational.makeRat(-5, 7) === Rational.makeRat(-10, 14)
 ```
 
-[Scala worksheet](https://scastie.scala-lang.org/DQaHBlzMRGmRcCl3iZomu)
-
 #### Упражнение 2.1
 
 > Определите улучшенную версию mul-rat, которая принимала бы как положительные, так и отрицательные аргументы. 
@@ -122,6 +120,76 @@ Rational.makeRat(1, -2).print
 
 ### 2.1.2. Барьеры абстракции
 
+#### Упражнение 2.2
+
+> Рассмотрим задачу представления отрезков прямой на плоскости. 
+> Каждый отрезок представляется как пара точек: начало и конец. 
+> Определите конструктор make-segment и селекторы startsegment и end-segment, 
+> которые определяют представление отрезков в терминах точек. 
+> Далее, точку можно представить как пару чисел: координата x и координата y. 
+> Соответственно, напишите конструктор make-point и селекторы x-point и y-point, которые определяют такое представление. 
+> Наконец, используя свои селекторы и конструктор, напишите процедуру midpointsegment, 
+> которая принимает отрезок в качестве аргумента и возвращает его середину 
+> (точку, координаты которой являются средним координат концов отрезка). 
+> Чтобы опробовать эти процедуры, Вам потребуется способ печатать координаты точек
+
+```scala mdoc
+final case class Point(x: Double, y: Double):
+  override def toString(): String = s"($x,$y)"
+
+final case class Segment(start: Point, end: Point):
+  lazy val midpoint: Point = Point((start.x + end.x) / 2, (start.y + end.y) / 2)
+
+Segment(Point(1, 0), Point(0, 1)).midpoint.toString
+```
+
+[Scala worksheet](https://scastie.scala-lang.org/3SvZKbYZRPaSqiCyNtwikQ)
+
+#### Упражнение 2.3
+
+> Реализуйте представление прямоугольников на плоскости. 
+> (Подсказка: Вам могут потребоваться результаты упражнения 2.2.) 
+> Определите в терминах своих конструкторов и селекторов процедуры, которые вычисляют периметр и площадь прямоугольника. 
+> Теперь реализуйте другое представление для прямоугольников. 
+> Можете ли Вы спроектировать свою систему с подходящими барьерами абстракции так, 
+> чтобы одни и те же процедуры вычисления периметра и площади работали с любым из Ваших представлений?
+
+```scala mdoc:reset:silent
+final case class Point(x: Double, y: Double):
+  override def toString(): String = s"($x,$y)"
+
+final case class Segment(start: Point, end: Point):
+  lazy val midpoint: Point = Point((start.x + end.x) / 2, (start.y + end.y) / 2)
+  lazy val length: Double =
+    math.sqrt(math.pow(start.x - end.x, 2.0) + math.pow(start.y - end.y, 2.0))
+
+final case class Rectangle(
+    topLeft: Point,
+    topRight: Point,
+    bottomRight: Point,
+    bottomLeft: Point
+):
+  private lazy val topSideLength: Double = Segment(topLeft, topRight).length
+  private lazy val leftSideLength: Double = Segment(topLeft, bottomLeft).length
+
+  lazy val perimeter: Double =
+    2 * (topSideLength + leftSideLength)
+  lazy val square: Double =
+    topSideLength * leftSideLength
+
+object Rectangle:
+  def apply(segment1: Segment, segment2: Segment): Rectangle =
+    Rectangle(segment1.start, segment1.end, segment2.start, segment2.end)
+
+val rect = Rectangle(Point(0, 0), Point(1, 0), Point(1, 1), Point(0, 1))
+```
+
+```scala mdoc
+rect.perimeter
+rect.square
+```
+
+[Scala worksheet](https://scastie.scala-lang.org/WOqHhQ9qRBmR8K0fueiA3g)
 
 ---
 

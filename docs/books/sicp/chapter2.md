@@ -191,6 +191,277 @@ rect.square
 
 [Scala worksheet](https://scastie.scala-lang.org/WOqHhQ9qRBmR8K0fueiA3g)
 
+#### Упражнение 2.4
+
+> Вот еще одно процедурное представление для пар. 
+> Проверьте для этого представления, что при любых двух объектах x и y (car (cons x y)) возвращает x
+> ```
+> (define (cons x y)
+>   (lambda (m) (m x y)))
+> (define (car z)
+>   (z (lambda (p q) p)))
+> ```
+> Каково соответствующее определение cdr? 
+> (Подсказка: Чтобы проверить, что это работает, используйте подстановочную модель из раздела 1.1.5.)
+
+```scala
+final case class Cons[A](x: A, y: A):
+  def lambda(f: (A, A) => A): A =
+    f(x, y)
+
+def car[A](z: Cons[A]): A =
+  z.lambda((p: A, q: A) => p)
+
+def cdr[A](z: Cons[A]): A =
+  z.lambda((p: A, q: A) => q)
+```
+
+Рассмотрим цепочку преобразований:
+
+- `(car (cons x y))`
+- `(cons x y).lambda((p: A, q: A) => p)`
+- `((p: A, q: A) => p)(x, y)`
+- `x`
+
+Аналогично для `cdr`.
+
+#### Упражнение 2.5
+
+> Покажите, что можно представлять пары неотрицательных целых чисел, 
+> используя только числа и арифметические операции, если представлять пару a и b 
+> как произведение 2^a*3^b. 
+> Дайте соответствующие определения процедур cons, car и cdr.
+
+```scala
+final case class Cons(x: Int, y: Int):
+  lazy val cons: Int = math.pow(2, x).toInt * math.pow(3, y).toInt
+
+  def degreeOfFactor(a: Int): Int =
+    def loop(n: Int, count: Int): Int =
+      if n % a == 0 then loop(n / a, count + 1)
+      else count 
+    loop(cons, 0)
+
+def car(z: Cons): Int =
+  z.degreeOfFactor(2)
+
+def cdr(z: Cons): Int =
+  z.degreeOfFactor(3)
+```
+
+#### Упражнение 2.6
+
+> Если представление пар как процедур было для Вас еще недостаточно сумасшедшим, 
+> то заметьте, что в языке, который способен манипулировать процедурами, 
+> мы можем обойтись и без чисел (по крайней мере, пока речь идет о неотрицательных числах), 
+> определив 0 и операцию прибавления 1 так:
+> ```
+> (define zero (lambda (f) (lambda (x) x)))
+> 
+> (define (add-1 n)
+>   (lambda (f) (lambda (x) (f ((n f) x)))))
+> ```
+> Такое представление известно как числа Чёрча (Church numerals), 
+> по имени его изобретателя, Алонсо Чёрча, того самого логика, который придумал λ-исчисление.
+> Определите one (единицу) и two (двойку) напрямую (не через zero и add-1). 
+> (Подсказка: вычислите (add-1 zero) с помощью подстановки.) 
+> Дайте прямое определение процедуры сложения + (не в терминах повторяющегося применения add-1).
+
+Число Чёрча можно определить как n-кратное применение заданной функции к аргументу.
+
+Например, вот так:
+
+```scala
+def zero[A](f: A => A): A => A = x => x
+
+def add1[A](f: A => A, n: Int): A => A =
+  if n == 0 then zero(f)
+  else (a: A) => add1(f, n - 1)(a)
+```
+
+Тогда единица - это однократное применение функции, двойка - двукратное, а сложение `a` и `b` - 
+это применение функции `f` к аргументу `a + b` раз.
+
+#### Упражнение 2.7
+
+> Программа Лизы неполна, поскольку она не определила, как реализуется абстракция интервала. 
+> Вот определение конструктора интервала: `(define (make-interval a b) (cons a b))`
+> Завершите реализацию, определив селекторы upper-bound и lower-bound.
+
+```scala
+final case class Interval(a: Double, b: Double):
+  lazy val upperBound: Double = math.max(a, b)
+  lazy val lowerBound: Double = math.min(a, b)
+
+  def add(that: Interval): Interval =
+    Interval(
+      this.lowerBound + that.lowerBound,
+      this.upperBound + that.upperBound
+    )
+
+  def mul(that: Interval): Interval =
+    val p1 = this.lowerBound * that.lowerBound
+    val p2 = this.lowerBound * that.upperBound
+    val p3 = this.upperBound * that.lowerBound
+    val p4 = this.upperBound * that.upperBound
+    Interval(
+      math.min(math.min(p1, p2), math.min(p3, p4)),
+      math.max(math.max(p1, p2), math.max(p3, p4))
+    )
+
+  def div(that: Interval): Interval =
+    mul(Interval(1.0 / that.upperBound, 1.0 / that.lowerBound))
+```
+
+#### Упражнение 2.8
+
+> Рассуждая в духе Лизы, опишите, как можно вычислить разность двух интервалов. 
+> Напишите соответствующую процедуру вычитания, называемую sub-interval.
+
+```scala
+def sub(that: Interval): Interval =
+  Interval(
+    this.lowerBound - that.upperBound,
+    this.upperBound - that.lowerBound
+  )
+```
+
+#### Упражнение 2.9
+
+> Радиус (width) интервала определяется как половина расстояния между его верхней и нижней границами. 
+> Радиус является мерой неопределенности числа, которое обозначает интервал. 
+> Есть такие математические операции, для которых радиус результата зависит только от радиусов интервалов-аргументов, 
+> а есть такие, для которых радиус результата не является функцией радиусов аргументов. 
+> Покажите, что радиус суммы (или разности) двух интервалов зависит только от радиусов интервалов, 
+> которые складываются (или вычитаются). 
+> Приведите примеры, которые показывают, что для умножения или деления это не так.
+
+```scala
+lazy val width: Double = (upperBound - lowerBound) / 2.0
+```
+
+Радиус суммы интервалов будет вычисляться так:
+
+- `((this.upperBound + that.upperBound) - (this.lowerBound + that.lowerBound)) / 2.0`
+- `((this.upperBound - this.lowerBound) / 2.0 + (that.upperBound - that.lowerBound) / 2.0)`
+- `this.width + that.width`
+
+Радиус разности интервалов будет вычисляться так:
+
+- `((this.upperBound - that.lowerBound) - (this.lowerBound - that.upperBound)) / 2.0`
+- `((this.upperBound - this.lowerBound) / 2.0 + (that.upperBound - that.lowerBound) / 2.0)`
+- `this.width + that.width`
+
+С умножением и делением ситуация иная: если взять два интервала радиуса `1`: `(0, 2)` и `(2, 4)`,
+то произведением интервалов будет интервал `(0, 8)` с радиусом `4`, 
+а результат деления - интервал `(0, 1)` с радиусом `0.5`.
+
+#### Упражнение 2.10
+
+> Бен Битобор, системный программист-эксперт, смотрит через плечо Лизы и замечает: 
+> неясно, что должно означать деление на интервал, пересекающий ноль. 
+> Модифицируйте код Лизы так, чтобы программа проверяла это условие и сообщала об ошибке, если оно возникает.
+
+```scala
+def div(that: Interval): Option[Interval] =
+  if that.lowerBound <= 0.0 && that.upperBound >= 0.0 then None
+  else Some(mul(Interval(1.0 / that.upperBound, 1.0 / that.lowerBound)))
+```
+
+#### Упражнение 2.11
+
+> Проходя мимо, Бен делает туманное замечание: 
+> «Если проверять знаки концов интервалов, можно разбить mul-interval на девять случаев, 
+> из которых только в одном требуется более двух умножений». 
+> Перепишите эту процедуру в соответствии с предложением Бена.
+
+```scala
+def mul(that: Interval): Interval =
+  (
+    this.lowerBound < 0,
+    this.upperBound < 0,
+    that.lowerBound < 0,
+    that.upperBound < 0
+  ) match
+    case (true, true, true, true) =>
+      Interval(
+        this.upperBound * that.upperBound,
+        this.lowerBound * that.lowerBound
+      )
+    case (true, true, true, false) =>
+      Interval(
+        this.lowerBound * that.upperBound,
+        this.lowerBound * that.lowerBound
+      )
+    case (true, true, false, false) =>
+      Interval(
+        this.lowerBound * that.upperBound,
+        this.upperBound * that.lowerBound
+      )
+    case (true, false, true, true) =>
+      Interval(
+        this.upperBound * that.lowerBound,
+        this.lowerBound * that.lowerBound
+      )
+    case (true, false, true, false) =>
+      val p1 = this.lowerBound * that.lowerBound
+      val p2 = this.lowerBound * that.upperBound
+      val p3 = this.upperBound * that.lowerBound
+      val p4 = this.upperBound * that.upperBound
+      Interval(
+        math.min(p2, p3),
+        math.max(p1, p4)
+      )
+    case (true, false, false, false) =>
+      Interval(
+        this.lowerBound * that.upperBound,
+        this.upperBound * that.upperBound
+      )
+    case (false, false, true, true) =>
+      Interval(
+        this.upperBound * that.lowerBound,
+        this.lowerBound * that.upperBound
+      )
+    case (false, false, true, false) =>
+      Interval(
+        this.upperBound * that.lowerBound,
+        this.upperBound * that.upperBound
+      )
+    case (false, false, false, false) =>
+      Interval(
+        this.lowerBound * that.lowerBound,
+        this.upperBound * that.upperBound
+      )
+```
+
+#### Упражнение 2.12
+
+> Определите конструктор make-center-percent, 
+> который принимает среднее значение и погрешность в процентах и выдает требуемый интервал. 
+> Нужно также определить селектор percent, который для данного интервала выдает погрешность в процентах. 
+> Селектор center остается тем же, что приведен выше.
+
+```scala
+final case class Interval(a: Double, b: Double):
+  lazy val upperBound: Double = math.max(a, b)
+  lazy val lowerBound: Double = math.min(a, b)
+  lazy val center: Double = (upperBound + lowerBound) / 2.0
+  lazy val width: Double = (upperBound - lowerBound) / 2.0
+  lazy val percent: Double = (width / center) * 100
+
+  // ...
+
+object Interval:
+  def makeCenterWidth(center: Double, width: Double): Interval =
+    Interval(center - width, center + width)
+
+  def makeCenterPercent(center: Double, percent: Double): Interval =
+    val width: Double = percent * center
+    makeCenterWidth(center, percent)
+```
+
+[Scala worksheet](https://scastie.scala-lang.org/BAa5ZixrSZyHORN8qLmpew)
+
 ---
 
 **Ссылки:**

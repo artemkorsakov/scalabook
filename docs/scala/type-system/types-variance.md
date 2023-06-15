@@ -176,3 +176,4 @@ val h: Function[Book, Buyable] = f
 **Ссылки:**
 
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-variance.html)
+- [Vivisecting the Veil of Variance](https://www.youtube.com/watch?v=dPbbqrhm-WY) 

@@ -28,12 +28,15 @@
 | [Proper and Basic Property-Based Testing](https://www.youtube.com/watch?v=FS_VJOQfogc)                                                             | Scala 3 |  En  | 2023 |             |
 | [Scala 3 - Rock the JVM](https://www.youtube.com/watch?v=orTmm6OMaLw&list=PLmtsMNDRU0BwsVUbhsH2HMqDMPNhQ0HPc)                                      | Scala 3 |  En  | 2020 |             |
 | [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)                                        | Scala 3 |  En  | 2021 |             |
+| [The Best Scala Libraries I Use in Every Project - DevInsideYou](https://www.youtube.com/watch?v=ZymD5NuOwdA)                                      | Scala 3 |  En  | 2023 |             |
 | [Typeclasses in Scala 3 - Colombia Scala meetup/Scala at the Sea](https://www.youtube.com/watch?app=desktop&v=co4LSvVoX-s)                         | Scala 3 |  En  | 2022 |             |
+| [Algebraic Data Types (ADT) in Scala - Rock the JVM](https://www.youtube.com/watch?v=0wmcCdoExbM&list=PLmtsMNDRU0ByxKWa4h2LMn9oXyeDEJbnC)          | Scala 2 |  En  | 2021 |             |
 | [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) | Scala 2 |  En  | 2015 |             |
 | [Scala - Your First Programming Language](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                                | Scala 2 |  En  | 2022 |             |
 | [Scala Collections](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE)                                                      | Scala 2 |  En  | 2020 |             |
 | [The Typeclass Pattern - An Alternative to Inheritance](https://www.youtube.com/watch?v=yYo0gANYViE)                                               | Scala 2 |  En  | 2012 |             |
 | [Tutorial: Typeclasses in Scala with Dan Rosen](https://www.youtube.com/watch?v=sVMES4RZF-8)                                                       | Scala 2 |  En  | 2012 |             |
+| [Vivisecting the Veil of Variance](https://www.youtube.com/watch?v=dPbbqrhm-WY)                                                                    | Scala 2 |  En  | 2023 |             |
 | [Why are Type Classes useful in Scala? - Rock the JVM](https://www.youtube.com/watch?v=bupBZKJT0EA)                                                | Scala 2 |  En  | 2020 |             |
 
 ### Курсы

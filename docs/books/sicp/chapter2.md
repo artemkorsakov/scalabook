@@ -456,11 +456,169 @@ object Interval:
     Interval(center - width, center + width)
 
   def makeCenterPercent(center: Double, percent: Double): Interval =
-    val width: Double = percent * center
-    makeCenterWidth(center, percent)
+    val width: Double = percent * center / 100.0
+    makeCenterWidth(center, width)
 ```
 
-[Scala worksheet](https://scastie.scala-lang.org/BAa5ZixrSZyHORN8qLmpew)
+#### Упражнение 2.13
+
+> Покажите, что, если предположить, что погрешность составляет малую долю величины интервала, 
+> то погрешность в процентах произведения двух интервалов можно получить 
+> из погрешности в процентах исходных интервалов по простой приближенной формуле. 
+> Задачу можно упростить, если предположить, что все числа положительные.
+
+Рассмотрим произведение двух интервалов с маленькой погрешностью:
+
+- `Interval(c1 - w1, c1 + w1) * Interval(c2 - w2, c2 + w2)`
+- `Interval((c1 - w1) * (c2 - w2), (c1 + w1) * (c2 + w2))`
+- `mulCenter = ((c1 * c2 + w1 * c2 + w2 * c1 + w1 * w2) + (c1 * c2 - w1 * c2 - w2 * c1 + w1 * w2)) / 2`
+- `mulCenter = (c1 * c2 + w1 * w2)`
+- т.к. погрешность малая величина, то слагаемым `w1 * w2` можно пренебречь
+- `mulWidth = ((c1 * c2 + w1 * c2 + w2 * c1 + w1 * w2) - (c1 * c2 - w1 * c2 - w2 * c1 + w1 * w2)) / 2`
+- `mulWidth = (w1 * c2 + w2 * c1)`
+- `mulPercent = ((w1 * c2 + w2 * c1) / (c1 * c2)) * 100 = (w1 / c1) * 100 + (w2 / c2) * 100`
+- таким образом погрешность произведения приближенно равна сумме погрешностей множителей
+
+#### Упражнение 2.14
+
+> Покажите, что Дайко прав. 
+> Исследуйте поведение системы на различных арифметических выражениях. 
+> Создайте несколько интервалов A и B и вычислите с их помощью выражения A/A и A/B. 
+> Наибольшую пользу Вы получите, если будете использовать интервалы, 
+> радиус которых составляет малую часть от среднего значения. 
+> Исследуйте результаты вычислений в форме центр/проценты (см. упражнение 2.12).
+
+```scala mdoc:invisible:reset
+final case class Interval(a: Double, b: Double):
+  lazy val upperBound: Double = math.max(a, b)
+  lazy val lowerBound: Double = math.min(a, b)
+  lazy val center: Double = (upperBound + lowerBound) / 2.0
+  lazy val width: Double = (upperBound - lowerBound) / 2.0
+  lazy val percent: Double = (width / center) * 100
+
+  def add(that: Interval): Interval =
+    Interval(
+      this.lowerBound + that.lowerBound,
+      this.upperBound + that.upperBound
+    )
+
+  def sub(that: Interval): Interval =
+    Interval(
+      this.lowerBound - that.upperBound,
+      this.upperBound - that.lowerBound
+    )
+
+  def mul(that: Interval): Interval =
+    (
+      this.lowerBound < 0,
+      this.upperBound < 0,
+      that.lowerBound < 0,
+      that.upperBound < 0
+    ) match
+      case (true, true, true, true) =>
+        Interval(
+          this.upperBound * that.upperBound,
+          this.lowerBound * that.lowerBound
+        )
+      case (true, true, true, false) =>
+        Interval(
+          this.lowerBound * that.upperBound,
+          this.lowerBound * that.lowerBound
+        )
+      case (true, true, false, false) =>
+        Interval(
+          this.lowerBound * that.upperBound,
+          this.upperBound * that.lowerBound
+        )
+      case (true, false, true, true) =>
+        Interval(
+          this.upperBound * that.lowerBound,
+          this.lowerBound * that.lowerBound
+        )
+      case (true, false, true, false) =>
+        val p1 = this.lowerBound * that.lowerBound
+        val p2 = this.lowerBound * that.upperBound
+        val p3 = this.upperBound * that.lowerBound
+        val p4 = this.upperBound * that.upperBound
+        Interval(
+          math.min(p2, p3),
+          math.max(p1, p4)
+        )
+      case (true, false, false, false) =>
+        Interval(
+          this.lowerBound * that.upperBound,
+          this.upperBound * that.upperBound
+        )
+      case (false, false, true, true) =>
+        Interval(
+          this.upperBound * that.lowerBound,
+          this.lowerBound * that.upperBound
+        )
+      case (false, false, true, false) =>
+        Interval(
+          this.upperBound * that.lowerBound,
+          this.upperBound * that.upperBound
+        )
+      case _ => // (false, false, false, false)
+        Interval(
+          this.lowerBound * that.lowerBound,
+          this.upperBound * that.upperBound
+        )
+
+  def div(that: Interval): Option[Interval] =
+    if that.lowerBound <= 0.0 && that.upperBound >= 0.0 then None
+    else Some(mul(Interval(1.0 / that.upperBound, 1.0 / that.lowerBound)))
+
+object Interval:
+  def makeCenterWidth(center: Double, width: Double): Interval =
+    Interval(center - width, center + width)
+
+  def makeCenterPercent(center: Double, percent: Double): Interval =
+    val width: Double = percent * center / 100.0
+    makeCenterWidth(center, width)
+```
+
+```scala mdoc
+def par1(r1: Interval, r2: Interval): Option[Interval] =
+  (r1.mul(r2)).div(r1.add(r2))
+
+def par2(r1: Interval, r2: Interval): Option[Interval] =
+  for
+    one <- Interval(1, 2).div(Interval(1, 2))
+    oneDivR1 <- one.div(r1)
+    oneDivR2 <- one.div(r2)
+    result <- one.div(oneDivR1.add(oneDivR2))
+  yield result
+
+val r1 = Interval.makeCenterWidth(10, 0.01)
+val r2 = Interval.makeCenterWidth(20, 0.01)
+par1(r1, r2)
+par2(r1, r2)
+```
+
+Методы действительно отдают различные результаты, потому что деление интервала на себя (A/A) - это не единица,
+а интервал, имеющий небольшую погрешность.
+
+[Scala worksheet](https://scastie.scala-lang.org/56fiIZVmSTitSmDRQmMFtw)
+
+#### Упражнение 2.15
+
+> Ева Лу Атор, другой пользователь Лизиной программы, тоже заметила, что алгебраически эквивалентные, но различные выражения могут давать разные результаты. Она говорит, что формула для
+вычисления интервалов, которая использует Лизину систему, будет давать более узкие границы
+погрешности, если ее удастся записать так, чтобы ни одна переменная, представляющая неточную величину, не повторялась. Таким образом, говорит она, par2 «лучше» как программа для
+параллельных резисторов, чем par1. Права ли она? Почему?
+
+#### Упражнение 2.16
+
+> Объясните в общем случае, почему эквивалентные алгебраические выражения могут давать разные
+результаты. Можете ли Вы представить себе пакет для работы с интервальной арифметикой,
+который бы не обладал этим недостатком, или такое невозможно? (Предупреждение: эта задача
+очень сложна.)
+
+[SICP section 2.1.4 - Eli Bendersky](https://eli.thegreenplace.net/2007/07/27/sicp-section-214)
+
+## 2.2. Иерархические данные и свойство замыкания
+
 
 ---
 

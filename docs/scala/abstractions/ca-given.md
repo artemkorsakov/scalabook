@@ -176,3 +176,6 @@ summon[Foo[String]].value
 **Ссылки:**
 
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual/givens.html)
+- [Given and Using Clauses in Scala 3 - Rock the JVM](https://blog.rockthejvm.com/scala-3-given-using/)
+- [Givens vs. Implicits in Scala 3 - Rock the JVM](https://blog.rockthejvm.com/givens-vs-implicits/)
+- [Scala 3: How Givens Can Work with Implicits - Rock the JVM](https://blog.rockthejvm.com/givens-and-implicits/)

@@ -51,6 +51,7 @@
 | [Scala & Functional Programming Essentials - Rock the JVM](https://rockthejvm.com/p/scala)                                                           | Scala 3 |  En  | 2022 | [Udemy link](https://www.udemy.com/course/rock-the-jvm-scala-for-beginners/) |
 | [Scala at Light Speed - Rock the JVM](https://rockthejvm.com/p/scala-at-light-speed)                                                                 | Scala 3 |  En  | 2023 |                                                                              |
 | [Scala 3 & Functional Programming Essentials - Rock the JVM](https://rockthejvm.com/p/scala)                                                         | Scala 3 |  En  | 2023 |                                                                              |
+| [Scala 3 New Features - Rock the JVM](https://rockthejvm.com/p/scala-3-new-features)                                                                 | Scala 3 |  En  | 2023 |                                                                              |
 | [Введение в Scala](https://stepik.org/course/16243/promo)                                                                                            | Scala 2 |  Ру  | 2019 |                                                                              |
 | [Основы Scala](https://stepik.org/course/89974/promo)                                                                                                | Scala 2 |  Ру  | 2021 |                                                                              |
 | [Scala Tutorial](https://stepik.org/course/55498/promo)                                                                                              | Scala 2 |  En  | 2021 |                                                                              |
@@ -71,6 +72,8 @@
 | [A Comprehensive Guide to Choosing the Best Scala Course - Rock the JVM](https://blog.rockthejvm.com/best-scala-courses/)        | Scala 3 |  En  | 2023 | Выбор курсов в Scala        |
 | [Build your vocabulary with Scala affixes](https://rossabaker.com/blog/scala-affixes)                                            | Scala 3 |  En  | 2023 | Префиксы и суффиксы в Scala |
 | [Exploring Scala CLI — the new scala runner](https://medium.com/virtuslab/exploring-scala-cli-the-new-scala-runner-4b958245c2e0) | Scala 3 |  En  | 2023 |                             |
+| [Let’s Talk About the Scala 3 Indentation - Rock the JVM](https://blog.rockthejvm.com/scala-3-indentation/)                      | Scala 3 |  En  | 2020 |                             |
+| [Why are Type Classes Useful in Scala? - Rock the JVM](https://blog.rockthejvm.com/why-are-typeclasses-useful/)                  | Scala 3 |  En  | 2020 |                             |
 | [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes) | Scala 2 |  En  | 2012 |                             |
 
 --- 

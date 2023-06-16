@@ -58,5 +58,6 @@ Scala 3 предлагает дополнительные функции, кот
 **Ссылки:**
 
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-type-classes.html)
+- [Why are Type Classes Useful in Scala? - Rock the JVM](https://blog.rockthejvm.com/why-are-typeclasses-useful/)
 
 [TypeClasses]: https://infoscience.epfl.ch/record/150280/files/TypeClasses.pdf

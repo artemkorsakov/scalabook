@@ -27,11 +27,35 @@
   если оно удовлетворяет свойству коммутативности относительно умножения, 
   то есть `x * y = y * x` для `∀ x, y ∈ R`.
 
-
-
 ## Описание
 
+```scala
+trait Ring[A] extends Group[A]:
+  def times(x: A, y: A): A
+
+trait RingWithUnity[A] extends Ring[A]:
+  def one: A
+```
+
 ## Примеры
+
+### Числа относительно сложения с 0 и умножения с 1
+
+`(Z, +, *)`
+
+```scala
+given RingWithUnity[Int] with
+  val empty: Int = 0
+  val one: Int = 1
+  def combine(x: Int, y: Int): Int = x + y
+  def times(x: Int, y: Int): Int = x * y
+
+  extension (a: Int) override def inverse: Int = -a
+```
+
+### Матрицы
+
+Набор квадратных матриц заданного размера представляет собой кольцо.
 
 ---
 

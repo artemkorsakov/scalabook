@@ -8,7 +8,7 @@
 
 Что можно сделать с таким `trait`-ом,
 
-```scala mdoc
+```dotty
 trait Combinator[A]:
   def combine(a1: A, a2: A): A
   val empty: A
@@ -20,14 +20,17 @@ trait Combinator[A]:
 
 [Его можно реализовать реализовать...](https://scastie.scala-lang.org/UdEjmfOzQcmeP16PGVWPOQ)
 
-```scala mdoc
+```dotty
 object IntCombinator extends Combinator[Int]:
   val empty: Int                     = 0
   def combine(a1: Int, a2: Int): Int = a1 + a2
 
 IntCombinator.combineAll(List.empty)    
+// res0: Int = 0    
 IntCombinator.combineAll(List(1))       
+// res1: Int = 1       
 IntCombinator.combineAll(List(1, 2, 3))
+// res2: Int = 6
 ```
 
 Уже неплохо: теперь можно сворачивать числовые коллекции.
@@ -36,7 +39,7 @@ IntCombinator.combineAll(List(1, 2, 3))
 
 А ещё [переменную empty можно вынести в параметр конструктора](https://scastie.scala-lang.org/yT58r4nNTsqNvalB1TqFSQ):
 
-```scala mdoc:reset
+```dotty
 trait Combinator[A](empty: A):
   def combine(a1: A, a2: A): A
   def combineAll(list: List[A]): A =
@@ -48,8 +51,11 @@ object IntCombinator extends Combinator[Int](0):
   def combine(a1: Int, a2: Int): Int = a1 + a2
 
 IntCombinator.combineAll(List.empty)   
+// res4: Int = 0   
 IntCombinator.combineAll(List(1))       
+// res5: Int = 1       
 IntCombinator.combineAll(List(1, 2, 3)) 
+// res6: Int = 6
 ```
 
 На этом остановимся чуть подробнее...
@@ -61,7 +67,7 @@ IntCombinator.combineAll(List(1, 2, 3))
 
 Т.е. следующие примеры вызовут ошибку компилятора:
 
-```scala
+```dotty
 trait Combinator[A](empty: A):
   def combine(a1: A, a2: A): A
   def combineAll(list: List[A]): A =
@@ -75,7 +81,7 @@ object IntCombinator extends Combinator[Int]:
 // in trait Combinator: (empty: Int): Playground.Combinator[Int]
 ```
 
-```scala
+```dotty
 trait Combinator[A](empty: A):
   def combine(a1: A, a2: A): A
   def combineAll(list: List[A]): A =
@@ -95,7 +101,7 @@ trait IntCombinator extends Combinator[Int](0):
 
 [Например](https://scastie.scala-lang.org/nlKQs01KT6yWb0z85gOykA):
 
-```scala mdoc:reset
+```dotty
 trait Combinator[A](using empty: A):
   def combine(a1: A, a2: A): A
   def combineAll(list: List[A]): A =
@@ -109,8 +115,11 @@ object IntCombinator extends Combinator[Int]:
   def combine(a1: Int, a2: Int): Int = a1 + a2
 
 IntCombinator.combineAll(List.empty)  
+// res8: Int = 0  
 IntCombinator.combineAll(List(1))     
+// res9: Int = 1     
 IntCombinator.combineAll(List(1, 2, 3))
+// res10: Int = 6
 ```
 
 ## А в чем разница?
@@ -120,19 +129,20 @@ IntCombinator.combineAll(List(1, 2, 3))
 
 [Рассмотрим пример](https://scastie.scala-lang.org/zmV0nmMXRoWbBjOhKrDJlQ):
 
-```scala mdoc:reset
+```dotty
 trait Combinator[A](empty: A):
   println(s"Пустое значение - $empty")
 
 object StringCombinator extends Combinator[String]("пусто")
 
 StringCombinator
+// Пустое значение - пусто
 ```
 
 [Аналогичный пример](https://scastie.scala-lang.org/SqdW2r1eTwqIuoEHzFVOIA)
 с использованием параметра в теле `trait`-а приводит к некорректной инициализации.
 
-```scala mdoc:reset
+```dotty
 trait Combinator[A]:
   val empty: A
   println(s"Пустое значение - $empty")
@@ -141,6 +151,7 @@ object StringCombinator extends Combinator[String]:
   val empty: String = ""
 
 StringCombinator
+// Пустое значение - null
 ```
 
 Объяснение почему так происходит можно найти
@@ -160,7 +171,7 @@ StringCombinator
 
 [Пример](https://scastie.scala-lang.org/us6LAIfaQayWMKRvMsKyuQ):
 
-```scala mdoc:reset
+```dotty
 trait Empty[A](val empty: A)
 
 trait Combinator[A](combine: (A, A) => A):
@@ -172,15 +183,18 @@ trait Combinator[A](combine: (A, A) => A):
 
 object IntCombinator extends Combinator[Int](_ + _), Empty(0)
 
-IntCombinator.combineAll(List.empty)   
-IntCombinator.combineAll(List(1))      
+IntCombinator.combineAll(List.empty)
+// res16: Int = 0   
+IntCombinator.combineAll(List(1))
+// res17: Int = 1      
 IntCombinator.combineAll(List(1, 2, 3))
+// res18: Int = 6
 ```
 
 Если же оба `trait`-а реализуют метод с идентичной сигнатурой,
 [то в смешанной композиции его нужно будет переопределить](https://scastie.scala-lang.org/gZs4vOfKQZmjHQGay7WuPQ):
 
-```scala mdoc:reset
+```dotty
 trait EmptyInt1:
   val empty: Int = -1
 
@@ -200,8 +214,11 @@ object IntCombinator extends Combinator[Int], EmptyInt1, EmptyInt2:
   def combine(a1: Int, a2: Int): Int = a1 + a2
 
 IntCombinator.combineAll(List.empty)   
+// res20: Int = 0   
 IntCombinator.combineAll(List(1))       
+// res21: Int = 1       
 IntCombinator.combineAll(List(1, 2, 3)) 
+// res22: Int = 6 
 ```
 
 > При использовании `super.empty` будет браться элемент из последнего `trait`-а в списке наследования.
@@ -234,7 +251,7 @@ IntCombinator.combineAll(List(1, 2, 3))
 
 [Или, например, кастомные реализации](https://scastie.scala-lang.org/Js2raBLxTtqSynlLpUHyhw):
 
-```scala mdoc:reset
+```dotty
 trait IntCombine:
   def combine(a1: Int, a2: Int): Int = a1 + a2
 
@@ -256,6 +273,7 @@ object IntCombinator1 extends Combinator[Int], EmptyInt1, IntCombine
 object IntCombinator2 extends Combinator[Int], EmptyInt2, IntCombine
 
 val x = Set(if true then IntCombinator1 else IntCombinator2)
+// x: Set[Combinator[Int] & IntCombine] = ...
 ```
 
 Здесь предполагаемый тип `x` равен `Set[Combinator[Int] & IntCombine]`,
@@ -267,7 +285,7 @@ Scala 3 позволяет помечать `trait` как _прозрачный
 
 [Например](https://scastie.scala-lang.org/kKNsIEoqRJGAjfGBI9zWpg):
 
-```scala mdoc:reset
+```dotty
 transparent trait IntCombine:
   def combine(a1: Int, a2: Int): Int = a1 + a2
 
@@ -289,6 +307,7 @@ object IntCombinator1 extends Combinator[Int], EmptyInt1, IntCombine
 object IntCombinator2 extends Combinator[Int], EmptyInt2, IntCombine
 
 val x = Set(if true then IntCombinator1 else IntCombinator2)
+// x: Set[Combinator[Int]] = ???
 ```
 
 Теперь `x` имеет тип `Set[Combinator[Int]]`. Общий `transparent trait IntCombine` не появляется в выводимом типе.
@@ -321,7 +340,7 @@ val x = Set(if true then IntCombinator1 else IntCombinator2)
 
 [Пример](https://scastie.scala-lang.org/OkrUeaF1ROKdiKEO7MPv2A):
 
-```scala mdoc:reset
+```dotty
 // File Combinator.scala
 open class Combinator[A](empty: A, combine: (A, A) => A):
   def combineAll(list: List[A]): A =
@@ -334,8 +353,11 @@ object IntCombinator extends Combinator[Int](0, _ + _)
 
 // Где-то ещё
 IntCombinator.combineAll(List.empty)    
+// res26: Int = 0    
 IntCombinator.combineAll(List(1))      
+// res27: Int = 1      
 IntCombinator.combineAll(List(1, 2, 3))
+// res28: Int = 6
 ```
 
 Открытый класс обычно поставляется с некоторой документацией,
@@ -363,7 +385,7 @@ IntCombinator.combineAll(List(1, 2, 3))
 
 [Например](https://scastie.scala-lang.org/JobduOVQSieuJzt0CeM3Ng):
 
-```scala mdoc:reset
+```dotty
 trait Combinator[A]:
   def combine(a1: A, a2: A): A
   val empty: A
@@ -379,9 +401,12 @@ object IntCombinator:
 
   export combinator.combineAll
 
-IntCombinator.combineAll(List.empty)    
-IntCombinator.combineAll(List(1))       
+IntCombinator.combineAll(List.empty)
+// res30: Int = 0    
+IntCombinator.combineAll(List(1))
+// res31: Int = 1       
 IntCombinator.combineAll(List(1, 2, 3))
+// res32: Int = 6
 ```
 
 Предложения `export` особенно полезны при сборе модуля из элементов, изменить которые возможности нет.
@@ -409,7 +434,7 @@ IntCombinator.combineAll(List(1, 2, 3))
 
 [Например](https://scastie.scala-lang.org/nU8Rd8z3Roq1n6e2xJrVCg):
 
-```scala mdoc:reset
+```dotty
 trait Combinator[A]:
   val empty: A
   def combine(a1: A, a2: A): A
@@ -417,7 +442,7 @@ trait Combinator[A]:
 
 И использование:
 
-```scala mdoc
+```dotty
 given Combinator[Int] with
   val empty: Int = 0
   def combine(a1: Int, a2: Int): Int = a1 + a2
@@ -428,7 +453,9 @@ def combineAll[A](list: List[A])(using c: Combinator[A]): A =
     case h :: t => c.combine(h, combineAll(t))
 
 combineAll(List(1))       
+// res34: Int = 1       
 combineAll(List(1, 2, 3))
+// res35: Int = 6
 ```
 
 Основное различие между полиморфизмом подтипа и специальным полиморфизмом с **type class**-ами заключается в том,
@@ -463,7 +490,7 @@ combineAll(List(1, 2, 3))
 - Добавление более 1 поведения к данным.
   Например, мы можем сворачивать
   коллекцию по-другому: [перемножив элементы](https://scastie.scala-lang.org/hwbBr4xpT1OkHrNu2CvLHQ):
-  ```scala
+  ```dotty
   given Combinator[Int] with
       val empty: Int = 1
       def combine(a1: Int, a2: Int): Int = a1 * a2
@@ -482,27 +509,29 @@ combineAll(List(1, 2, 3))
 
 А что на счет коллекций?
 
-```scala
+```dotty
 combineAll(List(List()))             
 combineAll(List(List(1), List(1, 2, 3, 4, 5)))
 ```
 
 [Можно и для коллекции определить "комбинатор"](https://scastie.scala-lang.org/QfiiXNTNT5GVUPeRQUoXKg):
 
-```scala mdoc
+```dotty
 given list[A]: Combinator[List[A]] with
   val empty: List[A]                             = List.empty[A]
   def combine(a1: List[A], a2: List[A]): List[A] = a1 ++ a2
 
-combineAll(List(List(0)))             
+combineAll(List(List(0)))
+// res36: List[Int] = List(0)             
 combineAll(List(List(1), List(1, 2, 3, 4, 5)))
+// res37: List[Int] = List(1, 1, 2, 3, 4, 5)
 ```
 
 Допустим!
 
 Но рано или поздно, когда мы привыкаем к какой-нибудь конструкции:
 
-```scala
+```dotty
 trait Combinator[A]:
   val empty: A
   def combine(a1: A, a2: A): A
@@ -510,14 +539,14 @@ trait Combinator[A]:
 
 появляется структура, обладающая **почти** заданным поведением:
 
-```scala
+```dotty
 case class NonEmptyList[A](head: A, tail: List[A])
 ```
 
 Есть несколько распространенных ошибок, совершаемых разработчиком, когда
 необходимо реализовать поведение для структуры, которая этим поведением не обладает.
 
-```scala
+```dotty
 given Combinator[NonEmptyList[Int]] with
   val empty: NonEmptyList[Int] = ...
   def combine(l1: NonEmptyList[Int], l2: NonEmptyList[Int]): NonEmptyList[Int] =
@@ -529,7 +558,7 @@ given Combinator[NonEmptyList[Int]] with
 Одной из самых распространенных ошибок в этом случае является использование исключения или
 отсутствие реализации:
 
-```scala
+```dotty
 given Combinator[NonEmptyList[Int]] with
   val empty: NonEmptyList[Int] = null
   val empty1: NonEmptyList[Int] = throw new Exception("")
@@ -550,7 +579,7 @@ given Combinator[NonEmptyList[Int]] with
 2) Ещё одним способом "взломать систему" является использование `Option`,
    что, вроде как, является "чисто функциональным" и даже выглядит как-то "по-Scala":
 
-```scala
+```dotty
 trait Combinator[A]:
   val empty: Option[A] = None
   def combine(a1: A, a2: A): A
@@ -577,7 +606,7 @@ given Combinator[NonEmptyList[Int]] with
 В данном случае
 рекомендуется [определить более общую структуру](https://scastie.scala-lang.org/TDgsqmaqQraKaLGN8deJjw):
 
-```scala
+```dotty
 trait Combinator[A]:
   def combine(a1: A, a2: A): A
 
@@ -587,7 +616,7 @@ trait FullCombinator[A] extends Combinator[A]:
 
 В этом случае можно "запросить" недостающую информацию у пользователя:
 
-```scala
+```dotty
 def combineAll[A](list: List[A], empty: A)(using c: Combinator[A]): A =
   list match
     case Nil    => empty
@@ -633,7 +662,7 @@ def combineAll[A](list: List[A])(using c: FullCombinator[A]): A =
 
 Пример:
 
-```scala
+```dotty
 trait Semigroup[A]:
   def combine(x: A, y: A): A
 
@@ -675,7 +704,7 @@ Scala 3 делает небольшой шаг по пути облегчени�
 
 Рассмотрим пример:
 
-```scala mdoc:reset
+```dotty
 trait Combinator[A]:
   def combine(a1: A, a2: A): A
   def empty: A
@@ -692,8 +721,11 @@ object IntCombinator extends Combinator[Int]:
   export combinator.*
 
 IntCombinator.combineAll(List.empty)   
+// res39: Int = 0   
 IntCombinator.combineAll(List(1))      
+// res40: Int = 1      
 IntCombinator.combineAll(List(1, 2, 3))
+// res41: Int = 6
 ```
 
 Здесь объект `IntCombinator` наследуется от `Combinator[Int]` и должен реализовать два абстрактных метода.
@@ -707,7 +739,7 @@ IntCombinator.combineAll(List(1, 2, 3))
 
 Пример:
 
-```scala
+```dotty
 trait Combinator[A]:
   def combine(a1: A, a2: A): A
   val empty: A
@@ -734,7 +766,7 @@ object IntCombinator extends Combinator[Int]:
 Также можно использовать переименование экспортируемых элементов для того, чтобы 
 "дополнить" необходимую реализацию. Рассмотрим следующий пример:
 
-```scala mdoc:reset
+```dotty
 trait Monoid[A]:
   def compose(a1: A, a2: A): A
   val empty: A
@@ -755,8 +787,11 @@ object IntCombinator extends Combinator[Int]:
   export monoid.{empty, compose as combine}
 
 IntCombinator.combineAll(List.empty)   
+// res43: Int = 0   
 IntCombinator.combineAll(List(1))      
+// res44: Int = 1      
 IntCombinator.combineAll(List(1, 2, 3))
+// res45: Int = 6
 ```
 
 Здесь `IntCombinator`-у нужно реализовать методы `def empty: Int` и `def combine(a1: Int, a2: Int): Int`, 
@@ -774,7 +809,7 @@ IntCombinator.combineAll(List(1, 2, 3))
 
 Рассмотрим пример:
 
-```scala
+```dotty
 transparent trait IntCombine:
   def combine(a1: Int, a2: Int): Int = a1 + a2
 
@@ -808,7 +843,7 @@ x.productArity // 1
 
 Представим, что у нас есть полугруппа, способная "складывать" два объекта произвольного типа:
 
-```scala
+```dotty
 trait Semigroup[A]:
   def combine(x: A, y: A): A
 
@@ -821,7 +856,7 @@ def combine[A: Semigroup](a1: A, a2: A): A =
 и метод, способный "оборачивать" значения произвольного типа в контейнер,
 то мы можем реализовать полугруппу для контейнера:
 
-```scala
+```dotty
 trait Container[A](val a: A)
 
 given [A](using Semigroup[A])(using unit: A => Container[A]): Semigroup[Container[A]] with
@@ -832,7 +867,7 @@ given [A](using Semigroup[A])(using unit: A => Container[A]): Semigroup[Containe
 В отдельном файле объявляется список всех возможных контейнеров в системе, 
 а также метод создания дефолтного контейнера:
 
-```scala
+```dotty
 sealed trait CanBeContainer
 
 case class DefaultContainer[A](value: A) extends Container[A](value), CanBeContainer
@@ -844,7 +879,7 @@ given [A]: (A => Container[A]) = a => DefaultContainer(a)
 если в области видимости доступна полугруппа этого типа,
 выводится ошибка компилятора о том, что не определена полугруппа для `Semigroup[(Container[Int] & CanBeContainer)]`:
 
-```scala
+```dotty
 given Semigroup[Int] with
   def combine(x: Int, y: Int): Int = x * y
 
@@ -863,7 +898,7 @@ combine(DefaultContainer[Int](2), OtherContainer[Int](3)).a
 В результате, чтобы "сложить" два контейнера приходится создавать лишние переменные "правильного" по мнению компилятора типа,
 чтобы получить необходимый результат:
 
-```scala
+```dotty
 val x: Container[Int] = DefaultContainer[Int](2)
 val y: Container[Int] = OtherContainer[Int](3)
 combine(x, y).a // 6
@@ -878,7 +913,7 @@ combine(x, y).a // 6
 
 Тогда мы сможем "складывать" контейнеры без выделения лишних переменных:
 
-```scala
+```dotty
 given Semigroup[Int] with
   def combine(x: Int, y: Int): Int = x * y
 

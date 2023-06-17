@@ -40,7 +40,7 @@
 
 Тогда определение полугруппы будет выглядеть так:
 
-```scala
+```dotty
 trait Semigroup[A]:
   extension (x: A)
     def |+|(y: A): A
@@ -50,7 +50,7 @@ trait Semigroup[A]:
 
 Проверку ассоциативности надо же добавлять - сделаем это в сопутствующем объекте:
 
-```scala
+```dotty
 object Semigroup:
   def doTheSemigroupLawsHold[A: Semigroup](x: A, y: A, z: A): Boolean =
     val s = summon[Semigroup[A]]
@@ -67,7 +67,7 @@ object Semigroup:
 
 Проверим это с помощью scalacheck на произвольной выборке:
 
-```scala
+```dotty
 property("Множество чисел образует полугруппу относительно умножения") {
   given Semigroup[Int] with
     extension (x: Int) override def |+|(y: Int): Int = x * y
@@ -88,7 +88,7 @@ property("Множество чисел образует полугруппу о
 
 Это тоже можно проверить с помощью тестов:
 
-```scala
+```dotty
 property("Множество чисел НЕ образует полугруппу относительно вычитания") {
   given Semigroup[Int] with
     extension (x: Int) override def |+|(y: Int): Int = x - y
@@ -112,15 +112,14 @@ property("Множество чисел НЕ образует полугрупп
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fru%2Fscalabook%2Fblog%2Farchitectureproblems%2FSemigroup.scala&branch=master)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Fru%2Fscalabook%2Farchitectureproblems%2FSemigroupSuite.scala&branch=master)
-
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Fru%2Fscalabook%2Fblog%2Farchitectureproblems%2FSemigroupSuite.scala&branch=master)
 
 ## Моноид
 
 Теперь перейдем к Моноиду. Моноид - это полугруппа с единичным элементом.
 И здесь естественным образом напрашивается наследование:
 
-```scala
+```dotty
 trait Monoid[A] extends Semigroup[A]:
   def e: A
 ```
@@ -128,7 +127,7 @@ trait Monoid[A] extends Semigroup[A]:
 По сравнению с полугруппой добавляется закон _"Тождественность"_, 
 который необходимо проверить дополнительно к законам полугруппы:
 
-```scala
+```dotty
 object Monoid:
   def doTheMonoidLawsHold[A: Monoid](x: A, y: A, z: A): Boolean =
     val s = summon[Monoid[A]]
@@ -145,7 +144,7 @@ object Monoid:
 
 [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Fmain%2Fscala%2Fru%2Fscalabook%2Fblog%2Farchitectureproblems%2FMonoid.scala&branch=master)
 
-[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Fru%2Fscalabook%2Farchitectureproblems%2FMonoidSuite.scala&branch=master)
+[Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=examples%2Fsrc%2Ftest%2Fscala%2Fru%2Fscalabook%2Fblog%2Farchitectureproblems%2FMonoidSuite.scala&branch=master)
 
 ## Проблемы архитектуры
 
@@ -156,7 +155,7 @@ object Monoid:
 
 Представим, что `Monoid` был "изобретен" раньше и он у нас уже есть:
 
-```scala
+```dotty
 trait WrongMonoid[A]:
   def e: A
   extension (x: A) def |+|(y: A): A
@@ -168,7 +167,7 @@ trait WrongMonoid[A]:
 
 Как для такой структуры определить Моноид?
 
-```scala
+```dotty
 given WrongMonoid[NonEmptyList[Int]] with
   override def e: NonEmptyList[Int] = ???
   extension (x: NonEmptyList[Int])
@@ -182,7 +181,7 @@ given WrongMonoid[NonEmptyList[Int]] with
 при попытке получить единичный элемент для `Monoid[NonEmptyList[A]]`.
 Тем не менее такое встречается.
 
-```scala
+```dotty
 given WrongMonoid[NonEmptyList[Int]] with
   override def e: NonEmptyList[Int] =
     throw new IllegalArgumentException("NonEmptyList does not have an empty element")
@@ -208,7 +207,7 @@ given WrongMonoid[NonEmptyList[Int]] with
 
 Ещё одним "решением" проблемы может стать оборачивание единичного элемента в `Option`:
 
-```scala
+```dotty
 trait WrongMonoid[A]:
   def maybeE: Option[A]
   extension (x: A) def |+|(y: A): A
@@ -216,7 +215,7 @@ trait WrongMonoid[A]:
 
 В этом случае можно явно указать, что есть "моноиды" без единичного элемента:
 
-```scala
+```dotty
 trait WrongSemigroup[A] extends WrongMonoid[A]:
   override def maybeE: Option[A] = None
 ```
@@ -242,5 +241,3 @@ trait WrongSemigroup[A] extends WrongMonoid[A]:
   Скорее всего - нет! Это _другая_ структура!
 - абстрактный `Option[A]` - явный показатель того, что на самом деле структура содержит в себе две разные:
   _родитель_ (без элемента) - _наследник_ (с элементом типа `A`)
-
-

@@ -15,7 +15,7 @@ object PreviewSite extends IOApp:
       .of(Markdown)
       .using(GitHubFlavor, SyntaxHighlighting)
       .parallel[IO]
-      .withTheme(HeliumThemes.mainTheme.build)
+      .withTheme(HeliumThemes.mainTheme("").build)
       .build
 
     val inputs = InputTree[IO]

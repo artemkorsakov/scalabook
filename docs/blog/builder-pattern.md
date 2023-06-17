@@ -10,7 +10,7 @@
 
 Представим, что у нас есть конфиг:
 
-```scala
+```dotty
 final case class ConnectionConfig (
     host: String,
     port: Int,
@@ -30,7 +30,7 @@ final case class ConnectionConfig (
 
 Весьма удобно использовать для этого уточняющие типы:
 
-```scala
+```dotty
 final case class ConnectionConfig(
     host: Host,
     port: Port,
@@ -50,7 +50,7 @@ object ConnectionConfig:
 
 Тогда сам шаблон Строитель можно определить вот так:
 
-```scala
+```dotty
 
 object ConnectionConfig:
   ...
@@ -111,7 +111,7 @@ end ConnectionConfig
 
 Таким образом построить `ConnectionConfig` по шаблону можно так:
 
-```scala
+```dotty
 ConnectionConfig
   .builder()
   .withHost("localhost")
@@ -132,7 +132,7 @@ ConnectionConfig
 Из типа `Host` выделим тип, описывающий уточняющие правила 
 и, если необходимо, переопределим сообщение об ошибке:
 
-```scala
+```dotty
 opaque type HostRule = MinLength[4] DescribedAs "Invalid host"
 opaque type Host     = String :| HostRule
 ```
@@ -141,7 +141,7 @@ opaque type Host     = String :| HostRule
 и переименуем его в `validatedHost`.
 Тогда метод установки значения можно заменить на:
 
-```scala
+```dotty
 def withHost(host: String): ConnectionConfigBuilder =
   copy(validatedHost = host.refineValidatedNel[HostRule])
 ```
@@ -150,7 +150,7 @@ def withHost(host: String): ConnectionConfigBuilder =
 
 Builder примет следующий вид:
 
-```scala
+```dotty
 final case class ConnectionConfigBuilder private (
     private val validatedHost: ValidatedNel[String, Host],
     private val validatedPort: ValidatedNel[String, Port],
@@ -161,7 +161,7 @@ final case class ConnectionConfigBuilder private (
 
 Конфиг по умолчанию станет равным:
 
-```scala
+```dotty
 def apply(): ConnectionConfigBuilder =
   new ConnectionConfigBuilder(
     validatedHost = Validated.Valid("localhost"),
@@ -176,19 +176,19 @@ def apply(): ConnectionConfigBuilder =
 
 Например:
 
-```scala
+```dotty
 validatedPassword = Validated.Invalid(NonEmptyList.one("Invalid password"))
 ```
 
 Или:
 
-```scala
+```dotty
 validatedPassword = "".refineValidatedNel[PasswordRule]
 ```
 
 Остается только определить метод `build()`:
 
-```scala
+```dotty
 def build(): ValidatedNel[String, ConnectionConfig] =
   (
     validatedHost,
@@ -200,7 +200,7 @@ def build(): ValidatedNel[String, ConnectionConfig] =
 
 В результате использования паттерна Строитель будет выведены либо список всех ошибок:
 
-```scala
+```dotty
 val invalidConfig = ConnectionConfig
   .builder()
   .withHost("")
@@ -214,7 +214,7 @@ val invalidConfig = ConnectionConfig
 
 Либо корректный конфиг:
 
-```scala
+```dotty
 val validConfig = ConnectionConfig
   .builder()
   .withHost("127.0.0.1")
@@ -227,7 +227,6 @@ val validConfig = ConnectionConfig
 ```
 
 [Полный пример доступен на Scastie](https://scastie.scala-lang.org/zalqhllqTu23ngxmD3nl4w)
-
 
 [Wiki]: https://ru.wikipedia.org/wiki/%D0%A1%D1%82%D1%80%D0%BE%D0%B8%D1%82%D0%B5%D0%BB%D1%8C_(%D1%88%D0%B0%D0%B1%D0%BB%D0%BE%D0%BD_%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F)
 [habr]: https://habr.com/ru/company/kryptonite/blog/719488/

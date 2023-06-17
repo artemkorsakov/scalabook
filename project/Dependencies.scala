@@ -46,4 +46,30 @@ object Dependencies {
   object zio {
     val core = "dev.zio" %% "zio" % "2.0.14"
   }
+
+  val exampleLibs: Seq[ModuleID] =
+    Seq(
+      cats.core,
+      cats.effect,
+      cats.free,
+      http4s.blaze,
+      http4s.dsl,
+      iron.iron,
+      iron.cats,
+      refined.cats,
+      refined.core,
+      scalaz.core,
+      scalaz.effect,
+      scalaz.iteratee,
+      zio.core
+    )
+
+  val exampleTestLibs: Seq[ModuleID] =
+    Seq(
+      cats.testkit,
+      munit.core,
+      munit.catsEffect3,
+      munit.scalacheck,
+      scalaz.scalacheck
+    ).map(_ % Test)
 }

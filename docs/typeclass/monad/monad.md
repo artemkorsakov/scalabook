@@ -171,6 +171,7 @@ List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 
 - [Herding Cats](http://eed3si9n.com/herding-cats/Monad.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad.html)
+- [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics/#monads)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#sec:monads)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monad.html)
 - [Tour of Scala](https://tourofscala.com/scala/monad)

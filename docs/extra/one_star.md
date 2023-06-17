@@ -67,14 +67,15 @@
 
 ### Статьи
 
-| Название                                                                                                                         | Версия  | Язык | Дата | Комментарий                 |
-|----------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-----------------------------|
-| [A Comprehensive Guide to Choosing the Best Scala Course - Rock the JVM](https://blog.rockthejvm.com/best-scala-courses/)        | Scala 3 |  En  | 2023 | Выбор курсов в Scala        |
-| [Build your vocabulary with Scala affixes](https://rossabaker.com/blog/scala-affixes)                                            | Scala 3 |  En  | 2023 | Префиксы и суффиксы в Scala |
-| [Exploring Scala CLI — the new scala runner](https://medium.com/virtuslab/exploring-scala-cli-the-new-scala-runner-4b958245c2e0) | Scala 3 |  En  | 2023 |                             |
-| [Let’s Talk About the Scala 3 Indentation - Rock the JVM](https://blog.rockthejvm.com/scala-3-indentation/)                      | Scala 3 |  En  | 2020 |                             |
-| [Why are Type Classes Useful in Scala? - Rock the JVM](https://blog.rockthejvm.com/why-are-typeclasses-useful/)                  | Scala 3 |  En  | 2020 |                             |
-| [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes) | Scala 2 |  En  | 2012 |                             |
+| Название                                                                                                                                                                                      | Версия  | Язык | Дата | Комментарий                 |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-----------------------------|
+| [A Comprehensive Guide to Choosing the Best Scala Course - Rock the JVM](https://blog.rockthejvm.com/best-scala-courses/)                                                                     | Scala 3 |  En  | 2023 | Выбор курсов в Scala        |
+| [Build your vocabulary with Scala affixes](https://rossabaker.com/blog/scala-affixes)                                                                                                         | Scala 3 |  En  | 2023 | Префиксы и суффиксы в Scala |
+| [Exploring Scala CLI — the new scala runner](https://medium.com/virtuslab/exploring-scala-cli-the-new-scala-runner-4b958245c2e0)                                                              | Scala 3 |  En  | 2023 |                             |
+| [Let’s Talk About the Scala 3 Indentation - Rock the JVM](https://blog.rockthejvm.com/scala-3-indentation/)                                                                                   | Scala 3 |  En  | 2020 |                             |
+| [Why are Type Classes Useful in Scala? - Rock the JVM](https://blog.rockthejvm.com/why-are-typeclasses-useful/)                                                                               | Scala 3 |  En  | 2020 |                             |
+| [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes)                                                              | Scala 2 |  En  | 2012 |                             |
+| [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics) | Scala 2 |  En  | 2013 |                             |
 
 --- 
 

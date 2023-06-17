@@ -22,6 +22,14 @@ object Dependencies {
     val cats            = "io.github.iltotore" %% "iron-cats" % version
   }
 
+  object laika {
+    private val version = "0.19.2"
+    val core            = "org.planet42" %% "laika-core"    % version
+    val io              = "org.planet42" %% "laika-io"      % version
+    val pdf             = "org.planet42" %% "laika-pdf"     % version
+    val preview         = "org.planet42" %% "laika-preview" % version
+  }
+
   object munit {
     private val version = "0.7.29"
     val core            = "org.scalameta" %% "munit"               % version
@@ -72,4 +80,12 @@ object Dependencies {
       munit.scalacheck,
       scalaz.scalacheck
     ).map(_ % Test)
+
+  val siteLibs: Seq[ModuleID] =
+    Seq(
+      laika.core,
+      laika.io,
+      laika.pdf,
+      laika.preview
+    )
 }

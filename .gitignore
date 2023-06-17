@@ -30,5 +30,5 @@ cspell.json
 .ammonite/
 metals.sbt
 
-### My temp worksheet
-Temp.worksheet.sc
+### Generated site
+/generated/

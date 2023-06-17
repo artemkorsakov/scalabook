@@ -12,8 +12,10 @@ object GenerateSite extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =
     createTransformer[IO]
       .use { transformer =>
-        // create modules depending on transformer
-        IO.unit
+        transformer
+          .fromDirectory("docs")
+          .toDirectory("generated")
+          .transform
       }
       .as(ExitCode.Success)
 

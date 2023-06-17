@@ -3,7 +3,7 @@
 Пример Scala "Hello, world!" выглядит следующим образом. 
 Сначала поместите этот код в файл с именем `Hello.scala`:
 
-```scala
+```dotty
 @main def hello = println("Hello, world!")
 ```
 

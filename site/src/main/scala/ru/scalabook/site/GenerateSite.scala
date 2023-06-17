@@ -11,12 +11,10 @@ import laika.parse.code.SyntaxHighlighting
 object GenerateSite extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =
     createTransformer[IO]
-      .use { transformer =>
-        transformer
-          .fromDirectory("docs")
+      .use:
+        _.fromDirectory("docs")
           .toDirectory("generated")
           .transform
-      }
       .as(ExitCode.Success)
 
   private def createTransformer[F[_]: Async]: Resource[F, TreeTransformer[F]] =

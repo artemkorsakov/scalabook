@@ -1,10 +1,10 @@
 addCommandAlias("com", "compile; Test / compile")
 addCommandAlias(
   "check",
-  "scalafmtSbtCheck; scalafmtCheckAll; githubWorkflowCheck"
+  "scalafmtSbtCheck; scalafmtCheckAll"
 )
 addCommandAlias(
   "fix",
-  "scalafmtSbt; scalafmtAll; scalafixAll; githubWorkflowGenerate"
+  "scalafmtSbt; scalafmtAll; scalafixAll"
 )
 addCommandAlias("dep", "dependencyUpdates")

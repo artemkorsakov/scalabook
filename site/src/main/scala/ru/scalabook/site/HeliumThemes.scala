@@ -46,24 +46,23 @@ object HeliumThemes:
 
   private def addCSSJS(theme: Helium): Helium =
     theme.site
-      .autoLinkCSS(Root / ".." / "css" / "sidebar.css")
-      .site
-      .autoLinkJS(Root / ".." / "js" / "tex-mml-chtml.js")
+      .autoLinkJS(Root / "js" / "tex-mml-chtml.js")
 
   private def addTopNavigation(theme: Helium): Helium =
     theme.site
       .topNavigationBar(
-        homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
+        homeLink = IconLink.external("https://scalabook.ru", HeliumIcon.home),
         navLinks = Seq(
-//          ButtonLink.internal(Root / "blog" / "index.md", "Блог"),
-//          ButtonLink.internal(Root / "scala.md", "Scala"),
-//          ButtonLink.internal(Root / "fp.md", "ФП"),
-//          ButtonLink.internal(Root / "typeclass.md", "Теория категорий"),
-//          ButtonLink.internal(Root / "algorithms.md", "Алгоритмы"),
-//          ButtonLink.internal(Root / "libs.md", "Scala libs"),
-//          ButtonLink.internal(Root / "patterns.md", "Паттерны"),
-//          ButtonLink.internal(Root / "books.md", "Упражнения"),
-//          ButtonLink.internal(Root / "extra" / "index.md", "Ресурсы")
+          ButtonLink.external("https://scalabook.ru/blog", "Блог"),
+          ButtonLink.external("https://scalabook.ru/scala", "Scala"),
+          ButtonLink.external("https://scalabook.ru/fp", "ФП"),
+          ButtonLink
+            .external("https://scalabook.ru/typeclass", "Теория категорий"),
+          ButtonLink.external("https://scalabook.ru/algorithms", "Алгоритмы"),
+          ButtonLink.external("https://scalabook.ru/libs", "Scala libs"),
+          ButtonLink.external("https://scalabook.ru/patterns", "Паттерны"),
+          ButtonLink.external("https://scalabook.ru/books", "Упражнения"),
+          ButtonLink.external("https://scalabook.ru/extra", "Ресурсы")
         )
       )
 

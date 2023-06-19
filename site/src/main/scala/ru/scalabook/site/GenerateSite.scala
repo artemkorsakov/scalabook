@@ -13,12 +13,10 @@ object GenerateSite extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =
     val allResources =
       for
-        main  <- createMain()
-        _     <- createPath("/css")
-        _     <- createPath("/js")
-        blog  <- createPath("/blog")
-        extra <- createPath("/extra")
-      yield (main, blog, extra)
+        _ <- createMain()
+        _ <- createPath("/blog")
+        _ <- createPath("/extra")
+      yield ()
 
     allResources.as(ExitCode.Success)
 

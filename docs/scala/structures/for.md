@@ -5,51 +5,72 @@
 В самом простом случае цикл `for` в Scala можно использовать для перебора элементов в коллекции.
 Например, имея последовательность целых чисел, можно перебрать ее элементы и вывести значения следующим образом:
 
-```scala mdoc
+```dotty
 val ints = List(1, 2, 3, 4, 5)
+// ints: List[Int] = List(1, 2, 3, 4, 5)
 for i <- ints do println(i)
+// 1
+// 2
+// 3
+// 4
+// 5
 ```
 
 Код `i <- ints` называется генератором.
 
 Если необходим многострочный блок кода после генератора `for`, используется следующий синтаксис:
 
-```scala mdoc
+```dotty
 for
   i <- ints
 do
   val x = i * 2
   println(s"i = $i, x = $x")
+// i = 1, x = 2
+// i = 2, x = 4
+// i = 3, x = 6
+// i = 4, x = 8
+// i = 5, x = 10
 ```
 
 #### Несколько генераторов
 
 В цикле `for` можно использовать несколько генераторов, например:
 
-```scala mdoc
+```dotty
 for
   i <- 1 to 2
-  j <- 'a' to 'b'
-  k <- 1 to 10 by 5
+j <- 'a' to 'b'
+k <- 1 to 10 by 5
 do
   println(s"i = $i, j = $j, k = $k")
+// i = 1, j = a, k = 1
+// i = 1, j = a, k = 6
+// i = 1, j = b, k = 1
+// i = 1, j = b, k = 6
+// i = 2, j = a, k = 1
+// i = 2, j = a, k = 6
+// i = 2, j = b, k = 1
+// i = 2, j = b, k = 6
 ```
 
 #### Guards
 
 Циклы `for` также могут содержать условия, называемые _guards_:
 
-```scala mdoc
+```dotty
 for
   i <- 1 to 5
   if i % 2 == 0
 do
   println(i)
+// 2
+// 4
 ```
 
 Можно добавлять столько условий, сколько необходимо:
 
-```scala mdoc
+```dotty
 for
   i <- 1 to 10
   if i > 3
@@ -57,6 +78,7 @@ for
   if i % 2 == 0
 do
   println(i)
+// 4
 ```
 
 #### Использование for с Map-ами
@@ -64,7 +86,7 @@ do
 Циклы `for` можно использовать с `Map`-ами.
 Например, если есть карта ключ/значение:
 
-```scala mdoc:silent
+```dotty
 val states = Map(
   "AK" -> "Alaska",
   "AL" -> "Alabama", 
@@ -74,8 +96,11 @@ val states = Map(
 
 Можно обойти все пары ключ/значение так:
 
-```scala mdoc
+```dotty
 for (abbrev, fullName) <- states do println(s"$abbrev: $fullName")
+// AK: Alaska
+// AL: Alabama
+// AR: Arizona
 ```
 
 Когда цикл `for` перебирает `Map`, каждая пара ключ/значение привязывается к переменным `abbrev` и `fullName`.
@@ -90,12 +115,13 @@ for (abbrev, fullName) <- states do println(s"$abbrev: $fullName")
 Важно знать, что `for` также можно использовать для выражений, возвращающих значения.
 Для этого `for` создается с ключевым словом `yield` вместо `do` и возвращаемым выражением, например:
 
-```scala mdoc
+```dotty
 val list =
   for
     i <- 10 to 12
   yield
     i * 2
+// list: IndexedSeq[Int] = Vector(20, 22, 24)
 ```
 
 После присваивания `list` содержит `Vector` с отображаемыми значениями. Вот как работает это выражение:
@@ -108,8 +134,9 @@ val list =
 
 В данном случае показанное выражение `for` эквивалентно вызову метода `map`:
 
-```scala mdoc:reset
+```dotty
 val list = (10 to 12).map(i => i * 2)
+// list: IndexedSeq[Int] = Vector(20, 22, 24)
 ```
 
 Выражения `for` можно использовать всегда, когда нужно обойти все элементы в коллекции
@@ -117,18 +144,20 @@ val list = (10 to 12).map(i => i * 2)
 
 Вот пример, который показывает, как использовать блок кода после `yield`:
 
-```scala mdoc
+```dotty
 val names = List("_olivia", "_walter", "_peter")
+// names: List[String] = List("_olivia", "_walter", "_peter")
 val capNames = for name <- names yield
   val nameWithoutUnderscore = name.drop(1)
   val capName = nameWithoutUnderscore.capitalize
   capName
+// capNames: List[String] = List("Olivia", "Walter", "Peter")
 ```
 
 Поскольку выражение `for` возвращает результат, его можно использовать в качестве тела метода.
 Пример:
 
-```scala mdoc
+```dotty
 def between3and10(xs: List[Int]): List[Int] =
   for
     x <- xs
@@ -136,6 +165,7 @@ def between3and10(xs: List[Int]): List[Int] =
     if x <= 10
   yield x
 between3and10(List(1, 3, 7, 11)) 
+// res7: List[Int] = List(3, 7)
 ```
 
 

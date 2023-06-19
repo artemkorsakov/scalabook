@@ -7,18 +7,20 @@ Scala включает в себя pattern matching, обладающий мно
 сопоставляя на основе целочисленного значения.
 Как и предыдущие структуры, pattern matching - это действительно выражение, поскольку оно вычисляет результат:
 
-```scala mdoc
+```dotty
 import scala.annotation.switch
 val i = 6
+// i: Int = 6
 val day = (i: @switch) match
-  case 0 => "Sunday"
-  case 1 => "Monday"
-  case 2 => "Tuesday"
-  case 3 => "Wednesday"
-  case 4 => "Thursday"
-  case 5 => "Friday"
-  case 6 => "Saturday"
-  case _ => "invalid day"
+case 0 => "Sunday"
+case 1 => "Monday"
+case 2 => "Tuesday"
+case 3 => "Wednesday"
+case 4 => "Thursday"
+case 5 => "Friday"
+case 6 => "Saturday"
+case _ => "invalid day"
+// day: String = "Saturday"
 ```
 
 В примере выше переменная `i` сопоставляется с числом и если равна от 0 до 6, то в `day` возвращается день недели.
@@ -34,11 +36,12 @@ val day = (i: @switch) match
 достаточно указать имя переменной в левой части оператора `case`,
 а затем использовать это имя в правой части оператора:
 
-```scala mdoc
+```dotty
 i match
   case 0 => println("1")
   case 1 => println("2")
-  case what => println(s"Получено значение: $what" )
+  case what => println(s"Получено значение: $what")
+// Получено значение: 6  
 ```
 
 Переменной можно дать любое допустимое имя. Можно также использовать `_` в качестве имени, чтобы игнорировать значение.
@@ -47,33 +50,36 @@ i match
 
 В этом примере показано, как использовать несколько возможных совпадений с образцом в каждом операторе `case`:
 
-```scala mdoc
+```dotty
 val evenOrOdd = i match
   case 1 | 3 | 5 | 7 | 9 => println("odd")
   case 2 | 4 | 6 | 8 | 10 => println("even")
   case _ => println("some other number")
+// even  
 ```
 
 #### Использование if в pattern matching
 
 В pattern matching можно использовать условия:
 
-```scala mdoc
+```dotty
 i match
   case 1 => println("one, a lonely number")
   case x if x == 2 || x == 3 => println("two’s company, three’s a crowd")
   case x if x > 3 => println("4+, that’s a party")
   case _ => println("i’m guessing your number is zero or less")
+// 4+, that’s a party  
 ```
 
 Ещё пример:
 
-```scala mdoc
+```dotty
 i match
   case a if 0 to 9 contains a => println(s"0-9 range: $a")
   case b if 10 to 19 contains b => println(s"10-19 range: $b")
   case c if 20 to 29 contains c => println(s"20-29 range: $c")
   case _ => println("Hmmm...")
+// 0-9 range: 6  
 ```
 
 #### case classes и выражение match
@@ -82,15 +88,18 @@ i match
 и использовать их в pattern matching.
 Вот пример использования простого `case class Person`
 
-```scala mdoc
+```dotty
 case class Person(name: String)
 def speak(p: Person) = p match
-  case Person(name) if name == "Fred" => println(s"$name says, Yubba dubba doo")
-  case Person(name) if name == "Bam Bam" => println(s"$name says, Bam bam!")
-  case _ => println("Watch the Flintstones!")
+case Person(name) if name == "Fred" => println(s"$name says, Yubba dubba doo")
+case Person(name) if name == "Bam Bam" => println(s"$name says, Bam bam!")
+case _ => println("Watch the Flintstones!")
 speak(Person("Fred"))
+// Fred says, Yubba dubba doo
 speak(Person("Bam Bam"))
+// Bam Bam says, Bam bam!
 speak(Person("Wilma"))
+// Watch the Flintstones!
 ```
 
 #### Использование выражения match в теле метода
@@ -99,7 +108,7 @@ speak(Person("Wilma"))
 Этот метод принимает значение `Matchable` в качестве входного параметра
 и возвращает логическое значение на основе результата выражения соответствия:
 
-```scala mdoc:silent
+```dotty
 def isTruthy(a: Matchable) = a match
   case 0 | "" | false => false
   case _              => true
@@ -114,13 +123,19 @@ def isTruthy(a: Matchable) = a match
 
 Эти примеры показывают, как работает метод:
 
-```scala mdoc
+```dotty
 isTruthy(0)
+// res6: Boolean = false
 isTruthy(false)
+// res7: Boolean = false
 isTruthy("")
+// res8: Boolean = false
 isTruthy(1)
+// res9: Boolean = true
 isTruthy(" ")
+// res10: Boolean = true
 isTruthy(2F)
+// res11: Boolean = true
 ```
 
 Использование pattern matching в качестве тела метода очень распространено.
@@ -136,7 +151,7 @@ isTruthy(2F)
 
 Все эти виды шаблонов показаны в следующем примере:
 
-```scala
+```dotty
 def pattern(x: Matchable): String = x match
 
   // Сравнение с константой
@@ -176,7 +191,7 @@ def pattern(x: Matchable): String = x match
 
 `match` выражения могут быть объединены в цепочку:
 
-```scala mdoc
+```dotty
 def chain(xs: List[Int]) =
   xs match
     case Nil => "empty"
@@ -186,7 +201,9 @@ def chain(xs: List[Int]) =
     case "nonempty" => 1
 
 chain(List.empty[Int])
+// res12: Int = 0
 chain(List(1, 2, 3))
+// res13: Int = 1
 ```
 
 

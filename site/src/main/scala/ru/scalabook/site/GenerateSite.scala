@@ -15,6 +15,13 @@ object GenerateSite extends IOApp:
       for
         _ <- createMain()
         _ <- createPath("/blog")
+        _ <- createPath("/scala")
+//        _ <- createPath("/fp")
+//        _ <- createPath("/typeclass")
+//        _ <- createPath("/algorithms")
+//        _ <- createPath("/libs")
+//        _ <- createPath("/patterns")
+//        _ <- createPath("/books")
         _ <- createPath("/extra")
       yield ()
 

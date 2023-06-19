@@ -13,15 +13,17 @@
 
 В примере показано, как создавать `val` и `var` переменные:
 
-```scala mdoc
+```dotty
 val a = 0
+// a: Int = 0
 var b = 1
+// b: Int = 1
 ```
 
 Значение `val` не может быть переназначено. 
 Если попытаться переназначить, то будет получена ошибка компиляции:
 
-```scala
+```dotty
 val msg = "Hello, world"
 msg = "Aloha"
 // error:
@@ -32,17 +34,18 @@ msg = "Aloha"
 
 И наоборот, `var` может быть переназначен:
 
-```scala mdoc:reset
+```dotty
 var msg = "Hello, world"
 msg = "Aloha"
 msg
+// res2: String = "Aloha"
 ```
 
 #### Объявление типов переменных
 
 Когда создается переменная, можно явно объявить ее тип или позволить определить тип компилятору:
 
-```scala
+```dotty
 val x: Int = 1
 val x = 1
 ```
@@ -50,15 +53,18 @@ val x = 1
 Вторая форма известна как вывод типа (_type inference_), и это отличный способ помочь сохранить код кратким. 
 Компилятор Scala обычно может определить тип данных, как показано в выходных данных этих примеров:
 
-```scala mdoc
+```dotty
 val x = 1
+// x: Int = 1
 val s = "a string"
+// s: String = "a string"
 val nums = List(1, 2, 3)
+// nums: List[Int] = List(1, 2, 3)
 ```
 
 Всегда можно явно объявить тип переменной, но в простых примерах, подобных этим, в этом нет необходимости:
 
-```scala
+```dotty
 val x: Int = 1
 val s: String = "a string"
 val p: Person = Person("Richard")
@@ -99,20 +105,21 @@ val p: Person = Person("Richard")
 В Scala для методов, которые не имеют возвращаемого значения, такие как следующий метод, 
 для той же цели используется `Unit`:
 
-```scala
+```dotty
 def printIt(a: Any): Unit = println(a)
 ```
 
 Вот пример, демонстрирующий, что строки, целые числа, символы, логические значения и функции являются экземплярами `Any` 
 и могут обрабатываться так же, как и любой другой объект:
 
-```scala mdoc
+```dotty
 val list: List[Any] = List(
   "a string",
-  732,  
-  'c',  
-  true, 
-  () => "an anonymous function returning a string"
+  732,   // Число
+  'c',   // Символ 
+  '\'',  // Экранированный символ
+  true,  // булево значение
+  () => "анонимная функция, возвращающая строку"
 )
 ```
 
@@ -125,7 +132,7 @@ val list: List[Any] = List(
 Как показано выше, числовые типы Scala расширяют `AnyVal`, и все они являются полноценными объектами. 
 В этих примерах показано, как объявлять переменные этих числовых типов:
 
-```scala
+```dotty
 val b: Byte = 1
 val i: Int = 1
 val l: Long = 1
@@ -141,35 +148,44 @@ val f: Float = 3.0
 
 Поскольку `Int` и `Double` являются числовыми типами по умолчанию, их можно создавать без явного объявления типа данных:
 
-```scala mdoc
+```dotty
 val i = 123
+// i: Int = 123
 val j = 1.0
+// j: Double = 1.0
 ```
 
 Также можно добавить символы `L`, `D`, and `F` (или их эквивалент в нижнем регистре) для того, 
 чтобы задать `Long`, `Double`, или `Float` значения:
 
-```scala mdoc:reset
+```dotty
 val x = 1_000L
-val y = 2.2D 
+// x: Long = 1000L
+val y = 2.2D
+// y: Double = 2.2 
 val z = 3.3F
+// z: Float = 3.3F
 ```
 
 В Scala также есть типы `String` (значение заключается в двойные кавычки или три двойных) 
 и `Char` (значение заключается в одинарные кавычки):
 
-```scala mdoc
+```dotty
 val name = "Bill"
+// name: String = "Bill"
 val c = 'a'    
+// c: Char = 'a'   
 ```
 
 #### BigInt и BigDecimal
 
 Для действительно больших чисел можно использовать типы `BigInt` и `BigDecimal`:
 
-```scala mdoc
+```dotty
 var a = BigInt(1_234_567_890_987_654_321L)
+// a: BigInt = 1234567890987654321
 var b = BigDecimal(123_456.789)
+// b: BigDecimal = 123456.789
 ```
 
 Где `Double` и `Float` являются приблизительными десятичными числами, 
@@ -177,10 +193,13 @@ var b = BigDecimal(123_456.789)
 
 `BigInt` и `BigDecimal` поддерживают все привычные числовые операторы:
 
-```scala mdoc:reset
+```dotty
 val b = BigInt(1234567890)
+// b: BigInt = 1234567890
 val c = b + b             
+// c: BigInt = 2469135780             
 val d = b * b            
+// d: BigInt = 1524157875019052100         
 ```
 
 #### Строки
@@ -194,7 +213,7 @@ val d = b * b
 Интерполяция строк обеспечивает очень удобный способ использования переменных внутри строк. 
 Например, учитывая эти три переменные:
 
-```scala mdoc:silent
+```dotty
 val firstName = "John"
 val mi = 'C'
 val lastName = "Doe"
@@ -202,18 +221,22 @@ val lastName = "Doe"
 
 их комбинацию можно получить так:
 
-```scala mdoc
+```dotty
 s"Name: $firstName $mi $lastName"
+// res5: String = "Name: John C Doe"
 ```
 
 Достаточно поставить перед строкой букву `s`, а затем - символ `$` перед именами переменных внутри строки. 
 
 Чтобы вставить произвольные выражения в строку, они заключаются в фигурные скобки:
 
-```scala mdoc:reset
+```dotty
 s"2 + 2 = ${2 + 2}"
+// res7: String = "2 + 2 = 4"
 val x = -1
+// x: Int = -1
 s"x.abs = ${x.abs}"
+// res8: String = "x.abs = 1"
 ```
 
 Символ `s`, помещенный перед строкой, является лишь одним из возможных интерполяторов. 
@@ -223,30 +246,39 @@ s"x.abs = ${x.abs}"
 
 Для экранирования символа `"` в интерполяции используется символ `$`:
 
-```scala mdoc
+```dotty
 val inventor = "Thomas Edison"
+// inventor: String = "Thomas Edison"
 val interpolation = s"as $inventor said: $"The three great essentials to achieve anything worth while are: Hard work, Stick-to-itiveness, and Common sense.$""
+// interpolation: String = "as Thomas Edison said: \"The three great essentials to achieve anything worth while are: Hard work, Stick-to-itiveness, and Common sense.\""
 println(interpolation)
+// as Thomas Edison said: "The three great essentials to achieve anything worth while are: Hard work, Stick-to-itiveness, and Common sense."
 ```
 
 ##### Multiline strings
 
 Многострочные строки создаются путем включения строки в три двойные кавычки:
 
-```scala mdoc
+```dotty
 println("""The essence of Scala:
                Fusion of functional and object-oriented
                programming in a typed setting.""")
+// The essence of Scala:
+//                      Fusion of functional and object-oriented
+//                      programming in a typed setting.
 ```
 
 Одним из недостатков базового подхода является то, что строки после первой имеют отступ.
 
 Если важно исключить отступ, можно поставить символ `|` перед всеми строками после первой и вызвать метод `stripMargin` после строки:
 
-```scala mdoc
+```dotty
 println("""The essence of Scala:
                |Fusion of functional and object-oriented
                |programming in a typed setting.""".stripMargin)
+// The essence of Scala:
+// Fusion of functional and object-oriented
+// programming in a typed setting.               
 ```
 
 Теперь все строки выравниваются по левому краю. 
@@ -262,16 +294,20 @@ println("""The essence of Scala:
 
 Например:
 
-```scala mdoc:reset
+```dotty
 val x: Int = 987654321
+// x: Int = 987654321
 val y: Long = x
+// y: Long = 987654321L
 val face: Char = '☺'
+// face: Char = '☺'
 val number: Int = face
+// number: Int = 9786
 ```
 
 Приведение типов однонаправленное, следующий код не будет компилиться:
 
-```scala
+```dotty
 val a: Long = 987654321
 val b: Float = a 
 val c: Long = b
@@ -283,7 +319,7 @@ val c: Long = b
 
 Неявное приведение типов в некоторых случаях помечено как `deprecated` и может быть запрещено в будущих версиях:
 
-```scala
+```dotty
 val x: Long = 987654321
 val y: Float = x
 // method long2float in object Long is deprecated since 2.13.1: Implicit conversion from Long to Float is dangerous because it loses precision. Write `.toFloat` instead.

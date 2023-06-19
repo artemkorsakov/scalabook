@@ -2,7 +2,7 @@
 
 Однострочное `if` выражение выглядит так:
 
-```scala
+```dotty
 val x = 1
 if x == 1 then println(x)
 // 1
@@ -10,7 +10,7 @@ if x == 1 then println(x)
 
 Когда необходимо выполнить несколько строк кода после `if`, используется синтаксис:
 
-```scala
+```dotty
 if x == 1 then
   println("x is 1, as you can see:")
   println(x)
@@ -20,7 +20,7 @@ if x == 1 then
 
 `if`/`else` синтаксис выглядит так:
 
-```scala
+```dotty
 if x == 1 then
   println("x is 1, as you can see:")
   println(x)
@@ -32,7 +32,7 @@ else
 
 `if`/`else if`/`else` выглядит так же, как и в других языках:
 
-```scala
+```dotty
 def detect(x: Int) = 
   if x < 0 then
     println("negative")
@@ -50,7 +50,7 @@ detect(1)
 
 При желании можно дополнительно включить оператор `end if` в конце каждого выражения:
 
-```scala
+```dotty
 if x == 1 then
   println("x is 1, as you can see:")
   println(x)
@@ -63,13 +63,13 @@ end if
 Поэтому нет необходимости в специальном тернарном операторе.
 Пример:
 
-```scala
+```dotty
 val minValue = if a < b then a else b
 ```
 
 Можно использовать `if/else` выражение в качестве тела метода:
 
-```scala
+```dotty
 def compare(a: Int, b: Int): Int =
   if a < b then -1
   else if a == b then 0

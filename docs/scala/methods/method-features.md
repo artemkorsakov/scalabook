@@ -2,7 +2,7 @@
 
 Синтаксис простого метода выглядит следующим образом:
 
-```scala
+```dotty
 def methodName(param1: Type1, param2: Type2): ReturnType =
   // здесь тело метода
 end methodName   // опционально, можно не указывать
@@ -20,7 +20,7 @@ end methodName   // опционально, можно не указывать
 Вот два примера однострочного метода с именем `add`, который принимает два входных параметра `Int`. 
 Первая версия явно показывает возвращаемый тип метода - `Int`, а вторая - нет:
 
-```scala
+```dotty
 def add(a: Int, b: Int): Int = a + b
 def add(a: Int, b: Int) = a + b
 ```
@@ -33,17 +33,21 @@ def add(a: Int, b: Int) = a + b
 
 Вызов методов прост:
 
-```scala
+```dotty
 val x = add(1, 2)
 ```
 
 Коллекции Scala имеют десятки встроенных методов. Эти примеры показывают, как их вызывать:
 
-```scala mdoc
+```dotty
 val x = List(1, 2, 3)
+// x: List[Int] = List(1, 2, 3)
 x.size
+// res0: Int = 3
 x.contains(1)
+// res1: Boolean = true
 x.map(_ * 10)
+// res2: List[Int] = List(10, 20, 30)
 ```
 
 Внимание:
@@ -56,11 +60,12 @@ x.map(_ * 10)
 
 Если метод длиннее одной строки, начинайте тело метода со второй строки с отступом вправо:
 
-```scala mdoc
+```dotty
 def addThenDouble(a: Int, b: Int): Int =
   val sum = a + b
   sum * 2
 addThenDouble(1, 1)  
+// res3: Int = 4
 ```
 
 В этом методе:
@@ -74,7 +79,7 @@ addThenDouble(1, 1)
 
 Это видно на примере того же метода, но в более сжатой форме:
 
-```scala
+```dotty
 def addThenDouble(a: Int, b: Int): Int = (a + b) * 2
 ```
 
@@ -91,7 +96,7 @@ def addThenDouble(a: Int, b: Int): Int = (a + b) * 2
 В качестве ещё одного примера многострочного метода, 
 `getStackTraceAsString` преобразует свой входной параметр `Throwable` в правильно отформатированную строку:
 
-```scala
+```dotty
 def getStackTraceAsString(t: Throwable): String =
   val sw = StringWriter()
   t.printStackTrace(PrintWriter(sw))
@@ -117,13 +122,13 @@ def getStackTraceAsString(t: Throwable): String =
 
 Например, этот метод выполняет побочный эффект, поэтому он объявлен с пустыми скобками:
 
-```scala
+```dotty
 def speak() = println("hi")
 ```
 
 При вызове метода нужно обязательно указывать круглые скобки, если он был объявлен с ними:
 
-```scala
+```dotty
 speak     // error: "method speak must be called with () argument"
 speak()   // prints "hi"
 ```
@@ -136,7 +141,7 @@ speak()   // prints "hi"
 Поскольку выражения `if`/`else` возвращают значение, их можно использовать в качестве тела метода. 
 Вот метод с именем `isTruthy`, реализующий Perl-определения `true` и `false`:
 
-```scala mdoc
+```dotty
 def isTruthy(a: Any) =
   if a == 0 || a == "" || a == false then
     false
@@ -146,7 +151,7 @@ def isTruthy(a: Any) =
 
 Примеры показывают, как работает метод:
 
-```scala
+```dotty
 isTruthy(0)   
 isTruthy("")  
 isTruthy("hi")
@@ -158,7 +163,7 @@ isTruthy(1.0)
 Довольно часто в качестве тела метода используются match-выражения.
 Вот еще одна версия `isTruthy`, написанная с `match` выражением:
 
-```scala
+```dotty
 def isTruthy(a: Matchable) = a match
   case 0 | "" | false => false
   case _ => true
@@ -173,17 +178,18 @@ def isTruthy(a: Matchable) = a match
 В классах, объектах, `trait`-ах и `enum`-ах методы Scala по умолчанию общедоступны, 
 поэтому созданный здесь экземпляр `Dog` может получить доступ к методу `speak`:
 
-```scala mdoc
+```dotty
 class Dog:
   def speak() = println("Woof")
 val d = new Dog
 d.speak()
+// Woof
 ```
 
 Также методы можно помечать как `private`. 
 Это делает их закрытыми в текущем классе, поэтому их нельзя вызвать или переопределить в подклассах:
 
-```scala
+```dotty
 class Animal:
   private def breathe() = println("I’m breathing")
   
@@ -195,7 +201,7 @@ class Cat extends Animal:
 Если необходимо сделать метод закрытым в текущем классе, но разрешить подклассам вызывать или переопределять его,
 метод помечается как `protected`, как показано в примере с методом `speak`:
 
-```scala
+```dotty
 class Animal:
   private def breathe() = println("I’m breathing")
   def walk() =
@@ -225,7 +231,7 @@ cat.breathe()   // won’t compile because it’s private
 Это хороший способ сгруппировать набор "служебных" методов. 
 Например, этот объект содержит набор методов, которые работают со строками:
 
-```scala
+```dotty
 object StringUtils:
 
   def truncate(s: String, length: Int): String = s.take(length)
@@ -243,7 +249,7 @@ end StringUtils
 
 Методы суперкласса можно вызвать через ключевое слово `super.`, как показано в примере:
 
-```scala mdoc
+```dotty
 class Animal:
   def speak() = println("Hello?")
 
@@ -254,6 +260,8 @@ class Cat extends Animal:
 
 val cat = new Cat
 cat.speak()
+// Hello?
+// Meow
 ```
 
 

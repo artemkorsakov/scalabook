@@ -3,7 +3,7 @@
 В Scala 3 все виды определений могут быть записаны на "верхнем уровне" файлов исходного кода. 
 Например, можно создать файл с именем `MyCoolApp.scala` и поместить в него данное содержимое:
 
-```scala
+```dotty
 import scala.collection.mutable.ArrayBuffer
 
 enum Topping:
@@ -36,7 +36,7 @@ type Money = BigDecimal
 когда вы помещаете определение в пакет с именем `foo`, 
 вы можете получить доступ к этому определению во всех других пакетах в `foo`, например, в пакете `foo.bar` в этом примере:
 
-```scala
+```dotty
 package foo {
   def double(i: Int) = i * 2
 }

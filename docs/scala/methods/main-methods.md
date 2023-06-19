@@ -3,7 +3,7 @@
 Scala предлагает следующий способ определения программ, которые можно вызывать из командной строки: 
 добавление аннотации `@main` к методу превращает его в точку входа исполняемой программы:
 
-```scala
+```dotty
 @main def hello() = println("Hello, world")
 ```
 
@@ -11,13 +11,13 @@ Scala предлагает следующий способ определени�
 (имя файла необязательно должно совпадать с именем метода) 
 и скомпилировать его с помощью `scalac`:
 
-```scala
+```
 $ scalac Hello.scala
 ```
 
 Затем запустить с помощью `scala`:
 
-```scala
+```dotty
 $ scala hello
 Hello, world
 ```
@@ -31,7 +31,7 @@ Hello, world
 Метод `@main` может обрабатывать аргументы командной строки с разными типами. 
 Например, данный метод `@main`, который принимает параметры `Int`, `String` и дополнительные строковые параметры:
 
-```scala
+```dotty
 @main def happyBirthday(age: Int, name: String, others: String*) =
   val suffix = (age % 100) match
     case 11 | 12 | 13 => "th"
@@ -48,7 +48,7 @@ Hello, world
 
 После компиляции кода создается основная программа с именем `happyBirthday`, которая вызывается следующим образом:
 
-```scala
+```
 $ scala happyBirthday 23 Lisa Peter
 Happy 23rd Birthday, Lisa and Peter!
 ```
@@ -64,7 +64,7 @@ Happy 23rd Birthday, Lisa and Peter!
 и что строки аргументов могут быть преобразованы в требуемые типы. 
 Если проверка завершается неудачей, программа завершается с сообщением об ошибке:
 
-```scala
+```
 $ scala happyBirthday 22
 Illegal command line after first argument: more arguments expected
 
@@ -84,7 +84,7 @@ Illegal command line: java.lang.NumberFormatException: For input string: "sixty"
 
 Например, приведенный выше метод `happyBirthday` генерирует дополнительный код, эквивалентный следующему классу:
 
-```scala
+```dotty
 final class happyBirthday {
   import scala.util.{CommandLineParser as CLP}
   <static> def main(args: Array[String]): Unit =

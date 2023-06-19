@@ -3,14 +3,14 @@
 В параметрах метода можно указывать значения по умолчанию. 
 В этом примере значения по умолчанию заданы как для `timeout`, так и для `protocol`:
 
-```scala
+```dotty
 def makeConnection(timeout: Int = 5_000, protocol: String = "http") =
   println(f"timeout = ${timeout}%d, protocol = ${protocol}%s")
 ```
 
 Поскольку параметры имеют значения по умолчанию, метод можно вызвать следующими способами:
 
-```scala
+```dotty
 makeConnection()                
 // timeout = 5000, protocol = http                
 makeConnection(2_000)          

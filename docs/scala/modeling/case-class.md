@@ -17,33 +17,50 @@ Scala `case class` позволяет моделировать концепци�
 
 Этот код демонстрирует несколько функций `case class`:
 
-```scala mdoc
+```dotty
 case class Person(name: String, vocation: String)
 val person = Person("Reginald Kenneth Dwight", "Singer")
+// person: Person = Person(
+//   name = "Reginald Kenneth Dwight",
+//   vocation = "Singer"
+// )
 person.name
+// res0: String = "Reginald Kenneth Dwight"
 ```
 
 Необходимо помнить, что поля в `case class`-е неизменяемые:
 
-```scala
+```dotty
 person.name = "Joe" // error: Reassignment to val name
 ```
 
 Остальные возможности продемонстрированы в коде:
 
-```scala mdoc
+```dotty
 println(person)
+// Person(Reginald Kenneth Dwight,Singer)
 
 person match
   case Person(n, r) => println("name is " + n)
+// name is Reginald Kenneth Dwight
 
 val elton = Person("Elton John", "Singer")
+// elton: Person = Person(name = "Elton John", vocation = "Singer")
 
 person == elton
+// res3: Boolean = false
 
 case class BaseballTeam(name: String, lastWorldSeriesWin: Int)
 val cubs1908 = BaseballTeam("Chicago Cubs", 1908)
+// cubs1908: BaseballTeam = BaseballTeam(
+//   name = "Chicago Cubs",
+//   lastWorldSeriesWin = 1908
+// )
 val cubs2016 = cubs1908.copy(lastWorldSeriesWin = 2016)
+// cubs2016: BaseballTeam = BaseballTeam(
+//   name = "Chicago Cubs",
+//   lastWorldSeriesWin = 2016
+// )
 ```
 
 #### Поддержка функционального программирования
@@ -68,7 +85,7 @@ val cubs2016 = cubs1908.copy(lastWorldSeriesWin = 2016)
 `Case object`-ы полезны, когда необходимо передавать неизменяемые сообщения. 
 Например, представим проект музыкального проигрывателя, и создадим набор команд или сообщений:
 
-```scala
+```dotty
 sealed trait Message
 case class PlaySong(name: String) extends Message
 case class IncreaseVolume(amount: Int) extends Message
@@ -80,7 +97,7 @@ case object StopPlaying extends Message
 для обработки входящего сообщения 
 (при условии, что методы `playSong`, `changeVolume` и `stopPlayingSong` определены где-то еще):
 
-```scala
+```dotty
 def handleMessages(message: Message): Unit = message match
   case PlaySong(name)         => playSong(name)
   case IncreaseVolume(amount) => changeVolume(amount)

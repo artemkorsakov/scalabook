@@ -5,13 +5,15 @@
 
 Пример:
 
-```scala mdoc
+```dotty
 def listOfDuplicates[A](x: A, length: Int): List[A] =
   if length < 1 then Nil
   else x :: listOfDuplicates(x, length - 1)
 
 listOfDuplicates[Int](3, 4)
+// res0: List[Int] = List(3, 3, 3, 3)
 listOfDuplicates("La", 8)
+// res1: List[String] = List("La", "La", "La", "La", "La", "La", "La", "La")
 ```
 
 Метод `listOfDuplicates` принимает параметр типа `A` и параметры значений `x` и `length`. 

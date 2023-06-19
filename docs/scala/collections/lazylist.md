@@ -10,9 +10,11 @@
 Если списки создаются с помощью оператора `::`, то ленивые списки создаются схожей операцией `#::`. 
 Вот простой пример ленивого списка с целыми числами 1, 2 и 3:
 
-```scala mdoc
+```dotty
 val lazyList = 1 #:: 2 #:: 3 #:: LazyList.empty
+// lazyList: LazyList[Int] = LazyList(1, 2, 3)
 lazyList.toString
+// res0: String = "LazyList(<not computed>)"
 ```
 
 На первом месте в этом ленивом списке - `1`, затем - `2` и `3`. 
@@ -22,7 +24,7 @@ lazyList.toString
 
 Ещё примеры:
 
-```scala mdoc:silent
+```dotty
 val x = LazyList.range(1, Int.MaxValue)
 x.take(1)    
 x.take(5)    
@@ -31,8 +33,9 @@ x.map(_ + 1)
 
 `LazyList` начинает вычислять свои элементы только при вызове некоторых методов, например, `foreach`:
 
-```scala mdoc
+```dotty
 x.take(1).foreach(println)
+// 1
 ```
 
 ##### Последовательность Фибоначчи
@@ -40,7 +43,7 @@ x.take(1).foreach(println)
 Пример ленивого списка, 
 содержащего [последовательность Фибоначчи](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D0%BB%D0%B0_%D0%A4%D0%B8%D0%B1%D0%BE%D0%BD%D0%B0%D1%87%D1%87%D0%B8). 
 
-```scala mdoc:silent
+```dotty
 def fibFrom(a: Int, b: Int): LazyList[Int] = a #:: fibFrom(b, a + b)
 ```
 
@@ -54,9 +57,11 @@ def fibFrom(a: Int, b: Int): LazyList[Int] = a #:: fibFrom(b, a + b)
 
 Ниже приведены первые элементы последовательности Фибоначчи, начиная с двух едениц:
 
-```scala mdoc
+```dotty
 val fibs = fibFrom(1, 1).take(7)
+// fibs: LazyList[Int] = LazyList(1, 1, 2, 3, 5, 8, 13)
 fibs.toList
+// res5: List[Int] = List(1, 1, 2, 3, 5, 8, 13)
 ```
 
 

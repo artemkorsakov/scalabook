@@ -9,7 +9,7 @@
 
 В качестве примера, рассмотрим перечисления, определяющие наборы атрибутов, связанных с пиццами:
 
-```scala mdoc:silent
+```dotty
 enum CrustSize:
   case Small, Medium, Large
 
@@ -22,28 +22,30 @@ enum Topping:
 
 Для использования в коде `enum` необходимо импортировать:
 
-```scala mdoc:silent
+```dotty
 import CrustSize.*
 val currentCrustSize = Small
 ```
 
 Значения `enum`-ов можно сравнивать и использовать в матчинге:
 
-```scala mdoc
+```dotty
 if (currentCrustSize == Small)
   println("If you buy a large pizza, you'll get a prize!")
+// If you buy a large pizza, you'll get a prize!
 
 currentCrustSize match
   case Small => println("small")
   case Medium => println("medium")
   case Large => println("large")
+// small
 ```
 
 #### Параметризованные перечисления
 
 Перечисления могут иметь параметры конструктора:
 
-```scala mdoc:reset
+```dotty
 enum Color(val rgb: Int):
   case Red   extends Color(0xFF0000)
   case Green extends Color(0x00FF00)
@@ -55,9 +57,11 @@ enum Color(val rgb: Int):
 Значения enum соответствуют уникальным целым числам. 
 Целое число, связанное со значением перечисления, возвращается методом `ordinal`:
 
-```scala mdoc
+```dotty
 val red = Color.Red
+// red: Color = Red
 red.ordinal
+// res3: Int = 0
 ```
 
 Сопутствующий объект перечисления определяет также три служебных метода. 
@@ -65,7 +69,7 @@ red.ordinal
 Метод `values` возвращает все значения enum, определенные в перечислении, в виде `Array`. 
 Метод `fromOrdinal` получает значение перечисления по его порядковому (`Int`) значению.
 
-```scala
+```dotty
 Color.valueOf("Blue")
 Color.values
 Color.fromOrdinal(0)
@@ -75,7 +79,7 @@ Color.fromOrdinal(0)
 
 В перечисление можно добавить свои собственные определения. Пример:
 
-```scala
+```dotty
 enum Planet(mass: Double, radius: Double):
   private final val G = 6.67300E-11
   def surfaceGravity = G * mass / (radius * radius)
@@ -96,7 +100,7 @@ end Planet
 
 Также возможно определить явный сопутствующий объект для перечисления:
 
-```scala
+```dotty
 object Planet:
   def main(args: Array[String]) =
     val earthWeight = args(0).toDouble
@@ -116,7 +120,7 @@ end Planet
 даже если они импортированы (напрямую или путем переименования). 
 Например:
 
-```scala
+```dotty
 import Planet.*
 enum Planet(mass: Double, radius: Double):
   private final val (mercuryMass, mercuryRadius) = (3.303e+23, 2.4397e6)
@@ -139,7 +143,7 @@ end Planet
 Если необходимо использовать определенные в Scala перечисления в качестве перечислений Java, 
 можно сделать это, расширив класс `java.lang.Enum` (который импортируется по умолчанию) следующим образом:
 
-```scala
+```dotty
 enum Color extends Enum[Color] { case Red, Green, Blue }
 ```
 
@@ -149,7 +153,7 @@ enum Color extends Enum[Color] { case Red, Green, Blue }
 
 После определения `Color` его можно использовать так же, как если бы использовался Java `enum`:
 
-```scala
+```dotty
 Color.Red.compareTo(Color.Green)
 ```
 

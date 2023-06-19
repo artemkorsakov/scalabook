@@ -11,7 +11,7 @@
 В базовом использовании `trait` может использоваться как интерфейс, 
 определяющий только абстрактные члены, которые будут реализованы другими классами:
 
-```scala mdoc:silent
+```dotty
 trait Employee:
   def id: Int
   def firstName: String
@@ -20,13 +20,13 @@ trait Employee:
 
 `traits` также могут содержать определенные методы:
 
-```scala mdoc:silent
+```dotty
 trait HasLegs:
   def numLegs: Int
   def walk(): Unit
   def stop() = println("Stopped walking")
 ```
-```scala mdoc:silent
+```dotty
 trait HasTail:
   def tailColor: String
   def wagTail() = println("Tail is wagging")
@@ -35,7 +35,7 @@ trait HasTail:
 
 Классы и объекты могут расширять несколько `traits`, что позволяет с их помощью создавать небольшие модули.
 
-```scala mdoc:silent
+```dotty
 class IrishSetter(name: String) extends HasLegs, HasTail:
   val numLegs = 4
   val tailColor = "Red"
@@ -45,8 +45,9 @@ class IrishSetter(name: String) extends HasLegs, HasTail:
 
 В классе `IrishSetter` реализованы все абстрактные параметры и методы, поэтому можно создать его экземпляр:
 
-```scala mdoc
+```dotty
 val d = IrishSetter("Big Red")
+// d: IrishSetter = Big Red is a Dog
 ```
 
 Класс также может переопределять методы `trait`-ов при необходимости.
@@ -58,7 +59,7 @@ val d = IrishSetter("Big Red")
 Одна потенциальная проблема с параметрами `trait` заключается в том, как предотвратить двусмысленность. 
 Например, можно попробовать расширить `Greeting` дважды с разными параметрами:
 
-```scala mdoc:reset
+```dotty
 trait Greeting(val name: String):
   def msg = s"How are you, $name"
 
@@ -66,7 +67,7 @@ class C extends Greeting("Bob"):
   println(msg)
 ```
 
-```scala
+```dotty
 class D extends C, Greeting("Bill") 
 // error:
 // trait Greeting is already implemented by superclass C,
@@ -81,20 +82,20 @@ class D extends C, Greeting("Bill")
 
 Вот трейт, расширяющий параметризованный трейт `Greeting`.
 
-```scala mdoc:silent
+```dotty
 trait FormalGreeting extends Greeting:
   override def msg = s"How do you do, $name"
 ```
 
 Правильный способ создания класса `E`, расширяющего оба - `Greeting` и `FormalGreeting` (в любом порядке) - такой:
 
-```scala mdoc:silent
+```dotty
 class E extends Greeting("Bob"), FormalGreeting
-```
-
-```scala mdoc
 (new C).msg
+// How are you, Bob
+// res1: String = "How are you, Bob"
 (new E).msg
+// res2: String = "How do you do, Bob"
 ```
 
 ### Trait-ы с параметрами контекста
@@ -103,7 +104,7 @@ class E extends Greeting("Bob"), FormalGreeting
 В этом случае ссылка на трейт неявно вставляется как дополнительный родитель с выводимыми аргументами. 
 Например, вот вариант `Greeting`, где адресат является параметром контекста типа `ImpliedName`:
 
-```scala mdoc:reset
+```dotty
 case class ImpliedName(name: String):
   override def toString = name
 
@@ -118,7 +119,7 @@ class F(using iname: ImpliedName) extends ImpliedFormalGreeting
 
 Определение `F` в последней строке неявно расширяется до
 
-```scala
+```dotty
 class F(using iname: ImpliedName) extends
   Object,
   ImpliedGreeting(using iname),
@@ -128,9 +129,10 @@ class F(using iname: ImpliedName) extends
 Обратите внимание на вставленную ссылку на `ImpliedFormalGreeting` - родительский `trait ImpliedGreeting`, 
 которая не упоминалась явно.
 
-```scala mdoc
+```dotty
 given ImpliedName = ImpliedName("Bob")
 (new F).msg
+// res4: String = "How do you do, Bob"
 ```
 
 
@@ -147,7 +149,7 @@ Trait-ы используются в двух случаях:
 В Scala 2 этот родительский trait иногда делает выводимые типы более сложными, чем они должны быть. 
 Пример:
 
-```scala
+```dotty
 trait Kind
 case object Var extends Kind
 case object Val extends Kind
@@ -167,12 +169,13 @@ val x = Set(if false then Val else Var)
 Scala 3 позволяет помечать trait примеси как `transparent`, что означает, что он может быть подавлен при выводе типа. 
 Вот пример, который повторяет строки приведенного выше кода, но теперь с новым `transparent trait S` вместо `Product`:
 
-```scala mdoc:reset
+```dotty
 transparent trait S
 trait Kind
 object Var extends Kind, S
 object Val extends Kind, S
 val x = Set(if true then Val else Var)
+// x: Set[Kind] = ...
 ```
 
 Теперь `x` предположил тип `Set[Kind]`. Общий `transparent trait S` не появляется в выводимом типе.

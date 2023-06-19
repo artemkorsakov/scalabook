@@ -18,14 +18,14 @@ Scala предоставляет все необходимые инструме�
 основным инструментом декомпозиции в Scala являются не классы, а `traits`. 
 Они могут служить для описания абстрактных интерфейсов, таких как:
 
-```scala
+```dotty
 trait Showable:
   def show: String
 ```
 
 , а также могут содержать конкретные реализации:
 
-```scala
+```dotty
 trait Showable:
   def show: String
   def showHtml = "<p>" + show + "</p>"
@@ -42,7 +42,7 @@ trait Showable:
 Это видно на примере со `Showable`: определяя класс `Document`, который расширяет `Showable`, 
 все еще нужно определить `show`, но `showHtml` уже предоставляется:
 
-```scala
+```dotty
 class Document(text: String) extends Showable:
   def show = text
 ```
@@ -67,7 +67,7 @@ Scala также предоставляет мощный способ созда
 
 Предположим, что следующие два (потенциально независимо определенные) `trait`-а:
 
-```scala
+```dotty
 trait GreetingService:
   def translate(text: String): String
   def sayHello = translate("Hello")
@@ -78,7 +78,7 @@ trait TranslationService:
 
 Чтобы скомпоновать два сервиса, можно просто создать новый `trait`, расширяющий их:
 
-```scala
+```dotty
 trait ComposedService extends GreetingService, TranslationService
 ```
 
@@ -110,7 +110,7 @@ Instances - `C()`
 
 Подобно `trait`-ам, классы могут расширять несколько `trait`-ов (но только один суперкласс):
 
-```scala
+```dotty
 class MyService(name: String) extends ComposedService, Showable:
   def show = s"$name says $sayHello"
 ```
@@ -119,13 +119,13 @@ class MyService(name: String) extends ComposedService, Showable:
 
 Экземпляр `MyService` создается следующим образом:
 
-```scala
+```dotty
 val s1: MyService = MyService("Service 1")
 ```
 
 С помощью подтипов экземпляр `s1` можно использовать везде, где ожидается любое из расширенных свойств:
 
-```scala
+```dotty
 val s2: GreetingService = s1
 val s3: TranslationService = s1
 val s4: Showable = s1
@@ -136,7 +136,7 @@ val s4: Showable = s1
 
 Как упоминалось ранее, можно расширить еще один класс:
 
-```scala
+```dotty
 class Person(name: String)
 class SoftwareDeveloper(name: String, favoriteLang: String)
   extends Person(name)
@@ -146,7 +146,7 @@ class SoftwareDeveloper(name: String, favoriteLang: String)
 класс, определенный в одном файле, не может быть расширен в другом файле. 
 Чтобы разрешить это, базовый класс должен быть помечен как открытый:
 
-```scala
+```dotty
 open class Person(name: String)
 ```
 
@@ -157,7 +157,7 @@ open class Person(name: String)
 
 Пример:
 
-```scala
+```dotty
 // File Writer.scala
 package p
 
@@ -200,7 +200,7 @@ class EncryptedWriter[T: Encryptable] extends Writer[T]:
 
 Как и в других языках с поддержкой ООП, `trait`-ы и классы в Scala могут определять изменяемые поля:
 
-```scala mdoc:silent
+```dotty
 class Counter:
   private var currentCount = 0
 
@@ -211,12 +211,14 @@ class Counter:
 Каждый экземпляр класса `Counter` имеет собственное приватное состояние, 
 которое можно наблюдать только через метод `count`, как показано в следующем примере:
 
-```scala mdoc
+```dotty
 val c1 = Counter()
 c1.count
+// res0: Int = 0
 c1.tick()
 c1.tick()
 c1.count
+// res3: Int = 2
 ```
 
 #### Модификаторы доступа
@@ -240,7 +242,7 @@ c1.count
 Конкретно, следующий код определяет компонент `SubjectObserver` как `trait` с двумя членами абстрактного типа, 
 `S` (для субъектов) и `O` (для наблюдателей):
 
-```scala mdoc:reset
+```dotty
 trait SubjectObserver:
   type S <: Subject
   type O <: Observer
@@ -291,7 +293,7 @@ trait SubjectObserver:
 
 Теперь можно реализовать вышеуказанный компонент и определить члены абстрактного типа как конкретные типы:
 
-```scala mdoc:silent
+```dotty
 object SensorReader extends SubjectObserver:
   type S = Sensor
   type O = Display
@@ -329,21 +331,22 @@ object SensorReader extends SubjectObserver:
 
 Наконец, следующий код иллюстрирует, как использовать компонент `SensorReader`:
 
-```scala mdoc:silent
+```dotty
 import SensorReader.*
 // настройка сети
 val s1 = Sensor("sensor1")
 val s2 = Sensor("sensor2")
 val d1 = Display()
 val d2 = Display()
-```
-```scala mdoc
 s1.subscribe(d1)
 s1.subscribe(d2)
 s2.subscribe(d1)
 // распространение обновлений по сети
 s1.changeValue(2)
+// sensor1 has value 2.0
+// sensor1 has value 2.0
 s2.changeValue(3)
+// sensor2 has value 3.0
 ```
 
 Имея под рукой все утилиты объектно-ориентированного программирования, 

@@ -16,7 +16,7 @@
 Объявление объекта аналогично объявлению класса. 
 Вот пример объекта `StringUtils`, который содержит набор методов для работы со строками:
 
-```scala mdoc:silent
+```dotty
 object StringUtils:
   def truncate(s: String, length: Int): String = s.take(length)
   def containsWhitespace(s: String): Boolean = s.matches(".*\\s.*")
@@ -25,22 +25,26 @@ object StringUtils:
 
 Поскольку `StringUtils` является одноэлементным, его методы могут вызываться непосредственно в объекте:
 
-```scala mdoc
+```dotty
 StringUtils.truncate("Chuck Bartowski", 5)
+// res0: String = "Chuck"
 ```
 
 Импорт в Scala очень гибкий и позволяет импортировать все члены объекта:
 
-```scala mdoc
+```dotty
 import StringUtils.*
 truncate("Chuck Bartowski", 5)
+// res1: String = "Chuck"
 containsWhitespace("Sarah Walker")
+// res2: Boolean = true
 isNullOrEmpty("John Casey")
+// res3: Boolean = false
 ```
 
 Можно импортировать только часть методов:
 
-```scala
+```dotty
 import StringUtils.{truncate, containsWhitespace}
 truncate("Charles Carmichael", 7)    
 containsWhitespace("Captain Awesome") 
@@ -49,11 +53,12 @@ isNullOrEmpty("Morgan Grimes")  // Not found: isNullOrEmpty (error)
 
 Объекты также могут иметь поля, к которым можно обратиться, как к статистическим методам:
 
-```scala mdoc:reset
+```dotty
 object MathConstants:
   val PI = 3.14159
   val E = 2.71828
 println(MathConstants.PI)
+// 3.14159
 ```
 
 

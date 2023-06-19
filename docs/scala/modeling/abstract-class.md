@@ -12,7 +12,7 @@
 
 До Scala 3, когда базовому классу нужно было принимать аргументы конструктора, он объявлялся как абстрактный класс:
 
-```scala
+```dotty
 abstract class Pet(name: String):
   def greeting: String
   def age: Int
@@ -26,7 +26,7 @@ val d = Dog("Fido", 1)
 
 Однако в Scala 3 `trait`-ы могут иметь параметры, так что теперь в той же ситуации можно использовать `trait`-ы:
 
-```scala
+```dotty
 trait Pet(name: String):
   def greeting: String
   def age: Int

@@ -18,7 +18,7 @@ Scala поддерживает стиль именования пакетов, �
 Например, если ваше доменное имя `acme.com` и вы работаете с пакетом `model` приложения с именем `myapp`, 
 объявление пакета выглядит следующим образом:
 
-```scala
+```dotty
 package com.acme.myapp.model
 
 class Person ...
@@ -39,7 +39,7 @@ class Person ...
 
 В качестве альтернативы можно написать `package`, которые применяются только к содержащимся в них определениям:
 
-```scala
+```dotty
 package users:
 
   package administrators:  // полное имя пакета - users.administrators
@@ -66,7 +66,7 @@ package users:
 с немного другим синтаксисом, обеспечивающим большую гибкость. 
 Пример:
 
-```scala
+```dotty
 import users.*                            // импортируется все из пакета `users`
 import users.User                         // импортируется только класс `User`
 import users.{User, UserPreferences}      // импортируются только два члена пакета
@@ -85,13 +85,13 @@ import users.{UserPreferences as UPrefs}  // переименование имп
 
 В Scala импортировать один элемент из пакета можно следующим образом:
 
-```scala
+```dotty
 import scala.concurrent.Future
 ```
 
 несколько:
 
-```scala
+```dotty
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.concurrent.blocking
@@ -99,13 +99,13 @@ import scala.concurrent.blocking
 
 При импорте нескольких элементов можно импортировать их более лаконично:
 
-```scala
+```dotty
 import scala.concurrent.{Future, Promise, blocking}
 ```
 
 Если необходимо импортировать все из пакета `scala.concurrent`, используется такой синтаксис:
 
-```scala
+```dotty
 import scala.concurrent.*
 ```
 
@@ -115,7 +115,7 @@ import scala.concurrent.*
 Например, если нужно использовать Scala класс `List` вместе с `java.util.List`, 
 то можно переименовать `java.util.List` при импорте:
 
-```scala
+```dotty
 import java.util.{List as JavaList}
 ```
 
@@ -124,7 +124,7 @@ import java.util.{List as JavaList}
 
 Также можно переименовывать несколько элементов одновременно, используя следующий синтаксис:
 
-```scala
+```dotty
 import java.util.{Date as JDate, HashMap as JHashMap, *}
 ```
 
@@ -138,14 +138,14 @@ import java.util.{Date as JDate, HashMap as JHashMap, *}
 Следующий оператор импорта скрывает класс `java.util.Random`, 
 в то время как все остальное в пакете `java.util` импортируется:
 
-```scala
+```dotty
 import java.util.{Random as _, *}
 ```
 
 Если попытаться получить доступ к классу `Random`, то выдается ошибка, 
 но есть доступ ко всем остальным членам пакета `java.util`:
 
-```scala
+```dotty
 val r = new Random   // не скомпилируется
 new ArrayList        // доступ есть
 ```
@@ -154,20 +154,20 @@ new ArrayList        // доступ есть
 
 Чтобы скрыть в `import` несколько элементов, их можно перечислить перед использованием `*`:
 
-```scala
+```dotty
 import java.util.{List as _, Map as _, Set as _, *}
 ```
 
 Перечисленные классы скрыты, но можно использовать все остальное в `java.util`:
 
-```scala
+```dotty
 val arr = new ArrayList[String]
 // arr: ArrayList[String] = []
 ```
 
 Поскольку эти Java классы скрыты, можно использовать классы Scala `List`, `Set` и `Map` без конфликта имен:
 
-```scala
+```dotty
 val a = List(1, 2, 3)
 // a: List[Int] = List(1, 2, 3)
 val b = Set(1, 2, 3)
@@ -181,7 +181,7 @@ val c = Map(1 -> 1, 2 -> 2)
 В Scala операторы импорта могут быть объявлены где угодно. 
 Их можно использовать в верхней части файла исходного кода:
 
-```scala
+```dotty
 package foo
 
 import scala.util.Random
@@ -194,7 +194,7 @@ class ClassA:
 
 Также операторы импорта можно использовать ближе к тому месту, где они необходимы:
 
-```scala
+```dotty
 package foo
 
 class ClassA:
@@ -216,17 +216,19 @@ class ClassB:
 
 Синтаксис для импорта всех статических членов Java класса `Math`:
 
-```scala
+```dotty
 import java.lang.Math.*
 ```
 
 Теперь можно получить доступ к статическим методам класса `Math`, таким как `sin` и `cos`, 
 без необходимости предварять их именем класса:
 
-```scala mdoc
+```dotty
 import java.lang.Math.*
 val a = sin(0)
+// a: Double = 0.0
 val b = cos(PI)
+// b: Double = -1.0
 ```
 
 #### Пакеты, импортированные по умолчанию
@@ -246,7 +248,7 @@ val b = cos(PI)
 Если необходимо импортировать что-то из корня проекта и возникает конфликт имен, 
 достаточно просто добавить к имени пакета префикс `_root_`:
 
-```scala
+```dotty
 package accounts
 
 import _root_.accounts.*
@@ -258,7 +260,7 @@ import _root_.accounts.*
 для импорта экземпляров `given` используется специальная форма оператора `import`. 
 Базовая форма показана в этом примере:
 
-```scala
+```dotty
 object A:
   class TC
   given tc as TC
@@ -273,7 +275,7 @@ object B:
 И наоборот, второй импорт, `import A.given`, импортирует только `given` экземпляр. 
 Два предложения импорта также могут быть объединены в одно:
 
-```scala
+```dotty
 object B:
   import A.{given, *}
 ```
@@ -297,26 +299,26 @@ object B:
 делая понятным то, что импортируется.
 Этот код импортирует из `A` любой `given` тип, соответствующий `TC`:
 
-```scala
+```dotty
 import A.{given TC}
 ```
 
 Если импортируется только один `given`, то фигурные скобки можно опустить:
 
-```scala
+```dotty
 import A.given TC
 ```
 
 Импорт данных нескольких типов `T1,...,Tn` выражается несколькими `given` селекторами:
 
-```scala
+```dotty
 import A.{given T1, ..., given Tn}
 ```
 
 Импорт всех `given` экземпляров параметризованного типа достигается аргументами с подстановочными знаками. 
 Например, есть такой объект:
 
-```scala
+```dotty
 object Instances:
   given intOrd as Ordering[Int]
   given listOrd[T: Ordering] as Ordering[List[T]]
@@ -327,7 +329,7 @@ object Instances:
 Оператор `import` ниже импортирует экземпляры `intOrd`, `listOrd` и `ec`, но пропускает экземпляр `im`, 
 поскольку он не соответствует ни одному из указанных шаблонов:
 
-```scala
+```dotty
 import Instances.{given Ordering[?], given ExecutionContext}
 ```
 
@@ -335,7 +337,7 @@ import Instances.{given Ordering[?], given ExecutionContext}
 Если оба присутствуют в предложении `import`, импорт по типу идет последним. 
 Например, это предложение импорта импортирует `im`, `intOrd` и `listOrd`, но не включает `ec`:
 
-```scala
+```dotty
 import Instances.{im, given Ordering[?]}
 ```
 
@@ -344,7 +346,7 @@ import Instances.{im, given Ordering[?]}
 В качестве конкретного примера представим, что у нас есть объект `MonthConversions`, 
 который содержит два определения `given`:
 
-```scala
+```dotty
 object MonthConversions:
   trait MonthConverter[A]:
     def convert(a: A): String
@@ -366,21 +368,21 @@ object MonthConversions:
 
 Чтобы импортировать эти `given`-ы в текущую область, используем два оператора `import`:
 
-```scala
+```dotty
 import MonthConversions.*
 import MonthConversions.given MonthConverter[?]
 ```
 
 Теперь создаем метод, использующий эти экземпляры:
 
-```scala
+```dotty
 def genericMonthConverter[A](a: A)(using monthConverter: MonthConverter[A]): String =
   monthConverter.convert(a)
 ```
 
 Вызов метода:
 
-```scala
+```dotty
 genericMonthConverter(1)
 // res1: String = "January"
 genericMonthConverter("jan")

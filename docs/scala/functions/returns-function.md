@@ -13,7 +13,7 @@ _Необходимо создать метод `greet`, возвращающи�
 
 Учитывая это утверждение, можно начать создавать `greet`. Известно, что это будет метод:
 
-```scala
+```dotty
 def greet()
 ```
 
@@ -24,7 +24,7 @@ def greet()
 
 Следовательно, эта функция имеет тип `String => Unit`:
 
-```scala
+```dotty
 def greet(): String => Unit = ???
              --------------
 ```
@@ -32,26 +32,26 @@ def greet(): String => Unit = ???
 Теперь нужно создать тело метода. 
 Возвращаемая функция соответствует следующему описанию:
 
-```scala
+```dotty
 (name: String) => println(s"Hello, $name")
 ```
 
 Добавляем эту функцию в тело метода:
 
-```scala
+```dotty
 def greet(): String => Unit = 
   (name: String) => println(s"Hello, $name")
 ```
 
 Поскольку метод возвращает функцию, мы получаем ее, вызывая `greet()`. 
 
-```scala
+```dotty
 val greetFunction = greet()
 ```
 
 Теперь можно вызвать `greetFunction`:
 
-```scala
+```dotty
 greetFunction("Joe")
 // Hello, Joe
 ```
@@ -61,7 +61,7 @@ greetFunction("Joe")
 Метод `greet()` был бы более полезным, если бы была возможность задавать приветствие. 
 Например, передать его в качестве параметра методу `greet()` и использовать внутри `println`:
 
-```scala mdoc:silent
+```dotty
 def greet(theGreeting: String): String => Unit = 
   (name: String) => println(s"$theGreeting, $name")
 ```
@@ -69,7 +69,7 @@ def greet(theGreeting: String): String => Unit =
 Теперь, при вызове этого метода, процесс становится более гибким, потому что приветствие можно изменить. 
 Вот как это выглядит, когда создается функция из этого метода:
 
-```scala mdoc:silent
+```dotty
 val sayHello = greet("Hello")
 ```
 
@@ -77,13 +77,14 @@ val sayHello = greet("Hello")
 которая принимает входной параметр `String` и возвращает `Unit`. 
 Так что теперь, при передаче `sayHello` строки, печатается приветствие:
 
-```scala mdoc
+```dotty
 sayHello("Joe")
+// Hello, Joe
 ```
 
 Приветствие можно менять для создания новых функций:
 
-```scala
+```dotty
 val sayCiao = greet("Ciao")
 sayCiao("Isabella")
 // Ciao, Isabella
@@ -111,21 +112,21 @@ sayHola("Carlos")
 Кроме того, поскольку эта функция печатает заданную строку, известно, что она имеет тип `String => Unit`. 
 С помощью этой информации сигнатура метода должна выглядеть так:
 
-```scala
+```dotty
 def createGreetingFunction(desiredLanguage: String): String => Unit = ???
 ```
 
 Далее, поскольку возвращаемые функции, берут строку и печатают ее, 
 можно прикинуть две анонимные функции для английского и французского языков:
 
-```scala
+```dotty
 (name: String) => println(s"Hello, $name")
 (name: String) => println(s"Bonjour, $name")
 ```
 
 Для большей читабельности дадим этим анонимным функциям имена и назначим двум переменным:
 
-```scala
+```dotty
 val englishGreeting = (name: String) => println(s"Hello, $name")
 val frenchGreeting = (name: String) => println(s"Bonjour, $name")
 ```
@@ -134,7 +135,7 @@ val frenchGreeting = (name: String) => println(s"Bonjour, $name")
 и вернуть `frenchGreeting`, если `desiredLanguage` — французский. 
 Один из способов сделать это - pattern matching:
 
-```scala mdoc:silent:reset
+```dotty
 def createGreetingFunction(desiredLanguage: String): String => Unit =
   val englishGreeting = (name: String) => println(s"Hello, $name")
   val frenchGreeting = (name: String) => println(s"Bonjour, $name")
@@ -148,7 +149,7 @@ def createGreetingFunction(desiredLanguage: String): String => Unit =
 
 Вот как `createGreetingFunction` создает функцию приветствия на французском языке:
 
-```scala
+```dotty
 val greetInFrench = createGreetingFunction("french")
 greetInFrench("Jonathan")
 // Bonjour, Jonathan
@@ -156,7 +157,7 @@ greetInFrench("Jonathan")
 
 И вот как - на английском:
 
-```scala
+```dotty
 val greetInEnglish = createGreetingFunction("english")
 greetInEnglish("Joe")
 // Hello, Joe

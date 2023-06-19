@@ -7,13 +7,13 @@
 
 Чтобы использовать `ArrayBuffer`, в отличие от предыдущих рассмотренных классов, его нужно вначале импортировать:
 
-```scala mdoc
+```dotty
 import scala.collection.mutable.ArrayBuffer
 ```
 
 Если необходимо начать с пустого `ArrayBuffer`, просто укажите его тип:
 
-```scala
+```dotty
 var strings = ArrayBuffer[String]()
 var ints = ArrayBuffer[Int]()
 var people = ArrayBuffer[Person]()
@@ -21,14 +21,14 @@ var people = ArrayBuffer[Person]()
 
 Если известен примерный размер `ArrayBuffer`, его можно задать:
 
-```scala
+```dotty
 val buf = new ArrayBuffer[Int](100_000)
 ```
 
 Чтобы создать новый `ArrayBuffer` с начальными элементами, достаточно просто указать начальные элементы,
 как для `List` или `Vector`:
 
-```scala
+```dotty
 val nums = ArrayBuffer(1, 2, 3)
 val people = ArrayBuffer(
   Person("Bert"),
@@ -43,10 +43,13 @@ val people = ArrayBuffer(
 Также можно использовать текстовый аналог: `append`, `appendAll`, `insert`, `insertAll`, `prepend` и `prependAll`.
 Вот несколько примеров с `+=` и `++=`:
 
-```scala mdoc
+```dotty
 val nums = ArrayBuffer(1, 2, 3)
+// nums: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3, 4, 5, 6)
 nums += 4
+// res0: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3, 4, 5, 6)
 nums ++= List(5, 6)
+// res1: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3, 4, 5, 6)
 ```
 
 #### Удаление элементов из ArrayBuffer
@@ -54,26 +57,30 @@ nums ++= List(5, 6)
 `ArrayBuffer` является изменяемым, поэтому у него есть такие методы, как `-=`, `--=`, `clear`, `remove` и другие.
 Примеры с `-=` и `--=`:
 
-```scala mdoc
+```dotty
 val a = ArrayBuffer.range('a', 'h')
+// a: ArrayBuffer[Char] = ArrayBuffer('f', 'g')
 a -= 'a'
+// res2: ArrayBuffer[Char] = ArrayBuffer('f', 'g')
 a --= Seq('b', 'c')
+// res3: ArrayBuffer[Char] = ArrayBuffer('f', 'g')
 a --= Set('d', 'e')
+// res4: ArrayBuffer[Char] = ArrayBuffer('f', 'g')
 ```
 
 #### Обновление элементов в ArrayBuffer
 
 Элементы в `ArrayBuffer` можно обновлять, либо переназначать:
 
-```scala mdoc:reset:invisible
-import scala.collection.mutable.ArrayBuffer
-```
-```scala mdoc
+```dotty
 val a = ArrayBuffer.range(1,5)
+// a: ArrayBuffer[Int] = ArrayBuffer(10, 2, 50, 4)
 a(2) = 50
 println(a)
+// ArrayBuffer(1, 2, 50, 4)
 a.update(0, 10)
 println(a)
+// ArrayBuffer(10, 2, 50, 4)
 ```
 
 

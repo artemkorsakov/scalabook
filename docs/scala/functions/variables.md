@@ -2,7 +2,7 @@
 
 Вернемся к примеру из предыдущего раздела:
 
-```scala
+```dotty
 val doubledInts = ints.map((i: Int) => i * 2)
 ```
 
@@ -14,7 +14,7 @@ val doubledInts = ints.map((i: Int) => i * 2)
 Однако анонимная функция, также известная как функциональный литерал (_function literal_), 
 может быть назначена переменной для создания функциональной переменной (_function variable_):
 
-```scala
+```dotty
 val double = (i: Int) => i * 2
 ```
 
@@ -22,7 +22,7 @@ val double = (i: Int) => i * 2
 В этом выражении исходный литерал функции находится справа от символа `=`, а новое имя переменной - слева.
 Список параметров функции подчеркнут:
 
-```scala
+```dotty
 val double = (i: Int) => i * 2
              --------
 ```
@@ -32,7 +32,7 @@ val double = (i: Int) => i * 2
 Как можно видеть ниже, `double` имеет тип `Int => Int`, что означает, 
 что он принимает один параметр `Int` и возвращает `Int`:
 
-```scala
+```dotty
 val double = (i: Int) => i * 2
 // double: Int => Int = ...
 ```
@@ -41,28 +41,28 @@ val double = (i: Int) => i * 2
 
 Функция `double` может быть вызвана так:
 
-```scala mdoc:invisible
+```dotty
 val double = (i: Int) => i * 2
-```
-```scala mdoc
 val x = double(2)
+// x: Int = 4
 ```
 
 `double` также можно передать в вызов `map`:
 
-```scala mdoc
+```dotty
 List(1, 2, 3).map(double)
+// res0: List[Int] = List(2, 4, 6)
 ```
 
 Кроме того, когда есть другие функции типа `Int => Int`:
 
-```scala
+```dotty
 val triple = (i: Int) => i * 3
 ```
 
 можно сохранить их в `List` или `Map`:
 
-```scala
+```dotty
 val functionList: List[Int => Int] = List(double, triple)
 val functionMap: Map[String, Int => Int] = Map(
   "2x" -> double,

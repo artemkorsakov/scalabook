@@ -38,7 +38,7 @@
 [его Scaladoc](https://scala-lang.org/api/3.x/scala/collection/immutable/List.html#filter-5a1). 
 Вот определение `filter` в классе `List[A]`:
 
-```scala
+```dotty
 def filter(p: (A) => Boolean): List[A]
 ```
 
@@ -74,7 +74,7 @@ def filter(p: (A) => Boolean): List[A]
 
 Чтобы продемонстрировать это, вот метод, который принимает входной параметр с именем `f`, где `f` — функция:
 
-```scala
+```dotty
 def sayHello(f: () => Unit): Unit = f()
 ```
 
@@ -93,13 +93,13 @@ def sayHello(f: () => Unit): Unit = f()
 Теперь, когда `sayHello` определен, создадим функцию, соответствующую сигнатуре `f`, чтобы ее можно было проверить. 
 Следующая функция не принимает входных параметров и ничего не возвращает, поэтому она соответствует сигнатуре типа `f`:
 
-```scala
+```dotty
 def helloJoe(): Unit = println("Hello, Joe")
 ```
 
 Поскольку сигнатуры типов совпадают, можно передать `helloJoe` в `sayHello`:
 
-```scala
+```dotty
 sayHello(helloJoe)
 // Hello, Joe
 ```
@@ -115,11 +115,11 @@ sayHello(helloJoe)
 Например, поскольку следующая функция не принимает входных параметров и ничего не возвращает, 
 она также работает с `sayHello`:
 
-```scala
+```dotty
 def bonjourJulien(): Unit = println("Bonjour, Julien")
 ```
 
-```scala
+```dotty
 sayHello(bonjourJulien)
 // Bonjour, Julien
 ```
@@ -130,7 +130,7 @@ sayHello(bonjourJulien)
 
 В методе:
 
-```scala
+```dotty
 def sayHello(f: () => Unit): Unit
 ```
 
@@ -140,7 +140,7 @@ def sayHello(f: () => Unit): Unit
 
 Вот сигнатура функции, которая принимает параметр `String` и возвращает `Int`:
 
-```scala
+```dotty
 f: (String) => Int
 ```
 
@@ -149,7 +149,7 @@ f: (String) => Int
 
 Эта функция принимает два параметра `Int` и возвращает `Int`:
 
-```scala
+```dotty
 f: (Int, Int) => Int
 ```
 
@@ -158,7 +158,7 @@ f: (Int, Int) => Int
 Любая функция, которая принимает два входных параметра `Int` и возвращает `Int`, соответствует этой сигнатуре, 
 поэтому все "функции" ниже (точнее, методы) подходят:
 
-```scala
+```dotty
 def add(a: Int, b: Int): Int = a + b
 def subtract(a: Int, b: Int): Int = a - b
 def multiply(a: Int, b: Int): Int = a * b
@@ -166,7 +166,7 @@ def multiply(a: Int, b: Int): Int = a * b
 
 Из примеров выше можно сделать вывод, что общий синтаксис сигнатуры функций такой:
 
-```scala
+```dotty
 variableName: (parameterTypes ...) => returnType
 ```
 
@@ -182,7 +182,7 @@ variableName: (parameterTypes ...) => returnType
 
 Рассмотрим пример метода с именем `executeNTimes`, который имеет два входных параметра: функцию и `Int`:
 
-```scala
+```dotty
 def executeNTimes(f: () => Unit, n: Int): Unit =
   for i <- 1 to n do f()
 ```
@@ -192,13 +192,13 @@ def executeNTimes(f: () => Unit, n: Int): Unit =
 
 Чтобы протестировать `executeNTimes`, определим метод, соответствующий сигнатуре `f`:
 
-```scala
+```dotty
 def helloWorld(): Unit = println("Hello, world")
 ```
 
 Затем передадим этот метод в `executeNTimes` вместе с `Int`:
 
-```scala
+```dotty
 executeNTimes(helloWorld, 3)
 // Hello, world
 // Hello, world
@@ -212,7 +212,7 @@ executeNTimes(helloWorld, 3)
 Методы могут усложняться по мере необходимости. 
 Например, этот метод принимает функцию типа `(Int, Int) => Int` вместе с двумя входными параметрами:
 
-```scala
+```dotty
 def executeAndPrint(f: (Int, Int) => Int, i: Int, j: Int): Unit =
   println(f(i, j))
 ```
@@ -220,11 +220,9 @@ def executeAndPrint(f: (Int, Int) => Int, i: Int, j: Int): Unit =
 Поскольку методы `sum` и `multiply` соответствуют сигнатуре `f`, 
 их можно передать в `executeAndPrint` вместе с двумя значениями `Int`:
 
-```scala
+```dotty
 def sum(x: Int, y: Int) = x + y
 def multiply(x: Int, y: Int) = x * y
-```
-```scala
 executeAndPrint(sum, 3, 11)     
 // 14     
 executeAndPrint(multiply, 3, 9)
@@ -239,41 +237,41 @@ executeAndPrint(multiply, 3, 9)
 
 Например, если необходимо написать функцию, вычисляющую сумму двух целых чисел, её можно было бы написать так:
 
-```scala
+```dotty
 val f: (Int, Int) => Int = (a, b) => a + b
 ```
 
 Этот код состоит из сигнатуры типа:
 
-```scala
+```dotty
 val f: (Int, Int) => Int = (a, b) => a + b
        -----------------
 ```
 
 входных параметров:
 
-```scala
+```dotty
 val f: (Int, Int) => Int = (a, b) => a + b
                            ------
 ```
 
 и тела функции:
 
-```scala
+```dotty
 val f: (Int, Int) => Int = (a, b) => a + b
                                      -----
 ```
 
 Согласованность Scala состоит в том, что тип функции:
 
-```scala
+```dotty
 val f: (Int, Int) => Int = (a, b) => a + b
        -----------------
 ```
 
 совпадает с сигнатурой типа, используемого для определения входного параметра функции:
 
-```scala
+```dotty
 def executeAndPrint(f: (Int, Int) => Int, ...
                        -----------------
 ```

@@ -52,7 +52,7 @@
 Данные, которые просто состоят из различных вариантов, таких как размер корочки, тип корочки и начинка, 
 кратко моделируются с помощью конструкции `enum`:
 
-```scala mdoc:silent
+```dotty
 enum CrustSize:
   case Small, Medium, Large
   
@@ -72,7 +72,7 @@ enum Topping:
 Мы можем использовать `case class`, чтобы описать, что пицца состоит из размеров корки, типа корки 
 и, возможно, нескольких начинок:
 
-```scala mdoc:silent
+```dotty
 import CrustSize.*
 import CrustType.*
 import Topping.*
@@ -92,9 +92,15 @@ case class Pizza(
 Модель данных легко читается, как объявление дизайна для реляционной базы данных. 
 Также очень легко создавать значения нашей модели данных и проверять их:
 
-```scala mdoc
+```dotty
 val myFavPizza = Pizza(Small, Regular, Seq(Cheese, Pepperoni))
+// myFavPizza: Pizza = Pizza(
+//   crustSize = Small,
+//   crustType = Regular,
+//   toppings = List(Cheese, Pepperoni)
+// )
 println(myFavPizza.crustType)
+// Regular
 ```
 
 ##### Подробнее о модели данных
@@ -102,7 +108,7 @@ println(myFavPizza.crustType)
 Таким же образом можно было бы смоделировать всю систему заказа пиццы. 
 Вот несколько других `case class`-ов, которые используются для моделирования такой системы:
 
-```scala
+```dotty
 case class Address(
   street1: String,
   street2: Option[String],
@@ -142,7 +148,7 @@ Debasish Ghosh утверждает,
 работающие со значениями смоделированных данных. 
 Например, можно определить функцию, которая вычисляет цену пиццы.
 
-```scala
+```dotty
 def pizzaPrice(p: Pizza): Double = p match
   case Pizza(crustSize, crustType, toppings) =>
     val base  = 6.00
@@ -155,7 +161,7 @@ def pizzaPrice(p: Pizza): Double = p match
 поскольку `Pizza` является `case class`-ом, используется сопоставление с образцом для извлечения компонентов,
 а затем вызываются вспомогательные функции для вычисления отдельных цен.
 
-```scala
+```dotty
 def toppingPrice(t: Topping): Double = t match
   case Cheese | Onions => 0.5
   case Pepperoni | BlackOlives | GreenOlives => 0.75
@@ -164,7 +170,7 @@ def toppingPrice(t: Topping): Double = t match
 Точно так же, поскольку `Topping` является перечислением, используется сопоставление с образцом, 
 чтобы разделить варианты. Сыр и лук продаются по 50 центов за штуку, остальные — по 75.
 
-```scala
+```dotty
 def crustPrice(s: CrustSize, t: CrustType): Double =
   (s, t) match
     case (Small | Medium, _) => 0.25 // игнорируем значение t
@@ -205,7 +211,7 @@ def crustPrice(s: CrustSize, t: CrustType): Double =
 При таком подходе в дополнение к `enum` или `case class` также определяется companion object с таким же именем, 
 который содержит поведение (функции).
 
-```scala
+```dotty
 case class Pizza(
   crustSize: CrustSize,
   crustType: CrustType,
@@ -228,7 +234,7 @@ object Topping:
 
 При таком подходе можно создать `Pizza` и вычислить ее цену следующим образом:
 
-```scala
+```dotty
 val pizza1 = Pizza(Small, Thin, Seq(Cheese, Onions))
 Pizza.price(pizza1)
 ```
@@ -260,7 +266,7 @@ Pizza.price(pizza1)
 Первое, о чем следует подумать, — это "поведение" `Pizza`. 
 Делая это, определяем `trait` `PizzaServiceInterface` следующим образом:
 
-```scala mdoc:silent
+```dotty
 trait PizzaServiceInterface:
 
   def price(p: Pizza): Double
@@ -282,7 +288,7 @@ trait PizzaServiceInterface:
 Когда вы это сделаете, будет полезно набросать некоторый пример "потребительского" кода, чтобы убедиться, 
 что API выглядит так, как хотелось:
 
-```scala
+```dotty
 val p = Pizza(Small, Thin, Seq(Cheese))
 
 val p1 = addTopping(p, Pepperoni)
@@ -304,7 +310,7 @@ val p4 = updateCrustSize(p3, Large)
 Теперь, когда известно, как выглядит `PizzaServiceInterface`, можно создать конкретную реализацию, 
 написав тело для всех методов, определенных в интерфейсе:
 
-```scala mdoc:silent
+```dotty
 object PizzaService extends PizzaServiceInterface:
 
   def price(p: Pizza): Double = p match
@@ -344,14 +350,40 @@ end PizzaService
 
 Когда все готово, можно использовать `Pizza` и `PizzaService`:
 
-```scala mdoc
+```dotty
 import PizzaService.*
 val p = Pizza(Small, Thin, Seq(Cheese))
+// p: Pizza = Pizza(
+//   crustSize = Small,
+//   crustType = Thin,
+//   toppings = List(Cheese)
+// )
 val p1 = addTopping(p, Pepperoni)
+// p1: Pizza = Pizza(
+//   crustSize = Small,
+//   crustType = Thin,
+//   toppings = List(Cheese, Pepperoni)
+// )
 val p2 = addTopping(p1, Onions)
+// p2: Pizza = Pizza(
+//   crustSize = Small,
+//   crustType = Thin,
+//   toppings = List(Cheese, Pepperoni, Onions)
+// )
 val p3 = updateCrustType(p2, Thick)
+// p3: Pizza = Pizza(
+//   crustSize = Small,
+//   crustType = Thick,
+//   toppings = List(Cheese, Pepperoni, Onions)
+// )
 val p4 = updateCrustSize(p3, Large)
+// p4: Pizza = Pizza(
+//   crustSize = Large,
+//   crustType = Thick,
+//   toppings = List(Cheese, Pepperoni, Onions)
+// )
 println(price(p4))
+// 8.75
 ```
 
 #### Функциональные объекты
@@ -374,7 +406,7 @@ println(price(p4))
 
 Используя этот подход, можно напрямую реализовать функциональность пиццы в `case class`:
 
-```scala
+```dotty
 case class Pizza(
   crustSize: CrustSize,
   crustType: CrustType,
@@ -403,7 +435,7 @@ case class Pizza(
 
 Теперь можно использовать этот новый дизайн следующим образом:
 
-```scala
+```dotty
 Pizza(Small, Thin, Seq(Cheese))
   .addTopping(Pepperoni)
   .updateCrustType(Thick)
@@ -426,7 +458,7 @@ Pizza(Small, Thin, Seq(Cheese))
 
 Вернемся к примеру:
 
-```scala
+```dotty
 case class Pizza(
   crustSize: CrustSize,
   crustType: CrustType,
@@ -456,7 +488,7 @@ extension (p: Pizza)
 
 Таким образом, получается тот же API, что и раньше:
 
-```scala
+```dotty
 Pizza(Small, Thin, Seq(Cheese))
   .addTopping(Pepperoni)
   .updateCrustType(Thick)

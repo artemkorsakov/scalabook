@@ -12,19 +12,24 @@
 
 `ArraySeq`-ы создаются и изменяются также, как и любые другие последовательности.
 
-```scala mdoc
+```dotty
 val arr = scala.collection.immutable.ArraySeq(1, 2, 3)
+// arr: ArraySeq[Int] = ArraySeq(1, 2, 3)
 val arr2 = arr :+ 4
+// arr2: ArraySeq[Int] = ArraySeq(1, 2, 3, 4)
 arr2(0)
+// res0: Int = 1
 ```
 
 `ArraySeq`-ы являются immutable, поэтому нельзя изменять элементы непосредственно в коллекции. 
 Однако операции `updated`, `appended` и `prepended` создают новые `ArraySeq`-ы, 
 которые отличаются от базового `ArraySeq` только в одном элементе:
 
-```scala mdoc
+```dotty
 arr.updated(2, 4)
+// res1: ArraySeq[Int] = ArraySeq(1, 2, 4)
 arr
+// res2: ArraySeq[Int] = ArraySeq(1, 2, 3)
 ```
 
 Как видно из последней строки выше, вызов `updated` не влияет на исходный `ArraySeq` `arr`.

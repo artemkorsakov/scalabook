@@ -1,6 +1,6 @@
 # Monoids
 
-`(M, +)` является [моноидом](../typeclass/monoid/monoid.md) 
+`(M, +)` является [моноидом](https://scalabook.ru/typeclass/monoid/monoid.html) 
 для заданного множества `M` и операции `+`,
 если удовлетворяет следующим свойствам для любых `x, y, z ∈ M`:
 
@@ -128,7 +128,7 @@ List().foldLeft("loremipsumdolorsit")(_ + _)
 ## Foldable
 
 Операция _fold_ позволяет агрегировать.
-Она берет начальный элемент и объединяет его с типом [_Foldable_](../typeclass/monad/foldable.md), 
+Она берет начальный элемент и объединяет его с типом [_Foldable_](https://scalabook.ru/typeclass/monad/foldable.html), 
 следуя способу, предоставленному методом `f`.
 
 _Foldable_ может быть выражен так:

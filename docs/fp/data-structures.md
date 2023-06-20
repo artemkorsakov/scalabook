@@ -47,7 +47,7 @@ val ex4: List[String] = List.apply("a", "b")
 ## Операции над односвязным списком
 
 Над этой функциональной структурой данных можно определить, например, следующие операции суммы и произведения,
-которые используют [сопоставление с образцом](../scala/structures/match.md):
+которые используют [сопоставление с образцом](https://scalabook.ru/scala/structures/match.html):
 
 ```dotty
 def sum(ints: List[Int]): Int = ints match

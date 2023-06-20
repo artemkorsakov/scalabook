@@ -2,7 +2,7 @@
 
 ## Functor
 
-[Функтор](../typeclass/monad/functor.md) — это преобразование из категории `A` в категорию `B`.
+[Функтор](https://scalabook.ru/typeclass/monad/functor.html) — это преобразование из категории `A` в категорию `B`.
 Такие преобразования часто изображаются стрелкой: `A -> B` (или через метод `map`).
 
 Функтор можно описать с помощью `trait`:
@@ -38,7 +38,7 @@ trait Functor[F[_]]:
 
 ## Applicative
 
-[Applicative](../typeclass/monad/applicative.md) расширяет `Functor` и позволяет работать с несколькими «ящиками».
+[Applicative](https://scalabook.ru/typeclass/monad/applicative.html) расширяет `Functor` и позволяет работать с несколькими «ящиками».
 В аппликативных функторах примитивами являются `unit` и `map2`.
 
 ```dotty
@@ -120,9 +120,9 @@ def product[A, B](fa: F[A], fb: F[B]): F[(A,B)] =
 
 ## Monad
 
-[Монада](../typeclass/monad/monad.md) - 
-это [Applicative](../typeclass/monad/applicative.md) 
-(а значит и [Functor](../typeclass/monad/functor.md))
+[Монада](https://scalabook.ru/typeclass/monad/monad.html) - 
+это [Applicative](https://scalabook.ru/typeclass/monad/applicative.html) 
+(а значит и [Functor](https://scalabook.ru/typeclass/monad/functor.html))
 с дополнительной функцией: `flatten` (сведение: `F[F[A]] -> F[A]`).
 Что позволяет определить `flatMap` — `map`, за которой следует `flatten`.
 

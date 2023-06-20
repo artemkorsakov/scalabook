@@ -4,7 +4,7 @@ _Given instances_ (или просто "givens") определяют "кано�
 которые служат для синтеза аргументов [в параметрах контекста](ca-using.md). 
 Пример:
 
-```scala mdoc:silent
+```dotty
 trait Ord[T]:
   def compare(x: T, y: T): Int
   extension (x: T) def < (y: T) = compare(x, y) < 0
@@ -35,10 +35,11 @@ given listOrd[T](using ord: Ord[T]): Ord[List[T]] with
 
 Результат:
 
-```scala mdoc
+```dotty
 def sort[T](lists: List[List[T]])(using ord: Ord[List[T]]): List[List[T]] =
   lists.sortWith((l1, l2) => ord.compare(l1, l2) < 0)
 sort(List(List(1, 3, 4), List(1, 2), List(1, 2, 3, 4, 5)))
+// res0: List[List[Int]] = List(List(1, 2), List(1, 2, 3, 4, 5), List(1, 3, 4))
 ```
 
 ### Анонимные givens
@@ -46,7 +47,7 @@ sort(List(List(1, 3, 4), List(1, 2), List(1, 2, 3, 4, 5)))
 Имя `given` может быть опущено. 
 Таким образом, определения выше также могут быть выражены следующим образом:
 
-```scala
+```dotty
 given Ord[Int] with
   ...
 given [T](using Ord[T]): Ord[List[T]] with
@@ -69,7 +70,7 @@ given [T](using Ord[T]): Ord[List[T]] with
 Псевдоним можно использовать для определения экземпляра `given`, равного некоторому выражению. 
 Пример:
 
-```scala
+```dotty
 given global: ExecutionContext = ForkJoinPool()
 ```
 
@@ -80,7 +81,7 @@ given global: ExecutionContext = ForkJoinPool()
 
 Псевдоним также может быть анонимным, например:
 
-```scala
+```dotty
 given Position = enclosingTree.position
 given (using config: Config): Factory = MemoizingFactory(config)
 ```
@@ -93,7 +94,7 @@ given (using config: Config): Factory = MemoizingFactory(config)
 Псевдонимы given могут иметь [модификаторы `inline` и `transparent`](../metaprogramming/inline.md).
 Пример:
 
-```scala
+```dotty
 transparent inline given mkAnnotations[A, T]: Annotations[A, T] = ${
   // код, создающий экземпляр подтипа Annotations
 }
@@ -106,7 +107,7 @@ transparent inline given mkAnnotations[A, T]: Annotations[A, T] = ${
 так как их тип уже известен из подписи. 
 Пример:
 
-```scala
+```dotty
 trait Show[T] {
   inline def show(x: T): String
 }
@@ -130,7 +131,7 @@ def app =
 
 Экземпляры `given` также могут появляться в шаблонах. Пример:
 
-```scala
+```dotty
 for given Context <- applicationContexts do
 
 pair match
@@ -152,7 +153,7 @@ pair match
 Для любого типа запроса `Q`, `NotGiven[Q]` выполняется успешно тогда и только тогда, 
 когда неявный поиск `Q` терпит неудачу, например:
 
-```scala mdoc:silent
+```dotty
 import scala.util.NotGiven
 
 trait Tagged[A]
@@ -163,11 +164,10 @@ object Foo:
   given fooNotTagged[A](using NotGiven[Tagged[A]]): Foo[A] = Foo("fooNotTagged is found")
 
 given Tagged[Int]()
-```
-
-```scala mdoc
 summon[Foo[Int]].value
+// res1: String = "fooTagged is found"
 summon[Foo[String]].value
+// res2: String = "fooNotTagged is found"
 ```
 
 

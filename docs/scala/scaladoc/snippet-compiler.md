@@ -73,7 +73,7 @@ Scala — это язык программирования со статичес
 
 Например, этот код:
 
-```scala
+```dotty
 List(1,2,3).toMap
 ```
 
@@ -131,7 +131,7 @@ Error: Snippet should not compile but compiled succesfully
 для того, чтобы объяснить, как он работает, 
 сравнив его с комбинацией методов `drop` и `take`, используя такой фрагмент кода:
 
-```scala
+```dotty
 slice(2, 5) == drop(2).take(3)
 ```
 
@@ -144,7 +144,7 @@ slice(2, 5) == drop(2).take(3)
 
 Фрагмент кода после предварительной обработки выглядит так:
 
-```scala
+```dotty
 package scala.collection
 trait Snippet[A] { self: List[A] =>
   slice(2,5) == drop(2).take(3)
@@ -164,7 +164,7 @@ trait Snippet[A] { self: List[A] =>
 
 Пример:
 
-```scala
+```dotty
 //{
 import scala.collection.immutable.List
 //}

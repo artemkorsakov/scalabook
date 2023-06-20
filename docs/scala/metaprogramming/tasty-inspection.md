@@ -14,7 +14,7 @@ TASTy файлы содержат полное типизированное де
 
 Для просмотра деревьев TASTy файла потребитель может быть определен следующим образом.
 
-```scala
+```dotty
 import scala.quoted.*
 import scala.tasty.inspector.*
 
@@ -28,7 +28,7 @@ class MyInspector extends Inspector:
 
 Затем можно создать экземпляр потребителя с помощью следующего кода, чтобы получить дерево файла `foo/Bar.tasty`.
 
-```scala
+```dotty
 object Test:
    def main(args: Array[String]): Unit =
       val tastyFiles = List("foo/Bar.tasty")

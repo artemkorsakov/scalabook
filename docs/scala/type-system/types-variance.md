@@ -4,7 +4,7 @@
 
 Чтобы разобраться в вариантности, рассмотрим следующий пример типов:
 
-```scala
+```dotty
 trait Item:
   def productNumber: String
 
@@ -17,7 +17,7 @@ trait Book extends Buyable:
 
 Предположим также следующие параметризованные типы:
 
-```scala
+```dotty
 // пример инвариантного типа
 trait Pipeline[T]:
   def process(t: T): T
@@ -48,7 +48,7 @@ trait Consumer[-T]:
 Предположим, что следующий метод использует два значения (`b1`, `b2`) типа `Pipeline[Buyable]` 
 и передает свой аргумент `b` методу `process` при его вызове на `b1` и `b2`:
 
-```scala
+```dotty
 def oneOf(
   p1: Pipeline[Buyable],
   p2: Pipeline[Buyable],
@@ -88,14 +88,14 @@ def oneOf(
 
 Это иллюстрируется следующим примером, где функция `makeTwo` ожидает `Producer[Buyable]`:
 
-```scala
+```dotty
 def makeTwo(p: Producer[Buyable]): Int =
   p.make.price + p.make.price
 ```
 
 Допустимо передать в `makeTwo` производителя книг:
 
-```scala
+```dotty
 val bookProducer: Producer[Book] = ???
 makeTwo(bookProducer)
 ```
@@ -109,7 +109,7 @@ makeTwo(bookProducer)
 
 Например, `List` и `Vector` определяются приблизительно так:
 
-```scala
+```dotty
 class List[+A] ...
 class Vector[+A] ...
 ```
@@ -140,7 +140,7 @@ class Vector[+A] ...
 Контравариантные типы встречаются гораздо реже, чем ковариантные типы. 
 Наиболее важным типом, помеченным как контравариантный, с которым можно столкнуться, является тип функций:
 
-```scala
+```dotty
 trait Function[-A, +B]:
   def apply(a: A): B
 ```
@@ -150,7 +150,7 @@ trait Function[-A, +B]:
 
 Вот несколько примеров, иллюстрирующих отношения подтипов, вызванные аннотациями вариантности функций:
 
-```scala
+```dotty
 val f: Function[Buyable, Buyable] = b => b
 
 // OK - допустимо вернуть Buyable там, где ожидается Item

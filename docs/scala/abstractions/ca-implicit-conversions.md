@@ -3,27 +3,27 @@
 Неявные преобразования определяются экземплярами `given` класса `scala.Conversion`.
 Этот класс определен в пакете `scala` следующим образом:
 
-```scala
+```dotty
 abstract class Conversion[-T, +U] extends (T => U):
   def apply (x: T): U
 ```
 
 Например, без учета возможных ошибок преобразования, этот код определяет неявное преобразование из `String` в `Int`:
 
-```scala
+```dotty
 given Conversion[String, Int] with
   def apply(s: String): Int = Integer.parseInt(s)
 ```
 
 Используя псевдоним, можно выразиться более кратко:
 
-```scala
+```dotty
 given Conversion[String, Int] = Integer.parseInt(_)
 ```
 
 Используя любое из этих преобразований, теперь `String` можно использовать в местах, где ожидается `Int`:
 
-```scala
+```dotty
 import scala.language.implicitConversions
 
 // метод, который ожидает Int
@@ -55,7 +55,7 @@ plus1("1")
 которые сопоставляют примитивные числовые типы с подклассами `java.lang.Number`. 
 Например, преобразование из `Int` в `java.lang.Integer` можно определить следующим образом:
 
-```scala
+```dotty
 given int2Integer: Conversion[Int, java.lang.Integer] =
   java.lang.Integer.valueOf(_)
 ```
@@ -66,7 +66,7 @@ given int2Integer: Conversion[Int, java.lang.Integer] =
 в которые могут быть преобразованы различные типы аргументов. 
 Пример:
 
-```scala
+```dotty
 object Completions:
 
   // The argument "magnet" type

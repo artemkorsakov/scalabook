@@ -4,7 +4,7 @@
 Тип `A & B` представляет собой значения, которые одновременно относятся как к типу `A`, так и к типу `B`. 
 Например, в следующем примере используется тип пересечения `Resettable & Growable[String]`:
 
-```scala
+```dotty
 trait Resettable:
   def reset(): Unit
 
@@ -26,7 +26,7 @@ def f(x: Resettable & Growable[String]): Unit =
 если оно является подтипом как `Resettable`, так и `Growable`. 
 Нет необходимости создавать номинальный вспомогательный trait, подобный следующему:
 
-```scala
+```dotty
 trait Both[A] extends Resettable, Growable[A]
 def f(x: Both[String]): Unit
 ```
@@ -44,7 +44,7 @@ def f(x: Both[String]): Unit
 Если элемент присутствует и в `A`, и в `B`, его тип в `A & B` является пересечением типа `A` и типа `B`. 
 Например, рассмотрим:
 
-```scala
+```dotty
 trait A:
   def children: List[A]
 
@@ -61,14 +61,14 @@ val ys: List[A & B] = x.children
 При определении класса `C`, который наследует `A` и `B`, 
 необходимо дать определение метода `children` с требуемым типом:
 
-```scala
+```dotty
 class C extends A, B:
   def children: List[A & B] = ???
 ```
 
 #### Пример
 
-```scala mdoc:silent
+```dotty
 trait Book:
   def title: String
 
@@ -94,17 +94,34 @@ class AudiobookLibrary(titles: String*) extends Library, Album:
     titles.map(title => BookAudio("empty", title)).toList
 
 val al = AudiobookLibrary("Пушкин", "Толстой", "Достоевский")
-```
-
-```scala mdoc
 val book: Book = al.first
+// book: Book = AudioBook(title = "Пушкин", track = "empty")
 println(book.title)
+// Пушкин
 val books: List[Book] = al.items
+// books: List[Book] = List(
+//   BookAudio(title = "empty", track = "Пушкин"),
+//   BookAudio(title = "empty", track = "Толстой"),
+//   BookAudio(title = "empty", track = "Достоевский")
+// )
 books.foreach(b => println(b.title))
+// empty
+// empty
+// empty
 val audio: Audio = al.first
+// audio: Audio = AudioBook(title = "Пушкин", track = "empty")
 println(audio.track)
+// empty
 val audios: List[Audio] = al.items
+// audios: List[Audio] = List(
+//   BookAudio(title = "empty", track = "Пушкин"),
+//   BookAudio(title = "empty", track = "Толстой"),
+//   BookAudio(title = "empty", track = "Достоевский")
+// )
 audios.foreach(a => println(a.track))
+// Пушкин
+// Толстой
+// Достоевский
 ```
 
 ### Детали

@@ -15,7 +15,7 @@ API отражения определен в типе `Quotes` как `reflect`.
 Поскольку `Quotes` является контекстным, для доступа к его членам нужно либо назвать параметр, либо вызвать его. 
 Следующее определение из стандартной библиотеки подробно описывает канонический способ доступа к ней:
 
-```scala
+```dotty
 package scala.quoted
 
 transparent inline def quotes(using inline q: Quotes): q.type = q
@@ -23,7 +23,7 @@ transparent inline def quotes(using inline q: Quotes): q.type = q
 
 Можно использовать `scala.quoted.quotes` для импорта текущей `Quotes` в область видимости:
 
-```scala
+```dotty
 import scala.quoted.* // Import `quotes`, `Quotes`, and `Expr`
 
 def f(x: Expr[Int])(using Quotes): Expr[Int] =
@@ -54,7 +54,7 @@ def f(x: Expr[Int])(using Quotes): Expr[Int] =
 В `TypeBoundsMethods` есть методы `low` и `hi`, которые позволяют получить доступ к представлениям `L` и `U`. 
 В `TypeBoundsModule`, доступен `unapply` метод, который позволяет написать:
 
-```scala
+```dotty
 def f(tpe: TypeRepr) =
   tpe match 
     case TypeBounds(l, u) =>
@@ -62,7 +62,7 @@ def f(tpe: TypeRepr) =
 
 Поскольку `TypeBounds <: TypeRepr`, все методы, определенные в `TypeReprMethods`, доступны для значений `TypeBounds`:
 
-```scala
+```dotty
 def f(tpe: TypeRepr) =
   tpe match
     case tpe: TypeBounds =>
@@ -84,7 +84,7 @@ def f(tpe: TypeRepr) =
 Например, `Ident(fn)` является недопустимым термином, если метод `fn` принимает параметры типа, 
 и в этом случае потребуется расширение `Apply(Ident(fn), args)`.
 
-```scala
+```dotty
 def f(x: Expr[Int])(using Quotes): Expr[Int] =
   import quotes.reflect.*
   val tree: Term = x.asTerm
@@ -101,7 +101,7 @@ def f(x: Expr[Int])(using Quotes): Expr[Int] =
 Поскольку тип `Type[?]` статически неизвестен, нужно вызвать его с реальным типом, чтобы его использовать. 
 Этого можно добиться с помощью паттерна `'[t]`.
 
-```scala
+```dotty
 def g[T: Type](using Quotes) =
   import quotes.reflect.*
   val tpe: TypeRepr = TypeRepr.of[T]
@@ -152,7 +152,7 @@ API-интерфейсы `Term` и `TypeRepr` относительно закр�
 Самыми простыми методами будут те, которые упоминают только `Expr`, `Type` и `Quotes` в своей подписи. 
 Внутри они могут использовать отражение, но это не будет видно на месте использования метода.
 
-```scala
+```dotty
 def f(x: Expr[Int])(using Quotes): Expr[Int] =
   import quotes.reflect.*
   ...
@@ -164,7 +164,7 @@ def f(x: Expr[Int])(using Quotes): Expr[Int] =
 
 Метод, который принимает `quotes.reflect.Term` параметр
 
-```scala
+```dotty
 def f(using Quotes)(term: quotes.reflect.Term): String =
   import quotes.reflect.*
   ...
@@ -172,14 +172,14 @@ def f(using Quotes)(term: quotes.reflect.Term): String =
 
 Метод расширения для `quotes.reflect.Term` возврата `quotes.reflect.Tree`
 
-```scala
+```dotty
 extension (using Quotes)(term: quotes.reflect.Term)
   def g: quotes.reflect.Tree = ...
 ```
 
 Экстрактор, который соответствует `quotes.reflect.Term`
 
-```scala
+```dotty
 object MyExtractor:
   def unapply(using Quotes)(x: quotes.reflect.Term) =
     ...
@@ -220,14 +220,14 @@ object MyExtractor:
 Примечательно, что классы `TreeStructure`, `TypeReprStructure` и `ConstantStructure` могут быть весьма полезными. 
 Они будут печатать древовидную структуру в соответствии с экстракторами, которые потребуются для ее сопоставления.
 
-```scala
+```dotty
 val tree: Tree = ...
 println(tree.show(using Printer.TreeStructure))
 ```
 
 Одно из наиболее полезных мест, где это можно добавить — конец сопоставления с образцом в `Tree`.
 
-```scala
+```dotty
 tree match
   case Ident(_) =>
   case Select(_, _) =>
@@ -241,7 +241,7 @@ tree match
 
 При желании можно сделать этот "принтер" "принтером" по умолчанию:
 
-```scala
+```dotty
 import quotes.reflect.*
 given Printer[Tree] = Printer.TreeStructure
 ...

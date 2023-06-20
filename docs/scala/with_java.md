@@ -48,7 +48,7 @@ public class JavaClass {
 Можно преобразовать этот список Java в Scala `Seq`, 
 используя утилиты преобразования в пакете Scala _scala.jdk.CollectionConverters_:
 
-```java
+```dotty
 // scala
 import scala.jdk.CollectionConverters.*
 
@@ -84,7 +84,7 @@ public class JavaClass {
 Теперь в коде Scala можно получить доступ к этим полям. 
 Если просто получить к ним прямой доступ, они оба будут значениями `Optional`:
 
-```scala
+```dotty
 // scala
 import java.util.Optional
 
@@ -94,7 +94,7 @@ val eOptionalString = JavaClass.oEmptyString   // Optional.empty
 
 Но с помощью методов _scala.jdk.OptionConverters_ эти поля можно преобразовать в значения Scala `Option`:
 
-```scala
+```dotty
 import java.util.Optional
 import scala.jdk.OptionConverters.*
 
@@ -131,7 +131,7 @@ interface Running {
 Можно создать класс `Dog` в Scala так же, как если бы использовались trait-ы. 
 Все, что нужно сделать, это реализовать методы `speak` и `wag`:
 
-```scala
+```dotty
 // scala
 class Dog extends Animal, Wagging, Running:
   def speak = println("Woof")
@@ -149,7 +149,7 @@ class Dog extends Animal, Wagging, Running:
 используйте методы Scala объекта `Scala.jdk.javaapi.CollectionConverters` в Java-коде, чтобы преобразования работали. 
 Например, если есть подобный `List[String]` в классе Scala:
 
-```scala
+```dotty
 // scala
 class ScalaClass:
   val strings = List("a", "b")
@@ -187,7 +187,7 @@ listOfStrings.forEach(System.out::println);
 Чтобы продемонстрировать это, создайте класс Scala с двумя значениями `Option[String]`, 
 одно из которых содержит строку, а второе — пустое:
 
-```scala
+```dotty
 // scala
 object ScalaObject:
   val someString = Option("foo")
@@ -220,7 +220,7 @@ public class JUseScalaOptionInJava {
 даже если у trait-а есть реализованные методы. 
 Например, учитывая эти два trait-а Scala, один с реализованным методом и ещё один абстрактный:
 
-```scala
+```dotty
 // scala
 trait ScalaAddTrait:
   def sum(x: Int, y: Int) =  x + y    // implemented
@@ -255,7 +255,7 @@ System.out.println(jm.multiply(3,4));   // 12
 
 Например, этот метод Scala `exceptionThrower` аннотирован, чтобы объявить, что он генерирует `Exception`:
 
-```scala
+```dotty
 // scala
 object SExceptionThrower:
   @throws(classOf[Exception])
@@ -296,7 +296,7 @@ public class ScalaExceptionsInJava {
 то данный метод Scala помечается аннотацией `@varargs`. 
 Например, метод `printAll` в этом классе Scala объявляет поле `String*` `varargs`:
 
-```scala
+```dotty
 // scala
 import scala.annotation.varargs
 
@@ -327,7 +327,7 @@ world
 
 В Scala можно создавать методы с символическими именами, например, `+`:
 
-```scala
+```dotty
 def +(a: Int, b: Int) = a + b
 ```
 

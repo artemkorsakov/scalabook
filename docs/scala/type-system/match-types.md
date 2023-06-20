@@ -3,7 +3,7 @@
 Тип match сводится к одной из его правых частей, в зависимости от проверяемого типа. 
 Например:
 
-```scala
+```dotty
 type Elem[X] = X match
   case String => Char
   case Array[t] => t
@@ -33,7 +33,7 @@ S match { P1 => T1 ... Pn => Tn }
 Типы match могут составлять часть определений рекурсивных типов. 
 Пример:
 
-```scala mdoc:silent
+```dotty
 type LeafElem[X] = X match
   case String => Char
   case Array[t] => LeafElem[t]
@@ -43,7 +43,7 @@ type LeafElem[X] = X match
 
 Определения рекурсивного типа match также могут иметь верхнюю границу, например:
 
-```scala
+```dotty
 type Concat[Xs <: Tuple, +Ys <: Tuple] <: Tuple = Xs match
   case EmptyTuple => Ys
   case x *: xs => x *: Concat[xs, Ys]
@@ -58,7 +58,7 @@ type Concat[Xs <: Tuple, +Ys <: Tuple] <: Tuple = Xs match
 Типы match можно использовать для определения методов с зависимыми типами. 
 Например:
 
-```scala mdoc:silent
+```dotty
 def leafElem[X](x: X): LeafElem[X] = x match
   case x: String      => x.charAt(0)
   case x: Array[t]    => leafElem(x(0))
@@ -68,8 +68,9 @@ def leafElem[X](x: X): LeafElem[X] = x match
 
 Результат:
 
-```scala mdoc
+```dotty
 leafElem(Array(List("abc")))
+// res0: Char = 'a'
 ```
 
 Этот специальный режим ввода выражений match используется только при выполнении следующих условий:
@@ -88,7 +89,7 @@ leafElem(Array(List("abc")))
 Поскольку редукция связана с созданием подтипов, есть механизм обнаружения циклов. 
 В результате следующее выдаст разумное сообщение об ошибке:
 
-```scala
+```dotty
 type L[X] = X match
   case Int => L[X]
 

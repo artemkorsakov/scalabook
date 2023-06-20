@@ -10,7 +10,7 @@
 Рассмотрим следующий пример гетерогенной базы данных, в которой могут храниться значения разных типов. 
 Ключ содержит информацию о типе соответствующего значения:
 
-```scala
+```dotty
 trait Key:
   type Value
 
@@ -24,7 +24,7 @@ trait DB:
 
 Например, у нас могут быть следующие ключи:
 
-```scala
+```dotty
 object Name extends Key:
   type Value = String
 
@@ -34,7 +34,7 @@ object Age extends Key:
 
 Вызовы метода `get` теперь будут возвращать такие типы:
 
-```scala
+```dotty
 val db: DB = ...
 val res1: Option[String] = db.get(Name)
 val res2: Option[Int] = db.get(Age)
@@ -50,7 +50,7 @@ val res2: Option[Int] = db.get(Age)
 Как видно выше, в Scala 2 уже была поддержка зависимых типов методов. 
 Однако создание значений типа `DB` довольно громоздко:
 
-```scala
+```dotty
 // создание пользователя DB
 def user(db: DB): Unit =
   db.get(Name) ... db.get(Age)
@@ -67,7 +67,7 @@ user(new DB {
 `DB` trait имеет только один абстрактный метод `get`. 
 Было бы неплохо использовать в этом месте лямбда-синтаксис...
 
-```scala
+```dotty
 user { k =>
   ... // implementation of DB
 }
@@ -75,7 +75,7 @@ user { k =>
 
 На самом деле, в Scala 3 теперь это возможно! Можно определить `DB` как зависимый тип функции:
 
-```scala
+```dotty
 type DB = (k: Key) => Option[k.Value]
 //        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //        зависимый тип функции
@@ -88,7 +88,7 @@ type DB = (k: Key) => Option[k.Value]
 Зависимый тип функции (_dependent function type_) — это тип функции, результат которой зависит от параметров функции. 
 Например:
 
-```scala
+```dotty
 trait Entry { type Key; val key: Key }
 
 def extractKey(e: Entry): e.Key = e.key          // зависимый метод
@@ -104,7 +104,7 @@ val extractor: (e: Entry) => e.Key = extractKey  // значение завис�
 Зависимые функции также представлены как экземпляры этих трейтов, но они получают дополнительное уточнение. 
 На самом деле, зависимый тип функции выше — это просто синтаксический сахар для
 
-```scala
+```dotty
 Function1[Entry, Entry#Key]:
   def apply(e: Entry): e.Key
 ```
@@ -116,7 +116,7 @@ Function1[Entry, Entry#Key]:
 
 Начнем с определения модуля для чисел:
 
-```scala
+```dotty
 trait Nums:
   // тип Num оставлен абстрактным
   type Num
@@ -132,7 +132,7 @@ trait Nums:
 
 Программа, использующая числовую абстракцию, теперь имеет следующий тип:
 
-```scala
+```dotty
 type Prog = (n: Nums) => n.Num => n.Num
 
 val ex: Prog = nums => x => nums.add(nums.lit(0.8), x)
@@ -140,13 +140,13 @@ val ex: Prog = nums => x => nums.add(nums.lit(0.8), x)
 
 Тип функции, которая вычисляет производную, наподобие `ex`:
 
-```scala
+```dotty
 def derivative(input: Prog): Double
 ```
 
 Учитывая удобство зависимых типов функций, вызов этой функции в разных программах прост:
 
-```scala
+```dotty
 derivative { nums => x => x }
 derivative { nums => x => nums.add(nums.lit(0.8), x) }
 // ...
@@ -154,7 +154,7 @@ derivative { nums => x => nums.add(nums.lit(0.8), x) }
 
 Напомним, что та же программа в приведенной выше кодировке будет выглядеть так:
 
-```scala
+```dotty
 derivative(new Prog {
   def apply(nums: Nums)(x: nums.Num): nums.Num = x
 })
@@ -170,7 +170,7 @@ derivative(new Prog {
 и зависимых функций обеспечивает мощный инструмент для разработчиков библиотек. 
 Например, мы можем уточнить нашу библиотеку, как указано выше, следующим образом:
 
-```scala
+```dotty
 trait NumsDSL extends Nums:
   extension (x: Num)
     def +(y: Num) = add(x, y)
@@ -195,7 +195,7 @@ derivative { x => x * x + const(2.0) }
 В приведенном ниже примере определяется trait `C` и два зависимых типа функций `DF` и `IDF`, 
 а также выводятся результаты вызовов соответствующих функций:
 
-```scala
+```dotty
 trait C { type M; val m: M }
 
 type DF = (x: C) => x.M
@@ -207,9 +207,7 @@ val c = new C { type M = Int; val m = 3 }
 val depfun: DF = (x: C) => x.m
 
 val idepfun: IDF = summon[C].m
-```
 
-```scala
 val t = depfun(c)
 // t: Int = 3
 val u = idepfun(using c)
@@ -218,7 +216,7 @@ val u = idepfun(using c)
 
 В следующем примере тип зависимости `f.Eff` относится к типу `CanThrow`:
 
-```scala mdoc:silent
+```dotty
 trait Effect
 
 // Type X => Y
@@ -258,9 +256,7 @@ def composeFn[A, B, C]: (f: Fun[A, B]) => (g: Fun[B, C]) => A => f.Eff ?=> g.Eff
   
 val i2s = new I2S
 val s2i = new S2I
-```
 
-```scala mdoc
 mapFn(i2s)(List(1, 2, 3)).mkString
 // res0: String = "123"
 composeFn(i2s)(s2i)(22)

@@ -12,7 +12,7 @@
 
 Простейшей формой встраивания является встраивание констант в программы:
 
-```scala mdoc:silent
+```dotty
 inline val pi = 3.141592653589793
 inline val pie = "🥧"
 ```
@@ -20,9 +20,11 @@ inline val pie = "🥧"
 Использование ключевого слова `inline` в определениях значений гарантирует, 
 что все ссылки на `pi` и `pie` являются встроенными:
 
-```scala mdoc
+```dotty
 val pi2 = pi + pi
+// pi2: Double = 6.283185307179586
 val pie2 = pie + pie
+// pie2: String = "🥧🥧"
 ```
 
 В приведенном выше коде ссылки `pi` и `pie` встроены. 
@@ -33,7 +35,7 @@ val pie2 = pie + pie
 > 
 > В Scala 2 использовался бы модификатор `final` в определении без возвращаемого типа:
 > 
-> ```scala
+> ```dotty
 > final val pi = 3.141592653589793
 > final val pie = "🥧"
 > ```
@@ -47,7 +49,7 @@ val pie2 = pie + pie
 Таким образом, следующий код недействителен, хотя компилятор знает, 
 что правая часть является постоянным значением времени компиляции:
 
-```scala
+```dotty
 val pi = 3.141592653589793
 inline val pi2 = pi + pi // error
 ```
@@ -60,7 +62,7 @@ inline val pi2 = pi + pi // error
 
 Также можно использовать модификатор `inline` для определения метода, который должен быть встроен в точку вызова:
 
-```scala
+```dotty
 inline def logged[T](level: Int, message: => String)(inline op: T): T =
   println(s"[$level]Computing $message")
   val res = op
@@ -73,7 +75,7 @@ inline def logged[T](level: Int, message: => String)(inline op: T): T =
 Предоставленные аргументы статически заменяются параметрами `logged`, соответственно. 
 Поэтому компилятор встраивает следующий вызов
 
-```scala
+```dotty
 logged(logLevel, getMessage()) {
   computeSomething()
 }
@@ -81,7 +83,7 @@ logged(logLevel, getMessage()) {
 
 и переписывает его на:
 
-```scala
+```dotty
 val level   = logLevel
 def message = getMessage()
 
@@ -93,7 +95,7 @@ res
 
 Встроенные методы всегда должны применяться полностью. Например, вызов
 
-```scala
+```dotty
 logged[String](1, "some message")
 ```
 
@@ -101,7 +103,7 @@ logged[String](1, "some message")
 Однако можно передавать аргументы с подстановочными знаками.
 Например,
 
-```scala
+```dotty
 logged[String](1, "some message")(_)
 ```
 
@@ -127,7 +129,7 @@ logged[String](1, "some message")(_)
 
 Например, рассмотрим следующий код:
 
-```scala mdoc:silent
+```dotty
 class Logger:
   def log(x: Any): Unit = println(x)
 
@@ -143,16 +145,19 @@ inline def logged[T](logger: Logger, x: T): Unit =
 
 Теперь, учитывая следующий код:
 
-```scala mdoc
+```dotty
 logged(new RefinedLogger, "✔")
+// Any: ✔
 ```
 
 Он расширяется до:
 
-```scala mdoc
+```dotty
 val logger = new RefinedLogger
 val x = "✔"
+// x: String = "✔"
 logger.log(x)
+// String: ✔
 ```
 
 Несмотря на то, что теперь известно, что `x` - это `String`, 
@@ -169,7 +174,7 @@ logger.log(x)
 Одним из важных применений встраивания является обеспечение постоянной оптимизации свертывания за пределами методов. 
 Встроенные параметры не создают привязок, и их код дублируется везде, где они используются.
 
-```scala
+```dotty
 inline def perimeter(inline radius: Double): Double =
   2.0 * pi * radius
 ```
@@ -178,39 +183,39 @@ inline def perimeter(inline radius: Double): Double =
 то все вычисления могут быть выполнены во время компиляции. 
 Следующий вызов:
 
-```scala
+```dotty
 perimeter(5.0)
 ```
 
 переписывается на:
 
-```scala
+```dotty
 2.0 * pi * 5.0
 ```
 
 Затем встраивается `pi` (вначале принимаются `inline val` определения - `radius`):
 
-```scala
+```dotty
 2.0 * 3.141592653589793 * 5.0
 ```
 
 Наконец, постоянно свернут до
 
-```scala
+```dotty
 31.4159265359
 ```
 
 > **Встроенные параметры следует использовать только один раз.**
 > Нужно быть осторожным при использовании встроенного параметра **более одного раза**. Рассмотрим следующий код:
 > 
-> ```scala
+> ```dotty
 > inline def printPerimeter(inline radius: Double): Double =
 >   println(s"Perimeter (r = $radius) = ${perimeter(radius)}")
 > ```
 > 
 > Он отлично работает, когда передается константа или ссылка на `val`.
 > 
-> ```scala
+> ```dotty
 > printPerimeter(5.0)
 > // встраивается как
 > println(s"Perimeter (r = ${5.0}) = ${31.4159265359}")
@@ -218,7 +223,7 @@ perimeter(5.0)
 > 
 > Но если передается большее выражение (возможно, с побочными эффектами), можно случайно дублировать работу.
 > 
-> ```scala
+> ```dotty
 > printPerimeter(longComputation())
 > // встраивается как
 > println(s"Perimeter (r = ${longComputation()}) = ${6.283185307179586 * longComputation()}")
@@ -227,7 +232,7 @@ perimeter(5.0)
 Полезным применением встроенных параметров является предотвращение создания замыканий, 
 вызванных использованием параметров по имени.
 
-```scala
+```dotty
 inline def assert1(cond: Boolean, msg: => String) =
   if !cond then
     throw new Exception(msg)
@@ -247,7 +252,7 @@ if !cond then
 что условие будет проверено до того, как будет достигнут любой код, обрабатывающий исключение. 
 В случае утверждения этот код никогда не должен быть достигнут.
 
-```scala
+```dotty
 inline def assert2(cond: Boolean, inline msg: String) =
   if !cond then
     throw new Exception(msg)
@@ -261,7 +266,7 @@ if !cond then
 
 В следующем примере показана разница в переводе между by-value, by-name и `inline` параметрами:
 
-```scala
+```dotty
 inline def funkyAssertEquals(actual: Double, expected: => Double, inline delta: Double): Unit =
   if (actual - expected).abs > delta then
     throw new AssertionError(s"difference between ${expected} and ${actual} was larger than ${delta}")
@@ -284,7 +289,7 @@ funkyAssertEquals(computeActual(), computeExpected(), computeDelta())
 Например, при вызове с постоянным `n` следующий метод `power` 
 будет реализован прямым встроенным кодом без какого-либо цикла или рекурсии.
 
-```scala
+```dotty
 inline def power(x: Double, n: Int): Double =
   if n == 0 then 1.0
   else if n == 1 then x
@@ -310,7 +315,7 @@ power(expr, 10)
 Например, следующий метод `power` содержит некоторые условия `if`, 
 которые потенциально могут развернуть рекурсию и удалить все вызовы методов.
 
-```scala
+```dotty
 inline def power(x: Double, inline n: Int): Double =
   if (n == 0) 1.0
   else if (n % 2 == 1) x * power(x, n - 1)
@@ -319,7 +324,7 @@ inline def power(x: Double, inline n: Int): Double =
 
 Вызов `power` со статически известными константами приводит к следующему коду:
 
-```scala
+```dotty
 power(2, 2)
 // первое встраивание
 val x = 2
@@ -333,7 +338,7 @@ power(x * x, 1)
 
 Дальнейшие шаги встраивания:
 
-```scala
+```dotty
 // дальнейшее встраивание
 val x = 2
 val x2 = x * x
@@ -360,14 +365,14 @@ x2 * 1.0
 
 Напротив, представим, что значение `n` неизвестно:
 
-```scala
+```dotty
 power(2, unknownNumber)
 ```
 
 Руководствуясь встроенной аннотацией параметра, компилятор попытается развернуть рекурсию. 
 Но безуспешно, так как параметр не известен статически.
 
-```scala
+```dotty
 // первое встраивание
 val x = 2
 if (unknownNumber == 0) 1.0
@@ -397,14 +402,14 @@ else {
 что условное выражение может быть уменьшено во время компиляции, 
 и выдает ошибку, если условие не является статически известной константой.
 
-```scala
+```dotty
 inline def power(x: Double, inline n: Int): Double =
   inline if (n == 0) 1.0
   else inline if (n % 2 == 1) x * power(x, n - 1)
   else power(x * x, n / 2)
 ```
 
-```scala
+```dotty
 power(2, 2) // Ok
 val unknownNumber = 2
 power(2, unknownNumber) // error  
@@ -440,7 +445,7 @@ power(2, unknownNumber) // error
 
 Рассмотрим следующий пример:
 
-```scala mdoc:silent:reset
+```dotty
 trait Logger:
   def log(x: Any): Unit
 
@@ -454,14 +459,13 @@ class PrintLogger extends Logger:
 
 Например:
 
-```scala mdoc:silent
+```dotty
 val pl: PrintLogger = new PrintLogger
 val l: Logger = pl
-```
-
-```scala mdoc
 pl.log("msg")
+// msg
 l.log("msg")
+// msg
 ```
 
 Встроенные вызовы и динамически отправленные вызовы дают одинаковые результаты.
@@ -479,7 +483,7 @@ l.log("msg")
 
 Также можно создавать абстрактные встроенные определения.
 
-```scala
+```dotty
 trait InlineLogger:
   inline def log(inline x: Any): Unit
 
@@ -495,7 +499,7 @@ class PrintLogger extends InlineLogger:
 
 Пример:
 
-```scala
+```dotty
 val pl: PrintLogger = new PrintLogger
 pl.log("msg")
 val il: InlineLogger = pl
@@ -506,14 +510,14 @@ il.log("msg")
 
 Полезность абстрактных встроенных методов становится очевидной при использовании в другом встроенном методе:
 
-```scala
+```dotty
 inline def logged(logger: InlineLogger, x: Any) =
   logger.log(x)
 ```
 
 Предположим, вызов для `logged` конкретного экземпляра `PrintLogger`:
 
-```scala
+```dotty
 logged(new PrintLogger, "🥧")
 // inlined as
 val logger: PrintLogger = new PrintLogger
@@ -550,7 +554,7 @@ Scala 2 также определяет `@inline` аннотацию,
 
 Встроенное значение должно иметь литеральный тип, например `1` или `true`.
 
-```scala
+```dotty
 inline val four = 4
 // equivalent to
 inline val four: 4 = 4
@@ -558,7 +562,7 @@ inline val four: 4 = 4
 
 Также возможно иметь встроенные значения типов, которые не имеют синтаксиса, например `Short(4)`.
 
-```scala
+```dotty
 trait InlineConstants:
   inline val myShort: Short
 
@@ -574,16 +578,15 @@ object Constants extends InlineConstants:
 на основе точного типа встроенного выражения. 
 Говоря языком Scala 2, прозрачность отражает суть "макросов белого ящика".
 
-```scala mdoc:silent
+```dotty
 transparent inline def default(inline name: String): Any =
   inline if name == "Int" then 0
   else inline if name == "String" then ""
   else ???
-```
-
-```scala mdoc
 val n0: Int = default("Int")
+// n0: Int = 0
 val s0: String = default("String")
+// s0: String = ""
 ```
 
 Обратите внимание, что даже если возвращаемый тип метода `default` — `Any`, 
@@ -591,7 +594,7 @@ val s0: String = default("String")
 Тип возвращаемого значения представляет собой верхнюю границу типа внутри встроенного термина. 
 Также можно было бы быть более точным и написать:
 
-```scala
+```dotty
 transparent inline def default(inline name: String): 0 | "" = ...
 ```
 
@@ -600,7 +603,7 @@ transparent inline def default(inline name: String): 0 | "" = ...
 
 Ещё пример:
 
-```scala
+```dotty
 class A
 class B extends A:
   def m = true
@@ -630,7 +633,7 @@ obj2.m    // OK
 В следующем примере мы видим, как тип возвращаемого значения `zero` специализирован для одноэлементного типа `0`,
 что позволяет приписать дополнению правильный тип `1`.
 
-```scala
+```dotty
 transparent inline def zero: Int = 0
 
 val one: 1 = zero + 1
@@ -648,7 +651,7 @@ val one: 1 = zero + 1
 
 Например, следующие две функции будут типизированы одинаково, но будут встроены в разное время.
 
-```scala
+```dotty
 inline def f1: T = ...
 transparent inline def f2: T = (...): T
 ```
@@ -673,14 +676,16 @@ A `transparent inline given` может добавить описание тип
 В приведенном ниже примере определяется встроенный метод с одним встроенным выражением соответствия,
 которое выбирает case на основе его статического типа:
 
-```scala mdoc
+```dotty
 transparent inline def g(x: Any): Any =
   inline x match
     case x: String => (x, x) // Tuple2[String, String](x, x)
     case x: Double => x
 
 g(1.0d)   // Has type 1.0d which is a subtype of Double
+// res5: Double = 1.0
 g("test") // Has type (String, String)
+// res6: Tuple2[String, String] = ("test", "test")
 ```
 
 `x` проверяется статически, и встроенное совпадение сокращается,
@@ -689,7 +694,7 @@ g("test") // Has type (String, String)
 Встроенные `match` предоставляют способ сопоставления статического типа некоторого выражения. 
 Поскольку сопоставляется статический тип выражения, следующий код не будет компилироваться.
 
-```scala
+```dotty
 val x: Any = "test"
 g(x)
 // error:
@@ -709,7 +714,7 @@ g(x)
 `toInt` соответствует структуре числа в [Чёрч-кодировке](https://en.wikipedia.org/wiki/Church_encoding)
 и вычисляет соответствующее целое число.
 
-```scala
+```dotty
 trait Nat
 case object Zero extends Nat
 case class Succ[N <: Nat](n: N) extends Nat
@@ -738,7 +743,7 @@ val intTwo: 2 = natTwo
 Встраивание также является основным механизмом, используемым для написания макросов. 
 [Макросы](../metaprogramming/macros.md) позволяют управлять генерацией и анализом кода после встроенного вызова.
 
-```scala
+```dotty
 inline def power(x: Double, inline n: Int) =
   ${ powerCode('x, 'n)  }
 

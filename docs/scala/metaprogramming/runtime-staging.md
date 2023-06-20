@@ -52,7 +52,7 @@
 `scala.quoted.staging.run` предоставляет `Quotes`, который можно использовать для отображения выражения в его области. 
 С другой стороны `scala.quoted.staging.withQuotes` предоставляет `Quotes` без оценки выражения.
 
-```scala
+```dotty
 package scala.quoted.staging
 
 def run[T](expr: Quotes ?=> Expr[T])(using Compiler): T = ...
@@ -93,7 +93,7 @@ scala -with-compiler -classpath out Test
 С помощью `staging.run{ ... }` можно оценить выражение во время выполнения. 
 В рамках `staging.run` также можно вызвать `show`, чтобы получить исходное представление выражения.
 
-```scala
+```dotty
 import scala.quoted.*
 
 // make available the necessary compiler for runtime code generation

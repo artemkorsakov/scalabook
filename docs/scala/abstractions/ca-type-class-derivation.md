@@ -7,7 +7,7 @@ Type class derivation - это способ автоматического со�
 Общие примеры: `Eq`, `Ordering` или `Show`. 
 Пример, для следующего алгебраического типа данных (ADT) `Tree`:
 
-```scala
+```dotty
 enum Tree[T] derives Eq, Ordering, Show:
   case Branch(left: Tree[T], right: Tree[T])
   case Leaf(elem: T)
@@ -16,7 +16,7 @@ enum Tree[T] derives Eq, Ordering, Show:
 Предложение `derives` создает следующие экземпляры `given` 
 для классов типов `Eq`, `Ordering` и `Show` в сопутствующем объекте `Tree`:
 
-```scala
+```dotty
 given [T: Eq]       : Eq[Tree[T]]    = Eq.derived
 given [T: Ordering] : Ordering[Tree] = Ordering.derived
 given [T: Show]     : Show[Tree]     = Show.derived
@@ -40,7 +40,7 @@ given [T: Show]     : Show[Tree]     = Show.derived
 Они также обеспечивают минимальную инфраструктуру уровня терминов, 
 позволяющую библиотекам более высокого уровня обеспечивать всестороннюю поддержку деривации.
 
-```scala
+```dotty
 sealed trait Mirror:
 
   /** the type being mirrored */
@@ -85,7 +85,7 @@ end Mirror
 
 Для `Tree` ADT, описанного выше, следующие экземпляры `Mirror` будут автоматически предоставлены компилятором:
 
-```scala
+```dotty
 // Mirror for Tree
 new Mirror.Sum:
   type MirroredType = Tree
@@ -148,7 +148,7 @@ Trait или класс могут появиться в предложении 
 Сигнатура и реализация `derived` метода для класса типов `TC[_]` произвольны, 
 но обычно имеют следующую форму:
 
-```scala
+```dotty
 import scala.deriving.Mirror
 
 def derived[T](using Mirror.Of[T]): TC[T] = ...
@@ -183,7 +183,7 @@ def derived[T](using Mirror.Of[T]): TC[T] = ...
 и неявный поиск через `summonInline` или `summonFrom`. 
 Учитывая это определение класса типа `Eq`:
 
-```scala
+```dotty
 trait Eq[T]:
   def eqv(x: T, y: T): Boolean
 ```
@@ -192,7 +192,7 @@ trait Eq[T]:
 который создает экземпляр `given` для `Eq[T]` заданного `Mirror[T]`. 
 Вот возможная реализация:
 
-```scala
+```dotty
 import scala.deriving.Mirror
 
 inline given derived[T](using m: Mirror.Of[T]): Eq[T] =
@@ -214,7 +214,7 @@ inline given derived[T](using m: Mirror.Of[T]): Eq[T] =
 Это либо все ветви типа суммы, либо все поля типа продукта. 
 Реализация `summonAll` - `inline` и использует конструкцию Scala 3 `summonInline` для сбора экземпляров в виде `List`:
 
-```scala
+```dotty
 inline def summonAll[T <: Tuple]: List[Eq[_]] =
   inline erasedValue[T] match
     case _: EmptyTuple => Nil
@@ -233,7 +233,7 @@ inline def summonAll[T <: Tuple]: List[Eq[_]] =
 для дальнейшей проверки на равенство на основе экземпляра `Eq` 
 для соответствующего подтипа ADT с помощью вспомогательного метода `check` (4).
 
-```scala
+```dotty
 import scala.deriving.Mirror
 
 def eqSum[T](s: Mirror.SumOf[T], elems: List[Eq[_]]): Eq[T] =
@@ -246,7 +246,7 @@ def eqSum[T](s: Mirror.SumOf[T], elems: List[Eq[_]]): Eq[T] =
 В случае продукта `eqProduct` мы проверяем runtime значения аргументов `eqv` на равенство 
 как продукты на основе экземпляров `Eq` для полей типа данных (5):
 
-```scala
+```dotty
 import scala.deriving.Mirror
 
 def eqProduct[T](p: Mirror.ProductOf[T], elems: List[Eq[_]]): Eq[T] =
@@ -259,7 +259,7 @@ def eqProduct[T](p: Mirror.ProductOf[T], elems: List[Eq[_]]): Eq[T] =
 
 Собрав все это вместе, получается следующая полная реализация:
 
-```scala
+```dotty
 import scala.deriving.*
 import scala.compiletime.{erasedValue, summonInline}
 
@@ -303,7 +303,7 @@ end Eq
 
 Получившийся результат можно проверить относительно простого ADT, например:
 
-```scala
+```dotty
 enum Opt[+T] derives Eq:
   case Sm(t: T)
   case Nn
@@ -319,7 +319,7 @@ enum Opt[+T] derives Eq:
 В этом случае код, сгенерированный встроенным расширением для derived экземпляра `Eq` для `Opt`, 
 после небольшой доработки выглядит следующим образом:
 
-```scala
+```dotty
 given derived$Eq[T](using eqT: Eq[T]): Eq[Opt[T]] =
   eqSum(
     summon[Mirror[Opt[T]]],
@@ -339,7 +339,7 @@ given derived$Eq[T](using eqT: Eq[T]): Eq[Opt[T]] =
 В качестве третьего примера, используя библиотеку более высокого уровня, такую как Shapeless, 
 автор класса типов может определить эквивалентный derived метод как:
 
-```scala
+```dotty
 given eqSum[A](using inst: => K0.CoproductInstances[Eq, A]): Eq[A] with
   def eqv(x: A, y: A): Boolean = inst.fold2(x, y)(false)(
     [t] => (eqt: Eq[t], t0: t, t1: t) => eqt.eqv(t0, t1)
@@ -364,7 +364,7 @@ inline def derived[A](using gen: K0.Generic[A]): Eq[A] =
 Для этого просто определите экземпляр, используя метод `derived` класса типа в правой части. 
 Например, для реализации `Ordering` для определения `Option`:
 
-```scala
+```dotty
 given [T: Ordering]: Ordering[Option[T]] = Ordering.derived
 ```
 
@@ -385,7 +385,7 @@ given [T: Ordering]: Ordering[Option[T]] = Ordering.derived
 
 Как и в исходном коде, определение класса типа такое же:
 
-```scala
+```dotty
 trait Eq[T]:
   def eqv(x: T, y: T): Boolean
 ```
@@ -394,13 +394,13 @@ trait Eq[T]:
 который создает quoted экземпляр для `Eq[T]`. 
 Вот возможная подпись:
 
-```scala
+```dotty
 given derived[T: Type](using Quotes): Expr[Eq[T]]
 ```
 
 и для сравнения дадим ту же подпись, что и у нас с `inline`:
 
-```scala
+```dotty
 inline given derived[T]: (m: Mirror.Of[T]) => Eq[T] = ???
 ```
 
@@ -409,7 +409,7 @@ inline given derived[T]: (m: Mirror.Of[T]) => Eq[T] = ???
 Кроме того, мы не можем вызвать quoted `Mirror` внутри тела `derived`, мы можем опустить его из подписи. 
 Тело метода `derived` показано ниже:
 
-```scala
+```dotty
 given derived[T: Type](using Quotes): Expr[Eq[T]] =
   import quotes.reflect.*
 
@@ -438,7 +438,7 @@ given derived[T: Type](using Quotes): Expr[Eq[T]] =
 Находясь внутри макроса, нашей первой реакцией было бы написать приведенный ниже код. 
 Поскольку путь внутри аргумента типа нестабилен, его нельзя использовать:
 
-```scala
+```dotty
 '{
   summonAll[$m.MirroredElemTypes]
 }
@@ -447,14 +447,14 @@ given derived[T: Type](using Quotes): Expr[Eq[T]] =
 Вместо этого мы извлекаем тип кортежа для типов элементов, 
 используя сопоставление с образцом по кавычкам и, более конкретно, уточненный тип:
 
-```scala
+```dotty
 case '{ $m: Mirror.ProductOf[T] { type MirroredElemTypes = elementTypes }} => ...
 ```
 
 Ниже показана реализация `summonAll` в виде макроса. 
 Предполагается, что given экземпляры для примитивных типов существуют.
 
-```scala
+```dotty
 def summonAll[T: Type](using Quotes): List[Expr[Eq[_]]] =
    Type.of[T] match
       case '[String *: tpes] => '{ summon[Eq[String]] } :: summonAll[tpes]
@@ -470,7 +470,7 @@ def summonAll[T: Type](using Quotes): List[Expr[Eq[_]]] =
 который содержит имя типа `String` и возраст типа `Int`, 
 проверка на равенство, которую хотим сгенерировать, выглядит следующим образом:
 
-```scala
+```dotty
 true
    && Eq[String].eqv(x.productElement(0),y.productElement(0))
    && Eq[Int].eqv(x.productElement(1), y.productElement(1))
@@ -483,7 +483,7 @@ true
 В качестве альтернативы показанного ниже, можно вызвать метод `eqv` напрямую. 
 `eqGen` может вызвать деривацию.
 
-```scala
+```dotty
 extension [T](inline x: T)
    inline def === (inline y: T)(using eq: Eq[T]): Boolean = eq.eqv(x, y)
 
@@ -493,7 +493,7 @@ inline given eqGen[T]: Eq[T] = ${ Eq.derived[T] }
 Обратите внимание, что используется синтаксис inline метода, 
 и можно сравнивать экземпляры, `Sm(Person("Test", 23)) === Sm(Person("Test", 24))`, например, для следующих двух типов:
 
-```scala
+```dotty
 case class Person(name: String, age: Int)
 
 enum Opt[+T]:
@@ -503,7 +503,7 @@ enum Opt[+T]:
 
 Полный код показан ниже:
 
-```scala
+```dotty
 import scala.deriving.*
 import scala.quoted.*
 

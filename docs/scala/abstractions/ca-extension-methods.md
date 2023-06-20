@@ -4,7 +4,7 @@
 т.е. позволяют добавлять новые методы в закрытые классы. 
 Например, предположим, что кто-то другой создал класс `Circle`:
 
-```scala mdoc:silent
+```dotty
 case class Circle(x: Double, y: Double, radius: Double)
 ```
 
@@ -12,21 +12,23 @@ case class Circle(x: Double, y: Double, radius: Double)
 До того как концепция вывода терминов была введена в языки программирования, 
 единственное, что можно было сделать, это написать метод в отдельном классе или объекте, подобном этому:
 
-```scala mdoc:silent
+```dotty
 object CircleHelpers:
   def circumference(c: Circle): Double = c.radius * math.Pi * 2
 ```
 
 Затем этот метод можно было использовать следующим образом:
 
-```scala mdoc
+```dotty
 val aCircle = Circle(2, 3, 5)
+// aCircle: Circle = Circle(x = 2.0, y = 3.0, radius = 5.0)
 CircleHelpers.circumference(aCircle)
+// res0: Double = 31.41592653589793
 ```
 
 Методы расширения позволяют создать метод `circumference` для работы с экземплярами `Circle`:
 
-```scala mdoc
+```dotty
 extension (c: Circle)
   def circumference: Double = c.radius * math.Pi * 2
 ```
@@ -38,15 +40,16 @@ extension (c: Circle)
 
 Затем в коде метод `circumference` можно использовать так же, как если бы он был изначально определен в классе `Circle`:
 
-```scala mdoc
+```dotty
 aCircle.circumference
+// res1: Double = 31.41592653589793
 ```
 
 #### Импорт методов расширения
 
 Представим, что `circumference` определен в пакете `lib` - его можно импортировать с помощью
 
-```scala
+```dotty
 import lib.circumference
 aCircle.circumference
 ```
@@ -54,7 +57,7 @@ aCircle.circumference
 Если импорт отсутствует, то компилятор выводит подробное сообщение об ошибке, 
 подсказывая возможный импорт, например так:
 
-```scala
+```dotty
 value circumference is not a member of Circle, but could be made available as an extension method.
 
 The following import might fix the problem:
@@ -66,7 +69,7 @@ The following import might fix the problem:
 
 Синтаксис метода расширения также можно использовать для определения операторов. Примеры:
 
-```scala
+```dotty
 extension (x: String)
   def < (y: String): Boolean = ...
 extension (x: Elem)
@@ -84,7 +87,7 @@ x min 3
 Также возможно расширить generic типы, добавив параметры типа в расширение. 
 Например:
 
-```scala
+```dotty
 extension [T](xs: List[T])
   def second = xs.tail.head
 
@@ -94,34 +97,34 @@ extension [T: Numeric](x: T)
 
 Параметры типа в расширениях также можно комбинировать с параметрами типа в самих методах:
 
-```scala
+```dotty
 extension [T](xs: List[T])
   def sumBy[U: Numeric](f: T => U): U = ...
 ```
 
 Аргументы типа, соответствующие параметрам типа метода, передаются стандартно:
 
-```scala
+```dotty
 List("a", "bb", "ccc").sumBy[Int](_.length)
 ```
 
 Напротив, аргументы типа, соответствующие параметрам типа `extension`, могут быть переданы, 
 только если на метод ссылаются как на метод без расширения:
 
-```scala
+```dotty
 sumBy[String](List("a", "bb", "ccc"))(_.length)
 ```
 
 Или при передаче обоих аргументов типа:
 
-```scala
+```dotty
 sumBy[String](List("a", "bb", "ccc"))[Int](_.length)
 ```
 
 Расширения также могут принимать предложения `using`. 
 Например, приведенное выше расширение `+` можно было бы записать с предложения `using`:
 
-```scala
+```dotty
 extension [T](x: T)(using n: Numeric[T])
   def + (y: T): T = n.plus(x, y)
 ```
@@ -132,7 +135,7 @@ extension [T](x: T)(using n: Numeric[T])
 заключенного в круглые скобки.
 Чтобы определить для типа несколько методов расширения, используется следующий синтаксис:
 
-```scala
+```dotty
 extension (c: Circle)
   def circumference: Double = c.radius * math.Pi * 2
   def diameter: Double = c.radius * 2
@@ -143,7 +146,7 @@ extension (c: Circle)
 где каждый метод определяется отдельно. 
 Например, расширение выше - это:
 
-```scala
+```dotty
 extension (c: Circle)
   def circumference: Double = c.radius * math.Pi * 2
 
@@ -157,7 +160,7 @@ extension (c: Circle)
 Коллективные расширения также могут принимать параметры типа и содержать предложения `using`. 
 Пример:
 
-```scala
+```dotty
 extension [T](xs: List[T])(using Ordering[T])
   def smallest(n: Int): List[T] = xs.sorted.take(n)
   def smallestIndices(n: Int): List[Int] =
@@ -180,7 +183,7 @@ extension [T](xs: List[T])(using Ordering[T])
 
 Вот пример первого правила:
 
-```scala
+```dotty
 trait IntOps:
   extension (i: Int) def isZero: Boolean = i == 0
 
@@ -208,7 +211,7 @@ trait SafeDiv:
 Согласно второму правилу, метод расширения можно сделать доступным, 
 определив экземпляр `given`, содержащий его, например так:
 
-```scala
+```dotty
 given ops1: IntOps()  // приносит safeMod в область видимости
 1.safeMod(2)
 ```
@@ -217,7 +220,7 @@ given ops1: IntOps()  // приносит safeMod в область видимо
 если он находится в неявной области действия типа получателя или в экземпляре `given` в этой области. 
 Пример:
 
-```scala
+```dotty
 class List[T]:
   ...
 object List:

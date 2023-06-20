@@ -21,7 +21,7 @@
 И нужен элегантный способ обработки исключения, которое возникает, когда метод получает строку типа `"Hello"` вместо `"1"`. 
 Первое предположение о таком методе может выглядеть следующим образом:
 
-```scala
+```dotty
 def makeInt(s: String): Int =
   try
     Integer.parseInt(s.trim)
@@ -47,7 +47,7 @@ def makeInt(s: String): Int =
 
 Вот доработанная версия `makeInt`:
 
-```scala mdoc:silent
+```dotty
 def makeInt(s: String): Option[Int] =
   try
     Some(Integer.parseInt(s.trim))
@@ -61,9 +61,11 @@ def makeInt(s: String): Option[Int] =
 
 Эти примеры показывают, как работает `makeInt`:
 
-```scala mdoc
+```dotty
 val a = makeInt("1")  
+// a: Option[Int] = Some(value = 1)  
 val b = makeInt("one")
+// b: Option[Int] = None
 ```
 
 Как показано, строка `"1"` приводится к `Some(1)`, а строка `"one"` - к `None`. 
@@ -92,7 +94,7 @@ val b = makeInt("one")
 
 Одним из возможных решений является использование выражения `match`:
 
-```scala
+```dotty
 makeInt(x) match
   case Some(i) => println(i)
   case None => println("That didn’t work.")
@@ -107,7 +109,7 @@ makeInt(x) match
 Например, представим, что необходимо преобразовать три строки в целочисленные значения, а затем сложить их. 
 Решение задачи с использованием выражения `for`:
 
-```scala
+```dotty
 val y = for
   a <- makeInt(stringA)
   b <- makeInt(stringB)
@@ -124,24 +126,23 @@ yield
 
 Это можно проверить на примере:
 
-```scala mdoc:silent
+```dotty
 val stringA = "1"
 val stringB = "2"
 val stringC = "3"
-```
-```scala mdoc
 val y = for
   a <- makeInt(stringA)
   b <- makeInt(stringB)
   c <- makeInt(stringC)
 yield
   a + b + c
+// y: Option[Int] = Some(value = 6)  
 ```
 
 Чтобы увидеть негативный кейс, достаточно изменить любую из строк на что-то, что нельзя преобразовать в целое число. 
 В этом случае `y` равно `None`:
 
-```scala
+```dotty
 y: Option[Int] = None
 ```
 
@@ -159,7 +160,7 @@ y: Option[Int] = None
 
 Возвращаясь к значениям `null`, место, где `null` значение может незаметно проникнуть в код, — класс, подобный этому:
 
-```scala
+```dotty
 class Address(
   var street1: String,
   var street2: String,
@@ -172,7 +173,7 @@ class Address(
 Хотя каждый адрес имеет значение `street1`, значение `street2` не является обязательным. 
 В результате полю `street2` можно присвоить значение `null`:
 
-```scala
+```dotty
 val santa = Address(
   "1 Main Street",
   null,            
@@ -187,7 +188,7 @@ val santa = Address(
 В Scala и других современных языках правильное решение состоит в том, 
 чтобы заранее объявить, что `street2` является необязательным:
 
-```scala
+```dotty
 class Address(
   var street1: String,
   var street2: Option[String],  
@@ -199,7 +200,7 @@ class Address(
 
 Теперь можно написать более точный код:
 
-```scala
+```dotty
 val santa = Address(
   "1 Main Street",
   None,         
@@ -211,7 +212,7 @@ val santa = Address(
 
 или так:
 
-```scala
+```dotty
 val santa = Address(
   "123 Main Street",
   Some("Apt. 2B"),

@@ -9,7 +9,7 @@
 Например, предположим, что после некоторого рефакторинга осталась ошибочная программа, 
 в которой значение `y` имеет тип `S` вместо правильного типа `T`:
 
-```scala
+```dotty
 val x = ...   // типа T
 val y = ...   // типа S, но должно быть типа T
 x == y        // проверки типов всегда будут выдавать false
@@ -29,7 +29,7 @@ x == y        // проверки типов всегда будут выдав�
 
 По умолчанию сравнение на равенство можно создать следующим образом:
 
-```scala
+```dotty
 case class Cat(name: String)
 case class Dog(name: String)
 val d = Dog("Fido")
@@ -42,7 +42,7 @@ d == c  // false, но он компилируется
 При (а) импорте `scala.language.strictEquality` 
 или (б) использовании флага компилятора `-language:strictEquality` это сравнение больше не компилируется:
 
-```scala
+```dotty
 import scala.language.strictEquality
 
 val rover = Dog("Rover")
@@ -58,14 +58,14 @@ println(rover == fido)   // compiler error
 Есть два способа включить сравнение с помощью класса типов `CanEqual`. 
 Для простых случаев класс может выводиться (_derive_) от класса `CanEqual`:
 
-```scala
+```dotty
 // Способ 1
 case class Dog(name: String) derives CanEqual
 ```
 
 Также можно использовать следующий синтаксис:
 
-```scala
+```dotty
 // Способ 2
 case class Dog(name: String)
 given CanEqual[Dog, Dog] = CanEqual.derived
@@ -80,14 +80,14 @@ given CanEqual[Dog, Dog] = CanEqual.derived
 и мы хотим разрешить или запретить сравнение бумажных, печатных и аудиокниг. 
 В Scala 3 для начала необходимо включить мультиуниверсальное равенство:
 
-```scala
+```dotty
 // [1] добавить этот импорт или command line flag: -language:strictEquality
 import scala.language.strictEquality
 ```
 
 Затем создать объекты домена:
 
-```scala
+```dotty
 // [2] создание иерархии классов
 trait Book:
   def author: String
@@ -111,7 +111,7 @@ case class AudioBook(
 
 Наконец, используем `CanEqual`, чтобы определить, какие сравнения необходимо разрешить:
 
-```scala
+```dotty
 // [3] создайте экземпляры класса типов, чтобы определить разрешенные сравнения.
 //     разрешено `PrintedBook == PrintedBook`
 //     разрешено `AudioBook == AudioBook`
@@ -131,7 +131,7 @@ println(pBook == aBook)   // compiler error
 
 Последняя строка кода приводит к следующему сообщению компилятора об ошибке:
 
-```scala
+```dotty
 Values of types PrintedBook and AudioBook cannot be compared with == or !=
 ```
 
@@ -142,7 +142,7 @@ Values of types PrintedBook and AudioBook cannot be compared with == or !=
 Если есть необходимость разрешить сравнение `PrintedBook` с `AudioBook`, 
 то достаточно создать следующие два дополнительных сравнения равенства:
 
-```scala
+```dotty
 // разрешить `PrintedBook == AudioBook` и `AudioBook == PrintedBook`
 given CanEqual[PrintedBook, AudioBook] = CanEqual.derived
 given CanEqual[AudioBook, PrintedBook] = CanEqual.derived
@@ -150,7 +150,7 @@ given CanEqual[AudioBook, PrintedBook] = CanEqual.derived
 
 Теперь можно сравнивать `PrintedBook` с `AudioBook` без ошибки компилятора:
 
-```scala
+```dotty
 println(pBook == aBook)   // false
 println(aBook == pBook)   // false
 ```
@@ -162,7 +162,7 @@ println(aBook == pBook)   // false
 Чтобы доработать сравнение, можно переопределить методы `equals` для каждого класса. 
 Например, если переопределить метод `equals` для `AudioBook`:
 
-```scala
+```dotty
 case class AudioBook(
     author: String,
     title: String,
@@ -186,7 +186,7 @@ case class AudioBook(
 
 Теперь можно сравнить `AudioBook` с `PrintedBook`:
 
-```scala
+```dotty
 println(aBook == pBook)   // true (работает из-за переопределенного `equals` в `AudioBook`)
 println(pBook == aBook)   // false
 ```

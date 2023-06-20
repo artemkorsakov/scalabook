@@ -23,7 +23,7 @@ Worksheet - это файл Scala, который вычисляется при 
 
 3) Вставьте следующее содержимое в редактор:
 
-```scala
+```dotty
 println("Hello, world!")
    
 val x = 1

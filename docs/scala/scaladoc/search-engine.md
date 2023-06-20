@@ -5,7 +5,7 @@
 
 Рассмотрим следующее определение метода расширения:
 
-```scala
+```dotty
 extension [T](arr: IArray[T]) def span(p: T => Boolean): (IArray[T], IArray[T]) = ...
 ```
 
@@ -60,7 +60,7 @@ extension [T](arr: IArray[T]) def span(p: T => Boolean): (IArray[T], IArray[T]) 
 
 Итак, по запросу `Num => Int => Int => Int` должны быть найдены следующие объявления:
 
-```scala
+```dotty
 class Num():
   def a(i: Int, j: Int): Int
   def b(i: Int)(j: Int): Int
@@ -80,7 +80,7 @@ extension (i: Num) def j(j: Int)(k: Int): Int
 Когда дело доходит до псевдонимов типов, они обесцениваются как в объявлении, так и в подписи запроса. 
 Это означает, что для объявлений:
 
-```scala
+```dotty
 type Name = String
 
 def fromName(name: Name): String

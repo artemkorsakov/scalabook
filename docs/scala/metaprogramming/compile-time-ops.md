@@ -11,28 +11,25 @@
 Метод `error` используется для создания определяемых пользователем ошибок компиляции во время встроенного расширения.
 Он имеет следующую подпись:
 
-```scala
+```dotty
 inline def error(inline msg: String): Nothing
 ```
 
 Если встроенное расширение приводит к вызову `error(msgStr)`,
 компилятор выдает сообщение об ошибке, содержащее заданный `msgStr`.
 
-```scala mdoc:silent
+```dotty
 import scala.compiletime.error
 
 inline def doSomething(inline mode: Boolean): Unit =
   if mode then println("true")
   else if !mode then println("false")
   else error("Mode must be a known value")
-```
 
-```scala mdoc
 doSomething(true)
+// true
 doSomething(false)
-```
-
-```scala
+// false
 val bool: Boolean = true
 doSomething(bool)
 // error: 
@@ -48,7 +45,7 @@ doSomething(bool)
 Если желательно включить часть исходного кода аргументов в сообщение об ошибке,
 можно использовать метод `codeOf`.
 
-```scala
+```dotty
 import scala.compiletime.{codeOf, error}
 
 inline def doSomething(inline mode: Boolean): Unit =
@@ -79,7 +76,7 @@ doSomething(bool)
 имеет ли тип `T` `Ordering` или нет.
 Мы можем создать набор неявных определений следующим образом:
 
-```scala
+```dotty
 trait SetFor[T, S <: Set[T]]
 
 class LowPriority:
@@ -107,7 +104,7 @@ object SetsFor extends LowPriority:
 Напротив, новая конструкция `summonFrom` делает неявный поиск доступным в функциональном контексте.
 Чтобы решить проблему создания правильного набора, можно было бы использовать его следующим образом:
 
-```scala
+```dotty
 import scala.compiletime.summonFrom
 
 inline def setFor[T]: Set[T] = summonFrom {
@@ -126,7 +123,7 @@ inline def setFor[T]: Set[T] = summonFrom {
 что позволяет избежать явного предложения `using`.
 Например, `setFor` можно было бы также сформулировать следующим образом:
 
-```scala
+```dotty
 import scala.compiletime.summonFrom
 
 inline def setFor[T]: Set[T] = summonFrom {
@@ -139,7 +136,7 @@ inline def setFor[T]: Set[T] = summonFrom {
 
 Следовательно, если мы вызовем `Ordering[String]`, то вернется новый экземпляр `TreeSet[String]`.
 
-```scala
+```dotty
 summon[Ordering[String]]
 
 println(setFor[String].getClass) // prints class scala.collection.immutable.TreeSet
@@ -149,7 +146,7 @@ println(setFor[String].getClass) // prints class scala.collection.immutable.Tree
 Рассмотрим следующий код с двумя `given` в области видимости типа `A`.
 Совпадение с шаблоном `f` вызовет ошибку неоднозначности `f`.
 
-```scala
+```dotty
 class A
 given a1: A = new A
 given a2: A = new A
@@ -166,7 +163,7 @@ inline def f: Any = summonFrom {
 В отличие от `summonFrom`, `summonInline` также выдает ошибку неявного отсутствия (_implicit-not-found error_),
 если данный экземпляр вызываемого типа не найден.
 
-```scala
+```dotty
 import scala.compiletime.summonInline
 import scala.annotation.implicitNotFound
 
@@ -197,7 +194,7 @@ val notMissing : NotMissing = summonInlineCheck(3)
 
 `constValue` - это функция, которая производит постоянное значение, представленное типом.
 
-```scala
+```dotty
 import scala.compiletime.constValue
 import scala.compiletime.ops.int.S
 
@@ -227,7 +224,7 @@ inline val ctwo = toIntC[2]
 Можно выразить это, используя переписывающие выражения соответствия 
 и простую вспомогательную функцию `scala.compiletime.erasedValue`, которая определяется следующим образом:
 
-```scala
+```dotty
 def erasedValue[T]: T
 ```
 
@@ -237,7 +234,7 @@ def erasedValue[T]: T
 
 Используя `erasedValue`, можно определить `defaultValue` следующим образом:
 
-```scala
+```dotty
 import scala.compiletime.erasedValue
 
 transparent inline def defaultValue[T] =
@@ -256,7 +253,7 @@ transparent inline def defaultValue[T] =
 
 Затем:
 
-```scala
+```dotty
 val dInt: Some[Int] = defaultValue[Int]
 // dInt: Some[Int] = Some(value = 0)
 val dDouble: Some[Double] = defaultValue[Double]
@@ -272,7 +269,7 @@ val dAny: None.type = defaultValue[Any]
 Рассмотрим определения чисел, как в разделе ["inline match"](../metaprogramming/inline.md). 
 Вот как можно определить `toIntT`:
 
-```scala
+```dotty
 transparent inline def toIntT[N <: Nat]: Int =
   inline scala.compiletime.erasedValue[N] match
     case _: Zero.type => 0
@@ -295,7 +292,7 @@ inline val two = toIntT[Succ[Succ[Zero.type]]]
 Когда все аргументы типа `scala.compiletime.ops` являются одноэлементными типами, 
 компилятор может оценить результат операции.
 
-```scala
+```dotty
 import scala.compiletime.ops.int.*
 import scala.compiletime.ops.boolean.*
 
@@ -309,7 +306,7 @@ val multiplication: 3 * 5 = 15
 Поскольку псевдонимы типов имеют те же правила приоритета, что и их эквиваленты на уровне терминов, 
 операции составляются с ожидаемыми правилами приоритета:
 
-```scala
+```dotty
 import scala.compiletime.ops.int.*
 val x: 1 + 2 * 3 = 7
 ```
@@ -320,7 +317,7 @@ val x: 1 + 2 * 3 = 7
 Чтобы использовать оба типа и отличить их друг от друга, 
 тип соответствия может отправляться в правильную реализацию:
 
-```scala
+```dotty
 import scala.compiletime.ops.*
 
 type +[X <: Int | String, Y <: Int | String] = (X, Y) match

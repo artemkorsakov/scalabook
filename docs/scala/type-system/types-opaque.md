@@ -10,7 +10,7 @@
 
 Поскольку важно отличать "обычные" `Double` от чисел, хранящихся в виде их логарифмов, введем класс `Logarithm`:
 
-```scala mdoc:silent
+```dotty
 class Logarithm(protected val underlying: Double):
   def toDouble: Double = math.exp(underlying)
   def + (that: Logarithm): Logarithm =
@@ -26,13 +26,13 @@ object Logarithm:
 Метод `apply` сопутствующего объекта позволяет создавать значения типа `Logarithm`, 
 которые можно использовать следующим образом:
 
-```scala mdoc:silent
+```dotty
 val l2 = Logarithm(2.0)
 val l3 = Logarithm(3.0)
-```
-```scala mdoc
 println((l2 * l3).toDouble)
+// 6.0
 println((l2 + l3).toDouble)
+// 4.999999999999999
 ```
 
 В то время как класс `Logarithm` предлагает хорошую абстракцию для значений `Double`, 
@@ -48,7 +48,7 @@ println((l2 + l3).toDouble)
 На этот раз вместо того, чтобы определять `Logarithm` как класс, определяем его с помощью псевдонима типа. 
 Во-первых, зададим абстрактный интерфейс модуля:
 
-```scala
+```dotty
 trait Logarithms:
 
   type Logarithm
@@ -70,7 +70,7 @@ trait Logarithms:
 
 Теперь давайте реализуем этот абстрактный интерфейс, задав тип `Logarithm` равным `Double`:
 
-```scala
+```dotty
 object LogarithmsImpl extends Logarithms:
 
   type Logarithm = Double
@@ -95,7 +95,7 @@ object LogarithmsImpl extends Logarithms:
 который может случайно использовать `Double` там, где ожидается логарифмическое удвоение. 
 Например:
 
-```scala
+```dotty
 import LogarithmsImpl.*
 val l: Logarithm = make(1.0)
 val d: Double = l // проверка типов ДОЗВОЛЯЕТ равенство!
@@ -107,7 +107,7 @@ val d: Double = l // проверка типов ДОЗВОЛЯЕТ равенс
 и часто требует использования дополнительных функций, 
 таких как типы, зависящие от пути, как в следующем примере:
 
-```scala
+```dotty
 def someComputation(L: Logarithms)(init: L.Logarithm): L.Logarithm = ...
 ```
 
@@ -123,7 +123,7 @@ def someComputation(L: Logarithms)(init: L.Logarithm): L.Logarithm = ...
 Вместо того чтобы вручную разбивать компонент `Logarithms` на абстрактную часть и на конкретную реализацию, 
 можно просто использовать `opaque` типы для достижения аналогичного эффекта:
 
-```scala mdoc:silent:reset
+```dotty
 object MyMath:
   // !!!
   opaque type Logarithm = Double
@@ -159,17 +159,21 @@ end MyMath
 и операции `+` и `*` определяются как методы расширения над значениями `Logarithm`. 
 Следующие операции допустимы, поскольку они используют функциональные возможности, реализованные в объекте `MyMath`.
 
-```scala mdoc
+```dotty
 import MyMath.Logarithm
 val l = Logarithm(1.0)
+// l: Logarithm = 0.0
 val l2 = Logarithm(2.0)
+// l2: Logarithm = 0.6931471805599453
 val l3 = l * l2
+// l3: Logarithm = 0.6931471805599453
 val l4 = l + l2
+// l4: Logarithm = 1.0986122886681098
 ```
 
 Но следующие операции приведут к ошибкам типа:
 
-```scala
+```dotty
 val d: Double = l       // error: found: Logarithm, required: Double
 val l2: Logarithm = 1.0 // error: found: Double, required: Logarithm
 l * 2                   // error: found: Int(2), required: Logarithm
@@ -184,7 +188,7 @@ l / l2                  // error: `/` is not a member of Logarithm
 
 Псевдонимы непрозрачных типов также могут иметь ограничения. Пример:
 
-```scala
+```dotty
 object Access:
 
   opaque type Permissions = Int
@@ -233,7 +237,7 @@ end Access
 Это дает понять за пределами объекта `Access`, что `Permission` является подтипом двух других типов.
 Следовательно, следующий сценарий использования проходит type-checks.
 
-```scala
+```dotty
 object User:
   import Access.*
 
@@ -261,7 +265,7 @@ end User
 
 С другой стороны, вызов `roItem.rights.isOneOf(ReadWrite)` выдаст ошибку типа:
 
-```scala
+```dotty
 assert(roItem.rights.isOneOf(ReadWrite))
                                ^^^^^^^^^
                                Found:    (Access.ReadWrite : Access.Permissions)
@@ -278,7 +282,7 @@ assert(roItem.rights.isOneOf(ReadWrite))
 
 Например, можно переопределить приведенный выше пример логарифмов как класс.
 
-```scala
+```dotty
 class Logarithms:
 
   opaque type Logarithm = Double
@@ -293,7 +297,7 @@ class Logarithms:
 
 Члены непрозрачного типа разных экземпляров обрабатываются как разные:
 
-```scala
+```dotty
 val l1 = new Logarithms
 val l2 = new Logarithms
 val x = l1(1.5)

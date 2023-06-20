@@ -15,7 +15,7 @@
 Чтобы продемонстрировать, что это значит, сначала рассмотрим однопоточное программирование. 
 В однопоточном мире результат вызова метода привязывается к переменной следующим образом:
 
-```scala
+```dotty
 def aShortRunningTask(): Int = 42
 val x = aShortRunningTask()
 ```
@@ -24,7 +24,7 @@ val x = aShortRunningTask()
 
 При работе с `Future` процесс назначения выглядит примерно так:
 
-```scala
+```dotty
 def aLongRunningTask(): Future[Int] = ???
 val x = aLongRunningTask()
 ```
@@ -36,7 +36,7 @@ val x = aLongRunningTask()
 В этом однопоточном примере оператор `println` не печатается до тех пор, 
 пока не завершится выполнение `aShortRunningTask`:
 
-```scala
+```dotty
 def aShortRunningTask(): Int =
   Thread.sleep(500)
   42
@@ -69,7 +69,7 @@ println("Here")
 Чтобы продемонстрировать, как это работает, начнем с примера `Future` в REPL. 
 Во-первых, вставим необходимые инструкции импорта:
 
-```scala
+```dotty
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
@@ -77,7 +77,7 @@ import scala.util.{Failure, Success}
 
 Теперь можно создать `Future`. Для этого примера сначала определим долговременный однопоточный алгоритм:
 
-```scala
+```dotty
 def longRunningAlgorithm() =
   Thread.sleep(10_000)
   42
@@ -86,7 +86,7 @@ def longRunningAlgorithm() =
 Этот причудливый алгоритм возвращает целочисленное значение `42` после десятисекундной задержки. 
 Теперь вызовем этот алгоритм, поместив его в конструктор `Future` и присвоив результат переменной:
 
-```scala
+```
 scala> val eventualInt = Future(longRunningAlgorithm())
 eventualInt: scala.concurrent.Future[Int] = Future(<not completed>)
 ```
@@ -94,14 +94,14 @@ eventualInt: scala.concurrent.Future[Int] = Future(<not completed>)
 Вычисления начинают выполняться после вызова `longRunningAlgorithm()`. 
 Если сразу проверить значение переменной `eventualInt`, то можно увидеть, что `Future` еще не завершен:
 
-```scala
+```
 scala> eventualInt
 val res1: scala.concurrent.Future[Int] = Future(<not completed>)
 ```
 
 Но если проверить через десять секунд еще раз, то можно увидеть, что оно выполнено успешно:
 
-```scala
+```
 scala> eventualInt
 val res2: scala.concurrent.Future[Int] = Future(Success(42))
 ```
@@ -120,7 +120,7 @@ val res2: scala.concurrent.Future[Int] = Future(Success(42))
 `Future` имеет метод `map`, который используется точно так же, как метод `map` для коллекций. 
 Вот как выглядит результат, при вызове `map` сразу после создания переменной `eventualInt`:
 
-```scala
+```
 scala> val a = eventualInt.map(_ * 2)
 a: scala.concurrent.Future[Int] = Future(<not completed>)
 ```
@@ -129,7 +129,7 @@ a: scala.concurrent.Future[Int] = Future(<not completed>)
 первоначальный вывод показывает `Future(<not completed>)`. 
 Но если проверить значение `a` через десять секунд, то можно увидеть, что оно содержит ожидаемый результат `84`:
 
-```scala
+```
 scala> a
 res1: scala.concurrent.Future[Int] = Future(Success(84))
 ```
@@ -142,7 +142,7 @@ res1: scala.concurrent.Future[Int] = Future(Success(84))
 Одним из часто используемых методов обратного вызова является `onComplete`, принимающий частичную функцию, 
 в которой обрабатываются случаи `Success` и `Failure`:
 
-```scala
+```dotty
 eventualInt.onComplete {
   case Success(value) => println(s"Got the callback, value = $value")
   case Failure(e) => e.printStackTrace
@@ -151,7 +151,7 @@ eventualInt.onComplete {
 
 Если вставить этот код в REPL, то в конечном итоге придет результат:
 
-```scala
+```text
 Got the callback, value = 42
 ```
 
@@ -194,7 +194,7 @@ Got the callback, value = 42
 Рассмотрим следующий пример. 
 Ключевой момент - сначала запускаются вычисления, возвращающие `Future`, а затем они объединяются в выражении `for`:
 
-```scala
+```dotty
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
@@ -239,7 +239,7 @@ def sleep(millis: Long) = Thread.sleep(millis)
 
 После запуска этого приложения, вывод выглядит следующим образом:
 
-```scala
+```dotty
 creating the futures:   1
 before the 'sleep(3000)': 2
 in the 'yield': 806
@@ -262,7 +262,7 @@ result = 6
 Обратите внимание, что если бы вычисления выполнялись в выражении `for`, 
 они выполнялись бы последовательно, а не параллельно:
 
-```scala
+```dotty
 // последовательное выполнение (не параллельно!)
 for
   r1 <- Future { sleep(800); 1 }
@@ -279,7 +279,7 @@ yield
 Было показано, как передавать однопоточный алгоритм в конструктор `Future`. 
 Ту же технику можно использовать для создания метода, который возвращает `Future`:
 
-```scala
+```dotty
 // моделируем медленно работающий метод
 def slowlyDouble(x: Int, delay: Long): Future[Int] = Future {
   sleep(delay)
@@ -291,7 +291,7 @@ def slowlyDouble(x: Int, delay: Long): Future[Int] = Future {
 Тогда, если сразу проверить результат, то можно увидеть, что он не завершен, 
 но по истечении времени задержки в `Future` результат будет выдан:
 
-```scala
+```dotty
 scala> val f = slowlyDouble(2, 5_000L)
 val f: concurrent.Future[Int] = Future(<not completed>)
 

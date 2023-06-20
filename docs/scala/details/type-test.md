@@ -3,14 +3,14 @@
 При сопоставлении с образцом есть две ситуации, когда необходимо выполнить проверку типа во время выполнения. 
 Первый случай — это явная проверка типа с использованием нотации шаблона атрибуции.
 
-```scala
+```dotty
 (x: X) match
   case y: Y =>
 ```
 
 Второй случай — когда экстрактор принимает аргумент, не являющийся подтипом контролируемого типа.
 
-```scala
+```dotty
 (x: X) match
   case y @ Y(n) =>
 
@@ -24,7 +24,7 @@ object Y:
 
 Проверку типов в этих случаях можно выполнять если предоставлен [trait TypeTest](https://scala-lang.org/api/3.x/scala/reflect/TypeTest.html).
 
-```scala
+```dotty
 package scala.reflect
 
 trait TypeTest[-S, T]:
@@ -34,7 +34,7 @@ trait TypeTest[-S, T]:
 Он предоставляет экстрактор, который возвращает свой аргумент, типизированный как `T`, если аргумент имеет тип `T`. 
 Его можно использовать для кодирования проверки типа.
 
-```scala
+```dotty
 def f[X, Y](x: X)(using tt: TypeTest[X, Y]): Option[Y] = x match
   case tt(x @ Y(1)) => Some(x)
   case tt(x) => Some(x)
@@ -47,7 +47,7 @@ def f[X, Y](x: X)(using tt: TypeTest[X, Y]): Option[Y] = x match
 если в области видимости доступен контекст `TypeTest[X, Y]`. 
 Предыдущий код эквивалентен
 
-```scala
+```dotty
 def f[X, Y](x: X)(using TypeTest[X, Y]): Option[Y] = x match
   case x @ Y(1) => Some(x)
   case x: Y => Some(x)
@@ -57,7 +57,7 @@ def f[X, Y](x: X)(using TypeTest[X, Y]): Option[Y] = x match
 На стороне вызова можно было бы создать тест типа, 
 где тест типа может быть выполнен непосредственно с тестами класса времени выполнения следующим образом.
 
-```scala
+```dotty
 val tt: TypeTest[Any, String] =
   new TypeTest[Any, String]:
     def unapply(s: Any): Option[s.type & String] = s match
@@ -69,7 +69,7 @@ f[AnyRef, String]("acb")(using tt)
 
 Компилятор синтезирует новый экземпляр теста типа, если ни один из них не найден в области видимости, например:
 
-```scala
+```dotty
 new TypeTest[A, B]:
   def unapply(s: A): Option[s.type & B] = s match
     case s: B => Some(s)
@@ -82,7 +82,7 @@ new TypeTest[A, B]:
 которые принимают любые параметры (т.е. `TypeTest[Any, T]`). 
 Чтобы можно было использовать такие экземпляры непосредственно в границах контекста, предоставляется псевдоним
 
-```scala
+```dotty
 package scala.reflect
 
 type Typeable[T] = TypeTest[Any, T]
@@ -90,7 +90,7 @@ type Typeable[T] = TypeTest[Any, T]
 
 Этот псевдоним можно использовать так:
 
-```scala mdoc
+```dotty
 import scala.reflect.Typeable
 
 def f[T: Typeable]: Boolean =
@@ -99,7 +99,9 @@ def f[T: Typeable]: Boolean =
     case _ => false
 
 f[String]
+// res0: Boolean = true
 f[Int]
+// res1: Boolean = false
 ```
 
 ### Пример
@@ -107,7 +109,7 @@ f[Int]
 Учитывая следующее абстрактное определение чисел Пеано, 
 которое предоставляет два given экземпляра типов `TypeTest[Nat, Zero]` и `TypeTest[Nat, Succ]`:
 
-```scala mdoc:silent
+```dotty
 import scala.reflect.*
 
 trait Peano:
@@ -130,7 +132,7 @@ trait Peano:
 
 вместе с реализацией чисел Пеано на основе типа `Int`:
 
-```scala mdoc:silent
+```dotty
 object PeanoInt extends Peano:
   type Nat  = Int
   type Zero = Int
@@ -155,7 +157,7 @@ object PeanoInt extends Peano:
 
 можно написать следующую программу:
 
-```scala mdoc
+```dotty
 import PeanoInt.*
 
 def divOpt(m: Nat, n: Nat): Option[(Nat, Nat)] =
@@ -164,11 +166,16 @@ def divOpt(m: Nat, n: Nat): Option[(Nat, Nat)] =
     case s @ Succ(_) => Some(safeDiv(m, s))
 
 val two = Succ(Succ(Zero))
+// two: Int = 2
 val five = Succ(Succ(Succ(two)))
+// five: Int = 5
 
 println(divOpt(five, two))
+// Some((2,1))
 println(divOpt(two, five))
+// Some((0,2))
 println(divOpt(two, Zero))
+// None
 ```
 
 Обратите внимание, что без `TypeTest[Nat, Succ]` паттерн `Succ.unapply(nat: Succ)` был бы `unchecked`.

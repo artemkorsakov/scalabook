@@ -17,7 +17,7 @@
 
 В Scala 3 классы типов — это просто trait-ы с одним или несколькими параметрами типа, например:
 
-```scala mdoc:silent
+```dotty
 trait Show[A]:
   def show(a: A): String
 ```
@@ -26,14 +26,14 @@ trait Show[A]:
 что мы можем показать (т.е. создать текстовое представление) экземпляр типа `A`. 
 Например, рассмотрим следующий экземпляр `Show` для `Int`:
 
-```scala mdoc:silent
+```dotty
 class ShowInt extends Show[Int]:
   def show(a: Int) = s"The number is ${a}!"
 ```
 
 Можно написать методы, которые работают с произвольными типами `A`, ограниченными `Show`, следующим образом:
 
-```scala mdoc:silent
+```dotty
 def toHtml[A](a: A)(showA: Show[A]): String =
   "<p>" + showA.show(a) + "</p>"
 ```
@@ -41,8 +41,9 @@ def toHtml[A](a: A)(showA: Show[A]): String =
 То есть `toHtml` можно вызывать с произвольным `A`, если также предоставить экземпляр `Show[A]`. 
 Например, метод можно вызвать так:
 
-```scala mdoc
+```dotty
 toHtml(42)(ShowInt())
+// res0: String = "<p>The number is 42!</p>"
 ```
 
 ##### Автоматическая передача экземпляров класса типов

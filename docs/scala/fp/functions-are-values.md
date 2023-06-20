@@ -11,10 +11,13 @@
 
 Это было видно во многих местах предыдущих глав, когда демонстрировались такие методы, как `map` и `filter`:
 
-```scala mdoc
+```dotty
 val nums = (1 to 10).toList
+// nums: List[Int] = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 val doubles = nums.map(_ * 2)         
+// doubles: List[Int] = List(2, 4, 6, 8, 10, 12, 14, 16, 18, 20)         
 val lessThanFive = nums.filter(_ < 5) 
+// lessThanFive: List[Int] = List(1, 2, 3, 4)
 ```
 
 В этих примерах анонимные функции передаются в `map` и `filter`.
@@ -23,12 +26,11 @@ val lessThanFive = nums.filter(_ < 5)
 
 Помимо передачи анонимных функций в `filter` и `map`, в них также можно передать методы:
 
-```scala mdoc:silent:nest
+```dotty
 def double(i: Int): Int = i * 2
 def underFive(i: Int): Boolean = i < 5
-```
-```scala mdoc
 val doubles = nums.filter(underFive).map(double) 
+// doubles: List[Int] = List(2, 4, 6, 8)
 ```
 
 Эта возможность обращаться с методами и функциями как со значениями — 
@@ -42,29 +44,30 @@ val doubles = nums.filter(underFive).map(double)
 
 В примерах выше анонимная функция это:
 
-```scala
+```dotty
 _ * 2
 ```
 
 Как было показано в обсуждении [функций высшего порядка](../functions/hofs.md), 
 `_ * 2` - сокращенная версия синтаксиса:
 
-```scala
+```dotty
 (i: Int) => i * 2
 ```
 
 Такие функции называются "анонимными", потому что им не присваивается определенное имя. 
 Для того чтобы это имя задать, достаточно просто назначить его переменной:
 
-```scala mdoc:reset:silent
+```dotty
 val double = (i: Int) => i * 2
 ```
 
 Теперь появилась именованная функция, назначенная переменной `double`. 
 Можно использовать эту функцию так же, как используется метод:
 
-```scala mdoc
+```dotty
 double(2)
+// res1: Int = 4
 ```
 
 В большинстве случаев не имеет значения, является ли `double` функцией или методом; 
@@ -80,22 +83,35 @@ Scala позволяет обращаться с ними одинаково.
 
 Вот еще несколько примеров:
 
-```scala mdoc
+```dotty
 List("bob", "joe").map(_.toUpperCase)  
+// res2: List[String] = List("BOB", "JOE")  
 List("bob", "joe").map(_.capitalize)   
+// res3: List[String] = List("Bob", "Joe")   
 List("plum", "banana").map(_.length)   
+// res4: List[Int] = List(4, 6)   
 
 val fruits = List("apple", "pear")
+// fruits: List[String] = List("apple", "pear")
 fruits.map(_.toUpperCase)     
+// res5: List[String] = List("APPLE", "PEAR")     
 fruits.flatMap(_.toUpperCase) 
+// res6: List[Char] = List('A', 'P', 'P', 'L', 'E', 'P', 'E', 'A', 'R') 
 
 val nums = List(5, 1, 3, 11, 7)
+// nums: List[Int] = List(5, 1, 3, 11, 7)
 nums.map(_ * 2)       
+// res7: List[Int] = List(10, 2, 6, 22, 14)       
 nums.filter(_ > 3)    
+// res8: List[Int] = List(5, 11, 7)    
 nums.takeWhile(_ < 6) 
+// res9: List[Int] = List(5, 1, 3) 
 nums.sortWith(_ < _)  
+// res10: List[Int] = List(1, 3, 5, 7, 11)  
 nums.sortWith(_ > _)  
+// res11: List[Int] = List(11, 7, 5, 3, 1)  
 nums.takeWhile(_ < 6).sortWith(_ < _) 
+// res12: List[Int] = List(1, 3, 5)
 ```
 
 

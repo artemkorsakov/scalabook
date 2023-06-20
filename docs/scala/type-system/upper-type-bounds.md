@@ -6,7 +6,7 @@
 Верхнее ограничение типа `T <: A` указывает на то что тип `T` относится к подтипу типа `A`.
 Приведем пример, демонстрирующий верхнее ограничение для типа класса `PetContainer`:
 
-```scala
+```dotty
 abstract class Animal:
   def name: String
 
@@ -32,7 +32,7 @@ val catContainer = PetContainer[Cat](Cat())
 `Dog` и `Cat` - это подтипы `Pet`, поэтому можно создать новые `PetContainer[Dog]` и `PetContainer[Cat]`.
 Однако, если попытаться создать `PetContainer[Lion]`, то получим следующую ошибку:
 
-```scala
+```dotty
 val lionContainer = PetContainer[Lion](Lion())
 // error:
 // Type argument App0.this.Lion does not conform to upper bound App0.this.Pet

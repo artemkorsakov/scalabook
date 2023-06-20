@@ -4,7 +4,7 @@ _Контекстные функции_ — это функции с парам�
 Их типы являются типами контекстных функций. 
 Вот пример подобного типа:
 
-```scala
+```dotty
 type Executable[T] = ExecutionContext ?=> T
 ```
 
@@ -12,7 +12,7 @@ type Executable[T] = ExecutionContext ?=> T
 Они применяются к синтезированным аргументам точно так же, как применяются методы с контекстными параметрами. 
 Например:
 
-```scala
+```dotty
 given ec: ExecutionContext = ...
 
   def f(x: Int): ExecutionContext ?=> Int = ...
@@ -28,7 +28,7 @@ given ec: ExecutionContext = ...
 и `E` не является литералом контекстной функции, 
 `E` преобразуется в литерал контекстной функции путем перезаписи его в
 
-```scala
+```dotty
 (x_1: T1, ..., x_n: Tn) ?=> E
 ```
 
@@ -42,7 +42,7 @@ given ec: ExecutionContext = ...
 
 Например, продолжая предыдущие определения,
 
-```scala
+```dotty
 def g(arg: Executable[Int]) = ...
 
   g(22)      // расширяется до g((ev: ExecutionContext) ?=> 22)
@@ -59,7 +59,7 @@ def g(arg: Executable[Int]) = ...
 Например, вот как они могут поддерживать "шаблон построителя", 
 целью которого является создание таких таблиц:
 
-```scala
+```dotty
 table {
   row {
     cell("top left")
@@ -74,7 +74,7 @@ table {
 
 Идея состоит в том, чтобы определить классы для `Table` и `Row`, которые позволяют добавлять элементы через `add`:
 
-```scala
+```dotty
 class Table:
   val rows = new ArrayBuffer[Row]
   def add(r: Row): Unit = rows += r
@@ -90,7 +90,7 @@ case class Cell(elem: String)
 
 Затем можно определить методы конструктора `table`, `row` и `cell` с типами контекстных функций в качестве параметров.
 
-```scala
+```dotty
 def table(init: Table ?=> Unit) =
   given t: Table = Table()
   init
@@ -107,7 +107,7 @@ def cell(str: String)(using r: Row) =
 
 При такой настройке приведенный выше код построения таблицы компилируется и расширяется до:
 
-```scala
+```dotty
 table { ($t: Table) ?=>
 
   row { ($r: Row) ?=>
@@ -130,7 +130,7 @@ table { ($t: Table) ?=>
 В примере сочетаются непрозрачные псевдонимы типов, типы контекстных функций и методы расширения, 
 чтобы обеспечить абстракцию с нулевыми издержками.
 
-```scala
+```dotty
 object PostConditions:
   opaque type WrappedResult[T] = T
 
@@ -158,7 +158,7 @@ val s = List(1, 2, 3).sum.ensuring(result == 6)
 Следовательно, реализация `ensuring` близка по эффективности к наилучшему коду, 
 который можно было бы написать вручную:
 
-```scala
+```dotty
 val s =
   val result = List(1, 2, 3).sum
   assert(result == 6)

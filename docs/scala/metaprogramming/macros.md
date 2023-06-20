@@ -18,7 +18,7 @@
 
 Следующая реализация макроса просто печатает выражение предоставленного аргумента:
 
-```scala
+```dotty
 def inspectCode(x: Expr[Any])(using Quotes): Expr[Any] =
   println(x.show)
   x
@@ -29,7 +29,7 @@ def inspectCode(x: Expr[Any])(using Quotes): Expr[Any] =
 Как уже упоминалось в разделе [Inline][inline], 
 встроенные методы предоставляют точку входа для определений макросов:
 
-```scala
+```dotty
 inline def inspect(inline x: Any): Any = ${ inspectCode('x) }
 ```
 
@@ -43,7 +43,7 @@ inline def inspect(inline x: Any): Any = ${ inspectCode('x) }
 Вызов `inspect` макроса `inspect(sys error "abort")` выводит 
 строковое представление выражения аргумента во время компиляции:
 
-```scala
+```dotty
 scala.sys.error("abort")
 ```
 
@@ -53,7 +53,7 @@ scala.sys.error("abort")
 Точно так же, как `scala.quoted.Expr[T]` представляет выражение Scala типа `T`, 
 `scala.quoted.Type[T]` используется для представления типа Scala `T`.
 
-```scala
+```dotty
 inline def logged[T](inline x: T): T = ${ loggedCode('x)  }
 
 def loggedCode[T](x: Expr[T])(using Type[T], Quotes): Expr[T] = ...
@@ -91,7 +91,7 @@ def loggedCode[T](x: Expr[T])(using Type[T], Quotes): Expr[T] = ...
 Вспомним определение `power` из раздела [Inline][inline], 
 которое специализировало вычисление `xⁿ` для статически известных значений `n`.
 
-```scala
+```dotty
 inline def power(x: Double, inline n: Int): Double =
   inline if n == 0 then 1.0
   else inline if n % 2 == 1 then x * power(x, n - 1)
@@ -103,7 +103,7 @@ inline def power(x: Double, inline n: Int): Double =
 Хотя это также возможно с помощью `inline`, 
 реализация с помощью макросов проиллюстрирует несколько вещей.
 
-```scala
+```dotty
 inline def power(inline x: Double, inline n: Int) =
   ${ powerCode('x, 'n)  }
 
@@ -117,7 +117,7 @@ def powerCode(
 
 `powerCode` можно было бы реализовать следующим образом:
 
-```scala
+```dotty
 def pow(x: Double, n: Int): Double =
   if n == 0 then 1 else x * pow(x, n - 1)
 
@@ -157,7 +157,7 @@ def powerCode(
 Вместо `valueOrError`, можно было бы также использовать операцию `value`, которая вернет `Option`. 
 Таким образом, можно сообщить об ошибке с помощью пользовательского сообщения.
 
-```scala
+```dotty
   ...
   (x.value, n.value) match
     case (Some(base), Some(exponent)) =>
@@ -170,7 +170,7 @@ def powerCode(
 
 Кроме того, также можно использовать экстрактор `Expr.unapply`:
 
-```scala
+```dotty
   ...
   (x, n) match
     case (Expr(base), Expr(exponent)) =>
@@ -190,7 +190,7 @@ def powerCode(
 в строковое представление исходного кода с помощью метода `.show`. 
 Это может быть полезно для отладки реализации макросов:
 
-```scala
+```dotty
 def debugPowerCode(
   x: Expr[Double],
   n: Expr[Int]
@@ -210,7 +210,7 @@ def debugPowerCode(
 поэтому, когда пишется макрос с переменным аргументом, он будет передан как `Expr[Seq[T]]`. 
 Можно восстановить каждый отдельный аргумент (типа `Expr[T]`) с помощью экстрактора `scala.quoted.Varargs`.
 
-```scala
+```dotty
 import scala.quoted.Varargs
 
 inline def sumNow(inline nums: Int*): Int =
@@ -263,7 +263,7 @@ def sumCode(nums: Expr[Seq[Int]])(using Quotes): Expr[Int] =
 Конструктор `Expr.block` предоставляет простой способ создания блока кода `{ stat1; ...; statn; expr }`. 
 Его первые аргументы — это список со всеми операторами, а второй аргумент — выражение в конце блока.
 
-```scala
+```dotty
 inline def test(inline ignore: Boolean, computation: => Unit): Boolean =
   ${ testCode('ignore, 'computation) }
 
@@ -281,7 +281,7 @@ def testCode(ignore: Expr[Boolean], computation: Expr[Unit])(using Quotes) =
 Этот метод `Expr.matches` можно использовать для проверки равенства одного выражения другому. 
 С помощью этого метода можно было бы реализовать `value` операцию `Expr[Boolean]` следующим образом:
 
-```scala
+```dotty
 def value(boolExpr: Expr[Boolean]): Option[Boolean] =
   if boolExpr.matches(Expr(true)) then Some(true)
   else if boolExpr.matches(Expr(false)) then Some(false)

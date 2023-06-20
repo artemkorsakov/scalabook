@@ -25,7 +25,7 @@
 который имеет один или несколько абстрактных методов. 
 Поскольку у `Showable` есть только один метод с именем `show`, он написан так:
 
-```scala mdoc:silent
+```dotty
 // Класс типа
 trait Showable[A]:
   extension(a: A) def show: String
@@ -34,7 +34,7 @@ trait Showable[A]:
 В Scala 3 это способ сказать, что любой тип, который реализует этот trait, должен определять, как работает метод `show`. 
 Обратите внимание, что синтаксис очень близок к обычному trait:
 
-```scala
+```dotty
 // a trait
 trait Show:
   def show: String
@@ -55,14 +55,14 @@ trait Show:
 Следующий шаг — определить, для каких классов должен работать `Showable`, а затем реализовать это поведение. 
 Например, чтобы реализовать `Showable` для данного класса `Person`:
 
-```scala mdoc:silent
+```dotty
 case class Person(firstName: String, lastName: String)
 ```
 
 нужно определить `given` значение для `Showable[Person]`. 
 Этот код предоставляет конкретный экземпляр `Showable` для класса `Person`:
 
-```scala mdoc:silent
+```dotty
 given Showable[Person] with
   extension(p: Person) def show: String =
     s"${p.firstName} ${p.lastName}"
@@ -75,9 +75,11 @@ given Showable[Person] with
 
 Этот класс типа можно использовать следующим образом:
 
-```scala mdoc
+```dotty
 val person = Person("John", "Doe")
+// person: Person = Person(firstName = "John", lastName = "Doe")
 println(person.show)
+// John Doe
 ```
 
 Опять же, если бы в Scala не было метода `toString`, доступного для каждого класса, 
@@ -88,17 +90,19 @@ println(person.show)
 
 Как и в случае с наследованием, можно определить методы, использующие `Showable` в качестве параметра типа:
 
-```scala mdoc
+```dotty
 def showAll[S: Showable](xs: List[S]): Unit =
   xs.foreach(x => println(x.show))
 showAll(List(Person("Jane", "Jackson"), Person("Mary", "Jameson")))
+// Jane Jackson
+// Mary Jameson
 ```
 
 #### Класс типов с несколькими методами
 
 Если необходимо создать класс типов с несколькими методами, исходный синтаксис выглядит следующим образом:
 
-```scala
+```dotty
 trait HasLegs[A]:
   extension (a: A)
     def walk(): Unit
@@ -111,7 +115,7 @@ trait HasLegs[A]:
 
 Вот определение [класса типа `Monoid`](https://typelevel.org/cats/typeclasses/monoid.html):
 
-```scala
+```dotty
 trait SemiGroup[T]:
   extension (x: T) def combine (y: T): T
 
@@ -121,7 +125,7 @@ trait Monoid[T] extends SemiGroup[T]:
 
 Реализация класса типа `Monoid` для типа `String` может быть следующей:
 
-```scala
+```dotty
 given Monoid[String] with
   extension (x: String) def combine (y: String): String = x.concat(y)
   def unit: String = ""
@@ -129,7 +133,7 @@ given Monoid[String] with
 
 Тогда как для типа `Int` можно было бы написать следующее:
 
-```scala
+```dotty
 given Monoid[Int] with
   extension (x: Int) def combine (y: Int): Int = x + y
   def unit: Int = 0
@@ -137,21 +141,21 @@ given Monoid[Int] with
 
 Этот моноид теперь можно использовать в качестве привязки к контексту в следующем методе `combineAll`:
 
-```scala
+```dotty
 def combineAll[T: Monoid](xs: List[T]): T =
   xs.foldLeft(summon[Monoid[T]].unit)(_.combine(_))
 ```
 
 Чтобы избавиться от `summon[...]` можно определить объект `Monoid` следующим образом:
 
-```scala
+```dotty
 object Monoid:
   def apply[T](using m: Monoid[T]) = m
 ```
 
 Что позволило бы переписать метод `combineAll` следующим образом:
 
-```scala
+```dotty
 def combineAll[T: Monoid](xs: List[T]): T =
   xs.foldLeft(Monoid[T].unit)(_.combine(_))
 ```
@@ -166,7 +170,7 @@ def combineAll[T: Monoid](xs: List[T]): T =
 Поэтому мы пишем `F[_]`, намекая, что тип `F` принимает в качестве аргумента другой тип. 
 Таким образом, определение generic `Functor` будет записано как:
 
-```scala
+```dotty
 trait Functor[F[_]]:
   def map[A, B](x: F[A], f: A => B): F[B]
 ```
@@ -177,7 +181,7 @@ trait Functor[F[_]]:
 Определение `Functor` здесь - класс типов. 
 Экземпляр `Functor` для типа `List` можно определить следующим образом:
 
-```scala
+```dotty
 given Functor[List] with
   def map[A, B](x: List[A], f: A => B): List[B] =
     x.map(f) // в List уже реализован метод `map`
@@ -188,14 +192,14 @@ given Functor[List] with
 
 Например, можно написать такой метод тестирования:
 
-```scala
+```dotty
 def assertTransformation[F[_]: Functor, A, B](expected: F[B], original: F[A], mapping: A => B): Unit =
   assert(expected == summon[Functor[F]].map(original, mapping))
 ```
 
 И использовать его, например, так:
 
-```scala
+```dotty
 assertTransformation(List("a1", "b1"), List("a", "b"), elt => s"${elt}1")
 ```
 
@@ -204,7 +208,7 @@ assertTransformation(List("a1", "b1"), List("a", "b"), elt => s"${elt}1")
 Как и в предыдущем примере моноидов, в этом помогают [extension методы](ca-extension-methods.md). 
 Переопределим класс типов `Functor` с помощью методов расширения.
 
-```scala
+```dotty
 trait Functor[F[_]]:
   extension [A](x: F[A])
     def map[B](f: A => B): F[B]
@@ -212,7 +216,7 @@ trait Functor[F[_]]:
 
 Экземпляр `given Functor` для `List` становится:
 
-```scala
+```dotty
 given Functor[List] with
   extension [A](xs: List[A])
     def map[B](f: A => B): List[B] =
@@ -221,7 +225,7 @@ given Functor[List] with
 
 Это упрощает метод `assertTransformation`:
 
-```scala
+```dotty
 def assertTransformation[F[_]: Functor, A, B](expected: F[B], original: F[A], mapping: A => B): Unit =
   assert(expected == original.map(mapping))
 ```
@@ -243,7 +247,7 @@ def assertTransformation[F[_]: Functor, A, B](expected: F[B], original: F[A], ma
 
 Определение монады:
 
-```scala
+```dotty
 trait Monad[F[_]] extends Functor[F]:
 
   /** Оборачивание в монаду */
@@ -263,7 +267,7 @@ end Monad
 
 `List` можно превратить в монаду через следующий экземпляр `given`:
 
-```scala
+```dotty
 given listMonad: Monad[List] with
   def pure[A](x: A): List[A] =
     List(x)
@@ -279,7 +283,7 @@ given listMonad: Monad[List] with
 
 `Option` - ещё один тип, имеющий такое же поведение:
 
-```scala
+```dotty
 given optionMonad: Monad[Option] with
   def pure[A](x: A): Option[A] =
     Option(x)
@@ -298,7 +302,7 @@ given optionMonad: Monad[Option] with
 
 Давайте определим тип `Config` и две функции, использующие его:
 
-```scala
+```dotty
 trait Config
 // ...
 def compute(i: Int)(config: Config): String = ???
@@ -310,13 +314,13 @@ def show(str: String)(config: Config): Unit = ???
 Также желательно использовать монаду, чтобы избежать явной передачи параметра несколько раз. 
 Таким образом, постулируя правильную операцию `flatMap`, можно было бы написать так:
 
-```scala
+```dotty
 def computeAndShow(i: Int): Config => Unit = compute(i).flatMap(show)
 ```
 
 вместо
 
-```scala
+```dotty
 show(compute(i)(config))(config)
 ```
 
@@ -324,13 +328,13 @@ show(compute(i)(config))(config)
 Во-первых, мы собираемся определить тип с именем `ConfigDependent`, 
 представляющий функцию, которая при передаче создает `Result` из `Config`.
 
-```scala
+```dotty
 type ConfigDependent[Result] = Config => Result
 ```
 
 Экземпляр монады будет выглядеть так:
 
-```scala
+```dotty
 given configDependentMonad: Monad[ConfigDependent] with
 
   def pure[A](x: A): ConfigDependent[A] =
@@ -345,13 +349,13 @@ end configDependentMonad
 
 Тип `ConfigDependent` может быть записан с использованием [лямбда-выражений типа](../type-system/type-lambdas.md):
 
-```scala
+```dotty
 type ConfigDependent = [Result] =>> Config => Result
 ```
 
 Использование этого синтаксиса превратит предыдущий `configDependentMonad` в:
 
-```scala
+```dotty
 given configDependentMonad: Monad[[Result] =>> Config => Result] with
 
   def pure[A](x: A): Config => A =
@@ -367,7 +371,7 @@ end configDependentMonad
 Вполне вероятно, что мы бы также хотели использовать этот паттерн с другими типами окружения, не только с `trait Config`. 
 Монада `Reader` позволяет абстрагировать `Config` в параметр типа, названный `Ctx` в следующем определении:
 
-```scala
+```dotty
 given readerMonad[Ctx]: Monad[[X] =>> Ctx => X] with
 
   def pure[A](x: A): Ctx => A =

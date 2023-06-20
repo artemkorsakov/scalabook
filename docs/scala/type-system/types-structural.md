@@ -24,7 +24,7 @@
 
 Вот пример структурного типа `Person`:
 
-```scala
+```dotty
 class Record(elems: (String, Any)*) extends Selectable:
   private val fields = elems.toMap
   def selectDynamic(name: String): Any = fields(name)
@@ -42,7 +42,7 @@ type Person = Record {
 Но тем не менее они существуют как члены класса `Person`. 
 Например, следующая программа напечатала бы "`Emma is 42 years old.`":
 
-```scala
+```dotty
 val person = Record(
   "name" -> "Emma",
   "age" -> 42
@@ -65,7 +65,7 @@ println(s"${person.name} is ${person.age} years old.")
 Выбор элемента структурного типа выполняется путем вызова соответствующего метода. 
 `person.name` и `person.age` преобразуются компилятором Scala в:
 
-```scala
+```dotty
 person.selectDynamic("name").asInstanceOf[String]
 person.selectDynamic("age").asInstanceOf[Int]
 ```
@@ -76,7 +76,7 @@ person.selectDynamic("age").asInstanceOf[Int]
 Чтобы закрепить сказанное, вот еще один структурный тип с именем `Book`, 
 представляющий книгу, доступную в базе данных:
 
-```scala
+```dotty
 type Book = Record {
   val title: String
   val author: String
@@ -87,7 +87,7 @@ type Book = Record {
 
 Как и в случае с `Person`, экземпляр `Book` создается следующим образом:
 
-```scala
+```dotty
 val book = Record(
   "title" -> "The Catcher in the Rye",
   "author" -> "J. D. Salinger",
@@ -103,7 +103,7 @@ val book = Record(
 который можно использовать для замены вызовов функций на вызов структурных элементов. 
 Таким образом, если `a` является экземпляром `Selectable`, структурный вызов типа `a.f(b, c)` преобразуется в:
 
-```scala
+```dotty
 a.applyDynamic("f")(b, c)
 ```
 

@@ -9,7 +9,7 @@
 Например, этот метод `maximum` принимает параметр контекста типа `Ord` 
 только для того, чтобы передать его в качестве аргумента функции `max`:
 
-```scala
+```dotty
 def maximum[A](xs: List[A])(using ord: Ord[A]): A =
   xs.reduceLeft(max(ord))
 ```
@@ -18,7 +18,7 @@ def maximum[A](xs: List[A])(using ord: Ord[A]): A =
 его можно передать в качестве предполагаемого аргумента в `max`, 
 поэтому достаточно просто указать, что `maximum` использует тип `Ord[A]`, не называя его:
 
-```scala
+```dotty
 def maximum[A](xs: List[A])(using Ord[A]): A =
   xs.reduceLeft(max)
 ```
@@ -30,7 +30,7 @@ def maximum[A](xs: List[A])(using Ord[A]): A =
 
 Используя привязку к контексту, метод `maximum` можно записать следующим образом:
 
-```scala
+```dotty
 def maximum[A: Ord](xs: List[A]): A = xs.reduceLeft(max)
 ```
 
@@ -39,20 +39,20 @@ def maximum[A: Ord](xs: List[A]): A = xs.reduceLeft(max)
 Параметры контекста, сгенерированные из границ контекста, идут последними в определении содержащего их метода или класса. 
 Например,
 
-```scala
+```dotty
 def f[T: C1 : C2, U: C3](x: T)(using y: U, z: V): R
 ```
 
 расширится до
 
-```scala
+```dotty
 def f[T, U](x: T)(using y: U, z: V)(using C1[T], C2[T], C3[U]): R
 ```
 
 Границы контекста можно комбинировать с границами подтипа. 
 Если присутствуют оба, сначала идут границы подтипа, например
 
-```scala
+```dotty
 def g[T <: B : C](x: T): R = ...
 ```
 

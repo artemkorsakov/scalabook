@@ -9,7 +9,7 @@
 Интуитивно понятно, что код непосредственно внутри кавычки (`'{ ... }`) сейчас не выполняется, 
 в то время как код внутри склейки (`${ ... }`) оценивается и результаты встраиваются в окружающее выражение.
 
-```scala
+```dotty
 val msg = Expr("Hello")
 val printHello = '{ print($msg) }
 println(printHello.show) // print("Hello")
@@ -28,7 +28,7 @@ println(printHello.show) // print("Hello")
 так как одна часть программы будет жить во время компиляции, а другая — во время выполнения. 
 Рассмотрим следующий плохо сконструированный код:
 
-```scala
+```dotty
 def myBadCounter1(using Quotes): Expr[Int] = {
   var x = 0
   '{ x += 1; x }
@@ -42,7 +42,7 @@ def myBadCounter1(using Quotes): Expr[Int] = {
 Теперь рассмотрим двойную версию, где определяется переменная во время выполнения 
 и происходит попытка получить к ней доступ во время компиляции:
 
-```scala
+```dotty
 def myBadCounter2(using Quotes): Expr[Int] = '{
   var x = 0
   ${ x += 1; 'x }
@@ -56,7 +56,7 @@ def myBadCounter2(using Quotes): Expr[Int] = '{
 
 Вводятся уровни как количество цитат за вычетом количества склеек, окружающих выражение или определение.
 
-```scala
+```dotty
 // level 0
 '{ // level 1
   var x = 0
@@ -86,7 +86,7 @@ Scala использует семантику стертых типов для �
 
 Рассмотрим следующий код:
 
-```scala
+```dotty
 def evalAndUse[T](x: Expr[T])(using Quotes) = '{
   val x2: T = $x // error
   ... // use x2
@@ -96,7 +96,7 @@ def evalAndUse[T](x: Expr[T])(using Quotes) = '{
 Здесь будет получено сообщение об ошибке, сообщающее, что не хватает контекстного параметра `Type[T]`. 
 Это можно легко исправить, написав:
 
-```scala
+```dotty
 def evalAndUse[T](x: Expr[T])(using Type[T])(using Quotes) = '{
   val x2: T = $x
   ... // use x2
@@ -105,7 +105,7 @@ def evalAndUse[T](x: Expr[T])(using Type[T])(using Quotes) = '{
 
 Код будет эквивалентен такой более подробной версии:
 
-```scala
+```dotty
 def evalAndUse[T](x: Expr[T])(using t: Type[T])(using Quotes) = '{
   val x2: t.Underlying = $x
   ... // use x2
@@ -127,7 +127,7 @@ def evalAndUse[T](x: Expr[T])(using t: Type[T])(using Quotes) = '{
 Когда добавляется контекстный параметр `Type` в метод, 
 он либо получается из другого параметра контекста, либо неявно с помощью вызова `Type.of`:
 
-```scala
+```dotty
 evalAndUse(Expr(3))
 // эквивалентно:
 evalAndUse[Int](Expr(3))(using Type.of[Int])
@@ -136,7 +136,7 @@ evalAndUse[Int](Expr(3))(using Type.of[Int])
 Не каждый тип можно использовать в качестве параметра `Type.of[..]` из коробки. 
 Например, нельзя восстановить абстрактные типы, которые уже были стерты:
 
-```scala
+```dotty
 def evalAndUse[T](x: Expr[T])(using Quotes) =
   given Type[T] = Type.of[T] // error
   '{
@@ -156,7 +156,7 @@ def evalAndUse[T](x: Expr[T])(using Quotes) =
 
 Метод `Expr.apply` использует экземпляры `ToExpr` для создания выражения, которое создаст копию значения.
 
-```scala
+```dotty
 object Expr:
   def apply[T](x: T)(using Quotes, ToExpr[T]): Expr[T] =
     summon[ToExpr[T]].apply(x)
@@ -164,7 +164,7 @@ object Expr:
 
 `ToExpr` определяется следующим образом:
 
-```scala
+```dotty
 trait ToExpr[T]:
   def apply(x: T)(using Quotes): Expr[T]
 ```
@@ -173,7 +173,7 @@ trait ToExpr[T]:
 
 Можно определить собственные `ToExpr`-ы, например:
 
-```scala
+```dotty
 given ToExpr[Boolean] with {
   def apply(x: Boolean)(using Quotes) =
     if x then '{true}
@@ -200,7 +200,7 @@ given ToExpr[StringContext] with {
 Самое простое, что можно сделать, - это проверить, соответствует ли выражение другому известному выражению. 
 Пример:
 
-```scala
+```dotty
 def valueOfBoolean(x: Expr[Boolean])(using Quotes): Option[Boolean] =
   x match
     case '{ true } => Some(true)
@@ -220,7 +220,7 @@ def valueOfBooleanOption(x: Expr[Option[Boolean]])(using Quotes): Option[Option[
 Для большей компактности, можно сопоставить часть выражения, используя склейку (`$`), 
 чтобы сматчить произвольный код и извлечь его.
 
-```scala
+```dotty
 def valueOfBooleanOption(x: Expr[Option[Boolean]])(using Quotes): Option[Option[Boolean]] =
   x match
     case '{ Some($boolExpr) } => Some(valueOfBoolean(boolExpr))
@@ -233,7 +233,7 @@ def valueOfBooleanOption(x: Expr[Option[Boolean]])(using Quotes): Option[Option[
 Также можно сопоставлять код произвольного типа `T`. 
 Ниже матчится `$x` типа `T` и на выходе получается `x` типа `Expr[T]`.
 
-```scala
+```dotty
 def exprOfOption[T: Type](x: Expr[Option[T]])(using Quotes): Option[Expr[T]] =
   x match
     case '{ Some($x) } => Some(x) // x: Expr[T]
@@ -243,7 +243,7 @@ def exprOfOption[T: Type](x: Expr[Option[T]])(using Quotes): Option[Expr[T]] =
 
 Также можно проверить тип выражения:
 
-```scala
+```dotty
 def valueOf(x: Expr[Any])(using Quotes): Option[Any] =
   x match
     case '{ $x: Boolean } => valueOfBoolean(x) // x: Expr[Boolean]
@@ -253,7 +253,7 @@ def valueOf(x: Expr[Any])(using Quotes): Option[Any] =
 
 Или аналогично для частичного выражения:
 
-```scala
+```dotty
 case '{ Some($x: Boolean) } => // x: Expr[Boolean]
 ```
 
@@ -261,7 +261,7 @@ case '{ Some($x: Boolean) } => // x: Expr[Boolean]
 
 Когда желательно сопоставить получателя метода, нужно явно указать его тип:
 
-```scala
+```dotty
 case '{ ($ls: List[Int]).sum } =>
 ```
 
@@ -269,7 +269,7 @@ case '{ ($ls: List[Int]).sum } =>
 
 Другой распространенный случай, когда нужны аннотации типов, — это инфиксные операции:
 
-```scala
+```dotty
 case '{ ($x: Int) + ($y: Int) } =>
 case '{ ($x: Double) + ($y: Double) } =>
 case ...
@@ -284,7 +284,7 @@ case ...
 
 Рассмотрим функцию `exprOfOption`:
 
-```scala
+```dotty
 def exprOfOption[T: Type](x: Expr[Option[T]])(using Quotes): Option[Expr[T]] =
   x match
     case '{ Some($x: T) } => Some(x) // x: Expr[T]
@@ -299,7 +299,7 @@ def exprOfOption[T: Type](x: Expr[Option[T]])(using Quotes): Option[Expr[T]] =
 
 Теперь рассмотрим следующий вариант, где `x` - необязательное значение со (статически) неизвестным типом элемента:
 
-```scala
+```dotty
 def exprOfOptionOf[T: Type](x: Expr[Option[Any]])(using Quotes): Option[Expr[T]] =
   x match
     case '{ Some($x: T) } => Some(x) // x: Expr[T]
@@ -308,7 +308,7 @@ def exprOfOptionOf[T: Type](x: Expr[Option[Any]])(using Quotes): Option[Expr[T]]
 
 На этот раз шаблон будет соответствовать только в том случае, если `Some($x: T)` - тип `.OptionSome[T]`
 
-```scala
+```dotty
 exprOfOptionOf[Int]('{ Some(3) })   // Some('{3})
 exprOfOptionOf[Int]('{ Some("a") }) // None
 ```
@@ -319,7 +319,7 @@ exprOfOptionOf[Int]('{ Some("a") }) // None
 Можно сопоставить их, используя переменные типа шаблона. 
 Как и в обычном шаблоне, переменные типа записываются с использованием имен нижнего регистра.
 
-```scala
+```dotty
 def exprOptionToList(x: Expr[Option[Any]])(using Quotes): Option[Expr[List[Any]]] =
   x match
     case '{ Some($x: t) } =>
@@ -338,7 +338,7 @@ def exprOptionToList(x: Expr[Option[Any]])(using Quotes): Option[Expr[List[Any]]
 
 Простой шаблон `case '{ $expr: tpe } =>` очень полезен, если необходимо знать точный тип выражения.
 
-```scala
+```dotty
 val expr: Expr[Option[Int]] = ...
 expr match
   case '{ $expr: tpe } =>
@@ -351,7 +351,7 @@ expr match
 на которую ссылаются несколько раз или имеющую некоторые ограничения типа. 
 Для этого можно создать переменные шаблона в начале шаблона, используя `type t` переменную шаблона типа.
 
-```scala
+```dotty
 /**
  * Use: Converts a redundant `list.map(f).map(g)` to only use one call
  * to `map`: `list.map(y => g(f(y)))`.
@@ -383,7 +383,7 @@ def fuseMap[T: Type](x: Expr[List[T]])(using Quotes): Expr[List[T]] = x match {
 
 Типы, представленные с помощью `Type[T]`, можно сопоставить с помощью шаблона `case '[...] =>`.
 
-```scala
+```dotty
 def mirrorFields[T: Type](using Quotes): List[String] =
   Type.of[T] match
     case '[field *: fields] =>
@@ -405,7 +405,7 @@ mirrorFields[Tuple]              // error: Expected known tuple but got: Tuple
 Методы `Expr.value`, `Expr.valueOrError` и `Expr.unapply` 
 используют экземпляры `FromExpr` для извлечения значения, если это возможно.
 
-```scala
+```dotty
 extension [T](expr: Expr[T]):
   def value(using Quotes)(using fromExpr: FromExpr[T]): Option[T] =
     fromExpr.unapply(expr)
@@ -421,7 +421,7 @@ object Expr:
 
 `FromExpr` определяется следующим образом:
 
-```scala
+```dotty
 trait FromExpr[T]:
   def unapply(x: Expr[T])(using Quotes): Option[T]
 ```
@@ -431,7 +431,7 @@ trait FromExpr[T]:
 
 Можно определить собственные `FromExprs` следующим образом:
 
-```scala
+```dotty
 given FromExpr[Boolean] with {
   def unapply(x: Expr[Boolean])(using Quotes): Option[Boolean] =
     x match
@@ -470,7 +470,7 @@ given FromExpr[StringContext] with {
 Метод `scala.quoted.quotes` обеспечивает простой способ использования `Quotes` без его именования. 
 Обычно он импортируется вместе с `Quotes` используя `import scala.quoted.*`.
 
-```scala
+```dotty
 ${ (using q1) => body(using q1) }
 // equivalent to
 ${ body(using quotes) }
@@ -481,7 +481,7 @@ ${ body(using quotes) }
 Когда пишется splice верхнего уровня в макросе, вызывается что-то похожее на следующее определение. 
 Этот splice обеспечит начальное значение `Quotes`, связанное с расширением макроса.
 
-```scala
+```dotty
 def $[T](x: Quotes ?=> Expr[T]): T = ...
 ```
 
@@ -491,7 +491,7 @@ def $[T](x: Quotes ?=> Expr[T]): T = ...
 Эти сведения полезны только для расширенных макросов, 
 которые будут проверять код и могут столкнуться с деталями кавычек и splice-ов.
 
-```scala
+```dotty
 def f(using q1: Quotes) = '{
   ${ (using q2: q1.Nested) ?=>
       ...
@@ -501,7 +501,7 @@ def f(using q1: Quotes) = '{
 
 Можно представить, что вложенный splice подобен следующему методу, где `ctx` - контекст, полученный окружающей цитатой.
 
-```scala
+```dotty
 def $[T](using q: Quotes)(x: q.Nested ?=> Expr[T]): T = ...
 ```
 
@@ -517,7 +517,7 @@ def $[T](using q: Quotes)(x: q.Nested ?=> Expr[T]): T = ...
 Для этого используется функция `Expr.betaReduce[T]`, которая получает `Expr[T]` и β-редуцирует, 
 если она непосредственно содержит применяемую лямбду.
 
-```scala
+```dotty
 Expr.betaReduce('{ ((x: Int) => x + x)(y) }) // returns '{ val x = y; x + x }
 ```
 
@@ -526,7 +526,7 @@ Expr.betaReduce('{ ((x: Int) => x + x)(y) }) // returns '{ val x = y; x + x }
 Есть два способа вызвать значения в макросе.
 Во-первых, использовать using параметр во встроенном методе, который явно передается реализации макроса.
 
-```scala
+```dotty
 inline def setOf[T](using ord: Ordering[T]): Set[T] =
   ${ setOfCode[T]('ord) }
 
@@ -540,7 +540,7 @@ def setOfCode[T: Type](ord: Expr[Ordering[T]])(using Quotes): Expr[Set[T]] =
 Это позволяет программно искать различные given выражения. 
 Следующий пример аналогичен предыдущему примеру:
 
-```scala
+```dotty
 inline def setOf[T]: Set[T] =
   ${ setOfCode[T] }
 
@@ -567,7 +567,7 @@ def setOfCode[T: Type](using Quotes): Expr[Set[T]] =
 потому что есть given `Numeric[Num]`, но требуется `Expr[Numeric[Num]]`. 
 Но тогда можно игнорировать его в `powerMacro` и в любом другом месте, которое только его передает.
 
-```scala
+```dotty
 inline def power[Num](x: Num, inline n: Int)(using num: Numeric[Num]) =
   ${ powerMacro('x, 'n)(using 'num) }
 
@@ -579,7 +579,7 @@ def powerMacro[Num: Type](x: Expr[Num], n: Expr[Int])(using Expr[Numeric[Num]])(
 и поэтому нужно склеить это выражение в сгенерированном коде. 
 Чтобы сделать его доступным, можно просто соединить его с заданным определением.
 
-```scala
+```dotty
 def powerCode[Num: Type](x: Expr[Num], n: Int)(using num: Expr[Numeric[Num]])(using Quotes): Expr[Num] =
   if (n == 0) '{ $num.one }
   else if (n % 2 == 0) '{

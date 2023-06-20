@@ -6,7 +6,7 @@
 В следующем примере метод `help` принимает параметр с именем `id` типа объединения `Username | Password`, 
 который может быть либо `Username`, либо `Password`:
 
-```scala
+```dotty
 case class Username(name: String)
 case class Password(hash: Hash)
 
@@ -22,7 +22,7 @@ def help(id: Username | Password) =
 Этот код является гибким и типобезопасным решением. 
 Если попытаться передать тип, отличный от `Username` или `Password`, компилятор пометит это как ошибку:
 
-```scala
+```dotty
 help("hi")   // error: Found: ("hi" : String)
              //        Required: Username | Password         
 ```
@@ -30,7 +30,7 @@ help("hi")   // error: Found: ("hi" : String)
 Ошибка также будет получена, если попытаться добавить `case` в выражение `match`, 
 которое не соответствует типам `Username` или `Password`:
 
-```scala
+```dotty
 case 1.0 => ???   // ERROR: this line won’t compile
 ```
 
@@ -43,7 +43,7 @@ case 1.0 => ???   // ERROR: this line won’t compile
 
 Другие языки требуют предварительного планирования иерархии классов, как показано в следующем примере:
 
-```scala
+```dotty
 trait UsernameOrPassword
 case class Username(name: String) extends UsernameOrPassword
 case class Password(hash: Hash) extends UsernameOrPassword
@@ -58,7 +58,7 @@ def help(id: UsernameOrPassword) = ...
 
 Другой альтернативой является задание отдельного типа перечисления, например:
 
-```scala
+```dotty
 enum UsernameOrPassword:
   case IsUsername(u: Username)
   case IsPassword(p: Password)
@@ -73,7 +73,7 @@ enum UsernameOrPassword:
 Компилятор присваивает типу объединения выражение, только если такой тип явно задан. 
 Например, рассмотрим такие значения:
 
-```scala
+```dotty
 val name = Username("Eve")   
 // name: Username = Username(name = "Eve")   
 val password = Password(123) 
@@ -82,7 +82,7 @@ val password = Password(123)
 
 В этом примере показано, как можно использовать тип объединения при привязке переменной к результату выражения `if`/`else`:
 
-```scala
+```dotty
 val a = if true then name else password
 // a: Object = Username(name = "Eve")
 val b: Password | Username = if true then name else password
@@ -154,7 +154,7 @@ A & (B | C) =:= A & B | A & C
 
 Дано:
 
-```scala
+```dotty
 trait C[+T]
 trait D
 trait E
@@ -171,7 +171,7 @@ class B extends C[B] with D with E
 
 Пример:
 
-```scala
+```dotty
 import scala.collection.mutable.ListBuffer
 val x = ListBuffer(Right("foo"), Left(0))
 val y: ListBuffer[Either[Int, String]] = x
@@ -191,7 +191,7 @@ val y: ListBuffer[Either[Int, String]] = x
 Следующий код не проходит проверку типов, так как метод `hello` не является членом `AnyRef`, 
 который является объединением `A | B`.
 
-```
+```dotty
 trait A { def hello: String }
 trait B { def hello: String }
 
@@ -200,7 +200,7 @@ def test(x: A | B) = x.hello // error: value `hello` is not a member of A | B
 
 С другой стороны, допускается следующее:
 
-```scala mdoc:silent
+```dotty
 trait D
 trait E
 trait C { def hello: String }
@@ -213,19 +213,15 @@ def test(x: A | B) = x.hello // ok, т.к. `hello` - элемент объеди
 При этом необходимо отметить, что в метод `test` нельзя передать экземпляр `С`, 
 потому что `A | B` - подтип `C`, но не наоборот:
 
-```scala mdoc:silent
+```dotty
 val a: A = new A:
   def hello = "Hello, A!"
 val b: B = new B:
   def hello = "Hello, B!"
-```
-
-```scala mdoc
 test(a)
+// res0: String = "Hello, A!"
 test(b)
-```
-
-```scala
+// res1: String = "Hello, B!"
 val c: C = new C:
   def hello = "Hello, C!"
 test(c)
@@ -243,7 +239,7 @@ test(c)
 
 Пример:
 
-```scala
+```dotty
 trait A { def hello: String }
 trait B { def hello: String }
 

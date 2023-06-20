@@ -47,7 +47,7 @@ scalaVersion := "3.1.3"
 
 Теперь создайте файл с именем _Hello.scala_ в корневом каталоге проекта с таким содержимым:
 
-```scala
+```dotty
 @main def helloWorld = println("Hello, world")
 ```
 
@@ -198,7 +198,7 @@ scalaVersion := "3.1.3"
 но для небольшого примера, подобного этому, можно поместить файл исходного кода в корневой каталог.
 Поэтому создайте файл с именем _HelloWorld.scala_ в корневом каталоге со следующим содержимым:
 
-```scala
+```dotty
 @main def helloWorld = println("Hello, world")
 ```
 
@@ -380,7 +380,7 @@ $ mkdir src/main/scala/math
 
 Внутри этого каталога создайте файл _MathUtils.scala_ со следующим содержимым:
 
-```scala
+```dotty
 package math
 
 object MathUtils:
@@ -402,7 +402,7 @@ $ mkdir src/test/scala/math
 
 Затем создайте в этом каталоге файл с именем _MathUtilsTests.scala_ со следующим содержимым:
 
-```scala
+```dotty
 package math
   
 import org.scalatest.funsuite.AnyFunSuite

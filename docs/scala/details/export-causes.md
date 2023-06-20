@@ -4,7 +4,7 @@
 
 Например:
 
-```scala mdoc:silent
+```dotty
 class BitMap
 class InkJet
 
@@ -31,7 +31,7 @@ class Copier:
 
 Два пункта `export` определяют следующие псевдонимы экспорта в классе `Copier`:
 
-```scala
+```dotty
 final def scan(): BitMap            = scanUnit.scan()
 final def print(bits: BitMap): Unit = printUnit.print(bits)
 final type PrinterType              = printUnit.PrinterType
@@ -39,14 +39,16 @@ final type PrinterType              = printUnit.PrinterType
 
 Доступ к ним возможен как изнутри `Copier`, так и снаружи:
 
-```scala mdoc
+```dotty
 val copier = new Copier
 copier.print(copier.scan())
+// Scanner.scan()
+// Printer.print()
 ```
 
 Предложение `export` имеет тот же формат, что и предложение импорта. Его общая форма:
 
-```scala
+```dotty
 export path . { sel_1, ..., sel_n }
 ```
 
@@ -106,7 +108,7 @@ export path . { sel_1, ..., sel_n }
 хотя технически они являются методами. 
 Например, следующее допустимо:
 
-```scala
+```dotty
 class C { type T }
 object O { val c: C = ... }
 export O.c

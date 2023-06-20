@@ -6,7 +6,7 @@
 и их обобщенную версию (_GADT_). 
 Вот пример, показывающий, как тип `Option` может быть представлен в виде _ADT_:
 
-```scala
+```dotty
 enum Option[+T]:
   case Some(x: T)
   case None
@@ -19,7 +19,7 @@ enum Option[+T]:
 
 Предложения `extends`, которые были опущены в предыдущем примере, также могут быть указаны явно:
 
-```scala mdoc:silent
+```dotty
 enum Option[+T]:
   case Some(x: T) extends Option[T]
   case None       extends Option[Nothing]
@@ -28,9 +28,11 @@ enum Option[+T]:
 Как и в случае с обычными значениями `enum`, `case` `enum` определяются в сопутствующем объекте перечисления, 
 поэтому они называются `Option.Some` и `Option.None` (если только определения не "вытягиваются" при импорте):
 
-```scala mdoc
+```dotty
 Option.Some("hello")
+// res0: Option[String] = Some(x = "hello")
 Option.None
+// res1: Option[Nothing] = None
 ```
 
 Обратите внимание, что тип приведенных выше выражений всегда `Option`. 
@@ -39,16 +41,18 @@ Option.None
 Классы, составляющие case enum, существуют, и их можно использовать, 
 либо создав их непосредственно с помощью `new`, либо явно указав ожидаемый тип.
 
-```scala mdoc
+```dotty
 new Option.Some(2)
+// res2: Some[Int] = Some(x = 2)
 val x: Option.Some[Int] = Option.Some(3)
+// x: Some[Int] = Some(x = 3)
 ```
 
 Как и в других случаях использования перечисления, 
 АТД могут определять дополнительные методы. 
 Например, вот снова `Option` с методом `isDefined` и конструктором `Option(...)` в сопутствующем объекте:
 
-```scala
+```dotty
 enum Option[+T]:
   case Some(x: T)
   case None
@@ -67,7 +71,7 @@ object Option:
 Например, приведенный ниже код дает реализацию `Color` либо с тремя значениями перечисления, 
 либо с параметризованным case, который принимает значение RGB:
 
-```scala
+```dotty
 enum Color(val rgb: Int):
   case Red   extends Color(0xFF0000)
   case Green extends Color(0x00FF00)
@@ -80,7 +84,7 @@ enum Color(val rgb: Int):
 До сих пор все перечисления состояли только из различных вариантов значений или case class-ов.
 Перечисления также могут быть рекурсивными, как показано в приведенном ниже примере кодирования натуральных чисел:
 
-```scala
+```dotty
 enum Nat:
   case Zero
   case Succ(n: Nat)
@@ -89,7 +93,7 @@ enum Nat:
 Например, значение `Succ(Succ(Zero))` представляет число `2` в унарной кодировке.
 Очень похожим образом могут быть определены списки:
 
-```scala
+```dotty
 enum List[+A]:
   case Nil
   case Cons(head: A, tail: List[A])
@@ -103,7 +107,7 @@ enum List[+A]:
 
 Вот пример GADT, где параметр типа (`T`) определяет содержимое, хранящееся в поле:
 
-```scala
+```dotty
 enum Box[T](contents: T):
   case IntBox(n: Int) extends Box[Int](n)
   case BoolBox(b: Boolean) extends Box[Boolean](b)
@@ -111,7 +115,7 @@ enum Box[T](contents: T):
 
 Сопоставление с шаблоном в конкретном конструкторе (`IntBox` или `BoolBox`) восстанавливает информацию о типе:
 
-```scala
+```dotty
 def extract[T](b: Box[T]): T = b match
   case IntBox(n)  => n + 1
   case BoolBox(b) => !b
@@ -125,7 +129,7 @@ def extract[T](b: Box[T]): T = b match
 Концептуально перечисления можно рассматривать как определение `sealed` класса вместе с сопутствующим объектом. 
 Посмотрим на дешугаризацию перечисления `Color`:
 
-```scala
+```dotty
 sealed abstract class Color(val rgb: Int) extends scala.reflect.Enum
 object Color:
   case object Red extends Color(0xFF0000) { def ordinal = 0 }

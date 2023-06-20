@@ -28,7 +28,7 @@
 
 а) `package` может использоваться в качестве префикса для ссылки на прилагаемый пакет. Пример:
 
-```scala
+```dotty
  package utils
  class C {
    def foo = "foo"
@@ -44,7 +44,7 @@
 
 б) `this` может использоваться в качестве префикса для ссылки на прилагаемый классоподобный пример:
 
-```scala
+```dotty
 class C {
   def foo = "foo"
   /** This is not [[this.foo]], this is bar. */
@@ -57,7 +57,7 @@ class C {
 
 в) Обратные кавычки могут использоваться для экранирования идентификаторов. Пример:
 
-```scala
+```dotty
 def `([.abusive.])` = ???
 /** TODO: Figure out what [[`([.abusive.])`]] is. */
 def foo = `([.abusive.])`

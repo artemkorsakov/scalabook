@@ -6,13 +6,13 @@
 При этом лог для вычислений `Writer` привязан к результату,
 поэтому можно запускать параллельные вычисления без смешивания логов.
 
-```scala
+```dotty
 final case class Writer[W, A](run: () => (W, A))
 ```
 
 ## Функции общего назначения, описывающие шаблоны программ с ведением журнала
 
-```scala
+```dotty
 object Writer:
   extension [W, A](underlying: Writer[W, A])
     def map[B](f: A => B): Writer[W, B] =
@@ -32,7 +32,7 @@ object Writer:
 
 Пример:
 
-```scala
+```dotty
 unit[String, Int](42).run()
 // res0: Tuple2[String, Int] = ("", 42)
 ```
@@ -41,7 +41,7 @@ unit[String, Int](42).run()
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.data.Writer
 import cats.instances.vector.*
 

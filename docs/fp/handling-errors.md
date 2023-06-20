@@ -26,7 +26,7 @@
 и рассмотрим различные подходы, которые можно было бы использовать вместо него. 
 Вот реализация функции, вычисляющей среднее значение списка, которое не определено, если список пуст:
 
-```scala
+```dotty
 def mean(xs: Seq[Double]): Double =
   if xs.isEmpty then
     throw new ArithmeticException("mean of empty list!")
@@ -69,7 +69,7 @@ def mean(xs: Seq[Double]): Double =
 Вторая возможность — заставить вызывающую программу предоставить аргумент, 
 который говорит, что делать, если мы не знаем, как обрабатывать ввод:
 
-```scala
+```dotty
 def mean(xs: Seq[Double], onEmpty: Double): Double =
   if xs.isEmpty then onEmpty
   else xs.sum / xs.length
@@ -90,7 +90,7 @@ def mean(xs: Seq[Double], onEmpty: Double): Double =
 Решение состоит в том, чтобы явно указать в возвращаемом типе, что функция не всегда может иметь ответ. 
 Можно думать об этом как о передаче вызывающей стороне стратегии обработки ошибок. 
 
-```scala
+```dotty
 enum Option[+A]:
   case Some(get: A)
   case None
@@ -100,7 +100,7 @@ enum Option[+A]:
 или не определен, и в этом случае - `None`. 
 Можно использовать `Option` для определения среднего значения следующим образом:
 
-```scala
+```dotty
 import Option.{Some, None}
 
 def mean(xs: Seq[Double]): Option[Double] =
@@ -117,7 +117,7 @@ def mean(xs: Seq[Double]): Option[Double] =
 
 Основными операциями `Option` являются:
 
-```scala
+```dotty
 def map[B](f: A => B): Option[B]
 
 def getOrElse[B >: A](default: => B): B
@@ -140,7 +140,7 @@ def filter(f: A => Boolean): Option[A]
 
 Пример:
 
-```scala mdoc
+```dotty
 case class Employee(name: String, department: String, manager: Option[Employee])
 def lookupByName(name: String): Option[Employee] =
   name match
@@ -148,7 +148,11 @@ def lookupByName(name: String): Option[Employee] =
     case "Joe"  => Some(Employee("Joe", "department2", lookupByName("Jack")))
     case _      => None
 lookupByName("Joe").map(_.department)
+// res0: Option[String] = Some(value = "department2")
 lookupByName("Joe").flatMap(_.manager)
+// res1: Option[Employee] = Some(
+//   value = Employee(name = "Jack", department = "department1", manager = None)
+// )
 ```
 
 `filter` можно использовать для преобразования успехов в неудачи, 
@@ -156,11 +160,12 @@ lookupByName("Joe").flatMap(_.manager)
 Распространенным шаблоном является преобразование `Option` через вызовы `map`, `flatMap` и/или `filter`, 
 а затем использование `getOrElse` для обработки ошибок в конце:
 
-```scala mdoc
+```dotty
 lookupByName("Joe")
   .map(_.department)
   .filter(_ != "department2")
   .getOrElse("Default Dept")
+// res2: String = "Default Dept"
 ```
 
 `getOrElse` используется для преобразования из `Option[String]` в `String`, 
@@ -196,7 +201,7 @@ lookupByName("Joe")
 
 Его определение:
 
-```scala
+```dotty
 enum Either[+E, +A]:
   case Left(value: E)
   case Right(value: A)
@@ -210,7 +215,7 @@ enum Either[+E, +A]:
 
 Пример `mean`, возвращающий `String` в случае ошибки:
 
-```scala
+```dotty
 def mean(xs: Seq[Double]): Either[String, Double] =
   if xs.isEmpty then
     Left("Пустой список!")
@@ -220,7 +225,7 @@ def mean(xs: Seq[Double]): Either[String, Double] =
 
 `Left` можно использовать и для возврата самого исключения:
 
-```scala
+```dotty
 import scala.util.control.NonFatal
 
 def catchNonFatal[A](a: => A): Either[Throwable, A] =

@@ -26,7 +26,7 @@
 В качестве практического примера рассмотрим обход списка с сохранением некоторого состояния.
 Мы будем использовать тип данных `State`, который представляет собой функцию перехода в простом автомате состояний.
 
-```scala
+```dotty
 case class State[S, +A](runS: S => (A, S)):
   def map[B](f: A => B): State[S, B] =
     State[S, B] { s =>
@@ -45,7 +45,7 @@ case class State[S, +A](runS: S => (A, S)):
 Методы `map` и `flatMap` позволяют нам передавать состояние через for-comprehension, 
 чтобы писать кажущиеся императивными программы, использующие комбинаторы `State`, такие как:
 
-```scala
+```dotty
 def getState[S]: State[S, S] =
   State(s => (s, s))
 
@@ -61,7 +61,7 @@ def pureState[S, A](a: A): State[S, A] =
 В качестве простой демонстрации давайте напишем функцию, которая использует `State` для нумерации всех элементов в списке. 
 Не потому, что это убедительный пример использования `State`, а потому, что он прост и демонстрирует переполнение стека.
 
-```scala
+```dotty
 def zipIndex[A](as: List[A]): List[(Int, A)] =
   as.foldLeft(pureState[Int, List[(Int, A)]](List())) { (acc, a) =>
     for {
@@ -74,7 +74,7 @@ def zipIndex[A](as: List[A]): List[(Int, A)] =
     .reverse
 ```
 
-```scala
+```dotty
 @main def runStateZipIndex(): Unit =
   import State.*
   val list = zipIndex[String](List.fill(10000)("el"))
@@ -119,7 +119,7 @@ Fold создает действие состояния, которое начи
 Например, следующее определение сворачивания списка влево оптимизировано компилятором 
 для использования постоянного объема стекового пространства:
 
-```scala
+```dotty
 def foldl[A, B](as: List[A], b: B, f: (B, A) => B): B =
   as match
     case Nil     => b
@@ -131,7 +131,7 @@ def foldl[A, B](as: List[A], b: B, f: (B, A) => B): B =
 рекурсивный вызов метода заменяется простым переходом в скомпилированном коде. 
 Это эквивалентно переписыванию хвостовой рекурсии в виде цикла:
 
-```scala
+```dotty
 def foldl[A, B](as: List[A], b: B, f: (B, A) => B): B =
   var z  = b
   var az = as
@@ -153,7 +153,7 @@ def foldl[A, B](as: List[A], b: B, f: (B, A) => B): B =
 Например, эта взаимная рекурсия не может быть оптимизирована компилятором, 
 даже если вызовы находятся в хвостовой позиции:
 
-```scala
+```dotty
 def even[A](ns: List[A]): Boolean =
   ns match
     case Nil     => true
@@ -186,7 +186,7 @@ def odd[A](ns: List[A]): Boolean =
 Мы начнем с очень простого типа данных `Trampoline`. 
 Он идентичен по духу, но отличается по реализации от [scala.util.control.TailCalls.TailRec][API].
 
-```scala
+```dotty
 sealed trait Trampoline[+A]: 
   self =>
   
@@ -210,7 +210,7 @@ case class Done[+A](result: A)              extends Trampoline[A]
 Все, что нужно сделать, это механически заменить любой возвращаемый тип `T` на `Trampoline[T]`. 
 Вот `odd` и `even`, измененные таким образом:
 
-```scala
+```dotty
 def even[A](ns: List[A]): Trampoline[Boolean] =
   ns match
     case Nil     => Done(true)
@@ -226,7 +226,7 @@ def odd[A](ns: List[A]): Trampoline[Boolean] =
 который можно выполнить рекурсивно, вызвав метод `runT`. 
 Стек больше не переполняется, независимо от того, насколько велики списки аргументов.
 
-```scala
+```dotty
 val list = List.fill(100000)(0)
 even(list).runT
 // true
@@ -238,14 +238,14 @@ even(list).runT
 Нам нужно изменить запуск состояния `State`, 
 чтобы вернуть `Trampoline`, который мы можем запускать хвостовой рекурсией:
 
-```scala
+```dotty
 case class State[S, +A](runS: S => Trampoline[(A, S)])
 ```
 
 Как теперь реализовать метод `flatMap` для составления действий `State`? 
 Мы могли бы попробовать так:
 
-```scala
+```dotty
 case class State[S, +A](runS: S => Trampoline[(A, S)]):
   def flatMap[B](f: A => State[S, B]): State[S, B] =
     State[S, B] { s =>
@@ -271,7 +271,7 @@ case class State[S, +A](runS: S => Trampoline[(A, S)]):
 Давайте добавим метод `flatMap` непосредственно в `Trampoline`, 
 чтобы можно было сделать следующее в `State.flatMap`:
 
-```scala
+```dotty
 def flatMap[B](f: A => State[S, B]): State[S, B] =
   State[S, B] { s =>
     More { () =>
@@ -284,7 +284,7 @@ def flatMap[B](f: A => State[S, B]): State[S, B] =
 Проблема переносится на метод `flatMap` для `Trampoline`, 
 который может возникнуть соблазн реализовать следующим образом:
 
-```scala
+```dotty
 def flatMap[B](f: A => Trampoline[B]): More[B] =
   More[B](() => f(runT))
 ```
@@ -298,7 +298,7 @@ def flatMap[B](f: A => Trampoline[B]): More[B] =
 Способ обойти это ограничение — добавить конструктор к типу данных `Trampoline`, 
 изменив `flatMap` с вызова метода на вызов конструктора:
 
-```scala
+```dotty
 case class FlatMap[A, +B](sub: Trampoline[A], k: A => Trampoline[B])
     extends Trampoline[B]
 ```
@@ -309,7 +309,7 @@ case class FlatMap[A, +B](sub: Trampoline[A], k: A => Trampoline[B])
 Метод `runT` трейта `Trampoline` теперь должен учитывать этот новый конструктор. 
 Для упрощения давайте отделим задачу перехода к следующему шагу от задачи выполнения всех шагов:
 
-```scala
+```dotty
 @annotation.tailrec
 final def resume: Either[() => Trampoline[A], A] =
   self match
@@ -360,7 +360,7 @@ final def runT: A =
 Сделаем конструктор `FlatMap` приватным, открывая вместо него метод `flatMap` в `Trampoline`, 
 который перепишем так, чтобы он всегда создавал правоассоциативные привязки:
 
-```scala
+```dotty
 def flatMap[B](f: A => Trampoline[B]): Trampoline[B] =
   self match
     case FlatMap(a, g) => FlatMap(a, x => g(x).flatMap(f))
@@ -370,7 +370,7 @@ def flatMap[B](f: A => Trampoline[B]): Trampoline[B] =
 Чтобы заполнить пробел, мы также должны запретить методу `resume` строить такую "матрешку", 
 заменив вызовы конструктора `FlatMap` вызовами метода `flatMap`:
 
-```scala
+```dotty
 case FlatMap(a, f) =>
   a match
     case Done(v) => f(v).resume
@@ -382,7 +382,7 @@ case FlatMap(a, f) =>
 Наконец, для того, чтобы использовать нашу монаду `Trampoline` с for-comprehension Scala, 
 нам также нужно реализовать метод `map`, который, конечно же, просто определен в терминах `flatMap`:
 
-```scala
+```dotty
 def map[B](f: A => B): Trampoline[B] =
   flatMap(a => Done(f(a)))
 ```
@@ -396,7 +396,7 @@ def map[B](f: A => B): Trampoline[B] =
 Теперь мы можем переписать любую программу так, чтобы вообще не использовать пространство стека. 
 Рассмотрим программу такого вида:
 
-```scala
+```dotty
 val x = f()
 val y = g(x)
 h(y)
@@ -404,7 +404,7 @@ h(y)
 
 Она может быть легко переписана в следующий вид:
 
-```scala
+```dotty
 for 
   x <- f()
   y <- g(x)
@@ -414,7 +414,7 @@ yield z
 
 если учесть следующее неявное преобразование:
 
-```scala
+```dotty
 given conv[A]: Conversion[A, Trampoline[A]] with
   def apply(a: A): Trampoline[A] = More(() => Done(a))
 ```
@@ -423,7 +423,7 @@ given conv[A]: Conversion[A, Trampoline[A]] with
 Их легко обнаружить, и в этих случаях мы могли бы вызвать конструктор `More` явно, 
 как в этой рекурсивной функции для нахождения n-го числа Фибоначчи:
 
-```scala
+```dotty
 def fib(n: Int): Trampoline[Int] =
   if n <= 1 then Done(n)
   else
@@ -443,7 +443,7 @@ def fib(n: Int): Trampoline[Int] =
 Мы видели, как можно последовательно составлять вычисления `Trampoline` с помощью `flatMap`. 
 Но также возможно составить их параллельно путем чередования вычислений:
 
-```scala
+```dotty
 def zip[B](b: Trampoline[B]): Trampoline[(A, B)] =
   (self.resume, b.resume) match
     case (Right(a), Right(b)) =>
@@ -458,7 +458,7 @@ def zip[B](b: Trampoline[B]): Trampoline[(A, B)] =
 
 Чтобы увидеть всё это в действии, можно ввести побочные эффекты для вывода на консоль:
 
-```scala
+```dotty
 val hello: Trampoline[Unit] =
   for
     _ <- print(" Hello , ")
@@ -468,7 +468,7 @@ val hello: Trampoline[Unit] =
 
 Можно увидеть, что произойдет, если вычисление `hello` чередуется с самим собой:
 
-```scala
+```dotty
 (hello zip hello).runT
 // Hello ,  Hello ,  World !
 // World !
@@ -487,7 +487,7 @@ val hello: Trampoline[Unit] =
 Но это не единственный конструктор типа, который мы могли бы использовать для приостановки. 
 Если абстрагироваться от конструктора типа, то получим следующий тип данных:
 
-```scala
+```dotty
 sealed trait Free[S[+_], A]
 
 object Free:
@@ -502,7 +502,7 @@ case class More[S[+_], A](k: S[Free[S, A]]) extends Free[S, A]
 
 Теперь `Trampoline` может быть определен как:
 
-```scala
+```dotty
 type Trampoline[A] = Free[Function0, A]
 ```
 
@@ -512,14 +512,14 @@ type Trampoline[A] = Free[Function0, A]
 
 Когда мы говорим, что `S` должен быть функтором, то имеем в виду, что должен существовать экземпляр `Functor[S]`:
 
-```scala
+```dotty
 trait Functor[F[_]]:
   def map[A, B](fa: F[A])(f: A => B): F[B]
 ```
 
 Для `Function0` функтор определяется просто:
 
-```scala
+```dotty
 given Functor[Function0] with
   def map[A, B](a: () => A)(f: A => B): () => B = () => f(a())
 ```
@@ -530,7 +530,7 @@ given Functor[Function0] with
 мы можем обобщить методы, определенные ранее для `Trampoline`. 
 Например, вот общая форма `resume`:
 
-```scala
+```dotty
 final def resume(using S: Functor[S]): Either[S[Free[S, A]], A] =
   this match
     case Done(a) => Right(a)
@@ -548,7 +548,7 @@ final def resume(using S: Functor[S]): Either[S[Free[S, A]], A] =
 Это также верно для обобщенных реализаций `zip`, `map` и `flatMap`. 
 Вот `zip`:
 
-```scala
+```dotty
 def zip[B](b: Free[S, B])(using S: Functor[S]): Free[S, (A, B)] =
   (resume, b.resume) match
     case (Left(a), Left(b)) =>
@@ -568,7 +568,7 @@ def zip[B](b: Free[S, B])(using S: Functor[S]): Free[S, (A, B)] =
 Чтобы понять это, рассмотрим обычное бинарное дерево решений. 
 Это свободная монада, функтор которой «разбивает» вычисление на две части в каждой ветви:
 
-```scala
+```dotty
 type Pair[+A]    = (A, A)
 type BinTree[+A] = Free[Pair, A]
 ```
@@ -583,13 +583,13 @@ type BinTree[+A] = Free[Pair, A]
 Чтобы получить дерево с любым количеством возможных ветвей в каждом узле вместо двух, 
 мы должны разветвляться с помощью функтора `List`:
 
-```scala
+```dotty
 type Tree[+A] = Free[List, A]
 ```
 
 Действительно, сам `List` может быть выражен как приложение `Free`:
 
-```scala
+```dotty
 type List[A] = Free[[X] =>> (A, X), Unit]
 ```
 
@@ -608,7 +608,7 @@ type List[A] = Free[[X] =>> (A, X), Unit]
 Он может производить выходные данные и ожидать входные данные в любой мыслимой комбинации. 
 Мы могли бы, например, смоделировать `State` как небольшой язык, где мы можем получить и установить состояние:
 
-```scala
+```dotty
 sealed trait StateF[S, +A]
 case class Get[S, A](f: S => A)  extends StateF[S, A]
 case class Put[S, A](s: S, a: A) extends StateF[S, A]
@@ -619,7 +619,7 @@ case class Put[S, A](s: S, a: A) extends StateF[S, A]
 а `a` — остальная часть вычислений (которые предположительно могут что-то сделать с этим состоянием).
 Нам понадобятся доказательства того, что наш тип данных на самом деле является функтором:
 
-```scala
+```dotty
 given statefFun[S]: Functor[[X] =>> StateF[S, X]] = new:
   def map[A, B](m: StateF[S, A])(f: A => B): StateF[S, B] =
     m match
@@ -630,19 +630,19 @@ given statefFun[S]: Functor[[X] =>> StateF[S, X]] = new:
 Затем мы можем закодировать монаду, подобную `State`, 
 непосредственно как свободную монаду, сгенерированную нашим функтором `StateF`:
 
-```scala
+```dotty
 type FreeState[S, A] = Free[[X] =>> StateF[S, X], A]
 ```
 
 Комбинатор `pureState` из раздела 1 поставляется "бесплатно" с конструктором `Done` нашей свободной монады.
 
-```scala
+```dotty
 def pureState[S, A](a: A): FreeState[S, A] = Done(a)
 ```
 
 А два других, для получения и установки состояния, легко определить:
 
-```scala
+```dotty
 def getState[S]: FreeState[S, S] = More(Get(s => Done(s)))
 
 def setState[S](s: S): FreeState[S, Unit] = More(Put(s, Done(())))
@@ -650,7 +650,7 @@ def setState[S](s: S): FreeState[S, Unit] = More(Put(s, Done(())))
 
 Для запуска действия с заданным начальным состоянием используется простой цикл:
 
-```scala
+```dotty
 def evalS[S, A](s: S, t: FreeState[S, A]): A =
   t.resume match
     case Left(Get(f))    => evalS(s, f(s))
@@ -661,7 +661,7 @@ def evalS[S, A](s: S, t: FreeState[S, A]): A =
 Теперь мы можем писать чистые функции, сохраняющие некоторое состояние в этой монаде. 
 Например, вот `zipIndex` из раздела 1, на этот раз с использованием нашей монады `FreeState`:
 
-```scala
+```dotty
 def zipIndex[A](as: List[A]): List[(Int, A)] =
   evalS(
     0,
@@ -756,7 +756,7 @@ Voigtlander объясняет, как спуск в левоассоцииро�
 поэтому их можно выразить как приложение `Free`. 
 Тип `IterV` в статье Лато можно очень грубо выразить следующим образом:
 
-```scala
+```dotty
 type IterV[I, O] = Free[[X] =>> I => X, (I, O)]
 ```
 
@@ -766,7 +766,7 @@ type IterV[I, O] = Free[[X] =>> I => X, (I, O)]
 преобразующий один поток входных данных в поток выходных данных, 
 и этот тип проще выразить как свободную монаду:
 
-```scala
+```dotty
 type Enumeratee[I, O, A] = Free[[X] =>> Either[I => X, (O, X)], A]
 ```
 

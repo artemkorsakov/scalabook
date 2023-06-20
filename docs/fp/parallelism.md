@@ -4,7 +4,7 @@
 
 Рассмотрим операцию суммирования чисел:
 
-```scala
+```dotty
 def sum(ints: Seq[Int]): Int =
   ints.foldLeft(0)((a, b) => a + b)
 ```
@@ -14,7 +14,7 @@ def sum(ints: Seq[Int]): Int =
 
 Вместо последовательного сворачивания можно было бы использовать алгоритм "разделяй и властвуй":
 
-```scala
+```dotty
 def sum(ints: IndexedSeq[Int]): Int =
   if ints.size <= 1 then
     ints.headOption.getOrElse(0)
@@ -32,7 +32,7 @@ def sum(ints: IndexedSeq[Int]): Int =
 
 Для параллельных вычислений с помощью чистых функций можно определить следующий API
 
-```scala
+```dotty
 def unit[A](a: A): Par[A]
 extension [A](pa: Par[A]) def map2[B, C](pb: Par[B])(f: (A, B) => C): Par[C]
 def fork[A](a: => Par[A]): Par[A]
@@ -49,7 +49,7 @@ extension [A](pa: Par[A]) def run: A
 
 Тогда сумму можно реализовать так:
 
-```scala
+```dotty
 def sum(ints: IndexedSeq[Int]): Par[Int] =
   if ints.size <= 1 then
     Par.unit(ints.headOption.getOrElse(0))
@@ -60,7 +60,7 @@ def sum(ints: IndexedSeq[Int]): Par[Int] =
 
 При этом для параллельных вычислений должен выполняться следующий закон:
 
-```scala
+```dotty
 unit(x).map(f) == unit(f(x))
 ```
 

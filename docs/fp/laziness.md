@@ -9,7 +9,7 @@
 
 В качестве примера рассмотрим следующую функцию:
 
-```scala
+```dotty
 def square(x: Double): Double = x * x
 ```
 
@@ -18,27 +18,32 @@ def square(x: Double): Double = x * x
 встречающиеся во многих языках программирования, включая Scala, не являются строгими.
 Функция `&&` принимает два логических аргумента, но оценивает второй аргумент только в том случае, если первый истинен:
 
-```scala mdoc
+```dotty
 false && { println("!!"); true }
+// res0: Boolean = false
 ```
 
 Аналогично `||` оценивает свой второй аргумент, только если первый `false`:
 
-```scala mdoc
+```dotty
 true || { println("!!"); false }
+// res1: Boolean = true
 ```
 
 Еще одним примером нестрогости является управляющая конструкция `if` в Scala:
 
-```scala
+```dotty
 val result = if input.isEmpty then sys.error("empty input") else input
 ```
 
 Нестрогие вычисления не кэшируются и вычисляются каждый раз при вызове:
 
-```scala mdoc
+```dotty
 def maybeTwice(b: Boolean, i: => Int) = if b then i + i else 0
 val x = maybeTwice(true, { println("hi"); 1 + 41 })
+// hi
+// hi
+// x: Int = 84
 ```
 
 ## Lazy List
@@ -48,7 +53,7 @@ val x = maybeTwice(true, { println("hi"); 1 + 41 })
 Цепочки преобразований в ленивых списках объединяются в один проход благодаря использованию нестрогости. 
 Вот простое определение `LazyList`:
 
-```scala
+```dotty
 enum LazyList[+A]:
   case Empty
   case Cons(h: () => A, t: () => LazyList[A])
@@ -76,7 +81,7 @@ object LazyList:
 В качестве примера может служить функция `exists`, 
 которая проверяет, существует ли в `LazyList` элемент, соответствующий логической функции:
 
-```scala
+```dotty
 def exists(p: A => Boolean): Boolean = this match
   case Cons(h, t) => p(h()) || t().exists(p)
   case _ => false
@@ -105,7 +110,7 @@ def exists(p: A => Boolean): Boolean = this match
 Поскольку преобразования являются инкрементальными, написанные функции также работают с бесконечными `LazyList`. 
 Вот пример бесконечного `LazyList` из единиц:
 
-```scala
+```dotty
 val ones: LazyList[Int] = LazyList.cons(1, ones)
 ones.take(5).toList
 // res2: List[Int] = List(1, 1, 1, 1, 1)
@@ -117,7 +122,7 @@ ones.exists(_ % 2 != 0)
 
 Рассмотрим функцию `unfold`:
 
-```scala
+```dotty
 def unfold[A, S](state: S)(f: S => Option[(A, S)]): LazyList[A] = f(state) match
   case None         => Empty
   case Some((a, s)) => Cons(() => a, () => unfold(s)(f))       
@@ -136,7 +141,7 @@ def unfold[A, S](state: S)(f: S => Option[(A, S)]): LazyList[A] = f(state) match
 
 - Нестрогость — полезный метод, который позволяет разделить задачи и улучшить модульность. 
 - Отделение описания вычисления от его выполнения предоставляет возможности 
-для повторного использования и повышения эффективности.
+  для повторного использования и повышения эффективности.
 
 
 ---

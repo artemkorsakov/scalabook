@@ -10,7 +10,7 @@
 
 Односвязный список можно определить так:
 
-```scala mdoc:silent
+```dotty
 enum List[+A]:
   case Nil
   case Cons(head: A, tail: List[A])
@@ -33,11 +33,15 @@ object List:
 
 Создать список можно следующим образом:
 
-```scala mdoc
+```dotty
 val ex1: List[Double] = Nil
+// ex1: List[Double] = Nil
 val ex2: List[Int] = Cons(1, Nil)
+// ex2: List[Int] = Cons(head = 1, tail = Nil)
 val ex3: List[String] = Cons("a", Cons("b", Nil))
+// ex3: List[String] = Cons(head = "a", tail = Cons(head = "b", tail = Nil))
 val ex4: List[String] = List.apply("a", "b")
+// ex4: List[String] = Cons(head = "a", tail = Cons(head = "b", tail = Nil))
 ```
 
 ## Операции над односвязным списком
@@ -45,7 +49,7 @@ val ex4: List[String] = List.apply("a", "b")
 Над этой функциональной структурой данных можно определить, например, следующие операции суммы и произведения,
 которые используют [сопоставление с образцом](../scala/structures/match.md):
 
-```scala
+```dotty
 def sum(ints: List[Int]): Int = ints match
   case Nil => 0
   case Cons(x, xs) => x + sum(xs)
@@ -80,7 +84,7 @@ def product(ds: List[Double]): Double = ds match
 
 Пример операции удаления:
 
-```scala
+```dotty
 def tail[A](l: List[A]): List[A] =
   l match
     case Nil         => sys.error("tail of empty list")
@@ -93,7 +97,7 @@ def tail[A](l: List[A]): List[A] =
 
 Ещё одним примером функциональной структуры данных является двоичное дерево:
 
-```scala
+```dotty
 enum Tree[+A]:
   case Leaf(value: A)
   case Branch(left: Tree[A], right: Tree[A])

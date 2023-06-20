@@ -2,7 +2,7 @@
 
 Базовый шаблон, как сделать любой API с отслеживанием состояния чисто функциональным, выглядит так:
 
-```scala
+```dotty
 opaque type State[S, +A] = S => (A, S)
 
 object State:
@@ -25,7 +25,7 @@ object State:
 
 ## Функции общего назначения, описывающие шаблоны программ с отслеживанием состояния
 
-```scala
+```dotty
 object State:
   extension [S, A](underlying: State[S, A])
     def map[B](f: A => B): State[S, B] =
@@ -52,7 +52,7 @@ object State:
 
 Пример:
 
-```scala
+```dotty
 unit[String, Int](42).run("state")
 // res0: Tuple2[Int, String] = (42, "state")
 val state = State[Int, String](i => (i.toString, i + 1))
@@ -70,7 +70,7 @@ state.map(str => s"Number: $str").run(5)
 
 ## Реализация в Cats
 
-```scala
+```dotty
 import cats.data.State
 
 val step1 = State[Int, String]{ num =>

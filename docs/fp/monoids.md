@@ -14,7 +14,7 @@
 
 Monoid может быть выражен с помощью `trait`:
 
-```scala mdoc:silent
+```dotty
 trait Monoid[A]:
  def combine(a1: A, a2: A): A
  def empty: A 
@@ -29,38 +29,42 @@ trait Monoid[A]:
 
 ### Множество - `String`, операция - конкатенация, пустой элемент - пустая строка
 
-```scala mdoc
+```dotty
 val stringMonoid: Monoid[String] = new:
   def combine(a1: String, a2: String) = a1 + a2
   val empty = ""
 stringMonoid.combine("ab", "cd")
+// res0: String = "abcd"
 ```
 
 ### Множество - `List`, операция - конкатенация, пустой элемент - `Nil`
 
-```scala mdoc
+```dotty
 def listMonoid[A]: Monoid[List[A]] = new:
   def combine(a1: List[A], a2: List[A]): List[A] = a1 ++ a2
   val empty: List[A] = Nil
 listMonoid.combine(List(1, 2), List(3, 4))
+// res1: List[Int] = List(1, 2, 3, 4)
 ```
 
 ### Множество - `Int`, операция - умножение, пустой элемент - 1
 
-```scala mdoc
+```dotty
 val intMultiplication: Monoid[Int] = new:
   def combine(a1: Int, a2: Int): Int = a1 * a2
   val empty: Int = 1
 intMultiplication.combine(5, 6)
+// res2: Int = 30
 ```
 
 ### Множество - `Boolean`, операция - логическое И (`&&`), пустой элемент - `true`
 
-```scala mdoc
+```dotty
 val booleanAnd: Monoid[Boolean] = new:
   def combine(a1: Boolean, a2: Boolean): Boolean = a1 && a2
   val empty: Boolean = true
 booleanAnd.combine(true, false)
+// res3: Boolean = false
 ```
 
 ## Использование моноидов
@@ -68,10 +72,11 @@ booleanAnd.combine(true, false)
 Моноиды тесно связаны со списками.
 Например, вот как можно свернуть список, используя моноид:
 
-```scala mdoc
+```dotty
 def combineAll[A](as: List[A], m: Monoid[A]): A =
   as.foldLeft(m.empty)(m.combine)
 combineAll(List(1, 2, 3, 4), intMultiplication)
+// res4: Int = 24
 ```
 
 Тот факт, что операция `combine` моноида является ассоциативной, означает, что можно выбирать, 
@@ -83,7 +88,7 @@ combineAll(List(1, 2, 3, 4), intMultiplication)
 которую необходимо сократить, используя некоторый моноид.
 _Balanced fold_ выглядит так:
 
-```scala
+```dotty
 combine(combine(a, b), combine(c, d))
 ```
 
@@ -94,7 +99,7 @@ combine(combine(a, b), combine(c, d))
 
 Например, рассмотрим производительность этого выражения во время выполнения:
 
-```scala
+```dotty
 List("lorem", "ipsum", "dolor", "sit").foldLeft("")(_ + _)
 ```
 
@@ -106,7 +111,7 @@ List("lorem", "ipsum", "dolor", "sit").foldLeft("")(_ + _)
 
 Вот трассировка вычисляемого предыдущего выражения:
 
-```scala
+```dotty
 List("lorem", "ipsum", "dolor", "sit").foldLeft("")(_ + _)
 List("ipsum", "dolor", "sit").foldLeft("lorem")(_ + _)
 List("dolor", "sit").foldLeft("loremipsum")(_ + _)
@@ -128,7 +133,7 @@ List().foldLeft("loremipsumdolorsit")(_ + _)
 
 _Foldable_ может быть выражен так:
 
-```scala
+```dotty
 trait Foldable[F[_]]:
   extension [A](as: F[A])
     def foldRight[B](acc: B)(f: (A, B) => B): B
@@ -139,7 +144,7 @@ trait Foldable[F[_]]:
 
 При этом каждую операцию можно выразить через другие:
 
-```scala
+```dotty
 trait Monoid[A]:
   def combine(a1: A, a2: A): A
   def empty: A
@@ -177,7 +182,7 @@ trait Foldable[F[_]]:
 Моноиды можно объединять: 
 если `A` и `B` - это моноиды, то кортеж `(A, B)` также является моноидом (и называется _продуктом_)
 
-```scala
+```dotty
 given productMonoid[A, B](using ma: Monoid[A], mb: Monoid[B]): Monoid[(A, B)] with
   def combine(x: (A, B), y: (A, B)): (A, B) =
     (ma.combine(x(0), y(0)), mb.combine(x(1), y(1)))
@@ -187,7 +192,7 @@ given productMonoid[A, B](using ma: Monoid[A], mb: Monoid[B]): Monoid[(A, B)] wi
 
 Моноидом также является `Map`, если доступен моноид для его значений:
 
-```scala
+```dotty
 given mapMergeMonoid[K, V](using mv: Monoid[V]): Monoid[Map[K, V]] with
   def combine(a: Map[K, V], b: Map[K, V]): Map[K, V] =
     (a.keySet ++ b.keySet).foldLeft(empty) { (acc, k) =>
@@ -199,7 +204,7 @@ given mapMergeMonoid[K, V](using mv: Monoid[V]): Monoid[Map[K, V]] with
 
 Моноидом является функция, результаты которой являются моноидами.
 
-```scala
+```dotty
 given functionMonoid[A, B](using mb: Monoid[B]): Monoid[A => B] with
   def combine(f: A => B, g: A => B): A => B = a => mb.combine(f(a), g(a))
 
@@ -210,7 +215,7 @@ given functionMonoid[A, B](using mb: Monoid[B]): Monoid[A => B] with
 что можно одновременно выполнять несколько вычислений при свертывании структуры данных. 
 Например, можно взять длину и сумму списка одновременно, чтобы вычислить среднее значение:
 
-```scala
+```dotty
 val p = List(1, 2, 3, 4).foldMap(a => (1, a))
 // p: Tuple2[Int, Int] = (4, 10)
 val mean = p(0) / p(1).toDouble

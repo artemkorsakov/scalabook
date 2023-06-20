@@ -7,7 +7,7 @@
 
 Функтор можно описать с помощью `trait`:
 
-```scala
+```dotty
 trait Functor[F[_]]:
   extension [A](fa: F[A])
     def map[B](f: A => B): F[B]
@@ -24,7 +24,7 @@ trait Functor[F[_]]:
 
 Функтор `F[(A, B)]` можно «распределить» по паре, чтобы получить `(F[A], F[B])`:
 
-```scala
+```dotty
 trait Functor[F[_]]:
   ...
   extension [A, B](fab: F[(A, B)])
@@ -41,7 +41,7 @@ trait Functor[F[_]]:
 [Applicative](../typeclass/monad/applicative.md) расширяет `Functor` и позволяет работать с несколькими «ящиками».
 В аппликативных функторах примитивами являются `unit` и `map2`.
 
-```scala
+```dotty
 trait Applicative[F[_]] extends Functor[F]:
   def unit[A](a: => A): F[A]
 
@@ -67,7 +67,7 @@ trait Applicative[F[_]] extends Functor[F]:
 
 `apply` и `map` могут быть выражены так:
 
-```scala
+```dotty
 trait Applicative[F[_]] extends Functor[F]:
   def unit[A](a: => A): F[A]
 
@@ -85,7 +85,7 @@ trait Applicative[F[_]] extends Functor[F]:
 
 `map2` и `map` могут быть выражены так:
 
-```scala
+```dotty
 trait Applicative[F[_]] extends Functor[F]:
   def unit[A](a: => A): F[A]
 
@@ -103,7 +103,7 @@ trait Applicative[F[_]] extends Functor[F]:
 
 `Applicative` определяет некоторые комбинаторы:
 
-```scala
+```dotty
 def sequence[A](fas: List[F[A]]): F[List[A]] =
   traverse(fas)(identity)
 
@@ -143,7 +143,7 @@ def product[A, B](fa: F[A], fb: F[B]): F[(A,B)] =
 Монада может быть определена с помощью `flatMap` и `unit`.
 В этом случае `map` и `map2` будут определяться так:
 
-```scala
+```dotty
 trait Monad[F[_]] extends Functor[F]:
   def unit[A](a: => A): F[A]
 
@@ -162,7 +162,7 @@ trait Monad[F[_]] extends Functor[F]:
 Монада может быть определена с помощью `compose` и `unit`.
 В этом случае `flatMap` (и через неё остальные операции) будет определяться так:
 
-```scala
+```dotty
 trait Monad[F[_]] extends Functor[F]:
   def unit[A](a: => A): F[A]
 
@@ -186,7 +186,7 @@ trait Monad[F[_]] extends Functor[F]:
 Монада может быть определена с помощью `map`, `join` (другое имя - `flatten`) и `unit`.
 В этом случае `flatMap` и `compose` могут быть определены так:
 
-```scala
+```dotty
 trait Functor[F[_]]:
   extension [A](fa: F[A]) 
     def map[B](f: A => B): F[B]
@@ -209,7 +209,7 @@ trait Monad[F[_]] extends Functor[F]:
 
 #### Option
 
-```scala
+```dotty
 given optionMonad: Monad[Option] with
   def unit[A](a: => A): Option[A] = Some(a)
 
@@ -221,7 +221,7 @@ given optionMonad: Monad[Option] with
 
 #### List
 
-```scala
+```dotty
 given listMonad: Monad[List] with
   def unit[A](a: => A): List[A] = a :: Nil
   
@@ -234,7 +234,7 @@ given listMonad: Monad[List] with
 
 Монада определяет некоторые комбинаторы:
 
-```scala
+```dotty
 def sequence[A](fas: List[F[A]]): F[List[A]] =
   traverse(fas)(identity)
 

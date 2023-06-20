@@ -2,7 +2,7 @@
 
 `NonEmptyList` - это односвязный список, который гарантированно непустой.
 
-```scala
+```dotty
 final case class NonEmptyList[+A](head: A, tail: List[A])
 ```
 

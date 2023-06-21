@@ -49,14 +49,14 @@
 
 Например, следующая функция деления двух целых чисел не является полной:
 
-```scala
+```dotty
 def divide(a: Int, b: Int): Int = a / b
 ```
 
 Чтобы ответить, почему эта функция не является полной, 
 давайте посмотрим, что произойдет, если попытаться поделить на ноль:
 
-```scala
+```dotty
 divide(5, 0)  // java.lang.ArithmeticException: / by zero
 ```
 
@@ -79,7 +79,7 @@ divide(5, 0)  // java.lang.ArithmeticException: / by zero
 Итак, как можно решить эту проблему? 
 Давайте посмотрим на альтернативное определение функции `divide`:
 
-```scala
+```dotty
 def divide(a: Int, b: Int): Option[Int] =
   if b != 0 then Some(a / b) else None
 ```
@@ -102,21 +102,23 @@ def divide(a: Int, b: Int): Option[Int] =
 должен быть возвращен один и тот же результат, независимо от того, сколько раз вызывалась функция. 
 Например, следующая функция генерации случайных целых чисел не является детерминированной:
 
-```scala mdoc:silent
+```dotty
 def generateRandomInt(): Int = (new scala.util.Random).nextInt
 ```
 
 Чтобы продемонстрировать, почему эта функция не является детерминированной, 
 давайте рассмотрим, что происходит при первом вызове функции:
 
-```scala mdoc
+```dotty
 generateRandomInt()
+// res0: Int = 442458883
 ```
 
 И затем, что происходит, когда мы снова вызываем функцию:
 
-```scala mdoc
+```dotty
 generateRandomInt()
+// res1: Int = 1432192231
 ```
 
 У нас разные результаты! 
@@ -130,7 +132,7 @@ generateRandomInt()
 Для этого будем использовать собственный генератор случайных чисел, 
 основанный на примере из книги [«Функциональное программирование на Scala»](https://livebook.manning.com/book/functional-programming-in-scala/chapter-6/21):
 
-```scala mdoc:reset:silent
+```dotty
 final case class RNG(seed: Long):
   def nextInt: (Int, RNG) =
     val newSeed = (seed * 0x5deece66dL + 0xbL) & 0xffffffffffffL
@@ -147,16 +149,23 @@ def generateRandomInt(random: RNG): (Int, RNG) = random.nextInt
 а в сигнатуре теперь четко указывается зависимость от `RNG`. 
 Например:
 
-```scala mdoc
+```dotty
 val random        = RNG(10)
+// random: RNG = RNG(seed = 10L)
 val (n1, random1) = generateRandomInt(random)
+// n1: Int = 3847489
+// random1: RNG = RNG(seed = 252149039181L)
 val (n2, random2) = generateRandomInt(random) 
+// n2: Int = 3847489
+// random2: RNG = RNG(seed = 252149039181L)
 ```
 
 Если мы хотим сгенерировать новое целое число, то должны предоставить другие входные данные:
 
-```scala mdoc
+```dotty
 val (n3, random3) = generateRandomInt(random2)
+// n3: Int = 1334288366
+// random3: RNG = RNG(seed = 87443922374356L)
 ```
 
 #### Чистая функция не должна иметь побочных эффектов
@@ -175,7 +184,7 @@ val (n3, random3) = generateRandomInt(random2)
 
 Например, следующая функция `increment` не является чистой, поскольку работает с изменяемой переменной `a`:
 
-```scala
+```dotty
 var a = 0
 def increment(inc: Int): Int =
   a += inc
@@ -184,7 +193,7 @@ def increment(inc: Int): Int =
 
 И следующая функция тоже не чистая, потому что она выводит сообщение в консоль:
 
-```scala
+```dotty
 def add(a: Int, b: Int): Int =
   println(s"Adding two integers: $a and $b")
   a + b
@@ -303,7 +312,7 @@ ZIO — это библиотека, позволяющая создавать �
 Самый важный тип данных в библиотеке ZIO 
 (а также основной строительный блок любого приложения, основанного на этой библиотеке) также называется ZIO:
 
-```scala
+```dotty
 ZIO[-R, +E, +A]
 ```
 
@@ -311,7 +320,7 @@ ZIO[-R, +E, +A]
 содержащее описание ряда взаимодействий с внешним миром (запросы к базе данных, вызовы сторонних API и т.д.). 
 Хорошая ментальная модель типа данных ZIO выглядит следующим образом:
 
-```scala
+```dotty
 R => Either[E, A]
 ```
 
@@ -425,7 +434,7 @@ lazy val root = (project in file("."))
 
 В качестве первого шага можно определить класс `Name`, представляющий имя игрока:
 
-```scala
+```dotty
 final case class Name(name: String)
 ```
 
@@ -442,7 +451,7 @@ final case class Name(name: String)
 позволяющий выполнять соответствующие проверки перед созданием экземпляра. 
 Итак, у нас получилось что-то вроде этого:
 
-```scala
+```dotty
 final case class Name (name: String)
 
 object Name:
@@ -459,7 +468,7 @@ object Name:
 Например, по-прежнему можно напрямую вызывать конструктор `Name` с пустыми строками. 
 Чтобы избежать этого, мы можем сделать его приватным:
 
-```scala mdoc:silent
+```dotty
 final case class Name private (name: String)
 
 object Name:
@@ -473,7 +482,7 @@ object Name:
 
 Точно так же можно определить case class с именем `Guess`, который представляет собой любую букву, угаданную игроком:
 
-```scala mdoc:silent
+```dotty
 final case class Guess private (char: Char)
 
 object Guess:
@@ -489,7 +498,7 @@ object Guess:
 
 Затем мы можем определить другой case class с именем `Word`, представляющий слово, которое игрок должен угадать:
 
-```scala mdoc:silent
+```dotty
 final case class Word private (word: String):
   val length: Int                   = word.length
   val toList: List[Char]            = word.toList
@@ -519,7 +528,7 @@ object Word:
 - Использованные пользователем буквы на текущий момент (`guesses`).
 - Слово, которое нужно угадать (`word`)
 
-```scala mdoc:silent
+```dotty
 final case class State private (name: Name, guesses: Set[Guess], word: Word):
   lazy val failuresCount: Int  = (guesses.map(_.char) -- word.toSet).size
   lazy val playerLost: Boolean = failuresCount > 5
@@ -554,7 +563,7 @@ object State:
 
 Мы можем представить это перечислением следующим образом:
 
-```scala mdoc:silent
+```dotty
 enum GuessResult:
   case Won, Lost, Correct, Incorrect, Unchanged
 ```
@@ -568,7 +577,7 @@ enum GuessResult:
 Теперь, когда мы определили модель предметной области приложения, можем продолжить с реализацией его самого. 
 Внутри файла `Hangman.scala` создадим объект, реализующий трейт `ZIOAppDefault`, например:
 
-```scala
+```dotty
 import zio.*
 
 object Hangman extends ZIOAppDefault:
@@ -606,7 +615,7 @@ object Hangman extends ZIOAppDefault:
 для этого напишем вспомогательную функцию внутри объекта Hangman, 
 которая позволяет печатать любое сообщение и затем запрашивает текст от игрока:
 
-```scala
+```dotty
 def getUserInput(message: String): IO[IOException, String] =
   Console.printLine(message)
   Console.readLine
@@ -646,7 +655,7 @@ def getUserInput(message: String): IO[IOException, String] =
 это эффект, возвращаемый `Console.readLine`. 
 Эта ситуация более или менее похожа на ту, как если бы у нас была вот такая функция:
 
-```scala
+```dotty
 def foo (): Int =
   4
   3
@@ -658,7 +667,7 @@ def foo (): Int =
 Поэтому мы должны модифицировать функцию `getUserInput`, 
 чтобы эффект, возвращаемый `Console.printLine`, действительно использовался:
 
-```scala
+```dotty
 def getUserInput(message: String): IO[IOException, String] =
   Console.printLine(message).flatMap(_ => Console.readLine)
 ```
@@ -677,7 +686,7 @@ def getUserInput(message: String): IO[IOException, String] =
 то можно написать `getUserInput` с использованием for-comprehension, 
 что поможет визуализировать код так, чтобы он больше походил на типичный императивный код:
 
-```scala
+```dotty
 def getUserInput(message: String): IO[IOException, String] =
   for
     _     <- Console.printLine(message)
@@ -687,7 +696,7 @@ def getUserInput(message: String): IO[IOException, String] =
 
 Эта реализация работает отлично, однако мы можем написать ее по-другому:
 
-```scala
+```dotty
 def getUserInput(message: String): IO[IOException, String] =
   Console.printLine(message) <*> Console.readLine
 ```
@@ -704,7 +713,7 @@ def getUserInput(message: String): IO[IOException, String] =
 Так почему же это работает? Ответ: Это еще одно упрощение ZIO 2.0! 
 В ZIO 1.0 компиляция бы не удалась, и нам нужно было бы сделать что-то вроде этого:
 
-```scala
+```dotty
 def getUserInput(message: String): ZIO[Console, IOException, String] =
   (Console.printLine(message) <*> Console.readLine).map(_._2)
 ```
@@ -720,14 +729,14 @@ def getUserInput(message: String): ZIO[Console, IOException, String] =
 мы могли бы также использовать оператор `*>` (эквивалентный методу `ZIO#zipRight`), 
 который всегда отбрасывает результат левостороннего вычисления, даже если его результирующий тип не `Unit`:
 
-```scala
+```dotty
 def getUserInput(message: String): IO[IOException, String] =
   Console.printLine(message) *> Console.readLine
 ```
 
 И, наконец, наиболее сжатая версия `getUserInput` будет следующей:
 
-```scala
+```dotty
 def getUserInput(message: String): IO[IOException, String] =  
   Console.readLine(message)
 ```
@@ -735,7 +744,7 @@ def getUserInput(message: String): IO[IOException, String] =
 Ну и теперь, когда у нас есть функция для получения текста от игрока, 
 можно реализовать функциональный эффект, чтобы получить его имя:
 
-```scala
+```dotty
 lazy val getName: IO[IOException, Name] =
   for
     input <- getUserInput("What's your name? ")
@@ -760,7 +769,7 @@ lazy val getName: IO[IOException, Name] =
 
 Однако мы можем написать эквивалентную версию:
 
-```scala
+```dotty
 lazy val getName: IO[IOException, Name] =
   for
     input <- getUserInput("What's your name?")
@@ -782,7 +791,7 @@ lazy val getName: IO[IOException, Name] =
 
 Как видите, эта новая версия getName несколько более лаконична. Однако мы можем сделать еще одно упрощение:
 
-```scala
+```dotty
 lazy val getName: IO[IOException, Name] =
   for
     input <- getUserInput("What's your name? ")
@@ -803,7 +812,7 @@ lazy val getName: IO[IOException, Name] =
 
 Реализация выглядит следующим образом:
 
-```scala
+```dotty
 lazy val chooseWord: UIO[Word] =
   for
     index <- Random.nextIntBounded(words.length)
@@ -843,7 +852,7 @@ lazy val chooseWord: UIO[Word] =
 
 Следующее, что нам нужно сделать, это реализовать функциональность для отображения состояния игры на консоли:
 
-```scala
+```dotty
 def renderState(state: State): IO[IOException, Unit] =
 
   /*
@@ -884,7 +893,7 @@ def renderState(state: State): IO[IOException, Unit] =
 Мы не будем вдаваться в подробности того, как реализована эта функция, 
 а сосредоточимся на одной строчке, пожалуй, самой интересной:
 
-```scala
+```dotty
 val hangman = ZIO.attempt(hangmanStages(state.failuresCount)).orDie
 ```
 
@@ -919,7 +928,7 @@ val hangman = ZIO.attempt(hangmanStages(state.failuresCount)).orDie
 Функционал для получения попытки угадать букву от игрока очень похож на то, 
 как мы получаем имя, поэтому не будем вдаваться в подробности:
 
-```scala
+```dotty
 lazy val getGuess: IO[IOException, Guess] =
   for
     input <- getUserInput("What's your next guess? ")
@@ -937,7 +946,7 @@ lazy val getGuess: IO[IOException, Guess] =
 неправильно угадал букву, но еще не проиграл игру 
 или если он повторил букву, уже опробованную ранее:
 
-```scala
+```dotty
 def analyzeNewGuess(oldState: State, newState: State, guess: Guess): GuessResult =
   if oldState.guesses.contains(guess) then GuessResult.Unchanged
   else if newState.playerWon then GuessResult.Won
@@ -950,7 +959,7 @@ def analyzeNewGuess(oldState: State, newState: State, guess: Guess): GuessResult
 
 Реализация игрового цикла использует функции, которые мы определили ранее:
 
-```scala
+```dotty
 def gameLoop(oldState: State): IO[IOException, Unit] =
   for
     guess <- renderState(oldState) <*> getGuess
@@ -996,7 +1005,7 @@ def gameLoop(oldState: State): IO[IOException, Unit] =
 и теперь остается только собрать их воедино и вызвать из метода `run`, 
 который, как уже упоминалось, является точкой входа любого ZIO приложения:
 
-```scala
+```dotty
 val run: IO[IOException, Unit] =
   for
     name <- Console.printLine("Welcome to ZIO Hangman!") <*> getName

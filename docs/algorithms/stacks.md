@@ -15,7 +15,7 @@
 
 Возможная реализация стека заданной длины в императивном стиле:
 
-```scala
+```dotty
 class ImperativeStack[A: ClassTag](maxSize: Int):
   private val stackBox = new Array[A](maxSize)
   private var top = -1
@@ -44,7 +44,7 @@ class ImperativeStack[A: ClassTag](maxSize: Int):
 
 Возможная реализация стека переменной длины в функциональном стиле:
 
-```scala
+```dotty
 enum Stack[+A]:
   case EmptyStack
   case NonEmptyStack(value: A, tail: Stack[A])

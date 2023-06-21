@@ -39,7 +39,7 @@
 Он возвращает экземпляр типа `Fiber`, который предоставляет доступ к методу `join`.
 Вызов `join` заставляет волокно стороны вызова ждать завершения присоединенного волокна.
 
-```scala
+```dotty
 import cats.effect.*
 import scala.concurrent.duration.*
 
@@ -67,7 +67,7 @@ yield ()
 
 С помощью `onCancel(fin: IO[Unit])` можно настроить финализатор, который будет запускаться при отмене задачи.
 
-```scala
+```dotty
 import cats.effect.*
 import scala.concurrent.duration.*
 
@@ -93,7 +93,7 @@ yield ()
 Значение, возвращаемое волокном, будет доступно в качестве поля результата `Succeeded`. 
 Таким образом, можно передавать значения из разветвленной задачи на сторону вызова.
 
-```scala
+```dotty
 import cats.effect.*
 import scala.concurrent.duration.*
 
@@ -121,7 +121,7 @@ yield ()
 
 Можно использовать метод `timeout`, чтобы указать период, по истечении которого волокно будет отменено.
 
-```scala
+```dotty
 task
   .onCancel(IO.println("Task has timed out!"))
   .timeout(500.millis)
@@ -130,7 +130,7 @@ task
 
 Метод `timeoutTo` позволяет указать резервный вариант для отмененных вычислений.
 
-```scala
+```dotty
 task
   .onCancel(IO.println("Task has timed out!"))
   .timeoutTo(500.millis, planB)
@@ -148,7 +148,7 @@ task
 Волокно завершится только в том случае, если его вычисления будут завершены или вызовут ошибку. 
 Если вычисления, выполняемые на волокне, никогда не заканчиваются, волокно никогда не завершится.
 
-```scala
+```dotty
 val task =
   for
     time <- IO.realTimeInstant
@@ -177,7 +177,7 @@ yield ()
 Метод `background` связывает жизненный цикл волокна с типом данных `Resource`. 
 Всякий раз, когда ресурс завершается, он также отменяет базовое волокно.
 
-```scala
+```dotty
 val backgroundTask: Resource[IO, Unit] = task
   .onCancel(IO.println("Closing the background task"))
   .background
@@ -203,7 +203,7 @@ backgroundTask.surround {
 Если `await` - `false`, то супервизор отменит все свои активные потоки, когда завершится. Это значение по умолчанию. 
 Если `await` - `true`, завершение супервизора будет блокироваться до тех пор, пока не будут завершены все волокна.
 
-```scala
+```dotty
 Supervisor[IO](await = false).use { supervisor =>
   for
     _ <- supervisor.supervise(
@@ -222,7 +222,7 @@ Supervisor[IO](await = false).use { supervisor =>
 мы также можем добавить в область видимости метод расширения `supervise` для `IO`. 
 Это позволит вызывать `supervise` аналогично тому, как вызывается `start`.
 
-```scala
+```dotty
 import cats.effect.implicits.*
 
 Supervisor[IO](await = true).use { supervisor =>
@@ -241,7 +241,7 @@ CE предоставляет множество удобных высокоур
 Например, с `IO.race` можно взять два `IO`, запустить их параллельно и дождаться более быстрого. 
 Более медленное вычисление будет отменено. Тип результата `race` - `IO[Either[A, B]]`.
 
-```scala
+```dotty
 val raced: IO[Either[String, Int]] = IO.race(
   IO("Faster").delayBy(5.seconds),
   IO(999).delayBy(10.seconds)
@@ -259,7 +259,7 @@ val raced: IO[Either[String, Int]] = IO.race(
 кортеж, содержащий результат левого волокна и дескриптор волокна для правого. 
 Если "выигрывает" правый, то получаем правое значение, на этот раз с результатом правого волокна и дескриптором левого.
 
-```scala
+```dotty
 IO.racePair(IO(10), IO(5).delayBy(2.seconds)).flatMap {
  case Left((resL, fibR))  => 
    fibR.cancel *> IO(s"Left fiber outcome: $resL")
@@ -274,7 +274,7 @@ IO.racePair(IO(10), IO(5).delayBy(2.seconds)).flatMap {
 Метод `IO.both` возвращает кортеж, содержащий оба результата: `IO[(A, B)]`. 
 Если какая-либо из операций отменена или завершилась с ошибкой, вторая также будет отменена.
 
-```scala
+```dotty
 IO.both(IO(1).delayBy(1.second), IO("Hello"))
 ```
 
@@ -285,7 +285,7 @@ IO.both(IO(1).delayBy(1.second), IO("Hello"))
 Они реализованы как методы расширения, поэтому для их использования нужно сделать соответствующий импорт, 
 который внесет в область видимости правильные имплициты.
 
-```scala
+```dotty
 import cats.syntax.all.*
 ```
 
@@ -296,7 +296,7 @@ import cats.syntax.all.*
 Если необходимо выполнить произвольное количество эффектов одновременно, 
 то можно использовать параллельные аналоги `traverse` и `sequence`: `parTraverse` и `parSequence`.
 
-```scala
+```dotty
 val r: IO[List[Int]] = List(
   IO(1).delayBy(1.second),
   IO(2).delayBy(2.seconds),
@@ -318,7 +318,7 @@ val r: IO[List[Int]] = List(
 Они также позволяют выполнять два эффекта параллельно. Неудача в одном из `IO` отменит и другой. 
 Если всё вычисление отменено, оба действия будут отменены. Оператор `&>` возвращает значение справа, `<&` - слева.
 
-```scala
+```dotty
 // Получим 1 приблизительно через 2 секунды
 IO(1).delayBy(1.second) <& IO(2).delayBy(2.seconds)
 ```

@@ -25,7 +25,7 @@
 Да все что угодно: практически все алфавиты мира и всевозможные символы,
 абсолютное большинство которых никто никогда в процессе разработки не встречает. Например: `"€‡™µ"`
 
-```scala
+```dotty
 val str: String = "€‡™µ"
 ```
 
@@ -50,18 +50,20 @@ val str: String = "€‡™µ"
 не подходят, потому что они представляют собой только "оболочку" над `String`,
 и по-прежнему позволяют "подложить" невалидное значение.
 
-```scala mdoc
+```dotty
 opaque type Name = String
 val name: Name = "€‡™µ"
+// name: String = "€‡™µ"
 ```
 
 [Пример в Scastie](https://scastie.scala-lang.org/j3H5VznPQUOz6ylAQgFMoA)
 
 [Тот же пример в Scastie на Scala 2](https://scastie.scala-lang.org/4ojla7AbTCe4lw8EdHdTMw)
 
-```scala mdoc:reset
+```dotty
 case class Name(value: String)
 val name: Name = Name("€‡™µ")
+// name: Name = Name(value = "€‡™µ")
 ```
 
 [Пример в Scastie](https://scastie.scala-lang.org/CjZpe7ejSwW724prXkQLqg)
@@ -71,7 +73,7 @@ val name: Name = Name("€‡™µ")
 "Стандартное" решение - регулировать создание `Name` путем ограничения видимости конструктора по умолчанию
 и определения метода создания экземпляра `Name` в сопутствующем объекте:
 
-```scala mdoc:reset:silent
+```dotty
 import scala.util.matching.Regex
 
 final case class Name private (value: String)
@@ -86,19 +88,25 @@ object Name:
 
 В этом случае нельзя создать невалидное имя напрямую, используя стандартный конструктор:
 
-```scala
+```dotty
 val name: Name = Name("€‡™µ") // не скомпилируется
 ```
 
 А его использование происходит так, как было задумано:
 
-```scala mdoc
+```dotty
 Name.fromString("€‡™µ")     
+// res2: Option[Name] = None     
 Name.fromString("12345")    
+// res3: Option[Name] = None    
 Name.fromString("Alyona")   
+// res4: Option[Name] = None   
 Name.fromString("Алёна18")  
+// res5: Option[Name] = None  
 Name.fromString("алёна")    
+// res6: Option[Name] = None    
 Name.fromString("Алёна")    
+// res7: Option[Name] = Some(value = Name(value = "Алёна"))   
 ```
 
 [Пример в Scastie](https://scastie.scala-lang.org/Esu8N76RQO6s0kORDsW1Kg)
@@ -158,7 +166,7 @@ Name.fromString("Алёна")
 
 Вот так можно объявить уточненный тип с помощью **iron**:
 
-```scala
+```dotty
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.string.*
 
@@ -167,7 +175,7 @@ opaque type Name = String :| Match["[А-ЯЁ][а-яё]+"]
 
 А вот так - с помощью **refined**:
 
-```scala
+```dotty
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.string.MatchesRegex
 
@@ -176,7 +184,7 @@ type Name = String Refined MatchesRegex["[А-ЯЁ][а-яё]+"]
 
 Явное присваивание невалидного значения вызовет ошибку компиляции:
 
-```scala
+```dotty
 val name0: Name = "€‡™µ"    // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
 val name1: Name = "12345"   // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
 val name2: Name = "Alyona"  // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
@@ -192,7 +200,7 @@ val name5: Name = "Алёна"   // Компиляция проходит усп
 Библиотеки уточнения также позволяют преобразовывать базовое значение для более удобной работы 
 в [`Option[T]`](https://www.scala-lang.org/api/3.2.2/scala/Option.html) (`refineOption` для **iron** / `unapply` в **refined**):
 
-```scala
+```dotty
 val name0: Option[Name] = "€‡™µ".refineOption     // None
 val name1: Option[Name] = "12345".refineOption    // None
 val name2: Option[Name] = "Alyona".refineOption   // None
@@ -208,13 +216,19 @@ val name5: Option[Name] = "Алёна".refineOption    // Some("Алёна")
 и в [`Either[String, T]`](https://www.scala-lang.org/api/3.2.2/scala/util/Either.html), 
 где слева будет ошибка валидации, (`refineEither` для **iron** / `from` в **refined**):
 
-```scala
-val name0: Either[String, Name] = "€‡™µ".refineEither     // Left("Should match [А-ЯЁ][а-яё]+")
-val name1: Either[String, Name] = "12345".refineEither    // Left("Should match [А-ЯЁ][а-яё]+")
-val name2: Either[String, Name] = "Alyona".refineEither   // Left("Should match [А-ЯЁ][а-яё]+")
-val name3: Either[String, Name] = "Алёна18".refineEither  // Left("Should match [А-ЯЁ][а-яё]+")
-val name4: Either[String, Name] = "алёна".refineEither    // Left("Should match [А-ЯЁ][а-яё]+")
-val name5: Either[String, Name] = "Алёна".refineEither    // Right("Алёна")
+```dotty
+val name0: Either[String, Name] = "€‡™µ".refineEither     
+// Left("Should match [А-ЯЁ][а-яё]+")
+val name1: Either[String, Name] = "12345".refineEither    
+// Left("Should match [А-ЯЁ][а-яё]+")
+val name2: Either[String, Name] = "Alyona".refineEither   
+// Left("Should match [А-ЯЁ][а-яё]+")
+val name3: Either[String, Name] = "Алёна18".refineEither  
+// Left("Should match [А-ЯЁ][а-яё]+")
+val name4: Either[String, Name] = "алёна".refineEither    
+// Left("Should match [А-ЯЁ][а-яё]+")
+val name5: Either[String, Name] = "Алёна".refineEither    
+// Right("Алёна")
 ```
 
 [Пример в Scastie для **iron**](https://scastie.scala-lang.org/cXvITTPiT4a27t8pU9m0fg)
@@ -252,7 +266,7 @@ val name5: Either[String, Name] = "Алёна".refineEither    // Right("Алё�
 
 При использовании case класса значение имени - это по-прежнему строка:
 
-```scala
+```dotty
 Name.fromString("Алёна").get.value
 // val res0: String = Алёна
 ```
@@ -263,7 +277,7 @@ Name.fromString("Алёна").get.value
 
 Уточняющий тип же - это конкретный тип:
 
-```scala
+```dotty
 val name: Name = "Алёна"
 // val name: Name = Алёна
 ```
@@ -273,7 +287,7 @@ val name: Name = "Алёна"
 Уточненный тип расширяет базовый (в данном случае - `String`)
 и его можно использовать там, где ожидается дочерний для базового тип:
 
-```scala
+```dotty
 val name: Name = "Алёна"
 def printT[T >: String](t: T): Unit = println(t)
 printT(name) // Печатает "Алёна"
@@ -287,7 +301,7 @@ printT(name) // Печатает "Алёна"
 
 Как уже было рассмотрено выше:
 
-```scala
+```dotty
 val name0: Name = "€‡™µ"    // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
 val name1: Name = "12345"   // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
 val name2: Name = "Alyona"  // Ошибка компиляции: Should match [А-ЯЁ][а-яё]+ 
@@ -313,7 +327,7 @@ val name5: Name = "Алёна"   // Компиляция проходит усп
 
 Допустим у нас есть тип и некий предикат для значений заданного типа:
 
-```scala
+```dotty
 opaque type Packed = Any
 
 val predicate: Packed => Boolean =
@@ -324,7 +338,7 @@ val predicate: Packed => Boolean =
 
 Уточняющий тип `NonEmpty` для `Packed` можно определить по предикату:
 
-```scala
+```dotty
 import io.github.iltotore.iron.{given, *}
 import io.github.iltotore.iron.constraint.all.*
 
@@ -343,7 +357,7 @@ given Constraint[Packed, NonEmpty] with
 
 Пример использования уточняющего типа для `Packed`:
 
-```scala
+```dotty
 (null: Packed).refineEither[NonEmpty]     // Left(Should be non empty)
 ("": Packed).refineEither[NonEmpty]       // Left(Should be non empty)
 (" ": Packed).refineEither[NonEmpty]      // Left(Should be non empty)
@@ -404,7 +418,7 @@ given Constraint[Packed, NonEmpty] with
 
 Для библиотеки **refined** есть аналогичное расширение [**refined-cats**][refined cats]:
 
-```scala
+```dotty
 import cats.data.ValidatedNec
 import cats.syntax.all.*
 
@@ -433,7 +447,7 @@ object Person:
 применяет все предикаты к входным данным для их проверки,
 а также возвращает более конкретные типы, с которыми можно более безопасно работать в будущем:
 
-```scala
+```dotty
 Person.refine("Андрей", 50, UUID.randomUUID().toString)
 // Valid(Person(Андрей,50,fccec68b-cefd-45e8-ae57-b8cdd3fa3cb8))
 ```
@@ -442,7 +456,7 @@ Person.refine("Андрей", 50, UUID.randomUUID().toString)
 то всегда будут выполняться все этапы "уточнения",
 и в случае неудачи некоторых из них их ошибки будут накапливаться в `NonEmptyChain`:
 
-```scala
+```dotty
 Person.refine("Andrew", 150, "id")
 // Invalid(Chain(
 //   "Should match [А-ЯЁ][а-яё]+", 

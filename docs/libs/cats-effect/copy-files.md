@@ -22,7 +22,7 @@
 
 Сигнатура функции выглядит так:
 
-```scala
+```dotty
 import cats.effect.IO
 import java.io.File
 
@@ -49,7 +49,7 @@ def copy(origin: File, destination: File): IO[Long] = ???
 
 См. код:
 
-```scala
+```dotty
 import cats.effect.{IO, Resource}
 import java.io.*
 
@@ -90,7 +90,7 @@ def inputOutputStreams(in: File, out: File): Resource[IO, (InputStream, OutputSt
 без необходимости определять, как освобождается ресурс. 
 Итак, наша функция `inputStream` будет выглядеть так:
 
-```scala
+```dotty
 import cats.effect.{IO, Resource}
 import java.io.{File, FileInputStream}
 
@@ -104,7 +104,7 @@ def inputStream(f: File): Resource[IO, FileInputStream] =
 
 Вернемся к нашей функции `copy`, которая теперь выглядит так:
 
-```scala
+```dotty
 import cats.effect.{IO, Resource}
 import java.io.*
 
@@ -158,7 +158,7 @@ def copy(origin: File, destination: File): IO[Long] =
 и, наконец, на этапе высвобождения закроем потоки. 
 Таким образом, мы могли бы определить нашу функцию `copy` следующим образом:
 
-```scala
+```dotty
 import cats.effect.IO
 import cats.syntax.all.*
 import java.io.*
@@ -210,7 +210,7 @@ def copy(origin: File, destination: File): IO[Long] = {
 и оставить фактическую передачу данных другой функции `transmit`, которая использует этот цикл. 
 Что-то типа:
 
-```scala
+```dotty
 import cats.effect.IO
 import cats.syntax.all.*
 import java.io.*
@@ -277,7 +277,7 @@ _for-comprehension_ зацикливается до тех пор, пока вы
 которая создает `IO` экземпляр, формирующий программу. 
 В нашем случае наш `run` метод может выглядеть так:
 
-```scala
+```dotty
 import cats.effect.*
 import java.io.File
 

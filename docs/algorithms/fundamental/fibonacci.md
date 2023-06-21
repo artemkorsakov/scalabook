@@ -9,7 +9,7 @@
 
 Заданное число Фибоначчи можно получить с помощью меморизации из библиотеки [scalaz](https://github.com/scalaz/scalaz):
 
-```scala
+```dotty
 import scalaz.*
 
 object Fibonacci:
@@ -24,7 +24,7 @@ memoizedFib(60)  // 1548008755920
 
 Либо число Фибоначчи можно вычислять итеративно:
 
-```scala
+```dotty
 def iterativeFib(n: Int): BigInt =
   @tailrec
   def loop(a: BigInt, b: BigInt, count: Int): BigInt =
@@ -40,7 +40,7 @@ def iterativeFib(n: Int): BigInt =
 
 Вычислить числа Фибоначчи с логарифмической сложностью можно так (**Exercise 1.19** из [SICP][sicp]):
 
-```scala
+```dotty
 def fastFib(n: Int): BigInt =
   @tailrec
   def loop(a: BigInt, b: BigInt, p: BigInt, q: BigInt, count: Int): BigInt =
@@ -58,7 +58,7 @@ def fastFib(n: Int): BigInt =
 
 ![](https://wikimedia.org/api/rest_v1/media/math/render/svg/7e13a8a7c316c95f60118e8a3dc9641eb1680dc2)
 
-```scala
+```dotty
 private val PHI: BigDecimal = BigDecimal((1.0 + math.sqrt(5.0)) / 2.0)
 
 def approximateFibonacci(n: Int): BigInt =

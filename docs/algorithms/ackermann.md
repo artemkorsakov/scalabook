@@ -3,7 +3,7 @@
 Следующая процедура вычисляет математическую функцию, называемую функцией Аккермана
 (**Exercise 1.10** из [SICP][sicp]):
 
-```scala
+```dotty
 def functionAckermann(x: Int, y: Int): Int =
   if y == 0 then 0
   else if x == 0 then 2 * y

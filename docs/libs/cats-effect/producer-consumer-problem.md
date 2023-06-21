@@ -86,7 +86,7 @@ Cats-effect реализует некоторые примитивы парал�
 
 Метод `producer` будет таким:
 
-```scala
+```dotty
 import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*
@@ -113,7 +113,7 @@ def producer[F[_]: Sync: Console](queueR: Ref[F, Queue[Int]], counter: Int): F[U
 Метод `consumer` немного другой. 
 Он попытается прочитать данные из очереди, но должен знать, что очередь может быть пустой:
 
-```scala
+```dotty
 import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*
@@ -136,7 +136,7 @@ def consumer[F[_]: Sync: Console](queueR: Ref[F, Queue[Int]]): F[Unit] =
 
 Теперь мы можем создать программу, которая создает экземпляр `queueR` и запускает `producer` и `consumer` параллельно:
 
-```scala
+```dotty
 import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*
@@ -171,7 +171,7 @@ object InefficientProducerConsumer extends IOApp:
 которые будут запускать производителя и потребителя, а затем использовать `join` для ожидания их завершения, 
 например:
 
-```scala
+```dotty
 import cats.effect.*
 import collection.immutable.Queue
 
@@ -240,7 +240,7 @@ _Из-за этого, если у вас нет особых и необычн�
 Эти экземпляры будут храниться в новой очереди `takers`. 
 Мы сохраним обе очереди в новом типе `State`:
 
-```scala
+```dotty
 import cats.effect.Deferred
 import scala.collection.immutable.Queue
 case class State[F[_], A](queue: Queue[A], takers: Queue[Deferred[F, A]])
@@ -259,7 +259,7 @@ case class State[F[_], A](queue: Queue[A], takers: Queue[Deferred[F, A]])
 Если предположить, что в нашей настройке мы производим и потребляем `Ints` (как и раньше), 
 тогда новый потребительский код будет таким:
 
-```scala
+```dotty
 import cats.effect.{Deferred, Ref, Async}
 import cats.effect.std.Console
 import cats.syntax.all._
@@ -301,7 +301,7 @@ end consumer
 
 Таким образом производитель будет выглядеть так:
 
-```scala
+```dotty
 import cats.effect.{Deferred, Ref, Sync}
 import cats.effect.std.Console
 import cats.syntax.all.*
@@ -330,7 +330,7 @@ def producer[F[_]: Sync: Console](id: Int, counterR: Ref[F, Int], stateR: Ref[F,
 Наконец, мы модифицируем нашу основную программу, чтобы она создавала счетчик и состояние `Refs`. 
 Также она создаст несколько потребителей и производителей, по 10 штук, и запустит их всех параллельно:
 
-```scala
+```dotty
 import cats.effect.*
 import cats.effect.std.Console
 import cats.instances.list.*
@@ -391,7 +391,7 @@ object ProducerConsumer extends IOApp:
 фактический элемент, предлагаемый производителем. 
 Таким образом класс `State` теперь становится:
 
-```scala
+```dotty
 import cats.effect.Deferred
 import scala.collection.immutable.Queue
 
@@ -422,7 +422,7 @@ case class State[F[_], A](
 
 Итак, потребительский код выглядит так:
 
-```scala
+```dotty
 import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*
@@ -470,7 +470,7 @@ def consumer[F[_]: Async: Console](id: Int, stateR: Ref[F, State[F, Int]]): F[Un
 
 Теперь код производителя выглядит так:
 
-```scala
+```dotty
 import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*
@@ -512,7 +512,7 @@ def producer[F[_]: Async: Console](id: Int, counterR: Ref[F, Int], stateR: Ref[F
 В качестве последнего шага мы должны адаптировать основную программу для использования этих новых потребителей и производителей. 
 Допустим, мы ограничиваем размер очереди до `100`, тогда имеем:
 
-```scala
+```dotty
 import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*
@@ -563,7 +563,7 @@ object ProducerConsumerBounded extends IOApp:
 Его состояние обрабатывается внутренним `offer`, поэтому сосредоточимся на нем. 
 И, для ясности в нашем анализе, давайте переформатируем код, используя для понимания:
 
-```scala
+```dotty
 import cats.effect.Deferred
 
 def offer[F[_]](i: Int): F[Unit] =
@@ -583,7 +583,7 @@ def offer[F[_]](i: Int): F[Unit] =
 Отмена после удаления `taker` или добавления `offerer` в состояние, но без запуска `op`, оставит состояние несогласованным. 
 Мы можем быстро исправить это, сделав этот код неотменяемым:
 
-```scala
+```dotty
 def offer[F[_]](i: Int): F[Unit] =
   for
     offerer <- Deferred[F, Int]
@@ -614,7 +614,7 @@ def offer[F[_]](i: Int): F[Unit] =
 поскольку она никогда не будет завершена. 
 Наша `offer` функция стала:
 
-```scala
+```dotty
 import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*
@@ -662,7 +662,7 @@ def producer[F[_]: Async: Console](id: Int, counterR: Ref[F, Int], stateR: Ref[F
 при отмене такого вызова `taker` будет удален из списка принимающих в `State`. 
 Итак, `consumer` сейчас:
 
-```scala
+```dotty
 import cats.effect.*
 import cats.effect.std.Console
 import cats.syntax.all.*

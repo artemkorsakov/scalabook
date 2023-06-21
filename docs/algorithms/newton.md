@@ -18,7 +18,7 @@
 производная `Dg` функции `g` есть функция, 
 значение которой в каждой точке `x` описывается формулой (при `dx`, стремящемся к нулю):
 
-```scala
+```dotty
 object NewtonsMethod:
   private val dx = 1e-6
 
@@ -28,7 +28,7 @@ object NewtonsMethod:
 
 С помощью `derivative` можно выразить метод Ньютона как процесс поиска неподвижной точки:
 
-```scala
+```dotty
 object NewtonsMethod:
   private val accuracy = 1e-6
 
@@ -47,7 +47,7 @@ object NewtonsMethod:
 Так как `cos x <= 1` для всех `x` и `x[3] > 1` для `x > 1`, очевидно, что решение лежит между `0` и `1`. 
 Возьмём в качестве начального приближения значение `x[0]=0,5`, тогда:
 
-```scala
+```dotty
 val g: Double => Double = x => math.cos(x) - x * x * x
 
 newtonsMethod(g, 0.5) // 0.865474033101...

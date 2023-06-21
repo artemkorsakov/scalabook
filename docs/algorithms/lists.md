@@ -8,7 +8,7 @@
 
 Однонаправленный связанный список можно реализовать например таким образом:
 
-```scala
+```dotty
 enum List[+A]:
   case Nil
   case Cons(head: A, tail: List[A])

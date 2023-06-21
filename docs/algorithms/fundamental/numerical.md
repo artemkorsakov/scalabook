@@ -10,16 +10,14 @@
 - `НОД(r, 0) = r` для любого ненулевого `r` (так как 0 делится на любое целое число).
 - Пусть `a = b*q + r`, тогда `НОД (a, b) = НОД (b, r)`.
 
-```scala mdoc:invisible
-import scala.annotation.tailrec
-```
-```scala mdoc
+```dotty
 @tailrec
 final def gcdByEuclideanAlgorithm(a: Long, b: Long): Long =
   if b == 0 then a
   else gcdByEuclideanAlgorithm(b, a % b)
   
 gcdByEuclideanAlgorithm(4851, 3003)
+// res0: Long = 231L
 ```
 
 ### Алгоритм НОД на основе четности чисел
@@ -32,7 +30,7 @@ gcdByEuclideanAlgorithm(4851, 3003)
 - Если числа имеют разную четность, то НОД этих двух чисел равен НОД нечетному и четному, разделенному на 2.
 - Если оба нечетные, то можно воспользоваться алгоритмом Евклида.
 
-```scala mdoc
+```dotty
 def gcd(a: Long, b: Long): Long =
   val u = math.abs(a)
   val v = math.abs(b)
@@ -47,6 +45,7 @@ def gcd(a: Long, b: Long): Long =
       case (_, _) => if (u > v) gcd(u - v, v) else gcd(v - u, u)
   
 gcd(4851, 3003)  
+// res1: Long = 231L
 ```
 
 
@@ -60,14 +59,13 @@ gcd(4851, 3003)
 
 Генератор можно реализовать на Scala так:
 
-```scala mdoc:silent
+```dotty
 val A = 7
 val B = 5
 val M = 11
 val generator = LazyList.iterate(0)(x => (A * x + B) % M)
-```
-```scala mdoc
 generator.take(11).toList
+// res2: List[Int] = List(0, 5, 7, 10, 9, 2, 8, 6, 3, 4, 0)
 ```
 
 
@@ -89,7 +87,7 @@ generator.take(11).toList
 
 Реализация алгоритма:
 
-```scala
+```dotty
 def decToBinConv(x: Int): String =
   val seqOfDivByTwo = Iterator.iterate(x)(a => a / 2)
   val binList = seqOfDivByTwo
@@ -111,7 +109,7 @@ def decToBinConv(x: Int): String =
 
 Реализация алгоритма (**Exercise 1.16** из [SICP][sicp]):
 
-```scala
+```dotty
 def power(a: Long, n: Long): BigInt =
   @tailrec
   def loop(base: BigInt, power: Long, acc: BigInt): BigInt =
@@ -131,7 +129,7 @@ def power(a: Long, n: Long): BigInt =
 
 **Exercise 1.7** из [SICP][sicp]:
 
-```scala
+```dotty
 def sqrt(x: Double): Double       =
   def isGoodEnough(guess: Double): Boolean =
     math.abs(guess * guess - x) < delta
@@ -152,7 +150,7 @@ def sqrt(x: Double): Double       =
 
 **Exercise 1.8** из [SICP][sicp]:
 
-```scala
+```dotty
 def cubeRootOf(x: Double): Double =
   def isGoodEnough(guess: Double): Boolean =
     math.abs(guess * guess * guess - x) < delta

@@ -17,7 +17,7 @@
 - Для каждого следующего числа `x`, начиная с `3`, берем этот же список простых чисел до корня из `x` 
   и проверяем, что ни одно из них не является делителем `x`.
 
-```scala mdoc
+```dotty
 lazy val primes: LazyList[Int] =
   2 #:: LazyList
     .from(3)
@@ -27,6 +27,7 @@ lazy val primes: LazyList[Int] =
     }
 
 primes.take(10).toList
+// res0: List[Int] = List(2, 3, 5, 7, 11, 13, 17, 19, 23, 29)
 ```
 
 ## Проверка, простое ли заданное число
@@ -40,7 +41,7 @@ primes.take(10).toList
 - Все простые числа, кроме `2`, нечетны. 
 - Все простые числа больше `3` можно записать в виде `6k ± 1`
 
-```scala mdoc
+```dotty
 def isPrime(n: Long): Boolean =
   if n < 2 then false
   else if n < 4 then true // 2 и 3 - простые
@@ -59,6 +60,7 @@ def isPrime(n: Long): Boolean =
     loop(5)
 
 isPrime(999_999_000_001L)
+// res1: Boolean = true
 ```
 
 #### Тест простоты Ферма
@@ -79,7 +81,7 @@ isPrime(999_999_000_001L)
 
 Вот вероятностный алгоритм проверки числа на простоту, который ошибается в **1/(2^max_test)** случаях.
 
-```scala
+```dotty
 @tailrec
 def isProbablyPrime(p: Long, max_test: Int): Boolean =
   (max_test <= 0) || {
@@ -92,7 +94,7 @@ def isProbablyPrime(p: Long, max_test: Int): Boolean =
 
 [Решето Эратосфена][sieve] на Scala можно реализовать следующим образом:
 
-```scala mdoc
+```dotty
 def sieveOfEratosthenes(n: Int): Array[Boolean] =
   val result = Array.fill(n + 1)(true)
   result(0) = false
@@ -106,6 +108,10 @@ def sieveOfEratosthenes(n: Int): Array[Boolean] =
   result
 
 sieveOfEratosthenes(10)
+// res2: Array[Boolean] = Array(
+//   false, false, true, true, false,
+//   true, false, true, false, false, false
+// )
 ```
 
 
@@ -113,7 +119,7 @@ sieveOfEratosthenes(10)
 
 Простые множители числа можно найти следующим образом:
 
-```scala mdoc
+```dotty
 def primeFactorsWithPow(n: Long): Map[Long, Long] =
   var number = n
 
@@ -138,6 +144,7 @@ def primeFactorsWithPow(n: Long): Map[Long, Long] =
   if number > 1 then map + (number -> 1) else map
 
 primeFactorsWithPow(777111)
+// res3: Map[Long, Long] = Map(3L -> 1L, 37L -> 1L, 7001L -> 1L)
 ```
 
 

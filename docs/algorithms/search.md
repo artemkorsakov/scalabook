@@ -39,7 +39,7 @@
 
 Возможная реализация алгоритма:
 
-```scala
+```dotty
 def naiveSubstringSearch(searchWord: String, source: String): Int =
   (0 to source.length - searchWord.length)
     .find { i => searchWord.indices.forall(j => source(j + i) == searchWord(j)) }
@@ -273,7 +273,7 @@ def naiveSubstringSearch(searchWord: String, source: String): Int =
 
 Возможная реализация алгоритма:
 
-```scala
+```dotty
 def kmpSubstringSearch(searchWord: String, source: String): Int = {
   val prefixTab = prefixTable(searchWord)
   source.indices

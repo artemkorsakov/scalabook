@@ -83,7 +83,7 @@ Cats `Ref` очень похож на упомянутую выше атомар
 второе - оно всегда содержит значение, 
 и значение, содержащееся в `Ref` — типа `A`, - это неизменяемое значение.
 
-```scala
+```dotty
 abstract class Ref[F[_], A]:
   def get: F[A]
   def set(a: A): F[Unit]
@@ -102,7 +102,7 @@ abstract class Ref[F[_], A]:
 Если внимательно посмотреть на сопутствующий объект для Cats `Ref`, 
 то увидим, что необходимо предоставить также `Sync[F]`:
 
-```scala
+```dotty
 def of[F[_], A](a: A)(implicit F: Sync[F]): F[Ref[F, A]] = F.delay(unsafe(a))
 ```
 
@@ -119,7 +119,7 @@ def of[F[_], A](a: A)(implicit F: Sync[F]): F[Ref[F, A]] = F.delay(unsafe(a))
 Допустим, у нас есть объект (назовем его `Shared`), который должен быть обновлен несколькими потоками. 
 И мы используем для этого методы `get` и `set`, создав служебный метод, который поможет нам на этом пути:
 
-```scala
+```dotty
 def modifyShared(trace: Ref[IO, Shared], msg: String): IO[Unit] =
   for
     sh <- trace.get()
@@ -150,7 +150,7 @@ def modifyShared(trace: Ref[IO, Shared], msg: String): IO[Unit] =
 Конечно, мы можем улучшить приведенный выше пример и использовать другие доступные методы из `Ref`. 
 Для выполнения `get` и `set` вместе можно использовать `update`.
 
-```scala
+```dotty
 def update(f: A => A): F[Unit]
 ```
 
@@ -158,7 +158,7 @@ def update(f: A => A): F[Unit]
 Если мы хотим прочитать значение сразу после его обновления, аналогично тому, как мы использовали `get` и `set`, 
 то мы можем в конечном итоге прочитать устаревшие данные, скажем, наш `Ref` будет содержать ссылку на простой `Int`:
 
-```scala
+```dotty
 for
   _ <- someRef.update(_ + 1)
   curr <- someRef.get
@@ -171,7 +171,7 @@ yield ()
 Мы можем немного это улучшить, используя `modify`, который будет делать то же самое, что и `update`, 
 но вернет обновленное значение для дальнейшего использования.
 
-```scala
+```dotty
 def modify[B](f: A => (A, B)): F[B] =
   @tailrec
   def spin: B =
@@ -208,7 +208,7 @@ def modify[B](f: A => (A, B)): F[B] =
 
 Эти свойства делают `Deferred` простым и довольно интересным одновременно.
 
-```scala
+```dotty
 abstract class Deferred[F[_], A]:
   def get: F[A]
   def complete(a: A): F[Unit]
@@ -231,7 +231,7 @@ abstract class Deferred[F[_], A]:
 Пример ниже взят из отличного выступления Fabio Labella на Scala Italy 2019 — 
 [Composable Concurrency with Ref + Deferred](https://vimeo.com/366191463), доступного на Vimeo.
 
-```scala
+```dotty
 def consumer(done: Deferred[IO, Unit]) =
   for
     c <- Consumer.setup

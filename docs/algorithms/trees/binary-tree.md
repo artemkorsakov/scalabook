@@ -33,7 +33,7 @@
 
 ## Возможная реализация в Scala
 
-```scala
+```dotty
 enum BinaryTree[+A]:
   case Leaf
   case Branch(value: A, left: BinaryTree[A], right: BinaryTree[A])
@@ -75,7 +75,7 @@ object BinaryTree:
 2. Выполнить postorder обход правого поддерева, если оно не пустое
 3. Посетить корень
 
-```scala
+```dotty
 lazy val preorder: IndexedSeq[A] = this match
   case Leaf                       => IndexedSeq.empty
   case Branch(value, left, right) => IndexedSeq(value) ++ left.preorder ++ right.preorder
@@ -105,7 +105,7 @@ lazy val postorder: IndexedSeq[A] = this match
 
 ### Двоичное дерево поиска
 
-```scala
+```dotty
 object BinarySearchTree:
   opaque type Dictionary[A] = BinaryTree[(String, A)]
 

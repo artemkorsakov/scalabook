@@ -31,7 +31,7 @@
 
 Возможная реализация алгоритма такая:
 
-```scala
+```dotty
 def bubbleSort[T: Ordering](array: Array[T]): Unit =
   val ord = summon[Ordering[T]]
   def loop(j: Int): Boolean =
@@ -58,7 +58,7 @@ private def swap[T](array: Array[T], i: Int, j: Int): Unit =
 
 Возможная реализация алгоритма такая:
 
-```scala
+```dotty
 def selectionSort[T: Ordering](array: Array[T]): Unit =
   (0 until array.length - 1).foreach { i =>
     val j = (i until array.length).minBy(j => array(j))
@@ -76,7 +76,7 @@ def selectionSort[T: Ordering](array: Array[T]): Unit =
 
 Возможная реализация алгоритма такая:
 
-```scala
+```dotty
 def insertionSort[T: Ordering](array: Array[T]): Unit =
   val ord = summon[Ordering[T]]
   (1 until array.length).foreach { j =>
@@ -100,7 +100,7 @@ def insertionSort[T: Ordering](array: Array[T]): Unit =
 
 Возможная реализация алгоритма такая:
 
-```scala
+```dotty
 def mergeSort[T: ClassTag: Ordering](array: Array[T]): Unit =
   mergeSort(array, 0, array.length - 1)
 
@@ -145,7 +145,7 @@ private def mergeParts[T: ClassTag: Ordering](array: Array[T], first: Int, last:
 
 Возможная реализация алгоритма такая:
 
-```scala
+```dotty
 def quickSort[T: Ordering](list: List[T]): List[T] =
   list match
     case Nil      => list

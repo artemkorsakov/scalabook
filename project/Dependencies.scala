@@ -30,6 +30,10 @@ object Dependencies {
     val preview         = "org.planet42" %% "laika-preview" % version
   }
 
+  object logback {
+    val logback = "ch.qos.logback" % "logback-classic" % "1.4.8"
+  }
+
   object munit {
     private val version = "0.7.29"
     val core            = "org.scalameta" %% "munit"               % version
@@ -86,6 +90,7 @@ object Dependencies {
       laika.core,
       laika.io,
       laika.pdf,
-      laika.preview
+      laika.preview,
+      logback.logback
     )
 }

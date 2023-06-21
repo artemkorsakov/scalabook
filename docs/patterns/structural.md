@@ -17,7 +17,7 @@
 
 Решение Scala сочетает в себе большинство преимуществ адаптера класса и адаптера объекта в одном решении.
 
-```scala mdoc:silent
+```dotty
 trait Target:
   def f(): Unit
 
@@ -27,12 +27,12 @@ class Adaptee:
 trait Adapter:
   self: Target with Adaptee =>
   def f(): Unit = g()
-```
 
-```scala mdoc
 val adapter = new Adaptee with Adapter with Target
 adapter.f()
+// g
 adapter.g()
+// g
 ```
 
 ## Мост
@@ -61,7 +61,7 @@ adapter.g()
 Корень иерархии абстракций с именем `Window` имеет тип `self`,
 который ссылается на корень иерархии реализации, `WindowImp`.
 
-```scala mdoc:reset:silent
+```dotty
 // common interface for all implementors
 trait WindowImp:
   def drawLine(x: Int, y: Int): Unit
@@ -84,7 +84,7 @@ trait IconWindow:
   def drawBorder(): Unit = drawRect(1, 2, 3, 4)
 ```
 
-```scala mdoc:silent
+```dotty
 // implementors
 trait WindowOSX extends WindowImp:
   def drawLine(x: Int, y: Int): Unit = println("drawing line in OSX")
@@ -93,9 +93,13 @@ trait WindowVista extends WindowImp:
   def drawLine(x: Int, y: Int): Unit = println("drawing line in Vista")
 ```
 
-```scala mdoc
+```dotty
 val windowOSX: Window = new Window with WindowOSX
 windowOSX.drawRect(1, 2, 3, 4)
+// drawing line in OSX
+// drawing line in OSX
+// drawing line in OSX
+// drawing line in OSX
 ```
 
 ## Компоновщик
@@ -119,7 +123,7 @@ Composite позволяет клиентам единообразно обра�
 или выполняют ли они другие роли в нашем дизайне или нет,
 мы можем сделать дочерние переменные как неизменяемыми, так и изменяемыми.
 
-```scala mdoc:reset:silent
+```dotty
 trait Component:
   def display(): Unit
 
@@ -133,15 +137,27 @@ case class Composite(children: List[Component]) extends Component:
   def display(): Unit = children.foreach(_.display())
 ```
 
-```scala mdoc
+```dotty
 val tree = Composite(List(Composite(List(Text("text1"), Picture("picture1"))), Text("text2")))
+// tree: Composite = Composite(
+//   children = List(
+//     Composite(
+//       children = List(Text(text = "text1"), Picture(picture = "picture1"))
+//     ),
+//     Text(text = "text2")
+//   )
+// )
 tree.display()
+// text1
+// picture1
+// text2
 tree.children(1).display()
+// text2
 ```
 
 Ниже показан пример метода, который обходит составную структуру и изменяет все узлы `Text` на месте.
 
-```scala mdoc
+```dotty
 def changeAllText(c: Component, s: String): Component =
   c match
     case _: Text    => Text(s)
@@ -150,6 +166,9 @@ def changeAllText(c: Component, s: String): Component =
       val newChildren = children.map(changeAllText(_, s))
       Composite(newChildren)
 changeAllText(tree, "text3").display()
+// text3
+// picture1
+// text3
 ```
 
 ## Декоратор
@@ -165,7 +184,7 @@ changeAllText(tree, "text3").display()
 
 #### Пример
 
-```scala mdoc:reset:silent
+```dotty
 trait Component:
   def draw(): Unit
 
@@ -189,13 +208,18 @@ trait ScrollDecorator extends Component:
   def scrollTo(): Unit = println("Scrolling..")
 ```
 
-```scala mdoc
+```dotty
 val tw = new TextView("foo")
 val etw1 = new EncapsulateTextView(tw) with BorderDecorator with ScrollDecorator
-etw1.draw()
+// Scrolling..
+// Drawing..foo
+// Drawing border
 tw.s = "bar"
 val etw2 = new EncapsulateTextView(tw) with ScrollDecorator with BorderDecorator
 etw2.draw()
+// Scrolling..
+// Drawing..bar
+// Drawing border
 ```
 
 ## Фасад
@@ -211,7 +235,7 @@ etw2.draw()
 
 #### Пример
 
-```scala mdoc:reset:silent
+```dotty
 trait Facade:
   type A <: SubSystemA
   type B <: SubSystemB
@@ -229,10 +253,9 @@ object FacadeA extends Facade:
   val subA: A = new SubSystemA
   val subB: B = new SubSystemB
 end FacadeA
-```
 
-```scala mdoc
 FacadeA.foo()
+// Calling foo
 ```
 
 ## Приспособленец
@@ -258,7 +281,7 @@ Flyweight дополняет шаблон Factory Method таким образо
 ищет уже созданный объект с такими же параметрами, что и у требуемого, и возвращает его клиенту.
 Если такого объекта нет, то фабрика создаст новый.
 
-```scala mdoc:reset:silent
+```dotty
 trait FlyWeightFactory[T1, T2] extends Function[T1, T2]:
   import scala.collection.mutable
   private val pool = mutable.Map.empty[T1, T2]
@@ -274,7 +297,7 @@ trait FlyWeightFactory[T1, T2] extends Function[T1, T2]:
 end FlyWeightFactory
 ```
 
-```scala mdoc:silent
+```dotty
 class Character(char: Char):
   import scala.util.Random
   private lazy val state = Random.nextInt()
@@ -285,18 +308,22 @@ object CharacterFactory extends FlyWeightFactory[Char, Character]:
   def createFlyWeight(c: Char) = new Character(c)
 ```
 
-```scala mdoc:silent
+```dotty
 val f1 = CharacterFactory('a')
 val f2 = CharacterFactory('b')
 val f3 = CharacterFactory('a')
 val f4 = new Character('a')
 ```
 
-```scala mdoc
+```dotty
 f1.draw()
+// drawing character - a, state - 1796598386
 f2.draw()
+// drawing character - b, state - -1864173438
 f3.draw()
+// drawing character - a, state - 1796598386
 f4.draw()
+// drawing character - a, state - 1632455878
 ```
 
 Обратите внимание, что `f1` и `f3` указывают на один и тот же общий объект-приспособленец.
@@ -341,7 +368,7 @@ f4.draw()
 
 ![Proxy](https://upload.wikimedia.org/wikipedia/ru/0/08/Proxy_patt.gif)
 
-```scala mdoc:reset:silent
+```dotty
 // "Subject"
 trait IMath:
   def add(x: Double, y: Double): Double
@@ -357,9 +384,10 @@ class MathProxy extends IMath:
   def add(x: Double, y: Double) = math.add(x, y)
 ```
 
-```scala mdoc
+```dotty
 val p: IMath = new MathProxy
 p.add(4, 2)
+// res20: Double = 6.0
 ```
 
 #### Примеры
@@ -372,7 +400,7 @@ p.add(4, 2)
 
 Отложенное вычисление Scala обеспечивает прямую языковую поддержку некоторых аспектов шаблона Proxy.
 
-```scala mdoc:compile-only
+```dotty
 class VirtualProxy:
   lazy val expensiveOperation = List (1 to 1000000000)
 ```

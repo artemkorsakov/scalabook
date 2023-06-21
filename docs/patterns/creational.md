@@ -16,7 +16,7 @@
 
 #### Пример
 
-```scala mdoc:silent
+```dotty
 trait Document:
   def open(): Unit
   def close(): Unit
@@ -28,7 +28,7 @@ trait Application:
 
 Использование паттерна фабричный метод:
 
-```scala mdoc
+```dotty
 class ElectronicDocument extends Document:
   def open(): Unit = println("Open an e-doc")
   def close(): Unit = println("Close an e-doc")
@@ -38,6 +38,7 @@ object ElectronicApplication extends Application:
   def createDocument: D = new ElectronicDocument
 
 ElectronicApplication.createDocument.open()
+// Open an e-doc
 ```
 
 ## Абстрактная фабрика
@@ -78,7 +79,7 @@ ElectronicApplication.createDocument.open()
 Абстрактные фабричные методы `createWindow` и `createScrollbar`
 скрывают фактический код создания экземпляра от клиентов.
 
-```scala mdoc:silent:reset
+```dotty
 trait WindowFactory:
   type aWindow <: Window
   type aScrollbar <: Scrollbar
@@ -94,7 +95,7 @@ trait WindowFactory:
 Конкретная фабрика в данном примере - это объект singleton, содержащий protected nested классы.
 Это конкретная реализация. Поскольку они protected, они скрыты от клиентов.
 
-```scala mdoc:silent
+```dotty
 object VistaFactory extends WindowFactory:
   type aWindow = VistaWindow
   type aScrollbar = VistaScrollbar
@@ -116,7 +117,7 @@ object VistaFactory extends WindowFactory:
 Это позволяет расширить `Window` и `Scrollbar` в модуле,
 где в противном случае они не были бы видны в области видимости.
 
-```scala mdoc:silent
+```dotty
 trait VistaWidgets:
   self: WindowFactory =>
   protected class VistaWindow(s: aScrollbar) extends Window(s)
@@ -144,7 +145,7 @@ trait VistaWidgets:
 
 #### Пример
 
-```scala mdoc:silent:reset
+```dotty
 final case class ConnectionConfig private (
     host: String,
     port: Int,
@@ -212,7 +213,7 @@ end ConnectionConfig
 
 Использование паттерна строитель:
 
-```scala mdoc
+```dotty
 ConnectionConfig
   .builder()
   .withHost("localhost")
@@ -222,6 +223,14 @@ ConnectionConfig
   .withUser("user")
   .withPassword("12345")
   .build()
+// res3: ConnectionConfig = ConnectionConfig(
+//   host = "localhost",
+//   port = 9090,
+//   timeout = 1000,
+//   connectionRetry = 1,
+//   user = "user",
+//   password = "12345"
+// )  
 ```
 
 ## Прототип
@@ -262,18 +271,20 @@ ConnectionConfig
 
 #### Пример
 
-```scala mdoc:reset:silent
+```dotty
 class A(var state: Int)
 extension (a: A) def copy = new A(a.state)
 ```
 
 Использование паттерна фабричный метод:
 
-```scala mdoc
+```dotty
 def a = new A(2)
 println(a.state)
+// 2
 def aCopy = a.copy
 println(a.state)
+// 2
 ```
 
 ## Одиночка
@@ -292,7 +303,7 @@ Scala позволяет создавать одноэлементные объ�
 По сути, одноэлементный объект создается автоматически при первом использовании,
 и всегда существует только один экземпляр.
 
-```scala
+```dotty
 object Singleton
 val s = Singleton
 ```
@@ -301,7 +312,7 @@ val s = Singleton
 Эта реализация актуальна только в том случае, если нам нужно иметь возможность усовершенствовать синглтон.
 В противном случае предпочтительнее краткое решение с использованием одноэлементного объекта (`object`).
 
-```scala
+```dotty
 class Singleton private () // private constructor
 
 object Singleton:

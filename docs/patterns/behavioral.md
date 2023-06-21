@@ -16,7 +16,7 @@
 
 #### Пример
 
-```scala mdoc:silent
+```dotty
 class Context:
   import scala.collection.mutable
   val result: mutable.Stack[String] = mutable.Stack.empty[String]
@@ -42,7 +42,7 @@ trait OperatorExpression extends Expression:
 end OperatorExpression
 ```
 
-```scala mdoc:silent
+```dotty
 trait EqualsExpression extends OperatorExpression:
   protected override def doInterpret(context: Context, leftValue: String, rightValue: String): Unit =
     context.result.push(if leftValue == rightValue then "true" else "false")
@@ -58,7 +58,7 @@ trait MyExpression extends Expression:
     context.result.push(value)
 ```
 
-```scala mdoc
+```dotty
 val context = Context()
 val input = new MyExpression() { var value = "" }
 
@@ -76,10 +76,12 @@ var expression = new OrExpression {
 input.value = "четыре"
 expression.interpret(context)
 context.result.pop()
+// res2: String = "true"
 
 input.value = "44"
 expression.interpret(context)
 context.result.pop()
+// res5: String = "false"
 ```
 
 ## Шаблонный метод
@@ -95,7 +97,7 @@ context.result.pop()
 
 #### Пример
 
-```scala mdoc:silent:reset
+```dotty
 trait Template extends (Unit => Int):
   def subStepA(): Unit
   def subStepB: Int
@@ -122,7 +124,7 @@ trait Template extends (Unit => Int):
 
 #### Пример
 
-```scala mdoc:silent:reset
+```dotty
 trait Handler[T]:
   var successor: Option[Handler[T]] = None
 
@@ -136,7 +138,7 @@ trait Handler[T]:
 end Handler
 ```
 
-```scala mdoc:silent
+```dotty
 class Sensor extends Handler[Int]:
   var value = 0
   def changeValue(v: Int): Unit =
@@ -151,7 +153,7 @@ class Display1 extends Handler[Int]:
 
 Другое решение, специфичный для шаблона код хранится в отдельном trait.
 
-```scala mdoc:silent
+```dotty
 class Display2:
   def show(v: Int): Unit = println(s"Display2 prints $v")
 
@@ -160,14 +162,16 @@ trait Display2Handler extends Display2 with Handler[Int]:
   override def handlingCriteria(v: Int): Boolean = v >= 4
 ```
 
-```scala mdoc
+```dotty
 val sensor = new Sensor
 val display1 = new Display1
 val display2 = new Display2 with Display2Handler
 sensor.successor = Some(display1)
 display1.successor = Some(display2)
 sensor.changeValue(2)
+// Display1 prints 2
 sensor.changeValue(4)
+// Display2 prints 4
 ```
 
 ## Команда
@@ -185,10 +189,11 @@ sensor.changeValue(4)
 
 Класс `Button` ожидает функцию обратного вызова, которую он будет выполнять при вызове метода `click`.
 
-```scala mdoc:reset
+```dotty
 class Button(val click: () => Unit)
 val button = new Button(() => println("click!"))
 button.click()
+// click!
 ```
 
 ## Итератор
@@ -204,7 +209,7 @@ button.click()
 
 #### Пример
 
-```scala mdoc:reset:silent
+```dotty
 trait Iterator[A]:
   def first: A
 
@@ -235,7 +240,7 @@ trait Iterator[A]:
 Это простой пример взаимодействия объектов.
 Обратите внимание, что коллеги совершенно не знают о посреднике и, следовательно, о самой схеме.
 
-```scala mdoc:reset:silent
+```dotty
 // Widgets
 class ListBox:
   def getSelection: String = "selected"
@@ -263,11 +268,12 @@ class DialogDirector:
 end DialogDirector
 ```
 
-```scala mdoc
+```dotty
 val dialog = new DialogDirector
 val listBox = dialog.listBox
 val entryField = dialog.entryField
 listBox.click()
+// selected
 ```
 
 ## Хранитель
@@ -283,7 +289,7 @@ listBox.click()
 
 #### Пример
 
-```scala mdoc:silent
+```dotty
 trait Originator:
   def createMemento: Memento
   def setMemento(m: Memento): Unit
@@ -313,7 +319,7 @@ trait Memento:
 
 #### Пример
 
-```scala mdoc:silent
+```dotty
 trait Subject[T]:
   self: T =>
 
@@ -330,7 +336,7 @@ trait Subject[T]:
   protected def publish(): Unit = observers.foreach(obs => obs(self))
 ```
 
-```scala mdoc:silent
+```dotty
 trait Sensor(val label: String):
   var value: Double = _
   def changeValue(v: Double): Unit = value = v
@@ -346,13 +352,13 @@ class Display(label: String):
     println(s"$label ${s.label} ${s.value}")
 ```
 
-```scala mdoc:silent
+```dotty
 val s1: SensorSubject = new Sensor("s1") with SensorSubject
 val d1: Display = new Display("d1")
 val d2: Display = new Display("d2")
 ```
 
-```scala mdoc
+```dotty
 s1.subscribe(d1.notify)
 s1.subscribe(d2.notify)
 s1.changeValue(10)
@@ -371,7 +377,7 @@ s1.changeValue(10)
 
 #### Пример
 
-```scala mdoc:silent:reset
+```dotty
 class Context:
   private var currentState: State = State1
 
@@ -394,11 +400,14 @@ class Context:
 end Context
 ```
 
-```scala mdoc
+```dotty
 val c = new Context
 c.operation()
+// State1
 c.operation()
+// State1
 c.operation()
+// State1
 ```
 
 ## Стратегия
@@ -417,7 +426,7 @@ c.operation()
 `Strategy` определяет интерфейс алгоритма.
 `Context` поддерживает ссылку на текущий объект `Strategy` и перенаправляет запросы от клиентов конкретному алгоритму.
 
-```scala mdoc:silent
+```dotty
 object FileMatcher:
   private val filesHere: Seq[String] =
     Seq(
@@ -451,11 +460,15 @@ object FileMatcher:
     def matchEnding(s: String): Boolean = s.endsWith(query)
 ```
 
-```scala mdoc
+```dotty
 val query = ".txt"
+// query: String = ".txt"
 FileMatcher.filesContaining(query)
+// res24: Seq[String] = List("example.txt", "file.txt.png")
 FileMatcher.filesRegex(query)
+// res25: Seq[String] = List("1txt")
 FileMatcher.filesEnding(query)
+// res26: Seq[String] = List("example.txt")
 ```
 
 ## Посетитель
@@ -471,7 +484,7 @@ Visitor позволяет определить новую операцию бе
 
 #### Пример
 
-```scala mdoc:reset:silent
+```dotty
 trait Expr
 case class Num(n: Int) extends Expr
 case class Sum(l: Expr, r: Expr) extends Expr
@@ -490,10 +503,13 @@ def eval(e: Expr): Int =
     case Sum(l, r) => eval(l) + eval(r)
 ```
 
-```scala mdoc
+```dotty
 val e1 = Sum(Sum(Num(1), Num(2)), Num(3))
+// e1: Sum = Sum(l = Sum(l = Num(n = 1), r = Num(n = 2)), r = Num(n = 3))
 prettyPrint(e1)
+// 1 + 2 + 3
 print(eval(e1))
+// 6
 ```
 
 ---

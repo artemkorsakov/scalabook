@@ -13,7 +13,7 @@
 
 ## Описание 
 
-```scala
+```dotty
 trait Semigroup[A]:
   def combine(x: A, y: A): A
 
@@ -39,7 +39,7 @@ trait Monoid[A] extends Semigroup[A]:
 - сложение ассоциативно: `(a + b) + c = a + (b + c)`
 - `0` - это единичный элемент относительно сложения: `0 + a = a + 0 = a`
 
-```scala
+```dotty
 given sumMonoidInstance: Monoid[Int] with
   val empty = 0
   def combine(x: Int, y: Int): Int = x + y
@@ -52,7 +52,7 @@ given sumMonoidInstance: Monoid[Int] with
 - умножение ассоциативно: `(a * b) * c = a * (b * c)`
 - `1` - это единичный элемент относительно сложения: `1*a = a*1 = a`
 
-```scala
+```dotty
 given productMonoidInstance: Monoid[Int] with
   val empty = 1
   def combine(x: Int, y: Int): Int = x * y
@@ -66,7 +66,7 @@ given productMonoidInstance: Monoid[Int] with
     - `"мама" + ("мыла" + "раму") = ("мама" + "мыла") + "раму" = "мамамылараму"`
 - `""` - это единичный элемент относительно конкатенации: `"" + a = a + "" = a`
 
-```scala
+```dotty
 given stringMonoidInstance: Monoid[String] with
   val empty = ""
   def combine(x: String, y: String): String = x + y
@@ -74,7 +74,7 @@ given stringMonoidInstance: Monoid[String] with
 
 ### Последовательность
 
-```scala
+```dotty
 given listMonoidInstance[T]: Monoid[List[T]] with
   val empty = List.empty[T]
   def combine(x: List[T], y: List[T]): List[T] = x ++ y
@@ -82,7 +82,7 @@ given listMonoidInstance[T]: Monoid[List[T]] with
 
 ### Кортеж от двух и более моноидов
 
-```scala
+```dotty
 given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): Monoid[(A, B)] with
   lazy val empty: (A, B) = (aMonoid.empty, bMonoid.empty)
   def combine(x: (A, B), y: (A, B)): (A, B) = (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
@@ -92,7 +92,7 @@ given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): 
 
 `Option` является моноидом, если его параметр типа - полугруппа, например:
 
-```scala
+```dotty
 given optionMonoidInstance[A: Semigroup]: Monoid[Option[A]] with
   val empty: Option[A] = None
 
@@ -108,7 +108,7 @@ given optionMonoidInstance[A: Semigroup]: Monoid[Option[A]] with
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.*
 import cats.implicits.*
 
@@ -118,7 +118,7 @@ Monoid[Int].combine(1, Monoid[Int].empty)   // 1
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

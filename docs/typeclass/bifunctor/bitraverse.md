@@ -6,7 +6,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:
   extension [A, B](fab: F[A, B])
     def bitraverse[G[_]: Applicative, C, D](f: A => G[C], g: B => G[D]): G[F[C, D]]
@@ -47,7 +47,7 @@ trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:
 
 ### Either
 
-```scala
+```dotty
 given Bitraverse[Either] with
   extension [A, B](fab: Either[A, B])
     override def bitraverse[G[_]: Applicative, C, D](f: A => G[C], g: B => G[D]): G[Either[C, D]] =

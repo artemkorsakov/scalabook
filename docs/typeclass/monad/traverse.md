@@ -14,11 +14,11 @@
 `Traversable` должен удовлетворять следующим законам:
 
 - Обход Id эквивалентен `Functor#map`:
-  ```scala
+  ```dotty
   traverse[F, Id, A, B](fa, a => Id(f(a))).value == fa.map(f)
   ```
 - Два последовательно зависимых эффекта могут быть объединены в один, их композицию:
-  ```scala
+  ```dotty
   val optFb: G[F[B]] = traverse[F, G, A, B](fa, a => unit(f(a)))
   val optListFc1: G[H[F[C]]] =
     map[G, F[B], H[F[C]]](optFb, fb => traverse[F, H, B, C](fb, b => unit(g(b))))
@@ -27,11 +27,11 @@
   optListFc1 == optListFc2
   ```
 - Обход с помощью функции `unit` аналогичен прямому применению функции `unit`:
-  ```scala
+  ```dotty
   traverse[F, G, A, A](fa, a => unit(a)) == unit[G, F[A]](fa)
   ```
 - Два независимых эффекта могут быть объединены в один эффект, их произведение
-  ```scala
+  ```dotty
   type GH[A] = (G[A], H[A])
   val t1: GH[F[B]] = (traverse[F, G, A, B](fa, a => unit(f(a))), traverse[F, H, A, B](fa, a => unit(f(a))))
   val t2: GH[F[B]] = traverse[F, GH, A, B](fa, a => (unit(f(a)), unit(f(a))))
@@ -41,7 +41,7 @@
 
 ## Описание 
 
-```scala
+```dotty
 trait Traverse[F[_]] extends Functor[F], Foldable[F]:
   self =>
 
@@ -61,7 +61,7 @@ trait Traverse[F[_]] extends Functor[F], Foldable[F]:
 
 ### "Обертка"
 
-```scala
+```dotty
 case class Id[A](value: A)
 
 given Traverse[Id] with
@@ -72,7 +72,7 @@ given Traverse[Id] with
 
 ### Кортеж от двух и более элементов
 
-```scala
+```dotty
 given Traverse[[X] =>> (X, X)] with
   extension [A](fa: (A, A))
     override def traverse[G[_]: Applicative, B](f: A => G[B]): G[(B, B)] =
@@ -90,7 +90,7 @@ given Traverse[[X] =>> (X, X, X)] with
 
 ### Option
 
-```scala
+```dotty
 given Traverse[Option] with
   extension [A](fa: Option[A])
     override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Option[B]] =
@@ -101,7 +101,7 @@ given Traverse[Option] with
 
 ### Последовательность
 
-```scala
+```dotty
 given Traverse[List] with
   extension [A](fa: List[A])
     override def traverse[G[_]: Applicative, B](f: A => G[B]): G[List[B]] =
@@ -113,7 +113,7 @@ given Traverse[List] with
 
 В области видимости должны быть доступны `idApplicative` and `listTraverse`
 
-```scala
+```dotty
 case class Tree[+A](head: A, tail: List[Tree[A]])
 
 given Traverse[Tree] with
@@ -128,7 +128,7 @@ tree.traverse(a => Id(a + 1))
 
 ### Map
 
-```scala
+```dotty
 given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
   extension [A](m: Map[K, A])
     override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Map[K, B]] =
@@ -141,7 +141,7 @@ given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import scala.concurrent.*
 import scala.concurrent.duration.*
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -163,7 +163,7 @@ Await.result(allUptimes, 1.second)  // List(1020, 960, 840)
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

@@ -10,7 +10,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Semigroupal[F[_]]:
   def product[A, B](fa: F[A], fb: F[B]): F[(A, B)]
 ```
@@ -19,7 +19,7 @@ trait Semigroupal[F[_]]:
 
 ### "Обертка"
 
-```scala
+```dotty
 final case class Id[A](value: A)
 
 given Semigroupal[Id] with
@@ -28,7 +28,7 @@ given Semigroupal[Id] with
 
 ### Option
 
-```scala
+```dotty
 given Semigroupal[Option] with
   override def product[A, B](fa: Option[A], fb: Option[B]): Option[(A, B)] =
     (fa, fb) match
@@ -40,7 +40,7 @@ given Semigroupal[Option] with
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.Semigroupal
 import cats.instances.option.*
 

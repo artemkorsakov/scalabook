@@ -18,7 +18,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Bind[F[_]] extends Apply[F]:
   extension [A](fa: F[A])
     def flatMap[B](f: A => F[B]): F[B]
@@ -38,7 +38,7 @@ trait Bind[F[_]] extends Apply[F]:
 
 ### "Обертка"
 
-```scala
+```dotty
 case class Id[A](value: A)
 
 given Bind[Id] with
@@ -52,7 +52,7 @@ given Bind[Id] with
 
 ### Option
 
-```scala
+```dotty
 given Bind[Option] with
   extension [A](fa: Option[A])
     override def map[B](f: A => B): Option[B] =
@@ -70,7 +70,7 @@ given Bind[Option] with
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

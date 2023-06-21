@@ -5,7 +5,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Bifoldable[F[_, _]]:
   extension [A, B](fa: F[A, B])
     /** Аккумулирование всех `A` и `B`. */
@@ -45,7 +45,7 @@ trait Bifoldable[F[_, _]]:
 
 ### Either
 
-```scala
+```dotty
 given eitherBifoldable: Bifoldable[Either] with
   extension [A, B](fa: Either[A, B])
     def bifoldMap[M](f: A => M)(g: B => M)(using ma: Monoid[M]): M =

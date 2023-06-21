@@ -17,7 +17,7 @@
   
 ## Описание
 
-```scala
+```dotty
 trait Profunctor[=>:[_, _]]:
   /** Contramap on `A`. */
   def mapfst[A, B, C](fab: A =>: B)(f: C => A): C =>: B
@@ -49,7 +49,7 @@ trait Profunctor[=>:[_, _]]:
 
 ### Функция от одной переменной
 
-```scala
+```dotty
 given Profunctor[Function1] with
   override def mapfst[A, B, C](fab: A => B)(f: C => A): C => B = f andThen fab
 
@@ -60,7 +60,7 @@ given Profunctor[Function1] with
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

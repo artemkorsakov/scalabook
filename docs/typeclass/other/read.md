@@ -5,7 +5,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Read[F]:
   def read(s: String): F
 ```

@@ -2,14 +2,14 @@
 
 ## Схема
 
-![monoid](https://gitflic.ru/project/artemkorsakov/scalabook/blob/raw?file=images%2Fmonoid.png&commit=24c04cb0b13071c583697dd4b2703fbaab349ca5)
+![monoid](images/monoid.png)
 
 ## Использование
 
 Моноиды обычно используются для сворачивания последовательностей. 
 Например, вот как можно посчитать произведение чисел:
 
-```scala
+```dotty
 trait Semigroup[A]:
   def combine(x: A, y: A): A
 
@@ -32,7 +32,7 @@ fold(List(1, 2, 3, 4, 5))
 
 Обычно библиотеки определяют "свой" оператор для моноидальной операции `combine`, например:
 
-```scala
+```dotty
 trait Semigroup[A]:
   def combine(x: A, y: A): A
   

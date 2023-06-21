@@ -18,7 +18,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Strong[=>:[_, _]] extends Profunctor[=>:]:
   def first[A, B, C](fa: A =>: B): (A, C) =>: (B, C)
 
@@ -30,7 +30,7 @@ trait Strong[=>:[_, _]] extends Profunctor[=>:]:
 
 ### Функция от одной переменной
 
-```scala
+```dotty
 given Strong[Function1] with
   override def mapfst[A, B, C](fab: A => B)(f: C => A): C => B = f andThen fab
 
@@ -45,7 +45,7 @@ given Strong[Function1] with
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.*, cats.data.*, cats.syntax.all.*
 
 lazy val f = (_:Int) + 1
@@ -60,7 +60,7 @@ f_second((1, 1))
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

@@ -10,7 +10,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait PlusEmpty[F[_]] extends Plus[F]:
   self =>
 
@@ -26,7 +26,7 @@ trait PlusEmpty[F[_]] extends Plus[F]:
 
 ### Связанный список
 
-```scala
+```dotty
 given PlusEmpty[List] with
   def plus[A](fa1: List[A], fa2: => List[A]): List[A] = fa1 ++ fa2
   def empty[A]: List[A] = List.empty[A]
@@ -36,7 +36,7 @@ given PlusEmpty[List] with
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

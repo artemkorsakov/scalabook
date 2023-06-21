@@ -8,7 +8,7 @@
 
 ## Описание свободной монады
 
-```scala
+```dotty
 sealed trait Free[F[_], A]
 final case class Unit[F[_], A](a: A) extends Free[F, A]
 final case class FlatMap[F[_], A, B](a: Free[F, A], fx: A => Free[F, B]) extends Free[F, B]

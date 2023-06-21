@@ -11,7 +11,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Compose[=>:[_, _]]:
   self =>
 
@@ -33,7 +33,7 @@ trait Compose[=>:[_, _]]:
 
 ### Функция от одной переменной
 
-```scala
+```dotty
 given Compose[Function1] with
   override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f
 ```
@@ -42,7 +42,7 @@ given Compose[Function1] with
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.*, cats.data.*, cats.syntax.all.*
 
 lazy val f = (_:Int) + 1
@@ -57,7 +57,7 @@ lazy val g = (_:Int) * 100
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

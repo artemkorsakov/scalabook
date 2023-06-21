@@ -5,7 +5,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait MonadTransformer[T[_[_], _], M[_]](using mMonad: Monad[M], tMonad: Monad[[X] =>> T[M, X]]):
   def lift[A](ma: M[A]): T[M, A]
 ```
@@ -14,7 +14,7 @@ trait MonadTransformer[T[_[_], _], M[_]](using mMonad: Monad[M], tMonad: Monad[[
 
 ### "Обертка"
 
-```scala
+```dotty
 final case class IdT[M[_], A](run: M[Id[A]])
 
 given idtMonad[M[_]](using outerMonad: Monad[M]): Monad[[X] =>> IdT[M, X]] with
@@ -31,7 +31,7 @@ given idtMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransformer[Id
 
 ### Option
 
-```scala
+```dotty
 final case class OptionT[M[_], A](run: M[Option[A]])
 
 given optionTMonad[M[_]](using outerMonad: Monad[M]): Monad[[X] =>> OptionT[M, X]] with
@@ -54,7 +54,7 @@ given optionTMonadTransformer[M[_]](using outerMonad: Monad[M]): MonadTransforme
 
 ### Writer - функциональный журнал
 
-```scala
+```dotty
 final case class WriterT[M[_], W, A](run: () => M[(W, A)])
 
 given writerTMonad[M[_], W](using outerMonad: Monad[M], outerMonoid: Monoid[W]): Monad[[X] =>> WriterT[M, W, X]] with
@@ -79,7 +79,7 @@ given writerTMonadTransformer[M[_], W](using
 
 ### State - функциональное состояние
 
-```scala
+```dotty
 final case class StateT[M[_], S, A](run: S => M[(S, A)])
 
 given stateTMonad[M[_], S](using outerMonad: Monad[M]): Monad[[X] =>> StateT[M, S, X]] with

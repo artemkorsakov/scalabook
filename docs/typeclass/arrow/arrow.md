@@ -12,7 +12,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Arrow[=>:[_, _]] extends Split[=>:], Strong[=>:], Category[=>:]:
   self =>
 
@@ -66,7 +66,7 @@ trait Arrow[=>:[_, _]] extends Split[=>:], Strong[=>:], Category[=>:]:
 
 ### Функция от одной переменной
 
-```scala
+```dotty
 given Arrow[Function1] with
   override def arr[A, B](f: A => B): A => B = f
   override def id[A]: A => A = a => a
@@ -78,7 +78,7 @@ given Arrow[Function1] with
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

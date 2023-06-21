@@ -11,7 +11,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Divisible[F[_]] extends Divide[F], InvariantApplicative[F]:
   def conquer[A]: F[A]
 
@@ -25,7 +25,7 @@ trait Divisible[F[_]] extends Divide[F], InvariantApplicative[F]:
 
 ### Унарная функция
 
-```scala
+```dotty
 given functionDivisible[R: Monoid]: Divisible[[X] =>> Function1[X, R]] with
   override def divide[A, B, C](fa: => A => R, fb: => B => R)(f: C => (A, B)): C => R =
     c => {

@@ -5,7 +5,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait CoBind[F[_]] extends Functor[F]:
   extension [A](fa: F[A])
     /** Также известно как `extend` и `coFlatMap` */
@@ -23,7 +23,7 @@ trait CoBind[F[_]] extends Functor[F]:
 
 ### "Обертка"
 
-```scala
+```dotty
 case class Id[A](value: A)
 
 given CoBind[Id] with
@@ -35,7 +35,7 @@ given CoBind[Id] with
 
 ### Переменные окружения
 
-```scala
+```dotty
 final case class Env[A, R](a: A, r: R)
 
 given envCoBind[R]: CoBind[[X] =>> Env[X, R]] with

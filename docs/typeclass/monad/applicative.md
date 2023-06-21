@@ -29,7 +29,7 @@
 
 ## Описание 
 
-```scala
+```dotty
 trait Applicative[F[_]] extends Apply[F], InvariantApplicative[F]:
   def unit[A](a: => A): F[A]
   override def xunit0[A](a: => A): F[A] = unit(a)
@@ -54,7 +54,7 @@ trait Applicative[F[_]] extends Apply[F], InvariantApplicative[F]:
 Как и монады, аппликативные функторы замкнуты относительно произведений;
 поэтому два независимых аппликативных эффекта обычно могут быть слиты в один, их продукт.
 
-```scala
+```dotty
 given tupleApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>> (F[X], G[X])] with
   type FG[A] = (F[A], G[A])
 
@@ -70,7 +70,7 @@ given tupleApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>
 поэтому два последовательно зависимых аппликативных эффекта обычно могут быть объединены в один.
 Это называется композицией над `Applicative`:
 
-```scala
+```dotty
 given compositeApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>> F[G[X]]] with
   override def unit[A](a: => A): F[G[A]] = summon[Applicative[F]].unit(summon[Applicative[G]].unit(a))
 
@@ -88,7 +88,7 @@ given compositeApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X
 
 ### "Обертка"
 
-```scala
+```dotty
 case class Id[A](value: A)
 
 given idApplicative: Applicative[Id] with
@@ -99,7 +99,7 @@ given idApplicative: Applicative[Id] with
 
 ### Option
 
-```scala
+```dotty
 given optionApplicative: Applicative[Option] with
   override def unit[A](a: => A): Option[A] = Some(a)
 
@@ -111,7 +111,7 @@ given optionApplicative: Applicative[Option] with
 
 ### Последовательность
 
-```scala
+```dotty
 given listApplicative: Applicative[List] with
   override def unit[A](a: => A): List[A] = List(a)
 
@@ -121,7 +121,7 @@ given listApplicative: Applicative[List] with
 
 ### Either
 
-```scala
+```dotty
 given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
   override def unit[A](a: => A): Either[E, A] = Right(a)
 
@@ -134,7 +134,7 @@ given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
 
 ### Writer - функциональный журнал
 
-```scala
+```dotty
 case class Writer[W, A](run: () => (W, A))
 
 trait Semigroup[A]:
@@ -157,7 +157,7 @@ given writerApplicative[W](using monoid: Monoid[W]): Applicative[[x] =>> Writer[
 
 ### State - функциональное состояние
 
-```scala
+```dotty
 case class State[S, +A](run: S => (S, A))
 
 given stateApplicative[S]: Applicative[[x] =>> State[S, x]] with
@@ -174,7 +174,7 @@ given stateApplicative[S]: Applicative[[x] =>> State[S, x]] with
 
 ### Nested
 
-```scala
+```dotty
 final case class Nested[F[_], G[_], A](value: F[G[A]])
 
 given nestedApplicative[F[_], G[_]](using
@@ -195,7 +195,7 @@ given nestedApplicative[F[_], G[_]](using
 
 ### IO
 
-```scala
+```dotty
 final case class IO[R](run: () => R)
 
 given ioApplicative: Applicative[IO] with
@@ -207,7 +207,7 @@ given ioApplicative: Applicative[IO] with
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.*, cats.data.*, cats.syntax.all.*
 
 Applicative[List].pure(1)    // List(1)
@@ -216,7 +216,7 @@ Applicative[Option].pure(1)  // Some(1)
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

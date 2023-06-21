@@ -7,7 +7,8 @@ _IdempotentMonoid_ — это [моноид](monoid.md),
 `IdempotentMonoid` должен удовлетворять законам своих "родителей": `Monoid`, `Band`, `Semigroup`.
 
 ## Описание
-```scala
+
+```dotty
 trait Semigroup[A]:
   def combine(x: A, y: A): A
 
@@ -26,7 +27,7 @@ trait IdempotentMonoid[A] extends Monoid[A], Band[A]
 Некоторые операции над множествами являются идемпотентными: объединение, пересечение и т.п.
 Например, объединение множеств образуют `IdempotentMonoid`:
 
-```scala
+```dotty
 given setIdempotentMonoidInstance[A]: IdempotentMonoid[Set[A]] with
   override def empty: Set[A] = Set.empty[A]
   override def combine(x: Set[A], y: Set[A]): Set[A] = x ++ y

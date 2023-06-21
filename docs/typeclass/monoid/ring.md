@@ -29,7 +29,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Ring[A] extends Group[A]:
   def times(x: A, y: A): A
 
@@ -43,7 +43,7 @@ trait RingWithUnity[A] extends Ring[A]:
 
 `(Z, +, *)`
 
-```scala
+```dotty
 given RingWithUnity[Int] with
   val empty: Int = 0
   val one: Int = 1

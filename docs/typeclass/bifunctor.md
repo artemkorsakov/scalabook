@@ -2,7 +2,7 @@
 
 ## Схема
 
-![bifunctor](https://gitflic.ru/project/artemkorsakov/scalabook/blob/raw?file=images%2Fbifunctor.png&commit=5ddc90d0ec8532f76a51fcff23de9253bcab9fd0)
+![bifunctor](images/bifunctor.png)
 
 **Ссылки:**
 

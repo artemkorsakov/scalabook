@@ -17,7 +17,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait ContravariantFunctor[F[_]] extends InvariantFunctor[F]:
   self =>
 
@@ -51,7 +51,7 @@ trait ContravariantFunctor[F[_]] extends InvariantFunctor[F]:
 
 ### Унарная функция
 
-```scala
+```dotty
 given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X, R]] with
   def cmap[A, B](function: B => R)(f: A => B): A => R =
     a => function(f(a))
@@ -61,7 +61,7 @@ given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X,
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.syntax.contravariant.*
 import cats.Show
 

@@ -7,7 +7,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait MonadPlus[F[_]] extends Monad[F] with ApplicativePlus[F]:
   def filter[A](fa: F[A])(f: A => Boolean): F[A] =
     fa.flatMap(a => if f(a) then unit(a) else empty[A])
@@ -26,7 +26,7 @@ trait MonadPlus[F[_]] extends Monad[F] with ApplicativePlus[F]:
 
 ### Связанный список
 
-```scala
+```dotty
 given MonadPlus[List] with
   override def unit[A](a: => A): List[A] = List(a)
 
@@ -44,7 +44,7 @@ given MonadPlus[List] with
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

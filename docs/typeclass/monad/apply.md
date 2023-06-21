@@ -16,7 +16,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Apply[F[_]] extends Functor[F], Semigroupal[F]:
   def apply[A, B](fab: F[A => B])(fa: F[A]): F[B]
 
@@ -42,7 +42,7 @@ trait Apply[F[_]] extends Functor[F], Semigroupal[F]:
 
 ### "Обертка"
 
-```scala
+```dotty
 final case class Id[A](value: A)
 
 given idApply: Apply[Id] with
@@ -53,7 +53,7 @@ given idApply: Apply[Id] with
 
 ### Option
 
-```scala
+```dotty
 given Apply[Option] with
   override def apply[A, B](fab: Option[A => B])(fa: Option[A]): Option[B] =
     (fab, fa) match
@@ -71,7 +71,7 @@ given Apply[Option] with
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.*, cats.data.*, cats.syntax.all.*
 
 Apply[Option].ap({{(_: Int) + 3}.some })(10.some)               // Some(13)
@@ -81,7 +81,7 @@ Apply[Option].ap({ none[String => String] })("woot".some)       // None
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

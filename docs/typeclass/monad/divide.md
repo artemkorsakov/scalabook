@@ -12,7 +12,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Divide[F[_]] extends ContravariantFunctor[F]:
   def divide[A, B, C](fa: => F[A], fb: => F[B])(f: C => (A, B)): F[C]
 
@@ -23,7 +23,7 @@ trait Divide[F[_]] extends ContravariantFunctor[F]:
 
 ### Унарная функция
 
-```scala
+```dotty
 given functionDivide[R: Monoid]: Divide[[X] =>> Function1[X, R]] with
   override def cmap[A, B](function: B => R)(f: A => B): A => R =
     a => function(f(a))

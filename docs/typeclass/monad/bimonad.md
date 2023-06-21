@@ -10,7 +10,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Bimonad[F[_]] extends Monad[F], CoMonad[F]
 ```
 
@@ -18,7 +18,7 @@ trait Bimonad[F[_]] extends Monad[F], CoMonad[F]
 
 ### Непустой список
 
-```scala
+```dotty
 given Bimonad[NonEmptyList] with
   def unit[A](a: => A): NonEmptyList[A] = NonEmptyList(a, List.empty)
 
@@ -40,7 +40,7 @@ given Bimonad[NonEmptyList] with
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.*
 import cats.data.*
 import cats.syntax.all.*

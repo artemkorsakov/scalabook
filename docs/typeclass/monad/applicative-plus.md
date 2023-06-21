@@ -8,7 +8,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait ApplicativePlus[F[_]] extends Applicative[F] with PlusEmpty[F]
 ```
 
@@ -16,7 +16,7 @@ trait ApplicativePlus[F[_]] extends Applicative[F] with PlusEmpty[F]
 
 ### Связанный список
 
-```scala
+```dotty
 given ApplicativePlus[List] with
   override def unit[A](a: => A): List[A] = List(a)
 
@@ -32,7 +32,7 @@ given ApplicativePlus[List] with
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

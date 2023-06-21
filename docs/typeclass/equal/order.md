@@ -21,7 +21,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Equal[F]: 
   def equal(a1: F, a2: F): Boolean
 
@@ -61,7 +61,7 @@ trait Order[F] extends Equal[F]:
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.*
 import cats.implicits.*
 
@@ -73,7 +73,7 @@ import cats.implicits.*
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 1.0 ?|? 2.0 // Ordering.LT

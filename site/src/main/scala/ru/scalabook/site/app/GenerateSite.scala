@@ -1,4 +1,4 @@
-package ru.scalabook.site
+package ru.scalabook.site.app
 
 import cats.effect.*
 import laika.api.*
@@ -8,6 +8,7 @@ import laika.io.implicits.*
 import laika.io.model.RenderedTreeRoot
 import laika.markdown.github.GitHubFlavor
 import laika.parse.code.SyntaxHighlighting
+import ru.scalabook.site.theme.HeliumThemes
 
 object GenerateSite extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =
@@ -17,7 +18,7 @@ object GenerateSite extends IOApp:
         _ <- createPath("/blog")
         _ <- createPath("/scala")
         _ <- createPath("/fp")
-//        _ <- createPath("/typeclass")
+        _ <- createPath("/typeclass")
 //        _ <- createPath("/algorithms")
 //        _ <- createPath("/libs")
 //        _ <- createPath("/patterns")

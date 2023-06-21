@@ -10,7 +10,7 @@ _Band_ — это [полугруппа](semigroup.md), которая такж�
 
 ## Описание
 
-```scala
+```dotty
 trait Semigroup[A]:
   def combine(x: A, y: A): A
 
@@ -24,7 +24,7 @@ trait Band[A] extends Semigroup[A]
 Некоторые операции над множествами являются идемпотентными: объединение, пересечение и т.п.
 Например, объединение множеств образуют `Band`:
 
-```scala
+```dotty
 given setBandInstance[A]: Band[Set[A]] =
   (x: Set[A], y: Set[A]) => x ++ y
 ```

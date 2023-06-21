@@ -14,7 +14,7 @@
 
 [Functor](monad/functor.md) против [Bifunctor](bifunctor/bifunctor.md):
 
-```scala
+```dotty
 trait Functor[F[_]]:
   def map[A, B](fa: F[A])(f: A => B): F[B]
 
@@ -24,7 +24,7 @@ trait Bifunctor[F[_, _]]:
 
 [Traverse](monad/traverse.md) против [Bitraverse](bifunctor/bitraverse.md).
 
-```scala
+```dotty
 trait Traverse[F[_]]:
   def traverse[G[_]: Applicative, A, B](fa: F[A])(f: A => G[B]): G[F[B]]
 
@@ -35,7 +35,7 @@ trait Bitraverse[F[_, _]]:
 Как ни странно, [Bimonad](monad/bimonad.md) не вводит второй параметр, 
 а скорее объединяет категорию и ее двойственность.
 
-```scala
+```dotty
 trait Bimonad[F[_]] extends Monad[F], Comonad[F]
 ```
 
@@ -46,7 +46,7 @@ trait Bimonad[F[_]] extends Monad[F], Comonad[F]
 
 `FlatMap` (другое имя - [Bind](monad/bind.md)) и `CoflatMap` (другое имя - [Co-Bind](monad/co-bind.md)). 
 
-```scala
+```dotty
 trait FlatMap[F[_]]:
   // F[F[A]] → F[A]
   def flatten[A](ffa: F[F[A]]): F[A]
@@ -59,7 +59,7 @@ trait CoflatMap[F[_]]:
 Есть еще Kleisli и Co-Kleisli. 
 Соответствующие примеры есть в [Cats](https://typelevel.org/cats/datatypes/kleisli.html) и в [ScalaZ](https://github.com/scalaz/scalaz/blob/v6.0.4/core/src/main/scala/scalaz/Cokleisli.scala#L20).
 
-```scala
+```dotty
 // A → F[B]
 final case class Kleisli[F[_], -A, B](run: A => F[B])
 // A ← F[B]
@@ -72,7 +72,7 @@ final case class Cokleisli[F[_], A, B](run: F[A] => B)
 
 [Functor](monad/functor.md) и [Contra-Functor](monad/contravariant-functor.md):
 
-```scala
+```dotty
 trait Functor[F[_]]:
   def map[A, B](fa: F[A])(f: A => B): F[B]
 
@@ -85,7 +85,7 @@ trait Contravariant[F[_]]:
 Принимая во внимание, что `bimap` отображает обе стороны, `dimap` противопоставляет одну сторону и отображает другую. 
 Функции с одним аргументом — это простой пример [Arrow](arrow/arrow.md) и [Profunctor](arrow/profunctor.md).
 
-```scala
+```dotty
 trait Arrow[F[_, _]]:
   def dimap[A, B, C, D](fab: F[A, B])(f: C => A)(g: B => D): F[C, D]
 ```
@@ -94,7 +94,7 @@ trait Arrow[F[_, _]]:
 
 `flat` - сглаживает сущности.
 
-```scala
+```dotty
 trait FlatMap[F[_]]:
   def     map[A, B](fa: F[A])(f: (A) =>   B ): F[B]
   def flatMap[A, B](fa: F[A])(f: (A) => F[B]): F[B]
@@ -111,7 +111,7 @@ trait FlatMap[F[_]]:
 `par` - для параллельных операций. 
 В стандартной библиотеке параллельные коллекции [выделены в отдельный модуль](https://github.com/scala/scala-parallel-collections).
 
-```scala
+```dotty
 trait ParIterable[+T]
 trait ParSeq[+T]
 trait ParMap[K, +V]
@@ -131,7 +131,7 @@ trait ParSet[T]
 `semi-` используется различными преобразователями монад для операций, 
 которые возвращают базовую монаду вместо преобразованной:
 
-```scala
+```dotty
 case class OptionT[F[_], A](value: F[Option[A]]):
   def     flatMap[B](f: (A) => OptionT[F, B])(implicit F: Monad[F]): OptionT[F, B]
   def semiflatMap[B](f: (A) =>         F [B])(implicit F: Monad[F]): OptionT[F, B]
@@ -142,7 +142,7 @@ case class OptionT[F[_], A](value: F[Option[A]]):
 `sub-` используется различными преобразователями монад для операций, 
 которые возвращают внутреннюю монаду вместо преобразованной монады:
 
-```scala
+```dotty
 case class OptionT[F[_], A](value: F[Option[A]]):
   def    flatMap[B](f: (A) => OptionT[F, B])(implicit F: Monad[F]):   OptionT[F, B]
   def subflatMap[B](f: (A) => Option [   B])(implicit F: Functor[F]): OptionT[F, B]
@@ -154,7 +154,7 @@ case class OptionT[F[_], A](value: F[Option[A]]):
 
 `-A` для операций [Applicative](monad/applicative.md).
 
-```scala
+```dotty
 trait Applicative[F[_]]:
   def replicateA[A](n: Int, fa: F[A]): F[List[A]]
   def unlessA[A](cond: Boolean)(f: => F[A]): F[Unit]
@@ -165,7 +165,7 @@ trait Applicative[F[_]]:
 
 `-F` для операций [Functor-а](monad/functor.md).
 
-```scala
+```dotty
 trait Functor[F[_]]:
   def ifF[A](fb: F[Boolean])(ifTrue: => A, ifFalse: => A): F[A]
 ```
@@ -174,7 +174,7 @@ trait Functor[F[_]]:
 В этом случае можно думать об **F-"эффекте"**.
 Иногда `Functor` - это все, что нужно. Иногда необходимо нечто большее.
 
-```scala
+```dotty
 object Kleisli:
   def liftF[F[_], A, B](x: F[B]): Kleisli[F, A, B]
 
@@ -190,7 +190,7 @@ object ContT:
 
 Вещи, называемые `eval` в Cats-Effect и FS2, очень похожи на `liftF`, но нарушает нашу этимологию.
 
-```scala
+```dotty
 object Resource:
   def eval[F[_], A](fa: F[A]): Resource[F, A]
 
@@ -204,7 +204,7 @@ object Stream:
 
 [MonoidK](https://typelevel.org/cats/typeclasses/monoidk.html) и [Monoid](monoid/monoid.md):
 
-```scala
+```dotty
 trait Monoid[A]:
   def combine(x: A, y: A): A
 
@@ -214,7 +214,7 @@ trait MonoidK[F[_]]:
 
 **FunctionK** и **Function**:
 
-```scala
+```dotty
 trait Function1[-T1, +R]: // или =>
   def apply(v1: T1): R
 
@@ -226,7 +226,7 @@ trait FunctionK[F[_], G[_]]: // или ~>
 
 `-L` и `-R` обозначают `Left` и `Right`.
 
-```scala
+```dotty
 trait Applicative[F[_]]:
   // Более известно как `<*`
   def productL[A, B](fa: F[A])(fb: F[B]): F[A]
@@ -238,7 +238,7 @@ trait Applicative[F[_]]:
 
 `-M` для монадических операций.
 
-```scala
+```dotty
 trait Monad[F[_]]:
   def ifM(fa: F[Boolean])(ifTrue: => F[B], ifFalse: => F[B]): F[B]
   def untilM[G[_], A](f: F[A])(cond: => F[Boolean])(implicit G: Alternative[G]): F[G[A]]
@@ -249,7 +249,7 @@ trait Monad[F[_]]:
 
 `-T` предназначен для преобразователей монад.
 
-```scala
+```dotty
 final case class EitherT[F[_], A, B](value: F[Either[A, B]])
 final case class IdT[F[_], A](value: F[A])
 final case class IorT[F[_], A, B](value: F[Ior[A, B]])
@@ -266,7 +266,7 @@ type StoreT[W[_], S, A] = RepresentableStoreT[W, [β$2$](S) => β$2$, S, A]
 Суффикс подчеркивания обычно означает: "Меня волнует эффект, а не результат внутри".
 Реализации могут быть оптимизированы, если известно, что вызывающий объект все равно проигнорирует это.
 
-```scala
+```dotty
 trait Traverse[F[_]]:
   def traverse [G[_]: Applicative, A, B](fa: F[A])(f: A => G[B]): G[F[B]]
   def traverse_[G[_]: Applicative, A, B](fa: F[A])(f: A => G[B]): G[Unit]

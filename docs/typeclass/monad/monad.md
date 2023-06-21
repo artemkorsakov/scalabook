@@ -21,7 +21,7 @@
   
 ## Описание
 
-```scala
+```dotty
 trait Monad[F[_]] extends Applicative[F], Bind[F]:
   extension [A](fa: F[A])
     override def map[B](f: A => B): F[B] =
@@ -32,7 +32,7 @@ trait Monad[F[_]] extends Applicative[F], Bind[F]:
 
 ### "Обертка"
 
-```scala
+```dotty
 case class Id[A](value: A)
 
 given idMonad: Monad[Id] with
@@ -43,7 +43,7 @@ given idMonad: Monad[Id] with
 
 ### Option
 
-```scala
+```dotty
 given optionMonad: Monad[Option] with
   override def unit[A](a: => A): Option[A] = Some(a)
 
@@ -56,7 +56,7 @@ given optionMonad: Monad[Option] with
 
 ### Последовательность
 
-```scala
+```dotty
 given listMonad: Monad[List] with
   override def unit[A](a: => A): List[A] = List(a)
 
@@ -65,7 +65,7 @@ given listMonad: Monad[List] with
 
 ### Either
 
-```scala
+```dotty
 given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
   override def unit[A](a: => A): Either[E, A] = Right(a)
 
@@ -78,7 +78,7 @@ given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
 
 ### Writer - функциональный журнал
 
-```scala
+```dotty
 case class Writer[W, A](run: () => (W, A))
 
 trait Semigroup[A]:
@@ -102,7 +102,7 @@ given writerMonad[W](using monoid: Monoid[W]): Monad[[x] =>> Writer[W, x]] with
 
 ### State - функциональное состояние
 
-```scala
+```dotty
 case class State[S, +A](run: S => (S, A))
 
 given stateMonad[S]: Monad[[x] =>> State[S, x]] with
@@ -119,7 +119,7 @@ given stateMonad[S]: Monad[[x] =>> State[S, x]] with
 
 ### IO
 
-```scala
+```dotty
 final case class IO[R](run: () => R)
 
 given ioMonad: Monad[IO] with
@@ -132,7 +132,7 @@ given ioMonad: Monad[IO] with
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.Monad
 import cats.instances.option.*
 import cats.instances.list.*
@@ -151,7 +151,7 @@ val list3 = Monad[List].map(list2)(a => a + 123)                     // List(124
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

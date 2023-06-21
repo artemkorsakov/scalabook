@@ -4,7 +4,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Show[A]:
   def show(a: A): String
 ```
@@ -13,7 +13,7 @@ trait Show[A]:
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.*
 import cats.implicits.*
 123.show     // 123
@@ -22,7 +22,7 @@ import cats.implicits.*
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 1.0.shows // "1.0"

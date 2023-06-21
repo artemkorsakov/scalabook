@@ -8,7 +8,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Predecessible[A]:
   def prev(a: A): A
 
@@ -22,7 +22,7 @@ trait Bothable[A] extends Predecessible[A], Successible[A]
 
 ### Числа
 
-```scala
+```dotty
 given Bothable[Int] with
   override def prev(a: Int): Int = a - 1
   override def next(a: Int): Int = a + 1

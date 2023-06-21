@@ -20,7 +20,7 @@
 
 ## Описание инвариантного функтора
 
-```scala
+```dotty
 trait InvariantFunctor[F[_]]:
   extension [A](fa: F[A]) 
     def xmap[B](f: A => B, g: B => A): F[B]
@@ -30,7 +30,7 @@ trait InvariantFunctor[F[_]]:
 
 ### "Обертка"
 
-```scala
+```dotty
 final case class Id[A](value: A)
 
 given InvariantFunctor[Id] with
@@ -51,7 +51,7 @@ given InvariantFunctor[Id] with
 
 Зачастую инвариантный функтор используется в кодеках, кодирующих и декодирующих строки.
 
-```scala
+```dotty
 trait Codec[A]:
   def encode(value: A): String
   def decode(value: String): A
@@ -69,19 +69,19 @@ given InvariantFunctor[Codec] with
 
 - тождественность: `xmap(ma)(identity, identity) == ma`
     - по определению метода `xmap` получим: `fa.xmap(identity, identity) ==`
-      ```scala
+      ```dotty
       def encode(value: A): String = fa.encode(identity(value)) = fa.encode(value)
       def decode(value: String): A = identity(fa.decode(value)) = = fa.decode(value)
       ```
       Это эквивалентно исходному `fa` (в случае использования чистых функций) - проксируются его методы.
 - композиция: `xmap(xmap(ma, f1, g1), f2, g2) == xmap(ma, f2 compose f1, g1 compose g2)`
     - по определению метода `xmap` получим `xmap(xmap(ma, f1, g1), f2, g2) ==`:
-        ```scala
+        ```dotty
         def encode(value: C): String = fb.encode(g2(value)) = fa.encode(g1(g2(value)))
         def decode(value: String): C = f2(fb.decode(value)) = f2(f1(fa.decode(value)))
         ```
         `xmap(ma, f2 compose f1, g1 compose g2) ==`:
-        ```scala
+        ```dotty
         def encode(value: C): String = fa.encode(g1 compose g2) = fa.encode(g1(g2(value)))
         def decode(value: String): C = (f2 compose f1)(fa.decode(value)) = f2(f1(fa.decode(value)))
         ```

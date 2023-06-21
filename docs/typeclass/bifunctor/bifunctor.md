@@ -5,7 +5,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Bifunctor[F[_, _]]:
   /** `map` over both type parameters. */
   def bimap[A, B, C, D](fab: F[A, B])(f: A => C, g: B => D): F[C, D]
@@ -39,7 +39,7 @@ trait Bifunctor[F[_, _]]:
 
 ### Either
 
-```scala
+```dotty
 given Bifunctor[Either] with
   override def bimap[A, B, C, D](fab: Either[A, B])(f: A => C, g: B => D): Either[C, D] =
     fab match
@@ -49,7 +49,7 @@ given Bifunctor[Either] with
 
 ### Writer - функциональный журнал
 
-```scala
+```dotty
 case class Writer[W, A](run: () => (W, A))
 
 given Bifunctor[Writer] with
@@ -64,7 +64,7 @@ given Bifunctor[Writer] with
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

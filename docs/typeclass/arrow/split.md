@@ -7,7 +7,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Split[=>:[_, _]] extends Compose[=>:]:
   def split[A, B, C, D](f: A =>: B, g: C =>: D): (A, C) =>: (B, D)
 ```
@@ -16,7 +16,7 @@ trait Split[=>:[_, _]] extends Compose[=>:]:
 
 ### Функция от одной переменной
 
-```scala
+```dotty
 object Split:
   given Split[Function1] with
     override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f
@@ -29,7 +29,7 @@ object Split:
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.*, cats.data.*, cats.syntax.all.*
 
 lazy val f = (_:Int) + 1
@@ -41,7 +41,7 @@ lazy val g = (_:Int) * 100
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

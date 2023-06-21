@@ -14,7 +14,7 @@
 
 ## Описание 
 
-```scala
+```dotty
 trait Group[A] extends Monoid[A]:
   extension (a: A) 
     def inverse: A
@@ -24,7 +24,7 @@ trait Group[A] extends Monoid[A]:
 
 ### Числа относительно сложения с 0
 
-```scala
+```dotty
 given Group[Int] with
   override val empty                           = 0
   override def combine(x: Int, y: Int): Int    = x + y
@@ -41,7 +41,7 @@ given Group[Int] with
 с проверкой на **n ≠ 0, d ≠ 0**,
 но в упрощенном варианте группа для рациональных чисел будет выглядеть так:
 
-```scala
+```dotty
 final case class Rational(n: Int, d: Int):
   def *(that: Rational): Rational =
     Rational(n * that.n, d * that.d)
@@ -57,7 +57,7 @@ given Group[Rational] with
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.*, cats.syntax.all.*
 
 1.inverse() // -1

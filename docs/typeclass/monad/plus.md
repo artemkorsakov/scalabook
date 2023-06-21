@@ -9,7 +9,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Plus[F[_]]:
   def plus[A](fa1: F[A], fa2: => F[A]): F[A]
 
@@ -20,7 +20,7 @@ trait Plus[F[_]]:
 
 ### Связанный список
 
-```scala
+```dotty
 given Plus[List] with
   def plus[A](fa1: List[A], fa2: => List[A]): List[A] = fa1 ++ fa2
 ```
@@ -29,7 +29,7 @@ given Plus[List] with
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

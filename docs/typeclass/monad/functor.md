@@ -21,7 +21,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Functor[F[_]] extends InvariantFunctor[F]:
   extension [A](fa: F[A])
     def map[B](f: A => B): F[B]
@@ -46,7 +46,7 @@ trait Functor[F[_]] extends InvariantFunctor[F]:
 
 ### "Обертка" является функтором
 
-```scala
+```dotty
 case class Id[A](value: A)
 
 given idFunctor: Functor[Id] with
@@ -64,7 +64,7 @@ given idFunctor: Functor[Id] with
   
 ### Option
 
-```scala
+```dotty
 given optionFunctor: Functor[Option] with
   extension [A](optA: Option[A])
     override def map[B](f: A => B): Option[B] =
@@ -87,7 +87,7 @@ given optionFunctor: Functor[Option] with
 
 ### Последовательность
 
-```scala
+```dotty
 given listFunctor: Functor[List] with
   extension [A](as: List[A])
     override def map[B](f: A => B): List[B] = as match
@@ -97,7 +97,7 @@ given listFunctor: Functor[List] with
 
 ### Either
 
-```scala
+```dotty
 given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
   extension [A](fa: Either[E, A])
     override def map[B](f: A => B): Either[E, B] =
@@ -108,7 +108,7 @@ given eitherFunctor[E]: Functor[[x] =>> Either[E, x]] with
 
 ### Writer - функциональный журнал
 
-```scala
+```dotty
 case class Writer[W, A](run: () => (W, A))
 
 given writerFunctor[W]: Functor[[x] =>> Writer[W, x]] with
@@ -120,7 +120,7 @@ given writerFunctor[W]: Functor[[x] =>> Writer[W, x]] with
 
 ### State - функциональное состояние
 
-```scala
+```dotty
 case class State[S, +A](run: S => (S, A))
 
 given stateFunctor[S]: Functor[[x] =>> State[S, x]] with
@@ -134,7 +134,7 @@ given stateFunctor[S]: Functor[[x] =>> State[S, x]] with
 
 ### IO
 
-```scala
+```dotty
 final case class IO[R](run: () => R)
 
 given ioFunctor: Functor[IO] with
@@ -144,7 +144,7 @@ given ioFunctor: Functor[IO] with
 
 ### Бинарное дерево
 
-```scala
+```dotty
 given Functor[BinaryTree] with
   extension [A](as: BinaryTree[A])
     override def map[B](f: A => B): BinaryTree[B] = as match
@@ -159,35 +159,18 @@ given Functor[BinaryTree] with
 
 Рассмотрим пример:
 
-```scala mdoc:invisible
-trait Functor[F[_]]:
-  extension [A](fa: F[A]) def map[B](f: A => B): F[B]
-
-given optionFunctor: Functor[Option] with
-  extension [A](optA: Option[A])
-    override def map[B](f: A => B): Option[B] =
-      optA match
-        case Some(a) => Some(f(a))
-        case None    => None
-
-given listFunctor: Functor[List] with
-  extension [A](as: List[A])
-    override def map[B](f: A => B): List[B] = as match
-      case Nil    => Nil
-      case h :: t => f(h) :: t.map(f)
-```
-
-```scala mdoc:silent
+```dotty
 final case class Nested[F[_], G[_], A](value: F[G[A]])
 
 given nf[F[_]: Functor, G[_]: Functor]: Functor[[X] =>> Nested[F, G, X]] with
   extension [A](fga: Nested[F, G, A])
     override def map[B](f: A => B): Nested[F, G, B] =
       Nested[F, G, B](fga.value.map(_.map(f)))
-```
 
-```scala mdoc
 Nested(Some(List(1, 2))).map(_ + 10)
+// res0: Nested[[A >: Nothing <: Any] => Option[A], List, Int] = Nested(
+//   value = Some(value = List(11, 12))
+// )
 ```
 
 Композиция функторов удовлетворяет функториальным законам:
@@ -201,7 +184,7 @@ Nested(Some(List(1, 2))).map(_ + 10)
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.*
 import cats.implicits.*
 
@@ -215,7 +198,7 @@ liftedFunc(Option(1))                        // Some(2)
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

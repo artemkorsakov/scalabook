@@ -19,7 +19,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Equal[F]:
   def equal(a1: F, a2: F): Boolean
 
@@ -42,7 +42,7 @@ trait Enum[F] extends Order[F]:
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 1 |-> 2        // [1,2]

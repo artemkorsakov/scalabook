@@ -21,7 +21,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Equal[F]:
   self =>
 
@@ -37,7 +37,7 @@ trait Equal[F]:
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.*
 import cats.implicits.*
 
@@ -62,7 +62,7 @@ cat1 === cat2         // false
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 List(1, 2, 3) === List(1, 2, 3) // true

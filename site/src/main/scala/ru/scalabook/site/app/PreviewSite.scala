@@ -1,4 +1,4 @@
-package ru.scalabook.site
+package ru.scalabook.site.app
 
 import cats.effect.*
 import laika.api.*
@@ -8,6 +8,7 @@ import laika.io.model.InputTree
 import laika.markdown.github.GitHubFlavor
 import laika.parse.code.SyntaxHighlighting
 import laika.preview.ServerBuilder
+import ru.scalabook.site.theme.HeliumThemes
 
 object PreviewSite extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =

@@ -4,7 +4,7 @@
 
 ## Описание
 
-```scala
+```dotty
 sealed trait IO[+A]:
   private[effect] def apply(rw: World[RealWorld]): Trampoline[(World[RealWorld], A)]
 ```
@@ -13,7 +13,7 @@ sealed trait IO[+A]:
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 import scalaz.effect.*

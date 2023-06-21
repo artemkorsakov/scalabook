@@ -5,7 +5,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait CoMonad[F[_]] extends CoBind[F]:
   /** Также известно как `coPoint` и `coPure` */
   def coUnit[A](fa: F[A]): A
@@ -19,7 +19,7 @@ trait CoMonad[F[_]] extends CoBind[F]:
 
 ### "Обертка"
 
-```scala
+```dotty
 case class Id[A](value: A)
 
 given CoMonad[Id] with
@@ -33,7 +33,7 @@ given CoMonad[Id] with
 
 ### Переменные окружения
 
-```scala
+```dotty
 final case class Env[A, R](a: A, r: R)
 
 given envCoMonad[R]: CoMonad[[X] =>> Env[X, R]] with

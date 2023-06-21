@@ -2,7 +2,7 @@
 
 ## Схема
 
-![monoid](https://gitflic.ru/project/artemkorsakov/scalabook/blob/raw?file=images%2Farrow.png&commit=bb54456180d7e8fe75ed106c03b9dcbe809c4b43)
+![monoid](images/arrow.png)
 
 ## Использование
 

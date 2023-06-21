@@ -11,7 +11,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Category[=>:[_, _]] extends Compose[=>:]:
   def id[A]: A =>: A
 
@@ -26,7 +26,7 @@ trait Category[=>:[_, _]] extends Compose[=>:]:
 
 ### Функция от одной переменной
 
-```scala
+```dotty
 given Category[Function1] with
   override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f
 
@@ -37,7 +37,7 @@ given Category[Function1] with
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

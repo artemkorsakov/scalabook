@@ -26,7 +26,7 @@ _Fold_ может использоваться для реализации `redu
 
 ## Описание
 
-```scala
+```dotty
 trait Foldable[F[_]]:
   extension [A](fa: F[A])
     def foldRight[B](init: B)(f: (A, B) => B): B =
@@ -49,7 +49,7 @@ trait Foldable[F[_]]:
 
 ### "Обертка"
 
-```scala
+```dotty
 case class Id[A](value: A)
 
 given idFoldable: Foldable[Id] with
@@ -60,7 +60,7 @@ given idFoldable: Foldable[Id] with
 
 ### Option
 
-```scala
+```dotty
 given Foldable[Option] with
   extension[A] (as: Option[A])
     override def foldRight[B](acc: B)(f: (A, B) => B) = as match
@@ -77,7 +77,7 @@ given Foldable[Option] with
 
 ### Последовательность
 
-```scala
+```dotty
 given Foldable[List] with
   extension[A] (as: List[A])
     override def foldRight[B](acc: B)(f: (A, B) => B) =
@@ -89,7 +89,7 @@ given Foldable[List] with
 
 ### Кортеж от двух и более элементов
 
-```scala
+```dotty
 given tuple2Foldable: Foldable[[X] =>> (X, X)] with
   extension [A](fa: (A, A))
     override def foldRight[B](init: B)(f: (A, B) => B): B =
@@ -108,7 +108,7 @@ given tuple3Foldable: Foldable[[X] =>> (X, X, X)] with
 
 ### Either
 
-```scala
+```dotty
 given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
   extension [A](fa: Either[E, A])
     override def foldRight[B](init: B)(f: (A, B) => B): B =
@@ -121,7 +121,7 @@ given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
 
 ### Реализация в Cats
 
-```scala
+```dotty
 import cats.Foldable
 import cats.instances.list.*
 import cats.instances.option.*
@@ -142,7 +142,7 @@ Foldable[List].foldMap(List(1, 2, 3))(_.toString)  // 123
 
 ### Реализация в ScalaZ
 
-```scala
+```dotty
 import scalaz.*
 import Scalaz.*
 

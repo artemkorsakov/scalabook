@@ -12,7 +12,7 @@
 
 ## Описание
 
-```scala
+```dotty
 trait Equal[F]:
   def equal(a1: F, a2: F): Boolean
 

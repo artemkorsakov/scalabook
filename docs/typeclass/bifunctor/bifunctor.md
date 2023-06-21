@@ -68,34 +68,46 @@ given Bifunctor[Writer] with
 import scalaz.*
 import Scalaz.*
 
-Bifunctor[Tuple2].bimap(("asdf", 1))(_.toUpperCase, _ + 1)                               // ("ASDF",2)
-("asdf", 1).bimap(_.length, _ + 1)                                                       // (4,2)
+Bifunctor[Tuple2].bimap(("asdf", 1))(_.toUpperCase, _ + 1)                               
+// ("ASDF",2)
+("asdf", 1).bimap(_.length, _ + 1)                                                       
+// (4,2)
 
 // Для суммированных типов, какая функция применяется, зависит от того, какое значение присутствует:
-Bifunctor[Either].bimap(Left("asdf") : Either[String,Int])(_.toUpperCase, _ + 1)         // Left("ASDF")
-Bifunctor[Either].bimap(Right(1): Either[String,Int])(_.toUpperCase, _ + 1)              // Right(2)
+Bifunctor[Either].bimap(Left("asdf") : Either[String,Int])(_.toUpperCase, _ + 1)         
+// Left("ASDF")
+Bifunctor[Either].bimap(Right(1): Either[String,Int])(_.toUpperCase, _ + 1)              
+// Right(2)
 
 //
 // leftMap / rightMap
 //
 
 // Существуют функции для отображения только «правого» или «левого» значения:
-Bifunctor[Tuple2].leftMap(("asdf", 1))(_.substring(1))                                   // ("sdf" -> 1)
-Bifunctor[Tuple2].rightMap(("asdf", 1))(_ + 3)                                           // ("asdf" -> 4)
+Bifunctor[Tuple2].leftMap(("asdf", 1))(_.substring(1))                                   
+// ("sdf" -> 1)
+Bifunctor[Tuple2].rightMap(("asdf", 1))(_ + 3)                                           
+// ("asdf" -> 4)
 
 // Они идут с таким синтаксисом
-1.success[String].rightMap(_ + 10)                                                       // Success(11)
-("a", 1).rightMap(_ + 10)                                                                // ("a" -> 11)
+1.success[String].rightMap(_ + 10)                                                       
+// Success(11)
+("a", 1).rightMap(_ + 10)                                                                
+// ("a" -> 11)
 
 // и еще более причудливым
-1.success[String] :-> (_ + 1)                                                            // Success(2)
+1.success[String] :-> (_ + 1)                                                            
+// Success(2)
 
 // С левой стороны вывод типа может быть плохим, так что мы вынуждены явно указывать типы в функции, которую мы оставилиMap.
 val strlen: String => Int = _.length
-(strlen <-: ("asdf", 1))                                                                 // (4 -> 1)
-(((_:String).length) <-: ("asdf", 1))                                                    // (4 -> 1)
+(strlen <-: ("asdf", 1))                                                                 
+// (4 -> 1)
+(((_:String).length) <-: ("asdf", 1))                                                    
+// (4 -> 1)
 
-strlen <-: ("asdf", 1) :-> (_ + 1)                                                       // (4 -> 2)
+strlen <-: ("asdf", 1) :-> (_ + 1)                                                       
+// (4 -> 2)
 
 //
 // Functor extraction
@@ -103,22 +115,28 @@ strlen <-: ("asdf", 1) :-> (_ + 1)                                              
 
 // Мы можем получить либо левый, либо правый базовые функторы.
 val leftF = Bifunctor[\/].leftFunctor[String]
-leftF.map("asdf".right[Int])(_ + 1)                                                      // "asdf".right[Int]
-leftF.map(1.left)(_ + 1)                                                                 // 2.left[String]
+leftF.map("asdf".right[Int])(_ + 1)                                                      
+// "asdf".right[Int]
+leftF.map(1.left)(_ + 1)                                                                 
+// 2.left[String]
 
 val rightF = Bifunctor[\/].rightFunctor[String]
-rightF.map("asdf".left[Int])(_ + 1)                                                      // "asdf".left[Int]
-rightF.map(1.right)(_ + 1)                                                               // 2.right[String]
+rightF.map("asdf".left[Int])(_ + 1)                                                      
+// "asdf".left[Int]
+rightF.map(1.right)(_ + 1)                                                               
+// 2.right[String]
 
 //
 // Ufunctor
 //
 
 // Если у нас есть F[A,A] (вместо F[A,B] с разными A и B) мы можем извлечь "унифицированный функтор", который является функтором,
-Bifunctor[Tuple2].uFunctor.map((2,3))(_ * 3)                                             // (6 -> 9)
+Bifunctor[Tuple2].uFunctor.map((2,3))(_ * 3)                                             
+// (6 -> 9)
 
 // или пропустить шаг извлечения единого функтора методом umap.
-Bifunctor[Tuple2].umap((2,3))(_ * 3)                                                     // (6 -> 9)
+Bifunctor[Tuple2].umap((2,3))(_ * 3)                                                     
+// (6 -> 9)
 ```
 
 

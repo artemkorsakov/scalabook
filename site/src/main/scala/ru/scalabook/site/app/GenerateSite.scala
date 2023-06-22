@@ -5,7 +5,7 @@ import laika.api.*
 import laika.format.*
 import laika.io.api.TreeTransformer
 import laika.io.implicits.*
-import laika.io.model.RenderedTreeRoot
+import laika.io.model.*
 import laika.markdown.github.GitHubFlavor
 import laika.parse.code.SyntaxHighlighting
 import ru.scalabook.site.theme.HeliumThemes
@@ -31,14 +31,24 @@ object GenerateSite extends IOApp:
   private def createMain(): IO[RenderedTreeRoot[IO]] =
     createTransformer[IO]("/main")
       .use:
-        _.fromDirectory("docs/main")
+        _.fromDirectories(
+          Seq(
+            FilePath.parse("docs/main"),
+            FilePath.parse("docs/icons")
+          )
+        )
           .toDirectory("generated")
           .transform
 
   private def createPath(path: String): IO[RenderedTreeRoot[IO]] =
     createTransformer[IO](path)
       .use:
-        _.fromDirectory(s"docs$path")
+        _.fromDirectories(
+          Seq(
+            FilePath.parse(s"docs$path"),
+            FilePath.parse("docs/icons")
+          )
+        )
           .toDirectory(s"generated$path")
           .transform
 

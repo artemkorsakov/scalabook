@@ -15,6 +15,7 @@ object HeliumThemes:
   private def addAll(part: String): Helium => Helium =
     addMeta andThen
       addThemeColors andThen
+      addFavIcons andThen
       addCSSJS andThen
       addTopNavigation andThen
       addMainNavigation andThen
@@ -43,6 +44,12 @@ object HeliumThemes:
         background = Color.hex("ffffff"),
         bgGradient = (Color.hex("095269"), Color.hex("007c99"))
       )
+
+  private def addFavIcons(theme: Helium): Helium =
+    theme.site.favIcons(
+      Favicon.internal(Root / "favicon32x32.png", sizes = "32x32"),
+      Favicon.internal(Root / "favicon64x64.png", sizes = "64x64")
+    )
 
   private def addCSSJS(theme: Helium): Helium =
     theme.site
@@ -99,4 +106,4 @@ object HeliumThemes:
       )
 
   private def addFooter(theme: Helium): Helium =
-    theme.site.footer(Text(""))
+    theme.site.footer()

@@ -22,7 +22,7 @@ object GenerateSite extends IOApp:
         _ <- createPath("/algorithms")
         _ <- createPath("/libs")
         _ <- createPath("/patterns")
-//        _ <- createPath("/books")
+        _ <- createPath("/books")
         _ <- createPath("/extra")
       yield ()
 

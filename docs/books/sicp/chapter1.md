@@ -10,26 +10,39 @@
 > Какой результат напечатает интерпретатор в ответ на каждое из них? 
 > Предполагается, что выражения вводятся в том же порядке, в каком они написаны.
 
-```scala mdoc
+```dotty
 10                    
+// res0: Int = 10                    
 (5 + 3 + 4)           
+// res1: Int = 12)           
 (9 - 1)               
+// res2: Int = 8)               
 (6 / 2)               
+// res3: Int = 3)               
 ((2 * 4) + (4 - 6))   
+// res4: Int = 6)   
 val a = 3
+// a: Int = 3
 val b = a + 1        
+// b: Int = 4        
 (a + b + (a * b))    
+// res5: Int = 19)    
 (a == b)             
+// res6: Boolean = false)             
 
 if (b > a) && (b < (a * b)) then b else a                  
+// res7: Int = 4                  
 
 if a == 4 then 6
 else if b == 4 then 6 + 7 + a
 else 25                                                    
+// res8: Int = 16                                                    
  
 2 + (if (b > a) then b else a)                             
+// res9: Int = 6                             
 
 ((if a > b then a else if a < b then b else -1) * (a + 1)) 
+// res10: Int = 16
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/ADHhKgP4S6q1CWdlWSqRfQ)
@@ -52,7 +65,7 @@ else 25
 > Определите процедуру, которая принимает в качестве аргументов три числа и возвращает сумму
 > квадратов двух больших из них.
 
-```scala mdoc
+```dotty
 def square(x: Int): Int = x * x
 
 def sumOfSquares(x: Int, y: Int): Int = square(x) + square(y)
@@ -63,6 +76,7 @@ def f(a: Int, b: Int, c: Int): Int =
   else sumOfSquares(a, b)
 
 f(5, 3, 4)
+// res11: Int = 41
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/i5pFJYMHTjurWwltcAkjNA)
@@ -175,7 +189,7 @@ if (= 0 0)
 
 Можно предложить следующую реализацию:
 
-```scala mdoc
+```dotty
 def goodEnough(guess: Double, next: Double): Boolean = 
   math.abs(guess - next) < 0.001
 
@@ -192,7 +206,9 @@ def sqrtIter(guess: Double, x: Double): Double =
 def sqrt(x: Double): Double = sqrtIter(1.0, x)
 
 sqrt(2.0)
+// res12: Double = 1.4142156862745097
 sqrt(1000000) 
+// res13: Double = 1000.0001533016629
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/9m6naSpLQMKkqMvJeGvjNw)
@@ -208,7 +224,7 @@ sqrt(1000000)
 
 Процедура вычисления кубического корня:
 
-```scala mdoc:reset
+```dotty
 def square(x: Double): Double = x * x
 
 def goodEnough(guess: Double, next: Double): Boolean = 
@@ -225,14 +241,16 @@ def cubeIter(guess: Double, x: Double): Double =
 def cubeOf(x: Double): Double = cubeIter(1.0, x)
 
 cubeOf(2.0)
+// res15: Double = 1.2599210500177698
 cubeOf(1000000)
+// res16: Double = 100.00000000005313
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/MPOYyJyFRoGnIYUbxzTHMw)
 
 ### 1.1.8. Процедуры как абстракции типа «черный ящик»
 
-```scala mdoc
+```dotty
 def sqrt(x: Double): Double = 
   def goodEnough(guess: Double, next: Double): Boolean =  math.abs(guess - next) < 0.001
 
@@ -248,7 +266,9 @@ def sqrt(x: Double): Double =
   sqrtIter(1.0)
 
 sqrt(2.0)
+// res17: Double = 1.4142156862745097
 sqrt(1000000) 
+// res18: Double = 1000.0001533016629
 ```
 
 
@@ -334,7 +354,7 @@ sqrt(1000000)
 
 Функцию Аккермана можно определить так:
 
-```scala mdoc
+```dotty
 def functionAckermann(x: Int, y: Int): Int =
   if y == 0 then 0
   else if x == 0 then 2 * y
@@ -342,8 +362,11 @@ def functionAckermann(x: Int, y: Int): Int =
   else functionAckermann(x - 1, functionAckermann(x, y - 1))
 
 functionAckermann(1, 10)
+// res19: Int = 1024
 functionAckermann(2, 4)
+// res20: Int = 65536
 functionAckermann(3, 3)
+// res21: Int = 65536
 ```
 
 > Рассмотрим следующие процедуры, где `A` — процедура, определенная выше:
@@ -375,7 +398,7 @@ functionAckermann(3, 3)
 
 Рекурсивный процесс:
 
-```scala
+```dotty
 def recursion(n: Int): Int =
   if n < 3 then n
   else recursion(n - 1) + recursion(n - 2) + recursion(n - 3)
@@ -383,7 +406,7 @@ def recursion(n: Int): Int =
 
 Итеративный процесс:
 
-```scala
+```dotty
 def iteration(n: Int): Int =
   def loop(a: Int, b: Int, c: Int, count: Int): Int =
     if count == 0 then c
@@ -414,12 +437,13 @@ def iteration(n: Int): Int =
 >
 > Напишите процедуру, вычисляющую элементы треугольника Паскаля с помощью рекурсивного процесса.
 
-```scala mdoc
+```dotty
 def pascalsTriangle(n: Int, k: Int): Int =
   if n == 0 || k == n || k == 0 then 1
   else pascalsTriangle(n - 1, k - 1) + pascalsTriangle(n - 1, k)
 
 pascalsTriangle(4, 2)
+// res22: Int = 6
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/qxmgWhSsS2exUsfTtboTkA)
@@ -557,7 +581,7 @@ pascalsTriangle(4, 2)
 
 На Scala эта программа будет выглядеть так:
 
-```scala mdoc
+```dotty
 def cube(x: Double): Double = x * x * x
 
 def p(x: Double): Double =
@@ -568,6 +592,7 @@ def sine(angle: Double): Double =
   else p(sine(angle / 3.0))
 
 sine(12.15)
+// res23: Double = -0.39980345741334
 ```
 
 а) Процедура `p` будет вызываться `roundUp(12.15 / 3) = 5` раз.
@@ -592,7 +617,7 @@ sine(12.15)
 
 На Scala эта программа будет выглядеть так:
 
-```scala mdoc
+```dotty
 def power(b: Long, n: Long): BigInt =
   @scala.annotation.tailrec
   def loop(base: BigInt, power: Long, acc: BigInt): BigInt =
@@ -602,6 +627,7 @@ def power(b: Long, n: Long): BigInt =
   loop(b, n, 1)
 
 power(2, 10)
+// res24: BigInt = 1024
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/Vwu5s7IbS8upuU83PIWiJA)
@@ -628,7 +654,7 @@ power(2, 10)
 
 На Scala эта программа будет выглядеть так:
 
-```scala mdoc
+```dotty
 def double(n: Long): Long =
   n << 1
 
@@ -641,6 +667,7 @@ def fastMul(a: Long, b: Long): Long =
   else a + fastMul(a, b - 1)
 
 fastMul(22, 10)
+// res25: Long = 220L
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/v7bXGTUPRpi6YMrDC7LnUg)
@@ -653,7 +680,7 @@ fastMul(22, 10)
 
 На Scala эта программа будет выглядеть так:
 
-```scala mdoc:reset
+```dotty
 def double(n: Long): Long =
   n << 1
 
@@ -669,6 +696,7 @@ def fastMul(a: Long, b: Long): Long =
   loop(a, b, 0)
 
 fastMul(22, 10)
+// res27: Long = 220L
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/MNMMlUBVTuejpjevIBuz3g)
@@ -726,7 +754,7 @@ fastMul(22, 10)
 
 Что позволяет реализовать программу так:
 
-```scala mdoc
+```dotty
 def fastFib(n: Int): BigInt =
   @scala.annotation.tailrec
   def loop(a: BigInt, b: BigInt, p: BigInt, q: BigInt, count: Int): BigInt =
@@ -738,6 +766,7 @@ def fastFib(n: Int): BigInt =
   loop(1, 0, 0, 1, n)
 
 fastFib(30)
+// res28: BigInt = 832040
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/B4ptJqqXS3CEsvtC9rsHtw)
@@ -818,7 +847,7 @@ if (= 0 0)
 
 Решение на Scala:
 
-```scala mdoc
+```dotty
 def divides(a: Long, b: Long): Boolean = a % b == 0
 
 def findDivisor(n: Long, d: Long): Long =
@@ -829,8 +858,11 @@ def findDivisor(n: Long, d: Long): Long =
 def smallestDivisor(n: Long): Long = findDivisor(n, 2)
 
 smallestDivisor(199)   
+// res29: Long = 199L   
 smallestDivisor(1999) 
+// res30: Long = 1999L 
 smallestDivisor(19999)
+// res31: Long = 7L
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/1kSbB13fQhG0DhEOngZFEQ)
@@ -878,7 +910,7 @@ smallestDivisor(19999)
 
 На Scala эта программа будет выглядеть так:
 
-```scala
+```dotty
 import java.time.Instant
 
 def divides(a: Long, b: Long): Boolean = a % b == 0
@@ -937,7 +969,7 @@ searchForPrimes(1000000, 1000000 + 1000)  // Vector(1000003, 1000033, 1000037, .
 
 На Scala эта программа будет выглядеть так:
 
-```scala mdoc:reset
+```dotty
 def divides(a: Long, b: Long): Boolean = a % b == 0
 
 def next(a: Long): Long =
@@ -954,6 +986,7 @@ def isPrime(n: Long): Boolean = smallestDivisor(n) == n
 
 Seq(1009, 1013, 1019, 10007, 10009, 10037, 100003, 100019, 100043, 1000003,
   1000033, 1000037).forall(isPrime)
+// res33: Boolean = true  
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/xE0njNosQWK9zjDUHgw7aQ)
@@ -1034,7 +1067,7 @@ Seq(1009, 1013, 1019, 10007, 10009, 10037, 100003, 100019, 100043, 1000003,
 
 На Scala эта программа будет выглядеть так:
 
-```scala mdoc
+```dotty
 def expmod(base: Long, exp: Long, m: Long): Long =
   if exp == 0 then 1
   else if exp % 2 == 0 then
@@ -1048,11 +1081,17 @@ def fermatTest(n: Long): Boolean =
   (2L until n).forall(a => expmod(a, n, n) == a)
 
 fermatTest(561)  
+// res34: Boolean = true  
 fermatTest(1105) 
+// res35: Boolean = true 
 fermatTest(1729) 
+// res36: Boolean = true 
 fermatTest(2465) 
+// res37: Boolean = true 
 fermatTest(2821) 
+// res38: Boolean = true 
 fermatTest(6601) 
+// res39: Boolean = true 
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/YAeohITfTfCb1kwDB9VNGw)
@@ -1084,7 +1123,7 @@ fermatTest(6601)
 
 На Scala эта программа будет выглядеть так:
 
-```scala
+```dotty
 import scala.util.Random
 
 def square(x: Long): Long = x * x
@@ -1140,7 +1179,7 @@ fastIsPrime(6601, 100)
 
 Решение на Scala:
 
-```scala mdoc
+```dotty
 def simpsonRule(f: Double => Double, a: Double, b: Double, n: Int): Double =
   val h = (b - a) / n
   def y(k: Int): Double =
@@ -1150,7 +1189,9 @@ def simpsonRule(f: Double => Double, a: Double, b: Double, n: Int): Double =
   (0 to n).foldLeft(0.0)((acc, k) => acc + y(k)) * h / 3
 
 simpsonRule(cube, 0.0, 1.0, 100)   
+// res40: Double = 0.25000000000000006   
 simpsonRule(cube, 0.0, 1.0, 1000)  
+// res41: Double = 0.25000000000000006
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/4ZbXwD7YR7eMwKtOrLCALg)
@@ -1173,7 +1214,7 @@ simpsonRule(cube, 0.0, 1.0, 1000)
 
 Решение на Scala:
 
-```scala mdoc
+```dotty
 def cube(a: Double): Double = a * a * a
 
 def sum(
@@ -1192,7 +1233,9 @@ def integral(f: Double => Double, a: Double, b: Double, dx: Double): Double =
   sum(f, a + dx / 2, addDx, b) * dx
 
 integral(cube, 0.0, 1.0, 0.01)  
+// res42: Double = 0.24998750000000042  
 integral(cube, 0.0, 1.0, 0.001) 
+// res43: Double = 0.24999987500000073
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/MdvSkJvWT0qfjA9UgrGceg)
@@ -1213,14 +1256,12 @@ integral(cube, 0.0, 1.0, 0.001)
 
 Решение на Scala:
 
-```scala mdoc:reset:silent
+```dotty
 val identity: Double => Double = x => x
 val nextNum: Double => Double = x => x + 1
 val square: Double => Double = x => x * x
 val piFraction: Double => Double = k =>
   (2 * k) * (2 * k + 2) / square(2 * k + 1)
-```
-```scala mdoc
 def productRec(
     term: Double => Double,
     a: Double,
@@ -1237,7 +1278,9 @@ def calculatePiRec(n: Int): Double =
   4 * productRec(piFraction, 1, nextNum, n)
 
 factorialRec(10)     
+// res45: Int = 3628800     
 calculatePiRec(1000) 
+// res46: Double = 3.142377365093882  
 
 def productIter(
     term: Double => Double,
@@ -1257,7 +1300,9 @@ def calculatePiIter(n: Int): Double =
   4 * productIter(piFraction, 1, nextNum, n)
 
 factorialIter(10)     
+// res47: Int = 3628800     
 calculatePiIter(1000) 
+// res48: Double = 3.1423773650938855
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/csS3FdhYQxuUZC12CbgqrQ)
@@ -1280,7 +1325,7 @@ calculatePiIter(1000)
 
 Решение на Scala:
 
-```scala mdoc:reset
+```dotty
 def accumulateRec(
     combiner: (Double, Double) => Double,
     nullValue: Double,
@@ -1348,7 +1393,7 @@ def productIter(
 
 Решение на Scala:
 
-```scala
+```dotty
 def filteredAccumulateRec(
     combiner: (Double, Double) => Double,
     nullValue: Double,
@@ -1465,7 +1510,7 @@ def productPrimesLessThanN(n: Int): Int =
 
 Решение на Scala:
 
-```scala mdoc
+```dotty
 val tolerance = 0.00001
 
 def fixedPoint(f: Double => Double, firstGuess: Double): Double =
@@ -1478,6 +1523,7 @@ def fixedPoint(f: Double => Double, firstGuess: Double): Double =
   tryGuess(firstGuess)
 
 fixedPoint(x => 1 + (1.0 / x), 1.0) 
+// res50: Double = 1.6180327868852458
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/kyMNERl5SnK8o9ePk1vrzg)
@@ -1493,7 +1539,7 @@ fixedPoint(x => 1 + (1.0 / x), 1.0)
 
 Решение на Scala:
 
-```scala
+```dotty
 def average(a: Double, b: Double): Double = (a + b) / 2
 
 val tolerance = 0.00001
@@ -1603,7 +1649,7 @@ res1: Double = 4.555536206185039
 
 Рекурсивный процесс:
 
-```scala mdoc
+```dotty
 def contFracRec(n: Int => Double, d: Int => Double, k: Int): Double =
   def loop(i: Int): Double =
     if i == k then n(i) / d(i)
@@ -1611,11 +1657,12 @@ def contFracRec(n: Int => Double, d: Int => Double, k: Int): Double =
   loop(1)
 
 contFracRec(_ => 1.0, _ => 1.0, 11)
+// res51: Double = 0.6180555555555556
 ```
 
 Итеративный процесс:
 
-```scala mdoc:reset
+```dotty
 def contFracIter(n: Int => Double, d: Int => Double, k: Int): Double =
   def loop(i: Int, result: Double): Double =
     if i == 0 then result
@@ -1623,6 +1670,7 @@ def contFracIter(n: Int => Double, d: Int => Double, k: Int): Double =
   loop(k, 0.0)
 
 contFracIter(_ => 1.0, _ => 1.0, 11)
+// res53: Double = 0.6180555555555556
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/o4M3kiklSiStzl3LUN91lg)
@@ -1638,7 +1686,7 @@ contFracIter(_ => 1.0, _ => 1.0, 11)
 
 Решение на Scala:
 
-```scala mdoc:reset:silent
+```dotty
 def contFracIter(n: Int => Double, d: Int => Double, k: Int): Double =
   def loop(i: Int, result: Double): Double =
     if i == 0 then result
@@ -1650,9 +1698,9 @@ val n: Int => Double = _ => 1.0
 val d: Int => Double = i =>
   if i % 3 == 2 then (i / 3 + 1) * 2
   else 1.0
-```
-```scala mdoc
+
 contFracIter(n, d, 1000)
+// res55: Double = 0.7182818284590453
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/usu62Nt0TsqHQHYA97wZBA)
@@ -1671,7 +1719,7 @@ contFracIter(n, d, 1000)
 
 Решение на Scala:
 
-```scala mdoc:reset:silent
+```dotty
 def contFracIter(n: Int => Double, d: Int => Double, k: Int): Double =
   def loop(i: Int, result: Double): Double =
     if i == 0 then result
@@ -1686,9 +1734,9 @@ val d: Int => Double = i => 2 * (i - 1) + 1
 
 def tanCf(x: Double, k: Int): Double =
   contFracIter(n(x), d, k)
-```
-```scala mdoc
+
 tanCf(1.0, 100)
+// res57: Double = 1.557407724654902
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/lZ9YXPg8S9ij3UZBAz8tUw)
@@ -1705,7 +1753,7 @@ tanCf(1.0, 100)
 
 Решение на Scala:
 
-```scala
+```dotty
 def square(x: Double): Double = x * x
 
 def cube(x: Double): Double = x * x * x
@@ -1729,7 +1777,7 @@ def cubic(a: Double, b: Double, c: Double): Double => Double = x =>
 
 Решение на Scala:
 
-```scala mdoc:silent
+```dotty
 val inc: Int => Int = _ + 1
 
 def double[T](f: T => T): T => T = x => f(f(x))
@@ -1737,9 +1785,7 @@ def double[T](f: T => T): T => T = x => f(f(x))
 // (((double (double double)) inc) 5)
 val f: (Int => Int) => (Int => Int) = double(double(double))
 f(inc)(5)
-```
-```scala mdoc
-f(inc)(5)
+// res59: Int = 21
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/GwhY4i7zTse1kU4xAw6LKQ)
@@ -1760,16 +1806,14 @@ f(inc)(5)
 
 Решение на Scala:
 
-```scala mdoc:reset:silent
+```dotty
 def compose[A, B, C](f: B => C, g: A => B): A => C = x => f(g(x))
 
 val square: Int => Int = x => x * x
 val inc: Int => Int = x => x + 1
 
 compose(square, inc)(6)
-```
-```scala mdoc
-compose(square, inc)(6)
+// res62: Int = 49
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/hKt6WdQETDCLqfafsx7uHQ)
@@ -1798,7 +1842,7 @@ compose(square, inc)(6)
 
 Решение на Scala:
 
-```scala mdoc:reset:silent
+```dotty
 def compose[A, B, C](f: B => C, g: A => B): A => C = x => f(g(x))
 
 def repeated[A](f: A => A, n: Int): A => A =
@@ -1806,9 +1850,8 @@ def repeated[A](f: A => A, n: Int): A => A =
   else repeated(compose(f, f), n - 1)
 
 val square: Int => Int = x => x * x
-```
-```scala mdoc
 repeated(square, 2)(5)
+// res64: Int = 625
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/YnKFqK1dTEaThXI09u1s1A)
@@ -1829,7 +1872,7 @@ repeated(square, 2)(5)
 
 Решение на Scala:
 
-```scala
+```dotty
 val dx: Double = 1e-6
 
 def smooth(f: Double => Double): Double => Double =
@@ -1863,7 +1906,7 @@ def nFoldSmoothedFunction(f: Double => Double, n: Int): Double => Double =
 
 Решение на Scala:
 
-```scala mdoc:reset
+```dotty
 def compose[A, B, C](f: B => C, g: A => B): A => C = x => f(g(x))
 
 def repeated[A](f: A => A, n: Int): A => A =
@@ -1894,6 +1937,7 @@ def nRoot(x: Double, n: Int): Double =
   fixedPoint(nFoldAverageFunction(f, math.log(n).toInt + 1), 1.0)
 
 nRoot(math.pow(2, 100), 100)
+// res66: Double = 2.0079006560360497
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/tm9BwnTRTJ2iFzNuzBVKDA)
@@ -1917,7 +1961,7 @@ nRoot(math.pow(2, 100), 100)
 
 Решение на Scala:
 
-```scala
+```dotty
 def iterativeImprove(
     doesCloseEnough: (Double, Double) => Boolean,
     next: Double => Double

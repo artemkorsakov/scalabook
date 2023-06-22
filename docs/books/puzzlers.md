@@ -5,11 +5,18 @@
 
 ## Hi There!
 
-```scala mdoc
+```dotty
 List(1, 2).map { i => i + 1 }
+// res0: List[Int] = List(2, 3)
 List(1, 2).map { _ + 1 }
+// res1: List[Int] = List(2, 3)
 List(1, 2).map { i => println("Hi"); i + 1 }
+// Hi
+// Hi
+// res2: List[Int] = List(2, 3)
 List(1, 2).map { println("Hi"); _ + 1 }
+// Hi
+// res3: List[Int] = List(2, 3)
 ```
 
 Несмотря на то, что упрощение `_` выглядит так же, во втором случае оно имеет совсем другой эффект:
@@ -19,13 +26,17 @@ List(1, 2).map { println("Hi"); _ + 1 }
 
 ## UPSTAIRS downstairs
 
-```scala mdoc
+```dotty
 val ij: (Int, Int) = (3, 4)
+// ij: Tuple2[Int, Int] = (3, 4)
 val (i, j): (Int, Int) = (3, 4)
+// i: Int = 3
+// j: Int = 4
 val IJ: (Int, Int) = (3, 4)
+// IJ: Tuple2[Int, Int] = (3, 4)
 ```
 
-```scala
+```dotty
 val (I, J): (Int, Int) = (3, 4)
 val (`i`, `j`): (Int, Int) = (3, 4)
 // error:
@@ -53,7 +64,7 @@ Scala полагает, что переменные ВЕРХНЕГО РЕГИС�
 
 ## Location, Location, Location
 
-```scala
+```dotty
 trait A:
   val audience: String
   println(s"Hello $audience")
@@ -79,7 +90,7 @@ BConstructor("Readers")
 
 ## Now You See Me, Now You Don't
 
-```scala
+```dotty
 trait A:
   val foo: Int
   val bar = 10
@@ -107,12 +118,14 @@ new C
 
 ## The Missing List
 
-```scala mdoc
+```dotty
 def sumSizes(collections: Iterable[Iterable[_]]): Int = 
   collections.map(_.iterator.size).sum
 
 sumSizes(List(Set(1, 2), List(3, 4)))
+// res4: Int = 4
 sumSizes(Set(List(1, 2), Set(3, 4)))
+// res5: Int = 2
 ```
 
 Несмотря на то, что `collections.map` может сопоставлять итерируемый объект с другим «хорошим» итерируемым объектом,
@@ -123,7 +136,7 @@ sumSizes(Set(List(1, 2), Set(3, 4)))
 
 ## Arg Arrgh!
 
-```scala mdoc:silent
+```dotty
 def square[T : Numeric](n: T) = summon[Numeric[T]].times(n, n)
 
 def twiceA[T](f: T => T, a: T) = f(f(a))
@@ -132,14 +145,20 @@ def twiceC[T](a: T, f: T => T) = f(f(a))
 def twiceD[T](a: T)(f: T => T) = f(f(a))
 ```
 
-```scala mdoc:fail
+```dotty
 twiceA(square, 2)
+// error: 
+// No implicit Ordering defined for Any.
 twiceB(square)(2)
+// error: 
+// No implicit Ordering defined for Any.
 ```
 
-```scala mdoc
+```dotty
 twiceC(2, square)
+// res7: Int = 16
 twiceD(2)(square)
+// res8: Int = 16
 ```
 
 Чтобы `square` можно было использовать в качестве аргумента,
@@ -150,7 +169,7 @@ twiceD(2)(square)
 
 ## Captured by Closures
 
-```scala
+```dotty
 val funcs1 = collection.mutable.Buffer[() => Int]()
 val funcs2 = collection.mutable.Buffer[() => Int]()
 
@@ -165,11 +184,11 @@ val funcs2 = collection.mutable.Buffer[() => Int]()
 }
 ```
 
-```scala
+```dotty
 funcs1 foreach { f1 => println(f1()) }
 ```
 
-```scala
+```dotty
 funcs2 foreach { f2 => println(f2()) }
 // java.lang.IndexOutOfBoundsException: 3
 // 	at scala.collection.LinearSeqOps.apply(LinearSeq.scala:117)
@@ -192,7 +211,7 @@ funcs2 foreach { f2 => println(f2()) }
 
 Исключения можно избежать, «зафиксировав» возвращаемое значение:
 
-```scala
+```dotty
 val funcs1 = collection.mutable.Buffer[() => Int]()
 val funcs2 = collection.mutable.Buffer[() => Int]()
 
@@ -208,7 +227,7 @@ val funcs2 = collection.mutable.Buffer[() => Int]()
 }
 ```
 
-```scala
+```dotty
 funcs1 foreach { f1 => println(f1()) }
 // 100
 // 110
@@ -223,16 +242,16 @@ funcs2 foreach { f2 => println(f2()) }
 
 ## Map Comprehension
 
-```scala
+```dotty
 val xs = Seq(Seq("a", "b", "c"), Seq("d", "e", "f"), Seq("g", "h"), Seq("i", "j", "k"))
 ```
 
-```scala
+```dotty
 val ys = for Seq(x, y, z) <- xs yield x + y + z
 // ys: Seq[String] = List("abc", "def", "ijk")
 ```
 
-```scala
+```dotty
 val zs = xs map { case Seq(x, y, z) => x + y + z }
 // scala.MatchError: List(g, h) (of class scala.collection.immutable.$colon$colon)
 ```
@@ -242,14 +261,14 @@ val zs = xs map { case Seq(x, y, z) => x + y + z }
 Если используется сопоставление с образцом, также применяется фильтр.
 Приведенный выше пример эквивалентен следующему коду:
 
-```scala
+```dotty
 xs collect { case Seq(x, y, z) => x + y + z }
 // res0: Seq[String] = List("abc", "def", "ijk")
 ```
 
 ## Init You, Init Me
 
-```scala
+```dotty
 object XY:
   object X:
     val value: Int = Y.value + 1
@@ -278,7 +297,7 @@ println(if math.random > 0.5 then XY.X.value else XY.Y.value)
 
 ## A Case of Equality
 
-```scala mdoc:silent
+```dotty
 trait SpyOnEquals:
   override def equals(x: Any) =
     println("DEBUG: In equals")
@@ -291,12 +310,17 @@ val cc1 = new CC() with SpyOnEquals
 val cc2 = new CC() with SpyOnEquals
 val ccspy1 = CCSpy()
 val ccspy2 = CCSpy()
-```
-```scala mdoc
+
 println(cc1 == cc2)
+// DEBUG: In equals
+// true
 println(cc1.## == cc2.##)
+// true
 println(ccspy1 == ccspy2)
+// DEBUG: In equals
+// false
 println(ccspy1.## == ccspy2.##)
+// true
 ```
 
 Для case классов генерируются методы `equals`, `hashCode` и `toString`,
@@ -319,7 +343,7 @@ println(ccspy1.## == ccspy2.##)
 
 ## If At First You Don't Succeed...
 
-```scala
+```dotty
 var x = 0
 lazy val y = 1 / x
 
@@ -340,7 +364,7 @@ catch
 
 ## To Map, or Not to Map
 
-```scala mdoc:silent
+```dotty
 case class RomanNumeral(symbol: String, value: Int)
 
 given Ordering[RomanNumeral] with
@@ -355,12 +379,13 @@ val numerals = collection.immutable.SortedSet(
   RomanNumeral("L", 50),
   RomanNumeral("V", 5)
 )
-```
 
-```scala mdoc
 println("Roman numeral symbols for 1 5 10 50 100 500 1000:")
+// Roman numeral symbols for 1 5 10 50 100 500 1000:
 for (num <- numerals; sym = num.symbol) do print(s"$sym ")
+// I V X L C D M 
 numerals map (_.symbol) foreach (sym => print(s"$sym "))
+// C D I L M V X
 ```
 
 Поскольку `RomanNumerals` упорядочены по их значениям,
@@ -373,29 +398,32 @@ numerals map (_.symbol) foreach (sym => print(s"$sym "))
 Потенциально неожиданное переупорядочение элементов в итерируемом объекте можно было бы предотвратить,
 например, с помощью
 
-```scala mdoc
+```dotty
 numerals.view map { _.symbol } foreach (sym => print(s"$sym "))
+// I V X L C D M
 ```
 
 или
 
-```scala mdoc
+```dotty
 numerals.toSeq map { _.symbol } foreach (sym => print(s"$sym "))
+// I V X L C D M
 ```
 
 Обратите внимание, что первоначальный порядок объявления набора не влияет на порядок итерации.
 Также обратите внимание, что пример кода, использующий `map`, неэффективно перебирает числа дважды.
 
 
-```scala mdoc
+```dotty
 numerals foreach { num => print(s"${num.symbol} ") }
+// I V X L C D M
 ```
 
 является более эффективным и выводит значения в ожидаемом порядке.
 
 ## Private Lives
 
-```scala
+```dotty
 object Lives:
   class Private:
     def foo1: Any = new Private.C1
@@ -424,7 +452,7 @@ object Lives:
 
 ## Self - See 'Self'
 
-```scala
+```dotty
 val s1: String = s1
 val s2: String = s2 + s2
 println(s1.length) // NullPointerException
@@ -467,7 +495,7 @@ class Z {
 
 ## One Egg or Two..?
 
-```scala
+```dotty
 class C
 val x1, x2 = new C
 val y1 @ y2 = new C
@@ -489,7 +517,7 @@ println(y1 == y2)
 
 ## Return to Me!
 
-```scala
+```dotty
 def value: Int = 
   def one(x: Int): Int = { return x; 1 }
   val two = (x: Int) => { return x; 2 }
@@ -525,7 +553,7 @@ Scala не жалуется на _unreachable code_, поэтому код ко�
 
 ## Implicitly Surprising
 
-```scala
+```dotty
 given z1: Int = 2
 
 def addTo(n: Int) =
@@ -551,7 +579,7 @@ addTo1(2)(3)
 Поэтому неявное значение `z1 = 2` используется как значение неявного параметра `z`.
 Если бы неявный параметр был недоступен, компилятор выдал бы сообщение об ошибке:
 
-```scala
+```dotty
 scala> def add(x: Int)(y: Int)(using z: Int) = x + y + z
 def add(x: Int)(y: Int)(using z: Int): Int
 
@@ -566,7 +594,7 @@ scala> add(1) _
 Можно также указать явное значение для `z`, если в текущем контексте не определено неявное значение,
 но тогда тип должен быть указан в заполнителе.
 
-```scala
+```dotty
 scala> val addTo1And3 = add(1)(_: Int)(using 3)
 val addTo1And3: Int => Int = Lambda$9137/1728074700@1bd1b5e0
 ```
@@ -586,7 +614,7 @@ val addTo1And3: Int => Int = Lambda$9137/1728074700@1bd1b5e0
 
 ## One Bound, Two to Go
 
-```scala
+```dotty
 def invert(v3: Int)(v2: Int = 2, v1: Int = 1): Unit =
   println(s"$v1, $v2, $v3")
   
@@ -596,7 +624,7 @@ invert3(v1 = 2, v2 = 1)
 // 1, 2, 3
 ```
 
-```scala
+```dotty
 invert3(v1 = 2)
 // error:
 // missing argument for parameter v2 of method apply in trait Function2: (v1: Int, v2: Int): Unit
@@ -629,7 +657,7 @@ def invert3: (Int, Int) => Unit
 
 ## Count Me Now, Count Me Later
 
-```scala
+```dotty
 var x = 0
 def counter = 
   x += 1
@@ -668,7 +696,7 @@ println("x = " + x)
 
 ## What's in a Name?
 
-```scala mdoc:silent
+```dotty
 class C:
   def sum(x: Int = 1, y: Int = 2): Int = x + y
   
@@ -677,10 +705,10 @@ class D extends C:
 
 val d: D = new D
 val c: C = d
-```
-```scala mdoc
 c.sum(x = 0)
+// res19: Int = 4
 d.sum(x = 0)
+// res20: Int = 3
 ```
 
 Scala использует статический тип переменной для привязки имен параметров,
@@ -696,7 +724,7 @@ Scala использует статический тип переменной д
 
 ## I Can Has Padding?
 
-```scala
+```dotty
 import scala.StringBuilder
 
 extension (sb: StringBuilder)
@@ -710,12 +738,12 @@ val greeting = new StringBuilder("Hello, kitteh!")
 val farewell = new StringBuilder("U go now.")  // I hate long bye-bye.
 ```
 
-```scala
+```dotty
 println(greeting pad2 20)
 // Hello, kitteh!*
 ```
 
-```scala
+```dotty
 println(farewell pad2 20)
 // java.lang.StringIndexOutOfBoundsException: index 10,length 10
 ```
@@ -728,7 +756,7 @@ println(farewell pad2 20)
 Каждая итерация вызывает `StringBuilder.apply`, который является псевдонимом для `StringBuilder.charAt`.
 Код, сгенерированный компилятором, эквивалентен следующему:
 
-```scala
+```dotty
 extension (sb: StringBuilder)
   def pad2(width: Int) =
     // the StringBuilder returned by append is a function!
@@ -742,7 +770,7 @@ extension (sb: StringBuilder)
 В случае более короткой строки `StringBuilder` содержит только десять символов (`U go now.*` после вызова `append()`).
 Таким образом, вызов `apply` - `charAt` - терпит неудачу на десятой итерации:
 
-```scala
+```dotty
 def pad2(width: Int) =
   val sbAsFunction: Function1[Int, Char] = sb.append('*')
   sbAsFunction.apply(1)
@@ -755,7 +783,7 @@ def pad2(width: Int) =
 
 Можно получить ожидаемое поведение, явно указав литерал функции, который будет использоваться:
 
-```scala
+```dotty
 import scala.StringBuilder
 
 extension (sb: StringBuilder)
@@ -770,7 +798,7 @@ val greeting = new StringBuilder("Hello, kitteh!")
 val farewell = new StringBuilder("U go now.")  // I hate long bye-bye.
 ```
 
-```scala
+```dotty
 println(greeting pad2 20)
 // Hello, kitteh!******
 println(farewell pad2 20)
@@ -779,7 +807,7 @@ println(farewell pad2 20)
 
 ## Cast Away
 
-```scala
+```dotty
 import scala.jdk.CollectionConverters.*
 def fromJava: java.util.Map[String, java.lang.Integer] = 
   val map = new java.util.HashMap[String, java.lang.Integer]()
@@ -792,7 +820,7 @@ println(map("key") == 0)
 // true
 ```
 
-```scala
+```dotty
 println(map("key") == null)
 // error:
 // Values of types Int and Null cannot be compared with == or !=
@@ -826,7 +854,7 @@ public static int unboxToInt(Object i) {
 
 ## Pick an Int, Any Int!
 
-```scala
+```dotty
 class A:
   type X // equivalent to X <: Any
   var x: X = _
@@ -853,7 +881,7 @@ Scala не понимает необходимости переводить пр
 
 Сравнение:
 
-```scala
+```dotty
 scala> println(b.x: Any)
 null
 scala> println(b.x: Int)
@@ -862,7 +890,7 @@ scala> println(b.x: Int)
 
 ## A Case of Strings
 
-```scala mdoc
+```dotty
 def objFromJava: Object = "string"
 def stringFromJava: String = null
 
@@ -872,12 +900,14 @@ def printLengthIfString(a: AnyRef): Unit =
     case _ => println("Not a string")
 
 printLengthIfString(objFromJava)
+// String of length 6
 printLengthIfString(stringFromJava)
+// Not a string
 ```
 
 Scala наследует от Java следующее поведение:
 
-```scala
+```dotty
 val s: String = null  // допустимо
 println(s.isInstanceOf[String]) // печатает "false", потому что, как и в Java, null.instanceof[String] == false
 ```
@@ -886,7 +916,7 @@ println(s.isInstanceOf[String]) // печатает "false", потому что
 Поэтому, если сопоставляется шаблон со значением, которое может быть `null`,
 необходимо явно проверять значение `null`:
 
-```scala
+```dotty
 a match
   case s: String => println("String of length " + s.length)
   case null      => println("Got null!")
@@ -897,23 +927,25 @@ a match
 поэтому первый пример соответствует случаю `s: String`, даже если тип времени компиляции — `java.lang.Object`.
 Хорошая идиома Scala состоит в том, чтобы преобразовать «может быть-нуль» из Java API в параметр:
 
-```scala mdoc
+```dotty
 val str: Option[String] = Option(stringFromJava)
+// str: Option[String] = None
 str match
   case Some(s: String) => println("String of length " + s.length)
   case None => println("stringFromJava was null")
+// stringFromJava was null
 ```
 
 ## A View to a Shill
 
-```scala mdoc:silent
+```dotty
 val ints = Map(1 -> List(1, 2, 3, 4, 5))
 val bits = ints.map { case (k, v) => (k, v.iterator) }
 val nits = ints.view.mapValues(_.iterator)
-```
-```scala mdoc
 s"${bits(1).next}${bits(1).next}"
+// res24: String = "12"
 s"${nits(1).next}${nits(1).next}"
+// res25: String = "11"
 ```
 
 Как объясняется [в этом тикете](https://github.com/scala/bug/issues/4776) и в Скаладоке,
@@ -925,13 +957,13 @@ s"${nits(1).next}${nits(1).next}"
 
 ## Accepts Any Args
 
-```scala mdoc:silent
+```dotty
 def acceptsAnyArgs(any1: Any)(any2: Any*): Unit =
   println(any1)
   println(any2)
-```
-```scala mdoc
 acceptsAnyArgs("Psst", "hey", "world:")(4, 2)
+// (Psst,hey,world:)
+// ArraySeq(4, 2)
 ```
 
 Возможно, это не широко известно и не разглашается, но Scala поддерживает "автоматическую корректировку" аргументов.
@@ -944,7 +976,7 @@ acceptsAnyArgs (( "Psst" , "hey" , "world:" ))( 4 , 2 )
 
 ## The Devil is in the Defaults
 
-```scala
+```dotty
 import collection.mutable
 
 val goodies: Map[String, mutable.Queue[String]] =
@@ -973,7 +1005,7 @@ println(baddies("under bed").dequeue)
 
 ## One, Two, Skip a Few
 
-```scala
+```dotty
 val oneTwo = Seq(1, 2).permutations
 // oneTwo: Iterator[Seq[Int]] = empty iterator
 if oneTwo.length > 0 then
@@ -1005,7 +1037,7 @@ if threeFour.nonEmpty then
 
 ## Oddly Enough
 
-```scala
+```dotty
 var mkEven: Int => Int = _
 def initMkEven(): Unit = 
   mkEven = (n: Int) => if n % 2 == 0 then n else return n + 1
@@ -1037,7 +1069,7 @@ println(mkEven(3))
 
 ## Splitting Headache
 
-```scala
+```dotty
 def validDna(maybeDna: String) = {
   def containsOnly(s: String, chars: Array[Char]) =
     s.split(chars).isEmpty
@@ -1074,7 +1106,7 @@ println(validDna(""))
 
 ## A Result, Finally!
 
-```scala mdoc
+```dotty
 var errCount: Int = 0
 def incErrs(): Int = { errCount += 1; errCount }
 
@@ -1085,7 +1117,9 @@ def tryEval(expr: => Double) =
   finally res
 
 println(tryEval(10 / 4))
+// ()
 println(tryEval(10 / 0))
+// 1
 ```
 
 В Scala, если функция не завершается с помощью явного возвращаемого выражения,
@@ -1101,7 +1135,7 @@ println(tryEval(10 / 0))
 
 ## Heads You Win...
 
-```scala
+```dotty
 import java.util.{List as JList, LinkedList}
 import scala.jdk.CollectionConverters.*
 
@@ -1132,18 +1166,18 @@ Scala `CollectionConverters` превращает списки Java
 
 ## (Ex)Stream Surprise
 
-```scala
+```dotty
 val nats: LazyList[Int] = 1 #:: (nats map { _ + 1 })
 val odds: LazyList[Int] = 1 #:: (odds map { _ + 1 } filter { _ % 2 != 0 })
 ```
 
-```scala
+```dotty
 nats filter { _ % 2 != 0 } take 2 foreach println
 // 1
 // 3
 ```
 
-```scala
+```dotty
 odds take 2 foreach println
 // java.lang.RuntimeException: self-referential LazyList or a derivation thereof has no more elements
 ```
@@ -1166,7 +1200,7 @@ odds take 2 foreach println
 
 ## A Matter of Context
 
-```scala mdoc
+```dotty
 def tmpDir(uniqueSuffix: String): String =
   """\\builder\tmp-""" + uniqueSuffix
 def tmpDir2(uniqueSuffix: String): String =
@@ -1175,8 +1209,11 @@ def tmpDir3(uniqueSuffix: String): String =
   s"\\builder\tmp-$uniqueSuffix"
 
 println(tmpDir("42"))
+// \\builder\tmp-42
 println(tmpDir2("42"))
+// \builder	mp-42
 println(tmpDir3("42"))
+// \builder	mp-42
 ```
 
 При использовании строкового интерполятора `s` или любого другого метода интерполяции
@@ -1187,7 +1224,7 @@ println(tmpDir3("42"))
 т.е. как если бы оно было заключено в тройные кавычки.
 Выражения `s"""\\builder\tmp-${uniqueSuffix}"""` и `s"\\builder\tmp-${uniqueSuffix}"` переписываются как:
 
-```scala
+```dotty
 StringContext("""\\builder\tmp-""").s(uniqueSuffix)
 ```
 
@@ -1199,7 +1236,7 @@ StringContext("""\\builder\tmp-""").s(uniqueSuffix)
 
 ## Inference Hindrance
 
-```scala
+```dotty
 case object Completed
 given Conversion[Any, Completed.type] = _ => Completed
 def log[T](t: T): T =
@@ -1245,7 +1282,7 @@ duplicate2("world")
 
 ## For Each Step...
 
-```scala
+```dotty
 for
   x <- 1 to 2
   y <- { println("DEBUG 1: x: " + x); x to 1 }
@@ -1266,7 +1303,7 @@ do println(x + y)
 
 Несколько генераторов в `for comprehensions` и `for loops` приводят к вложенным вызовам `flatMap` (SLS §6.19):
 
-```scala
+```dotty
 for {
     a <- expr1
     b <- expr2
@@ -1276,7 +1313,7 @@ for {
 
 преобразуются в код, эквивалентный:
 
-```scala
+```dotty
 expr1 flatMap { a => expr2 flatMap ... }
 ``` 
 
@@ -1289,7 +1326,7 @@ expr1 flatMap { a => expr2 flatMap ... }
 С другой стороны, определения значений фактически приводят к «преобразованию» генератора,
 с которым они связаны (SLS §6.19):
 
-```scala
+```dotty
 for {
     a <- expr1
     v = vexpr
@@ -1300,7 +1337,7 @@ for {
 
 преобразуются в код, эквивалентный:
 
-```scala
+```dotty
 expr1 map { a => (a, vexpr) } flatMap { case (a, v) => expr2 flatMap ... }
 ```
 
@@ -1311,7 +1348,7 @@ expr1 map { a => (a, vexpr) } flatMap { case (a, v) => expr2 flatMap ... }
 
 ## Beep Beep...Reversing
 
-```scala
+```dotty
 import collection.SortedSet
 val ints = SortedSet(-1, 1, 2)(summon[Ordering[Int]].reverse)
 println(ints.filter(_ > 0).head)
@@ -1325,14 +1362,14 @@ println(ints.collect { case n if n > 0 => n }.head)
 такие как `map` и `flatMap`, метод `collect` не сохраняет порядок исходной коллекции.
 Есть перегруженные методы, принимающие `Ordering`, например, `Set.collect`:
 
-```scala
+```dotty
 println(ints.collect { case n if n > 0 => n }(summon[Ordering[Int]].reverse).head)
 // 2
 ```
 
 или
 
-```scala
+```dotty
 import collection.SortedSet
 given Ordering[Int] = math.Ordering.Int.reverse
 val ints = SortedSet(-1, 1, 2)

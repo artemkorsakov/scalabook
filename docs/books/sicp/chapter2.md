@@ -6,18 +6,21 @@
 
 В качестве пары можно было бы использовать кортежи:
 
-```scala mdoc
+```dotty
 opaque type Pair = (Long, Long)
 val cons: Pair = (-5, 7)
+// cons: Tuple2[Long, Long] = (-5L, 7L)
 val car = cons._1
+// car: Long = -5L
 val cdr = cons._2
+// cdr: Long = 7L
 ```
 
 но в дальшейшем для удобства и наглядности будем использовать case class.
 
 Рациональные числа на Scala можно выразить вот так:
 
-```scala mdoc:silent
+```dotty
 final case class Rational private (numer: Long, denom: Long):
   import Rational.makeRat
 
@@ -41,15 +44,19 @@ final case class Rational private (numer: Long, denom: Long):
 object Rational:
   def makeRat(numer: Long, denom: Long): Rational =
     Rational(numer, denom)
-```
 
-```scala mdoc
 Rational.makeRat(-5, 7).print
+// res0: String = "-5/7"
 Rational.makeRat(-5, 7) + Rational.makeRat(3, 7)
+// res1: Rational = Rational(numer = -14L, denom = 49L)
 Rational.makeRat(-5, 7) - Rational.makeRat(3, 7)
+// res2: Rational = Rational(numer = -56L, denom = 49L)
 Rational.makeRat(-5, 7) * Rational.makeRat(3, 7)
+// res3: Rational = Rational(numer = -15L, denom = 49L)
 Rational.makeRat(-5, 7) / Rational.makeRat(3, 7)
+// res4: Rational = Rational(numer = -35L, denom = 21L)
 Rational.makeRat(-5, 7) === Rational.makeRat(-10, 14)
+// res5: Boolean = true
 ```
 
 #### Упражнение 2.1
@@ -59,48 +66,7 @@ Rational.makeRat(-5, 7) === Rational.makeRat(-10, 14)
 > чтобы в случае, если рациональное число положительно, то и его числитель, и знаменатель были бы положительны, 
 > а если оно отрицательно, то чтобы только его числитель был отрицателен.
 
-```scala mdoc:reset:invisible
-final case class Rational private (numer: Long, denom: Long):
-  lazy val print: String = s"$numer/$denom"
-
-  import Rational.makeRat
-
-  def +(that: Rational): Rational =
-    makeRat(numer * that.denom + that.numer * denom, denom * that.denom)
-
-  def -(that: Rational): Rational =
-    makeRat(numer * that.denom - that.numer * denom, denom * that.denom)
-
-  def *(that: Rational): Rational =
-    makeRat(numer * that.numer, denom * that.denom)
-
-  def /(that: Rational): Rational =
-    makeRat(numer * that.denom, denom * that.numer)
-
-  def ===(that: Rational): Boolean =
-    numer * that.denom == denom * that.numer
-
-object Rational:
-  def makeRat(numer: Long, denom: Long): Rational =
-    val g = gcd(numer, denom)
-    val sign = if denom < 0 then -1 else 1
-    Rational(sign * numer / g, sign * denom / g)
-
-  private def gcd(a: Long, b: Long): Long =
-    val u = math.abs(a)
-    val v = math.abs(b)
-    if u == v then u
-    else if u == 0 then v
-    else if v == 0 then u
-    else
-      (~u & 1, ~v & 1) match
-        case (1, 1) => gcd(u >> 1, v >> 1) << 1
-        case (1, 0) => gcd(u >> 1, v)
-        case (0, 1) => gcd(u, v >> 1)
-        case (_, _) => if (u > v) gcd(u - v, v) else gcd(v - u, u)
-```
-
-```scala
+```dotty
 object Rational:
   def makeRat(numer: Long, denom: Long): Rational =
     val g = gcd(numer, denom)
@@ -108,12 +74,17 @@ object Rational:
     Rational(sign * numer / g, sign * denom / g)
 ```
 
-```scala mdoc
+```dotty
 Rational.makeRat(14, 49).print
+// res7: String = "2/7"
 Rational.makeRat(1, 2).print
+// res8: String = "1/2"
 Rational.makeRat(-1, -2).print
+// res9: String = "1/2"
 Rational.makeRat(-1, 2).print
+// res10: String = "-1/2"
 Rational.makeRat(1, -2).print
+// res11: String = "-1/2"
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/E3EOUMyRRIKLm2KnmdZ7XA)
@@ -133,7 +104,7 @@ Rational.makeRat(1, -2).print
 > (точку, координаты которой являются средним координат концов отрезка). 
 > Чтобы опробовать эти процедуры, Вам потребуется способ печатать координаты точек
 
-```scala mdoc
+```dotty
 final case class Point(x: Double, y: Double):
   override def toString(): String = s"($x,$y)"
 
@@ -141,6 +112,7 @@ final case class Segment(start: Point, end: Point):
   lazy val midpoint: Point = Point((start.x + end.x) / 2, (start.y + end.y) / 2)
 
 Segment(Point(1, 0), Point(0, 1)).midpoint.toString
+// res12: String = "(0.5,0.5)"
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/3SvZKbYZRPaSqiCyNtwikQ)
@@ -154,7 +126,7 @@ Segment(Point(1, 0), Point(0, 1)).midpoint.toString
 > Можете ли Вы спроектировать свою систему с подходящими барьерами абстракции так, 
 > чтобы одни и те же процедуры вычисления периметра и площади работали с любым из Ваших представлений?
 
-```scala mdoc:reset:silent
+```dotty
 final case class Point(x: Double, y: Double):
   override def toString(): String = s"($x,$y)"
 
@@ -182,11 +154,10 @@ object Rectangle:
     Rectangle(segment1.start, segment1.end, segment2.start, segment2.end)
 
 val rect = Rectangle(Point(0, 0), Point(1, 0), Point(1, 1), Point(0, 1))
-```
-
-```scala mdoc
 rect.perimeter
+// res14: Double = 4.0
 rect.square
+// res15: Double = 1.0
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/WOqHhQ9qRBmR8K0fueiA3g)
@@ -204,7 +175,7 @@ rect.square
 > Каково соответствующее определение cdr? 
 > (Подсказка: Чтобы проверить, что это работает, используйте подстановочную модель из раздела 1.1.5.)
 
-```scala
+```dotty
 final case class Cons[A](x: A, y: A):
   def lambda(f: (A, A) => A): A =
     f(x, y)
@@ -232,7 +203,7 @@ def cdr[A](z: Cons[A]): A =
 > как произведение 2^a*3^b. 
 > Дайте соответствующие определения процедур cons, car и cdr.
 
-```scala
+```dotty
 final case class Cons(x: Int, y: Int):
   lazy val cons: Int = math.pow(2, x).toInt * math.pow(3, y).toInt
 
@@ -271,7 +242,7 @@ def cdr(z: Cons): Int =
 
 Например, вот так:
 
-```scala
+```dotty
 def zero[A](f: A => A): A => A = x => x
 
 def add1[A](f: A => A, n: Int): A => A =
@@ -288,7 +259,7 @@ def add1[A](f: A => A, n: Int): A => A =
 > Вот определение конструктора интервала: `(define (make-interval a b) (cons a b))`
 > Завершите реализацию, определив селекторы upper-bound и lower-bound.
 
-```scala
+```dotty
 final case class Interval(a: Double, b: Double):
   lazy val upperBound: Double = math.max(a, b)
   lazy val lowerBound: Double = math.min(a, b)
@@ -318,7 +289,7 @@ final case class Interval(a: Double, b: Double):
 > Рассуждая в духе Лизы, опишите, как можно вычислить разность двух интервалов. 
 > Напишите соответствующую процедуру вычитания, называемую sub-interval.
 
-```scala
+```dotty
 def sub(that: Interval): Interval =
   Interval(
     this.lowerBound - that.upperBound,
@@ -336,7 +307,7 @@ def sub(that: Interval): Interval =
 > которые складываются (или вычитаются). 
 > Приведите примеры, которые показывают, что для умножения или деления это не так.
 
-```scala
+```dotty
 lazy val width: Double = (upperBound - lowerBound) / 2.0
 ```
 
@@ -362,7 +333,7 @@ lazy val width: Double = (upperBound - lowerBound) / 2.0
 > неясно, что должно означать деление на интервал, пересекающий ноль. 
 > Модифицируйте код Лизы так, чтобы программа проверяла это условие и сообщала об ошибке, если оно возникает.
 
-```scala
+```dotty
 def div(that: Interval): Option[Interval] =
   if that.lowerBound <= 0.0 && that.upperBound >= 0.0 then None
   else Some(mul(Interval(1.0 / that.upperBound, 1.0 / that.lowerBound)))
@@ -375,7 +346,7 @@ def div(that: Interval): Option[Interval] =
 > из которых только в одном требуется более двух умножений». 
 > Перепишите эту процедуру в соответствии с предложением Бена.
 
-```scala
+```dotty
 def mul(that: Interval): Interval =
   (
     this.lowerBound < 0,
@@ -441,7 +412,7 @@ def mul(that: Interval): Interval =
 > Нужно также определить селектор percent, который для данного интервала выдает погрешность в процентах. 
 > Селектор center остается тем же, что приведен выше.
 
-```scala
+```dotty
 final case class Interval(a: Double, b: Double):
   lazy val upperBound: Double = math.max(a, b)
   lazy val lowerBound: Double = math.min(a, b)
@@ -488,97 +459,7 @@ object Interval:
 > радиус которых составляет малую часть от среднего значения. 
 > Исследуйте результаты вычислений в форме центр/проценты (см. упражнение 2.12).
 
-```scala mdoc:invisible:reset
-final case class Interval(a: Double, b: Double):
-  lazy val upperBound: Double = math.max(a, b)
-  lazy val lowerBound: Double = math.min(a, b)
-  lazy val center: Double = (upperBound + lowerBound) / 2.0
-  lazy val width: Double = (upperBound - lowerBound) / 2.0
-  lazy val percent: Double = (width / center) * 100
-
-  def add(that: Interval): Interval =
-    Interval(
-      this.lowerBound + that.lowerBound,
-      this.upperBound + that.upperBound
-    )
-
-  def sub(that: Interval): Interval =
-    Interval(
-      this.lowerBound - that.upperBound,
-      this.upperBound - that.lowerBound
-    )
-
-  def mul(that: Interval): Interval =
-    (
-      this.lowerBound < 0,
-      this.upperBound < 0,
-      that.lowerBound < 0,
-      that.upperBound < 0
-    ) match
-      case (true, true, true, true) =>
-        Interval(
-          this.upperBound * that.upperBound,
-          this.lowerBound * that.lowerBound
-        )
-      case (true, true, true, false) =>
-        Interval(
-          this.lowerBound * that.upperBound,
-          this.lowerBound * that.lowerBound
-        )
-      case (true, true, false, false) =>
-        Interval(
-          this.lowerBound * that.upperBound,
-          this.upperBound * that.lowerBound
-        )
-      case (true, false, true, true) =>
-        Interval(
-          this.upperBound * that.lowerBound,
-          this.lowerBound * that.lowerBound
-        )
-      case (true, false, true, false) =>
-        val p1 = this.lowerBound * that.lowerBound
-        val p2 = this.lowerBound * that.upperBound
-        val p3 = this.upperBound * that.lowerBound
-        val p4 = this.upperBound * that.upperBound
-        Interval(
-          math.min(p2, p3),
-          math.max(p1, p4)
-        )
-      case (true, false, false, false) =>
-        Interval(
-          this.lowerBound * that.upperBound,
-          this.upperBound * that.upperBound
-        )
-      case (false, false, true, true) =>
-        Interval(
-          this.upperBound * that.lowerBound,
-          this.lowerBound * that.upperBound
-        )
-      case (false, false, true, false) =>
-        Interval(
-          this.upperBound * that.lowerBound,
-          this.upperBound * that.upperBound
-        )
-      case _ => // (false, false, false, false)
-        Interval(
-          this.lowerBound * that.lowerBound,
-          this.upperBound * that.upperBound
-        )
-
-  def div(that: Interval): Option[Interval] =
-    if that.lowerBound <= 0.0 && that.upperBound >= 0.0 then None
-    else Some(mul(Interval(1.0 / that.upperBound, 1.0 / that.lowerBound)))
-
-object Interval:
-  def makeCenterWidth(center: Double, width: Double): Interval =
-    Interval(center - width, center + width)
-
-  def makeCenterPercent(center: Double, percent: Double): Interval =
-    val width: Double = percent * center / 100.0
-    makeCenterWidth(center, width)
-```
-
-```scala mdoc
+```dotty
 def par1(r1: Interval, r2: Interval): Option[Interval] =
   (r1.mul(r2)).div(r1.add(r2))
 
@@ -591,9 +472,17 @@ def par2(r1: Interval, r2: Interval): Option[Interval] =
   yield result
 
 val r1 = Interval.makeCenterWidth(10, 0.01)
+// r1: Interval = Interval(a = 9.99, b = 10.01)
 val r2 = Interval.makeCenterWidth(20, 0.01)
+// r2: Interval = Interval(a = 19.99, b = 20.01)
 par1(r1, r2)
+// res17: Option[Interval] = Some(
+//   value = Interval(a = 6.652235176548966, b = 6.681124082721815)
+// )
 par2(r1, r2)
+// res18: Option[Interval] = Some(
+//   value = Interval(a = 1.6652776851234157, b = 26.6888874083944)
+// )
 ```
 
 Методы действительно отдают различные результаты, потому что деление интервала на себя (A/A) - это не единица,

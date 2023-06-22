@@ -37,6 +37,7 @@ _В функциональном программировании функции
 - [A bite of functional programming (in Scala)](https://scalac.io/blog/functional-programming-in-scala/)
 - [Business benefits of functional programming and how to make it work for your company](https://www.youtube.com/watch?v=EcGZdzECmIk)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fp-what-is-fp.html)
+- [Unleashing the Power: The Advantages of Functional Programming in the Digital Age](https://scalac.io/blog/unleashing-the-power-the-advantages-of-functional-programming-in-the-digital-age)
 - [What is functional programming and why it matters for your business?](https://scalac.io/blog/benefits-of-functional-programming/)
 - [Wikipedia][Wikipedia]
 

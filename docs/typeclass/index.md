@@ -181,7 +181,7 @@ val (str, num) = product
 Несмотря на своё название, в общем случае они могут и не быть мономорфизмами.
 
 В Scala примером копроизведений могут служить такие структуры: 
-[Option, Either](../fp/handling-errors.md) и [List](../fp/data-structures.md).
+[Option, Either](https://scalabook.ru/fp/handling-errors.html) и [List](https://scalabook.ru/fp/data-structures.html).
 
 ```dotty
 enum Option[+A]:

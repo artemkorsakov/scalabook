@@ -46,7 +46,8 @@ object GenerateSite extends IOApp:
         _.fromDirectories(
           Seq(
             FilePath.parse(s"docs$path"),
-            FilePath.parse("docs/icons")
+            FilePath.parse("docs/icons"),
+            FilePath.parse("docs/js")
           )
         )
           .toDirectory(s"generated$path")

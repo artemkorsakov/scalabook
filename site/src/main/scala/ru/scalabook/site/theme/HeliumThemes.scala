@@ -47,13 +47,13 @@ object HeliumThemes:
 
   private def addFavIcons(theme: Helium): Helium =
     theme.site.favIcons(
-      Favicon.internal(Root / "favicon32x32.png", sizes = "32x32"),
-      Favicon.internal(Root / "favicon64x64.png", sizes = "64x64")
+      Favicon.internal(Root / "icons" / "favicon32x32.png", sizes = "32x32"),
+      Favicon.internal(Root / "icons" / "favicon64x64.png", sizes = "64x64")
     )
 
   private def addCSSJS(theme: Helium): Helium =
     theme.site
-      .autoLinkJS(Root / "tex-mml-chtml.js")
+      .autoLinkJS(Root / "js" / "tex-mml-chtml.js")
 
   private def addTopNavigation(theme: Helium): Helium =
     theme.site

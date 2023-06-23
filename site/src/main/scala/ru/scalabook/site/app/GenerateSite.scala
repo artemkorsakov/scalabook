@@ -34,7 +34,7 @@ object GenerateSite extends IOApp:
         _.fromDirectories(
           Seq(
             FilePath.parse("docs/main"),
-            FilePath.parse("docs/icons")
+            FilePath.parse("docs/common")
           )
         )
           .toDirectory("generated")
@@ -46,8 +46,7 @@ object GenerateSite extends IOApp:
         _.fromDirectories(
           Seq(
             FilePath.parse(s"docs$path"),
-            FilePath.parse("docs/icons"),
-            FilePath.parse("docs/js")
+            FilePath.parse("docs/common")
           )
         )
           .toDirectory(s"generated$path")
@@ -60,6 +59,9 @@ object GenerateSite extends IOApp:
       .from(Markdown)
       .to(HTML)
       .using(GitHubFlavor, SyntaxHighlighting)
+//      .rendering { case (fmt, ListContainer) =>
+//        fmt.element("em", opt, content, "class" -> "big")
+//      }
       .parallel[F]
       .withTheme(HeliumThemes.mainTheme(part).build)
       .build

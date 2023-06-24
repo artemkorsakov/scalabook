@@ -1,6 +1,6 @@
 # Теория категорий
 
-В данном разделе будут собраны основные [классы типов](https://scalabook.ru/scala/abstractions/type-classes.html) из теории категорий,
+В данном разделе будут собраны основные [классы типов](../scala/abstractions/type-classes.md) из теории категорий,
 а также примеры реализации этих классов типов на Scala,
 в том числе из таких семейств библиотек, как [Algebird](https://twitter.github.io/algebird/),
 [Cats](http://typelevel.org/cats/), [Scalaz](https://scalaz.github.io/7/).
@@ -167,7 +167,7 @@ def cocompose[A, B, C](f: B => A, g: C => B): C => A = g andThen f
 
 Морфизмы \\(p\_{1}: A \times B \to A\\) и \\(p\_{2}: A \times B \to B\\) называются проекциями.
 
-В Scala примером произведений могут служить [кортежи](https://scalabook.ru/scala/collections/tuple.html):
+В Scala примером произведений могут служить [кортежи](../scala/collections/tuple.md):
 
 ```dotty
 val product: (String, Int) = ("product", 42)
@@ -181,7 +181,7 @@ val (str, num) = product
 Несмотря на своё название, в общем случае они могут и не быть мономорфизмами.
 
 В Scala примером копроизведений могут служить такие структуры: 
-[Option, Either](https://scalabook.ru/fp/handling-errors.html) и [List](https://scalabook.ru/fp/data-structures.html).
+[Option, Either](../fp/handling-errors.md) и [List](../fp/data-structures.md).
 
 ```dotty
 enum Option[+A]:

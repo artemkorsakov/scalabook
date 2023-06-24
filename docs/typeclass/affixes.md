@@ -41,7 +41,7 @@ trait Bimonad[F[_]] extends Monad[F], Comonad[F]
 
 ### co-
 
-**co**-представляет собой [категориальную двойственность](https://scalabook.ru/typeclass). 
+**co**-представляет собой [категориальную двойственность](index.md). 
 Наивный способ думать об этом — «переворачивать стрелки».
 
 `FlatMap` (другое имя - [Bind](monad/bind.md)) и `CoflatMap` (другое имя - [Co-Bind](monad/co-bind.md)). 

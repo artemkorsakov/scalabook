@@ -16,11 +16,11 @@ object PreviewSite extends IOApp:
       .of(Markdown)
       .using(GitHubFlavor, SyntaxHighlighting)
       .parallel[IO]
-      .withTheme(HeliumThemes.mainTheme("fp").build)
+      .withTheme(HeliumThemes.mainTheme.build)
       .build
 
     val inputs = InputTree[IO]
-      .addDirectory("docs/fp")
+      .addDirectory("docs")
 
     ServerBuilder[IO](parser, inputs).build
       .use(_ => IO.never)

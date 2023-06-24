@@ -9,17 +9,17 @@ import laika.theme.config.*
 import scala.annotation.unused
 
 object HeliumThemes:
-  def mainTheme(part: String): Helium =
-    addAll(part)(Helium.defaults)
+  lazy val mainTheme: Helium =
+    addAll(Helium.defaults)
 
-  private def addAll(part: String): Helium => Helium =
+  private lazy val addAll: Helium => Helium =
     addMeta andThen
       addThemeColors andThen
       addFavIcons andThen
       addCSSJS andThen
       addTopNavigation andThen
       addMainNavigation andThen
-      addPageNavigation(part) andThen
+      addPageNavigation andThen
       addFooter
 
   private def addMeta(theme: Helium): Helium =
@@ -58,18 +58,17 @@ object HeliumThemes:
   private def addTopNavigation(theme: Helium): Helium =
     theme.site
       .topNavigationBar(
-        homeLink = IconLink.external("https://scalabook.ru", HeliumIcon.home),
+        homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
         navLinks = Seq(
-          ButtonLink.external("https://scalabook.ru/blog", "Блог"),
-          ButtonLink.external("https://scalabook.ru/scala", "Scala"),
-          ButtonLink.external("https://scalabook.ru/fp", "ФП"),
-          ButtonLink
-            .external("https://scalabook.ru/typeclass", "Теория категорий"),
-          ButtonLink.external("https://scalabook.ru/algorithms", "Алгоритмы"),
-          ButtonLink.external("https://scalabook.ru/libs", "Scala libs"),
-          ButtonLink.external("https://scalabook.ru/patterns", "Паттерны"),
-          ButtonLink.external("https://scalabook.ru/books", "Упражнения"),
-          ButtonLink.external("https://scalabook.ru/extra", "Ресурсы")
+          ButtonLink.internal(Root / "blog/index.md", "Блог"),
+          ButtonLink.internal(Root / "scala/index.md", "Scala"),
+          ButtonLink.internal(Root / "fp/index.md", "ФП"),
+          ButtonLink.internal(Root / "typeclass/index.md", "Теория категорий"),
+          ButtonLink.internal(Root / "algorithms/index.md", "Алгоритмы"),
+          ButtonLink.internal(Root / "libs/index.md", "Scala libs"),
+          ButtonLink.internal(Root / "patterns/index.md", "Паттерны"),
+          ButtonLink.internal(Root / "books/index.md", "Упражнения"),
+          ButtonLink.internal(Root / "extra/index.md", "Ресурсы")
         )
       )
 
@@ -82,13 +81,13 @@ object HeliumThemes:
         appendLinks = Seq()
       )
 
-  private def addPageNavigation(part: String)(theme: Helium): Helium =
+  private def addPageNavigation(theme: Helium): Helium =
     theme.site
       .pageNavigation(
         enabled = true,
         depth = 1,
         sourceBaseURL = Some(
-          s"https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=docs$part"
+          s"https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=docs"
         ),
         sourceLinkText = "Редактировать страницу",
         keepOnSmallScreens = false

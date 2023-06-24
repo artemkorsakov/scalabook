@@ -53,6 +53,8 @@ object HeliumThemes:
 
   private def addCSSJS(theme: Helium): Helium =
     theme.site
+      .autoLinkCSS(Root / "css" / "sidebar.css")
+      .site
       .autoLinkJS(Root / "js" / "tex-mml-chtml.js")
 
   private def addTopNavigation(theme: Helium): Helium =

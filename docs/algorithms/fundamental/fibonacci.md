@@ -56,7 +56,7 @@ def fastFib(n: Int): BigInt =
 
 Приблизительное значение числа Фибоначчи можно вычислить [по формуле Бине](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D0%BB%D0%B0_%D0%A4%D0%B8%D0%B1%D0%BE%D0%BD%D0%B0%D1%87%D1%87%D0%B8#%D0%A4%D0%BE%D1%80%D0%BC%D1%83%D0%BB%D0%B0_%D0%91%D0%B8%D0%BD%D0%B5):
 
-![](https://wikimedia.org/api/rest_v1/media/math/render/svg/7e13a8a7c316c95f60118e8a3dc9641eb1680dc2)
+\\(F\_{n} = \frac{(\frac{1+\sqrt{5}}{2})^{n} - (\frac{1-\sqrt{5}}{2})^{n}}{\sqrt{5}} = \frac{(\varphi)^{n} - (-\varphi)^{-n}}{\varphi - (-\varphi)^{-1}} = \frac{(\varphi)^{n} - (-\varphi)^{-n}}{2\varphi - 1}\\)
 
 ```dotty
 private val PHI: BigDecimal = BigDecimal((1.0 + math.sqrt(5.0)) / 2.0)

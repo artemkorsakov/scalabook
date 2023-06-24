@@ -8,7 +8,7 @@ import laika.io.model.InputTree
 import laika.markdown.github.GitHubFlavor
 import laika.parse.code.SyntaxHighlighting
 import laika.preview.ServerBuilder
-import ru.scalabook.site.theme.HeliumThemes
+import ru.scalabook.site.syntax.HeliumThemes
 
 object PreviewSite extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =

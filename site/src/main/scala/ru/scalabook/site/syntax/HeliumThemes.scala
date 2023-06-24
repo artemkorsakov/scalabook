@@ -1,4 +1,4 @@
-package ru.scalabook.site.theme
+package ru.scalabook.site.syntax
 
 import laika.ast.*
 import laika.ast.Path.*

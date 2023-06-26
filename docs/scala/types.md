@@ -163,8 +163,25 @@ val x = 1_000L
 // x: Long = 1000L
 val y = 2.2D
 // y: Double = 2.2 
-val z = 3.3F
-// z: Float = 3.3F
+val z = -3.3F
+// z: Float = -3.3F
+```
+
+Вы также можете использовать шестнадцатеричное представление для форматирования целых чисел
+(обычно это `Int`, но также поддерживается суффикс `L` для указания `Long`):
+
+```dotty
+val a = 0xACE    // val a: Int = 2766
+val b = 0xfd_3aL // val b: Long = 64826
+```
+
+Scala поддерживает множество различных способов форматирования одного и того же числа с плавающей запятой,
+например:
+
+```dotty
+val q = .25      // val q: Double = 0.25
+val r = 2.5e-1   // val r: Double = 0.25
+val s = .0025e2F // val s: Float = 0.25
 ```
 
 В Scala также есть типы `String` (значение заключается в двойные кавычки или три двойных) 
@@ -255,6 +272,8 @@ println(interpolation)
 // as Thomas Edison said: "The three great essentials to achieve anything worth while are: Hard work, Stick-to-itiveness, and Common sense."
 ```
 
+[Подробнее об интерполяции строк][interpolation]
+
 ##### Multiline strings
 
 Многострочные строки создаются путем включения строки в три двойные кавычки:
@@ -284,7 +303,6 @@ println("""The essence of Scala:
 Теперь все строки выравниваются по левому краю. 
 
 Здесь также можно использовать переменные внутри строки, добавив `s` перед первыми `"""`.
-
 
 #### Приведение типов
 
@@ -351,3 +369,6 @@ val y: Float = x
 
 - [Scala3 book, Variables and Data Types](https://docs.scala-lang.org/scala3/book/taste-vars-data-types.html)
 - [Scala3 book, A First Look at Types](https://docs.scala-lang.org/scala3/book/first-look-at-types.html)
+- [Scala3 book, String interpolation][interpolation]
+
+[interpolation]: https://docs.scala-lang.org/scala3/book/string-interpolation.html

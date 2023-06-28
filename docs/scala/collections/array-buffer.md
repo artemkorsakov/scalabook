@@ -45,9 +45,9 @@ val people = ArrayBuffer(
 
 ```dotty
 val nums = ArrayBuffer(1, 2, 3)
-// nums: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3, 4, 5, 6)
+// nums: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3)
 nums += 4
-// res0: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3, 4, 5, 6)
+// res0: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3, 4)
 nums ++= List(5, 6)
 // res1: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3, 4, 5, 6)
 ```
@@ -59,11 +59,11 @@ nums ++= List(5, 6)
 
 ```dotty
 val a = ArrayBuffer.range('a', 'h')
-// a: ArrayBuffer[Char] = ArrayBuffer('f', 'g')
+// a: ArrayBuffer[Char] = ArrayBuffer('a', 'b', 'c', 'd', 'e', 'f', 'g')
 a -= 'a'
-// res2: ArrayBuffer[Char] = ArrayBuffer('f', 'g')
+// res2: ArrayBuffer[Char] = ArrayBuffer('b', 'c', 'd', 'e', 'f', 'g')
 a --= Seq('b', 'c')
-// res3: ArrayBuffer[Char] = ArrayBuffer('f', 'g')
+// res3: ArrayBuffer[Char] = ArrayBuffer('d', 'e', 'f', 'g')
 a --= Set('d', 'e')
 // res4: ArrayBuffer[Char] = ArrayBuffer('f', 'g')
 ```
@@ -74,7 +74,7 @@ a --= Set('d', 'e')
 
 ```dotty
 val a = ArrayBuffer.range(1,5)
-// a: ArrayBuffer[Int] = ArrayBuffer(10, 2, 50, 4)
+// a: ArrayBuffer[Int] = ArrayBuffer(1, 2, 3, 4)
 a(2) = 50
 println(a)
 // ArrayBuffer(1, 2, 50, 4)

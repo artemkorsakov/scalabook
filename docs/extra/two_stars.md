@@ -53,6 +53,7 @@
 | [Concurrency with Cats Effect](https://softwaremill.com/concurrency-with-cats-effect)                                                                                                    | Scala 3 |  En  | 2023 | Cats effect |
 | [Controllable Futures in Scala - Rock the JVM](https://blog.rockthejvm.com/controllable-futures/)                                                                                        | Scala 3 |  En  | 2020 |             |
 | [Functional Programming anti-patterns in Scala](https://scalajobs.com/blog/functional-programming-anti-patterns-in-scala)                                                                | Scala 3 |  En  | 2023 | Patterns    |
+| [Scala 3: Error handling in FP land](https://gvolpe.com/blog/error-handling-scala3/)                                                                                                     | Scala 3 |  En  | 2022 |             |
 | [Time traveling in tests with Cats Effect](https://blog.softwaremill.com/time-traveling-in-tests-with-cats-effect-b22084f6a89)                                                           | Scala 3 |  En  | 2020 | Cats effect |
 | [Type Classes](https://typelevel.org/cats/typeclasses.html)                                                                                                                              | Scala 3 |  En  |      |             |
 | [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/)                                                                                                             | Scala 3 |  En  | 2020 | Cats effect |
@@ -91,12 +92,15 @@
 
 | Название                                                                                                                                               | Язык | Дата | Комментарий |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
-| [Род Стивенс - Алгоритмы. Теория и практическое применение](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854) |  Ru  | 2021 |  Алгоритмы  |
-| [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)                              |  En  | 2019 |  Алгоритмы  |
+| [Род Стивенс - Алгоритмы. Теория и практическое применение](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854) |  Ru  | 2021 | Алгоритмы   |
+| [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)                              |  En  | 2019 | Алгоритмы   |
+| [Abelson, Sussman - Structure and Interpretation of Computer Programs](https://web.mit.edu/6.001/6.037/sicp.pdf)                                       |  En  | 1996 |             |
 
 ### Видео
 
-...
+| Название                                                                                           | Язык | Дата | Комментарий |
+|----------------------------------------------------------------------------------------------------|:----:|------|-------------|
+| [MIT 6.001 Structure and Interpretation](https://www.youtube.com/playlist?list=PLE18841CABEA24090) |  En  | 1986 |             |
 
 ### Курсы
 

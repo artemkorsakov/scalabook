@@ -73,6 +73,31 @@ _Инициальный объект_ — это объект, от которо
 упорядоченные множества, такие как все целые числа (и положительные,
 и отрицательные), не имеют инициального объекта.
 
+Рассмотрим ещё один пример:
+
+Если представить, что класс объектов \\(Ob_{T}\\) - это [система типов Scala](../scala/types.md),
+а морфизм - это отношение "наследует" (`A extends B` или \\(A \mapsto B\\)),
+то в такой категории инициальным объектом будет `Nothing`
+(от него к любому объекту категории исходит ровно один морфизм или `Nothing` наследует от любого типа в Scala),
+а терминальным - `Any` (из каждого объекта существует стрелка "наследует" в этот объект).
+
+## Глобальный элемент
+
+В теории категорий говорят, что `x` является глобальным элементом для `a`, 
+если он является стрелкой \\(1 \overset{x}{\rightarrow} a\\), где `1` - терминальный объект.
+
+В теории типов, `x: A` означает, что `x` является типом `A`.
+
+Система типов Scala различает `x: A` и `x: () => A`. 
+Однако, в категорной семантике они обозначают одно и то же.
+В дальнейшем глобальный элемент будем обозначать как `x: A`.
+
+Поскольку стрелок от любого другого объекта к инициальному объекту нет, 
+то нет и стрелок от терминального объекта к нему. 
+Поэтому инициальный объект не имеет элементов. И в Scala нет типа для инициального объекта.
+Терминальный объект имеет только один элемент, так как от него к самому себе идет единственная стрелка, `1 → 1`; 
+поэтому иногда его называют синглетоном. В Scala терминальный объект - это `Unit` с единственным элементом - `()`.
+
 ## Двойственность
 
 Для категории **C** можно определить двойственную категорию \\({\mathcal  {C}}^{{op}}\\), в которой:
@@ -254,6 +279,9 @@ rightside match
     - [Category Theory for Programmers, Products and Coproducts](https://bartoszmilewski.com/2015/01/07/products-and-coproducts)
     - [Category Theory for Programmers, Simple Algebraic Data Types](https://bartoszmilewski.com/2015/01/13/simple-algebraic-data-types)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#anatomy-of-a-type-class)
+- The Dao of Functional Programming - Bartosz Milewski:
+    - [Дао функционального программирования](https://henrychern.wordpress.com/2022/09/23/milewski-%d0%b4%d0%b0%d0%be-%d1%84%d1%83%d0%bd%d0%ba%d1%86%d0%b8%d0%be%d0%bd%d0%b0%d0%bb%d1%8c%d0%bd%d0%be%d0%b3%d0%be-%d0%bf%d1%80%d0%be%d0%b3%d1%80%d0%b0%d0%bc%d0%bc%d0%b8%d1%80%d0%be%d0%b2%d0%b0/)
+    - [The Dao of Functional Programming](https://github.com/BartoszMilewski/Publications/blob/master/TheDaoOfFP/DaoFP.pdf)
 - [Type classes in Algebird](https://twitter.github.io/algebird/typeclasses.html)
 - [Type classes in Cats](https://github.com/tpolecat/cats-infographic)
 - [Type classes in Scalaz](https://scalaz.github.io/7/typeclass/index.html)

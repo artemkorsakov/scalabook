@@ -1,7 +1,5 @@
 # ✯
 
---- 
-
 ## Scala
 
 ### Книги и документация
@@ -77,40 +75,6 @@
 | [Why are Type Classes Useful in Scala? - Rock the JVM](https://blog.rockthejvm.com/why-are-typeclasses-useful/)                                                                               | Scala 3 |  En  | 2020 |                             |
 | [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes)                                                              | Scala 2 |  En  | 2012 |                             |
 | [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics) | Scala 2 |  En  | 2013 |                             |
-
---- 
-
-## Функциональное программирование
-
-### Книги и документация
-
-...
-
-### Видео
-
-| Название                                                                                                                                 | Язык | Дата | Комментарий |
-|------------------------------------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
-| [Business benefits of functional programming and how to make it work for your company](https://www.youtube.com/watch?v=EcGZdzECmIk)      |  En  | 2020 |             |
-| [Null References: The Billion Dollar Mistake](https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare) |  En  | 2009 |             |
-
-### Курсы
-
-...
-
-### Упражнения
-
-...
-
-### Статьи
-
-| Название                                                                                                                                                                          | Язык | Дата | Комментарий |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
-| [A bite of functional programming (in Scala)](https://scalac.io/blog/functional-programming-in-scala/)                                                                            |  En  | 2020 |             |
-| [Functional Programming vs OOP](https://scalac.io/blog/functional-programming-vs-oop/)                                                                                            |  En  | 2022 |             |
-| [I hate NULL and all its variants!](https://alexn.org/blog/2010/05/25/i-hate-null)                                                                                                |  En  | 2010 |             |
-| [Making something out of nothing (or, why None is better than NaN and NULL)](https://blog.janestreet.com/making-something-out-of-nothing-or-why-none-is-better-than-nan-and-null) |  En  | 2010 |             |
-| [Null, NullPointerException and dealing with it](https://scalac.io/blog/null-pointer-exception-npe/)                                                                              |  En  | 2015 |             |
-| [What is functional programming and why it matters for your business?](https://scalac.io/blog/benefits-of-functional-programming)                                                 |  En  | 2020 |             |
 
 --- 
 

@@ -1,5 +1,17 @@
 # Моноидальная категория
 
+Правила симметричной моноидальной категории можно записать так:
+
+- \\(I \bigotimes a \cong a\\)
+- \\(a \bigotimes b \cong b \bigotimes a\\)
+- \\((a \bigotimes b) \bigotimes c \cong a \bigotimes (b \bigotimes c)\\)
+
+Эти изоморфизмы часто записывают в виде семейств обратимых стрелок, называемых ассоциатами и объединителями. 
+
+Функториальность позволяет поднять пару стрелок: \\(f: a \to \acute{a}, g: b \to \acute{b}\\)
+для работы с тензорными произведениями:
+\\(a \bigotimes b \overset{f \bigotimes g}{\rightarrow} \acute{a} \bigotimes \acute{b}\\).
+
 ## Схема
 
 ![monoid](images/monoid.png)

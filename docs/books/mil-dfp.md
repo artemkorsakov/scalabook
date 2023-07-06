@@ -258,6 +258,22 @@ def maybeAB[A, B](either: Either[B, (A, B)]): (Option[A], B) =
 
 Да, функция однозначно задается своей сигнатурой.
 
+## Упражнение 6.3.1. 
+
+> Покажите, что: \\(2 \times a \cong a + a\\), где 2 — логический тип. 
+> Сначала проведите доказательство схематически, а затем реализуйте две Haskell-функции, свидетельствующие об изоморфизме.
+
+```dotty
+def toSum[A](product: (Boolean, A)): Either[A, A] =
+  if product._1 then Left(product._2)
+  else Right(product._2)
+
+def toProduct[A](either: Either[A, A]): (Boolean, A) =
+  either match
+    case Left(a)  => (true, a)
+    case Right(a) => (false, a)
+```
+
 ---
 
 **Ссылки:**

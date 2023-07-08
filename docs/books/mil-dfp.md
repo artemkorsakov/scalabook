@@ -274,6 +274,134 @@ def toProduct[A](either: Either[A, A]): (Boolean, A) =
     case Right(a) => (false, a)
 ```
 
+## Упражнение 7.1.1. 
+
+> Реализуйте каррированную версию сложения как отображение-вне N в функциональный объект \\(N^{N}\\) . 
+> Подсказка: используйте следующие типы в рекурсоре:
+> init :: Nat -> Nat
+> step :: (Nat -> Nat) -> (Nat -> Nat)
+
+```dotty
+enum Nat:
+  case Zero
+  case Succ(n: Nat)
+
+import Nat.*
+
+val one = Succ(Zero)
+val two = Succ(one)
+val three = Succ(two)
+
+def rec[A](init: A, step: A => A, n: Nat): A =
+  n match
+    case Zero    => init
+    case Succ(m) => step(rec(init, step, m))
+
+rec(two, Succ(_), three) // 5
+
+val plusTwo: Nat => Nat = n => rec(two, Succ(_), n)
+plusTwo(three) // 5
+
+val curryInit: Nat => Nat = n => n
+val curryStep: (Nat => Nat) => (Nat => Nat) = f => k => Succ(f(k))
+val curry: Nat => Nat => Nat = n => rec[Nat => Nat](curryInit, curryStep, n)
+
+curry(Zero)(two)  // 2
+curry(three)(two) // 5
+```
+
+## Упражнение 7.2.1. 
+
+> Подумайте, что произойдет, если заменить a в определении списка терминальным объектом. 
+> Подсказка: что такое кодирование натуральных чисел по основанию один?
+
+???
+
+## Упражнение 7.2.2. 
+
+> Сколько существует отображений \\(h : L\_{a} → 1 + a\\)? 
+> Можно ли получить их все, используя рекурсор списка? 
+> Что можно сказать насчет Haskell-функций сигнатуры: \\(h :: \[a\] -> Maybe a\\)
+
+???
+
+## Упражнение 7.2.3. 
+
+> Реализуйте функцию, извлекающую третий элемент из списка, если список достаточно длинный. 
+> Подсказка: используйте Maybe a для типа результата.
+
+```dotty
+def get[A](list: List[A], n: Int): Option[A] =
+  list match
+    case Nil => None
+    case head :: next =>
+      if n == 0 then Some(head)
+      else get(next, n - 1)
+
+get(List(1, 2, 3, 4, 5), 2)
+// Some(3)
+```
+
+## Упражнение 8.2.1. 
+
+> Опишите функтор, источником которого является категория «шагающая стрелка». 
+> Это категория фигурок с двумя объектами и одной стрелкой между ними (плюс обязательные тождественные стрелки).
+
+???
+
+## Упражнение 8.2.2. 
+
+> Категория «ходячий изо» аналогична категории «шагающая стрелка», плюс еще одна стрелка, идущая обратно от b к а. 
+> Покажите, что функтор из этой категории всегда выбирает изоморфизм в целевой категории.
+
+???
+
+## Упражнение 8.3.1. 
+
+> Покажите, что WithInt является функтором data WithInt a = WithInt a Int
+
+???
+
+## Упражнение 8.3.2. 
+
+> Покажите, что Id есть Functor. Подсказка: реализуйте для него экземпляр Functor.
+
+```dotty
+trait Functor[F[_]]:
+  extension [A](fa: F[A])
+    def map[B](f: A => B): F[B]
+
+case class Id[A](value: A)
+
+given idFunctor: Functor[Id] with
+  extension [A](as: Id[A]) 
+    override def map[B](f: A => B): Id[B] = Id(f(as.value))
+```
+
+## Упражнение 8.3.3. 
+
+> Покажите, что (Const c) есть Functor. 
+> Подсказка: Конструктор типа принимает два аргумента, 
+> но здесь он частично применяется к первому аргументу. 
+> Он функториален по второму аргументу.
+
+```dotty
+trait Functor[F[_]]:
+  extension [A](fa: F[A]) def map[B](f: A => B): F[B]
+
+case class Const[C, A](c: C)
+
+given constFunctor[C]: Functor[[X] =>> Const[C, X]] with
+  extension [A](as: Const[C, A])
+    override def map[B](f: A => B): Const[C, B] = Const[C, B](as.c)
+```
+
+## Упражнение 8.3.4. 
+
+> Покажите, что MoreThanA является бифунктором. data MoreThanA a b = More a (Maybe b)
+
+???
+
 ---
 
 **Ссылки:**

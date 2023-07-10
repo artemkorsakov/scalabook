@@ -57,6 +57,18 @@ given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X,
     a => function(f(a))
 ```
 
+### Предикат
+
+Частным случаем предыдущего примера является предикат:
+
+```dotty
+trait Predicate[A] extends Function1[A, Boolean]  
+  
+given ContravariantFunctor[Predicate] with
+  def cmap[A, B](b: Predicate[B])(f: A => B): Predicate[A] =
+    a => b(f(a))
+```
+
 ## Реализация
 
 ### Реализация в Cats

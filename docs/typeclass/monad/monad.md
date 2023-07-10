@@ -1,4 +1,4 @@
-# Monad
+# Монада
 
 Монада (_monad_) - это [`Applicative`](applicative.md), 
 который также поддерживает [`Bind`](bind.md), 

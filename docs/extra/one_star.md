@@ -26,7 +26,7 @@
 | [Proper and Basic Property-Based Testing](https://www.youtube.com/watch?v=FS_VJOQfogc)                                                             | Scala 3 |  En  | 2023 |             |
 | [Scala 3 - Rock the JVM](https://www.youtube.com/watch?v=orTmm6OMaLw&list=PLmtsMNDRU0BwsVUbhsH2HMqDMPNhQ0HPc)                                      | Scala 3 |  En  | 2020 |             |
 | [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)                                        | Scala 3 |  En  | 2021 |             |
-| [Scala Tips - Rock the JVM](https://www.youtube.com/playlist?list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)                                              | Scala 3 |  En  | 2022 |             |
+| [Scala Tips - Rock the JVM](https://www.youtube.com/playlist?list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)                                              | Scala 3 |  En  | 2023 |             |
 | [The Best Scala Libraries I Use in Every Project - DevInsideYou](https://www.youtube.com/watch?v=ZymD5NuOwdA)                                      | Scala 3 |  En  | 2023 |             |
 | [Typeclasses in Scala 3 - Colombia Scala meetup/Scala at the Sea](https://www.youtube.com/watch?app=desktop&v=co4LSvVoX-s)                         | Scala 3 |  En  | 2022 |             |
 | [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) | Scala 2 |  En  | 2015 |             |
@@ -102,8 +102,9 @@
 
 ### Статьи
 
-| Название                                                                                                  | Язык | Дата | Комментарий      |
-|-----------------------------------------------------------------------------------------------------------|:----:|------|------------------|
-| [«Чистый» код, ужасная производительность](https://habr.com/ru/companies/sportmaster_lab/articles/728880) |  Ru  | 2023 | Рефакторинг кода |
+| Название                                                                                                             | Язык | Дата | Комментарий      |
+|----------------------------------------------------------------------------------------------------------------------|:----:|------|------------------|
+| [«Чистый» код, ужасная производительность](https://habr.com/ru/companies/sportmaster_lab/articles/728880)            |  Ru  | 2023 | Рефакторинг кода |
+| [Software requirements do not change](https://blog.tmorris.net/posts/software-requirements-do-not-change/index.html) |  En  | 2006 |                  |
 
 ---

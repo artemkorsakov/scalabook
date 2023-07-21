@@ -80,3 +80,4 @@ val methods = List(isEvenMethod)
 **Ссылки:**
 
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fun-eta-expansion.html)
+- [Eta-expansion and Partially Applied Functions in Scala - Rock the JVM](https://www.youtube.com/watch?v=rORf1e9Gksg&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)

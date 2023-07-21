@@ -29,5 +29,7 @@ Scala поставляется с большим количеством типо
 
 **Ссылки:**
 
+- [Functional Collections in Scala](https://www.youtube.com/watch?v=Y5rPHZaUakg&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
+- [Linear Collections in Scala: Seq, List, Array, Vector, Set, Range](https://www.youtube.com/watch?v=UvUkpduo6uE&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 - [Scala3 book, Collections intro](https://docs.scala-lang.org/scala3/book/collections-intro.html)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/taste-collections.html)

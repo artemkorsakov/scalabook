@@ -212,6 +212,7 @@ chain(List(1, 2, 3))
 **Ссылки:**
 
 - [8 Scala Pattern Matching Tricks](https://blog.rockthejvm.com/8-pm-tricks)
+- [Custom Pattern Matching in Scala](https://www.youtube.com/watch?v=js2IgkNz1H0&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 - [Pattern Matching Tricks in Scala - Rock the JVM](https://www.youtube.com/watch?v=qe85507fSc8&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS&index=2)
 - [Scala3 book, taste Control Structures](https://docs.scala-lang.org/scala3/book/taste-control-structures.html)
 - [Scala3 book, Control Structures](https://docs.scala-lang.org/scala3/book/control-structures.html)

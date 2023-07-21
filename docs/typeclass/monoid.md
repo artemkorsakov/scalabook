@@ -66,5 +66,6 @@ trait Semigroup[A]:
 - [Тесты](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Ftest%2Fscala%2Fru%2Fscalabook%2Ftypeclass%2Fmonoid&branch=master)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/sum+function.html)
 - [Scala with Cats][Scala with Cats]
+- [Semigroups and Monoids in Scala](https://www.youtube.com/watch?v=LmBTiFYa-V4&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 
 [Scala with Cats]: https://www.scalawithcats.com/dist/scala-with-cats.html#applications-of-monoids

@@ -286,3 +286,4 @@ def executeAndPrint(f: (Int, Int) => Int, ...
 **Ссылки:**
 
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fun-hofs.html)
+- [Higher-order Functions for OO Programmers - Rock the JVM](https://www.youtube.com/watch?v=GG19t3xn0D0&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)

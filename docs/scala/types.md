@@ -370,5 +370,6 @@ val y: Float = x
 - [Scala3 book, Variables and Data Types](https://docs.scala-lang.org/scala3/book/taste-vars-data-types.html)
 - [Scala3 book, A First Look at Types](https://docs.scala-lang.org/scala3/book/first-look-at-types.html)
 - [Scala3 book, String interpolation][interpolation]
+- [How to create your own String interpolator in Scala - Rock the JVM](https://www.youtube.com/watch?v=J6Vnn7aHYAk&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 
 [interpolation]: https://docs.scala-lang.org/scala3/book/string-interpolation.html

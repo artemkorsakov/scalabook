@@ -252,3 +252,4 @@ listOpt.map(List(Some(1), None, Some(3)))(_ + 1)   // List(Some(2), None, Some(4
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-functor)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Functor.html)
 - [Tour of Scala](https://tourofscala.com/scala/functor)
+- [What the Functor? Functors in Scala - Rock the JVM](https://www.youtube.com/watch?v=aSnY2JBzjUw&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)

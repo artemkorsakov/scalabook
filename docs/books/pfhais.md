@@ -15,9 +15,141 @@
 
 > В примерах используются Scala `3.3.0` и последние версии библиотек на июль 2023.
 
-## Чистая обработка конфигурации
+## Спецификация сервиса 
 
-Для начала определимся с конфигурацией.
+Сначала укажем точную область действия и API сервиса. 
+Сервис должен предоставлять конечные точки HTTP API для: 
+
+- создания типа данных продукта, определяемого уникальным идентификатором
+- добавления переводов имени продукта по коду языка и уникальному идентификатору
+- возврата существующих переводов для продукта
+- возврата списка всех существующих продуктов с их переводами
+
+### Модель данных 
+
+Определим модель очень простой, чтобы не переборщить с реализацией. 
+
+- Код языка определяется стандартом ISO 639-1 (например, двухбуквенный код). 
+- Перевод должен содержать код языка и название продукта (непустая строка). 
+- Продукт должен содержать уникальный идентификатор (UUID версии 4) и список переводов.
+
+### База данных 
+
+Данные будут храниться в реляционной базе данных (RDBMS). 
+Поэтому нам нужно определить таблицы и отношения в базе данных. 
+
+#### Таблица продуктов 
+
+Таблица `products` должна содержать только уникальный идентификатор, который также является первичным ключом. 
+
+#### Таблица имен 
+
+Таблица `names` должна содержать столбец для идентификатора продукта, один для кода языка и один для имени. 
+Его первичный ключ представляет собой комбинацию идентификатора продукта и кода языка. 
+Все столбцы должны быть не нулевыми.
+Отношение к продуктам реализуется ограничением внешнего ключа к таблице продуктов через идентификатор продукта.
+
+### HTTP API
+
+HTTP API должен предоставлять следующие эндпоинты на заданных путях:
+
+| **Path**          | **HTTP method** | **Function**                                    |
+|-------------------|-----------------|-------------------------------------------------|
+| `/products`       | POST            | Создание продукта                               |
+| `/products`       | GET             | Получение всех продуктов и переводов            |
+| `/product/{UUID}` | PUT             | Добавление перевода                             |
+| `/product/{UUID}` | GET             | Получение всех переводов для заданного продукта |
+
+Данные должны быть закодированы в JSON с использованием следующей спецификации:
+
+JSON для перевода:
+
+```json
+{
+  "lang": "ISO-639-1 Code",
+  "name": "A non empty string."
+}
+```
+
+JSON для продукта:
+
+```json
+{
+  "id": "The-UUID-of-the-product",
+  "names": [ ... список переводов ... ]
+}
+```
+
+## Модели
+
+Для начала реализуем простые и понятные модели. 
+Нам нужен класс для хранения переводов или, лучше, одного перевода.
+
+```dotty
+final case class Translation(lang: LanguageCode, name: ProductName)
+```
+
+В качестве типов параметров используются уточняющие типы, ограничивающие множество значений областью, которую считаем валидной.
+Подробнее об уточняющих типах и зачем они нужны [рассказывается в статье][refined].
+В данном случае используются такие типы:
+
+```dotty
+type LanguageCode = String :| Match["^[a-z]{2}$"]
+type ProductName = String :| Not[Blank]
+```
+
+В качестве `LanguageCode` используется двухсимвольная строка латинского алфавита в нижнем регистре, 
+а в качестве `ProductName` - непустая строка.
+Они необходимы для того, чтобы нельзя было создавать `Translation`, например, с `name` равным `null` или `""`.
+
+Необходимые кодеки для кодирования и раскодирования в Json 
+[предоставляются библиотекой интеграции Iron с Circe](https://iltotore.github.io/iron/docs/modules/circe.html)
+
+Теперь о модели продукта.
+В качестве типа идентификатора используем уточняющий тип, соответствующий формату UUID.
+А в качестве типа списка переводов - непустое множество `NonEmptySet` из библиотеки cats.
+
+```dotty
+type ProductId = String :| Match["^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"]
+
+final case class Product(id: ProductId, names: NonEmptySet[Translation])
+```
+
+#### Тестирование
+
+Отдельно остановимся на тестировании. 
+В качестве тестового фреймворка можно выбрать любой фреймворк, я выбрал [MUnit](https://scalameta.org/munit).
+Кроме того, используем [интеграцию со ScalaCheck](https://scalameta.org/munit/docs/integrations/scalacheck.html)
+для покрытия большего количества вариантов.
+
+Необходимо проверить декодирование `Translation` со следующими кейсами:
+
+- `decode[Translation](s).isLeft`, где `s` - строка не JSON формата
+- `decodeAccumulating[Translation](json)` выдает заданный список ошибок 
+  (в данном случае `"DecodingFailure at .lang: Should match ^[a-z]{2}$"` и `"DecodingFailure at .name: !(Should only contain whitespaces)"`), 
+  где `json` имеет валидный формат, но невалидные значения, например,
+  `val json = """{"lang":"rus","name":""}"""`: `lang` - невалидный код, например, `rus` вместо `ru`, а `name` - пустая строка.
+- Представим, что есть две переменные `t: Translation` и `val json = s"""{"lang":${t.lang.asJson.noSpaces},"name":${t.name.asJson.noSpaces}}"""`
+    - `decode[Translation](json)` должен равняться `t`
+    - `t.asJson.noSpaces` должен равняться `json`
+    - как следствие двух предыдущих: `decode[Translation](t.asJson.noSpaces)` должен равняться `t`
+
+Аналогично проверяется `Product`:
+
+- `decode[Product](s).isLeft`, где `s` - строка не JSON формата
+- `decodeAccumulating[Product](json)` выдает заданный список ошибок,
+  где `json` имеет валидный формат, но невалидные значения, например,
+  `val json = """{"id":"id12","names":[]}"""`: `id` - произвольная строка, неподходящая по формату к UUID, а `names` - пустая коллекция.
+- Представим, что есть две переменные `p: Product` и `val json = s"""{"id":${p.id.asJson.noSpaces},"names":${p.names.asJson.noSpaces}}"""`
+    - `decode[Product](json)` должен равняться `p`
+    - `p.asJson.noSpaces` должен равняться `json`
+    - как следствие двух предыдущих: `decode[Product](p.asJson.noSpaces)` должен равняться `p`
+
+[Исходный код тестов](https://github.com/artemkorsakov/pfhais/tree/my_solutions/pure-scala-3/pure/src/test/scala/com/wegtam/books/pfhais/pure/models)
+
+## Обработка конфигурации
+
+Теперь определимся с конфигурацией.
 У нас будет два конфига: `ApiConfig` - конфигурация для http API и `DatabaseConfig` - для работы с БД.
 `ApiConfig` должен состоять из `host` и `port`, где `host` - непустая строка, а `port` - число от `1` до `65535`.
 `DatabaseConfig` должен состоять из `driver` (непустая строка), `url` (валидный url), 
@@ -54,8 +186,6 @@ final case class DatabaseConfig(
 ```
 
 В первую очередь мы определяем три уточняющих типа: `NonEmptyString`, `DatabaseUrl`, `PortNumber`.
-Они необходимы для того, чтобы нельзя было создавать `ApiConfig`, например, с `host` равным `null` или `""`.
-Подробнее об уточняющих типах и зачем они нужны [рассказывается в статье][refined].
 
 Затем определяются конфиги `ApiConfig` и `DatabaseConfig`. 
 Конфиги будут читаться с помощью библиотеки **pureconfig**, 
@@ -85,9 +215,120 @@ ConfigSource.fromConfig(databaseConfig).at("database").load[DatabaseConfig]
 
 [Рассмотренный пример в Scastie](https://scastie.scala-lang.org/Ci4qPxbJQ1iAdpy5GmWhxg)
 
+#### Тестирование
 
+Для проверки корректности создания `ApiConfig` необходимо рассмотреть 4 случая:
 
+- входящая строка в формате Json пустая или невалидная - `"{}"`: `ConfigSource.fromConfig(config).at("api").load[ApiConfig].isLeft`,
+  где `val config = ConfigFactory.parseString("{}")`
+- `host` - невалидный (пустая строка), `port` - валидный (от `1` до `65535`): как в примере выше, только
+  `val config = ConfigFactory.parseString(s"""api{"host":"","port":1234}""")`
+- `host` - валидный (непустая строка), `port` - невалидный (меньше `1` или больше `65535`): как в примере выше, только
+  `val config = ConfigFactory.parseString(s"""api{"host":"localhost","port":65536}""")`
+- `host` и `port` валидные: `ConfigSource.fromConfig(config).at("api").load[ApiConfig]` должен равняться
+  `config: ApiConfig`, где `val config = ConfigFactory.parseString(s"""api{"host":"${config.host}","port":${config.port}}""")`
 
+Аналогично добавляются тесты для `DatabaseConfig`.
+
+[Исходный код тестов](https://github.com/artemkorsakov/pfhais/tree/my_solutions/pure-scala-3/pure/src/test/scala/com/wegtam/books/pfhais/pure/config)
+
+## Уровень базы данных
+
+Для простоты будем придерживаться Flyway для миграции базы данных. 
+Напишем код миграции, используя шаблон интерпретатора (в Scala он стал известен под названием "tagless final").
+
+```dotty
+trait DatabaseMigrator[F[_]]:
+
+  def migrate(url: DatabaseUrl, user: NonEmptyString, pass: NonEmptyString): F[Int]
+```
+
+Мы определяем трейт, который описывает функциональность, требуемую интерпретатором, 
+и используем параметр высшего типа, чтобы иметь возможность абстрагироваться от типа. 
+Теперь давайте продолжим с интерпретатором Flyway.
+
+```dotty
+final class FlywayDatabaseMigrator extends DatabaseMigrator[IO]:
+
+  override def migrate(url: DatabaseUrl, user: NonEmptyString, pass: NonEmptyString): IO[Int] =
+    IO {
+      val flyway: Flyway = Flyway.configure()
+        .dataSource(url, user, pass)
+        .load()
+      flyway.migrate().migrationsExecuted
+    }
+```
+
+#### Doobie
+
+Поскольку мы уже начали с использования "tagless final", мы могли бы продолжить и определить базу для нашего репозитория.
+
+```dotty
+trait Repository[F[_]]:
+
+  def loadProduct(id: ProductId): F[Seq[(ProductId, LanguageCode, ProductName)]]
+
+  def loadProducts(): Stream[F, (ProductId, LanguageCode, ProductName)]
+
+  def saveProduct(p: Product): F[Int]
+
+  def updateProduct(p: Product): F[Int]
+```
+
+В этом примере используются уточняющие типы, кроме того, возвращаемый тип `loadProducts` связан с `fs2.Stream`, 
+потому что мы хотим добиться чисто функциональной потоковой передачи. 
+
+Итак, давайте посмотрим, как выглядит репозиторий, использующий **doobie**.
+
+```dotty
+final class DoobieRepository[F[_]: Sync](tx: Transactor[F]) extends Repository[F]:
+  import DoobieRepository.given
+
+  override def loadProduct(id: ProductId): F[Seq[(ProductId, LanguageCode, ProductName)]] =
+    sql"""SELECT products.id, names.lang_code, names.name 
+          FROM products
+          JOIN names ON products.id = names.product_id
+          WHERE products.id = ${id.toString}"""
+      .query[(ProductId, LanguageCode, ProductName)]
+      .to[Seq]
+      .transact(tx)
+
+  override def loadProducts(): Stream[F, (ProductId, LanguageCode, ProductName)] =
+    sql"""SELECT products.id, names.lang_code, names.name
+        FROM products
+        JOIN names ON products.id = names.product_id
+        ORDER BY products.id"""
+      .query[(ProductId, LanguageCode, ProductName)]
+      .stream
+      .transact(tx)
+
+  override def saveProduct(p: Product): F[Int] =
+    val namesSql    = "INSERT INTO names (product_id, lang_code, name) VALUES (?, ?, ?)"
+    val namesValues = p.names.toNonEmptyList.map(t => (p.id, t.lang, t.name))
+    val program = for
+      pi <- sql"INSERT INTO products (id) VALUES(${p.id.toString})".update.run
+      ni <- Update[(ProductId, LanguageCode, ProductName)](namesSql).updateMany(namesValues)
+    yield pi + ni
+    program.transact(tx)
+
+  override def updateProduct(p: Product): F[Int] =
+    val namesSql    = "INSERT INTO names (product_id, lang_code, name) VALUES (?, ?, ?)"
+    val namesValues = p.names.toNonEmptyList.map(t => (p.id, t.lang, t.name))
+    val program = for
+      dl <- sql"DELETE FROM names WHERE product_id = ${p.id.toString}".update.run
+      ts <- Update[(ProductId, LanguageCode, ProductName)](namesSql).updateMany(namesValues)
+    yield dl + ts
+    program.transact(tx)
+
+end DoobieRepository
+
+object DoobieRepository:
+  given Read[(ProductId, LanguageCode, ProductName)] =
+    Read[(String, String, String)].map { case (x, y, z) => (x.refine, y.refine, z.refine) }
+
+  given Write[(ProductId, LanguageCode, ProductName)] =
+    Write[(String, String, String)].contramap(p => (p._1, p._2, p._3))
+```
 
 ---
 

@@ -366,9 +366,83 @@ override def updateProduct(p: Product): F[Int] =
   program.transact(tx)
 ```
 
-#### http4s routes
+### http4s routes
 
-???
+Определяем следующую маршрутизацию для проекта:
+
+```dotty
+final class ProductRoutes[F[_]: Concurrent](repo: Repository[F]) extends Http4sDsl[F]:
+  val routes: HttpRoutes[F] = HttpRoutes.of[F]:
+    case GET -> Root / "product" / UUIDVar(id) => ???
+    case req @ PUT -> Root / "product" / UUIDVar(id) => ???
+
+final class ProductsRoutes[F[_]: Concurrent](repo: Repository[F]) extends Http4sDsl[F]:
+  val routes: HttpRoutes[F] = HttpRoutes.of[F]:
+    case GET -> Root / "products" => ???
+    case req @ POST -> Root / "products" => ??? 
+```
+
+Как видно, DSL ближе к синтаксису Scala и довольно легко читается. 
+Можно было бы привязать роуты к IO, но желательно иметь больше гибкости и определить более абстрактную структуру.
+
+Рассмотрим реализацию роутов для продукта:
+
+```dotty
+final class ProductRoutes[F[_]: Concurrent](repo: Repository[F]) extends Http4sDsl[F]:
+  given EntityDecoder[F, Product] = jsonOf
+
+  val routes: HttpRoutes[F] = HttpRoutes.of[F]:
+    case GET -> Root / "product" / UUIDVar(id) =>
+      for
+        rows <- repo.loadProduct(id.toString.refine)
+        resp <- Product.fromDatabase(rows).fold(NotFound())(p => Ok(p.asJson))
+      yield resp
+    case req @ PUT -> Root / "product" / UUIDVar(id) =>
+      req
+        .as[Product]
+        .flatMap: p =>
+          for
+            cnt <- repo.updateProduct(p)
+            res <- cnt match
+              case 0 => NotFound()
+              case _ => NoContent()
+          yield res
+        .handleErrorWith { case _: InvalidMessageBodyFailure =>
+          BadRequest()
+        }
+
+end ProductRoutes
+```
+
+Сначала нам нужно включить кодеки JSON в область видимости для http4, такие как `EntityDecoder`. 
+
+В маршруте для обновления продукта (`PUT`) мы просто загружаем строки базы данных, 
+которые передаем через вспомогательную функцию, чтобы создать правильный продукт и вернуть его. 
+Маршрут обновления (через `PUT`) преобразует тело запроса в `Product` и передает его функции обновления репозитория. 
+В случае успешного обновления возвращается ответ `NoContent`, не успешного - `NotFound`.
+
+В маршруте для получения продукта по идентификатору передаем идентификатор в БД и анализируем результат.
+Если продукт не найдет, то возвращаем `NotFound`, найден - `Ok(p.asJson)` - найденный продукт в Json формате.
+
+#### Тестирование роутов
+
+Для роутов продукта необходимо проверить следующее:
+
+- если продукта не существует, то возвращается статус `Status.NotFound` с пустым телом ответа
+- если продукт существует, то возвращается статус `Status.Ok`, где в теле передается json-продукта
+- при обновлении продукта с невалидным телом запроса возвращается статус `Status.BadRequest` с пустым телом ответа
+- при обновлении продукта с валидным телом запроса, 
+  но несуществующим идентификатором продукта, возвращается статус `Status.NotFound` с пустым телом ответа
+- при обновлении продукта с валидным телом запроса и существующим идентификатором продукта,
+  возвращается статус `Status.NoContent` с пустым телом ответа
+- GET после PUT должен врозвращать обновленный продукт
+
+[Исходный код тестов](https://github.com/artemkorsakov/pfhais/tree/my_solutions/pure-scala-3/pure/src/test/scala/com/wegtam/books/pfhais/api)
+
+Маршрут продуктов:
+
+
+
 
 ---
 

@@ -12,18 +12,18 @@ object Dependencies {
   }
 
   object http4s {
-    val blaze = "org.http4s" %% "http4s-blaze-server" % "0.23.14"
-    val dsl   = "org.http4s" %% "http4s-dsl"          % "0.23.18"
+    val blaze = "org.http4s" %% "http4s-blaze-server" % "0.23.15"
+    val dsl   = "org.http4s" %% "http4s-dsl"          % "0.23.23"
   }
 
   object iron {
-    private val version = "2.1.0"
+    private val version = "2.2.0"
     val iron            = "io.github.iltotore" %% "iron"      % version
     val cats            = "io.github.iltotore" %% "iron-cats" % version
   }
 
   object laika {
-    private val version = "0.19.2"
+    private val version = "0.19.3"
     val core            = "org.planet42" %% "laika-core"    % version
     val io              = "org.planet42" %% "laika-io"      % version
     val pdf             = "org.planet42" %% "laika-pdf"     % version
@@ -42,7 +42,7 @@ object Dependencies {
   }
 
   object refined {
-    private val version = "0.10.3"
+    private val version = "0.11.0"
     val core            = "eu.timepit" %% "refined"      % version
     val cats            = "eu.timepit" %% "refined-cats" % version
   }
@@ -56,7 +56,7 @@ object Dependencies {
   }
 
   object zio {
-    val core = "dev.zio" %% "zio" % "2.0.14"
+    val core = "dev.zio" %% "zio" % "2.0.15"
   }
 
   val exampleLibs: Seq[ModuleID] =

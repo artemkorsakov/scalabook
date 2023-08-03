@@ -422,7 +422,7 @@ end ProductRoutes
 В случае успешного обновления возвращается ответ `NoContent`, не успешного - `NotFound`.
 
 В маршруте для получения продукта по идентификатору передаем идентификатор в БД и анализируем результат.
-Если продукт не найдет, то возвращаем `NotFound`, найден - `Ok(p.asJson)` - найденный продукт в Json формате.
+Если продукт не найден, то возвращаем `NotFound`, найден - `Ok(p.asJson)` - найденный продукт в Json формате.
 
 #### Тестирование роутов
 
@@ -435,13 +435,79 @@ end ProductRoutes
   но несуществующим идентификатором продукта, возвращается статус `Status.NotFound` с пустым телом ответа
 - при обновлении продукта с валидным телом запроса и существующим идентификатором продукта,
   возвращается статус `Status.NoContent` с пустым телом ответа
-- GET после PUT должен врозвращать обновленный продукт
+- `GET` после `PUT` должен возвращать обновленный продукт
 
 [Исходный код тестов](https://github.com/artemkorsakov/pfhais/tree/my_solutions/pure-scala-3/pure/src/test/scala/com/wegtam/books/pfhais/api)
 
 Маршрут продуктов:
 
+```dotty
+final class ProductsRoutes[F[_]: Concurrent](repo: Repository[F]) extends Http4sDsl[F]:
+  given EntityDecoder[F, Product] = jsonOf
 
+  val routes: HttpRoutes[F] = HttpRoutes.of[F]:
+    case GET -> Root / "products" =>
+      val prefix = Stream.eval("[".pure[F])
+      val suffix = Stream.eval("]".pure[F])
+      val ps = repo
+        .loadProducts()
+        .groupAdjacentBy(_._1)
+        .map: (id, rows) =>
+          Product.fromDatabase(rows.toList)
+        .collect { case Some(p) => p }
+        .map(_.asJson.noSpaces)
+        .intersperse(",")
+      @SuppressWarnings(Array("org.wartremover.warts.Any"))
+      val result: Stream[F, String] = prefix ++ ps ++ suffix
+      Ok(result)
+    case req @ POST -> Root / "products" =>
+      req
+        .as[Product]
+        .flatMap: p =>
+          for
+            cnt <- repo.saveProduct(p)
+            res <- cnt match
+              case 0 => InternalServerError()
+              case _ => NoContent()
+          yield res
+        .handleErrorWith { case _: InvalidMessageBodyFailure =>
+          BadRequest()
+        }
+
+end ProductsRoutes
+```
+
+Для маршрута продуктов, опять же, нужны контекстные параметры для кодеков JSON, 
+чтобы иметь возможность сериализовать и десериализовать наши объекты. 
+Маршрут `POST` для создания продукта в основном такой же, как маршрут обновления из предыдущей части. 
+Мы создаем `Product` из тела запроса, передаем его в функцию сохранения репозитория 
+и возвращаем ответ: `NoContent` - если сохранение в репозитории завершилось успешно, `InternalServerError` - в противном случае. 
+Маршрут `GET` для возврата всех продуктов вызывает соответствующую функцию репозитория, 
+возвращающую поток, который мы отображаем с помощью вспомогательной функции. 
+После этого мы используем `collect` для преобразования потока из `Option[Product]` в поток `Product`, 
+который мы передаем функции `Ok` из `http4s`. 
+
+#### Тестирование роутов
+
+Для роутов продуктов необходимо проверить следующее:
+
+- при запросе продуктов, если продуктов не существует, то возвращается статус `Status.Ok` с пустым списком продуктов
+- при запросе продуктов, если продукты есть, то возвращается статус `Status.Ok` со списком продуктов
+- при добавлении продукта с невалидным телом запроса возвращается статус `Status.BadRequest` с пустым телом ответа
+- при добавлении продукта с валидным телом запроса возвращается статус `Status.NotFound` с пустым телом ответа
+- при добавлении продукта с валидным телом запроса, но он не может быть сохранен, 
+  возвращается статус `Status.InternalServerError` с пустым телом ответа
+- `GET` после `POST` должен возвращать добавленные продукты
+
+[Исходный код тестов](https://github.com/artemkorsakov/pfhais/tree/my_solutions/pure-scala-3/pure/src/test/scala/com/wegtam/books/pfhais/api)
+
+#### Стримминг
+
+Внимательный читатель заметит, что наша реализация «выборки всех продуктов» сталкивается с той же проблемой, 
+что и наша первая попытка в нечистом разделе: мы возвращаемся ко многим продуктам! 
+
+Чтобы решить эту проблему, нам нужно погрузиться в fs2 API и использовать его возможности, чтобы снова объединить наши продукты. 
+Итак, давайте посмотрим, как мы это делаем.
 
 
 ---

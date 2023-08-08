@@ -366,7 +366,7 @@ override def updateProduct(p: Product): F[Int] =
   program.transact(tx)
 ```
 
-### http4s routes
+## http4s routes
 
 Определяем следующую маршрутизацию для проекта:
 
@@ -501,14 +501,89 @@ end ProductsRoutes
 
 [Исходный код тестов](https://github.com/artemkorsakov/pfhais/tree/my_solutions/pure-scala-3/pure/src/test/scala/com/wegtam/books/pfhais/api)
 
-#### Стримминг
+## Запуск приложения
 
-Внимательный читатель заметит, что наша реализация «выборки всех продуктов» сталкивается с той же проблемой, 
-что и наша первая попытка в нечистом разделе: мы возвращаемся ко многим продуктам! 
+В нашей основной точке входа мы просто инициализируем все необходимые компоненты и соединяем их вместе. 
 
-Чтобы решить эту проблему, нам нужно погрузиться в fs2 API и использовать его возможности, чтобы снова объединить наши продукты. 
-Итак, давайте посмотрим, как мы это делаем.
+```dotty
+object Pure extends IOApp:
+  @SuppressWarnings(Array("org.wartremover.warts.Any", "scalafix:DisableSyntax.null"))
+  def run(args: List[String]): IO[ExitCode] =
+    val migrator: DatabaseMigrator[IO] = new FlywayDatabaseMigrator
 
+    val configsIO =
+      for
+        cfg       <- IO(ConfigFactory.load(getClass.getClassLoader))
+        apiConfig <- loadConfig[ApiConfig](cfg, "api")
+        dbConfig  <- loadConfig[DatabaseConfig](cfg, "database")
+      yield (apiConfig, dbConfig)
+    ... 
+  
+  private def loadConfig[A: ConfigReader](cfg: Config, namespace: String): IO[A] =
+    val result = ConfigSource.fromConfig(cfg).at(namespace).load[A]
+    IO.fromEither(result.left.map(error => new IllegalArgumentException(error.prettyPrint())))   
+```
+
+Вначале вычисляются заданные конфиги. 
+После успешной загрузки конфигурации мы продолжаем миграцию базы данных. 
+Наконец, мы создаем транзактор, необходимый Doobie, и репозиторий базы данных.
+
+```dotty
+    ...
+    val program =
+      for
+        configs <- configsIO
+        (apiConfig, dbConfig) = configs
+        _ <- migrator.migrate(dbConfig.url, dbConfig.user, dbConfig.pass)
+        host <- IO.fromOption(Host.fromString(apiConfig.host))(
+          new IllegalArgumentException("Invalid host")
+        )
+        port <- IO.fromOption(Port.fromInt(apiConfig.port.toInt))(
+          new IllegalArgumentException("Invalid port")
+        )
+      yield
+        val tx = Transactor.fromDriverManager[IO](
+          driver = dbConfig.driver.toString,
+          url = dbConfig.url.toString,
+          user = dbConfig.user.toString,
+          password = dbConfig.pass.toString,
+          logHandler = None
+        )
+        val repo           = new DoobieRepository(tx)
+        val productRoutes  = new ProductRoutes(repo)
+        val productsRoutes = new ProductsRoutes(repo)
+        val routes         = productRoutes.routes <+> productsRoutes.routes
+        val httpApp        = Router("/" -> routes).orNotFound
+        val server = EmberServerBuilder
+          .default[IO]
+          .withHost(host)
+          .withPort(port)
+          .withHttpApp(httpApp)
+        server.build.use(_ => IO(StdIn.readLine())).as(ExitCode.Success)
+    ...    
+```
+
+Выше мы создаем маршруты через классы, комбинируем их (с помощью оператора `<+>`) и создаем приложение `http4s`, 
+явно используя ввод-вывод, таким образом связывая наши абстрактные маршруты с вводом-выводом. 
+Служба будет работать до тех пор, пока вы не нажмете Enter.
+
+```dotty
+    ...
+    program.attempt.unsafeRunSync() match
+      case Left(e) =>
+        IO {
+          println("*** An error occured! ***")
+          if e ne null then println(e.getMessage)
+          ExitCode.Error
+        }
+      case Right(r) => r
+```
+
+Мы пытаемся запустить нашу программу и выполнить возможные побочные эффекты с помощью метода `unsafeRunSync` из Cats effects. 
+Но чтобы обеспечить корректный тип возвращаемого значения для `IOApp`, нам нужно оценить возвращаемое значение, 
+которое является либо ошибкой, либо правильным кодом выхода. 
+В случае ошибки мы выводим ее на консоль (здесь нет логирования) и явно устанавливаем код ошибки в качестве возвращаемого значения. 
+Обратите внимание, что мы также заключаем наш обработчик ошибок в IO, чтобы отсрочить возможные побочные эффекты.
 
 ---
 

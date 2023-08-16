@@ -8,6 +8,8 @@
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
 | [Programming Scala, 3rd Edition by Dean Wampler](https://deanwampler.github.io/books/programmingscala.html)                                               | Scala 3 |  En  | 2021 |             |
 | [Refinement types for Scala](https://github.com/fthomas/refined)                                                                                          | Scala 3 |  En  |      | Refined     |
+| [Hands-on Scala Programming by Li Haoyi](https://www.handsonscala.com/)                                                                                   | Scala 2 |  En  | 2020 |             |
+| [Pure functional HTTP APIs in Scala by Jens Grassel](https://leanpub.com/pfhais)                                                                          | Scala 2 |  En  | 2022 |             |
 | [Scala & Design Patterns: Exploring Language Expressivity by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf) | Scala 2 |  En  | 2009 |             |
 | [Scala with Cats](https://www.scalawithcats.com/)                                                                                                         | Scala 2 |  En  | 2020 | Cats        |
 
@@ -35,6 +37,7 @@
 | [Functional Programming in Scala - 4 Big Data Analysis with Scala and Spark](https://www.coursera.org/learn/scala-spark-big-data) | Scala 3  |  En  | 2021 | Spark       |
 | [Functional Programming in Scala - 5 Functional Programming in Scala Capstone](https://www.coursera.org/learn/scala-capstone)     | Scala 3  |  En  | 2021 |             |
 | [Scala - продвинутый уровень](https://stepik.org/course/92864/promo)                                                              | Scala 2  |  Ру  | 2021 |             |
+| [Pure Functional HTTP APIs in Scala](https://www.educative.io/courses/pure-functional-http-apis-scala)                            | Scala 2  |  En  | 2022 |             |
 
 ### Упражнения
 

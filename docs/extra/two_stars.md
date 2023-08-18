@@ -17,6 +17,7 @@
 
 | Название                                                                                                                                                                 | Версия  | Язык | Дата | Комментарий            |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|------------------------|
+| [Saint Scala-митап от Яндекса](https://www.youtube.com/watch?v=04Y1IAFTLXA)                                                                                              | Scala 3 |  Ru  | 2023 |                        |
 | [Direct Style Scala - Martin Odersky, Scalar Conference 2023](https://www.youtube.com/watch?v=0Fm0y4K4YO8&t)                                                             | Scala 3 |  En  | 2023 | Scalar Conference 2023 |
 | [Combining Refined Types with Type Class Derivation in Scala - Lawrence Carvalho](https://www.youtube.com/watch?v=Hq2QWbUXKbE&t)                                         | Scala 2 |  En  | 2018 | Refined                |
 | [Decorate your types with refined – Frank Thomas](https://www.youtube.com/watch?v=zExb9x3fzKs)                                                                           | Scala 2 |  En  | 2016 | Refined                |
@@ -48,34 +49,35 @@
 
 ### Статьи
 
-| Название                                                                                                                                                                                 | Версия  | Язык | Дата | Комментарий |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
-| [Cats Effect 3 - Introduction to Fibers](https://blog.rockthejvm.com/cats-effect-fibers/)                                                                                                | Scala 3 |  En  | 2021 | Cats effect |
-| [Concurrency with Cats Effect](https://softwaremill.com/concurrency-with-cats-effect)                                                                                                    | Scala 3 |  En  | 2023 | Cats effect |
-| [Controllable Futures in Scala - Rock the JVM](https://blog.rockthejvm.com/controllable-futures/)                                                                                        | Scala 3 |  En  | 2020 |             |
-| [Functional Programming anti-patterns in Scala](https://scalajobs.com/blog/functional-programming-anti-patterns-in-scala)                                                                | Scala 3 |  En  | 2023 | Patterns    |
-| [Scala 3: Error handling in FP land](https://gvolpe.com/blog/error-handling-scala3/)                                                                                                     | Scala 3 |  En  | 2022 |             |
-| [Time traveling in tests with Cats Effect](https://blog.softwaremill.com/time-traveling-in-tests-with-cats-effect-b22084f6a89)                                                           | Scala 3 |  En  | 2020 | Cats effect |
-| [Type Classes](https://typelevel.org/cats/typeclasses.html)                                                                                                                              | Scala 3 |  En  |      |             |
-| [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/)                                                                                                             | Scala 3 |  En  | 2020 | Cats effect |
-| [A simple trick to improve type safety of your Scala code](https://blog.softwaremill.com/a-simple-trick-to-improve-type-safety-of-your-scala-code-ba80559ca092)                          | Scala 2 |  En  | 2020 | Refined     |
-| [Cats Concurrency basics with Ref and Deferred](https://blog.softwaremill.com/cats-concurrency-basics-with-ref-and-deferred-399e0335630)                                                 | Scala 2 |  En  | 2020 | Cats effect |
-| [Higher-kinded types: the difference between giving up, and moving forward](https://typelevel.org/blog/2016/08/21/hkts-moving-forward.html)                                              | Scala 2 |  En  | 2016 |             |
-| [How we used Refined to improve type safety and error reporting in Scala](https://engineering.contentsquare.com/2021/scala-refined-types/)                                               | Scala 2 |  En  | 2021 | Refined     |
-| [Introduction to Programming with ZIO Functional Effects](https://scalac.io/blog/introduction-to-programming-with-zio-functional-effects)                                                | Scala 2 |  En  | 2021 | ZIO         |
-| [JVM Multithreading: Monitor Locks and Visibility](https://alexn.org/blog/2013/03/14/jvm-multithreading-monitor-locks-visibility/)                                                       | Scala 2 |  En  | 2013 |             |
-| [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/) | Scala 2 |  En  | 2015 | Refined     |
-| [Refined types, what are they good for?](https://beyondthelines.net/programming/refined-types/)                                                                                          | Scala 2 |  En  | 2017 | Refined     |
-| [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#117)                                                                                                 | Scala 2 |  En  | 2018 | Refined     |
-| [Refined Types in Scala](https://blog.rockthejvm.com/refined-types/)                                                                                                                     | Scala 2 |  En  | 2020 | Refined     |
-| [Refined Types in Scala: the Good, the Bad and the Ugly](https://medium.com/swlh/refined-types-the-good-the-bad-and-the-ugly-ee971e5d9137)                                               | Scala 2 |  En  | 2020 | Refined     |
-| [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)                                                       | Scala 2 |  En  | 2017 | Refined     |
-| [Safe, Expressive Code with Refinement Types](https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/)                                                                    | Scala 2 |  En  | 2020 | Refined     |
-| [Stackless Scala With Free Monads - Runar Oli Bjarnason](https://blog.higher-order.com/assets/trampolines.pdf)                                                                           | Scala 2 |  En  | 2012 | Trampoline  |
-| [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)                                                                    | Scala 2 |  En  | 2018 | Refined     |
-| [Type safety with refined](https://blog.michalp.net/posts/scala/refined/)                                                                                                                | Scala 2 |  En  | 2022 | Refined     |
-| [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)                                            | Scala 2 |  En  | 2019 | Refined     |
-| [Wtf is Refined?](https://medium.com/@Methrat0n/wtf-is-refined-5008eb233194)                                                                                                             | Scala 2 |  En  | 2019 | Refined     |
+| Название                                                                                                                                                                                 | Версия  | Язык | Дата | Комментарий      |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|------------------|
+| [Cats Effect 3 - Introduction to Fibers](https://blog.rockthejvm.com/cats-effect-fibers/)                                                                                                | Scala 3 |  En  | 2021 | Cats effect      |
+| [Cats Effect vs ZIO](https://softwaremill.com/cats-effect-vs-zio/)                                                                                                                       | Scala 3 |  En  | 2023 | Cats effect, ZIO |
+| [Concurrency with Cats Effect](https://softwaremill.com/concurrency-with-cats-effect)                                                                                                    | Scala 3 |  En  | 2023 | Cats effect      |
+| [Controllable Futures in Scala - Rock the JVM](https://blog.rockthejvm.com/controllable-futures/)                                                                                        | Scala 3 |  En  | 2020 |                  |
+| [Functional Programming anti-patterns in Scala](https://scalajobs.com/blog/functional-programming-anti-patterns-in-scala)                                                                | Scala 3 |  En  | 2023 | Patterns         |
+| [Scala 3: Error handling in FP land](https://gvolpe.com/blog/error-handling-scala3/)                                                                                                     | Scala 3 |  En  | 2022 |                  |
+| [Time traveling in tests with Cats Effect](https://blog.softwaremill.com/time-traveling-in-tests-with-cats-effect-b22084f6a89)                                                           | Scala 3 |  En  | 2020 | Cats effect      |
+| [Type Classes](https://typelevel.org/cats/typeclasses.html)                                                                                                                              | Scala 3 |  En  |      |                  |
+| [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/)                                                                                                             | Scala 3 |  En  | 2020 | Cats effect      |
+| [A simple trick to improve type safety of your Scala code](https://blog.softwaremill.com/a-simple-trick-to-improve-type-safety-of-your-scala-code-ba80559ca092)                          | Scala 2 |  En  | 2020 | Refined          |
+| [Cats Concurrency basics with Ref and Deferred](https://blog.softwaremill.com/cats-concurrency-basics-with-ref-and-deferred-399e0335630)                                                 | Scala 2 |  En  | 2020 | Cats effect      |
+| [Higher-kinded types: the difference between giving up, and moving forward](https://typelevel.org/blog/2016/08/21/hkts-moving-forward.html)                                              | Scala 2 |  En  | 2016 |                  |
+| [How we used Refined to improve type safety and error reporting in Scala](https://engineering.contentsquare.com/2021/scala-refined-types/)                                               | Scala 2 |  En  | 2021 | Refined          |
+| [Introduction to Programming with ZIO Functional Effects](https://scalac.io/blog/introduction-to-programming-with-zio-functional-effects)                                                | Scala 2 |  En  | 2021 | ZIO              |
+| [JVM Multithreading: Monitor Locks and Visibility](https://alexn.org/blog/2013/03/14/jvm-multithreading-monitor-locks-visibility/)                                                       | Scala 2 |  En  | 2013 |                  |
+| [Lightweight Non-Negative Numerics for Better Scala Type Signatures](http://erikerlandson.github.io/blog/2015/08/18/lightweight-non-negative-numerics-for-better-scala-type-signatures/) | Scala 2 |  En  | 2015 | Refined          |
+| [Refined types, what are they good for?](https://beyondthelines.net/programming/refined-types/)                                                                                          | Scala 2 |  En  | 2017 | Refined          |
+| [Refinement Types In Practice](https://kwark.github.io/refined-in-practice-bescala/#117)                                                                                                 | Scala 2 |  En  | 2018 | Refined          |
+| [Refined Types in Scala](https://blog.rockthejvm.com/refined-types/)                                                                                                                     | Scala 2 |  En  | 2020 | Refined          |
+| [Refined Types in Scala: the Good, the Bad and the Ugly](https://medium.com/swlh/refined-types-the-good-the-bad-and-the-ugly-ee971e5d9137)                                               | Scala 2 |  En  | 2020 | Refined          |
+| [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)                                                       | Scala 2 |  En  | 2017 | Refined          |
+| [Safe, Expressive Code with Refinement Types](https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/)                                                                    | Scala 2 |  En  | 2020 | Refined          |
+| [Stackless Scala With Free Monads - Runar Oli Bjarnason](https://blog.higher-order.com/assets/trampolines.pdf)                                                                           | Scala 2 |  En  | 2012 | Trampoline       |
+| [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)                                                                    | Scala 2 |  En  | 2018 | Refined          |
+| [Type safety with refined](https://blog.michalp.net/posts/scala/refined/)                                                                                                                | Scala 2 |  En  | 2022 | Refined          |
+| [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)                                            | Scala 2 |  En  | 2019 | Refined          |
+| [Wtf is Refined?](https://medium.com/@Methrat0n/wtf-is-refined-5008eb233194)                                                                                                             | Scala 2 |  En  | 2019 | Refined          |
 
 --- 
 
@@ -103,4 +105,6 @@
 
 ### Статьи
 
-...
+| Название                                                                             | Язык | Дата | Комментарий |
+|--------------------------------------------------------------------------------------|:----:|------|-------------|
+| [Strong Type Systems](https://blog.tmorris.net/posts/strong-type-systems/index.html) |  En  | 2007 |             |

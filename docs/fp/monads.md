@@ -256,3 +256,4 @@ def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
 
 - [Functional Programming in Scala, Second Edition, Chapter 11](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [A Monads Approach for Beginners, in Scala - Rock the JVM](https://www.youtube.com/watch?v=d-dy1x33moA&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
+- [Strong Type Systems](https://blog.tmorris.net/posts/strong-type-systems/index.html)

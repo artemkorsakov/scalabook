@@ -162,6 +162,7 @@ Foldable[List].fold(digits)                                // 45
 **Ссылки:**
 
 - [Cats](https://typelevel.org/cats/typeclasses/foldable.html)
+- [Folds for Imperative Programmers](https://blog.tmorris.net/posts/folds-for-imperative-programmers/index.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/using-monoids-to-fold.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Foldable.html)

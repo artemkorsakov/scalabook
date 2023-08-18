@@ -165,6 +165,31 @@ summon[True#Not =:= False]
 summon[False#Not =:= True]
 ```
 
+Мы также можем добавить в модуль `Bool` метод для преобразования типа `Bool` в логическое значение для прямой печати:
+
+```dotty
+object Bool:
+  class BoolRep[B <: Bool](val value: Boolean)
+  given BoolRep[False] = new BoolRep(false)
+  given BoolRep[True]  = new BoolRep(true)
+
+  def toBoolean[B <: Bool: BoolRep]: Boolean =
+    summon[BoolRep[B]].value
+```
+
+Пример:
+
+```dotty
+Bool.toBoolean[True#And[False]#Or[False#Not]]
+// val res0: Boolean = true
+```
+
+Это еще один метод проверки результата вычислений на уровне типов.
+
+## Часть 4: Числа Пеано
+
+[Исходная статья][part 3]
+
 
 ---
 

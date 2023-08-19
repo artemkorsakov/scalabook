@@ -1,14 +1,10 @@
 package ru.scalabook.books.tlpis
 
-sealed trait Nat
+sealed trait Nat:
+  type FoldR[Init <: Type, Type, F <: Fold[Nat, Type]] <: Type
+
 sealed trait _0             extends Nat
 sealed trait Succ[N <: Nat] extends Nat
-
-type _1 = Succ[_0]
-type _2 = Succ[_1]
-type _3 = Succ[_2]
-type _4 = Succ[_3]
-type _5 = Succ[_4]
 
 type Is0[A <: Nat] =
   A match
@@ -27,6 +23,12 @@ type Compare[A <: Nat, B <: Nat] <: Comparison =
         case Succ[b] => Compare[a, b]
 
 @main def runNat(): Unit =
+  type _1 = Succ[_0]
+  type _2 = Succ[_1]
+  type _3 = Succ[_2]
+  type _4 = Succ[_3]
+  type _5 = Succ[_4]
+  
   import Bool.*
 
   require(toBoolean[Is0[_0]])

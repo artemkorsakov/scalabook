@@ -186,9 +186,79 @@ Bool.toBoolean[True#And[False]#Or[False#Not]]
 
 Это еще один метод проверки результата вычислений на уровне типов.
 
-## Часть 4: Числа Пеано
+## Часть 4а. Основы числа Пеано
 
-[Исходная статья][part 3]
+[Исходная статья][part 4a]
+
+Как упоминалось во вступительной главе, мы можем выполнять рекурсию на уровне типов в Scala. 
+Первым применением для этого будет представление чисел в системе типов ([числа Пеано][wiki]). 
+Одним из их применений является безопасное для типов индексирование в `HLlists`, что мы сделаем в следующей главе. 
+Основная идея, конечно, не нова, но мы все еще создаем инструменты, которые нам понадобятся для последующих глав.
+
+Базовое представление неотрицательных целых чисел на уровне типа выглядит так:
+
+```dotty
+sealed trait Nat
+sealed trait _0 extends Nat
+sealed trait Succ[N <: Nat] extends Nat
+```
+
+Мы можем построить другие целые числа с помощью `Succ`:
+
+```dotty
+type _1 = Succ[_0]
+type _2 = Succ[_1]
+...
+```
+
+Как и в случае с `Bool`, мы добавляем некоторую структуру в `Nat`. 
+Определим три основные операции, все на уровне типов.
+
+Операция, необходимая для индексации в `HLists`, аналогична операции `If`, которую мы определили для `Bool`. 
+Назовем её `Match`. 
+Определение:
+
+```dotty
+sealed trait Nat:
+  type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] <: Up
+sealed trait _0 extends Nat:
+  type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] = IfZero
+sealed trait Succ[N <: Nat] extends Nat:
+  type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] = NonZero[N]
+```
+
+Он похож на `Bool#If`, за исключением того, что мы принимаем конструктор типа для случая, когда `Nat` является `Succ`. 
+То есть, если `Match` вызывается для `Succ[N]`, результатом будет `NonZero[N]`. 
+Если фактический тип `Nat` равен `_0`, возвращается `IfZero`. 
+Параметр `Up` определяет границу результата, как и для `Bool#If`.
+
+Мы видим, что это позволяет нам деконструировать `Nat`. 
+Например, мы можем объявить тип, который определяет, равен ли его параметр `_0`:
+
+```dotty
+sealed trait Nat:
+  type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] <: Up
+  private type ConstFalse[_] = False
+  type Is0                   = Match[ConstFalse, True, Bool]
+```
+
+Для `_0` результатом `_0#Match` будет `True`. Для `Succ[N]` - `ConstFalse[N]`. 
+`ConstFalse` всегда имеет значение `False`, поэтому для `Succ` результатом будет `False`.
+
+```dotty
+Bool.toBoolean[_0#Is0] // true
+Bool.toBoolean[_1#Is0] // false
+Bool.toBoolean[_2#Is0] // false
+```
+
+`Match` — единственная операция, которая нам нужна для `HList`. 
+Мы продолжим определение сравнений, сложения, умножения, модуля и возведения в степень просто для развлечения.
+
+## Часть 4b. Сравнение чисел Пеано
+
+[Исходная статья][part 4b]
+
+
 
 
 ---
@@ -199,9 +269,19 @@ Bool.toBoolean[True#And[False]#Or[False#Not]]
     - [Part 1: Type Recursion][part 1]
     - [Part 2: implicitly and =:=][part 2]
     - [Part 3: Booleans][part 3]
+    - [Part 4a: Peano number basics][part 4a]
+      - [Peano numbers][wiki]
+    - [Part 4b: Comparing Peano numbers][part 4b]
+    - [Part 4c: General recursion on Peano numbers][part 4c]
+    - [Part 4d: Peano arithmetic][part 4d]
 
 
 [blog]: https://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/
 [part 1]: https://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/
 [part 2]: https://apocalisp.wordpress.com/2010/06/10/type-level-programming-in-scala-part-2-implicitly-and/
 [part 3]: https://apocalisp.wordpress.com/2010/06/13/type-level-programming-in-scala-part-3-boolean/
+[part 4a]: https://apocalisp.wordpress.com/2010/06/16/type-level-programming-in-scala-part-4a-peano-number-basics/
+[part 4b]: https://apocalisp.wordpress.com/2010/06/17/type-level-programming-in-scala-part-4b-comparing-peano-numbers/
+[part 4c]: https://apocalisp.wordpress.com/2010/06/21/type-level-programming-in-scala-part-4c-general-recursion-on-peano-numbers/
+[part 4d]: https://apocalisp.wordpress.com/2010/06/21/type-level-programming-in-scala-part-4d-peano-arithmetic/
+[wiki]: https://wiki.haskell.org/Peano_numbers

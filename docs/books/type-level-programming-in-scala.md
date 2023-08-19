@@ -31,7 +31,7 @@ object Recurse:
 
 [Исходная статья][part 2]
 
-В этом посте кратко представлена полезная техника сравнения типов (показанная Jason Zaugg), 
+В этой главе кратко представлена полезная техника сравнения типов (показанная Jason Zaugg), 
 которая позже будет использоваться для проверки результатов вычислений на уровне типов.
 
 Она использует метод `summon`, определенный в `Predef` как:
@@ -85,8 +85,7 @@ summon[Int <:< AnyVal]
 [Исходная статья][part 3]
 
 Хорошим вводным примером программирования на уровне типов является [кодирование логических значений по Черчу](https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%B4%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5_%D0%A7%D1%91%D1%80%D1%87%D0%B0). 
-Это не требует ничего особенного, и нам понадобятся Boolean-ы при сравнении чисел позже. 
-Этот и следующий пост о числах Пеано на уровне типов предназначены для тех, кто не знаком с программированием на уровне типов.
+Это не требует ничего особенного, и позже нам понадобятся Boolean-ы при сравнении чисел. 
 
 Основные задействованные типы:
 
@@ -96,73 +95,58 @@ sealed trait True extends Bool
 sealed trait False extends Bool
 ```
 
-Мы можем добавить условные выражения, определив член типа `If` в `Bool`. 
-`If` принимает три параметра: тип, который нужно создать, если `Bool` имеет значение `True`, 
-тип, если он имеет значение `False`, и верхнюю границу, которой должны соответствовать первые два типа. 
-Верхняя граница зачастую важна при работе с результатом `If`.
-
-Наш расширенный `Bool` выглядит так:
+[Сравнение типов](../scala/type-system/match-types.md) позволяет добавлять условие на заданный тип,
+например:
 
 ```dotty
-sealed trait Bool:
-  type If[T <: Up, F <: Up, Up] <: Up
-```
-
-`True` и `False` просто возвращают соответствующий аргумент:
-
-```dotty
-sealed trait True extends Bool:
-  type If[T <: Up, F <: Up, Up] = T
-sealed trait False extends Bool:
-  type If[T <: Up, F <: Up, Up] = F
-```
-
-Пример использования:
-
-```dotty
-summon[True#If[Int, Long, AnyVal] =:= Int]
+type Rep[A <: Bool] =
+  A match
+    case True  => Int
+    case False => Long
+    
+summon[Rep[True] =:= Int]
 // val res0: Int =:= Int = generalized constraint
-
-summon[False#If[Int, Long, AnyVal] =:= Int]
-// -- [E172] Type Error: ----------------------------------------------------------
-// 1 |summon[False#If[Int, Long, AnyVal] =:= Int]
-//   |                                           ^
-//   |                    Cannot prove that False#If[Int, Long, AnyVal] =:= Int.
-// 1 error found
-
-summon[False#If[Int, Long, AnyVal] =:= Long]
-// val res1: Long =:= Long = generalized constraint
+summon[Rep[False] =:= Long]   
+// val res1: Long =:= Long = generalized constraint 
 ```
 
-Мы можем определить некоторые дополнительные типы в `Bool`:
+Используя эту технику мы можем определить некоторые дополнительные типы в сопутствующем объекте `Bool`:
 
 ```dotty
-sealed trait Bool:
-  type If[T <: Up, F <: Up, Up] <: Up
-  type And[B <: Bool] = If[B, False, Bool]
-  type Or[B <: Bool]  = If[True, B, Bool]
-  type Not            = If[False, True, Bool]
+object Bool:
+  type &&[A <: Bool, B <: Bool] =
+    A match
+      case False => False
+      case _     => B
+  type ||[A <: Bool, B <: Bool] =
+    A match
+      case True => True
+      case _    => B
+  type Not[A <: Bool] =
+    A match
+      case True  => False
+      case False => True
 ```
 
 Пример использования:
 
 ```dotty
-summon[True#And[False]#Or[False#Not] =:= True]
+summon[((True && False) || Not[False]) =:= True]
 // val res0: True =:= True = generalized constraint
 
 // Аналогичный результат ниже
-summon[True#And[True] =:= True]
-summon[True#And[False] =:= False]
-summon[False#And[True] =:= False]
-summon[False#And[False] =:= False]
+summon[(True && True) =:= True]
+summon[(True && False) =:= False]
+summon[(False && True) =:= False]
+summon[(False && False) =:= False]
 
-summon[True#Or[True] =:= True]
-summon[True#Or[False] =:= True]
-summon[False#Or[True] =:= True]
-summon[False#Or[False] =:= False]
+summon[(True || True) =:= True]
+summon[(True || False) =:= True]
+summon[(False || True) =:= True]
+summon[(False || False) =:= False]
 
-summon[True#Not =:= False]
-summon[False#Not =:= True]
+summon[Not[True] =:= False]
+summon[Not[False] =:= True]
 ```
 
 Мы также можем добавить в модуль `Bool` метод для преобразования типа `Bool` в логическое значение для прямой печати:
@@ -180,7 +164,7 @@ object Bool:
 Пример:
 
 ```dotty
-Bool.toBoolean[True#And[False]#Or[False#Not]]
+Bool.toBoolean[(True && False) || Not[False]]
 // val res0: Boolean = true
 ```
 
@@ -208,55 +192,94 @@ sealed trait Succ[N <: Nat] extends Nat
 ```dotty
 type _1 = Succ[_0]
 type _2 = Succ[_1]
+type _3 = Succ[_2]
+type _4 = Succ[_3]
+type _5 = Succ[_4]
 ...
 ```
-
-Как и в случае с `Bool`, мы добавляем некоторую структуру в `Nat`. 
-Определим три основные операции, все на уровне типов.
-
-Операция, необходимая для индексации в `HLists`, аналогична операции `If`, которую мы определили для `Bool`. 
-Назовем её `Match`. 
-Определение:
-
-```dotty
-sealed trait Nat:
-  type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] <: Up
-sealed trait _0 extends Nat:
-  type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] = IfZero
-sealed trait Succ[N <: Nat] extends Nat:
-  type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] = NonZero[N]
-```
-
-Он похож на `Bool#If`, за исключением того, что мы принимаем конструктор типа для случая, когда `Nat` является `Succ`. 
-То есть, если `Match` вызывается для `Succ[N]`, результатом будет `NonZero[N]`. 
-Если фактический тип `Nat` равен `_0`, возвращается `IfZero`. 
-Параметр `Up` определяет границу результата, как и для `Bool#If`.
-
-Мы видим, что это позволяет нам деконструировать `Nat`. 
+ 
+Сопоставление с шаблоном для типов позволяет нам деконструировать `Nat`. 
 Например, мы можем объявить тип, который определяет, равен ли его параметр `_0`:
 
 ```dotty
-sealed trait Nat:
-  type Match[NonZero[N <: Nat] <: Up, IfZero <: Up, Up] <: Up
-  private type ConstFalse[_] = False
-  type Is0                   = Match[ConstFalse, True, Bool]
+type Is0[A <: Nat] =
+  A match
+    case _0 => True
+    case _  => False
 ```
 
-Для `_0` результатом `_0#Match` будет `True`. Для `Succ[N]` - `ConstFalse[N]`. 
-`ConstFalse` всегда имеет значение `False`, поэтому для `Succ` результатом будет `False`.
+Для `_0` результатом деконструирования будет `True`, иначе - `False`.
 
 ```dotty
-Bool.toBoolean[_0#Is0] // true
-Bool.toBoolean[_1#Is0] // false
-Bool.toBoolean[_2#Is0] // false
+Bool.toBoolean[Is0[_0]] // true
+Bool.toBoolean[Is0[_2]] // false
 ```
 
-`Match` — единственная операция, которая нам нужна для `HList`. 
-Мы продолжим определение сравнений, сложения, умножения, модуля и возведения в степень просто для развлечения.
+Исключительно для развлечения продолжим определение сравнений, сложения, умножения, модуля и возведения в степень.
 
 ## Часть 4b. Сравнение чисел Пеано
 
 [Исходная статья][part 4b]
+
+Далее давайте посмотрим на сравнение натуральных чисел. 
+Определим тип сравнения следующим образом:
+
+```dotty
+sealed trait Comparison:
+  type Match[IfLT <: Up, IfEQ <: Up, IfGT <: Up, Up] <: Up
+
+  type gt = Match[False, False, True, Bool]
+  type ge = Match[False, True, True, Bool]
+  type eq = Match[False, True, False, Bool]
+  type le = Match[True, True, False, Bool]
+  type lt = Match[True, False, False, Bool]
+```
+
+Реализации выглядят так:
+
+```dotty
+sealed trait LT extends Comparison:
+  type Match[IfLT <: Up, IfEQ <: Up, IfGT <: Up, Up] = IfLT
+sealed trait EQ extends Comparison:
+  type Match[IfLT <: Up, IfEQ <: Up, IfGT <: Up, Up] = IfEQ
+sealed trait GT extends Comparison:
+  type Match[IfLT <: Up, IfEQ <: Up, IfGT <: Up, Up] = IfGT
+```
+
+Затем мы можем определить тип `Compare`, сравнивающий два `Nat`. 
+
+```dotty
+type Compare[A <: Nat, B <: Nat] <: Comparison =
+  A match
+    case _0 =>
+      B match
+        case _0 => EQ
+        case _  => LT
+    case Succ[a] =>
+      B match
+        case _0      => GT
+        case Succ[b] => Compare[a, b]
+```
+
+Для `A` равным `_0` результатом `Compare` является `EQ` (`A` и `B` равны), если `B` равен `_0`, 
+и `LT` (`A` меньше) - в противном случае.
+Если же `A` - это `Succ[a]`, где `a` - переменная типа, предшествующего `A`,
+то проверяем `B`. Если он равен `_0`, то результатом `Compare` является `GT` (`A` больше).
+Если же он равен `Succ[b]`, то возвращаем результат сравнения предшествующих значений.
+
+Получается потенциально бесконечная рекурсия на уровне типов.
+
+Примеры:
+
+```dotty
+toBoolean[(_0 Compare _0)#eq]  // true
+toBoolean[(_0 Compare _0)#lt]  // false
+toBoolean[(_3 Compare _5)#lt]  // true
+```
+
+Когда мы добираемся до нашего бинарного дерева поиска, 
+`Compare` позволяет нам использовать `Nat`-ы в качестве ключей в дереве. 
+Далее мы определим общий способ рекурсии в `Nat` с использованием fold-ов.
 
 
 
@@ -265,17 +288,21 @@ Bool.toBoolean[_2#Is0] // false
 
 **Ссылки:**
 
+- [Исходный код][source]
 - ["Type-Level Programming in Scala"][blog]
     - [Part 1: Type Recursion][part 1]
     - [Part 2: implicitly and =:=][part 2]
     - [Part 3: Booleans][part 3]
     - [Part 4a: Peano number basics][part 4a]
-      - [Peano numbers][wiki]
+        - [Peano numbers][wiki]
     - [Part 4b: Comparing Peano numbers][part 4b]
     - [Part 4c: General recursion on Peano numbers][part 4c]
     - [Part 4d: Peano arithmetic][part 4d]
+- [Scala Reference - Match Types](http://dotty.epfl.ch/docs/reference/new-types/match-types.html#) 
+- [In Dotty try match types as a replacement for type projections](https://stackoverflow.com/questions/59101681/dotty-cannot-infer-result-type-of-generic-scala-function-taking-type-parameter-t) 
+- [Converting code using simple type projections to dotty](https://users.scala-lang.org/t/converting-code-using-simple-type-projections-to-dotty/6516)
 
-
+[source]: https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Fru%2Fscalabook%2Fbooks%2Ftlpis&branch=master
 [blog]: https://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/
 [part 1]: https://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/
 [part 2]: https://apocalisp.wordpress.com/2010/06/10/type-level-programming-in-scala-part-2-implicitly-and/

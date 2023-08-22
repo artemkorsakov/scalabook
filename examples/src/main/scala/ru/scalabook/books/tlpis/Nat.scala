@@ -63,6 +63,13 @@ type Mod[A <: Nat, B <: Succ[?]] <: Nat =
       A match
         case Succ[a] => Mod[Add[Mod[a, B], _1], B]
 
+type Sq[N <: Nat] = Exp[N, _2]
+
+type Eq[A <: Nat, B <: Nat] <: Bool =
+  Compare[A, B] match
+    case EQ => True
+    case _  => False
+
 @main def runNat(): Unit =
   import Bool.*
 
@@ -108,3 +115,5 @@ type Mod[A <: Nat, B <: Succ[?]] <: Nat =
   summon[Mod[_5, _4] =:= _1]
   summon[Mod[_5, _5] =:= _0]
   summon[Mod[_5, _6] =:= _5]
+
+  require(toBoolean[Eq[Sq[_9], Add[_1, Mult[_8, _10]]]])

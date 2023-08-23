@@ -170,7 +170,9 @@ Bool.toBoolean[(True && False) || Not[False]]
 
 Это еще один метод проверки результата вычислений на уровне типов.
 
-## Часть 4а. Основы числа Пеано
+## Часть 4. Натуральные числа
+
+## Часть 4а. Основы чисел Пеано
 
 [Исходная статья][part 4a]
 
@@ -288,7 +290,7 @@ toBoolean[(_3 Compare _5)#lt]  // true
 К сожалению, определить свертывание на неопределенных типах невозможно,
 поэтому арифметические операции будут реализовываться напрямую со сопоставлением типов с шаблоном.
 
-## Часть 4d. Арифметика Пеано
+## Часть 4d. Арифметика чисел Пеано
 
 [Исходная статья][part 4d]
 
@@ -407,6 +409,105 @@ toBoolean[Eq[Sq[_9], Add[_1, Mult[_8, _10]]]] // true
 Около `10_000` время компиляции сильно увеличивается или переполняется стек. 
 Далее мы рассмотрим представление целых чисел без знака в двоичном виде и (вроде) решим проблему Эйлера № 4.
 
+## Часть 5. Двоичные числа уровня типа
+
+## Часть 5a. Двоичные числа
+
+[Исходная статья][part 5a]
+
+Операции `Nat` обычно ограничиваются результатами ниже `10_000`. 
+Время компиляции становится довольно продолжительным или переполняется стек. 
+Альтернативой является использование двоичного представления чисел, названного здесь _Dense_ 
+после реализации в ["Чисто функциональных структурах данных" Окасаки](https://books.google.ru/books?id=owgkEAAAQBAJ&printsec=frontcover&hl=ru#v=onepage&q&f=false). 
+Мы будем использовать это представление для решения упрощенной задачи Project Euler в системе типов в следующей главе.
+
+Здесь показаны только базовая форма и реализации приращения и свертки. 
+См. полный исходный код `Add`, `Mult` и `Exp`.
+
+Во-первых, нам нужен тип `Digit` для представления бита. 
+Имеет два подтипа: Один (`One`) и Ноль (`Zero`). 
+Мы определяем `Is0` для проверки на равенство `0` и `Compare` для сравнения цифр.
+
+```dotty
+sealed trait Digit
+sealed trait Zero extends Digit
+sealed trait One  extends Digit
+
+type Is0[A <: Digit] =
+  A match
+    case Zero => True
+    case One  => False
+
+type Compare[A <: Digit, B <: Digit] <: Comparison =
+  A match
+    case Zero =>
+      B match
+        case Zero => EQ
+        case One  => LT
+    case One =>
+      B match
+        case Zero => GT
+        case One  => EQ
+```
+
+Например:
+
+```dotty
+summon[Is0[Zero] =:= True]
+summon[(One Compare Zero) =:= GT]
+```
+
+Далее мы создаем тип `Dense`. 
+Это гетерогенный список уровня типа, в котором типы элементов ограничены цифрами. 
+Начало списка является наименее значимым битом. 
+Последний элемент непустого списка всегда равен единице и является старшим битом. 
+Пустой список представляет ноль.
+
+```dotty
+sealed trait Dense:
+  type digit <: Digit
+  type tail <: Dense
+  type ShiftR <: Dense
+  type ShiftL <: Dense
+
+type Inc[T <: Dense] <: Dense =
+  T match
+    case DNil => One :: DNil
+    case DCons[h, t] =>
+      h match
+        case Zero => One :: t
+        case One  => Zero :: Inc[t]
+
+sealed trait DNil extends Dense:
+  type tail   = Nothing
+  type digit  = Nothing
+  type ShiftR = DNil
+  type ShiftL = DNil
+
+sealed trait DCons[d <: Digit, T <: Dense] extends Dense:
+  type digit  = d
+  type tail   = T
+  type ShiftR = tail
+  type ShiftL = Zero :: DCons[d, T]
+```
+
+Мы видим, что с `Dense` сдвиг происходит легче (по сравнению с `Nat`). 
+Это просто конец списка (сдвиг вправо) или добавление нуля (сдвиг влево).
+
+Мы можем заранее определить некоторые целые числа (используя псевдоним `::` для `DCons`):
+
+```dotty
+type ::[H <: Digit, T <: Dense] = DCons[H, T]
+
+type _0 = DNil
+type _1 = One :: DNil
+type _2 = Zero :: One :: DNil
+type _3 = One :: One :: DNil
+type _4 = Zero :: Zero :: One :: DNil
+type _5 = One :: Zero :: One :: DNil
+...
+```
+
 
 ---
 
@@ -422,6 +523,8 @@ toBoolean[Eq[Sq[_9], Add[_1, Mult[_8, _10]]]] // true
     - [Part 4b: Comparing Peano numbers][part 4b]
     - [Part 4c: General recursion on Peano numbers][part 4c]
     - [Part 4d: Peano arithmetic][part 4d]
+    - [Part 5a: Binary numbers][part 5a]
+    - [Part 5b: Project Euler problem 4][part 5b]
 - [Scala Reference - Match Types](http://dotty.epfl.ch/docs/reference/new-types/match-types.html#) 
 - [In Dotty try match types as a replacement for type projections](https://stackoverflow.com/questions/59101681/dotty-cannot-infer-result-type-of-generic-scala-function-taking-type-parameter-t) 
 - [Converting code using simple type projections to dotty](https://users.scala-lang.org/t/converting-code-using-simple-type-projections-to-dotty/6516)
@@ -435,5 +538,7 @@ toBoolean[Eq[Sq[_9], Add[_1, Mult[_8, _10]]]] // true
 [part 4b]: https://apocalisp.wordpress.com/2010/06/17/type-level-programming-in-scala-part-4b-comparing-peano-numbers/
 [part 4c]: https://apocalisp.wordpress.com/2010/06/21/type-level-programming-in-scala-part-4c-general-recursion-on-peano-numbers/
 [part 4d]: https://apocalisp.wordpress.com/2010/06/21/type-level-programming-in-scala-part-4d-peano-arithmetic/
+[part 5a]: https://apocalisp.wordpress.com/2010/06/24/type-level-programming-in-scala-part-5a-binary-numbers/
+[part 5b]: https://apocalisp.wordpress.com/2010/06/24/type-level-programming-in-scala-part-5b-project-euler-problem%C2%A04/
 [wiki]: https://wiki.haskell.org/Peano_numbers
 [match types]: ../scala/type-system/match-types.md

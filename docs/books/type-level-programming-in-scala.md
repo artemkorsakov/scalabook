@@ -470,14 +470,6 @@ sealed trait Dense:
   type ShiftR <: Dense
   type ShiftL <: Dense
 
-type Inc[T <: Dense] <: Dense =
-  T match
-    case DNil => One :: DNil
-    case DCons[h, t] =>
-      h match
-        case Zero => One :: t
-        case One  => Zero :: Inc[t]
-
 sealed trait DNil extends Dense:
   type tail   = Nothing
   type digit  = Nothing
@@ -507,6 +499,106 @@ type _4 = Zero :: Zero :: One :: DNil
 type _5 = One :: Zero :: One :: DNil
 ...
 ```
+
+Как обычно, определяем преобразование в значения:
+
+```dotty
+object Dense:
+  def toInt[D <: Dense](using drep: DRep[D]): Int = drep.value
+
+  final case class DRep[D <: Dense](value: Int)
+  given DRep[DNil] = DRep[DNil](0)
+  given dcons0ToRep[D <: Dense](using tailRep: DRep[D]): DRep[DCons[Zero, D]] =
+    DRep(tailRep.value * 2)
+  given dcons1ToRep[D <: Dense](using tailRep: DRep[D]): DRep[DCons[One, D]] =
+    DRep(tailRep.value * 2 + 1)
+```
+
+Пример использования:
+
+```dotty
+toInt[_4] // 4
+```
+
+Следующее и предыдущее двоичное число определяются так:
+
+```dotty
+type Inc[T <: Dense] <: Dense =
+  T match
+    case DNil           => One :: DNil
+    case DCons[Zero, t] => One :: t
+    case DCons[One, t]  => Zero :: Inc[t]
+
+type Dec[T <: Dense] <: Dense =
+  T match
+    case DNil             => Nothing
+    case DCons[Zero, t]   => One :: Dec[t]
+    case DCons[One, DNil] => DNil
+    case DCons[One, t]    => Zero :: t
+```
+
+Пример:
+
+```dotty
+summon[Inc[_0] =:= _1]
+summon[Inc[_1] =:= _2]
+summon[Inc[_2] =:= _3]
+
+summon[Dec[_0] =:= Nothing]
+summon[Dec[_1] =:= _0]
+summon[Dec[_2] =:= _1]
+```
+
+Операции сложения, умножения и возведения в степень определяются так:
+
+```dotty
+type Add[A <: Dense, B <: Dense] <: Dense =
+  A match
+    case DNil => B
+    case DCons[Zero, ta] =>
+      B match
+        case DNil          => A
+        case DCons[hb, tb] => hb :: Add[ta, tb]
+    case DCons[One, ta] =>
+      B match
+        case DNil            => A
+        case DCons[Zero, tb] => One :: Add[ta, tb]
+        case DCons[One, tb]  => Zero :: Inc[Add[ta, tb]]
+        
+type Mult[A <: Dense, B <: Dense] <: Dense =
+  A match
+    case DNil             => DNil
+    case DCons[One, DNil] => B
+    case _ =>
+      B match
+        case DNil => DNil
+        case _    => Add[Mult[Dec[A], B], B]   
+
+type Exp[A <: Dense, B <: Dense] <: Dense =
+  B match
+    case DNil => _1
+    case _    => Mult[A, Exp[A, Dec[B]]]
+
+type Sq[N <: Dense] = Exp[N, _2]             
+```
+
+Пример:
+
+```dotty
+toInt[_5 Add _7]            // 12
+toInt[_12 Mult _8 Mult _13] // 1248
+toInt[_4 Exp _15]           // 1073741824
+```
+
+В некоторых случаях большие числа обрабатываются лучше, используя `Dense`, например, для степеней двойки.
+В других же эффективнее `Nat` (например, для `_3#Exp[_8]`).
+
+Позже `Dense` послужит хорошим примером ключей в ассоциативном массиве уровня типа. 
+Далее мы решим (намного) уменьшенную версию задачи Проекта Эйлера, используя эти двоичные числа уровня типа. 
+Для этого нам понадобятся функции `Reverce` и `Compare`, определенные в `Dense`:
+
+
+
 
 
 ---

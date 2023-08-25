@@ -594,7 +594,7 @@ toInt[_4 Exp _15]           // 1073741824
 В других же эффективнее `Nat` (например, для `_3#Exp[_8]`).
 
 Позже `Dense` послужит хорошим примером ключей в ассоциативном массиве уровня типа. 
-Далее мы решим (намного) уменьшенную версию задачи Проекта Эйлера, используя двоичные числа уровня типа. 
+Далее мы решим (намного) уменьшенную версию задачи [Project Euler][Project Euler], используя двоичные числа уровня типа. 
 Для этого нам понадобятся функции `Reverce` и `Compare`, определенные в `Dense`:
 
 ```dotty
@@ -612,6 +612,150 @@ type Compare[A <: Dense, B <: Dense] <: Comparison =
             case EQ => Digit.Compare[ha, hb]
             case LT => LT
             case GT => GT
+
+type AddToTheEnd[D <: Digit, T <: Dense] <: Dense =
+  T match
+    case DNil        => D :: DNil
+    case DCons[h, t] => h :: AddToTheEnd[D, t]
+
+type Reverse[A <: Dense] <: Dense =
+  A match
+    case DNil        => DNil
+    case DCons[h, t] => AddToTheEnd[h, Reverse[t]]            
+```
+
+Пример использования:
+
+```dotty
+summon[(_3 Compare _3) =:= EQ]
+summon[(_3 Compare _5) =:= LT]
+summon[(_5 Compare _3) =:= GT]
+
+summon[Reverse[_4] =:= (One :: Zero :: Zero :: DNil)]
+summon[Reverse[_8] =:= (One :: Zero :: Zero :: Zero :: DNil)]
+summon[Reverse[_9] =:= _9]
+```
+
+## Часть 5b. Project Euler problem 4
+
+[Исходная статья][part 5b]
+
+Давайте посмотрим на решение [проблемы № 4 Project Euler][Project Euler, p4] на уровне типа. 
+Поскольку мы работаем с двоичными числами в системе типов Scala, 
+нам приходится существенно снижать наши ожидания относительно того, что мы можем решить.
+
+Первое упрощение заключается в том, что мы будем рассматривать палиндромы по основанию `2`, 
+поскольку наши числа уже находятся в этом представлении. 
+Кроме того, мы не будем рассматривать большие числа. 
+Мы просто найдем самый большой двоичный палиндром, который является произведением двух двоичных чисел меньше `N`. 
+Даже `N = 15` требует времени, поэтому мы будем придерживаться `15`.
+
+Я покажу подход, начав с обычного кода Scala, реализующего решение методом перебора:
+
+```dotty
+object E4:
+  // класс, содержащий числа i,j и их произведение prod = i*j
+  case class Result(prod: Int, iMax: Int, jMax: Int)
+
+  // сравнивает Result-ы на основе произведения
+  given Ordering[Result] with
+    def compare(a: Result, b: Result): Int = a.prod compare b.prod
+
+  // вычисляет наибольший бинарный палиндром,
+  // являющийся произведением двух чисел, меньших start
+  def apply(start: Int): Result =
+    all(start).max
+
+  // итерация по парам (i, j), вычисление произведения и отслеживание палиндромов
+  def all(start: Int): Iterable[Result] =
+    for
+      i <- start to 1 by -1
+      j <- i to 1 by -1
+      prod = i * j
+      if isPalindrome(prod)
+    yield Result(prod, i, j)
+
+  // проверка, что число является полиндромом в бинарном представлении
+  def isPalindrome(i: Int): Boolean =
+    i.toBinaryString == i.toBinaryString.reverse
+```
+
+Однако код нелегко перенести непосредственно на программирование на уровне типа. 
+Нам нужно преобразовать его так, чтобы он явно рекурсировал, отслеживал и обновлял максимум, 
+а не использовал промежуточные переменные. 
+Мы также отказались от класса `Result` в пользу `Tuple3`.
+
+```dotty
+object E4_Explicit:
+  opaque type Result = (Int, Int, Int)
+  
+  def apply(start: Int): Result = apply((1, 1, 1), start, start)
+
+  def apply(max: Result, i: Int, j: Int): Result =
+    apply1(max, (i * j, i, j))
+
+  def apply1(max: Result, iteration: Result): Result =
+    if isPalindrome(iteration._1) && iteration._1 > max._1 then
+      apply2(iteration, iteration)
+    else apply2(max, iteration)
+
+  def apply2(max: Result, iteration: Result): Result =
+    if iteration._3 == 1 then
+      if iteration._2 == 1 then max
+      else apply(max, iteration._2 - 1, iteration._2 - 1)
+    else apply(max, iteration._2, iteration._3 - 1)
+
+  def isPalindrome(i: Int): Boolean =
+    i.toBinaryString == i.toBinaryString.reverse
+```
+
+Код все еще необходимо преобразовать в лучшее программирование на уровне целевого типа. 
+По сути, утверждения и сравнения "if" могут быть проблематичными. 
+См. Expanded объект в [Euler4.scala](https://github.com/harrah/up/blob/master/Euler4.scala) 
+для обычного кода Scala, наиболее близкого к следующему коду уровня типа.
+
+Что касается кода уровня типа, давайте начнем с проверки бинарных палиндромов:
+
+```dotty
+type isPalindrome[D <: Dense] <: Bool =
+  Reverse[D] Compare D match
+    case EQ => True
+    case _  => False
+       
+println(toBoolean[isPalindrome[_3]])
+// true
+println(toBoolean[isPalindrome[_6]])
+// false
+println(toBoolean[isPalindrome[_15]])
+// true
+```
+
+Затем давайте проверим, является ли число палиндромом и больше текущего максимального палиндрома:
+
+```dotty
+type isGreaterThan[D <: Dense, Max <: Dense] <: Bool =
+  D Compare Max match
+    case GT => True
+    case _  => False
+
+type isLargerPalindrome[D <: Dense, Max <: Dense] =
+  isPalindrome[D] && (D isGreaterThan Max)
+ 
+println(toBoolean[isLargerPalindrome[_7, _3]])
+// true
+println(toBoolean[isLargerPalindrome[_3, _5]])
+// false
+println(toBoolean[isLargerPalindrome[_8, _5]])
+// false
+```
+
+Затем мы хотим использовать `Bool#If` для обработки результата `isLargerPalindrome`. 
+К сожалению, хотя до этого момента все работало нормально, как только мы начинаем создавать остальную часть программы, 
+наша информация о типе теряется. Нам нужно сделать что-то менее простое. 
+Нам нужно передать, что возвращать, если результат истинен или ложен. 
+Грубо говоря, мы встраиваем `If`, `gt` и `&&`.
+
+```dotty
 ```
 
 
@@ -649,3 +793,5 @@ type Compare[A <: Dense, B <: Dense] <: Comparison =
 [part 5b]: https://apocalisp.wordpress.com/2010/06/24/type-level-programming-in-scala-part-5b-project-euler-problem%C2%A04/
 [wiki]: https://wiki.haskell.org/Peano_numbers
 [match types]: ../scala/type-system/match-types.md
+[Project Euler]: https://projecteuler.net/about
+[Project Euler, p4]: https://projecteuler.net/index.php?section=problems&id=4

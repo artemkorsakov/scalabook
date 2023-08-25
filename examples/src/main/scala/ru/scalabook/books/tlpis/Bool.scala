@@ -5,15 +5,15 @@ sealed trait True  extends Bool
 sealed trait False extends Bool
 
 object Bool:
-  type &&[A <: Bool, B <: Bool] =
+  type &&[A <: Bool, B <: Bool] <: Bool =
     A match
       case False => False
       case _     => B
-  type ||[A <: Bool, B <: Bool] =
+  type ||[A <: Bool, B <: Bool] <: Bool =
     A match
       case True => True
       case _    => B
-  type Not[A <: Bool] =
+  type Not[A <: Bool] <: Bool =
     A match
       case True  => False
       case False => True

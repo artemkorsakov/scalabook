@@ -107,19 +107,6 @@ object Dense:
       case DNil        => DNil
       case DCons[h, t] => AddToTheEnd[h, Reverse[t]]
 
-  type isPalindrome[D <: Dense] <: Bool =
-    Reverse[D] Compare D match
-      case EQ => True
-      case _  => False
-
-  type isGreaterThan[D <: Dense, Max <: Dense] <: Bool =
-    D Compare Max match
-      case GT => True
-      case _  => False
-
-  type isLargerPalindrome[D <: Dense, Max <: Dense] =
-    isPalindrome[D] && (D isGreaterThan Max)
-
   def toInt[D <: Dense](using drep: DRep[D]): Int = drep.value
 
   final case class DRep[D <: Dense](value: Int)
@@ -224,13 +211,3 @@ end Dense
   summon[Reverse[_8] =:= (One :: Zero :: Zero :: Zero :: DNil)]
   summon[Reverse[_9] =:= _9]
   summon[Reverse[_10] =:= (One :: Zero :: One :: Zero :: DNil)]
-
-  // isPalindrome
-  require(toBoolean[isPalindrome[_3]])
-  require(!toBoolean[isPalindrome[_6]])
-  require(toBoolean[isPalindrome[_15]])
-
-  // isLargerPalindrome
-  require(toBoolean[isLargerPalindrome[_7, _3]])
-  require(!toBoolean[isLargerPalindrome[_3, _5]])
-  require(!toBoolean[isLargerPalindrome[_8, _5]])

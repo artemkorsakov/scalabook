@@ -594,10 +594,25 @@ toInt[_4 Exp _15]           // 1073741824
 В других же эффективнее `Nat` (например, для `_3#Exp[_8]`).
 
 Позже `Dense` послужит хорошим примером ключей в ассоциативном массиве уровня типа. 
-Далее мы решим (намного) уменьшенную версию задачи Проекта Эйлера, используя эти двоичные числа уровня типа. 
+Далее мы решим (намного) уменьшенную версию задачи Проекта Эйлера, используя двоичные числа уровня типа. 
 Для этого нам понадобятся функции `Reverce` и `Compare`, определенные в `Dense`:
 
-
+```dotty
+type Compare[A <: Dense, B <: Dense] <: Comparison =
+  A match
+    case DNil =>
+      B match
+        case DNil => EQ
+        case _    => LT
+    case DCons[ha, ta] =>
+      B match
+        case DNil => GT
+        case DCons[hb, tb] =>
+          Compare[ta, tb] match
+            case EQ => Digit.Compare[ha, hb]
+            case LT => LT
+            case GT => GT
+```
 
 
 

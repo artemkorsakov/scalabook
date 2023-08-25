@@ -20,24 +20,24 @@ sealed trait DCons[d <: Digit, T <: Dense] extends Dense:
   type ShiftR = tail
   type ShiftL = Zero :: DCons[d, T]
 
-type _0  = DNil
-type _1  = One :: DNil
-type _2  = Zero :: One :: DNil
-type _3  = One :: One :: DNil
-type _4  = Zero :: Zero :: One :: DNil
-type _5  = One :: Zero :: One :: DNil
-type _6  = Zero :: One :: One :: DNil
-type _7  = One :: One :: One :: DNil
-type _8  = Zero :: Zero :: Zero :: One :: DNil
-type _9  = One :: Zero :: Zero :: One :: DNil
-type _10 = Zero :: One :: Zero :: One :: DNil
-type _11 = One :: One :: Zero :: One :: DNil
-type _12 = Zero :: Zero :: One :: One :: DNil
-type _13 = One :: Zero :: One :: One :: DNil
-type _14 = Zero :: One :: One :: One :: DNil
-type _15 = One :: One :: One :: One :: DNil
-
 object Dense:
+  type _0  = DNil
+  type _1  = One :: DNil
+  type _2  = Zero :: One :: DNil
+  type _3  = One :: One :: DNil
+  type _4  = Zero :: Zero :: One :: DNil
+  type _5  = One :: Zero :: One :: DNil
+  type _6  = Zero :: One :: One :: DNil
+  type _7  = One :: One :: One :: DNil
+  type _8  = Zero :: Zero :: Zero :: One :: DNil
+  type _9  = One :: Zero :: Zero :: One :: DNil
+  type _10 = Zero :: One :: Zero :: One :: DNil
+  type _11 = One :: One :: Zero :: One :: DNil
+  type _12 = Zero :: Zero :: One :: One :: DNil
+  type _13 = One :: Zero :: One :: One :: DNil
+  type _14 = Zero :: One :: One :: One :: DNil
+  type _15 = One :: One :: One :: One :: DNil
+
   type Inc[T <: Dense] <: Dense =
     T match
       case DNil           => One :: DNil
@@ -94,10 +94,16 @@ object Dense:
               case EQ => Digit.Compare[ha, hb]
               case LT => LT
               case GT => GT
-  /*
-type Reverse[Acc <: Dense] <: Dense
-type Compare[B <: Dense] <: Comparison
-   */
+
+  type AddToTheEnd[D <: Digit, T <: Dense] <: Dense =
+    T match
+      case DNil        => D :: DNil
+      case DCons[h, t] => h :: AddToTheEnd[D, t]
+
+  type Reverse[A <: Dense] <: Dense =
+    A match
+      case DNil        => DNil
+      case DCons[h, t] => AddToTheEnd[h, Reverse[t]]
 
   def toInt[D <: Dense](using drep: DRep[D]): Int = drep.value
 
@@ -180,7 +186,6 @@ end Dense
 
   // Compare
   summon[(_0 Compare _0) =:= EQ]
-  summon[(_0 Compare _0) =:= LT]
   summon[(_0 Compare _1) =:= LT]
   summon[(_1 Compare _0) =:= GT]
   summon[(_0 Compare _2) =:= LT]
@@ -191,3 +196,16 @@ end Dense
   summon[(_3 Compare _3) =:= EQ]
   summon[(_3 Compare _5) =:= LT]
   summon[(_5 Compare _3) =:= GT]
+
+  // Reverse
+  summon[Reverse[_0] =:= _0]
+  summon[Reverse[_1] =:= _1]
+  summon[Reverse[_2] =:= (One :: Zero :: DNil)]
+  summon[Reverse[_3] =:= _3]
+  summon[Reverse[_4] =:= (One :: Zero :: Zero :: DNil)]
+  summon[Reverse[_5] =:= _5]
+  summon[Reverse[_6] =:= (One :: One :: Zero :: DNil)]
+  summon[Reverse[_7] =:= _7]
+  summon[Reverse[_8] =:= (One :: Zero :: Zero :: Zero :: DNil)]
+  summon[Reverse[_9] =:= _9]
+  summon[Reverse[_10] =:= (One :: Zero :: One :: Zero :: DNil)]

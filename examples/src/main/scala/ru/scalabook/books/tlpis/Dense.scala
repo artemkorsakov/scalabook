@@ -39,6 +39,12 @@ object Dense:
   type _13 = One :: Zero :: One :: One :: DNil
   type _14 = Zero :: One :: One :: One :: DNil
   type _15 = One :: One :: One :: One :: DNil
+  type _16 = Zero :: Zero :: Zero :: Zero :: One :: DNil
+  type _17 = One :: Zero :: Zero :: Zero :: One :: DNil
+  type _18 = Zero :: One :: Zero :: Zero :: One :: DNil
+  type _19 = One :: One :: Zero :: Zero :: One :: DNil
+  type _20 = Zero :: Zero :: One :: Zero :: One :: DNil
+  type _21 = One :: Zero :: One :: Zero :: One :: DNil
 
   type Inc[T <: Dense] <: Dense =
     T match

@@ -709,9 +709,9 @@ object E4_Explicit:
     i.toBinaryString == i.toBinaryString.reverse
 ```
 
-Код все еще необходимо преобразовать в лучшее программирование на уровне целевого типа. 
+Код все еще необходимо преобразовать в программирование на уровне типа. 
 По сути, утверждения и сравнения "if" могут быть проблематичными. 
-См. Expanded объект в [Euler4.scala](https://github.com/harrah/up/blob/master/Euler4.scala) 
+См. `Expanded` объект в [Euler4.scala](https://github.com/harrah/up/blob/master/Euler4.scala) 
 для обычного кода Scala, наиболее близкого к следующему коду уровня типа.
 
 Что касается кода уровня типа, давайте начнем с проверки бинарных палиндромов:
@@ -749,13 +749,87 @@ println(toBoolean[isLargerPalindrome[_8, _5]])
 // false
 ```
 
-Затем мы хотим использовать `Bool#If` для обработки результата `isLargerPalindrome`. 
-К сожалению, хотя до этого момента все работало нормально, как только мы начинаем создавать остальную часть программы, 
-наша информация о типе теряется. Нам нужно сделать что-то менее простое. 
-Нам нужно передать, что возвращать, если результат истинен или ложен. 
-Грубо говоря, мы встраиваем `If`, `gt` и `&&`.
+Перевод кода на разработку на уровне типов приводит к следующим результатам:
 
 ```dotty
+trait Pali:
+  type Result = (Dense, Dense, Dense)
+
+  type Apply[
+      max <: Dense,
+      iMax <: Dense,
+      jMax <: Dense,
+      i <: Dense,
+      j <: Dense,
+      P <: Pali
+  ] <: Result
+
+trait Pali0 extends Pali:
+  // Точка входа
+  type App[start <: Dense, P <: Pali] <: Result =
+    P match
+      case _ => Apply[_1, _1, _1, start, start, P]
+
+  // Рекурсия
+  type Apply[
+      max <: Dense,
+      iMax <: Dense,
+      jMax <: Dense,
+      i <: Dense,
+      j <: Dense,
+      P <: Pali
+  ] <: Result =
+    P match
+      case _ => Apply1[max, iMax, jMax, i, j, Mult[j, i], P]
+
+  type Apply1[
+      max <: Dense,
+      iMax <: Dense,
+      jMax <: Dense,
+      i <: Dense,
+      j <: Dense,
+      prod <: Dense,
+      P <: Pali
+  ] <: Result =
+    isLargerPalindrome[prod, max] match
+      case True  => Apply2[prod, i, j, i, Dec[j], P]
+      case False => Apply2[max, iMax, jMax, i, Dec[j], P]
+
+  type Apply2[
+      max <: Dense,
+      iMax <: Dense,
+      jMax <: Dense,
+      i <: Dense,
+      j <: Dense,
+      P <: Pali
+  ] <: Result =
+    j match
+      case DNil => Apply3[max, iMax, jMax, Dec[i], Dec[i], P]
+      case _    => Apply3[max, iMax, jMax, i, j, P]
+
+  type Apply3[
+      max <: Dense,
+      iMax <: Dense,
+      jMax <: Dense,
+      i <: Dense,
+      j <: Dense,
+      P <: Pali
+  ] <: Result =
+    i match
+      case DNil => (max, iMax, jMax)
+      case _    => Apply[max, iMax, jMax, i, j, P]
+
+end Pali0
+```
+
+К сожалению, он вызывает предупреждение компилятора о бесконечной рекурсии, согласно документации:
+
+```dotty
+object Pali1 extends Pali0
+
+// Recursion limit exceeded. 
+// Maybe there is an illegal cyclic reference? 
+// ...
 ```
 
 

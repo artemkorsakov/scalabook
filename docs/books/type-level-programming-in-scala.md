@@ -830,6 +830,60 @@ object Pali1 extends Pali0:
   summon[App[_15, Pali1.type] =:= (Mult[_15, _13], _15, _13)]  
 ```
 
+## Часть 6. Разнородные списки
+
+## Часть 6a. Основы разнородных списков
+
+[Исходная статья][part 6a]
+
+`HList` — это кортеж произвольной длины.
+Мы можем (в некоторой степени) легко перемещаться между длинами, объединяя кортежи или вытаскивая фрагмент из кортежа. 
+Недостатки в том, что мы теряем специальный синтаксис для построения кортежей и типов, таких как `(Int, Boolean)` и `(3, true)`, 
+иногда сталкиваемся с ограничениями компилятора или языка, а некоторые полезные операции требуют сложных типов.
+
+`HList`-ы ранее были продемонстрированы [в Scala](http://jnordenberg.blogspot.com/2008/08/hlist-in-scala.html) 
+(и даже [в Java](https://apocalisp.wordpress.com/2008/10/23/heterogeneous-lists-and-the-limits-of-the-java-type-system)). 
+Реализация Scala использовала сочетание членов типа в иерархии `HList` и класса типов.
+
+Здесь мы реализуем четыре основные операции, которые позволяют нам реализовать другие операции вне иерархии `HList` 
+и без класса типов для каждой операции. 
+Эти основные операции: добавление, свертка влево, свертка вправо и "заевшая молния" (stuck zipper). 
+Под заевшей молнией подразумевается структура, которая указывает на позицию в `HList` 
+и предоставляет `HList` до и после этой позиции, но не может перемещаться влево или вправо.
+
+С помощью этих четырех операций мы можем определить:
+
+- Использование сверток: длина, добавление, обращение, обратное добавление, последний элемент
+- Использование "заевшей молнии": `at` (выбрать по индексу), `drop` (пропустить часть элементов), `take` (взять часть элементов),
+  `replace` (заменить), `remove` (удалить), `map`/`flatMap` (преобразование по одному индексу), 
+  `insert` (вставить элемент), `insert hlist` (вставить hlist), `splitAt` (разделить по заданному индексу)
+
+С некоторыми дополнительными классами типов мы также определим:
+
+- `zip` (поэлементное соединение двух списков)
+- разнородный `apply` (применить `HList` функции к входящим `HList`)
+
+Для начала создадим очень простой `HList`:
+
+```dotty
+sealed trait HList
+
+final case class HCons[H, T <: HList](head: H, tail: T) extends HList:
+  def ::[A](v: A): HList = HCons(v, this)
+
+sealed class HNil extends HList:
+  def ::[A](v: A): HList = HCons(v, this)
+
+// алиасы для построения типов HList и для сопоставления с шаблоном
+object HList:
+  type ::[H, T <: HList] = HCons[H, T]
+  val :: : HCons.type = HCons
+```
+
+Это базовое определение уже полезно. Например, ниже показано типобезопасное построение и извлечение:
+
+```dotty
+```
 
 
 ---
@@ -848,6 +902,13 @@ object Pali1 extends Pali0:
     - [Part 4d: Peano arithmetic][part 4d]
     - [Part 5a: Binary numbers][part 5a]
     - [Part 5b: Project Euler problem 4][part 5b]
+    - [Part 6a: Heterogeneous List Basics][part 6a]
+    - [Part 6b: HList folds][part 6b]
+    - [Part 6c: HList Indexing][part 6c]
+    - [Part 6d: HList Zip/Unzip][part 6d]
+    - [Part 6e: HList Apply][part 6e]
+    - [Part 6f: Deriving type class instances through HLists][part 6f]
+    - [Part 6g: Type-indexed HLists][part 6g]
 - [Scala Reference - Match Types](http://dotty.epfl.ch/docs/reference/new-types/match-types.html#) 
 - [In Dotty try match types as a replacement for type projections](https://stackoverflow.com/questions/59101681/dotty-cannot-infer-result-type-of-generic-scala-function-taking-type-parameter-t) 
 - [Converting code using simple type projections to dotty](https://users.scala-lang.org/t/converting-code-using-simple-type-projections-to-dotty/6516)
@@ -863,6 +924,13 @@ object Pali1 extends Pali0:
 [part 4d]: https://apocalisp.wordpress.com/2010/06/21/type-level-programming-in-scala-part-4d-peano-arithmetic/
 [part 5a]: https://apocalisp.wordpress.com/2010/06/24/type-level-programming-in-scala-part-5a-binary-numbers/
 [part 5b]: https://apocalisp.wordpress.com/2010/06/24/type-level-programming-in-scala-part-5b-project-euler-problem%C2%A04/
+[part 6a]: https://apocalisp.wordpress.com/2010/07/06/type-level-programming-in-scala-part-6a-heterogeneous-list%C2%A0basics/
+[part 6b]: https://apocalisp.wordpress.com/2010/07/08/type-level-programming-in-scala-part-6b-hlist%C2%A0folds/
+[part 6c]: https://apocalisp.wordpress.com/2010/07/12/type-level-programming-in-scala-part-6c-hlist%C2%A0indexing/
+[part 6d]: https://apocalisp.wordpress.com/2010/07/17/type-level-programming-in-scala-part-6d-hlist%C2%A0zipunzip/
+[part 6e]: https://apocalisp.wordpress.com/2010/10/15/type-level-programming-in-scala-part-6e-hlist%C2%A0apply/
+[part 6f]: https://apocalisp.wordpress.com/2010/10/18/type-level-programming-in-scala-part-6f-deriving-type-class-instances-through%C2%A0hlists/
+[part 6g]: https://apocalisp.wordpress.com/2010/10/22/type-level-programming-in-scala-part-6g-type-indexed%C2%A0hlists/
 [wiki]: https://wiki.haskell.org/Peano_numbers
 [match types]: ../scala/type-system/match-types.md
 [Project Euler]: https://projecteuler.net/about

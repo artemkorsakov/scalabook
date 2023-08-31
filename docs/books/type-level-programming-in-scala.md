@@ -762,11 +762,11 @@ trait Pali:
       i <: Dense,
       j <: Dense,
       P <: Pali
-  ] <: Result
+  ]
 
 trait Pali0 extends Pali:
   // Точка входа
-  type App[start <: Dense, P <: Pali] <: Result =
+  type App[start <: Dense, P <: Pali] =
     P match
       case _ => Apply[_1, _1, _1, start, start, P]
 
@@ -778,7 +778,7 @@ trait Pali0 extends Pali:
       i <: Dense,
       j <: Dense,
       P <: Pali
-  ] <: Result =
+  ] =
     P match
       case _ => Apply1[max, iMax, jMax, i, j, Mult[j, i], P]
 
@@ -790,7 +790,7 @@ trait Pali0 extends Pali:
       j <: Dense,
       prod <: Dense,
       P <: Pali
-  ] <: Result =
+  ] =
     isLargerPalindrome[prod, max] match
       case True  => Apply2[prod, i, j, i, Dec[j], P]
       case False => Apply2[max, iMax, jMax, i, Dec[j], P]
@@ -802,10 +802,10 @@ trait Pali0 extends Pali:
       i <: Dense,
       j <: Dense,
       P <: Pali
-  ] <: Result =
+  ] =
     j match
-      case DNil => Apply3[max, iMax, jMax, Dec[i], Dec[i], P]
-      case _    => Apply3[max, iMax, jMax, i, j, P]
+      case _0 => Apply3[max, iMax, jMax, Dec[i], Dec[i], P]
+      case _  => Apply3[max, iMax, jMax, i, j, P]
 
   type Apply3[
       max <: Dense,
@@ -814,22 +814,20 @@ trait Pali0 extends Pali:
       i <: Dense,
       j <: Dense,
       P <: Pali
-  ] <: Result =
+  ] =
     i match
-      case DNil => (max, iMax, jMax)
-      case _    => Apply[max, iMax, jMax, i, j, P]
+      case _0 => (max, iMax, jMax)
+      case _  => Pali0#Apply[max, iMax, jMax, i, j, P]
 
 end Pali0
 ```
 
-К сожалению, он вызывает предупреждение компилятора о бесконечной рекурсии, согласно документации:
+Запуск дает следующие результаты:
 
 ```dotty
-object Pali1 extends Pali0
-
-// Recursion limit exceeded. 
-// Maybe there is an illegal cyclic reference? 
-// ...
+object Pali1 extends Pali0:
+  summon[App[_7, Pali1.type] =:= (_21, _7, _3)]
+  summon[App[_15, Pali1.type] =:= (Mult[_15, _13], _15, _13)]  
 ```
 
 

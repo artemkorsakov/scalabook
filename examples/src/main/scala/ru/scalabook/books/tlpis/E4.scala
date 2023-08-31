@@ -88,6 +88,7 @@ object E4:
 
   object Pali1 extends Pali0:
     summon[App[_7, Pali1.type] =:= (_21, _7, _3)]
+    summon[App[_15, Pali1.type] =:= (Mult[_15, _13], _15, _13)]
 
 end E4
 

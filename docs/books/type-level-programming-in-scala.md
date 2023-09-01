@@ -868,23 +868,53 @@ object Pali1 extends Pali0:
 ```dotty
 sealed trait HList
 
-final case class HCons[H, T <: HList](head: H, tail: T) extends HList:
-  def ::[A](v: A): HList = HCons(v, this)
+case object HNil extends HList:
+  self =>
+  def ::[A](v: A): HCons[A, HNil.type] = HCons(v, self)
 
-sealed class HNil extends HList:
-  def ::[A](v: A): HList = HCons(v, this)
+final case class HCons[H, T <: HList](head: H, tail: T) extends HList:
+  self =>
+  def ::[A](v: A): HCons[A, HCons[H, T]] = HCons(v, self)
 
 // алиасы для построения типов HList и для сопоставления с шаблоном
 object HList:
   type ::[H, T <: HList] = HCons[H, T]
-  val :: : HCons.type = HCons
+  val :: = HCons
 ```
 
 Это базовое определение уже полезно. Например, ниже показано типобезопасное построение и извлечение:
 
 ```dotty
+// построение HList подобного Tuple3 ("str", true, 1.0)
+val x = "str" :: true :: 1.0 :: HNil
+
+// получение компонентов по вызову head/tail
+val s: String  = x.head
+val b: Boolean = x.tail.head
+val d: Double  = x.tail.tail.head
+
+// ошибка компиляции
+// val e = x.tail.tail.tail.head
+
+// или декомпозиция с помощью сопоставления с шаблоном
+val f: (String :: Boolean :: Double :: HNil.type) => String =
+  case "s" :: false :: _        => "test"
+  case h :: true :: 1.0 :: HNil => h
+  // ошибка компиляции из-за несовпадения конкретных типов и общей длины кортежа
+  // case 3 :: "i" :: HNil => "invalid"
+  case _ => "unknown"
 ```
 
+Обратите внимание, что мы используем `::` для `HLists`, 
+хотя на практике может быть лучше использовать `:+:` или другое имя, чтобы отличить его от `::`, 
+используемого для объединения и сопоставления списков.
+
+Далее мы определим свертку влево и вправо, 
+которую можно использовать для простой реализации добавления, обращения, расчета длины и последнего элемента.
+
+## Часть 6b. Свертка HList
+
+[Исходная статья][part 6b]
 
 ---
 

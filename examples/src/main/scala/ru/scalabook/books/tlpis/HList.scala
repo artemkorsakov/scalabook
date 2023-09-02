@@ -60,9 +60,9 @@ object HList:
   val s: String  = x.head
   val b: Boolean = x.tail.head
   val d: Double  = x.tail.tail.head
-  println(s)
-  println(b)
-  println(d)
+  require(s == "str")
+  require(b)
+  require(math.abs(d - 1.0) < 0.001)
 
   // ошибка компиляции
   // val e = x.tail.tail.tail.head
@@ -74,7 +74,7 @@ object HList:
     // ошибка компиляции из-за несовпадения конкретных типов и общей длины кортежа
     // case 3 :: "i" :: HNil => "invalid"
     case _ => "unknown"
-  println(f(x))
+  require(f(x) == "str")
 
   summon[Length[x.type] =:= Nat._3]
   summon[Length[x.tail.type] =:= Nat._2]
@@ -105,27 +105,22 @@ object HList:
     case _ => false
   require(checkAB)
 
-//  // length of an HList, on both type and value level
-//  val 7 = ab.length
-//  implicitly[_7 =:= ab.Length]
-//
-//  // reverse
-//  val reversed = b.reverse
-//  // check types
-//  val checkReversed: String :: Char :: Int :: Char :: HNil = reversed
-//  // check values
-//  val "sdfh" :: 'j' :: 2 :: '3' :: HNil = reversed
-//
-//  // last (implementation not shown in this post- it is implemented with a foldl)
-//  val last = reversed.last
-//  // check type
-//  val checkLast: Char = last
-//  // check value
-//  val '3' = last
-//
-//  // reverse_:::
-//  val reverseAppend = a reverse_::: b
-//  // check types
-//  val checkReverseAppend: List[Char] :: String :: Int :: Char :: Int :: Char :: String :: HNil = reverseAppend
-//  // check values
-//  val List('r', 'H') :: "ai4" :: 3 :: '3' :: 2 :: 'j' :: "sdfh" :: HNil = reverseAppend
+  // проверка длины HList
+  require(ab.length == 7)
+
+  // обратимость
+  val reversed = b.reverse
+  // проверка значения путем сопоставления с шаблоном
+  val checkReversed = reversed match
+    case "sdfh" :: 'j' :: 2 :: '3' :: HNil => true
+    case _                                 => false
+  require(checkReversed)
+
+  // обращение, а затем добавление
+  val reverseAppend = a reverse_::: b
+  // проверка значения
+  val checkReverseAppend = reverseAppend match
+    case List('r', 'H') :: "ai4" :: 3 :: '3' :: 2 :: 'j' :: "sdfh" :: HNil =>
+      true
+    case _ => false
+  require(checkReverseAppend)

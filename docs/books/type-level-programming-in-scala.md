@@ -987,7 +987,7 @@ summon[LengthViaFoldLeft[x.type] =:= Nat._3]
 ```
 
 Используя функцию свертки, которая просто добавляет текущий тип итерации к накопленному типу `HList`, 
-можно определить добавление, обращение и обратное добавление на уровне типа:
+можно определить добавление, обращение и обращение с последующим добавлением на уровне типа:
 
 ```dotty
 object AppHCons extends FoldAny[HList]:
@@ -1013,23 +1013,60 @@ object Length extends FoldAny[Int]:
   type Apply[N <: Any, Acc <: Int] = Int
   def apply[A, B <: Int](a: A, b: B): Apply[Any, Int] = b + 1
 
-extension [B <: HList](b: B)
-  def length: Int = Length.foldr(b, 0)
+extension [A <: HList](a: A)
+  def length: Int = Length.foldr(a, 0)
 
-  def :::[A <: HList](a: A): HList = AppHCons.foldr(a, b)
+  def :::[B <: HList](b: B): HList = AppHCons.foldr(a, b)
 
-  def reverse_:::[A <: HList](a: A): HList = AppHCons.foldl(a, b)
+  def reverse_:::[B <: HList](b: B): HList = AppHCons.foldl(a, b)
 
-  def reverse: HList = AppHCons.foldl(b, HNil)
+  def reverse: HList = AppHCons.foldl(a, HNil)
 ```
 
 Некоторые примеры использования определенных выше методов:
 
 ```dotty
+// построение разнородного списка длины 3
+// со следующими типами Int :: String :: List[Char] :: HNil
+val a = 3 :: "ai4" :: List('r', 'H') :: HNil
 
+// построение разнородного списка длины 4
+// со следующими типами Char :: Int :: Char :: String :: HNil
+val b = '3' :: 2 :: 'j' :: "sdfh" :: HNil
+
+// объединение двух HLists
+val ab = a ::: b
+// проверка значения путем сопоставления с шаблоном
+val checkAB = ab match
+  case 3 :: "ai4" :: List('r', 'H') :: '3' :: 2 :: 'j' :: "sdfh" :: HNil =>
+    true
+  case _ => false
+require(checkAB)
+
+// проверка длины HList
+require(ab.length == 7)
+
+// обратимость
+val reversed = b.reverse
+// проверка значения путем сопоставления с шаблоном
+val checkReversed = reversed match
+  case "sdfh" :: 'j' :: 2 :: '3' :: HNil => true
+  case _                                 => false
+require(checkReversed)
+
+// обращение, а затем добавление
+val reverseAppend = a reverse_::: b
+// проверка значения
+val checkReverseAppend = reverseAppend match
+  case List('r', 'H') :: "ai4" :: 3 :: '3' :: 2 :: 'j' :: "sdfh" :: HNil =>
+    true
+  case _ => false
+require(checkReverseAppend)
 ```
 
+## Часть 6c. Индексирование HList
 
+[Исходная статья][part 6c]
 
 
 

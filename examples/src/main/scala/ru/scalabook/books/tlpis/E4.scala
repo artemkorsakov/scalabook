@@ -104,12 +104,3 @@ end E4
   require(toBoolean[isLargerPalindrome[_7, _3]])
   require(!toBoolean[isLargerPalindrome[_3, _5]])
   require(!toBoolean[isLargerPalindrome[_8, _5]])
-
-/*
-  println( toTuple3[Pali0#App[_7, Pali0]] )
-  // (21,7,3)
-
-  // already pretty slow at _15
-  println( toTuple3[Pali1.App[_15, Pali1.type]] )
-  // (195,15,13)
- */

@@ -916,6 +916,76 @@ val f: (String :: Boolean :: Double :: HNil.type) => String =
 
 [Исходная статья][part 6b]
 
+Теперь, основываясь на базовом определении `HList`, реализуем свертки. 
+Они будут отличаться от сверток, предложенных в исходной статье, 
+потому что в Scala 3 нет возможности обращаться к неопределенным типам, как показано ниже:
+
+```dotty
+type Foldr[Value, F <: Fold[Any, Value], I <: Value] =
+  F#Apply[H, tail.Foldr[Value, F, I]]
+// Ошибка компилятора: F - это не конкретный тип, вызывать Apply на нем непозволительно  
+```
+
+### Fold
+
+Определим трейт `Fold`, позволяющий сворачивать не только типы, но и значения:
+
+```dotty
+trait Fold[-Elem, Value]:
+  type Apply[N <: Elem, Acc <: Value] <: Value
+  def apply[N <: Elem, Acc <: Value](n: N, acc: Acc): Apply[N, Acc]
+```
+
+Тип `Apply` предназначен для сворачивания типов, а метод `apply` - для сворачивания значений.
+`Value` — это тип результата и он же обеспечивает границу, позволяющую выполнять рекурсию на уровне типа.
+
+Определим дополнительный трейт `FoldAny` для свертки разнородных списков (где `Elem` - это `Any`):
+
+```dotty
+trait FoldAny[Value] extends Fold[Any, Value]:
+  type Foldr[H <: HList, I <: Value] <: Value =
+    H match
+      case HNil.type   => I
+      case HCons[h, t] => Apply[h, Foldr[t, I]]
+
+  def foldr[H <: HList, I <: Value](hlist: H, i: I): Value =
+    hlist match
+      case HNil              => i
+      case HCons(head, tail) => apply(head, foldr(tail, i))
+
+  type Foldl[H <: HList, I <: Value] <: Value =
+    H match
+      case HNil.type   => I
+      case HCons[h, t] => Foldl[t, Apply[h, I]]
+
+  def foldl[H <: HList, I <: Value](hlist: H, i: I): Value =
+    hlist match
+      case HNil              => i
+      case HCons(head, tail) => foldl(tail, apply(head, i))
+```
+
+`I` — тип начального значения. 
+Для пустого списка возвращаем его, а для непустого - разделяем список на головной элемент и остаточный список.
+В зависимости от направления, в котором происходит свертка, либо сворачиваем головной элемент и результат рекурсии,
+примененный к остатку, либо вызываем рекурсию для хвоста и свертки головного элемента и начального значения.
+
+### Функции, использующие свертки
+
+Мы можем определить функцию расчета длины списка на уровне типа в `HList`, используя `Inc`:
+
+```dotty
+type Inc = FoldAny[Nat] {
+  type Apply[N <: Any, Acc <: Nat] = Succ[Acc]
+}
+
+type Length[H <: HList]            = Inc#Foldr[H, _0]
+type LengthViaFoldLeft[H <: HList] = Inc#Foldl[H, _0]
+
+// Проверка
+summon[Length[x.type] =:= Nat._3]
+summon[LengthViaFoldLeft[x.type] =:= Nat._3]
+```
+
 ---
 
 **Ссылки:**

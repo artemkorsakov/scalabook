@@ -74,10 +74,12 @@
 | [Build your vocabulary with Scala affixes](https://rossabaker.com/blog/scala-affixes)                                                                                                         | Scala 3 |  En  | 2023 | Префиксы и суффиксы в Scala |
 | [Exploring Scala CLI — the new scala runner](https://medium.com/virtuslab/exploring-scala-cli-the-new-scala-runner-4b958245c2e0)                                                              | Scala 3 |  En  | 2023 |                             |
 | [Let’s Talk About the Scala 3 Indentation - Rock the JVM](https://blog.rockthejvm.com/scala-3-indentation/)                                                                                   | Scala 3 |  En  | 2020 |                             |
+| [Principles of developing applications in Scala](https://softwaremill.com/principles-of-developing-applications-in-scala/)                                                                    | Scala 3 |  En  | 2023 |                             |
 | [Two types of futures](https://softwaremill.com/two-types-of-futures/)                                                                                                                        | Scala 3 |  En  | 2023 |                             |
 | [Why are Type Classes Useful in Scala? - Rock the JVM](https://blog.rockthejvm.com/why-are-typeclasses-useful/)                                                                               | Scala 3 |  En  | 2020 |                             |
 | [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes)                                                              | Scala 2 |  En  | 2012 |                             |
 | [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics) | Scala 2 |  En  | 2013 |                             |
+| [The Power of Type-classes with Scala implicit defs](https://blog.tmorris.net/posts/the-power-of-type-classes-with-scala-implicit-defs/index.html)                                            | Scala 2 |  En  | 2007 |                             |
 
 --- 
 

@@ -986,6 +986,54 @@ summon[Length[x.type] =:= Nat._3]
 summon[LengthViaFoldLeft[x.type] =:= Nat._3]
 ```
 
+Используя функцию свертки, которая просто добавляет текущий тип итерации к накопленному типу `HList`, 
+можно определить добавление, обращение и обратное добавление на уровне типа:
+
+```dotty
+object AppHCons extends FoldAny[HList]:
+  type Apply[N <: Any, H <: HList] = N :: H
+
+  // будет использоваться позднее для реализации на уровне значений
+  def apply[A, B <: HList](a: A, b: B) = HCons(a, b)
+
+type :::[A <: HList, B <: HList] =
+  AppHCons.Foldr[A, B]
+
+type Reverse_:::[A <: HList, B <: HList] =
+  AppHCons.Foldl[A, B]
+
+type Reverse[A <: HList] =
+  AppHCons.Foldl[A, HNil.type]
+```
+
+Определим методы расширения, позволяющие вычислять значения на уровне типов:
+
+```dotty
+object Length extends FoldAny[Int]:
+  type Apply[N <: Any, Acc <: Int] = Int
+  def apply[A, B <: Int](a: A, b: B): Apply[Any, Int] = b + 1
+
+extension [B <: HList](b: B)
+  def length: Int = Length.foldr(b, 0)
+
+  def :::[A <: HList](a: A): HList = AppHCons.foldr(a, b)
+
+  def reverse_:::[A <: HList](a: A): HList = AppHCons.foldl(a, b)
+
+  def reverse: HList = AppHCons.foldl(b, HNil)
+```
+
+Некоторые примеры использования определенных выше методов:
+
+```dotty
+
+```
+
+
+
+
+
+
 ---
 
 **Ссылки:**

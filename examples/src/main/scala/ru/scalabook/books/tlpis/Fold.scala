@@ -24,8 +24,3 @@ trait FoldAny[Value] extends Fold[Any, Value]:
     hlist match
       case HNil              => i
       case HCons(head, tail) => foldl(tail, apply(head, i))
-
-object Fold:
-  type Inc = FoldAny[Nat] {
-    type Apply[N <: Any, Acc <: Nat] = Succ[Acc]
-  }

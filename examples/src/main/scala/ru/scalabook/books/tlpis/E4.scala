@@ -91,16 +91,3 @@ object E4:
     summon[App[_15, Pali1.type] =:= (Mult[_15, _13], _15, _13)]
 
 end E4
-
-@main def runE4(): Unit =
-  import E4.*
-
-  // isPalindrome
-  require(toBoolean[isPalindrome[_3]])
-  require(!toBoolean[isPalindrome[_6]])
-  require(toBoolean[isPalindrome[_15]])
-
-  // isLargerPalindrome
-  require(toBoolean[isLargerPalindrome[_7, _3]])
-  require(!toBoolean[isLargerPalindrome[_3, _5]])
-  require(!toBoolean[isLargerPalindrome[_8, _5]])

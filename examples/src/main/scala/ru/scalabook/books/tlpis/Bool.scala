@@ -24,31 +24,3 @@ object Bool:
 
   def toBoolean[B <: Bool: BoolRep]: Boolean =
     summon[BoolRep[B]].value
-
-@main def runBool(): Unit =
-  import Bool.*
-
-  type Rep[A <: Bool] =
-    A match
-      case True  => Int
-      case False => Long
-
-  summon[Rep[True] =:= Int]
-  summon[Rep[False] =:= Long]
-
-  summon[((True && False) || Not[False]) =:= True]
-
-  summon[(True && True) =:= True]
-  summon[(True && False) =:= False]
-  summon[(False && True) =:= False]
-  summon[(False && False) =:= False]
-
-  summon[(True || True) =:= True]
-  summon[(True || False) =:= True]
-  summon[(False || True) =:= True]
-  summon[(False || False) =:= False]
-
-  summon[Not[True] =:= False]
-  summon[Not[False] =:= True]
-
-  require(toBoolean[(True && False) || Not[False]])

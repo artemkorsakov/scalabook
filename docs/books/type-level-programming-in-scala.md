@@ -1149,6 +1149,29 @@ def splitAt: (Before, ::[At, After]) =
   withIndex((b, a, t) => (b, HCons(a, t)))
 ```
 
+Реализация разделена на два случая. 
+Первый — `Indexed0`, представляющий местоположение указателя. 
+Он указывает на головной элемент ячейки `HCons`. 
+Хвост ячейки — это `Before`, а `After` пуст.
+
+```dotty
+final class Indexed0[H, T <: HList](val hc: H :: T) extends Indexed:
+  type Before = HNil.type
+  type After  = T
+  type At     = H
+  def withIndex[R](f: (Before, At, After) => R): R = f(HNil, hc.head, hc.tail)
+```
+
+`IndexedN` создает список `Before` `HList`. 
+Он добавляет элемент в начало к другому `Indexed` `Before` 
+и делегирует элементы `At` и `After` этому `Indexed`. 
+В конечном счете, завершающий `Indexed` должен быть `Indexed0`.
+
+```dotty
+```
+
+
+
 ---
 
 **Ссылки:**

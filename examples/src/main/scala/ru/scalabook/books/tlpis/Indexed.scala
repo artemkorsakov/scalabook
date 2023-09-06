@@ -2,12 +2,11 @@ package ru.scalabook.books.tlpis
 
 import ru.scalabook.books.tlpis.HCons.*
 import ru.scalabook.books.tlpis.HList.*
-import ru.scalabook.books.tlpis.HNil.*
 
 sealed trait Indexed:
   type Before <: HList
-  type After <: HList
   type At
+  type After <: HList
 
   def withIndex[R](f: (Before, At, After) => R): R
 
@@ -51,17 +50,20 @@ sealed trait Indexed:
   def splitAt: (Before, ::[At, After]) =
     withIndex((b, a, t) => (b, HCons(a, t)))
 
-object Indexed:
-  import ru.scalabook.books.tlpis.HList.*
+end Indexed
 
-  val example: Indexed {
-    type Before = Int :: Boolean :: HNil.type; type After = Char :: HNil.type;
-    type At     = String
-  } =
-    new Indexed:
-      type Before = Int :: Boolean :: HNil.type
-      type After  = Char :: HNil.type
-      type At     = String
+final class Indexed0[H, T <: HList](val hc: H :: T) extends Indexed:
+  type Before = HNil.type
+  type At     = H
+  type After  = T
+  def withIndex[R](f: (Before, At, After) => R): R = f(HNil, hc.head, hc.tail)
 
-      def withIndex[R](f: (Before, At, After) => R): R =
-        f(3 :: true :: HNil, "blue", 'h' :: HNil)
+final class IndexedN[H, I <: Indexed](h: H, iTail: I) extends Indexed:
+  type Before = H :: I#Before
+  type At     = I#At
+  type After = I match
+    case Indexed0[_, t] => t
+    case IndexedN[_, i] => i#After
+
+  def withIndex[R](f: (Before, At, After) => R): R =
+    iTail.withIndex((before, at, after) => f(HCons(h, before), at, after))

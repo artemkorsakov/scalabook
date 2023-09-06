@@ -1,69 +1,69 @@
 package ru.scalabook.books.tlpis
 
-import ru.scalabook.books.tlpis.HCons.*
 import ru.scalabook.books.tlpis.HList.*
 
-sealed trait Indexed:
-  type Before <: HList
-  type At
-  type After <: HList
+import scala.annotation.tailrec
 
-  def withIndex[R](f: (Before, At, After) => R): R
+sealed trait Indexed:
+  self =>
 
   // получение элемента по индексу
-  def at: At = withIndex((_, a, _) => a)
+  def at = withIndex(self, (_, a, _) => a)
 
   // удаление всех элементов перед заданным индексом
-  def drop: HCons[At, After] =
-    withIndex((_, a, t) => HCons(a, t))
+  def drop = withIndex(self, (_, a, t) => HCons(a, t))
 
   // получение всех элементов перед заданным индексом
-  def take: Before =
-    withIndex((b, _, _) => b)
+  def take = withIndex(self, (b, _, _) => b)
 
   // замена значения текущего индекса на 'a'
-  def replace[A](a: A): HList =
-    withIndex((b, _, t) => b ::: HCons(a, t))
+  def replace[A](a: A) = withIndex(self, (b, _, t) => b ::: HCons(a, t))
 
   // удаление значения текущего индекса
-  def remove: HList =
-    withIndex((b, _, t) => b ::: t)
+  def remove = withIndex(self, (b, _, t) => b ::: t)
 
   // применение функции 'f' к текущему значению
-  def map[B](f: At => B): HList =
-    withIndex((b, a, t) => b ::: HCons(f(a), t))
+  def map[B](f: Any => B) = withIndex(self, (b, a, t) => b ::: HCons(f(a), t))
 
   // применение функции 'f' к текущему значению, возвращающей HList,
   // и вставка полученного списка на место текущего индекса
-  def flatMap[B <: HList](f: At => B): HList =
-    withIndex((b, a, t) => b ::: f(a) ::: t)
+  def flatMap[B <: HList](f: Any => B) =
+    withIndex(self, (b, a, t) => b ::: f(a) ::: t)
 
   // вставка заданного значения
-  def insert[C](c: C): HList =
-    withIndex((b, a, t) => b ::: HCons(c, HCons(a, t)))
+  def insert[C](c: C) =
+    withIndex(self, (b, a, t) => b ::: HCons(c, HCons(a, t)))
 
   // вставка заданного списка HList в текущий индекс
-  def insertH[C <: HList](c: C): HList =
-    withIndex((b, a, t) => b ::: c ::: HCons(a, t))
+  def insertH[C <: HList](c: C) =
+    withIndex(self, (b, a, t) => b ::: c ::: HCons(a, t))
 
   // возвращает список HList, лежащий перед текущим индексом, и HList, начинающийся с заданного индекса
-  def splitAt: (Before, ::[At, After]) =
-    withIndex((b, a, t) => (b, HCons(a, t)))
+  def splitAt = withIndex(self, (b, a, t) => (b, HCons(a, t)))
 
 end Indexed
 
-final class Indexed0[H, T <: HList](val hc: H :: T) extends Indexed:
-  type Before = HNil.type
-  type At     = H
-  type After  = T
-  def withIndex[R](f: (Before, At, After) => R): R = f(HNil, hc.head, hc.tail)
+final case class Indexed0[H, T <: HList](hc: H :: T)       extends Indexed
+final case class IndexedN[H, I <: Indexed](h: H, iTail: I) extends Indexed
 
-final class IndexedN[H, I <: Indexed](h: H, iTail: I) extends Indexed:
-  type Before = H :: I#Before
-  type At     = I#At
-  type After = I match
+type Before[I <: Indexed] <: HList =
+  I match
+    case Indexed0[_, _] => HNil.type
+    case IndexedN[h, i] => HCons[h, Before[i]]
+
+type At[I <: Indexed] =
+  I match
+    case Indexed0[h, _] => h
+    case IndexedN[_, i] => At[i]
+
+type After[I <: Indexed] <: HList =
+  I match
     case Indexed0[_, t] => t
-    case IndexedN[_, i] => i#After
+    case IndexedN[_, i] => After[i]
 
-  def withIndex[R](f: (Before, At, After) => R): R =
-    iTail.withIndex((before, at, after) => f(HCons(h, before), at, after))
+@tailrec
+def withIndex[I <: Indexed, R](i: I, f: (HList, Any, HList) => R): R =
+  i match
+    case Indexed0(hc) => f(HNil, hc.head, hc.tail)
+    case IndexedN(h, iTail) =>
+      withIndex(iTail, (before, at, after) => f(HCons(h, before), at, after))

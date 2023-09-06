@@ -1084,6 +1084,69 @@ require(checkReverseAppend)
 Базовый индексированный интерфейс выглядит так:
 
 ```dotty
+trait Indexed:
+  type Before <: HList
+  type After <: HList
+  type At
+
+  def withIndex[R](f: (Before, At, After) => R): R
+```
+
+Например, индексированный экземпляр для `Nat` равного `_2` и `HList` равного `3 :: true :: "blue" :: 'h' :: HNil`:
+
+```dotty
+new Indexed:
+  type Before = Int :: Boolean :: HNil.type
+  type After  = Char :: HNil.type
+  type At     = String
+
+  def withIndex[R](f: (Before, At, After) => R): R =
+    f(3 :: true :: HNil, "blue", 'h' :: HNil)
+```
+
+Прежде чем рассмотреть создание экземпляра `Indexed` для произвольных `Nat` и `HList`, 
+давайте убедимся, что можно реализовать несколько операций индексирования с помощью `withIndex`:
+
+```dotty
+// получение элемента по индексу
+def at: At = withIndex((_, a, _) => a)
+
+// удаление всех элементов перед заданным индексом
+def drop: HCons[At, After] =
+  withIndex((_, a, t) => HCons(a, t))
+
+// получение всех элементов перед заданным индексом
+def take: Before =
+  withIndex((b, _, _) => b)
+
+// замена значения текущего индекса на переданный параметр
+def replace[A](a: A): HList =
+  withIndex((b, _, t) => b ::: HCons(a, t))
+
+// удаление значения текущего индекса
+def remove: HList =
+  withIndex((b, _, t) => b ::: t)
+
+// применение функции 'f' к текущему значению
+def map[B](f: At => B): HList =
+  withIndex((b, a, t) => b ::: HCons(f(a), t))
+
+// применение функции 'f', возвращающей HList, к текущему значению
+// и вставка полученного списка на место текущего индекса
+def flatMap[B <: HList](f: At => B): HList =
+  withIndex((b, a, t) => b ::: f(a) ::: t)
+
+// вставка заданного значения
+def insert[C](c: C): HList =
+  withIndex((b, a, t) => b ::: HCons(c, HCons(a, t)))
+
+// вставка заданного списка HList в текущий индекс
+def insertH[C <: HList](c: C): HList =
+  withIndex((b, a, t) => b ::: c ::: HCons(a, t))
+
+// возвращает список HList, лежащий перед текущим индексом, и HList, начинающийся с заданного индекса
+def splitAt: (Before, ::[At, After]) =
+  withIndex((b, a, t) => (b, HCons(a, t)))
 ```
 
 ---

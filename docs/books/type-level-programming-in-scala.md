@@ -1172,7 +1172,98 @@ final case class IndexedN[H, I <: Indexed](h: H, iTail: I) extends Indexed:
     iTail.withIndex((before, at, after) => f(HCons(h, before), at, after))
 ```
 
+Теперь нам нужно получить индексированный объект для `HList`. 
+Для этого мы определяем элемент типа `toI[N <: Nat]` в `HList`. 
+Этот элемент типа определяет индексированный тип для `HList` и `Nat`. 
+Затем мы можем использовать неявные выражения для предоставления этого типа.
 
+```dotty
+type toI[H <: HList, N <: Nat] <: Indexed =
+  H match
+    case HNil.type   => Nothing
+    case HCons[h, t] =>
+      // совпадение по N:
+      //   Если он равен _0, тип Indexed должен указывать на эту ячейку (то есть это Indexed0)
+      //   в противном случае индекс будет справа, поэтому вернитесь к N-1 и верните IndexedN
+      N match
+        case _0      => Indexed0[h, t]
+        case Succ[n] => IndexedN[h, toI[t, n]] 
+```
+
+Итак, учитывая `HList h` и индекс `Nat N`, мы знаем, что нам нужен индексированный тип `h.toI[N]`. 
+Нам нужна функция `h => h.toI[N]`. 
+Мы можем сделать это с помощью неявных значений следующим образом:
+
+```dotty
+// определено как метод расширения для HList
+extension [A <: HList](a: A)
+  ...
+  def i[N <: Nat](using in: A => toI[A, N]): toI[A, N] = in(a)
+
+object Indexed:
+  given indexed0[H, T <: HList]: (HCons[H, T] => Indexed0[H, T]) =
+    hc => new Indexed0[H, T](hc)
+
+  given indexedN[H, T <: HList, I <: Indexed](using
+      iTail: T => I
+  ): (HCons[H, T] => IndexedN[H, I]) =
+    hc => new IndexedN[H, I](hc.head, iTail(hc.tail))
+```
+
+Примеры:
+
+```dotty
+val x = 3 :: true :: "asfd" :: false :: 'k' :: () :: 13 :: 9.3 ::  HNil
+ 
+// получение булева значения по индексу 3
+val b2: Boolean = x.i[_3].at
+ 
+// drop everything before index 3 and then get the first value
+   /* false */
+val pre: Boolean = x.i[_3].drop.i[_0].at
+ 
+// replace the boolean value at index 3 with the integer 19
+   /* 3 :: true :: asfd :: 19 :: k :: () :: 13 :: 9.3 :: HNil */
+val rep = x.i[_3].replace(19)
+ 
+// replace the character at index 4 with true if it is lowercase, false otherwise
+   /* 3 :: true :: asfd :: false :: true :: () :: 13 :: 9.3 :: HNil */
+val mp = x.i[_4].map(_.isLower)
+ 
+// remove the value at index 5
+   /* 3 :: true :: asfd :: false :: k :: 13 :: 9.3 :: HNil */
+val rm = x.i[_5].remove
+ 
+// remove the value at index 2 and insert an HList derived from its value
+   /* 3 :: true :: a :: sfd :: false :: k :: () :: 13 :: 9.3 :: HNil */
+val fmp = x.i[_2].flatMap( s => s.charAt(0) :: s.substring(1) :: HNil )
+ 
+// insert a value at the beginning of the HList
+   /* List(3, 4) :: 3 :: true :: asfd :: false :: k :: () :: 13 :: 9.3 :: HNil */
+val ins0 = x.i[_0].insert(List(3,4))
+ 
+// insert a value at index 7
+   /* 3 :: true :: asfd :: false :: k :: () :: 13 :: -3.0 :: 9.3 :: HNil */
+val ins7 = x.i[_7].insert(-3.0f)
+ 
+// insert an HList at index 3
+   /* 3 :: true :: asfd :: h :: false :: Some(3) :: None :: false :: k :: 13 :: 9.3 :: HNil */
+val insH = rm.i[_3].insertH( 'h' :: b2 :: Some(3) :: None :: HNil )
+ 
+// split the HList around index 6
+   /* (3 :: true :: asfd :: false :: k :: () :: HNil, 13 :: -3.0 :: 9.3 :: HNil) */
+val (aa, bb) = ins7.i[_6].splitAt
+ 
+// encoding of drop right
+   /* 3 :: true :: asfd :: false :: k :: HNil */
+val dropRight = x.reverse.i[_3].drop.reverse
+```
+
+Далее мы увидим, как определить `zip` и `unzip` для объединения и разделения HL-списков кортежей.
+
+## Часть 6d. HList Zip/Unzip
+
+[Исходная статья][part 6d]
 
 ---
 

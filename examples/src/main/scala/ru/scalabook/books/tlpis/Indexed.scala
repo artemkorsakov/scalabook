@@ -60,3 +60,12 @@ final case class IndexedN[H, I <: Indexed](h: H, iTail: I) extends Indexed:
 
   def withIndex[R](f: (Before, At, After) => R): R =
     iTail.withIndex((before, at, after) => f(HCons(h, before), at, after))
+
+object Indexed:
+  given indexed0[H, T <: HList]: (HCons[H, T] => Indexed0[H, T]) =
+    hc => new Indexed0[H, T](hc)
+
+  given indexedN[H, T <: HList, I <: Indexed](using
+      iTail: T => I
+  ): (HCons[H, T] => IndexedN[H, I]) =
+    hc => new IndexedN[H, I](hc.head, iTail(hc.tail))

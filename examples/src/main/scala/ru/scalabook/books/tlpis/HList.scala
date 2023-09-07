@@ -4,10 +4,12 @@ sealed trait HList
 
 case object HNil extends HList:
   self =>
+
   def ::[A](v: A): HCons[A, HNil.type] = HCons(v, self)
 
 final case class HCons[H, T <: HList](head: H, tail: T) extends HList:
   self =>
+
   def ::[A](v: A): HCons[A, HCons[H, T]] = HCons(v, self)
 
 // алиасы для построения типов HList и для сопоставления с шаблоном
@@ -41,6 +43,17 @@ object HList:
     type Apply[N <: Any, Acc <: Int] = Int
     def apply[A, B <: Int](a: A, b: B): Apply[Any, Int] = b + 1
 
+  type toI[H <: HList, N <: Nat] <: Indexed =
+    H match
+      case HNil.type   => Nothing
+      case HCons[h, t] =>
+        // совпадение по N:
+        //   Если он равен _0, тип Indexed должен указывать на эту ячейку (то есть это Indexed0)
+        //   в противном случае индекс будет справа, поэтому вернитесь к N-1 и верните IndexedN
+        N match
+          case _0      => Indexed0[h, t]
+          case Succ[n] => IndexedN[h, toI[t, n]]
+
   extension [A <: HList](a: A)
     def length: Int = Length.foldr(a, 0)
 
@@ -49,3 +62,5 @@ object HList:
     def reverse_:::[B <: HList](b: B): HList = AppHCons.foldl(a, b)
 
     def reverse: HList = AppHCons.foldl(a, HNil)
+
+    def i[N <: Nat](using in: A => toI[A, N]): toI[A, N] = in(a)

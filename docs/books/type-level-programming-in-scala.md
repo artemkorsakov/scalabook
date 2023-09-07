@@ -1083,10 +1083,10 @@ require(checkReverseAppend)
 Базовый индексированный интерфейс выглядит так:
 
 ```dotty
-trait Indexed:
+sealed trait Indexed:
   type Before <: HList
-  type After <: HList
   type At
+  type After <: HList
 
   def withIndex[R](f: (Before, At, After) => R): R
 ```
@@ -1096,8 +1096,8 @@ trait Indexed:
 ```dotty
 new Indexed:
   type Before = Int :: Boolean :: HNil.type
-  type After  = Char :: HNil.type
   type At     = String
+  type After  = Char :: HNil.type
 
   def withIndex[R](f: (Before, At, After) => R): R =
     f(3 :: true :: HNil, "blue", 'h' :: HNil)
@@ -1111,26 +1111,21 @@ new Indexed:
 def at: At = withIndex((_, a, _) => a)
 
 // удаление всех элементов перед заданным индексом
-def drop: HCons[At, After] =
-  withIndex((_, a, t) => HCons(a, t))
+def drop: HCons[At, After] = withIndex((_, a, t) => HCons(a, t))
 
 // получение всех элементов перед заданным индексом
-def take: Before =
-  withIndex((b, _, _) => b)
+def take: Before = withIndex((b, _, _) => b)
 
-// замена значения текущего индекса на переданный параметр
-def replace[A](a: A): HList =
-  withIndex((b, _, t) => b ::: HCons(a, t))
+// замена значения текущего индекса на 'a'
+def replace[A](a: A): HList = withIndex((b, _, t) => b ::: HCons(a, t))
 
 // удаление значения текущего индекса
-def remove: HList =
-  withIndex((b, _, t) => b ::: t)
+def remove: HList = withIndex((b, _, t) => b ::: t)
 
 // применение функции 'f' к текущему значению
-def map[B](f: At => B): HList =
-  withIndex((b, a, t) => b ::: HCons(f(a), t))
+def map[B](f: At => B): HList = withIndex((b, a, t) => b ::: HCons(f(a), t))
 
-// применение функции 'f' к текущему значению, возвращающей HList,
+// применение функции 'f', возвращающей HList, к текущему значению
 // и вставка полученного списка на место текущего индекса
 def flatMap[B <: HList](f: At => B): HList =
   withIndex((b, a, t) => b ::: f(a) ::: t)
@@ -1151,13 +1146,14 @@ def splitAt: (Before, ::[At, After]) =
 Реализация разделена на два случая. 
 Первый — `Indexed0`, представляющий местоположение указателя. 
 Он указывает на головной элемент ячейки `HCons`. 
-Хвост ячейки — это `Before`, а `After` пуст.
+Хвост ячейки — это `After`, а `Before` пуст.
 
 ```dotty
-final class Indexed0[H, T <: HList](val hc: H :: T) extends Indexed:
+final case class Indexed0[H, T <: HList](hc: H :: T) extends Indexed:
   type Before = HNil.type
-  type After  = T
   type At     = H
+  type After  = T
+
   def withIndex[R](f: (Before, At, After) => R): R = f(HNil, hc.head, hc.tail)
 ```
 
@@ -1167,6 +1163,13 @@ final class Indexed0[H, T <: HList](val hc: H :: T) extends Indexed:
 В конечном счете, завершающий `Indexed` должен быть `Indexed0`.
 
 ```dotty
+final case class IndexedN[H, I <: Indexed](h: H, iTail: I) extends Indexed:
+  type Before = H :: iTail.type#Before
+  type At     = iTail.type#At
+  type After  = iTail.type#After
+
+  def withIndex[R](f: (Before, At, After) => R): R =
+    iTail.withIndex((before, at, after) => f(HCons(h, before), at, after))
 ```
 
 

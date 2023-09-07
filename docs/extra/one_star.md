@@ -29,6 +29,7 @@
 | [Scala Tips - Rock the JVM](https://www.youtube.com/playlist?list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)                                              | Scala 3 |  En  | 2023 |             |
 | [The Best Scala Libraries I Use in Every Project - DevInsideYou](https://www.youtube.com/watch?v=ZymD5NuOwdA)                                      | Scala 3 |  En  | 2023 |             |
 | [Typeclasses in Scala 3 - Colombia Scala meetup/Scala at the Sea](https://www.youtube.com/watch?app=desktop&v=co4LSvVoX-s)                         | Scala 3 |  En  | 2022 |             |
+| [Functional Scala - Scala in the city](https://www.youtube.com/playlist?list=PLjtl9Y7VJMWtZz3g0LjMhO54_KBL8Tfwl)                                   | Scala 2 |  En  | 2020 |             |
 | [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) | Scala 2 |  En  | 2015 |             |
 | [Language-Agnostic Tips - Rock the JVM](https://www.youtube.com/watch?v=0wmcCdoExbM&list=PLmtsMNDRU0ByxKWa4h2LMn9oXyeDEJbnC)                       | Scala 2 |  En  | 2021 |             |
 | [Scala - Your First Programming Language - DevInsideYou](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                 | Scala 2 |  En  | 2022 |             |

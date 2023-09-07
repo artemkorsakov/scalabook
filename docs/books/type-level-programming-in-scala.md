@@ -1173,7 +1173,7 @@ final case class IndexedN[H, I <: Indexed](h: H, iTail: I) extends Indexed:
 ```
 
 Теперь нам нужно получить индексированный объект для `HList`. 
-Для этого мы определяем элемент типа `toI[N <: Nat]` в `HList`. 
+Для этого мы определяем тип `toI[H <: HList, N <: Nat]`. 
 Этот элемент типа определяет индексированный тип для `HList` и `Nat`. 
 Затем мы можем использовать неявные выражения для предоставления этого типа.
 
@@ -1183,15 +1183,17 @@ type toI[H <: HList, N <: Nat] <: Indexed =
     case HNil.type   => Nothing
     case HCons[h, t] =>
       // совпадение по N:
-      //   Если он равен _0, тип Indexed должен указывать на эту ячейку (то есть это Indexed0)
-      //   в противном случае индекс будет справа, поэтому вернитесь к N-1 и верните IndexedN
+      //   Если он равен _0, тип Indexed должен 
+      //     указывать на эту ячейку (то есть это Indexed0)
+      //   в противном случае индекс будет справа, 
+      //     поэтому вернитесь к N-1 и верните IndexedN
       N match
         case _0      => Indexed0[h, t]
         case Succ[n] => IndexedN[h, toI[t, n]] 
 ```
 
-Итак, учитывая `HList h` и индекс `Nat N`, мы знаем, что нам нужен индексированный тип `h.toI[N]`. 
-Нам нужна функция `h => h.toI[N]`. 
+Итак, учитывая `HList h` и индекс `Nat N`, мы знаем, что нам нужен индексированный тип `toI[A, N]`. 
+Нам нужна функция `A => toI[A, N]`. 
 Мы можем сделать это с помощью неявных значений следующим образом:
 
 ```dotty
@@ -1217,22 +1219,23 @@ val x = 3 :: true :: "asfd" :: false :: 'k' :: () :: 13 :: 9.3 ::  HNil
  
 // получение булева значения по индексу 3
 val b2: Boolean = x.i[_3].at
+// false
  
-// drop everything before index 3 and then get the first value
-   /* false */
+// удалить все значения перед индексом 3 и затем получить первое значение
 val pre: Boolean = x.i[_3].drop.i[_0].at
+// false
  
-// replace the boolean value at index 3 with the integer 19
-   /* 3 :: true :: asfd :: 19 :: k :: () :: 13 :: 9.3 :: HNil */
+// замена булева значения по индексу 3 на число 19
 val rep = x.i[_3].replace(19)
- 
-// replace the character at index 4 with true if it is lowercase, false otherwise
-   /* 3 :: true :: asfd :: false :: true :: () :: 13 :: 9.3 :: HNil */
+// 3 :: true :: "asfd" :: 19 :: 'k' :: () :: 13 :: 9.3 :: HNil
+
+// преобразование значения по индексу 4 на `true` если символ в нижнем регистре, иначе - `false`
 val mp = x.i[_4].map(_.isLower)
+// 3 :: true :: "asfd" :: false :: true :: () :: 13 :: 9.3 :: HNil
  
-// remove the value at index 5
-   /* 3 :: true :: asfd :: false :: k :: 13 :: 9.3 :: HNil */
+// Удаление значения по индексу 5
 val rm = x.i[_5].remove
+// 3 :: true :: asfd :: false :: k :: 13 :: 9.3 :: HNil
  
 // remove the value at index 2 and insert an HList derived from its value
    /* 3 :: true :: a :: sfd :: false :: k :: () :: 13 :: 9.3 :: HNil */

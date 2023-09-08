@@ -1235,31 +1235,31 @@ val mp = x.i[_4].map(_.isLower)
  
 // Удаление значения по индексу 5
 val rm = x.i[_5].remove
-// 3 :: true :: asfd :: false :: k :: 13 :: 9.3 :: HNil
+// 3 :: true :: "asfd" :: false :: 'k' :: 13 :: 9.3 :: HNil
  
-// remove the value at index 2 and insert an HList derived from its value
-   /* 3 :: true :: a :: sfd :: false :: k :: () :: 13 :: 9.3 :: HNil */
+// преобразование значения по индексу 2 на HList, созданного на основе значения
 val fmp = x.i[_2].flatMap( s => s.charAt(0) :: s.substring(1) :: HNil )
- 
-// insert a value at the beginning of the HList
-   /* List(3, 4) :: 3 :: true :: asfd :: false :: k :: () :: 13 :: 9.3 :: HNil */
+// 3 :: true :: 'a' :: "sfd" :: false :: 'k' :: () :: 13 :: 9.3 :: HNil
+
+// вставка значения в начало HList
 val ins0 = x.i[_0].insert(List(3,4))
+// List(3, 4) :: 3 :: true :: "asfd" :: false :: 'k' :: () :: 13 :: 9.3 :: HNil 
  
-// insert a value at index 7
-   /* 3 :: true :: asfd :: false :: k :: () :: 13 :: -3.0 :: 9.3 :: HNil */
+// вставка значения по индексу 7
 val ins7 = x.i[_7].insert(-3.0f)
- 
-// insert an HList at index 3
-   /* 3 :: true :: asfd :: h :: false :: Some(3) :: None :: false :: k :: 13 :: 9.3 :: HNil */
+// 3 :: true :: "asfd" :: false :: 'k' :: () :: 13 :: -3.0 :: 9.3 :: HNil
+    
+// вставка HList по индексу 3
 val insH = rm.i[_3].insertH( 'h' :: b2 :: Some(3) :: None :: HNil )
- 
-// split the HList around index 6
-   /* (3 :: true :: asfd :: false :: k :: () :: HNil, 13 :: -3.0 :: 9.3 :: HNil) */
+// 3 :: true :: "asfd" :: 'h' :: false :: Some(3) :: None :: false :: 'k' :: 13 :: 9.3 :: HNil 
+
+// разбиение HList по индексу 6
 val (aa, bb) = ins7.i[_6].splitAt
+// (3 :: true :: "asfd" :: false :: 'k' :: () :: HNil, 13 :: -3.0 :: 9.3 :: HNil)
  
-// encoding of drop right
-   /* 3 :: true :: asfd :: false :: k :: HNil */
+// аналог удаления справа
 val dropRight = x.reverse.i[_3].drop.reverse
+// 3 :: true :: "asfd" :: false :: 'k' :: HNil 
 ```
 
 Далее мы увидим, как определить `zip` и `unzip` для объединения и разделения HL-списков кортежей.

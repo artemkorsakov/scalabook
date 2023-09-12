@@ -64,3 +64,6 @@ object HList:
     def reverse: HList = AppHCons.foldl(a, HNil)
 
     def i[N <: Nat](using in: A => toI[A, N]): toI[A, N] = in(a)
+
+    def zip[B <: HList, R <: HList](b: B)(using hzip: HZip[A, B, R]): R =
+      hzip(a, b)

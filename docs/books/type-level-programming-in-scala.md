@@ -1268,6 +1268,84 @@ val dropRight = x.reverse.i[_3].drop.reverse
 
 [Исходная статья][part 6d]
 
+Для `zip` и `unzip` нужно определить некоторые классы типов. 
+Сначала мы определим класс типов `HZip`, который принимает два списка `HList` и создает сжатый список `HList`.
+
+```dotty
+sealed trait HZip[A <: HList, B <: HList, Result <: HList]:
+  def apply(a: A, b: B): Result
+```
+
+Реализуем класс типов с двумя основными вариантами: 
+
+- `HZip[HNil.type, HNil.type, HNil.type]`
+- `HZip[HA :: TA, HB :: TB, (HA, HB) :: TR]`.
+
+Сжатие двух `HNil` создает `HNil`:
+
+```dotty
+given HZip[HNil.type, HNil.type, HNil.type] with
+  def apply(a: HNil.type, b: HNil.type): HNil.type = HNil
+```
+
+Сжатие двух ячеек `HCons` объединяет их головные элементы в кортеж, сжимает их хвосты 
+и создает новую ячейку `HCons` из кортежа и сжатых хвостов.
+
+```dotty
+given hzipCons[HA, HB, TA <: HList, TB <: HList, TR <: HList](using
+    hzipTail: HZip[TA, TB, TR]
+): HZip[HA :: TA, HB :: TB, (HA, HB) :: TR] with
+  def apply(a: HA :: TA, b: HB :: TB): (HA, HB) :: TR =
+    HCons((a.head, b.head), hzipTail(a.tail, b.tail))
+```
+
+Два дополнительных случая, `hzipNil1` и `hzipNil2`, 
+обрабатывают несовпадающие длины путем простого усечения более длинного списка.
+
+```dotty
+given hzipNil1[H, T <: HList]: HZip[H :: T, HNil.type, HNil.type] with
+  def apply(a: H :: T, b: HNil.type): HNil.type = HNil
+
+given hzipNil2[H, T <: HList]: HZip[HNil.type, H :: T, HNil.type] with
+  def apply(a: HNil.type, b: H :: T): HNil.type = HNil
+```
+
+Мы подключаем эти реализации к методам расширения и можем вызывать `zip` непосредственно в `HList`.
+
+```dotty
+extension [A <: HList](a: A)
+  def zip[B <: HList, R <: HList](b: B)(using hzip: HZip[A, B, R]): R =
+    hzip(a, b)
+```
+
+Примеры:
+
+```dotty
+// разнородный список длины 3
+// с типом Int :: String :: List[Char] :: HNil
+val a = 3 :: "ai4" :: List('r', 'H') :: HNil
+
+// разнородный список длины 4
+// с типом Char :: Int :: Char :: String :: HNil
+val b = '3' :: 2 :: 'j' :: "sdfh" :: HNil
+
+// два свернутых HLists
+val c = a zip b
+// (3, '3') :: ("ai4", 2) :: (List('r', 'H'), 'j') :: HNil
+
+// ещё одна свертка
+val cc = c zip c.tail
+// ((3, '3'), ("ai4", 2)) :: (("ai4", 2), (List('r', 'H'), 'j')) :: HNil
+
+// проверка типов
+// заметим, что четвертый элемент b удален,
+// также как это происходит при свертке однородных списков List
+val checkCType: (Int, Char) :: (String, Int) :: (List[Char], Char) :: HNil.type = c
+
+val checkCCType: ((Int, Char), (String, Int)) :: ((String, Int), (List[Char], Char)) :: HNil.type = cc
+```
+
+
 ---
 
 **Ссылки:**

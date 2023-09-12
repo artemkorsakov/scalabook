@@ -67,29 +67,30 @@ class IndexedSuite extends FunSuite:
       3 :: true :: "asfd" :: false :: 'k' :: () :: 13 :: -3.0 :: 9.3 :: HNil
     )
 
-//  test("вставка HList по индексу 3"):
-//    val rm    = x.i[_5].remove
-//    val b2    = x.i[_3].at
-//    val value = 'h' :: b2 :: Some(3) :: None :: HNil
-//    val insH  = rm.i[_3].insertH(value)
-//    assertEquals(
-//      insH,
-//      3 :: true :: "asfd" :: 'h' :: false :: Some(
-//        3
-//      ) :: None :: false :: 'k' :: 13 :: 9.3 :: HNil
-//    )
+  test("вставка HList по индексу 3"):
+    type R = Int :: Boolean :: String :: Boolean :: Char :: Int :: Double ::
+      HNil.type
+    val rm   = x.i[_5].remove.asInstanceOf[R]
+    val b2   = x.i[_3].at
+    val insH = rm.i[_3].insertH('h' :: b2 :: Some(3) :: None :: HNil)
+    assertEquals(
+      insH,
+      3 :: true :: "asfd" :: 'h' :: false :: Some(
+        3
+      ) :: None :: false :: 'k' :: 13 :: 9.3 :: HNil
+    )
 
-//  test("разбиение HList по индексу 6"):
-//    val ins7     = x.i[_7].insert(-3.0f)
-//    val (aa, bb) = ins7.i[_6].splitAt
-//    assertEquals(aa, 3 :: true :: "asfd" :: false :: 'k' :: () :: HNil)
-//    assertEquals(bb, 13 :: -3.0 :: 9.3 :: HNil)
+  test("разбиение HList по индексу 6"):
+    type R = Int :: Boolean :: String :: Boolean :: Char :: Unit :: Int ::
+      Double :: Double :: HNil.type
+    val ins7     = x.i[_7].insert(-3.0f).asInstanceOf[R]
+    val (aa, bb) = ins7.i[_6].splitAt
+    assertEquals(aa, 3 :: true :: "asfd" :: false :: 'k' :: () :: HNil)
+    assertEquals(bb, 13 :: -3.0 :: 9.3 :: HNil)
 
   test("аналог удаления справа"):
-    type R = HCons[Double, HCons[Int, HCons[Unit, HCons[
-      Char,
-      HCons[Boolean, HCons[String, HCons[Boolean, HCons[Int, HNil.type]]]]
-    ]]]]
+    type R = Double :: Int :: Unit :: Char :: Boolean :: String :: Boolean ::
+      Int :: HNil.type
     val y         = x.reverse.asInstanceOf[R]
     val dropRight = y.i[_3].drop.reverse
     assertEquals(

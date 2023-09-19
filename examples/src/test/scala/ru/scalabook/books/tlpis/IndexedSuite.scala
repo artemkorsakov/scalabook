@@ -70,7 +70,7 @@ class IndexedSuite extends FunSuite:
   test("вставка HList по индексу 3"):
     type R = Int :: Boolean :: String :: Boolean :: Char :: Int :: Double ::
       HNil.type
-    val rm   = x.i[_5].remove.asInstanceOf[R]
+    val rm   = x.i[_5].remove.asInstanceOf[R] // scalafix:ok
     val b2   = x.i[_3].at
     val insH = rm.i[_3].insertH('h' :: b2 :: Some(3) :: None :: HNil)
     assertEquals(
@@ -83,7 +83,7 @@ class IndexedSuite extends FunSuite:
   test("разбиение HList по индексу 6"):
     type R = Int :: Boolean :: String :: Boolean :: Char :: Unit :: Int ::
       Double :: Double :: HNil.type
-    val ins7     = x.i[_7].insert(-3.0f).asInstanceOf[R]
+    val ins7     = x.i[_7].insert(-3.0f).asInstanceOf[R] // scalafix:ok
     val (aa, bb) = ins7.i[_6].splitAt
     assertEquals(aa, 3 :: true :: "asfd" :: false :: 'k' :: () :: HNil)
     assertEquals(bb, 13 :: -3.0 :: 9.3 :: HNil)
@@ -91,7 +91,7 @@ class IndexedSuite extends FunSuite:
   test("аналог удаления справа"):
     type R = Double :: Int :: Unit :: Char :: Boolean :: String :: Boolean ::
       Int :: HNil.type
-    val y         = x.reverse.asInstanceOf[R]
+    val y         = x.reverse.asInstanceOf[R] // scalafix:ok
     val dropRight = y.i[_3].drop.reverse
     assertEquals(
       dropRight,

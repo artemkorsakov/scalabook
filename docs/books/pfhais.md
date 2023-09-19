@@ -507,7 +507,6 @@ end ProductsRoutes
 
 ```dotty
 object Pure extends IOApp:
-  @SuppressWarnings(Array("org.wartremover.warts.Any", "scalafix:DisableSyntax.null"))
   def run(args: List[String]): IO[ExitCode] =
     val migrator: DatabaseMigrator[IO] = new FlywayDatabaseMigrator
 

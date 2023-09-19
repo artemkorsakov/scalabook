@@ -159,3 +159,4 @@ type TL = [X] =>> [Y] =>> (X, Y)
 
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/new-types/type-lambdas.html)
 - [Scala 3 Reference, Details](https://docs.scala-lang.org/scala3/reference/new-types/type-lambdas-spec.html)
+- [Type Lambdas, Polymorphic Function Types, and Dependent Function Types](https://medium.com/scala-3/scala-3-type-lambdas-polymorphic-function-types-and-dependent-function-types-2a6eabef896d?source=rss----de7527e0301e---4)

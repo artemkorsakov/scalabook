@@ -1345,6 +1345,15 @@ val checkCType: (Int, Char) :: (String, Int) :: (List[Char], Char) :: HNil.type 
 val checkCCType: ((Int, Char), (String, Int)) :: ((String, Int), (List[Char], Char)) :: HNil.type = cc
 ```
 
+Далее мы определим класс типов `unzip`, который принимает `HList` кортежей и разделяет его на два `HList` по компонентам:
+
+```dotty
+```
+
+При распаковке HNil создается HNil.
+
+```dotty
+```
 
 ---
 

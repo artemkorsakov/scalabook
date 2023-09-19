@@ -74,8 +74,10 @@
 | [A Comprehensive Guide to Choosing the Best Scala Course - Rock the JVM](https://blog.rockthejvm.com/best-scala-courses/)                                                                     | Scala 3 |  En  | 2023 | Выбор курсов в Scala        |
 | [Build your vocabulary with Scala affixes](https://rossabaker.com/blog/scala-affixes)                                                                                                         | Scala 3 |  En  | 2023 | Префиксы и суффиксы в Scala |
 | [Exploring Scala CLI — the new scala runner](https://medium.com/virtuslab/exploring-scala-cli-the-new-scala-runner-4b958245c2e0)                                                              | Scala 3 |  En  | 2023 |                             |
+| [Infix operator notation](https://medium.com/scala-3/scala-3-infix-operator-notation-26bd7c13d0a3?source=rss----de7527e0301e---4)                                                             | Scala 3 |  En  | 2023 |                             |
 | [Let’s Talk About the Scala 3 Indentation - Rock the JVM](https://blog.rockthejvm.com/scala-3-indentation/)                                                                                   | Scala 3 |  En  | 2020 |                             |
 | [Principles of developing applications in Scala](https://softwaremill.com/principles-of-developing-applications-in-scala/)                                                                    | Scala 3 |  En  | 2023 |                             |
+| [TestContainers in Scala: Use Integration Tests for building your services](https://scalac.io/blog/testcontainers-in-scala-use-integration-tests-for-building-your-services/)                 | Scala 3 |  En  | 2023 |                             |
 | [Two types of futures](https://softwaremill.com/two-types-of-futures/)                                                                                                                        | Scala 3 |  En  | 2023 |                             |
 | [Why are Type Classes Useful in Scala? - Rock the JVM](https://blog.rockthejvm.com/why-are-typeclasses-useful/)                                                                               | Scala 3 |  En  | 2020 |                             |
 | [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes)                                                              | Scala 2 |  En  | 2012 |                             |
@@ -108,9 +110,10 @@
 
 ### Статьи
 
-| Название                                                                                                             | Язык | Дата | Комментарий      |
-|----------------------------------------------------------------------------------------------------------------------|:----:|------|------------------|
-| [«Чистый» код, ужасная производительность](https://habr.com/ru/companies/sportmaster_lab/articles/728880)            |  Ru  | 2023 | Рефакторинг кода |
-| [Software requirements do not change](https://blog.tmorris.net/posts/software-requirements-do-not-change/index.html) |  En  | 2006 |                  |
+| Название                                                                                                                                    | Язык | Дата | Комментарий      |
+|---------------------------------------------------------------------------------------------------------------------------------------------|:----:|------|------------------|
+| [«Чистый» код, ужасная производительность](https://habr.com/ru/companies/sportmaster_lab/articles/728880)                                   |  Ru  | 2023 | Рефакторинг кода |
+| [Bad software examples - how much can poor code hurt you?](https://softwaremill.com/bad-software-examples-how-much-can-poor-code-hurt-you/) |  En  | 2023 |                  |
+| [Software requirements do not change](https://blog.tmorris.net/posts/software-requirements-do-not-change/index.html)                        |  En  | 2006 |                  |
 
 ---

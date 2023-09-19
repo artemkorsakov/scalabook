@@ -157,6 +157,7 @@ object Color:
 **Ссылки:**
 
 - [Algebraic Data Types (ADT) in Scala - Rock the JVM](https://www.youtube.com/watch?v=0wmcCdoExbM&list=PLmtsMNDRU0ByxKWa4h2LMn9oXyeDEJbnC)
+- [Algebraic Data Types again](https://blog.tmorris.net/posts/algebraic-data-types-again/index.html)
 - [Functional Data Modeling in Scala](https://scalajobs.com/blog/functional-data-modeling-in-scala/)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-adts-gadts.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/enums/adts.html)

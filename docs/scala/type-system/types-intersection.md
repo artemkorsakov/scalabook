@@ -220,3 +220,4 @@ glb(A, _)                 = A                     // use first
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-intersection.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/new-types/intersection-types.html)
 - [Scala 3 Reference, Details](https://docs.scala-lang.org/scala3/reference/new-types/intersection-types-spec.html)
+- [Intersection and union types](https://medium.com/scala-3/intersection-and-union-types-860665b785c1?source=rss----de7527e0301e---4)

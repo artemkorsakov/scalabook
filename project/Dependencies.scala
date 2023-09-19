@@ -1,10 +1,10 @@
 import sbt.*
 
 object Dependencies {
-  val Scala = "3.3.0"
+  val Scala = "3.3.1"
 
   object cats {
-    private val version = "2.9.0"
+    private val version = "2.10.0"
     val core            = "org.typelevel" %% "cats-core"    % version
     val effect          = "org.typelevel" %% "cats-effect"  % "3.5-639ac01"
     val free            = "org.typelevel" %% "cats-free"    % version
@@ -17,13 +17,13 @@ object Dependencies {
   }
 
   object iron {
-    private val version = "2.2.0"
+    private val version = "2.2.1"
     val iron            = "io.github.iltotore" %% "iron"      % version
     val cats            = "io.github.iltotore" %% "iron-cats" % version
   }
 
   object laika {
-    private val version = "0.19.3"
+    private val version = "0.19.5"
     val core            = "org.planet42" %% "laika-core"    % version
     val io              = "org.planet42" %% "laika-io"      % version
     val pdf             = "org.planet42" %% "laika-pdf"     % version
@@ -31,7 +31,7 @@ object Dependencies {
   }
 
   object logback {
-    val logback = "ch.qos.logback" % "logback-classic" % "1.4.8"
+    val logback = "ch.qos.logback" % "logback-classic" % "1.4.11"
   }
 
   object munit {
@@ -56,7 +56,7 @@ object Dependencies {
   }
 
   object zio {
-    val core = "dev.zio" %% "zio" % "2.0.15"
+    val core = "dev.zio" %% "zio" % "2.0.17"
   }
 
   val exampleLibs: Seq[ModuleID] =

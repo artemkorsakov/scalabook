@@ -326,5 +326,6 @@ l1.mul(x, z) // error: found l2.Logarithm, required l1.Logarithm
 **Ссылки:**
 
 - [Are you sure your Scala 3 opaque types don’t instantiate?](https://medium.com/@mikolaj.koziarkiewicz/are-you-sure-your-scala-3-opaque-types-dont-instantiate-63653be379ee)
+- [Opaque type aliases and open classes](https://medium.com/scala-3/opaque-type-aliases-and-open-classes-13076a6c07e4?source=rss----de7527e0301e---4)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-opaque-types.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/other-new-features/opaques.html)

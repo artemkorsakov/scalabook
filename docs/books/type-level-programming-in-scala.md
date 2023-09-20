@@ -1403,6 +1403,123 @@ val checkCb: Char :: Int :: HNil.type                          = cb
 
 [Исходная статья][part 6e]
 
+Мы продолжим определение `happly`, разнородного метода применения функций. 
+Он принимает `HList` функций и применяет их к соответствующим значениям во входном `HList`, 
+создавая `HList` результатов.
+
+Во-первых, пример использования выглядит так:
+
+```dotty
+// два HList с типом Double :: Char :: HNil
+val y1 = 9.75 :: 'x' :: HNil
+val y2 = -2.125 :: 'X' :: HNil
+
+// Функции применения.
+// Тип z: (Double => Double) :: (Char => Boolean) :: HNil
+val z = ((_: Double) + .5) :: ((_: Char).isUpper) :: HNil
+
+// применение первого параметра HList z ко второму параметру y1
+val z1 = happly(z)(y1)
+// проверка типов
+val z1Types: Double :: Boolean :: HNil.type = z1
+// проверка значения
+assertEquals(z1, 10.25 :: false :: HNil)
+
+// применение первого параметра HList z ко второму параметру y2
+val z2 = happly(z)(y2)
+// проверка типов
+val z2Types: Double :: Boolean :: HNil.type = z2
+// проверка значения
+assertEquals(z2, -1.625 :: true :: HNil)
+```
+
+Мы реализуем `Happly`, используя класс типов `HApply`, который по сути является `Function1`. 
+На самом деле мы не можем использовать `Function1`, 
+потому что мешают существующие неявные условия, связанные с `Function1`.
+
+```dotty
+sealed trait HApply[-In, +Out]:
+  def apply(in: In): Out
+```
+
+Идея состоит в том, что, учитывая `HList` функций, мы создаем `HApply`, 
+который принимает `HList` параметров "правильного" типа и выдает `HList` результатов. 
+Для функции `z` из примера нам нужен `HApply` типа:
+
+```dotty
+HApply[(Double :: Char :: HNil), (Double :: Boolean :: HNil)]
+```
+
+Для этого есть два основных случая: `HNil` и `HCons`. 
+Самый простой случай — это сопоставление `HNil` с `HNil`:
+
+```dotty
+given HApply[HNil.type, HApply[HNil.type, HNil.type]] with
+  def apply(h: HNil.type): HApply[HNil.type, HNil.type] =
+    new HApply[HNil.type, HNil.type]:
+      def apply(in: HNil.type): HNil.type = HNil
+```
+
+Как обычно, интересен случай с `HCons`. 
+Мы принимаем ячейку `HCons` с заголовком, являющимся функцией, 
+и создаем `HApply`, который будет принимать входную ячейку `HCons` требуемого типа. 
+Затем `HApply` применяет функцию `head` к значению `head` и выполняет рекурсию по остатку. 
+`HApply`, используемый для рекурсии, предоставляется неявно, и именно поэтому мы требуем, 
+чтобы один `HList` был `HList`, полностью состоящим из функций, 
+а другой `HList` содержал значения правильного типа, 
+которые будут предоставляться в качестве входных данных для этих функций.
+
+```dotty
+given happlyCons[InH, OutH, TF <: HList, TIn <: HList, TOut <: HList](using
+    applyTail: HApply[TF, HApply[TIn, TOut]]
+): HApply[(InH => OutH) :: TF, HApply[InH :: TIn, OutH :: TOut]] with
+  def apply(h: (InH => OutH) :: TF): HApply[InH :: TIn, OutH :: TOut] =
+    new HApply[InH :: TIn, OutH :: TOut]:
+      def apply(in: InH :: TIn): OutH :: TOut =
+        HCons(h.head(in.head), applyTail(h.tail)(in.tail))
+```
+
+В примере мы имеем:
+
+```dotty
+val y1 = 9.75 :: 'x' :: HNil
+
+val z = ((_: Double) + .5) :: ((_: Char).isUpper) :: HNil
+```
+
+Итак, для `happly(z)(y1)` наша неявная конструкция строится с помощью:
+
+```dotty
+happlyCons[Double, Double, Char => Boolean :: HNil, Char :: HNil, Boolean :: HNil]( 
+  happlyCons[Char, Boolean, HNil, HNil, HNil](
+    happlyNil
+  )
+)
+```
+
+Первый метод `applyCons` создает `HApply`, который использует заголовок `z`, 
+функцию типа `Double => Double`, для сопоставления `HList` с заголовком типа `Double` с `HList` с заголовком типа `Double`. 
+Он использует `HApply` из второго `happlyCons` для отображения остатка входного `HList`.
+
+Этот второй `HApply` использует второй элемент `z`, функцию типа `Char => Boolean`, 
+для сопоставления `HList` с заголовком типа `Char` с `HList` с заголовком типа `Boolean`. 
+Поскольку это последний элемент, рекурсия заканчивается отображением `happlyNil` `HNil` в `HNil`.
+
+Наконец, мы определяем точку входа. 
+Учитывая `HList` функций и `HList` аргументов этих функций, мы используем `happly`, 
+чтобы неявно получить `HApply` и создать с его помощью результирующий `HList`:
+
+```dotty
+def happly[H <: HList, In <: HList, Out <: HList](h: H)(in: In)(using
+    toApply: HApply[H, HApply[In, Out]]
+): Out =
+  toApply(h)(in)
+```
+
+## Часть 6f. Получение экземпляров классов типов с помощью HLists
+
+[Исходная статья][part 6f]
+
 ---
 
 **Ссылки:**
@@ -1427,6 +1544,7 @@ val checkCb: Char :: Int :: HNil.type                          = cb
     - [Part 6e: HList Apply][part 6e]
     - [Part 6f: Deriving type class instances through HLists][part 6f]
     - [Part 6g: Type-indexed HLists][part 6g]
+    - [Part 7: Natural transformation literals][part 7]
 - [Scala Reference - Match Types](http://dotty.epfl.ch/docs/reference/new-types/match-types.html#) 
 - [In Dotty try match types as a replacement for type projections](https://stackoverflow.com/questions/59101681/dotty-cannot-infer-result-type-of-generic-scala-function-taking-type-parameter-t) 
 - [Converting code using simple type projections to dotty](https://users.scala-lang.org/t/converting-code-using-simple-type-projections-to-dotty/6516)
@@ -1449,6 +1567,7 @@ val checkCb: Char :: Int :: HNil.type                          = cb
 [part 6e]: https://apocalisp.wordpress.com/2010/10/15/type-level-programming-in-scala-part-6e-hlist%C2%A0apply/
 [part 6f]: https://apocalisp.wordpress.com/2010/10/18/type-level-programming-in-scala-part-6f-deriving-type-class-instances-through%C2%A0hlists/
 [part 6g]: https://apocalisp.wordpress.com/2010/10/22/type-level-programming-in-scala-part-6g-type-indexed%C2%A0hlists/
+[part 7]: https://apocalisp.wordpress.com/2010/10/26/type-level-programming-in-scala-part-7-natural-transformation%C2%A0literals/
 [wiki]: https://wiki.haskell.org/Peano_numbers
 [match types]: ../scala/type-system/match-types.md
 [Project Euler]: https://projecteuler.net/about

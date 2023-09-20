@@ -23,6 +23,7 @@
 
 | Название                                                                                                                                           | Версия  | Язык | Дата | Комментарий |
 |----------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
+| [Functional Programming in Scala - DevInsideYou](https://www.youtube.com/playlist?list=PLJGDHERh23x8AD0LFiS9iPg_tKLS1i1wZ)                         | Scala 3 |  En  | 2022 |             |
 | [Proper and Basic Property-Based Testing](https://www.youtube.com/watch?v=FS_VJOQfogc)                                                             | Scala 3 |  En  | 2023 |             |
 | [Scala 3 - Rock the JVM](https://www.youtube.com/watch?v=orTmm6OMaLw&list=PLmtsMNDRU0BwsVUbhsH2HMqDMPNhQ0HPc)                                      | Scala 3 |  En  | 2020 |             |
 | [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)                                        | Scala 3 |  En  | 2021 |             |

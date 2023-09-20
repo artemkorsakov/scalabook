@@ -67,3 +67,6 @@ object HList:
 
     def zip[B <: HList, R <: HList](b: B)(using hzip: HZip[A, B, R]): R =
       hzip(a, b)
+
+    def unzip[R1 <: HList, R2 <: HList](using un: Unzip[A, R1, R2]): (R1, R2) =
+      un unzip a

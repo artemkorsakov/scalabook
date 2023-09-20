@@ -1348,12 +1348,60 @@ val checkCCType: ((Int, Char), (String, Int)) :: ((String, Int), (List[Char], Ch
 Далее мы определим класс типов `unzip`, который принимает `HList` кортежей и разделяет его на два `HList` по компонентам:
 
 ```dotty
+trait Unzip[H <: HList, R1 <: HList, R2 <: HList]:
+  def unzip(h: H): (R1, R2)
 ```
 
-При распаковке HNil создается HNil.
+При распаковке `HNil` создается `HNil`.
 
 ```dotty
+object Unzip:
+  given Unzip[HNil.type, HNil.type, HNil.type] with
+    def unzip(h: HNil.type) = (HNil, HNil)
 ```
+
+Для `HCon` мы разархивируем остаток, отделяем компоненты заголовка
+и добавляем соответствующий компонент заголовка к каждому компоненту остатка.
+
+```dotty
+given unzipCons[H1, H2, T <: HList, TR1 <: HList, TR2 <: HList](using
+    unzipTail: Unzip[T, TR1, TR2]
+): Unzip[(H1, H2) :: T, H1 :: TR1, H2 :: TR2] with
+  def unzip(h: (H1, H2) :: T): (H1 :: TR1, H2 :: TR2) =
+    val (t1, t2) = unzipTail.unzip(h.tail)
+    (HCons(h.head._1, t1), HCons(h.head._2, t2))
+```
+
+Опять же, нам просто нужно подключить добавить метод расширения к `HList`.
+
+```dotty
+extension [A <: HList](a: A)
+  def unzip[R1 <: HList, R2 <: HList](using un: Unzip[A, R1, R2]): (R1, R2) =
+    un unzip a
+```
+
+Основываясь на примере выше,
+
+```dotty
+// разархивирование свернутых HList-ов
+val (cc1, cc2) = cc.unzip
+
+val (ca, cb) = cc1.unzip
+// ca = 3 :: "ai4" :: HNil
+// cb = '3' :: 2 :: HNil
+
+// проверка типов
+val checkCC1: (Int, Char) :: (String, Int) :: HNil.type        = cc1
+val checkCC2: (String, Int) :: (List[Char], Char) :: HNil.type = cc2
+val checkCa: Int :: String :: HNil.type                        = ca
+val checkCb: Char :: Int :: HNil.type                          = cb
+```
+
+Далее мы рассмотрим применение функций к значениям `HList`.
+
+## Часть 6e. HList Apply
+
+[Исходная статья][part 6e]
 
 ---
 

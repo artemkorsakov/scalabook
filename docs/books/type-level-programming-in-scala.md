@@ -1520,6 +1520,156 @@ def happly[H <: HList, In <: HList, Out <: HList](h: H)(in: In)(using
 
 [Исходная статья][part 6f]
 
+Хотя некоторые части этой серии не имеют прямого практического применения 
+([Project Euler problem 4 в системе типов][part 5b]), сами `HLists` определенно практичны. 
+Механизм задач в sbt позволяет избежать необходимости использования большого количества шаблонов 
+или использования препроцессора, сохраняя при этом безопасность типов за счет использования `HList`-ов 
+(и `KList`-ов — гетерогенного списка с конструктором типа, общим для каждой ячейки, который будет обсуждаться в части 8).
+
+Однако в этой главе давайте посмотрим, как мы можем использовать `HList`-ы, чтобы уменьшить еще одну категорию шаблонов. 
+Это связано с определением экземпляров классов типов, особенно тех, которые созданы для определенного типа данных. 
+В примерах используется `scala.Equiv`. 
+Если вы не знакомы с `Equiv`, это класс типов для равенства:
+
+```dotty
+trait Equiv[T]:
+   def equiv(a: T, b: T): Boolean
+```
+
+Экземпляр для `Int` может выглядеть так:
+
+```dotty
+given Equiv[Int] with
+  def equiv(a: Int, b: Int): Boolean = a == b
+```
+
+Для `Tuple2` мы создаем экземпляры `Equiv` для его членов:
+
+```dotty
+given pairEquiv[A, B](using a: Equiv[A], b: Equiv[B]): Equiv[(A, B)] with
+  def equiv(t1: (A, B), t2: (A, B)): Boolean =
+    a.equiv(t1._1, t2._1) && b.equiv(t1._2, t2._2)
+```
+
+Нам нужно будет повторить это для каждого `TupleN`. Это немного раздражает, но не так уж плохо. 
+Однако классы пользователей представляют собой препятствие. 
+В частности, мы будем рассматривать кейс-классы, поскольку Scala фокусируется на создании методов для них. 
+Очевидно, что пользователи могут создавать столько кейс-классов, сколько захотят. 
+Вы не можете заранее написать `Equiv` для всех этих классов. 
+Вместо этого для каждого кейс-класса пользователю необходимо сделать что-то вроде:
+
+```dotty
+case class Example[A, B](a: A, b: Seq[B], c: Int)
+
+given exampleEquiv[A, B](using
+    a: Equiv[A],
+    b: Equiv[Seq[B]],
+    c: Equiv[Int]
+): Equiv[Example[A, B]] with
+  def equiv(e1: Example[A, B], e2: Example[A, B]): Boolean =
+    a.equiv(e1.a, e2.a) && b.equiv(e1.b, e2.b) && c.equiv(e1.c, e2.c)
+```
+
+Это чисто шаблонный подход, поскольку мы не говорим ничего нового. Мы дублируем логику `Equiv` для `Tuple3`. 
+Класс `Example` по сути представляет собой `Tuple3[A, Seq[B], Int]`, 
+а `HList`-ы способны представлять кортежи произвольной длины. 
+Мы могли бы написать функции для преобразования между `HList`-ами и нашими кейс-классами. 
+Если мы затем создадим экземпляры нашего класса типов для `HCons` и `HNil`, 
+а также для любого кейс-класса, который обеспечивает преобразование в `HList`-ы и обратно, 
+то сможем автоматически получить экземпляры класса типа для любого кейс-класса.
+
+Сопутствующий объект кейс-класса содержит неявные преобразования в соответствующий тип `HList` и обратно. 
+Для приведенного выше класса `Example` это примерно эквивалентно следующему определению, данному вручную:
+
+```dotty
+object Example:
+  extension [A, B](e: Example[A, B])
+    def toHList: A :: Seq[B] :: Int :: HNil.type = e.a :: e.b :: e.c :: HNil
+
+  def fromHList[A, B](hl: A :: Seq[B] :: Int :: HNil.type): Example[A, B] =
+    val a :: b :: c :: HNil = hl
+    Example(a, b, c)
+```
+
+Затем мы реализуем `Equiv` для `HList` и для всего, что конвертируется в `HList`:
+
+```dotty
+object EquivHList:
+  // HNil === HNil
+  given Equiv[HNil.type] with
+    def equiv(a: HNil.type, b: HNil.type) = true
+
+  // заданы Equiv для заголовка и остатка,
+  //   (h1 :: t1) === (h2 :: t2) тогда, когда
+  //   (h1 === h2) и (t1 === t2)
+  given equivHCons[H, T <: HList](using
+      equivH: Equiv[H],
+      equivT: Equiv[T]
+  ): Equiv[HCons[H, T]] with
+    def equiv(a: HCons[H, T], b: HCons[H, T]): Boolean =
+      equivH.equiv(a.head, b.head) && equivT.equiv(a.tail, b.tail)
+
+  // дано:
+  //   - тип T, конвертируемый в HList типа HL
+  //   - экземпляр Equiv для HL
+  // мы можем создать Equiv[T] приведя T к HL и используя Equiv[HL]
+  given equivHListable[T, HL <: HList](using
+      toHList: T => HL,
+      equivHL: Equiv[HL]
+  ): Equiv[T] with
+    def equiv(a: T, b: T): Boolean =
+      equivHL.equiv(toHList(a), toHList(b))
+```
+
+Итак, нам нужно написать что-то вроде `EquivHList` для каждого класса типов, 
+для которого мы хотим автоматически генерировать экземпляры для кейс-классов. 
+Как только мы это сделаем, то сможем просто:
+
+```dotty
+case class Example[A, B](a: A, b: Seq[B], c: Int)
+
+assert(Example('a', Seq(1, 2, 3), 19) === Example('a', Seq(1, 2, 3), 19))
+assert(Example('b', Seq(1, 2, 3), 1) !== Example('a', Seq(1, 2, 3), 1))
+```
+
+В этом примере предполагается, что `===` и `!==` предоставляются неявным преобразованием, например:
+
+```dotty
+extension [A](a1: A)
+  def ===(a2: A): Boolean = Equiv.universal.equiv(a1, a2)
+
+  def !==(a2: A): Boolean = !Equiv.universal.equiv(a1, a2)
+```
+
+`Predef.conforms` также необходимо скрыть. 
+В противном случае `equivHListable` расходится. Было бы хорошо иметь хорошее решение для этого.
+
+И последнее замечание: даже если компилятор автоматически не генерирует преобразования, 
+вручную определить преобразования в `HLists` и из них для каждого кейс-класса может быть легче, чем вручную реализовать класс типов. 
+Вероятно, это тот случай, когда вы хотите реализовать несколько классов типов для одного класса.
+
+В следующем и последнем разделе этой части будет рассказано о некоторых способах упростить работу со списками `HList` в Scala.
+
+## Часть 6g. Type-indexed HLists
+
+[Исходная статья][part 6g]
+
+## Часть 7. Естественные литералы преобразования
+
+[Исходная статья][part 7]
+
+## Часть 8a. Мотивация KList
+
+[Исходная статья][part 8a]
+
+## Часть 8b. Основы KList
+
+[Исходная статья][part 8b]
+
+## Часть 8c. KList ZipWith
+
+[Исходная статья][part 8c]
+
 ---
 
 **Ссылки:**
@@ -1545,6 +1695,9 @@ def happly[H <: HList, In <: HList, Out <: HList](h: H)(in: In)(using
     - [Part 6f: Deriving type class instances through HLists][part 6f]
     - [Part 6g: Type-indexed HLists][part 6g]
     - [Part 7: Natural transformation literals][part 7]
+    - [Part 8a: KList motivation][part 8a]
+    - [Part 8b: KList basics][part 8b]
+    - [Part 8c: KList ZipWith][part 8c]
 - [Scala Reference - Match Types](http://dotty.epfl.ch/docs/reference/new-types/match-types.html#) 
 - [In Dotty try match types as a replacement for type projections](https://stackoverflow.com/questions/59101681/dotty-cannot-infer-result-type-of-generic-scala-function-taking-type-parameter-t) 
 - [Converting code using simple type projections to dotty](https://users.scala-lang.org/t/converting-code-using-simple-type-projections-to-dotty/6516)
@@ -1568,6 +1721,9 @@ def happly[H <: HList, In <: HList, Out <: HList](h: H)(in: In)(using
 [part 6f]: https://apocalisp.wordpress.com/2010/10/18/type-level-programming-in-scala-part-6f-deriving-type-class-instances-through%C2%A0hlists/
 [part 6g]: https://apocalisp.wordpress.com/2010/10/22/type-level-programming-in-scala-part-6g-type-indexed%C2%A0hlists/
 [part 7]: https://apocalisp.wordpress.com/2010/10/26/type-level-programming-in-scala-part-7-natural-transformation%C2%A0literals/
+[part 8a]: https://apocalisp.wordpress.com/2010/11/01/type-level-programming-in-scala-part-8a-klist%C2%A0motivation/
+[part 8b]: https://apocalisp.wordpress.com/2010/11/03/type-level-programming-in-scala-part-8b-klist%C2%A0basics/
+[part 8c]: https://apocalisp.wordpress.com/2010/11/15/type-level-programming-in-scala-part-8c-klist%C2%A0zipwith/
 [wiki]: https://wiki.haskell.org/Peano_numbers
 [match types]: ../scala/type-system/match-types.md
 [Project Euler]: https://projecteuler.net/about

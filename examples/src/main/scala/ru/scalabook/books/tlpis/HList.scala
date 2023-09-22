@@ -1,5 +1,7 @@
 package ru.scalabook.books.tlpis
 
+import ru.scalabook.books.tlpis.HList.::
+
 sealed trait HList
 
 case object HNil extends HList:
@@ -11,6 +13,8 @@ final case class HCons[H, T <: HList](head: H, tail: T) extends HList:
   self =>
 
   def ::[A](v: A): HCons[A, HCons[H, T]] = HCons(v, self)
+
+  def t[S]: TipDummy[S, H :: T] = TipDummy[S, H :: T](self)
 
 // алиасы для построения типов HList и для сопоставления с шаблоном
 object HList:

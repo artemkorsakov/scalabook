@@ -1702,7 +1702,7 @@ sealed trait Tip[S, HL <: HList, Ind <: Indexed]:
 ```
 
 Таким образом, экземпляр `Tip` для `HList` `HL` и типа `S` может предоставить индексированный экземпляр, 
-в котором мы можем вызывать такие методы, как "at", "remove" или "map".
+в котором мы можем вызывать такие методы, как `at`, `remove` или `map`.
 
 Фактическая работа — создание экземпляров `Tip`. Существует один случай для `Indexed0` и один для `IndexedN`. 
 Когда у нас есть доказательства того, что тип заголовка ячейки `HCons` совпадает с искомыми типом, 
@@ -1737,7 +1737,9 @@ given tindexedN[H, T <: HList, I <: Indexed, S](using
 Чтобы связать вышеизложенное с `HList` для запрошенного типа, мы добавляем метод `t` в `HCons`:
 
 ```dotty
-def t[S]: TipDummy[S, H :: T]
+final case class HCons[H, T <: HList](head: H, tail: T) extends HList:
+  self =>
+  def t[S]: TipDummy[S, H :: T] = TipDummy[S, H :: T](self)
  
 sealed class TipDummy[S, HL <: HList](val hl: HL)
 ```
@@ -1746,7 +1748,12 @@ sealed class TipDummy[S, HL <: HList](val hl: HL)
 Затем мы обеспечиваем неявное преобразование из `TipDummy` в `Indexed`:
 
 ```dotty
-implicit def tipToInd[S, HL <: HList, I <: Indexed](dummy: TipDummy[S, HL])(implicit tip: Tip[S, HL, I]): I = tip(dummy.hl)
+object TipDummy:
+  given fromTipDummy[S, HL <: HList, I <: Indexed](using
+      tip: Tip[S, HL, I]
+  ): Conversion[TipDummy[S, HL], I] with
+    def apply(dummy: TipDummy[S, HL]): I =
+      tip(dummy.hl)
 ```
 
 Промежуточный `TipDummy` выполняет применение параметра частичного типа. 
@@ -1755,7 +1762,52 @@ implicit def tipToInd[S, HL <: HList, I <: Indexed](dummy: TipDummy[S, HL])(impl
 Примеры:
 
 ```dotty
-???
+val x = 3 :: true :: "asfd" :: 'k' :: () :: 9.3 :: HNil
+
+// получение значения типа Boolean
+val b2: Boolean = x.t[Boolean].toIndexed.at
+// true
+
+// Удалить все перед значением типа String
+val pre = x.t[String].drop
+// "asfd" :: 'k' :: () :: 9.3 :: HNil
+
+// замена значения типа String на число 19
+val rep = x.t[String].replace(19)
+// 3 :: true :: 19 :: 'k' :: () :: 9.3 :: HNil
+
+// замена символа Char на true если он в нижнем регистре, false - в ином случае
+val mp = x.t[Char].map(_.isLower)
+// 3 :: true :: "asfd" :: true :: () :: 9.3 :: HNil
+
+// удаление значения типа Unit
+val rm = x.t[Unit].remove
+// 3 :: true :: "asfd" :: 'k' :: 9.3 :: HNil
+
+// замена значения типа String на HList, построенный на её значениях
+val fmp = x.t[String].flatMap(s => s.charAt(0) :: s.substring(1) :: HNil)
+// 3 :: true :: 'a' :: "sfd" :: 'k' :: () :: 9.3 :: HNil
+
+// вставка значения перед полем типа Int
+val ins0 = x.t[Int].insert(List(3, 4))
+// List(3, 4) :: 3 :: true :: "asfd" :: 'k' :: () :: 9.3 :: HNil
+
+// вставка значения перед полем типа  Double
+val ins7 = x.t[Double].insert(-3.0f)
+// 3 :: true :: "asfd" :: 'k' :: () :: -3.0 :: 9.3 :: HNil
+
+// вставка HList перед значением типа String
+val insH = x.t[String].insertH('h' :: b2 :: Some(3) :: None :: HNil)
+// 3 :: true :: 'h' :: true :: Some(3) :: None :: "asfd" :: 'k' :: () :: 9.3 :: HNil
+
+// разбиение HList перед значением с типом Unit
+val (aa, bb) = x.t[Unit].splitAt
+// (3 :: true :: "asfd" :: 'k' :: HNil, () :: 9.3 :: HNil)
+
+// аналог операции удаление справа
+type R = Double :: Unit :: Char :: String :: Boolean :: Int :: HNil.type
+val dropRight = x.reverse.asInstanceOf[R].t[Char].drop.reverse
+// 3 :: true :: "asfd" :: 'k' :: HNil
 ```
 
 ## Часть 7. Естественные литералы преобразования

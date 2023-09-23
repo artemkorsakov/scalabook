@@ -1768,7 +1768,7 @@ val x = 3 :: true :: "asfd" :: 'k' :: () :: 9.3 :: HNil
 val b2: Boolean = x.t[Boolean].toIndexed.at
 // true
 
-// Удалить все перед значением типа String
+// удаление значений перед значением типа String
 val pre = x.t[String].drop
 // "asfd" :: 'k' :: () :: 9.3 :: HNil
 
@@ -1792,7 +1792,7 @@ val fmp = x.t[String].flatMap(s => s.charAt(0) :: s.substring(1) :: HNil)
 val ins0 = x.t[Int].insert(List(3, 4))
 // List(3, 4) :: 3 :: true :: "asfd" :: 'k' :: () :: 9.3 :: HNil
 
-// вставка значения перед полем типа  Double
+// вставка значения перед полем типа Double
 val ins7 = x.t[Double].insert(-3.0f)
 // 3 :: true :: "asfd" :: 'k' :: () :: -3.0 :: 9.3 :: HNil
 

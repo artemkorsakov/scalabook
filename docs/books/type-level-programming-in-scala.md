@@ -1912,6 +1912,147 @@ transform[Option, Boolean, Double, List]((some(true), none[Double]),toList),
 
 [Исходная статья][part 8b]
 
+При отсутствии типов ранга 2 может быть полезно иметь разнородный список более высокого порядка, который здесь назовем `KList`. 
+`KList` определяет конструктор типа `M[_]`, который используется для создания типа для всех ячеек в списке. 
+Параметр, передаваемый в конструктор этого типа, может быть разным для каждой ячейки, которая является разнородной частью. 
+Одним из вариантов использования `KList` является определение общей функции `zipWith`. 
+`KList`-ы также используются при реализации механизма задач в **sbt**. 
+Каждое из этих приложений будет описано в последующих постах.
+
+Начнем с базового определения `KList`, которое выглядит так:
+
+```dotty
+sealed trait KList[+M[_], HL <: HList]
+
+final case class KCons[H, T <: HList, +M[_]](head: M[H], tail: KList[M, T])
+    extends KList[M, H :: T]:
+  self =>
+  // добавление в начало
+  def :^:[N[X] >: M[X], G](g: N[G]): KCons[G, H :: T, N] = KCons(g, self)
+
+sealed class KNil extends KList[Nothing, HNil.type]:
+  def :^:[M[_], H](h: M[H]): KCons[H, HNil.type, M] = KCons(h, this)
+
+object KNil extends KNil
+
+object KList:
+  // более удобный псевдоним для сопоставления с образцом
+  val :^: : KCons.type = KCons
+```
+
+Он похож на `HList`, за исключением конструктора типа `M`. 
+Мы сохраняем тип `head`-а в `KCons` двумя частями: конструктор типа `M`, общий для всех ячеек в `KList`, 
+и параметр типа `M`, специфичный для этой ячейки. Полный тип заголовка тогда будет `M[H]`.
+
+Пример конструкции:
+
+```dotty
+val m = List(1, 2, 3, 4) :^: List("str1", "str2") :^: KNil
+```
+
+Тип переменной:
+
+```dotty
+KCons[Int, java.lang.String :: HNil, List]
+```
+
+Обратите внимание, что мы можем смешивать совместимые конструкторы типов:
+
+```dotty
+val m = Seq(1, 2, 3, 4) :^: List("str1", "str2") :^: KNil
+// KCons[Int, java.lang.String :: HNil, Seq]
+```
+
+Те, которые несовместимы, приводят к сбою компилятора:
+
+```dotty
+final case class MyArray(str: String, str1: String)
+
+val m = Seq(1, 2, 3, 4) :^: MyArray("str1", "str2") :^: KNil
+// Found: KListSuite.this.MyArray Required: M[H]  
+```
+
+В некоторых случаях невозможно вывести типы, например, когда конструктор типа — `Id`, где `type Id[X] = X`:
+
+```dotty
+// не скомпилируется
+val p = 1 :^: true :^: KNil
+```
+
+Ключевое использование `KList` — применение естественного преобразования к своему содержимому. 
+Мы сохранили конструктор типа отдельно от параметров типа, что означает, 
+что мы можем применить естественное преобразование `[A] => M[A] => N[A]` к каждому элементу 
+и сохранить базовые параметры типа. В качестве примера рассмотрим наш разнородный список списков:
+
+```dotty
+val m = List(1, 2, 3, 4) :^: List("str1", "str2") :^: KNil
+```
+
+и естественное преобразование, которое принимает `List` и вызывает для него `headOption`:
+
+```dotty
+val headOption: [A] => List[A] => Option[A] =
+  [A] => (list: List[A]) => list.headOption
+```
+
+Затем применяем `headOption` к `m`:
+
+```dotty
+val heads = m transform headOption
+// KCons(Some(1), KCons(Some("str1"), KNil))
+```
+
+Мы получаем список опций `KList`, сохраняя информацию о том, 
+что первый элемент имеет тип `Option[Int]`, а второй — тип `Option[String]`.
+
+Метод `transform` в `KList` реализовать просто:
+
+```dotty
+sealed trait KList[+M[_], HL <: HList]:
+  def transform[N[_]](f: [A] => M[A] => N[A]): KList[N, HL]
+  
+final case class KCons[H, T <: HList, +M[_]](head: M[H], tail: KList[M, T])
+    extends KList[M, H :: T]:
+  ...
+  def transform[N[_]](f: [A] => M[A] => N[A]): KList[N, H :: T] =
+    KCons(f(head), tail transform f)  
+
+sealed class KNil extends KList[Nothing, HNil.type]:
+  ...
+  def transform[N[_]](f: [A] => Nothing => N[A]): KList[N, HNil.type] = KNil    
+```
+
+Мы можем добавить еще один метод, который преобразует `KList` в базовый `HList`. 
+Например, мы могли бы уменьшить каждый список в нашем `KList` выше до его головного элемента:
+
+```dotty
+val head: [A] => List[A] => Id[A] =
+  [A] => (list: List[A]) => list.head
+
+val heads = m down head
+// 1 :: "str1" :: HNil
+```
+
+Определение метода `down` выглядит так:
+
+```dotty
+sealed trait KList[+M[_], HL <: HList]:
+  // Для преобразования KList в HList
+  def down(f: [A] => M[A] => Id[A]): HL
+  
+final case class KCons[H, T <: HList, +M[_]](head: M[H], tail: KList[M, T])
+    extends KList[M, H :: T]:
+  ...
+  def down(f: [A] => M[A] => Id[A]) = HCons(f(head), tail down f)
+
+sealed class KNil extends KList[Nothing, HNil.type]:
+  ...
+  def down(f: [A] => Nothing => Id[A]) = HNil
+```
+
+В следующем разделе мы будем использовать `down` и `transform`, 
+чтобы реализовать `zipWith` для произвольной арности.
+
 ## Часть 8c. KList ZipWith
 
 [Исходная статья][part 8c]

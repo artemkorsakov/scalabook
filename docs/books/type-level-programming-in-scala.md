@@ -2123,6 +2123,7 @@ def zipWith[HL <: HList, T](
   else
     LazyList.cons(f(kl down heads), zipWith(kl transform tails)(f))
 
+@tailrec
 def anyEmpty(kl: KList[LazyList, _]): Boolean =
   kl match
     case KCons(head, tail) => head.isEmpty || anyEmpty(tail)
@@ -2143,67 +2144,58 @@ val tails: [A] => LazyList[A] => LazyList[A] =
 Исходный пример, переведенный для использования обобщенного `zipWith`, выглядит так:
 
 ```dotty
-???
-val nats = Stream.from(1)
-val random = Stream.continually( math.random )
-val seq = zipWith( nats :^: random :^: KNil ) {
-   case n :: r :: HNil => if(r > 0.3) n else -n
+val nats   = LazyList.from(1)
+val random = LazyList.continually(math.random)
+val seq = ZipWith.zipWith(nats :^: random :^: KNil) { case n :: r :: HNil =>
+  if (r > 0.3) n else -n
 }
- 
-scala> seq.take(10).toList
-res0: List[Int] = List(-1, 2, -3, -4, -5, 6, 7, 8, 9, 10)
-???
+
+seq.take(10).toList
+// List(1, 2, 3, 4, 5, 6, 7, 8, -9, 10)
 ```
 
 Мы можем реализовать соответствующую функцию `zip` в терминах `zipWith`.
 
 ```dotty
-???
-def zipped[HL <: HList](kl: KList[Stream, HL]): Stream[HL] =
-   zipWith(kl)(x => x)
-???
+def zipped[HL <: HList](kl: KList[LazyList, HL]): LazyList[HL] =
+  zipWith(kl)(x => x)
 ```
 
 Или мы могли бы реализовать `zipWith` в терминах `zip`. 
 В любом случае мы можем реализовать несколько других функций, используя `zip`:
 
 ```dotty
-???
-def foreach[HL <: HList, T](kl: KList[Stream, HL])(f: HL => T): Unit =
-   zipped(kl).foreach(f)
- 
-def collect[HL <: HList, T](kl: KList[Stream, HL])(f: HL => Option[T]): Stream[T] =
-   zipped(kl).collect(f)
- 
-def flatMap[HL <: HList, T](kl: KList[Stream, HL])(f: HL => Stream[T]): Stream[T] =
-   zipped(kl).flatMap(f)
- 
-def forall[HL <: HList](kl: KList[Stream, HL])(f: HL => Boolean): Boolean =
-   zippped(kl).forall(f)
-       
-def exists[HL <: HList](kl: KList[Stream, HL])(f: HL => Boolean): Boolean =
-   zipped(kl).exists(f)
-???
+def foreach[HL <: HList, T](kl: KList[LazyList, HL])(f: HL => T): Unit =
+  zipped(kl).foreach(f)
+
+def collect[HL <: HList, T](kl: KList[LazyList, HL])(f: HL => Option[T): LazyList[T] =
+  zipped(kl).collect { case hl if f(hl).isDefined => f(hl).get }
+
+def flatMap[HL <: HList, T](kl: KList[LazyList, HL])(f: HL => LazyList[T]): LazyList[T] =
+  zipped(kl).flatMap(f)
+
+def forall[HL <: HList](kl: KList[LazyList, HL])(f: HL => Boolean): Boolean =
+  zipped(kl).forall(f)
+
+def exists[HL <: HList](kl: KList[LazyList, HL])(f: HL => Boolean): Boolean =
+  zipped(kl).exists(f)
 ```
 
 Пример использования `foreach`:
 
 ```dotty
-???
-val a = Stream(1,2,5,3,9,10,101)
-val b = Stream("one", "two", "three", "four")
-val c = Stream(true, false, false, true, true)
- 
-zipped(a :^: b :^: c :^: KNil) foreach {
-   case n :: s :: b :: HNil =>
-      println( s * (if(b) 1 else n) )
+val a = LazyList(1, 2, 5, 3, 9, 10, 101)
+val b = LazyList("one", "two", "three", "four")
+val c = LazyList(true, false, false, true, true)
+
+ZipWith.zipped(a :^: b :^: c :^: KNil) foreach { case n :: s :: b :: HNil =>
+  println(s * (if (b) 1 else n))
 }
- 
-one
-twotwo
-threethreethreethreethree
-four
-???
+
+// one
+// twotwo
+// threethreethreethreethree
+// four
 ```
 
 ---

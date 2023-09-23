@@ -2057,6 +2057,155 @@ sealed class KNil extends KList[Nothing, HNil.type]:
 
 [Исходная статья][part 8c]
 
+Одним из вариантов использования `KList` и методов `transform` и `down` 
+является реализация таких методов, как `zipWith`, для кортежей произвольной длины. 
+Начнем с того, что подпись `zipWith` для пары потоков, работающих с фиксированной арностью `2`, выглядит так:
+
+```dotty
+def zipWith2[A, B, C](t2: (LazyList[A], LazyList[B]))(
+    f: (A, B) => C
+): LazyList[C] =
+  t2 match
+    case (ha #:: ta, hb #:: tb) =>
+      LazyList.cons(f(ha, hb), zipWith2((ta, tb))(f))
+    case _ => LazyList.empty
+```
+
+Пример использования:
+
+```dotty
+val nats   = LazyList.from(1)
+val random = LazyList.continually(math.random)
+val seq    = zipWith2((nats, random)) { (n, r) => if (r > 0.3) n else -n }
+
+seq.take(10).toList
+// List(-1, -2, 3, 4, 5, -6, 7, 8, -9, 10)
+```
+
+Для реализации `zipWith2`, если любой из потоков в паре пуст, результирующий поток также будет пуст. 
+В противном случае для каждого потока в паре существует элемент `head`. 
+Мы применяем предоставленную функцию к этим элементам и делаем результат заголовком нового потока. 
+Остаток этого нового потока будет результатом рекурсии остатков входной пары.
+
+Чтобы обобщить код до произвольной арности, мы будем работать со списком потоков `KList`. 
+Поскольку мы хотим абстрагироваться от арности, то используем разнородный список. 
+Мы используем `KList` вместо `HList`, потому что хотим, чтобы каждый элемент в кортеже был потоком, 
+и нас не волнует, к какому конкретному типу потоков относятся элементы, но мы хотим сохранить эти типы. 
+Когда мы берем элемент `head` каждого потока, результирующий список является базовым типом `HList` входного `KList`. 
+Например, учитывая ввод типа `KList[LazyList, A :: B :: HNil]`, когда мы берем заголовок каждого потока в `KList`, 
+то получаем `HList` типа `A :: B :: HNil`. 
+Это похоже на переход от `(LazyList[A], LazyList[B])` к `(A, B)`.
+
+Итак, если мы в конечном итоге получим базовый тип `HList`, 
+функция, которую мы применим к входному `KList`, должна быть функцией от этого типа `HList` к какому-либо другому типу. 
+В приведенном выше примере тип функции будет относиться `A :: B :: HNil => T` к некоторому типу `T`, 
+который будет типом выходного потока. Таким образом, у нас есть подпись для обобщенного `zipWith`:
+
+```dotty
+def zipWith[HL <: HList, T](kl: KList[LazyList, HL])(f: HL => T): LazyList[T]
+```
+
+Чтобы реализовать эту функцию, мы снова разобьем задачу на две части. 
+Если какой-либо поток пуст, результирующий поток также будет пуст. 
+В противном случае мы получаем все элементы `head` `LazyList`-ов в виде `HList`, 
+применяем к нему функцию ввода и делаем его новым `head`. 
+Для остатка получаем все остатки потоков и выполняем рекурсию. 
+Чтобы получить элементы `head`, мы используем `down`, потому что нам нужно `KList[LazyList, HL] => HL`. 
+Для остатков используем `transform`, потому что нам нужно отображение `KList[LazyList, HL] => KList[LazyList, HL]`. 
+Реализация выглядит так:
+
+```dotty
+def zipWith[HL <: HList, T](
+    kl: KList[LazyList, HL]
+)(f: HL => T): LazyList[T] =
+  if (anyEmpty(kl))
+    LazyList.empty
+  else
+    LazyList.cons(f(kl down heads), zipWith(kl transform tails)(f))
+
+def anyEmpty(kl: KList[LazyList, _]): Boolean =
+  kl match
+    case KCons(head, tail) => head.isEmpty || anyEmpty(tail)
+    case _                 => false
+
+val heads: [A] => LazyList[A] => Id[A] =
+  [A] => (list: LazyList[A]) => list.head
+
+val tails: [A] => LazyList[A] => LazyList[A] =
+  [A] => (list: LazyList[A]) => list.tail
+```
+
+В `zipWith` мы можем вызвать метод `isEmpty` для элементов списка, 
+но мы не получим конкретный тип, если, например, вызовем `head`. 
+"Заголовки" и "остатки" — это естественные преобразования, 
+которые сопоставляют `LazyList[T]` с его началом типа `T` и остатком типа `LazyList[T]` соответственно.
+
+Исходный пример, переведенный для использования обобщенного `zipWith`, выглядит так:
+
+```dotty
+???
+val nats = Stream.from(1)
+val random = Stream.continually( math.random )
+val seq = zipWith( nats :^: random :^: KNil ) {
+   case n :: r :: HNil => if(r > 0.3) n else -n
+}
+ 
+scala> seq.take(10).toList
+res0: List[Int] = List(-1, 2, -3, -4, -5, 6, 7, 8, 9, 10)
+???
+```
+
+Мы можем реализовать соответствующую функцию `zip` в терминах `zipWith`.
+
+```dotty
+???
+def zipped[HL <: HList](kl: KList[Stream, HL]): Stream[HL] =
+   zipWith(kl)(x => x)
+???
+```
+
+Или мы могли бы реализовать `zipWith` в терминах `zip`. 
+В любом случае мы можем реализовать несколько других функций, используя `zip`:
+
+```dotty
+???
+def foreach[HL <: HList, T](kl: KList[Stream, HL])(f: HL => T): Unit =
+   zipped(kl).foreach(f)
+ 
+def collect[HL <: HList, T](kl: KList[Stream, HL])(f: HL => Option[T]): Stream[T] =
+   zipped(kl).collect(f)
+ 
+def flatMap[HL <: HList, T](kl: KList[Stream, HL])(f: HL => Stream[T]): Stream[T] =
+   zipped(kl).flatMap(f)
+ 
+def forall[HL <: HList](kl: KList[Stream, HL])(f: HL => Boolean): Boolean =
+   zippped(kl).forall(f)
+       
+def exists[HL <: HList](kl: KList[Stream, HL])(f: HL => Boolean): Boolean =
+   zipped(kl).exists(f)
+???
+```
+
+Пример использования `foreach`:
+
+```dotty
+???
+val a = Stream(1,2,5,3,9,10,101)
+val b = Stream("one", "two", "three", "four")
+val c = Stream(true, false, false, true, true)
+ 
+zipped(a :^: b :^: c :^: KNil) foreach {
+   case n :: s :: b :: HNil =>
+      println( s * (if(b) 1 else n) )
+}
+ 
+one
+twotwo
+threethreethreethreethree
+four
+???
+```
+
 ---
 
 **Ссылки:**

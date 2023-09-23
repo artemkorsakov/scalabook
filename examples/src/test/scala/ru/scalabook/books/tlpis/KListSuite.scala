@@ -18,7 +18,7 @@ class KListSuite extends FunSuite:
       KCons(Some(1), KCons(Some("str1"), KNil))
     )
 
-  test("Проверка KList на примере преобразования List ~> Option"):
+  test("Проверка KList на примере преобразования List ~> A"):
     val m = List(1, 2, 3, 4) :^: List("str1", "str2") :^: KNil
 
     val head: [A] => List[A] => Id[A] =

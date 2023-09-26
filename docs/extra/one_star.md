@@ -11,6 +11,7 @@
 | [Creative Scala](https://www.creativescala.org/)                                                                                                                                                                                                    | Scala 3 |  En  | 2020 |             |
 | [Get Programming with Scala](https://www.manning.com/books/get-programming-with-scala)                                                                                                                                                              | Scala 3 |  En  | 2021 |             |
 | [Programming in Scala, Fifth Edition](https://www.artima.com/shop/programming_in_scala_5ed)                                                                                                                                                         | Scala 3 |  En  | 2021 |             |
+| [Scala Language Specification](https://scala-lang.org/files/archive/spec/3.4/)                                                                                                                                                                      | Scala 3 |  En  | 2023 |             |
 | [Путеводитель неофита по Scala](https://github.com/anton-k/ru-neophyte-guide-to-scala)                                                                                                                                                              | Scala 2 |  Ру  | 2014 |             |
 | [All about Scala](https://allaboutscala.com/)                                                                                                                                                                                                       | Scala 2 |  En  | 2020 |             |
 | [Essential Scala](https://books.underscore.io/essential-scala/essential-scala.html)                                                                                                                                                                 | Scala 2 |  En  | 2017 |             |
@@ -23,6 +24,7 @@
 
 | Название                                                                                                                                           | Версия  | Язык | Дата | Комментарий |
 |----------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
+| [A Tour of Scala 3 - Martin Odersky](https://www.youtube.com/watch?v=_Rnrx2lo9cw)                                                                  | Scala 3 |  En  | 2023 |             |
 | [Functional Programming in Scala - DevInsideYou](https://www.youtube.com/playlist?list=PLJGDHERh23x8AD0LFiS9iPg_tKLS1i1wZ)                         | Scala 3 |  En  | 2022 |             |
 | [Proper and Basic Property-Based Testing](https://www.youtube.com/watch?v=FS_VJOQfogc)                                                             | Scala 3 |  En  | 2023 |             |
 | [Scala 3 - Rock the JVM](https://www.youtube.com/watch?v=orTmm6OMaLw&list=PLmtsMNDRU0BwsVUbhsH2HMqDMPNhQ0HPc)                                      | Scala 3 |  En  | 2020 |             |

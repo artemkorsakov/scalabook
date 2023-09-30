@@ -68,7 +68,6 @@ object HeliumThemes:
           ButtonLink.internal(Root / "typeclass/index.md", "Теория категорий"),
           ButtonLink.internal(Root / "algorithms/index.md", "Алгоритмы"),
           ButtonLink.internal(Root / "libs/index.md", "Scala libs"),
-          ButtonLink.internal(Root / "patterns/index.md", "Паттерны"),
           ButtonLink.internal(Root / "books/index.md", "Упражнения"),
           ButtonLink.internal(Root / "extra/index.md", "Ресурсы")
         )

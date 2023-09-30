@@ -6,8 +6,10 @@
 
 | Название                                                                                                                                               | ✯?   | Язык | Дата |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------|------|:----:|------|
-| [Род Стивенс - Алгоритмы. Теория и практическое применение](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854) | ✯✯   |  Ру  | 2021 |
-| [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)                              | ✯✯   |  En  | 2019 |
+| [Алгоритмы. Теория и практическое применение - Род Стивенс](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854) | ✯✯   |  Ру  | 2021 |
+| [Алгоритмы на Java - Роберт Седжвик, Кевин Уэйн](https://books.google.ru/books?id=GttJkgEACAAJ&hl=ru&source=gbs_navlinks_s)                            | ✯✯   |  Ру  | 2013 |
+| [Algorithms, 4th Edition - Robert Sedgewick and Kevin Wayne](https://algs4.cs.princeton.edu/home/)                                                     | ✯✯   |  En  | 2011 |
+| [Data Structures and Algorithms with Scala - Bhim P. Upadhyaya](https://link.springer.com/book/10.1007/978-3-030-12561-5)                              | ✯✯   |  En  | 2019 |
 
 ## Курсы
 
@@ -15,3 +17,4 @@
 |--------------------------------------------------------------------------------------------------------------------|----|:----:|------|
 | [Алгоритмизация и языки программирования - преподаватель Татьяна Бочарова](https://stepik.org/course/178827/promo) | ✯  |  Ру  | 2023 |
 | [Алгоритмы - преподаватель Дмитрий Храмов](https://stepik.org/108401)                                              | ✯  |  Ру  | 2021 |
+| [Алгоритмы и структуры данных - proglib.academy](https://stepik.org/181885)                                        | ✯  |  Ру  | 2023 |

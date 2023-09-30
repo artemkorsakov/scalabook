@@ -15,17 +15,5 @@
 |-----------------------------------------------------------------------------------------------|:--------:|:----:|------|-------------|
 | [Michael Pilquist, Concurrency with Cats-effect](https://www.youtube.com/watch?v=Gig-f_HXvLI) | Scala 2  |  En  | 2018 | Cats effect |
 
-### Курсы
-
-...
-
-### Упражнения
-
-...
-
-### Статьи
-
-...
-
 [Red book]: https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition
 [Cats effect]: https://typelevel.org/cats-effect/docs/tutorial

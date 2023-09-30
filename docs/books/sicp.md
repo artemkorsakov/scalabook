@@ -1,7 +1,7 @@
 # Структура и интерпретация компьютерных программ
 
-В этом разделе приведены решения упражнений, 
-взятых из книги [Structure and Interpretation of Computer Programs][SICP].
+В этом разделе приведены решения упражнений, взятых из книги 
+["Structure and Interpretation of Computer Programs" авторов Abelson Harold, Sussman Gerald Jay, Sussman Julie][SICP].
 
 ---
 

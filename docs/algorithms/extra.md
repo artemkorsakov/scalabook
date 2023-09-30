@@ -2,14 +2,21 @@
 
 Материалы отсортированы по сложности (от ✯ до ✯✯✯✯✯), языку (Ру, En) и названию.
 
+## Дональд Эрвин Кнут
+
+| Название                                                                                                                                                                                                                              | ✯?    | Язык | Дата        |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|:----:|-------------|
+| [Искусство программирования - Дональд Э. Кнут](https://ru.wikipedia.org/wiki/%D0%98%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%BE_%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F) | ✯✯✯✯✯ |  Ру  | 1968-по н.в |
+| [The Art of Computer Programming - Donald E. Knuth](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)                                                                                                                            | ✯✯✯✯✯ |  En  | 1968-по н.в |
+
 ## Книги и документация
 
-| Название                                                                                                                                               | ✯?   | Язык | Дата |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------|------|:----:|------|
-| [Алгоритмы. Теория и практическое применение - Род Стивенс](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854) | ✯✯   |  Ру  | 2021 |
-| [Алгоритмы на Java - Роберт Седжвик, Кевин Уэйн](https://books.google.ru/books?id=GttJkgEACAAJ&hl=ru&source=gbs_navlinks_s)                            | ✯✯   |  Ру  | 2013 |
-| [Algorithms, 4th Edition - Robert Sedgewick and Kevin Wayne](https://algs4.cs.princeton.edu/home/)                                                     | ✯✯   |  En  | 2011 |
-| [Data Structures and Algorithms with Scala - Bhim P. Upadhyaya](https://link.springer.com/book/10.1007/978-3-030-12561-5)                              | ✯✯   |  En  | 2019 |
+| Название                                                                                                                                               | ✯? | Язык | Дата |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------|----|:----:|------|
+| [Алгоритмы. Теория и практическое применение - Род Стивенс](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854) | ✯✯ |  Ру  | 2021 |
+| [Алгоритмы на Java - Роберт Седжвик, Кевин Уэйн](https://books.google.ru/books?id=GttJkgEACAAJ&hl=ru&source=gbs_navlinks_s)                            | ✯✯ |  Ру  | 2013 |
+| [Algorithms, 4th Edition - Robert Sedgewick and Kevin Wayne](https://algs4.cs.princeton.edu/home/)                                                     | ✯✯ |  En  | 2011 |
+| [Data Structures and Algorithms with Scala - Bhim P. Upadhyaya](https://link.springer.com/book/10.1007/978-3-030-12561-5)                              | ✯✯ |  En  | 2019 |
 
 ## Курсы
 

@@ -58,6 +58,41 @@ gcd(4851, 3003)
 // res1: Long = 231L
 ```
 
+### Обобщенный алгоритм Евклида
+
+> Даны два целых положительных числа `m` и `n`. 
+> Требуется найти их наибольший общий делитель `d` и два целых числа `a` и `b`, таких, что `am + bn = d`.
+
+**Алгоритм:**
+
+- **E1** (Инициализация). Присвоить \\(\acute{a} \leftarrow b \leftarrow 1, a \leftarrow \acute{b} \leftarrow 0, c \leftarrow m, d \leftarrow n\\).
+- **E2** (Деление). Пусть \\(q\\) и \\(r\\) — это частное и остаток от деления \\(c\\) на \\(d\\) соответственно. 
+  (Тогда \\(c = qd + r\\), где \\(0 \leq r < d\\)).
+- **E3** (Остаток — нуль?). Если \\(r = 0\\), то выполнение алгоритма прекращается; 
+  в этом случае имеем \\(am + bn = d\\), как и требовалось.
+- **E4** (Повторение цикла). Присвоить \\(c \leftarrow d, d \leftarrow r, t \leftarrow \acute{a}, \acute{a} \leftarrow a, a \leftarrow t − qa, t \leftarrow \acute{b}, \acute{b} \leftarrow b, b \leftarrow t − qb\\) и вернуться к шагу **E2**.
+
+```dotty
+def generalizedEuclideanAlgorithm(m: Long, n: Long): (Long, Long, Long) =
+  @tailrec
+  def loop(
+      aa: Long,
+      b: Long,
+      a: Long,
+      bb: Long,
+      c: Long,
+      d: Long
+  ): (Long, Long, Long) =
+    val r = c % d
+    if r == 0 then (d, a, b)
+    else
+      val q = c / d
+      loop(aa = a, b = bb - q * b, a = aa - q * a, bb = b, c = d, d = r)
+  loop(aa = 1, b = 1, a = 0, bb = 0, c = m, d = n)
+
+generalizedEuclideanAlgorithm(1769, 551)
+// (29, 5, -16)    
+```
 
 ## Рандомизация данных - Линейный конгруэнтный генератор
 

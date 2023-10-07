@@ -1,7 +1,8 @@
 package ru.scalabook.algorithms.fundamental
 
-import scala.annotation.tailrec
 import ru.scalabook.algorithms.fundamental.Primes.primeFactorsWithPow
+
+import scala.annotation.tailrec
 
 object Numerical:
   private val delta: Double = 0.001
@@ -19,6 +20,24 @@ object Numerical:
   def gcdByEuclideanAlgorithm(a: Long, b: Long): Long =
     if b == 0 then a
     else gcdByEuclideanAlgorithm(b, a % b)
+
+  /** Обобщенный алгоритм Евклида. */
+  def generalizedEuclideanAlgorithm(m: Long, n: Long): (Long, Long, Long) =
+    @tailrec
+    def loop(
+        aa: Long,
+        b: Long,
+        a: Long,
+        bb: Long,
+        c: Long,
+        d: Long
+    ): (Long, Long, Long) =
+      val r = c % d
+      if r == 0 then (d, a, b)
+      else
+        val q = c / d
+        loop(aa = a, b = bb - q * b, a = aa - q * a, bb = b, c = d, d = r)
+    loop(aa = 1, b = 1, a = 0, bb = 0, c = m, d = n)
 
   /** Вычисление наибольшего общего делителя */
   def gcd(a: Long, b: Long): Long =

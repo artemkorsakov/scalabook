@@ -16,6 +16,12 @@ class NumericalSuite extends FunSuite:
     assertEquals(gcd(4851, 3003), 231L)
   }
 
+  test(
+    "generalizedEuclideanAlgorithm should return the greatest common divisor and coefficients"
+  ) {
+    assertEquals(generalizedEuclideanAlgorithm(1769L, 551L), (29L, 5L, -16L))
+  }
+
   test("gcdex should return Extended Euclidean algorithm's result") {
     assertEquals(
       gcdex(BigInt(12121212L), BigInt(23422344L)),

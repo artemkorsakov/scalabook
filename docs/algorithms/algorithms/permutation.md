@@ -74,6 +74,28 @@ constructByMethod2(Vector(2, 3, 1)),
 При этом \\(0! = 1\\) - учитывая это соглашение, видно, 
 что основное тождество \\(n! = (n − 1)!n\\) справедливо для всех целых положительных n.
 
+#### Приближенное значение по формуле Стирлинга
+
+Формула Стирлинга позволяет вычислить приближенное значение факториала:
+\\(n!\approx \sqrt{2\pi n}\left ( \frac{n}{e} \right )^{n}\\)
+
+> Относительная погрешность расчетов по этой формуле приблизительно равна \\(\frac{1}{12n}\\).
+
+```dotty
+def approximateFactorial(n: Int): BigInt =
+  (BigDecimal(math.sqrt(2 * math.Pi * n)) *
+    BigDecimal(n / math.E).pow(n)).toBigInt
+      
+approximateFactorial(8)
+// BigInt(39902)      
+```
+
+#### Разложение факториала на простые множители
+
+Простое число \\(p\\) является делителем \\(n!\\) кратности
+\\(\mu = \left \lfloor \frac{n}{p} \right \rfloor + \left \lfloor \frac{n}{p^{2}} \right \rfloor + \left \lfloor \frac{n}{p^{2}} \right \rfloor + ... = \sum_{k > 0}^{}\left \lfloor \frac{n}{p^{k}} \right \rfloor\\)
+
+
 ---
 
 **Ссылки:**

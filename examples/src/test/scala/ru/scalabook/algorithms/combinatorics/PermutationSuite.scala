@@ -14,3 +14,14 @@ class PermutationSuite extends FunSuite:
         Vector(2, 3, 1, 4)
       )
     )
+
+  test("Permutation should construct by method 2"):
+    assertEquals(
+      constructByMethod2(Vector(2, 3, 1)),
+      Vector(
+        Vector(3, 4, 2, 1),
+        Vector(3, 4, 1, 2),
+        Vector(2, 4, 1, 3),
+        Vector(2, 3, 1, 4)
+      )
+    )

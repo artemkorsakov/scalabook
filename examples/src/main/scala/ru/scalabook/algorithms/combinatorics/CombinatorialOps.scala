@@ -9,7 +9,9 @@ package ru.scalabook.algorithms.combinatorics
   *
   * How to use this class.
   *
-  * import CombinatorialOps._ val v = List(1, 2, 3).xvariations(2)
+  * import CombinatorialOps.*
+  *
+  * val v = List(1, 2, 3).xvariations(2)
   *
   * The following functions are available:
   *

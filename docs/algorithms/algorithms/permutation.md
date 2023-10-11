@@ -93,7 +93,26 @@ approximateFactorial(8)
 #### Разложение факториала на простые множители
 
 Простое число \\(p\\) является делителем \\(n!\\) кратности
-\\(\mu = \left \lfloor \frac{n}{p} \right \rfloor + \left \lfloor \frac{n}{p^{2}} \right \rfloor + \left \lfloor \frac{n}{p^{2}} \right \rfloor + ... = \sum_{k > 0}^{}\left \lfloor \frac{n}{p^{k}} \right \rfloor\\)
+\\(\mu = \left \lfloor \frac{n}{p} \right \rfloor + \left \lfloor \frac{n}{p^{2}} \right \rfloor + \left \lfloor \frac{n}{p^{3}} \right \rfloor + ... = \sum_{k > 0}^{}\left \lfloor \frac{n}{p^{k}} \right \rfloor\\).
+
+Эта формула позволяет разложить факториал на простые множители.
+
+Например:
+
+```dotty
+def primeFactor(n: Int, p: Int): Int =
+  @tailrec
+  def loop(pj: Int, acc: Int): Int =
+    if pj == 0 then acc
+    else
+      val next = pj / p
+      loop(next, acc + next)
+  loop(n, 0)
+  
+primeFactor(1000, 3)
+// 498  
+```
+
 
 
 ---

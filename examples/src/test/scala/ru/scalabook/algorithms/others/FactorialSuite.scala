@@ -14,3 +14,6 @@ class FactorialSuite extends FunSuite:
 
   test("Вычисление приближенного факториала по формуле Стирлинга"):
     assertEquals(approximateFactorial(8), BigInt(39902))
+
+  test("Вычисление кратности деления факториала на простое число"):
+    assertEquals(primeFactor(1000, 3), 498)

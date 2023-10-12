@@ -132,10 +132,10 @@ binomialCoefficient(100, 32)
 **Формула 19**: \\(\sum_{k=0}^{r}\binom{r-k}{m}\binom{s}{k - t}(-1)^{k-t} = \binom{r - t - s}{r - t - m}\\),
 целое \\(t \geq 0\\), целое \\(r \geq 0\\), целое \\(m \geq 0\\).
 
-**Формула 20**: \\(\\)
+**Формула 20**: \\(\sum_{k=0}^{r}\binom{r-k}{m}\binom{s + k}{n} = \binom{r + s + 1}{m + n + 1}\\),
+целое \\(n \geq\\) целое \\(s \geq 0\\), целое \\(m \geq 0\\), целое \\(r \geq 0\\). 
 
-**Формула 21**: \\(\\)
-
+**Формула 21**: \\(\sum_{k \geq 0}^{}\binom{r - tk}{k}\binom{s - t(n - k)}{n - k}\frac{r}{r - tk} = \binom{r + s - tn}{n}\\), целое n.
 
 ---
 

@@ -28,4 +28,4 @@
 
 **Ссылки:**
 
-- [The Art of Computer Programming - Donald E. Knuth, section 1.2.11](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
+- [The Art of Computer Programming - Donald E. Knuth, section 1.2.11.1](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)

@@ -69,10 +69,17 @@ constructByMethod2(Vector(2, 3, 1)),
 
 ## Факториал
 
-\\(p\_n\\) — это очень важная величина, которую называют _n-факториал_ и записывают следующим образом:
-\\(n! = 1 · 2 · ... · n = \prod_{k=1}^{n}k \\).
+_n-факториал_ - величина, записанная следующим образом: \\(n! = 1 · 2 · ... · n = \prod_{k=1}^{n}k \\).
 При этом \\(0! = 1\\) - учитывая это соглашение, видно, 
 что основное тождество \\(n! = (n − 1)!n\\) справедливо для всех целых положительных n.
+
+```dotty
+def factorial(n: Int): BigInt =
+  (2 to n).foldLeft(BigInt(1))((f, i) => f * BigInt(i))
+  
+factorial(8)
+// BigInt(40320)
+```
 
 #### Приближенное значение по формуле Стирлинга
 
@@ -88,6 +95,22 @@ def approximateFactorial(n: Int): BigInt =
       
 approximateFactorial(8)
 // BigInt(39902)      
+```
+
+Более точная формула:
+
+\\(n! = \sqrt{2\pi n}\left ( \frac{n}{e} \right )^{n}(1 + \frac{1}{12n} + \frac{1}{288n^{2}} - \frac{139}{51840n^{3}} - \frac{571}{2488320n^{4}} + O(\frac{1}{n^{5}}))\\)
+
+```dotty
+def approximateFactorial2(n: Int): BigInt =
+  (BigDecimal(math.sqrt(2 * math.Pi * n)) *
+    BigDecimal(n / math.E).pow(n) *
+    (1 + 1 / BigDecimal(12.0 * n) + 1 / BigDecimal(288.0 * n * n) -
+      139 / BigDecimal(51840.0 * n * n * n) -
+      571 / BigDecimal(2488320.0 * n * n * n * n))).toBigInt
+ 
+approximateFactorial2(8)
+// BigInt(40319)      
 ```
 
 #### Разложение факториала на простые множители
@@ -120,3 +143,4 @@ primeFactor(1000, 3)
 **Ссылки:**
 
 - [The Art of Computer Programming - Donald E. Knuth, section 1.2.5](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
+- [The Art of Computer Programming - Donald E. Knuth, section 1.2.11.2](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)

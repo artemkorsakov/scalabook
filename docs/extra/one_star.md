@@ -85,12 +85,14 @@
 | [Principles of developing applications in Scala](https://softwaremill.com/principles-of-developing-applications-in-scala/)                                                                    | Scala 3 |  En  | 2023 |                             |
 | [Scala as a Junior Developer](https://blog.rockthejvm.com/scala-as-a-junior-dev)                                                                                                              | Scala 3 |  En  | 2023 |                             |
 | [Scala Made Simple for Beginners](https://yadukrishnan.live/scala-made-simple-for-beginners-a-gentle-introduction-to-kickstarting-your-scala-learning)                                        | Scala 3 |  En  | 2023 |                             |
+| [Scripting with Scala](https://alexn.org/blog/2022/09/13/scripting-with-scala/)                                                                                                               | Scala 3 |  En  | 2023 |                             |
 | [TestContainers in Scala: Use Integration Tests for building your services](https://scalac.io/blog/testcontainers-in-scala-use-integration-tests-for-building-your-services/)                 | Scala 3 |  En  | 2023 |                             |
 | [Two types of futures](https://softwaremill.com/two-types-of-futures/)                                                                                                                        | Scala 3 |  En  | 2023 |                             |
 | [Why are Type Classes Useful in Scala? - Rock the JVM](https://blog.rockthejvm.com/why-are-typeclasses-useful/)                                                                               | Scala 3 |  En  | 2020 |                             |
 | [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes)                                                              | Scala 2 |  En  | 2012 |                             |
 | [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics) | Scala 2 |  En  | 2013 |                             |
 | [The Power of Type-classes with Scala implicit defs](https://blog.tmorris.net/posts/the-power-of-type-classes-with-scala-implicit-defs/index.html)                                            | Scala 2 |  En  | 2007 |                             |
+| [Types and Typeclasses: Believe the type](http://learnyouahaskell.com/types-and-typeclasses)                                                                                                  | Haskell |  En  | 2011 |                             |
 
 --- 
 

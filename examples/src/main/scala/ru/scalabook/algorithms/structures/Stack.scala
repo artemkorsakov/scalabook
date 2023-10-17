@@ -14,10 +14,10 @@ object Stack:
   extension [A](stack: Stack[A])
     def push[B <: A](value: B): Stack[A] = NonEmptyStack(value, stack)
 
-    def peek(): Option[(A, Stack[A])] = stack match
-      case EmptyStack              => None
-      case NonEmptyStack(value, _) => Some((value, stack))
-
     def pop(): Option[(A, Stack[A])] = stack match
       case EmptyStack                 => None
       case NonEmptyStack(value, tail) => Some((value, tail))
+
+    def peek(): Option[(A, Stack[A])] = stack match
+      case EmptyStack              => None
+      case NonEmptyStack(value, _) => Some((value, stack))

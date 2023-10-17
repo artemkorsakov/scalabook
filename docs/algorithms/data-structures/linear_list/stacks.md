@@ -1,49 +1,18 @@
 # Стеки
 
-Стек — это линейный список, в котором все операции вставки и удаления (и, как правило, операции доступа к данным) 
+_Стек_ — это линейный список, в котором все операции вставки и удаления (и, как правило, операции доступа к данным) 
 выполняются только на одном из концов списка.
 
-Пример операций стека: 
+Структура такого типа определяет набор правил:
 
-- вставить элемент
-- удалить элемент 
-- проверить стек на пустоту
-- проверить стек на заполненность
+- Элемент, который вставляется последним, удаляется первым - _Last In First Out (LIFO)_.
+- Элемент, вставленный первым, покидает стек последним.
 
 Стек — это простая структура данных, удобная для многих операций, требующих упорядочивания или принудительного исполнения. 
-Сложность пространства для n операций `push` составляет _O(n)_, тогда как средний случай _O(1)_. 
-Точно так же `pop` и `peek` имеют сложность _O(1)_, что верно для `isEmpty` и `isFull`.
+Сложность пространства для n операций `push` (_протолкнуть_) составляет _O(n)_, тогда как средний случай _O(1)_. 
+Точно так же `pop` (_вытолкнуть_) и `peek` (_заглянуть_) имеют сложность _O(1)_, что верно для `isEmpty` и `isFull`.
 
-Возможная реализация стека заданной длины в императивном стиле:
-
-```dotty
-class ImperativeStack[A: ClassTag](maxSize: Int):
-  private val stackBox = new Array[A](maxSize)
-  private var top = -1
-
-  def push(data: A): Unit =
-    if isFull then throw new IllegalArgumentException("Can't add element to full stack")
-    else
-      top += 1
-      stackBox(top) = data
-
-  def pop(): A =
-    val popData = peek()
-    top -= 1
-    popData
-
-  def peek(): A =
-    if isEmpty then throw new IllegalArgumentException("Can't get element to empty stack")
-    else stackBox(top)
-
-  def isEmpty: Boolean =
-    top == -1
-
-  def isFull: Boolean =
-    top == maxSize - 1
-```
-
-Возможная реализация стека переменной длины в функциональном стиле:
+Возможная реализация стека:
 
 ```dotty
 enum Stack[+A]:
@@ -60,13 +29,13 @@ object Stack:
   extension [A](stack: Stack[A])
     def push[B <: A](value: B): Stack[A] = NonEmptyStack(value, stack)
 
-    def peek(): Option[(A, Stack[A])] = stack match
-      case EmptyStack              => None
-      case NonEmptyStack(value, _) => Some((value, stack))
-
     def pop(): Option[(A, Stack[A])] = stack match
       case EmptyStack                 => None
       case NonEmptyStack(value, tail) => Some((value, tail))
+      
+    def peek(): Option[(A, Stack[A])] = stack match
+      case EmptyStack              => None
+      case NonEmptyStack(value, _) => Some((value, stack))
 ```
 
 ---

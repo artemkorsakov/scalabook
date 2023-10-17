@@ -1,8 +1,9 @@
 # Стеки
 
-Стек можно рассматривать как контейнер с одним входом, т.е. элементы можно вставлять и извлекать только с этого входа. 
+Стек — это линейный список, в котором все операции вставки и удаления (и, как правило, операции доступа к данным) 
+выполняются только на одном из концов списка.
 
-Операции стека: 
+Пример операций стека: 
 
 - вставить элемент
 - удалить элемент 
@@ -68,9 +69,9 @@ object Stack:
       case NonEmptyStack(value, tail) => Some((value, tail))
 ```
 
-
 ---
 
 **Ссылки:**
 
+- [Donald E. Knuth - The Art of Computer Programming, section 2.2.1](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)

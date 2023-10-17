@@ -20,3 +20,6 @@
 | [Алгоритмизация и языки программирования - преподаватель Татьяна Бочарова](https://stepik.org/course/178827/promo) | ✯  |  Ру  | 2023 |
 | [Алгоритмы - преподаватель Дмитрий Храмов](https://stepik.org/108401)                                              | ✯  |  Ру  | 2021 |
 | [Алгоритмы и структуры данных - proglib.academy](https://stepik.org/181885)                                        | ✯  |  Ру  | 2023 |
+| [Алгоритмы, часть I - Роберт Седжвик, Кевин Уэйн](https://www.coursera.org/learn/algorithms-part1-ru)              | ✯✯ |  Ру  | 2012 |
+| [Algorithms, Part I - Robert Sedgewick and Kevin Wayne](https://www.coursera.org/learn/algorithms-part1)           | ✯✯ |  En  | 2012 |
+| [Algorithms, Part II - Robert Sedgewick and Kevin Wayne](https://www.coursera.org/learn/algorithms-part2)          | ✯✯ |  En  | 2012 |

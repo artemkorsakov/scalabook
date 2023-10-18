@@ -30,7 +30,6 @@ vowels.length
 // res2: Int = 5
 ```
 
-
 ---
 
 **Ссылки:**

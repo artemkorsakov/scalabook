@@ -28,6 +28,8 @@ enum BinaryTree[+A]:
       left.postorder ++ right.postorder ++ IndexedSeq(value)
 
 object BinaryTree:
+  def apply[A](a: A): BinaryTree[A] = Branch(a, Leaf, Leaf)
+
   def apply[A](list: List[A]): BinaryTree[A] =
     list match
       case Nil => Leaf

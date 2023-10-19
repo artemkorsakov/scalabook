@@ -14,14 +14,33 @@ class BinaryTreeOperationSuite extends FunSuite:
     Branch(6, Leaf, Leaf)
   )
 
-  test("BinaryTree.preorder") {
+  private val otherBinaryTree: BinaryTree[Char] = Branch(
+    'A',
+    Branch('B', Branch('D', Leaf, Leaf), Leaf),
+    Branch(
+      'C',
+      Branch('E', Leaf, Branch('G', Leaf, Leaf)),
+      Branch('F', Branch('H', Leaf, Leaf), Branch('J', Leaf, Leaf))
+    )
+  )
+
+  test("BinaryTree.preorder"):
     assertEquals(binaryTree.preorder, Vector(5, 4, 1, 0, 2, 3, 6))
-  }
+    assertEquals(
+      otherBinaryTree.preorder,
+      Vector('A', 'B', 'D', 'C', 'E', 'G', 'F', 'H', 'J')
+    )
 
-  test("BinaryTree.inorder") {
+  test("BinaryTree.inorder"):
     assertEquals(binaryTree.inorder, Vector(0, 1, 2, 4, 3, 5, 6))
-  }
+    assertEquals(
+      otherBinaryTree.inorder,
+      Vector('D', 'B', 'A', 'E', 'G', 'C', 'H', 'F', 'J')
+    )
 
-  test("BinaryTree.postorder") {
+  test("BinaryTree.postorder"):
     assertEquals(binaryTree.postorder, Vector(0, 2, 1, 3, 4, 6, 5))
-  }
+    assertEquals(
+      otherBinaryTree.postorder,
+      Vector('D', 'B', 'G', 'E', 'H', 'J', 'F', 'C', 'A')
+    )

@@ -67,19 +67,19 @@ object BinaryTree:
 Для обхода бинарного дерева можно применить один из трех принципиально разных способов: 
 _в прямом порядке_ (_preorder_), _в центрированном порядке_ (_inorder_) или _в обратном порядке_ (_postorder_).
 
-### Preorder
+### Preorder (прямой порядок)
 
 1. Посетить корень
 2. Выполнить preorder обход левого поддерева, если оно не пустое
 3. Выполнить preorder обход правого поддерева, если оно не пустое
 
-### Inorder
+### Inorder (центрированный порядок)
 
 1. Выполнить inorder обход левого поддерева, если оно не пустое
 2. Посетить корень
 3. Произвести inorder обход правого поддерева, если оно не пустое
 
-### Postorder
+### Postorder (обратный порядок)
 
 1. Выполнить postorder обход левого поддерева, если оно не пустое
 2. Выполнить postorder обход правого поддерева, если оно не пустое
@@ -142,11 +142,29 @@ binaryTree.postorder
 - \\(l(u)=1\\), если \\(u\\) имеет непустое левое поддерево, иначе \\(l(u) = 0\\);
 - \\(r(u)=1\\), если \\(u\\) имеет непустое правое поддерево, иначе \\(r(u) = 0\\);
 
-Следовательно, \\(T\\) и \\(\acute{T}\\) **подобны** тогда и только тогда, когда \\(n = \acute{n}\\) и 
+\\(T\\) и \\(\acute{T}\\) **подобны** тогда и только тогда, когда \\(n = \acute{n}\\) и 
 \\(l(u\_{j}) = l(\acute{u}\_{j})\\), \\(r(u\_{j}) = r(\acute{u}\_{j})\\) для \\(1 \leq j \leq n\\).
 
 Более того, подобные деревья \\(T\\) и \\(\acute{T}\\) **эквивалентны** тогда и только тогда, когда 
 \\(info(u\_{j}) = info(\acute{u}\_{j})\\) для \\(1 \leq j \leq n\\).
+
+Пример:
+
+```dotty
+def areSimilar[A, B](treeA: BinaryTree[A], treeB: BinaryTree[B]): Boolean =
+  (treeA, treeB) match
+    case (Leaf, Leaf) => true
+    case (Branch(_, leftA, rightA), Branch(_, leftB, rightB)) =>
+      areSimilar(leftA, leftB) && areSimilar(rightA, rightB)
+    case _ => false
+
+def areEqual[A](treeA: BinaryTree[A], treeB: BinaryTree[A]): Boolean =
+  (treeA, treeB) match
+    case (Leaf, Leaf) => true
+    case (Branch(valueA, leftA, rightA), Branch(valueB, leftB, rightB)) =>
+      valueA == valueB && areEqual(leftA, leftB) && areEqual(rightA, rightB)
+    case _ => false
+```
 
 ## Применение
 

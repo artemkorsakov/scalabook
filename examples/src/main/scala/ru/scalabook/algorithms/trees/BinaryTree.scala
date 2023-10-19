@@ -36,3 +36,17 @@ object BinaryTree:
       case x :: xs =>
         val (left, right) = xs.splitAt(xs.length / 2)
         Branch(x, BinaryTree(left), BinaryTree(right))
+
+  def areSimilar[A, B](treeA: BinaryTree[A], treeB: BinaryTree[B]): Boolean =
+    (treeA, treeB) match
+      case (Leaf, Leaf) => true
+      case (Branch(_, leftA, rightA), Branch(_, leftB, rightB)) =>
+        areSimilar(leftA, leftB) && areSimilar(rightA, rightB)
+      case _ => false
+
+  def areEqual[A](treeA: BinaryTree[A], treeB: BinaryTree[A]): Boolean =
+    (treeA, treeB) match
+      case (Leaf, Leaf) => true
+      case (Branch(valueA, leftA, rightA), Branch(valueB, leftB, rightB)) =>
+        valueA == valueB && areEqual(leftA, leftB) && areEqual(rightA, rightB)
+      case _ => false

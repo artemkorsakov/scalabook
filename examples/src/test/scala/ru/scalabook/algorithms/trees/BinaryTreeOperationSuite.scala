@@ -1,17 +1,17 @@
 package ru.scalabook.algorithms.trees
 
 import munit.FunSuite
-import ru.scalabook.algorithms.trees.BinaryTree.{Branch, Leaf}
+import ru.scalabook.algorithms.trees.BinaryTree.*
 
 class BinaryTreeOperationSuite extends FunSuite:
   private val binaryTree: BinaryTree[Int] = Branch(
-    5,
+    1,
+    Branch(2, Branch(4, Leaf, Leaf), Leaf),
     Branch(
-      4,
-      Branch(1, Branch(0, Leaf, Leaf), Branch(2, Leaf, Leaf)),
-      Branch(3, Leaf, Leaf)
-    ),
-    Branch(6, Leaf, Leaf)
+      3,
+      Branch(5, Leaf, Branch(7, Leaf, Leaf)),
+      Branch(6, Branch(8, Leaf, Leaf), Branch(10, Leaf, Leaf))
+    )
   )
 
   private val otherBinaryTree: BinaryTree[Char] = Branch(
@@ -25,22 +25,31 @@ class BinaryTreeOperationSuite extends FunSuite:
   )
 
   test("BinaryTree.preorder"):
-    assertEquals(binaryTree.preorder, Vector(5, 4, 1, 0, 2, 3, 6))
+    assertEquals(binaryTree.preorder, Vector(1, 2, 4, 3, 5, 7, 6, 8, 10))
     assertEquals(
       otherBinaryTree.preorder,
       Vector('A', 'B', 'D', 'C', 'E', 'G', 'F', 'H', 'J')
     )
 
   test("BinaryTree.inorder"):
-    assertEquals(binaryTree.inorder, Vector(0, 1, 2, 4, 3, 5, 6))
+    assertEquals(binaryTree.inorder, Vector(4, 2, 1, 5, 7, 3, 8, 6, 10))
     assertEquals(
       otherBinaryTree.inorder,
       Vector('D', 'B', 'A', 'E', 'G', 'C', 'H', 'F', 'J')
     )
 
   test("BinaryTree.postorder"):
-    assertEquals(binaryTree.postorder, Vector(0, 2, 1, 3, 4, 6, 5))
+    assertEquals(binaryTree.postorder, Vector(4, 2, 7, 5, 8, 10, 6, 3, 1))
     assertEquals(
       otherBinaryTree.postorder,
       Vector('D', 'B', 'G', 'E', 'H', 'J', 'F', 'C', 'A')
     )
+
+  test("BinaryTree.areSimilar"):
+    assert(areSimilar[Int, Char](binaryTree, otherBinaryTree))
+    assert(!areSimilar(Branch(9, binaryTree, Leaf), otherBinaryTree))
+
+  test("BinaryTree.areEqual"):
+    assert(!areEqual(binaryTree, otherBinaryTree))
+    assert(areEqual(binaryTree, binaryTree))
+    assert(areEqual(otherBinaryTree, otherBinaryTree))

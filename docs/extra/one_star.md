@@ -19,6 +19,7 @@
 | [Hello Scala by Alexander Alvin](https://alvinalexander.com/photos/hello-scala-free-pdf-preview/)                                                                                                                                                   | Scala 2 |  En  | 2019 |             |
 | [Scala Cookbook by Alexander Alvin](https://www.amazon.com/Scala-Cookbook-Object-Oriented-Functional-Programming-dp-1492051543/dp/1492051543?&linkCode=sl1&tag=devdaily-20&linkId=d089a7152c070d0ae50814301bb12d21&language=en_US&ref_=as_li_ss_tl) | Scala 2 |  En  | 2021 |             |
 | [The Neophyte's Guide to Scala](https://danielwestheide.com/books/the-neophytes-guide-to-scala)                                                                                                                                                     | Scala 2 |  En  | 2013 |             |
+| [The Type Astronaut's Guide to Shapeless Book](https://underscore.io/books/shapeless-guide)                                                                                                                                                         | Scala 2 |  En  | 2017 |             |
 
 ### Видео
 

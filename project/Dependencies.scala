@@ -55,6 +55,10 @@ object Dependencies {
     val scalacheck      = "org.scalaz" %% "scalaz-scalacheck-binding" % version
   }
 
+  object spire {
+    val spire = "org.typelevel" %% "spire" % "0.18.0"
+  }
+
   object zio {
     val core = "dev.zio" %% "zio" % "2.0.17"
   }
@@ -73,6 +77,7 @@ object Dependencies {
       scalaz.core,
       scalaz.effect,
       scalaz.iteratee,
+      spire.spire,
       zio.core
     )
 

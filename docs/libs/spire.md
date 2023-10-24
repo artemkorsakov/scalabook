@@ -170,67 +170,18 @@ def selectionSort(ns: Array[Int]): Unit =
 ## Остальные операции
 
 - [Сортировка, выбор и поиск](spire/sorting.md)
+- [Генераторы псевдослучайных чисел](spire/generators.md)
+- [Разное](spire/other.md)
 
+### Тесты
 
-### Pseudo-Random Number Generators
-
-Spire comes with many different PRNG implementations, which extends
-the `spire.random.Generator` interface. Generators are mutable RNGs
-that support basic operations like `nextInt`. Unlike Java, generators
-are not threadsafe by default; synchronous instances can be attained
-by calling the `.sync` method.
-
-Spire supports generating random instances of arbitrary types using
-the `spire.random.Dist[A]` type class. These instances represent a
-strategy for getting random values using a `Generator` instance. For
-instance:
-
-```scala mdoc:silent
-object DistDemo {
-  import spire.random.Dist
-  
-  val rng = spire.random.rng.Cmwc5()
-  
-  // produces a map with ~10-20 entries
-  implicit val nextmap: Dist[Map[Int, Complex[Double]]] = Dist.map[Int, Complex[Double]](10, 20)
-  val m = rng.next[Map[Int, Complex[Double]]]
-
-  // produces a double in [0.0, 1.0)
-  val n = rng.next[Double]
-  
-  // produces a complex number, with real and imaginary parts in [0.0, 1.0)
-  val q = rng.next[Complex[Double]]
-}
-```
-
-Unlike generators, `Dist[A]` instances are immutable and composable,
-supporting operations like `map`, `flatMap`, and `filter`. Many default
-instances are provided, and it's easy to create custom instances for
-user-defined types.
-
-### Miscellany
-
-In addition, Spire provides many other methods which are "missing" from
-`java.Math` (and `scala.math`), such as:
-
-* `log(BigDecimal): BigDecimal`
-* `exp(BigDecimal): BigDecimal`
-* `pow(BigDecimal): BigDecimal`
-* `pow(Long): Long`
-* `gcd(Long, Long): Long`
-* *and so on...*
-
-### Benchmarks
-
-In addition to unit tests, Spire comes with a relatively fleshed-out set of
-[JMH](https://openjdk.java.net/projects/code-tools/jmh) micro-benchmarks. To
-run the benchmarks from within SBT, change to the `benchmark` subproject
-and then `jmh:run -l` to see a list of benchmarks:
+Помимо модульных тестов, Spire поставляется с относительно детальным набором микротестов [JMH](https://openjdk.java.net/projects/code-tools/jmh). 
+Чтобы запустить тесты из SBT, перейдите к подпроекту `benchmark` и затем запустите `Jmh / run -l`, чтобы просмотреть список тестов:
 
 ```
 $ sbt
 > project benchmark
-> jmh:run -l
+> Jmh / run -l
 
 [info] Benchmarks:
 [info] spire.benchmark.AddBenchmarks.addComplexDoubleStateDirect
@@ -239,31 +190,34 @@ $ sbt
 ...
 ```
 
-To run all available benchmarks:
+Чтобы запустить все доступные тесты:
+
 ```
-> jmh:run
+> Jmh / run
 ```
 
-To run a specific benchmark method:
+Чтобы запустить определенный метод тестирования:
+
 ```
-> jmh:run spire.benchmark.AddBenchmarks.addComplexDoubleStateDirect
+> Jmh / run spire.benchmark.AddBenchmarks.addComplexDoubleStateDirect
 ```
 
-To run all benchmarks in a specific class:
+Чтобы запустить все тесты в определенном классе:
+
 ```
-> jmh:run spire.benchmark.AddBenchmarks
+> Jmh / run spire.benchmark.AddBenchmarks
 ```
 
-To see all available JMH usage options:
+Чтобы просмотреть все доступные варианты использования JMH:
+
 ```
-> jmh:run -h
+> Jmh / run -h
 ```
 
-If you plan to contribute to Spire, please make sure to run the relevant
-benchmarks to be sure that your changes don't impact performance. Benchmarks
-usually include comparisons against equivalent Scala or Java classes to try to
-measure relative as well as absolute performance.
-
+Если вы планируете внести свой вклад в Spire, обязательно запустите соответствующие тесты, 
+чтобы убедиться, что ваши изменения не повлияют на производительность. 
+Тесты обычно включают сравнение с эквивалентными классами Scala или Java, 
+чтобы попытаться измерить как относительную, так и абсолютную производительность.
 
 ---
 

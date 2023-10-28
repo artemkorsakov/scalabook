@@ -5,9 +5,9 @@
 Более формально: `(M, +)` является моноидом для заданного множества `M` и операции `+`,
 если удовлетворяет следующим свойствам для любых `x, y, z ∈ M`:
 
-- Closure (замыкание): для `∀ x, y ∈ S` выполняется `x + y ∈ M`
-- Associativity (ассоциативность): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
-- Identity (тождественность): существует `∃ e ∈ M` такой, что для `∀ x ∈ M` выполняется `e + x = x + e = x`
+- _Замыкание_ (_closure_): для `∀ x, y ∈ S` выполняется `x + y ∈ M`
+- _Ассоциативность_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
+- _Тождественность_ (_identity_): существует `∃ e ∈ M` такой, что для `∀ x ∈ M` выполняется `e + x = x + e = x`
 
 Также говорится, что _M — моноид относительно +_.
 
@@ -33,8 +33,8 @@ trait Monoid[A] extends Semigroup[A]:
   def empty: A
 ```
 
-Для операции сложения встречаются следующие наименования: `combine`, `append`, `mappend` (Haskell).
-Для единичного элемента встречаются следующие наименования: `empty`, `mempty` (Haskell).
+Для операции сложения встречаются наименования, перечисленные в [Полугруппе](semigroup.md).
+Для единичного элемента встречаются следующие наименования: `empty`, `mempty` (Haskell), `id`.
 
 Законы моноида принимают следующий вид:
 
@@ -137,6 +137,13 @@ import Scalaz.*
 mzero[List[Int]]             // List()
 ```
 
+### Реализация в Spire
+
+```dotty
+1 |+| Monoid.empty[Int] // 1
+Monoid.isEmpty(Monoid.empty[Int])
+```
+
 ---
 
 **Ссылки:**
@@ -150,3 +157,4 @@ mzero[List[Int]]             // List()
 - [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics/#monoids)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-monoid)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monoid.html)
+- [Spire home page](https://typelevel.org/spire)

@@ -5,8 +5,8 @@ _Band_ — это [полугруппа](semigroup.md), которая такж�
 
 `Band` должна удовлетворять следующим законам (+ закон `Semigroup`):
 
-- Associativity (ассоциативность): `(x + y) + z = x + (y + z)`
-- Idempotency (идемпотентность): для любых `a ∈ M` такое, что `a + a = a`
+- _Ассоциативность_ (_associativity_): `(x + y) + z = x + (y + z)`
+- _Идемпотентность_ (_idempotency_): для любых `a ∈ M` такое, что `a + a = a`
 
 ## Описание
 
@@ -14,7 +14,15 @@ _Band_ — это [полугруппа](semigroup.md), которая такж�
 trait Semigroup[A]:
   def combine(x: A, y: A): A
 
-trait Band[A] extends Semigroup[A]
+  def combineN(x: A, n: Int): Option[A] =
+    if n <= 0 then None
+    else if n == 1 then Some(x)
+    else combineN(x, n - 1).map(y => combine(x, y))
+
+trait Band[A] extends Semigroup[A]:
+  override def combineN(x: A, n: Int): Option[A] =
+    if n <= 0 then None
+    else Some(x)
 ```
 
 ## Примеры

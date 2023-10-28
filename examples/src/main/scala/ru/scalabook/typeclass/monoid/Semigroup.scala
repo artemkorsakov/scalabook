@@ -3,9 +3,10 @@ package ru.scalabook.typeclass.monoid
 trait Semigroup[A]:
   def combine(x: A, y: A): A
 
-  def combineN(x: A, n: Int, acc: A): A =
-    if n <= 0 then acc
-    else combineN(x, n - 1, combine(x, acc))
+  def combineN(x: A, n: Int): Option[A] =
+    if n <= 0 then None
+    else if n == 1 then Some(x)
+    else combineN(x, n - 1).map(y => combine(x, y))
 
 object Semigroup:
   def apply[A: Semigroup]: Semigroup[A] = summon[Semigroup[A]]

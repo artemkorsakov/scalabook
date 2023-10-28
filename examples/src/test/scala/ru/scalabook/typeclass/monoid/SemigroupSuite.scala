@@ -52,9 +52,9 @@ class SemigroupSuite extends ScalaCheckSuite, SemigroupLaw:
   }
 
   property("combineN должен складывать k раз") {
-    forAll { (x: Int, k: SmallInt, acc: Int) =>
-      val actual   = sumSemigroupInstance.combineN(x, k, acc)
-      val expected = if k <= 0 then acc else x * k + acc
+    forAll { (x: Int, k: SmallInt) =>
+      val actual   = sumSemigroupInstance.combineN(x, k)
+      val expected = if k <= 0 then None else Some(x * k)
       assertEquals(actual, expected)
     }
   }

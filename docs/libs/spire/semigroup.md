@@ -27,11 +27,24 @@ Semigroup.combineN(3, 5)          // 15
 - `id`: единичный элемент моноида
 - `isId`: проверка на равенство единичного элемента (вместе с `Eq`)
 
+```dotty
+1 |+| Monoid.empty[Int] // 1
+Monoid.isEmpty(Monoid.empty[Int])
+```
+
 ## Группа
 
 `Group` - моноид, который также имеет обратную операцию (`inverse` или `|-|`). `Group` расширяет `Monoid`.
 
 - `inverse`: унарный оператор
+
+```dotty
+import spire.algebra.Group
+import spire.syntax.group.*
+
+1.inverse       // -1
+1 |+| 1.inverse // 0
+```
 
 ## Коммутативная полугруппа
 

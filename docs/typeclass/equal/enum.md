@@ -1,6 +1,7 @@
 # Enum
 
-Члены типа `Enum`, расширяющего тип [`Order`](order.md), представляют собой последовательно упорядоченные типы — их можно перечислить.
+Члены типа `Enum`, расширяющего тип [`Order`](order.md) и [`Bothable`](bothable.md), 
+представляют собой последовательно упорядоченные типы — их можно перечислить.
 
 Основное преимущество класса типов `Enum` заключается в том, что мы можем использовать его типы в диапазонах списков. 
 У них также есть определенные преемники (_successors_) и предшественники (_predecessors_), 
@@ -16,26 +17,31 @@
 - для любого x, не равного `max`, его следующий элемент больше или равен `x`: `x == max || succ(x) >= x`
 - для любого x, не равного `min`, его предыдущий элемент меньше или равен `x`: `x == min || pred(x) <= x`
 
-
 ## Описание
 
 ```dotty
-trait Equal[F]:
-  def equal(a1: F, a2: F): Boolean
+trait Equal[A]:
+  def equal(a1: A, a2: A): Boolean
 
 enum Ordering:
   case LT
   case EQ
   case GT
 
-trait Order[F] extends Equal[F]:
-  def order(x: F, y: F): Ordering
+trait Order[A] extends Equal[A]:
+  def order(x: A, y: A): Ordering
 
-trait Enum[F] extends Order[F]:
-  def succ(a: F): F
-  def pred(a: F): F
-  def min: Option[F]
-  def max: Option[F]
+trait Predecessible[A]:
+  def pred(a: A): A
+
+trait Successible[A]:
+  def succ(a: A): A
+
+trait Bothable[A] extends Predecessible[A], Successible[A]
+
+trait Enum[A] extends Order[A], Bothable[A]:
+  def min: Option[A]
+  def max: Option[A]
 ```
 
 ## Реализация

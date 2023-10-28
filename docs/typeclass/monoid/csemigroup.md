@@ -1,6 +1,11 @@
 # Коммутативная полугруппа
 
-`CSemigroup[A]` - полугруппа, которая является коммутативной.
+`CSemigroup[A]` - [полугруппа](semigroup.md), которая является коммутативной.
+
+Помимо законов полугруппы должен соблюдаться закон:
+
+- _Коммутативность_ (_commutative_): для `∀ x, y ∈ S` выполняется `x + y = y + x`
+
 
 ## Описание
 
@@ -8,18 +13,15 @@
 trait Semigroup[A]:
   def combine(x: A, y: A): A
   
-  def combineN(x: A, n: Int): Option[A] =
-    if n <= 0 then None
-    else if n == 1 then Some(x)
-    else combineN(x, n - 1).map(y => combine(x, y))
+trait CSemigroup[A] extends Semigroup[A]
 ```
 
 ## Примеры
 
-### Натуральные числа N образуют полугруппу относительно сложения
+### Натуральные числа N образуют коммутативную полугруппу относительно сложения
 
 ```dotty
-given sumSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x + y
+given CSemigroup[Int] = (x: Int, y: Int) => x + y
 ```
 
 ## Реализация
@@ -27,13 +29,9 @@ given sumSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x + y
 ### Реализация в Spire
 
 ```dotty
-import spire.algebra.Semigroup
-import spire.syntax.semigroup.*
+import spire.algebra.CSemigroup
 
-1 |+| 2                           // 3
-("hello", 123) |+| ("world", 321) // ("helloworld",444)
-
-Semigroup.combineN(3, 5)          // 15
+CSemigroup.combine(1, 2) == CSemigroup.combine(2, 1)
 ```
 
 ---

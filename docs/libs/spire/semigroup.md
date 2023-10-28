@@ -50,6 +50,12 @@ import spire.syntax.group.*
 
 `CSemigroup[A]` - полугруппа, которая является коммутативной.
 
+```dotty
+import spire.algebra.CSemigroup
+
+CSemigroup.combine(1, 2) == CSemigroup.combine(2, 1)
+```
+
 ## Коммутативный моноид
 
 `CMonoid[A]` - моноид, который коммутативен.

@@ -1,4 +1,4 @@
-# Idempotent Monoid
+#  Идемпотентная моноид
 
 _IdempotentMonoid_ — это [моноид](monoid.md), 
 который также является [идемпотентным](band.md),

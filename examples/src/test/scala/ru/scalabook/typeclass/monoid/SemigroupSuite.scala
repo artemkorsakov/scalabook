@@ -2,9 +2,13 @@ package ru.scalabook.typeclass.monoid
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
+import org.scalacheck.{Arbitrary, Gen}
 import ru.scalabook.typeclass.monoid.Semigroup.given
 
 class SemigroupSuite extends ScalaCheckSuite, SemigroupLaw:
+  opaque type SmallInt = Int
+  given Arbitrary[SmallInt] = Arbitrary[SmallInt](Gen.choose(-10, 100))
+
   property("sumSemigroupInstance должен удовлетворять законам полугруппы") {
     forAll { (x: Int, y: Int, z: Int) =>
       checkSemigroupLaw(x, y, z)(using sumSemigroupInstance)
@@ -44,5 +48,13 @@ class SemigroupSuite extends ScalaCheckSuite, SemigroupLaw:
           (s"$x0$y0", x1 ++ y1)
         )
         checkSemigroupLaw((x0, x1), (y0, y1), (z0, z1))
+    }
+  }
+
+  property("combineN должен складывать k раз") {
+    forAll { (x: Int, k: SmallInt, acc: Int) =>
+      val actual   = sumSemigroupInstance.combineN(x, k, acc)
+      val expected = if k <= 0 then acc else x * k + acc
+      assertEquals(actual, expected)
     }
   }

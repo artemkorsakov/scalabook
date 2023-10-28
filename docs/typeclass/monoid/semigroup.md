@@ -3,8 +3,8 @@
 `(S, +)` является полугруппой (_semigroup_) для множества `S` и операции `+`, 
 если удовлетворяет следующим свойствам для любых `x, y, z ∈ S`:
 
-- Closure (замыкание): для `∀ x, y ∈ S` выполняется `x + y ∈ S`
-- Associativity (ассоциативность): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
+- _Замыкание_ (_closure_): для `∀ x, y ∈ S` выполняется `x + y ∈ S`
+- _Ассоциативность_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
 
 Также говорится, что _S образует полугруппу относительно +_.
 
@@ -13,9 +13,16 @@
 ```dotty
 trait Semigroup[A]:
   def combine(x: A, y: A): A
+  
+  def combineN(x: A, n: Int, acc: A): A =
+    if n <= 0 then acc
+    else combineN(x, n - 1, combine(x, acc))
 ```
 
-Для операции сложения встречаются следующие наименования: `combine`, `append`, `mappend` (Haskell).
+Используя операцию "сложения" можно определить операцию "сложить k раз" (`combineN`).
+
+Для операции сложения встречаются следующие наименования: 
+`combine`, `append`, `mappend` (Haskell), `op`, `plus`, `times`.
 
 Законы полугруппы принимают следующий вид:
 
@@ -79,6 +86,18 @@ List(1, 2) mappend List(3)  // List(1, 2, 3)
 1 |+| 2                     // 3
 ```
 
+### Реализация в Spire
+
+```dotty
+import spire.algebra.Semigroup
+import spire.syntax.semigroup.*
+
+1 |+| 2                           // 3
+("hello", 123) |+| ("world", 321) // ("helloworld",444)
+
+Semigroup.combineN(3, 5)          // 15
+```
+
 ---
 
 **Ссылки:**
@@ -91,3 +110,4 @@ List(1, 2) mappend List(3)  // List(1, 2, 3)
 - [Math world](https://mathworld.wolfram.com/Semigroup.html)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-semigroup)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Semigroup.html)
+- [Spire home page](https://typelevel.org/spire)

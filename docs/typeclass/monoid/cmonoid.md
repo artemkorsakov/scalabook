@@ -1,25 +1,25 @@
 # Коммутативный моноид
 
-`CMonoid[A]` - моноид, который коммутативен.
+`CMonoid[A]` - [моноид](monoid.md), который коммутативен.
+
+Помимо законов моноида должен соблюдаться закон:
+
+- _Коммутативность_ (_commutative_): для `∀ x, y ∈ S` выполняется `x + y = y + x`
 
 ## Описание
 
 ```dotty
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
-  
-  def combineN(x: A, n: Int): Option[A] =
-    if n <= 0 then None
-    else if n == 1 then Some(x)
-    else combineN(x, n - 1).map(y => combine(x, y))
+trait CMonoid[A] extends Monoid[A], CSemigroup[A]
 ```
 
 ## Примеры
 
-### Натуральные числа N образуют полугруппу относительно сложения
+### Натуральные числа N образуют коммутативный моноид относительно сложения и 0
 
 ```dotty
-given sumSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x + y
+given CMonoid[Int] with
+  val empty                        = 0
+  def combine(x: Int, y: Int): Int = x + y
 ```
 
 ## Реализация
@@ -27,13 +27,9 @@ given sumSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x + y
 ### Реализация в Spire
 
 ```dotty
-import spire.algebra.Semigroup
-import spire.syntax.semigroup.*
+import spire.algebra.CMonoid
 
-1 |+| 2                           // 3
-("hello", 123) |+| ("world", 321) // ("helloworld",444)
-
-Semigroup.combineN(3, 5)          // 15
+CMonoid.combine(100, CMonoid.empty[Int]) // 100
 ```
 
 ---

@@ -1,51 +1,36 @@
 # Абелева группа
 
-`AbGroup[A]` - "абелева группа", группа, которая является коммутативной.
+`AbGroup[A]` - "абелева группа", [группа](group.md), которая является коммутативной.
 
-Группа, помимо законов моноида, должна удовлетворять закону:
+Помимо законов моноида должен соблюдаться закон:
 
-- _Обратимость_: для каждого **g ∈ G** существует \\(g^{-1}\\) такой,
-  что g * \\(g^{-1}\\) == \\(g^{-1}\\) * g == G.empty
-
-Более того, это _абелева группа_, если она удовлетворяет свойству:
-
-- _Коммутативность_: **x * y = y * x** для всех **x** и **y ∈ G**.
+- _Коммутативность_ (_commutative_): для `∀ x, y ∈ S` выполняется `x + y = y + x`
 
 ## Описание
 
 ```dotty
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
-  
-  def combineN(x: A, n: Int): Option[A] =
-    if n <= 0 then None
-    else if n == 1 then Some(x)
-    else combineN(x, n - 1).map(y => combine(x, y))
+trait AbGroup[A] extends Group[A], CMonoid[A]
 ```
 
 ## Примеры
 
-### Натуральные числа N образуют полугруппу относительно сложения
+### Целые числа **Z** являются абелевой группой по сложению
 
 ```dotty
-given sumSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x + y
+given AbGroup[Int] with
+  override val empty                           = 0
+  override def combine(x: Int, y: Int): Int    = x + y
+  extension (a: Int) override def inverse: Int = -a
 ```
-
-- Целые числа **Z** являются абелевой группой по сложению
-
 
 ## Реализация
 
 ### Реализация в Spire
 
 ```dotty
-import spire.algebra.Semigroup
-import spire.syntax.semigroup.*
+import spire.algebra.AbGroup
 
-1 |+| 2                           // 3
-("hello", 123) |+| ("world", 321) // ("helloworld",444)
-
-Semigroup.combineN(3, 5)          // 15
+AbGroup[Int].inverse(1) // -1
 ```
 
 ---

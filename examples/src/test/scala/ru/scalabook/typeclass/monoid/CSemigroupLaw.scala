@@ -1,6 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
 trait CSemigroupLaw extends SemigroupLaw:
-  def checkCSemigroupLaw[A](x: A, y: A, z: A)(using cs: CSemigroup[A]): Unit =
+  def checkCSemigroupLaw[A: CSemigroup](x: A, y: A, z: A): Unit =
     checkSemigroupLaw(x, y, z)
-    assertEquals(cs.combine(x, y), cs.combine(y, x), "commutative")
+    assertEquals(
+      CSemigroup[A].combine(x, y),
+      CSemigroup[A].combine(y, x),
+      "commutative"
+    )

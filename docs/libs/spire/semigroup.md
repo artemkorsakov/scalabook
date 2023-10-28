@@ -60,9 +60,21 @@ CSemigroup.combine(1, 2) == CSemigroup.combine(2, 1)
 
 `CMonoid[A]` - моноид, который коммутативен.
 
+```dotty
+import spire.algebra.CMonoid
+
+CMonoid.combine(100, CMonoid.empty[Int]) // 100
+```
+
 ## Абелева группа
 
 `AbGroup[A]` - "абелева группа", группа, которая является коммутативной.
+
+```dotty
+import spire.algebra.AbGroup
+
+AbGroup[Int].inverse(1) // -1
+```
 
 ## Действия
 

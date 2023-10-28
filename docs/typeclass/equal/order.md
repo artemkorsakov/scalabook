@@ -6,18 +6,19 @@
 
 `Order` должен удовлетворять следующим законам (помимо законов `Equal`):
 
-- Антисимметричность: 
+- _Антисимметричность_: 
     - если `f1 < f2`, то `f2 > f1`, 
     - если `f1 <= f2`, то `f2 >= f1`,
     - и т.п.
-- Транзитивность:
+- _Транзитивность_:
     - если `f1 < f2` и `f2 <= f3`, то `f1 < f3`,
     - если `f1 == f2` и `f2 <= f3`, то `f1 <= f3`,
     - если `f1 == f2` и `f2 == f3`, то `f1 == f3`,
     - и т.п.
-- Соответствие `Order` и `Equal`:
+- _Полнота_:
+    - либо `a <= b`, либо `b <= a`
+- _Соответствие_ `Order` и `Equal`:
     - `equal(f1, f2)` равно `true` тогда и только тогда, когда `order(f1, f2)` равно `Ordering.EQ`
-
 
 ## Описание
 
@@ -87,6 +88,21 @@ import Scalaz.*
 
 Метод `?|?` в ScalaZ возвращает результат сравнения `Ordering: LT, GT или EQ`. 
 
+### Реализация в Spire
+
+```dotty
+import spire.algebra.Order
+import spire.math.Rational
+
+Order.comparison(Rational(1, 2), Rational(1, 3)) // GreaterThan
+Order.gt(Rational(1, 2), Rational(1, 3))         // true
+Order.gteqv(Rational(1, 2), Rational(1, 3))      // true
+Order.lt(Rational(1, 2), Rational(1, 3))         // false
+Order.lteqv(Rational(1, 2), Rational(1, 3))      // false
+Order.min(Rational(1, 2), Rational(1, 3))        // 1/3
+Order.max(Rational(1, 2), Rational(1, 3))        // 1/2
+```
+
 ---
 
 **Ссылки:**
@@ -95,3 +111,4 @@ import Scalaz.*
 - [Herding Cats](http://eed3si9n.com/herding-cats/Order.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Order.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Order.html)
+- [Spire home page](https://typelevel.org/spire)

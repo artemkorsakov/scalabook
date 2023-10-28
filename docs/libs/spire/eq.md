@@ -28,6 +28,14 @@ Spire требует для `eqv` соблюдения законов отнош
 Идея состоит в том, что если `a === b`, тогда `a` и `b` должны быть взаимозаменяемыми, 
 так что для любого выражения `f(x)`, `f(a) === f(b)`.
 
+```dotty
+import spire.math.Rational
+import spire.syntax.all.*
+
+Rational(2, 4) === Rational(3, 6) // true
+Rational(2, 6) =!= Rational(3, 6) // true
+```
+
 ## Order
 
 Общее сравнение в Spire поддерживается классом типов `Order[A]`. 
@@ -65,6 +73,19 @@ Spire требует для `eqv` соблюдения законов отнош
 В этих случаях пользователям необходимо будет осознавать риски и ограничивать их использование ситуациями, 
 когда конкретный закон не требуется.
 
+```dotty
+import spire.algebra.Order
+import spire.math.Rational
+
+Order.comparison(Rational(1, 2), Rational(1, 3)) // GreaterThan
+Order.gt(Rational(1, 2), Rational(1, 3))         // true
+Order.gteqv(Rational(1, 2), Rational(1, 3))      // true
+Order.lt(Rational(1, 2), Rational(1, 3))         // false
+Order.lteqv(Rational(1, 2), Rational(1, 3))      // false
+Order.min(Rational(1, 2), Rational(1, 3))        // 1/3
+Order.max(Rational(1, 2), Rational(1, 3))        // 1/2
+```
+
 ## Signed
 
 Общее упорядочивание, инвариантное к сдвигу, фиксируется классом типов `Signed[A]` - 
@@ -83,6 +104,27 @@ Spire требует для `eqv` соблюдения законов отнош
 Вышеуказанные законы подразумевают:
 
 - `abs(a + b) <= abs(a) + abs(b)`
+
+```dotty
+import spire.algebra.Signed.*
+import spire.std.int.*
+
+sign(10)               // Positive
+sign(0)                // Zero
+sign(-10)              // Negative
+signum(10)             // 1
+signum(0)              // 0
+signum(-10)            // -1
+abs(10)                // 10
+abs(0)                 // 0 
+abs(-10)               // 10
+isSignPositive(10)     // true
+isSignZero(0)          // true
+isSignNegative(-10)    // true
+isSignNonPositive(10)  // false
+isSignNonZero(0)       // false
+isSignNonNegative(-10) // false
+```
 
 ## PartialOrder
 

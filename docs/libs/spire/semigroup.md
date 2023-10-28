@@ -80,6 +80,23 @@ AbGroup[Int].inverse(1) // -1
 
 `(Left/Right/)Action[P, G]` - действия влево/вправо для полугрупп/моноидов/групп
 
+```dotty
+import spire.algebra.*
+import spire.syntax.action.*
+import spire.syntax.group.*
+
+given LeftAction[Int, String] with
+  def actl(g: String, p: Int): Int =
+    g.toIntOption.getOrElse(0) - p
+
+given RightAction[Int, String] with
+  def actr(p: Int, g: String): Int =
+    g.toIntOption.getOrElse(0) - p
+
+"100" |+|> 10 // 90
+10 <|+| "100" // 90
+```
+
 ## Описание
 
 Большинство типов имеют множество возможных реализаций этих классов типов. 

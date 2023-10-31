@@ -61,10 +61,46 @@ Rng.zero[Rational]
 - `zero`: аддитивное тождество
 - `one`: мультипликативное тождество (такой элемент, что для любого `x` из множества `x * one = x`)
 
+```dotty
+import spire.algebra.Rig
+import spire.math.Rational
+
+Rig.plus(Rational(1, 2), Rational(1, 3))
+// val res0: spire.math.Rational = 5/6
+Rig.times(Rational(1, 2), Rational(1, 3))
+// val res1: spire.math.Rational = 1/6
+Rig.pow(Rational(1, 2), 3)
+// val res2: spire.math.Rational = 1/8
+Rig.zero[Rational]
+// val res3: spire.math.Rational = 0
+Rig.one[Rational]
+// val res4: spire.math.Rational = 1
+```
+
 ## Ring
 
 `Ring[A]` обеспечивает коммутативные `+`, `zero`, `-`, `*` и `one`.
 `Ring[A]` расширяет `Rig[A]` и `Rng[A]`.
+
+```dotty
+import spire.algebra.Ring
+import spire.math.Rational
+
+Ring.plus(Rational(1, 2), Rational(1, 3))
+// val res0: spire.math.Rational = 5/6
+Ring.times(Rational(1, 2), Rational(1, 3))
+// val res1: spire.math.Rational = 1/6
+Ring.pow(Rational(1, 2), 3)
+// val res2: spire.math.Rational = 1/8
+Ring.negate(Rational(1, 2))
+// val res3: spire.math.Rational = -1/2
+Ring.minus(Rational(1, 2), Rational(1, 3))
+// val res4: spire.math.Rational = 1/6
+Ring.zero[Rational]
+// val res5: spire.math.Rational = 0
+Ring.one[Rational]
+// val res6: spire.math.Rational = 1
+```
 
 ## CRing
 

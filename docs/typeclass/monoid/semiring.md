@@ -10,9 +10,9 @@
 
 Для полугруппы должны соблюдаться законы коммутативного моноида по сложению:
 
-- _Замыкание_ (_closure_): для `∀ x, y ∈ S` выполняется `x + y ∈ M`
+- _Замыкание_ (_closure_): для `∀ x, y ∈ S` выполняется `x + y ∈ S`
 - _Ассоциативность_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
-- _Тождественность_ (_identity_): существует `∃ e ∈ M` такой, что для `∀ x ∈ M` выполняется `e + x = x + e = x`
+- _Тождественность_ (_identity_): существует `∃ e ∈ S` такой, что для `∀ x ∈ S` выполняется `e + x = x + e = x`
 - _Коммутативность_ (_commutative_): для `∀ x, y ∈ S` выполняется `x + y = y + x`
 
 и законы полугруппы по умножению:
@@ -20,25 +20,17 @@
 - _Замыкание_ (_closure_): для `∀ x, y ∈ S` выполняется `x * y ∈ S`
 - _Ассоциативность_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x * y) * z = x * (y * z)`
 
+, а также дистрибутивность:
+
+- _Дистрибутивность_ (_distributivus_, _распределительный закон_): 
+  Для любых `∀ x, y, z ∈ S` выполняется `x * (y + z) = x * y + x * z` и `(x + y) * z = x * z + y * z`.
+
 ## Описание
 
 ```dotty
 trait MultiplicativeSemigroup[A]:
   def times(x: A, y: A): A
 
-  def pow(x: A, n: Int): Option[A] =
-    if n <= 0 then None
-    else Some(positivePow(x, n))
-
-  private def positivePow(a: A, n: Int): A =
-    @tailrec def loop(b: A, k: Int, extra: A): A =
-      if k == 1 then times(b, extra)
-      else
-        val x = if (k & 1) == 1 then times(b, extra) else extra
-        loop(times(b, b), k >>> 1, x)
-
-    if n == 1 then a else loop(a, n - 1, a)
-    
 trait Semiring[A] extends CMonoid[A], MultiplicativeSemigroup[A]    
 ```
 
@@ -49,13 +41,10 @@ trait Semiring[A] extends CMonoid[A], MultiplicativeSemigroup[A]
 `(Z, +, *)`
 
 ```dotty
-given RingWithUnity[Int] with
-  val empty: Int = 0
-  val one: Int = 1
+given Semiring[Int] with
+  val empty                        = 0
   def combine(x: Int, y: Int): Int = x + y
-  def times(x: Int, y: Int): Int = x * y
-
-  extension (a: Int) override def inverse: Int = -a
+  def times(x: Int, y: Int): Int   = x * y
 ```
 
 ## Реализация
@@ -63,9 +52,15 @@ given RingWithUnity[Int] with
 ### Реализация в Spire
 
 ```dotty
-import spire.algebra.CMonoid
+import spire.algebra.Semiring
+import spire.math.Rational
 
-CMonoid.combine(100, CMonoid.empty[Int]) // 100
+Semiring.plus(Rational(1, 2), Rational(1, 3))
+// val res0: spire.math.Rational = 5/6
+Semiring.times(Rational(1, 2), Rational(1, 3))
+// val res1: spire.math.Rational = 1/6
+Semiring.pow(Rational(1, 2), 3)
+// val res2: spire.math.Rational = 1/8
 ```
 
 ---

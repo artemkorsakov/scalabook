@@ -1,7 +1,7 @@
 # Кольцо
 
-В то время как [группа](group.md) определяется множеством и одной операцией, 
-кольцо определяется множеством и двумя операциями. 
+Кольцо (Ring) - это [полукольцо](semiring.md), являющееся [абелевой группой](abgroup.md) по сложению.
+
 Учитывая множество `R` и операции `+` и `*`, 
 мы говорим, что `(R, +, *)` - это кольцо, если оно удовлетворяет следующим свойствам:
 
@@ -10,46 +10,42 @@
 - Для любых `x`, `y` и `z ∈ R`: `(x * y) * z = x * (y * z)`.
 - Для любых `x`, `y` и `z ∈ R`: `x * (y + z) = x * y + x * z` и `(x + y) * z = x * z + y * z`.
 
-Примечания к кольцам:
+Законы по сложению:
 
-- Кольцо обязательно должно соблюдать закон тождественности по `+` (называемый _аддитивной идентичностью_):
-  существует `e ∈ M` (`empty: A`) такой, что `e + x = x + e = x` (см. [моноид](monoid.md)).
-- Кольцо не обязательно должно соблюдать закон тождественности по `*` (называемый _мультипликативной идентичностью_).
-- Кольцо не обязательно коммутативно относительно `*`.
-- Кольцо не обязательно удовлетворяет обратному свойству по `*`.
-- Не обязательно существует какое-либо особое свойство аддитивного тождества для `*`.
+- _Замыкание_ (_closure_): для `∀ x, y ∈ R` выполняется `x + y ∈ R`
+- _Ассоциативность_ (_associativity_): для `∀ x, y, z ∈ R` выполняется `(x + y) + z = x + (y + z)`
+- _Тождественность_ (_identity_): существует `∃ e ∈ R` такой, что для `∀ x ∈ R` выполняется `e + x = x + e = x`
+- _Обратимость_: для каждого `x ∈ R` существует \\(x^{-1}\\) такой,
+  что x * \\(x^{-1}\\) == \\(x^{-1}\\) * x == G.empty
+- _Коммутативность_ (_commutative_): для `∀ x, y ∈ R` выполняется `x + y = y + x`
 
-Несколько других типов колец:
+Законы по умножению:
 
-- Мы говорим, что `(R, +, *)` - это кольцо с единицей, если оно имеет мультипликативную единицу, 
-  называемую **единицей** или **1**: `e * x = x * e = x`
-- Мы говорим, что `(R, +, *)` - это коммутативное кольцо, 
-  если оно удовлетворяет свойству коммутативности относительно умножения, 
-  то есть `x * y = y * x` для `∀ x, y ∈ R`.
+- _Замыкание_ (_closure_): для `∀ x, y ∈ R` выполняется `x * y ∈ R`
+- _Ассоциативность_ (_associativity_): для `∀ x, y, z ∈ R` выполняется `(x * y) * z = x * (y * z)`
+
+Законы по сложению и умножению:
+
+- _Дистрибутивность_ (_distributivus_, _распределительный закон_):
+  Для любых `∀ x, y, z ∈ R` выполняется `x * (y + z) = x * y + x * z` и `(x + y) * z = x * z + y * z`.
 
 ## Описание
 
 ```dotty
-trait Ring[A] extends Group[A]:
-  def times(x: A, y: A): A
-
-trait RingWithUnity[A] extends Ring[A]:
-  def one: A
+trait Ring[A] extends AbGroup[A], Semiring[A]
 ```
 
 ## Примеры
 
-### Числа относительно сложения с 0 и умножения с 1
+### Числа относительно сложения с 0 и умножения
 
 `(Z, +, *)`
 
 ```dotty
-given RingWithUnity[Int] with
-  val empty: Int = 0
-  val one: Int = 1
-  def combine(x: Int, y: Int): Int = x + y
-  def times(x: Int, y: Int): Int = x * y
-
+given Ring[Int] with
+  val empty                                    = 0
+  def combine(x: Int, y: Int): Int             = x + y
+  def times(x: Int, y: Int): Int               = x * y
   extension (a: Int) override def inverse: Int = -a
 ```
 
@@ -57,8 +53,32 @@ given RingWithUnity[Int] with
 
 Набор квадратных матриц заданного размера представляет собой кольцо.
 
+## Реализация
+
+### Реализация в Spire
+
+```dotty
+import spire.algebra.Rng
+import spire.math.Rational
+
+Rng.plus(Rational(1, 2), Rational(1, 3))
+// val res0: spire.math.Rational = 5/6
+Rng.times(Rational(1, 2), Rational(1, 3))
+// val res1: spire.math.Rational = 1/6
+Rng.pow(Rational(1, 2), 3)
+// val res2: spire.math.Rational = 1/8
+Rng.negate(Rational(1, 2))
+// val res3: spire.math.Rational = -1/2
+Rng.minus(Rational(1, 2), Rational(1, 3))
+// val res4: spire.math.Rational = 1/6
+Rng.zero[Rational]
+// val res5: spire.math.Rational = 0
+```
+
 ---
 
 **Ссылки:**
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/ring.html)
+- [Spire home page](https://typelevel.org/spire)
+- [Spire User's Guide](https://typelevel.org/spire/guide.html)

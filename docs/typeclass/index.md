@@ -3,7 +3,7 @@
 В данном разделе будут собраны основные [классы типов](../scala/abstractions/type-classes.md) из теории категорий,
 а также примеры реализации этих классов типов на Scala,
 в том числе из таких семейств библиотек, как [Algebird](https://twitter.github.io/algebird/),
-[Cats](http://typelevel.org/cats/), [Scalaz](https://scalaz.github.io/7/).
+[Cats](http://typelevel.org/cats/), [Scalaz](https://scalaz.github.io/7/), [Spire](https://typelevel.org/spire).
 
 [**Теория категорий**](https://ru.wikipedia.org/wiki/%D0%A2%D0%B5%D0%BE%D1%80%D0%B8%D1%8F_%D0%BA%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D0%B9) — 
 раздел математики, изучающий свойства отношений между математическими объектами, не зависящие от внутренней структуры объектов.
@@ -537,3 +537,4 @@ rightside match
 - [Type classes in Algebird](https://twitter.github.io/algebird/typeclasses.html)
 - [Type classes in Cats](https://github.com/tpolecat/cats-infographic)
 - [Type classes in Scalaz](https://scalaz.github.io/7/typeclass/index.html)
+- [Spire home page](https://typelevel.org/spire)

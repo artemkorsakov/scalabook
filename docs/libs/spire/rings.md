@@ -14,6 +14,18 @@ Spire определяет их, расширяя соответствующие
 - `times` (`*`): умножение
 - `pow` (`**`): возведения в степень (интегральная экспонента)
 
+```dotty
+import spire.algebra.Semiring
+import spire.math.Rational
+
+Semiring.plus(Rational(1, 2), Rational(1, 3))
+// val res0: spire.math.Rational = 5/6
+Semiring.times(Rational(1, 2), Rational(1, 3))
+// val res1: spire.math.Rational = 1/6
+Semiring.pow(Rational(1, 2), 3)
+// val res2: spire.math.Rational = 1/8
+```
+
 ## Rng
 
 `Rng[A]` обеспечивает коммутативные `+`, `zero`, `-`, и `*`.
@@ -22,6 +34,24 @@ Spire определяет их, расширяя соответствующие
 - `negate` (`-`): обратная операция сложению
 - `minus` (`-`): вычитание
 - `zero`: аддитивное тождество (такой элемент, что для любого `x` из множества `x + zero = x`)
+
+```dotty
+import spire.algebra.Rng
+import spire.math.Rational
+
+Rng.plus(Rational(1, 2), Rational(1, 3))
+// val res0: spire.math.Rational = 5/6
+Rng.times(Rational(1, 2), Rational(1, 3))
+// val res1: spire.math.Rational = 1/6
+Rng.pow(Rational(1, 2), 3)
+// val res2: spire.math.Rational = 1/8
+Rng.negate(Rational(1, 2))
+// val res3: spire.math.Rational = -1/2
+Rng.minus(Rational(1, 2), Rational(1, 3))
+// val res4: spire.math.Rational = 1/6
+Rng.zero[Rational]
+// val res5: spire.math.Rational = 0
+```
 
 ## Rig
 

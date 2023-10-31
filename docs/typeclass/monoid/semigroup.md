@@ -13,11 +13,19 @@
 ```dotty
 trait Semigroup[A]:
   def combine(x: A, y: A): A
-  
+
   def combineN(x: A, n: Int): Option[A] =
     if n <= 0 then None
-    else if n == 1 then Some(x)
-    else combineN(x, n - 1).map(y => combine(x, y))
+    else Some(positiveSumN(x, n))
+
+  private def positiveSumN(a: A, n: Int): A =
+    @tailrec def loop(b: A, k: Int, extra: A): A =
+      if k == 1 then combine(b, extra)
+      else
+        val x = if (k & 1) == 1 then combine(b, extra) else extra
+        loop(combine(b, b), k >>> 1, x)
+
+    if n == 1 then a else loop(a, n - 1, a)
 ```
 
 Используя операцию "сложения" можно определить операцию "сложить k раз" (`combineN`).

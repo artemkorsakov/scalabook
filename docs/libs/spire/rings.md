@@ -8,7 +8,7 @@ Spire определяет их, расширяя соответствующие
 ## Semiring
 
 `Semiring[A]` обеспечивает `+`, `zero` и `*`. 
-`Semiring[A]` расширяет `AdditiveMonoid[A]` и `MultiplicativeSemigroup[A]`.
+`Semiring[A]` расширяет `AdditiveCommutativeMonoid[A]` и `MultiplicativeSemigroup[A]`.
 
 - `plus` (`+`): сложение
 - `times` (`*`): умножение

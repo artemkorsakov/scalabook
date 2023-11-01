@@ -192,15 +192,45 @@ Spire поддерживает евклидовы кольца (называем
 
 `EuclideanRing[A]` поддерживает следующие операции:
 
-- `quot` (`/~`, `a /~ b`): частное (евклидово деление)
-- `mod` (`%`, `a % b`): остаток
-- `quotmod` (`/%`, `a /% b`): частное и остаток, объединяет `quot` и `mod` в одну операцию.
+- `equot` (`/~`, `a /~ b`): частное (евклидово деление)
+- `emod` (`%`, `a % b`): остаток
+- `equotmod` (`/%`, `a /% b`): частное и остаток, объединяет `quot` и `mod` в одну операцию.
 
 Spire требует, чтобы `b * (a /~ b) + (a % b)` было эквивалентно `a`.
 
 В целых числах евклидово частное и остаток соответствуют делению с остатком; 
 однако знак результата является вопросом соглашения. 
 Для рациональных чисел (или с плавающей запятой) `a /~ b = a / b` и `a % b = 0` по определению.
+
+```dotty
+import spire.algebra.EuclideanRing
+import spire.std.int.*
+
+EuclideanRing.plus(15, 10)
+// val res0: Int = 25
+EuclideanRing.times(15, 10)
+// val res1: Int = 150
+EuclideanRing.pow(15, 2)
+// val res2: Int = 225
+EuclideanRing.negate(15)
+// val res3: Int = -15
+EuclideanRing.minus(15, 10)
+// val res4: Int = 5
+EuclideanRing.zero[Int]
+// val res5: Int = 0
+EuclideanRing.one[Int]
+// val res6: Int = 1
+EuclideanRing.gcd(15, 10)
+// val res7: Int = 5
+EuclideanRing.lcm(15, 10)
+// val res8: Int = 30
+EuclideanRing.equot(15, 10)
+// val res9: Int = 1
+EuclideanRing.emod(15, 10)
+// val res10: Int = 5
+EuclideanRing.equotmod(15, 10)
+// val res11: (Int, Int) = (1,5)
+```
 
 ## Field
 

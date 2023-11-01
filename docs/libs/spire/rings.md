@@ -253,6 +253,21 @@ EuclideanRing.equotmod(15, 10)
 - квадратный корень и другие корни (предоставленные `NRoot[A]`).
 - синус, косинус и тригонометрические функции (предоставлены `Trig[A]`).
 
+```dotty
+import spire.math.Real.apply
+
+15.reciprocal
+// val res0: spire.math.Real = 1/15
+15 / 3
+// val res1: Int = 5
+15.24.ceil
+// val res2: spire.math.Real = 16
+15.24.floor
+// val res3: spire.math.Real = 15
+15.24.round
+// val res4: spire.math.Real = 15
+```
+
 ## Иррациональные и трансцендентальные классы типов
 
 Spire поддерживает квадратные корни и дробные степени через `NRoot[A]`. 

@@ -1,80 +1,66 @@
 # Поле
 
-В то время как [группа](group.md) определяется множеством и одной операцией, 
-кольцо определяется множеством и двумя операциями. 
-Учитывая множество `R` и операции `+` и `*`, 
-мы говорим, что `(R, +, *)` - это кольцо, если оно удовлетворяет следующим свойствам:
+Поля расширяют [Евклидово кольцо](euclidean-ring.md), добавляя операцию обратную умножению.
 
-- `(R, +)` является [абелевой группой](abgroup.md)
-- Для любых `x` и `y ∈ R`: `x * y ∈ R`.
-- Для любых `x`, `y` и `z ∈ R`: `(x * y) * z = x * (y * z)`.
-- Для любых `x`, `y` и `z ∈ R`: `x * (y + z) = x * y + x * z` и `(x + y) * z = x * z + y * z`.
+`Field[A]` поддерживает следующие операции:
 
-Примечания к кольцам:
+- `reciprocal` (`a.reciprocal`): обратная операция умножению. Мультипликативный обратный `a`, т.е. `one/a`.
+- `div` (`/`, `a / b`): деление `a` на `b`.
 
-- Кольцо обязательно должно соблюдать закон тождественности по `+` (называемый _аддитивной идентичностью_):
-  существует `e ∈ S` (`empty: A`) такой, что `e + x = x + e = x` (см. [моноид](monoid.md)).
-- Кольцо не обязательно должно соблюдать закон тождественности по `*` (называемый _мультипликативной идентичностью_).
-- Кольцо не обязательно коммутативно относительно `*`.
-- Кольцо не обязательно удовлетворяет обратному свойству по `*`.
-- Не обязательно существует какое-либо особое свойство аддитивного тождества для `*`.
+Помимо законов [Евклидова кольца](euclidean-ring.md):
 
-Несколько других типов колец:
+- _Замыкание по сложению_ (_closure_): для `∀ x, y ∈ S` выполняется `x + y ∈ S`
+- _Ассоциативность по сложению_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
+- _Тождественность по сложению_ (_identity_): существует `∃ e ∈ S` такой, что для `∀ x ∈ S` выполняется `e + x = x + e = x`
+- _Обратимость по сложению_: для каждого `x ∈ S` существует \\(x^{-1}\\) такой,
+  что x + \\(x^{-1}\\) == \\(x^{-1}\\) + x == e
+- _Коммутативность по сложению_ (_commutative_): для `∀ x, y ∈ S` выполняется `x + y = y + x`
+- _Замыкание по умножению_ (_closure_): для `∀ x, y ∈ S` выполняется `x * y ∈ S`
+- _Ассоциативность по умножению_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x * y) * z = x * (y * z)`
+- _Тождественность по умножению_ (_identity_): существует `∃ one ∈ S` такой, что для `∀ x ∈ S` выполняется `one * x = x * one = x`
+- _Коммутативность по умножению_ (_commutative_): для `∀ x, y ∈ S` выполняется `x * y = y * x`
+- _Дистрибутивность_ (_distributivus_, _распределительный закон_):
+  Для любых `∀ x, y, z ∈ S` выполняется `x * (y + z) = x * y + x * z` и `(x + y) * z = x * z + y * z`.
+- `d * m === a * b` для `d = gcd(a, b)` и `m = lcm(a, b)`
+- `gcd` ассоциативен и коммутативен
+- `lcm` ассоциативен и коммутативен
+- `b * (a /~ b) + (a % b) = a`
 
-- Мы говорим, что `(R, +, *)` - это кольцо с единицей, если оно имеет мультипликативную единицу, 
-  называемую **единицей** или **1**: `e * x = x * e = x`
-- Мы говорим, что `(R, +, *)` - это коммутативное кольцо, 
-  если оно удовлетворяет свойству коммутативности относительно умножения, 
-  то есть `x * y = y * x` для `∀ x, y ∈ R`.
+должен соблюдаться закон:
+
+- _Обратимость по умножению_: для каждого `x ∈ S` существует \\(x^{-1}\\) такой,
+  что x * \\(x^{-1}\\) == \\(x^{-1}\\) * x == one. Или `a * a.reciprocal = one`
 
 ## Описание
 
 ```dotty
-trait Ring[A] extends Group[A]:
-  def times(x: A, y: A): A
+trait Field[A] extends EuclideanRing[A]:
+  extension (a: A) def reciprocal: A
 
-trait RingWithUnity[A] extends Ring[A]:
-  def one: A
+  def div(x: A, y: A): A = times(x, y.reciprocal)
 ```
 
 ## Примеры
 
-### Числа относительно сложения с 0 и умножения с 1
-
-`(Z, +, *)`
-
-```dotty
-given RingWithUnity[Int] with
-  val empty: Int = 0
-  val one: Int = 1
-  def combine(x: Int, y: Int): Int = x + y
-  def times(x: Int, y: Int): Int = x * y
-
-  extension (a: Int) override def inverse: Int = -a
-```
+### Рациональные числа со сложением и умножением
 
 ## Реализация
 
 ### Реализация в Spire
 
 ```dotty
-import spire.algebra.CRing
-import spire.math.Rational
+import spire.math.Real.apply
 
-CRing.plus(Rational(1, 2), Rational(1, 3))
-// val res0: spire.math.Rational = 5/6
-CRing.times(Rational(1, 2), Rational(1, 3))
-// val res1: spire.math.Rational = 1/6
-CRing.pow(Rational(1, 2), 3)
-// val res2: spire.math.Rational = 1/8
-CRing.negate(Rational(1, 2))
-// val res3: spire.math.Rational = -1/2
-CRing.minus(Rational(1, 2), Rational(1, 3))
-// val res4: spire.math.Rational = 1/6
-CRing.zero[Rational]
-// val res5: spire.math.Rational = 0
-CRing.one[Rational]
-// val res6: spire.math.Rational = 1
+15.reciprocal
+// val res0: spire.math.Real = 1/15
+15 / 3
+// val res1: Int = 5
+15.24.ceil
+// val res2: spire.math.Real = 16
+15.24.floor
+// val res3: spire.math.Real = 15
+15.24.round
+// val res4: spire.math.Real = 15
 ```
 
 ---

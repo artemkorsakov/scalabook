@@ -154,6 +154,31 @@ Spire требует, чтобы эти операции были коммута
 либо определение, расширяющее определение, 
 используемое для целочисленного кольца (`gcd(a / b, c / d) == gcd(a, c) / lcm(b, d)`).
 
+```dotty
+import spire.algebra.GCDRing
+import spire.math.Rational
+import spire.std.int.*
+
+GCDRing.plus(Rational(1, 2), Rational(1, 3))
+// val res0: spire.math.Rational = 5/6
+GCDRing.times(Rational(1, 2), Rational(1, 3))
+// val res1: spire.math.Rational = 1/6
+GCDRing.pow(Rational(1, 2), 3)
+// val res2: spire.math.Rational = 1/8
+GCDRing.negate(Rational(1, 2))
+// val res3: spire.math.Rational = -1/2
+GCDRing.minus(Rational(1, 2), Rational(1, 3))
+// val res4: spire.math.Rational = 1/6
+GCDRing.zero[Rational]
+// val res5: spire.math.Rational = 0
+GCDRing.one[Rational]
+// val res6: spire.math.Rational = 1
+GCDRing.gcd(15, 10)
+// val res7: Int = 5
+GCDRing.lcm(15, 10)
+// val res8: Int = 30
+```
+
 ## EuclideanRing
 
 Spire поддерживает евклидовы кольца (называемые `EuclideanRing[A]`). 

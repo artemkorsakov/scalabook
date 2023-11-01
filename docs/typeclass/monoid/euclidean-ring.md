@@ -53,12 +53,33 @@ given RingWithUnity[Int] with
   extension (a: Int) override def inverse: Int = -a
 ```
 
-### Матрицы
+## Реализация
 
-Набор квадратных матриц заданного размера представляет собой кольцо.
+### Реализация в Spire
+
+```dotty
+import spire.algebra.CRing
+import spire.math.Rational
+
+CRing.plus(Rational(1, 2), Rational(1, 3))
+// val res0: spire.math.Rational = 5/6
+CRing.times(Rational(1, 2), Rational(1, 3))
+// val res1: spire.math.Rational = 1/6
+CRing.pow(Rational(1, 2), 3)
+// val res2: spire.math.Rational = 1/8
+CRing.negate(Rational(1, 2))
+// val res3: spire.math.Rational = -1/2
+CRing.minus(Rational(1, 2), Rational(1, 3))
+// val res4: spire.math.Rational = 1/6
+CRing.zero[Rational]
+// val res5: spire.math.Rational = 0
+CRing.one[Rational]
+// val res6: spire.math.Rational = 1
+```
 
 ---
 
 **Ссылки:**
 
-- [Algebird](https://twitter.github.io/algebird/typeclasses/ring.html)
+- [Spire home page](https://typelevel.org/spire)
+- [Spire User's Guide](https://typelevel.org/spire/guide.html)

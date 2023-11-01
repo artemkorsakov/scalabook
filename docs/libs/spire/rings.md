@@ -107,6 +107,26 @@ Ring.one[Rational]
 `CRing[A]` обеспечивает коммутативный `+`, `zero`, `-`, коммутативный `*` и `one`.
 `CRing[A]` расширяет `Ring[A]` и `MultiplicativeCMonoid[A]`.
 
+```dotty
+import spire.algebra.CRing
+import spire.math.Rational
+
+CRing.plus(Rational(1, 2), Rational(1, 3))
+// val res0: spire.math.Rational = 5/6
+CRing.times(Rational(1, 2), Rational(1, 3))
+// val res1: spire.math.Rational = 1/6
+CRing.pow(Rational(1, 2), 3)
+// val res2: spire.math.Rational = 1/8
+CRing.negate(Rational(1, 2))
+// val res3: spire.math.Rational = -1/2
+CRing.minus(Rational(1, 2), Rational(1, 3))
+// val res4: spire.math.Rational = 1/6
+CRing.zero[Rational]
+// val res5: spire.math.Rational = 0
+CRing.one[Rational]
+// val res6: spire.math.Rational = 1
+```
+
 ## GCDRing (кольца НОД)
 
 Коммутативные кольца (в литературе их также называют _доменами_ (_domains_)) имеют богатую структуру.

@@ -1,40 +1,26 @@
 # Коммутативное кольцо с единицей
 
-В то время как [группа](group.md) определяется множеством и одной операцией, 
-кольцо определяется множеством и двумя операциями. 
-Учитывая множество `R` и операции `+` и `*`, 
-мы говорим, что `(R, +, *)` - это кольцо, если оно удовлетворяет следующим свойствам:
+Коммутативное кольцо с единицей объединяет в себе [коммутативное кольцо](cring.md) и [кольцо с единицей](ring-with-one.md).
 
-- `(R, +)` является [абелевой группой](abgroup.md)
-- Для любых `x` и `y ∈ R`: `x * y ∈ R`.
-- Для любых `x`, `y` и `z ∈ R`: `(x * y) * z = x * (y * z)`.
-- Для любых `x`, `y` и `z ∈ R`: `x * (y + z) = x * y + x * z` и `(x + y) * z = x * z + y * z`.
+Для коммутативного кольца с единицей должны соблюдаться следующие законы:
 
-Примечания к кольцам:
-
-- Кольцо обязательно должно соблюдать закон тождественности по `+` (называемый _аддитивной идентичностью_):
-  существует `e ∈ S` (`empty: A`) такой, что `e + x = x + e = x` (см. [моноид](monoid.md)).
-- Кольцо не обязательно должно соблюдать закон тождественности по `*` (называемый _мультипликативной идентичностью_).
-- Кольцо не обязательно коммутативно относительно `*`.
-- Кольцо не обязательно удовлетворяет обратному свойству по `*`.
-- Не обязательно существует какое-либо особое свойство аддитивного тождества для `*`.
-
-Несколько других типов колец:
-
-- Мы говорим, что `(R, +, *)` - это кольцо с единицей, если оно имеет мультипликативную единицу, 
-  называемую **единицей** или **1**: `e * x = x * e = x`
-- Мы говорим, что `(R, +, *)` - это коммутативное кольцо, 
-  если оно удовлетворяет свойству коммутативности относительно умножения, 
-  то есть `x * y = y * x` для `∀ x, y ∈ R`.
+- _Замыкание по сложению_ (_closure_): для `∀ x, y ∈ S` выполняется `x + y ∈ S`
+- _Ассоциативность по сложению_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
+- _Тождественность по сложению_ (_identity_): существует `∃ e ∈ S` такой, что для `∀ x ∈ S` выполняется `e + x = x + e = x`
+- _Обратимость по сложению_: для каждого `x ∈ S` существует \\(x^{-1}\\) такой,
+  что x * \\(x^{-1}\\) == \\(x^{-1}\\) * x == e
+- _Коммутативность по сложению_ (_commutative_): для `∀ x, y ∈ S` выполняется `x + y = y + x`
+- _Замыкание по умножению_ (_closure_): для `∀ x, y ∈ S` выполняется `x * y ∈ S`
+- _Ассоциативность по умножению_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x * y) * z = x * (y * z)`
+- _Тождественность по умножению_ (_identity_): существует `∃ o ∈ S` такой, что для `∀ x ∈ S` выполняется `o * x = x * o = x`
+- _Коммутативность по умножению_ (_commutative_): для `∀ x, y ∈ S` выполняется `x * y = y * x`
+- _Дистрибутивность_ (_distributivus_, _распределительный закон_):
+  Для любых `∀ x, y, z ∈ S` выполняется `x * (y + z) = x * y + x * z` и `(x + y) * z = x * z + y * z`.
 
 ## Описание
 
 ```dotty
-trait Ring[A] extends Group[A]:
-  def times(x: A, y: A): A
-
-trait RingWithUnity[A] extends Ring[A]:
-  def one: A
+trait CRingWithUnity[A] extends CRing[A], RingWithUnity[A]
 ```
 
 ## Примеры
@@ -44,13 +30,36 @@ trait RingWithUnity[A] extends Ring[A]:
 `(Z, +, *)`
 
 ```dotty
-given RingWithUnity[Int] with
-  val empty: Int = 0
-  val one: Int = 1
-  def combine(x: Int, y: Int): Int = x + y
-  def times(x: Int, y: Int): Int = x * y
-
+given CRingWithUnity[Int] with
+  val empty: Int                               = 0
+  val one: Int                                 = 1
+  def combine(x: Int, y: Int): Int             = x + y
+  def times(x: Int, y: Int): Int               = x * y
   extension (a: Int) override def inverse: Int = -a
+```
+
+## Реализация
+
+### Реализация в Spire
+
+```dotty
+import spire.algebra.CRing
+import spire.math.Rational
+
+CRing.plus(Rational(1, 2), Rational(1, 3))
+// val res0: spire.math.Rational = 5/6
+CRing.times(Rational(1, 2), Rational(1, 3))
+// val res1: spire.math.Rational = 1/6
+CRing.pow(Rational(1, 2), 3)
+// val res2: spire.math.Rational = 1/8
+CRing.negate(Rational(1, 2))
+// val res3: spire.math.Rational = -1/2
+CRing.minus(Rational(1, 2), Rational(1, 3))
+// val res4: spire.math.Rational = 1/6
+CRing.zero[Rational]
+// val res5: spire.math.Rational = 0
+CRing.one[Rational]
+// val res6: spire.math.Rational = 1
 ```
 
 ---

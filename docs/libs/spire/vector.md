@@ -156,6 +156,17 @@ Vector(1.0, 5.0, 3.0) :/ 0.5
 
 `MetricSpace[V,R]` - типы со связанной метрикой
 
+Этот класс типов моделирует метрическое пространство `V`. 
+Расстояние между двумя точками в `V` измеряется в `R`, которое должно быть действительным (т.е. существует `IsReal[R]`).
+
+```dotty
+import spire.algebra.*
+import spire.implicits.*
+
+MetricSpace.distance(Vector(1.0, 5.0), Vector(5.0, 1.0))
+// val res2: Double = 5.656854249492381
+```
+
 ## NormedVectorSpace
 
 Нормированное векторное пространство — это векторное пространство, снабженное функцией нормирования: `V => F`.
@@ -174,19 +185,35 @@ trait NormedVectorSpace[V, F] extends VectorSpace[V, F], MetricSpace[V, F]:
   def distance(v: V, w: V): F = norm(minus(v, w))
 ```
 
-```dotty
-```
-
 Операции нормированного векторного пространства:
 
 - `norm`: векторная норма
 - `normalize`: нормализация вектора (поэтому норма равна 1)
 
+```dotty
+import spire.algebra.*
+import spire.implicits.*
+
+Vector(1.0, 5.0, 3.0).norm
+// val res0: Double = 5.916079783099616
+Vector(1.0, 5.0, 3.0).normalize
+// val res1: Vector[Double] = Vector(0.1690308509457033, 0.8451542547285165, 0.50709255283711)
+
+MetricSpace.distance(Vector(1.0, 5.0), Vector(5.0, 1.0))
+// val res2: Double = 5.656854249492381
+```
+
 ## InnerProductSpace
 
 - `dot` (`⋅`, `dot`): векторный внутренний продукт
 
+```dotty
+import spire.algebra.InnerProductSpace
+import spire.implicits.*
 
+Vector(1.0, 5.0, 3.0).dot(Vector(1.0, 5.0, 3.0))
+// val res0: Double = 35.0
+```
 
 ---
 

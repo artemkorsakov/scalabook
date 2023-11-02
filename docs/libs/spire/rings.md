@@ -289,6 +289,17 @@ Spire поддерживает квадратные корни и дробные
 Точные типы, например, `Rational` не имеют экземпляров `NRoot`, определенных по умолчанию, 
 но экземпляры могут быть созданы с точностью, заданной пользователем.
 
+```dotty
+import spire.math.Real.apply
+
+9 nroot 2
+// val res1: spire.math.Real = 3
+9.sqrt
+// val res2: spire.math.Real = 3
+3 fpow 2
+// val res3: spire.math.Real = 9
+```
+
 ---
 
 **Ссылки:**

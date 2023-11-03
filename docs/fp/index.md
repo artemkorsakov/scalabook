@@ -159,5 +159,6 @@ def compose[A, B, C](f: B => C, g: A => B): A => C =
 - [Functional Programming For The Rest of Us](https://www.defmacro.org/2006/06/19/fp.html)
 - [Functional Programming in Scala, Second Edition, Chapter 1-2](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Unleashing the Power: The Advantages of Functional Programming in the Digital Age](https://scalac.io/blog/unleashing-the-power-the-advantages-of-functional-programming-in-the-digital-age)
+- [What is Functional Programming? - Alexandru Nedelcu](https://alexn.org/blog/2017/10/15/functional-programming)
 - [What is functional programming and why it matters for your business?](https://scalac.io/blog/benefits-of-functional-programming/)
 

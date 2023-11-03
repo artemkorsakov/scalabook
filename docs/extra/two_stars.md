@@ -74,7 +74,9 @@
 | [Refined Types in Scala](https://blog.rockthejvm.com/refined-types/)                                                                                                                     | Scala 2 |  En  | 2020 | Refined          |
 | [Refined Types in Scala: the Good, the Bad and the Ugly](https://medium.com/swlh/refined-types-the-good-the-bad-and-the-ugly-ee971e5d9137)                                               | Scala 2 |  En  | 2020 | Refined          |
 | [Refining your data from configuration to database](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)                                                       | Scala 2 |  En  | 2017 | Refined          |
+| [Retry Failing Tasks with Cats and Scala - Alexandru Nedelcu](https://alexn.org/blog/2020/08/03/on-error-retry-loop)                                                                     | Scala 2 |  En  | 2020 | Cats             |
 | [Safe, Expressive Code with Refinement Types](https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/)                                                                    | Scala 2 |  En  | 2020 | Refined          |
+| [Scala's isInstanceOf is an Anti-Pattern - Alexandru Nedelcu](https://alexn.org/blog/2019/08/11/isinstanceof-anti-pattern)                                                               | Scala 2 |  En  | 2019 |                  |
 | [Stackless Scala With Free Monads - Runar Oli Bjarnason](https://blog.higher-order.com/assets/trampolines.pdf)                                                                           | Scala 2 |  En  | 2012 | Trampoline       |
 | [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)                                                                    | Scala 2 |  En  | 2018 | Refined          |
 | [Type-Level Programming in Scala](https://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/)                                                                           | Scala 2 |  En  | 2010 |                  |
@@ -100,6 +102,8 @@
 
 ### Статьи
 
-| Название                                                                             | Язык | Дата | Комментарий |
-|--------------------------------------------------------------------------------------|:----:|------|-------------|
-| [Strong Type Systems](https://blog.tmorris.net/posts/strong-type-systems/index.html) |  En  | 2007 |             |
+| Название                                                                                                        | Язык | Дата | Комментарий |
+|-----------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
+| [Strong Type Systems](https://blog.tmorris.net/posts/strong-type-systems/index.html)                            |  En  | 2007 |             |
+| [In Defense of OOFP - Alexandru Nedelcu](https://alexn.org/blog/2018/02/12/in-defense-oofp)                     |  En  | 2018 |             |
+| [What is Functional Programming? - Alexandru Nedelcu](https://alexn.org/blog/2017/10/15/functional-programming) |  En  | 2017 |             |

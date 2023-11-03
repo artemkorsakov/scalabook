@@ -12,6 +12,7 @@
 | [Get Programming with Scala](https://www.manning.com/books/get-programming-with-scala)                                                                                                                                                              | Scala 3 |  En  | 2021 |             |
 | [Programming in Scala, Fifth Edition](https://www.artima.com/shop/programming_in_scala_5ed)                                                                                                                                                         | Scala 3 |  En  | 2021 |             |
 | [Scala Language Specification](https://scala-lang.org/files/archive/spec/3.4/)                                                                                                                                                                      | Scala 3 |  En  | 2023 |             |
+| [Spire - a numeric library for Scala](https://typelevel.org/spire)                                                                                                                                                                                  | Scala 3 |  En  | 2023 |             |
 | [Путеводитель неофита по Scala](https://github.com/anton-k/ru-neophyte-guide-to-scala)                                                                                                                                                              | Scala 2 |  Ру  | 2014 |             |
 | [All about Scala](https://allaboutscala.com/)                                                                                                                                                                                                       | Scala 2 |  En  | 2020 |             |
 | [Essential Scala](https://books.underscore.io/essential-scala/essential-scala.html)                                                                                                                                                                 | Scala 2 |  En  | 2017 |             |
@@ -31,6 +32,7 @@
 | [Scala 3 - Rock the JVM](https://www.youtube.com/watch?v=orTmm6OMaLw&list=PLmtsMNDRU0BwsVUbhsH2HMqDMPNhQ0HPc)                                      | Scala 3 |  En  | 2020 |             |
 | [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)                                        | Scala 3 |  En  | 2021 |             |
 | [Scala Tips - Rock the JVM](https://www.youtube.com/playlist?list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)                                              | Scala 3 |  En  | 2023 |             |
+| [Scala's Role in the Programming Languages Ecosystem - Martin Odersky](https://www.youtube.com/watch?v=7mTNZeiIK7E)                                | Scala 3 |  En  | 2023 |             |
 | [The Best Scala Libraries I Use in Every Project - DevInsideYou](https://www.youtube.com/watch?v=ZymD5NuOwdA)                                      | Scala 3 |  En  | 2023 |             |
 | [Typeclasses in Scala 3 - Colombia Scala meetup/Scala at the Sea](https://www.youtube.com/watch?app=desktop&v=co4LSvVoX-s)                         | Scala 3 |  En  | 2022 |             |
 | [Functional Scala - Scala in the city](https://www.youtube.com/playlist?list=PLjtl9Y7VJMWtZz3g0LjMhO54_KBL8Tfwl)                                   | Scala 2 |  En  | 2020 |             |
@@ -90,6 +92,7 @@
 | [TestContainers in Scala: Use Integration Tests for building your services](https://scalac.io/blog/testcontainers-in-scala-use-integration-tests-for-building-your-services/)                 | Scala 3 |  En  | 2023 |                             |
 | [Two types of futures](https://softwaremill.com/two-types-of-futures/)                                                                                                                        | Scala 3 |  En  | 2023 |                             |
 | [Why are Type Classes Useful in Scala? - Rock the JVM](https://blog.rockthejvm.com/why-are-typeclasses-useful/)                                                                               | Scala 3 |  En  | 2020 |                             |
+| [Fatal Warnings and Linting in Scala - Alexandru Nedelcu](https://alexn.org/blog/2020/05/26/scala-fatal-warnings)                                                                             | Scala 2 |  En  | 2020 |                             |
 | [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes)                                                              | Scala 2 |  En  | 2012 |                             |
 | [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics) | Scala 2 |  En  | 2013 |                             |
 | [The Power of Type-classes with Scala implicit defs](https://blog.tmorris.net/posts/the-power-of-type-classes-with-scala-implicit-defs/index.html)                                            | Scala 2 |  En  | 2007 |                             |
@@ -113,10 +116,12 @@
 
 ### Статьи
 
-| Название                                                                                                                                    | Язык | Дата | Комментарий      |
-|---------------------------------------------------------------------------------------------------------------------------------------------|:----:|------|------------------|
-| [«Чистый» код, ужасная производительность](https://habr.com/ru/companies/sportmaster_lab/articles/728880)                                   |  Ru  | 2023 | Рефакторинг кода |
-| [Bad software examples - how much can poor code hurt you?](https://softwaremill.com/bad-software-examples-how-much-can-poor-code-hurt-you/) |  En  | 2023 |                  |
-| [Software requirements do not change](https://blog.tmorris.net/posts/software-requirements-do-not-change/index.html)                        |  En  | 2006 |                  |
+| Название                                                                                                                                                | Язык | Дата | Комментарий              |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------|:----:|------|--------------------------|
+| [«Чистый» код, ужасная производительность](https://habr.com/ru/companies/sportmaster_lab/articles/728880)                                               |  Ru  | 2023 | Рефакторинг кода         |
+| [A Brief, Incomplete, and Mostly Wrong History of Programming Languages](https://james-iry.blogspot.com/2009/05/brief-incomplete-and-mostly-wrong.html) |  En  | 2009 | История программирования |
+| [Bad software examples - how much can poor code hurt you?](https://softwaremill.com/bad-software-examples-how-much-can-poor-code-hurt-you/)             |  En  | 2023 |                          |
+| [Beating the Averages](http://www.paulgraham.com/avg.html)                                                                                              |  En  | 2001 | История программирования |
+| [Software requirements do not change](https://blog.tmorris.net/posts/software-requirements-do-not-change/index.html)                                    |  En  | 2006 |                          |
 
 ---

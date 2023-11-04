@@ -64,10 +64,10 @@ object HeliumThemes:
         navLinks = Seq(
           ButtonLink.internal(Root / "blog/index.md", "Блог"),
           ButtonLink.internal(Root / "scala/index.md", "Scala"),
-          ButtonLink.internal(Root / "fp/index.md", "ФП"),
-          ButtonLink.internal(Root / "typeclass/index.md", "Теория категорий"),
+          ButtonLink.internal(Root / "fp/index.md", "Функ. программирование"),
+          ButtonLink.internal(Root / "typeclass/index.md", "Классы типов"),
           ButtonLink.internal(Root / "algorithms/index.md", "Алгоритмы"),
-          ButtonLink.internal(Root / "libs/index.md", "Scala libs"),
+          ButtonLink.internal(Root / "libs/index.md", "Библиотеки"),
           ButtonLink.internal(Root / "books/index.md", "Упражнения"),
           ButtonLink.internal(Root / "extra/index.md", "Ресурсы")
         )

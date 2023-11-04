@@ -1,8 +1,8 @@
-# ✯
+# Scala - ✯
 
-## Scala
+Материалы отсортированы по версии Scala (Scala 3/Scala 2), языку (русский/english), а затем - по алфавиту.
 
-### Книги и документация
+## Книги и документация
 
 | Название                                                                                                                                                                                                                                            | Версия  | Язык | Дата | Комментарий |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
@@ -22,7 +22,7 @@
 | [The Neophyte's Guide to Scala](https://danielwestheide.com/books/the-neophytes-guide-to-scala)                                                                                                                                                     | Scala 2 |  En  | 2013 |             |
 | [The Type Astronaut's Guide to Shapeless Book](https://underscore.io/books/shapeless-guide)                                                                                                                                                         | Scala 2 |  En  | 2017 |             |
 
-### Видео
+## Видео
 
 | Название                                                                                                                                           | Версия  | Язык | Дата | Комментарий |
 |----------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
@@ -48,7 +48,7 @@
 | [Vivisecting the Veil of Variance](https://www.youtube.com/watch?v=dPbbqrhm-WY)                                                                    | Scala 2 |  En  | 2023 |             |
 | [Why are Type Classes useful in Scala? - Rock the JVM](https://www.youtube.com/watch?v=bupBZKJT0EA)                                                | Scala 2 |  En  | 2020 |             |
 
-### Курсы
+## Курсы
 
 | Название                                                                                                                                             | Версия  | Язык | Дата | Комментарий                                                                  |
 |------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|------------------------------------------------------------------------------|
@@ -64,7 +64,7 @@
 | [Основы Scala](https://stepik.org/course/89974/promo)                                                                                                | Scala 2 |  Ру  | 2021 |                                                                              |
 | [Scala Tutorial](https://stepik.org/course/55498/promo)                                                                                              | Scala 2 |  En  | 2021 |                                                                              |
 
-### Упражнения
+## Упражнения
 
 | Название                                                    | Версия  | Язык | Дата | Комментарий |
 |-------------------------------------------------------------|:-------:|:----:|------|-------------|
@@ -73,7 +73,7 @@
 | [Scala tutorials](http://scalatutorials.com/tour/)          | Scala 2 |  En  |      |             |
 | [Tour of Scala](https://tourofscala.com/)                   | Scala 2 |  En  |      |             |
 
-### Статьи
+## Статьи
 
 | Название                                                                                                                                                                                      | Версия  | Язык | Дата | Комментарий                 |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-----------------------------|
@@ -96,32 +96,3 @@
 | [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes)                                                              | Scala 2 |  En  | 2012 |                             |
 | [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics) | Scala 2 |  En  | 2013 |                             |
 | [The Power of Type-classes with Scala implicit defs](https://blog.tmorris.net/posts/the-power-of-type-classes-with-scala-implicit-defs/index.html)                                            | Scala 2 |  En  | 2007 |                             |
-| [Types and Typeclasses: Believe the type](http://learnyouahaskell.com/types-and-typeclasses)                                                                                                  | Haskell |  En  | 2011 |                             |
-
---- 
-
-## Общее
-
-### Книги и документация
-
-| Название                                                                                                       | Язык | Дата | Комментарий      |
-|----------------------------------------------------------------------------------------------------------------|:----:|------|------------------|
-| [Роберт Мартин - Чистый код: создание, анализ и рефакторинг](https://www.chitai-gorod.ru/catalog/book/312177/) |  Ру  | 2008 | Рефакторинг кода |
-
-### Видео
-
-| Название                                                                          | Язык | Дата | Комментарий      |
-|-----------------------------------------------------------------------------------|:----:|------|------------------|
-| ["Clean" Code, Horrible Performance](https://www.youtube.com/watch?v=tD5NrevFtbU) |  En  | 2023 | Рефакторинг кода |
-
-### Статьи
-
-| Название                                                                                                                                                | Язык | Дата | Комментарий              |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------|:----:|------|--------------------------|
-| [«Чистый» код, ужасная производительность](https://habr.com/ru/companies/sportmaster_lab/articles/728880)                                               |  Ru  | 2023 | Рефакторинг кода         |
-| [A Brief, Incomplete, and Mostly Wrong History of Programming Languages](https://james-iry.blogspot.com/2009/05/brief-incomplete-and-mostly-wrong.html) |  En  | 2009 | История программирования |
-| [Bad software examples - how much can poor code hurt you?](https://softwaremill.com/bad-software-examples-how-much-can-poor-code-hurt-you/)             |  En  | 2023 |                          |
-| [Beating the Averages](http://www.paulgraham.com/avg.html)                                                                                              |  En  | 2001 | История программирования |
-| [Software requirements do not change](https://blog.tmorris.net/posts/software-requirements-do-not-change/index.html)                                    |  En  | 2006 |                          |
-
----

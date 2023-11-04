@@ -1,8 +1,8 @@
-# ✯✯
+# Scala - ✯✯
 
-## Scala
+Материалы отсортированы по версии Scala (Scala 3/Scala 2), языку (русский/english), а затем - по алфавиту.
 
-### Книги и документация
+## Книги и документация
 
 | Название                                                                                                                                                  | Версия  | Язык | Дата | Комментарий |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
@@ -13,7 +13,7 @@
 | [Scala & Design Patterns: Exploring Language Expressivity by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf) | Scala 2 |  En  | 2009 |             |
 | [Scala with Cats](https://www.scalawithcats.com/)                                                                                                         | Scala 2 |  En  | 2020 | Cats        |
 
-### Видео
+## Видео
 
 | Название                                                                                                                                                                 | Версия  | Язык | Дата | Комментарий            |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|------------------------|
@@ -31,7 +31,7 @@
 | [Strings are Evil: Methods to hide the use of primitive types - Noel Welsh](https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types) | Scala 2 |  En  | 2018 | Refined                |
 | [Why types matter](https://www.youtube.com/watch?v=n1Y2V4zCZdQ)                                                                                                          | Scala 2 |  En  | 2020 | Refined                |
 
-### Курсы
+## Курсы
 
 | Название                                                                                                                          |  Версия  | Язык | Дата | Комментарий |
 |-----------------------------------------------------------------------------------------------------------------------------------|:--------:|:----:|------|-------------|
@@ -40,14 +40,14 @@
 | [Scala - продвинутый уровень](https://stepik.org/course/92864/promo)                                                              | Scala 2  |  Ру  | 2021 |             |
 | [Pure Functional HTTP APIs in Scala](https://www.educative.io/courses/pure-functional-http-apis-scala)                            | Scala 2  |  En  | 2022 |             |
 
-### Упражнения
+## Упражнения
 
 | Название                                                                                                                                  |  Версия  | Язык | Дата | Комментарий |
 |-------------------------------------------------------------------------------------------------------------------------------------------|:--------:|:----:|------|-------------|
 | [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)                                                | Scala 2  |  En  | 2017 |             |
 | [Scala puzzlers](https://scalapuzzlers.com/index.html), на основе упражнений [написана книга](https://www.artima.com/shop/scala_puzzlers) | Scala 2  |  En  | 2014 |             |
 
-### Статьи
+## Статьи
 
 | Название                                                                                                                                                                                 | Версия  | Язык | Дата | Комментарий      |
 |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|------------------|
@@ -83,27 +83,3 @@
 | [Type safety with refined](https://blog.michalp.net/posts/scala/refined/)                                                                                                                | Scala 2 |  En  | 2022 | Refined          |
 | [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)                                            | Scala 2 |  En  | 2019 | Refined          |
 | [Wtf is Refined?](https://medium.com/@Methrat0n/wtf-is-refined-5008eb233194)                                                                                                             | Scala 2 |  En  | 2019 | Refined          |
-
---- 
-
-## Общее
-
-### Книги и документация
-
-| Название                                                                                                         | Язык | Дата | Комментарий |
-|------------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
-| [Abelson, Sussman - Structure and Interpretation of Computer Programs](https://web.mit.edu/6.001/6.037/sicp.pdf) |  En  | 1996 |             |
-
-### Видео
-
-| Название                                                                                           | Язык | Дата | Комментарий |
-|----------------------------------------------------------------------------------------------------|:----:|------|-------------|
-| [MIT 6.001 Structure and Interpretation](https://www.youtube.com/playlist?list=PLE18841CABEA24090) |  En  | 1986 |             |
-
-### Статьи
-
-| Название                                                                                                        | Язык | Дата | Комментарий |
-|-----------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
-| [Strong Type Systems](https://blog.tmorris.net/posts/strong-type-systems/index.html)                            |  En  | 2007 |             |
-| [In Defense of OOFP - Alexandru Nedelcu](https://alexn.org/blog/2018/02/12/in-defense-oofp)                     |  En  | 2018 |             |
-| [What is Functional Programming? - Alexandru Nedelcu](https://alexn.org/blog/2017/10/15/functional-programming) |  En  | 2017 |             |

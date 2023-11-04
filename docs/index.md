@@ -28,3 +28,4 @@
 - [Мой профиль на gitflic](https://gitflic.ru/user/artemkorsakov)
 - [Мой профиль на github](https://github.com/artemkorsakov)
 - [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook)
+- artemkorsakov@mail.ru

@@ -1,14 +1,13 @@
 package ru.scalabook.typeclass.monoid
 
-import io.github.iltotore.iron.:|
-import io.github.iltotore.iron.constraint.all.Greater
+import ru.scalabook.typeclass.common.PositiveInt
 
 import scala.annotation.tailrec
 
 trait Semigroup[A]:
   def combine(x: A, y: A): A
 
-  def combineN(x: A, n: Int :| Greater[0]): A =
+  def combineN(x: A, n: PositiveInt): A =
     @tailrec def loop(b: A, k: Int, acc: A): A =
       if k == 1 then combine(b, acc)
       else

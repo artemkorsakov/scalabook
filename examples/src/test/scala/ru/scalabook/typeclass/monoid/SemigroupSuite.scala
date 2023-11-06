@@ -1,5 +1,8 @@
 package ru.scalabook.typeclass.monoid
 
+import io.github.iltotore.iron.cats.given
+import ru.scalabook.typeclass.common.Generators.given
+import ru.scalabook.typeclass.common.PositiveInt
 import ru.scalabook.typeclass.monoid.Semigroup.given
 import weaver.*
 import weaver.scalacheck.*
@@ -10,9 +13,6 @@ object SemigroupSuite extends SimpleIOSuite, Checkers, SemigroupLaw:
       whenSuccess(checkSemigroupLaw(x, y, z)): _ =>
         success
 
-//  test("combineN должен складывать k раз") {
-//    forall { (x: Int) =>
-//      val actual = Semigroup[Int].combineN(x, 10)
-//      assertEquals(actual, x * 10)
-//    }
-//  }
+  test("combineN should combine n times"):
+    forall: (x: Int, n: PositiveInt) =>
+      expect.eql(x * n, Semigroup[Int].combineN(x, n))

@@ -1,16 +1,4 @@
-# Моноидальная категория
-
-Правила симметричной моноидальной категории можно записать так:
-
-- \\(I \bigotimes a \cong a\\)
-- \\(a \bigotimes b \cong b \bigotimes a\\)
-- \\((a \bigotimes b) \bigotimes c \cong a \bigotimes (b \bigotimes c)\\)
-
-Эти изоморфизмы часто записывают в виде семейств обратимых стрелок, называемых ассоциатами и объединителями. 
-
-Функториальность позволяет поднять пару стрелок: \\(f: a \to \acute{a}, g: b \to \acute{b}\\)
-для работы с тензорными произведениями:
-\\(a \bigotimes b \overset{f \bigotimes g}{\rightarrow} \acute{a} \bigotimes \acute{b}\\).
+# Группа моноидов
 
 ## Схема
 
@@ -32,8 +20,7 @@ given Monoid[Int] with
   val empty = 1
   def combine(x: Int, y: Int): Int = x * y
 
-def fold[A: Monoid](xs: List[A]): A =
-  val m = summon[Monoid[A]]
+def fold[A](xs: List[A])(using m: Monoid[A]): A =
   xs.foldLeft(m.empty)(m.combine)
 
 fold(List(1, 2, 3, 4, 5))
@@ -56,7 +43,6 @@ trait Semigroup[A]:
 3 |+| 4
 // val res1: Int = 12
 ```
-
 
 ---
 

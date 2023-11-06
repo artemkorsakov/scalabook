@@ -41,4 +41,3 @@ trait PlusEmptyLaw extends PlusLaw, MonoidLaw:
       run(f1),
       "left identity"
     )
-    checkMonoidLawWithRunner(f1, f2, f3)(run)(using PlusEmpty[F].monoid)

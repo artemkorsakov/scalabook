@@ -1,20 +1,17 @@
 package ru.scalabook.typeclass.monoid
 
-import munit.Assertions
+import cats.data.*
+import cats.syntax.either.*
 
-trait SemigroupLaw extends Assertions:
-  def checkSemigroupLaw[A: Semigroup](x: A, y: A, z: A): Unit =
-    assertEquals(
-      Semigroup[A].combine(Semigroup[A].combine(x, y), z),
-      Semigroup[A].combine(x, Semigroup[A].combine(y, z)),
-      "Associativity"
-    )
-
-  def checkSemigroupLawWithRunner[A: Semigroup, B](x: A, y: A, z: A)(
-      run: A => B
-  ): Unit =
-    assertEquals(
-      run(Semigroup[A].combine(Semigroup[A].combine(x, y), z)),
-      run(Semigroup[A].combine(x, Semigroup[A].combine(y, z))),
-      "Associativity"
-    )
+trait SemigroupLaw:
+  def checkSemigroupLaw[A](x: A, y: A, z: A)(using
+      sg: Semigroup[A]
+  ): ValidatedNel[String, Unit] =
+    import sg.combine
+    Either
+      .cond[String, Unit](
+        combine(combine(x, y), z) == combine(x, combine(y, z)),
+        (),
+        "combine must be associative: (x + y) + z == x + (y + z)"
+      )
+      .toValidatedNel

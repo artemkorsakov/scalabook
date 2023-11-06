@@ -4,11 +4,14 @@ object Dependencies {
   val Scala = "3.3.1"
 
   object cats {
-    private val version = "2.10.0"
-    val core            = "org.typelevel" %% "cats-core"    % version
-    val effect          = "org.typelevel" %% "cats-effect"  % "3.5-639ac01"
-    val free            = "org.typelevel" %% "cats-free"    % version
-    val testkit         = "org.typelevel" %% "cats-testkit" % version
+    private val version       = "2.10.0"
+    private val effectVersion = "3.6-0142603"
+
+    val core         = "org.typelevel" %% "cats-core"          % version
+    val effect       = "org.typelevel" %% "cats-effect"        % effectVersion
+    val effectKernel = "org.typelevel" %% "cats-effect-kernel" % effectVersion
+    val free         = "org.typelevel" %% "cats-free"          % version
+    val testkit      = "org.typelevel" %% "cats-testkit"       % version
   }
 
   object http4s {
@@ -17,7 +20,7 @@ object Dependencies {
   }
 
   object iron {
-    private val version = "2.2.1"
+    private val version = "2.3.0"
     val iron            = "io.github.iltotore" %% "iron"      % version
     val cats            = "io.github.iltotore" %% "iron-cats" % version
   }
@@ -59,8 +62,14 @@ object Dependencies {
     val spire = "org.typelevel" %% "spire" % "0.18.0"
   }
 
+  object weaver {
+    private val version = "0.8.3"
+    val cats            = "com.disneystreaming" %% "weaver-cats"       % version
+    val scalacheck      = "com.disneystreaming" %% "weaver-scalacheck" % version
+  }
+
   object zio {
-    val core = "dev.zio" %% "zio" % "2.0.17"
+    val core = "dev.zio" %% "zio" % "2.0.18"
   }
 
   val exampleLibs: Seq[ModuleID] =
@@ -83,11 +92,14 @@ object Dependencies {
 
   val exampleTestLibs: Seq[ModuleID] =
     Seq(
+      cats.effectKernel,
       cats.testkit,
       munit.core,
       munit.catsEffect3,
       munit.scalacheck,
-      scalaz.scalacheck
+      scalaz.scalacheck,
+      weaver.cats,
+      weaver.scalacheck
     ).map(_ % Test)
 
   val siteLibs: Seq[ModuleID] =

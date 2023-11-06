@@ -29,7 +29,8 @@ lazy val examples = (project in file("examples"))
   .settings(name := "scalabook-examples")
   .settings(
     libraryDependencies ++= exampleLibs,
-    libraryDependencies ++= exampleTestLibs
+    libraryDependencies ++= exampleTestLibs,
+    testFrameworks += new TestFramework("weaver.framework.CatsEffect")
   )
 
 lazy val site = project

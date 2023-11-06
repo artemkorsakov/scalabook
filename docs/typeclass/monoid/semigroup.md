@@ -1,42 +1,67 @@
 # Полугруппа
 
-`(S, +)` является полугруппой (_semigroup_) для множества `S` и операции `+`, 
-если удовлетворяет следующим свойствам для любых `x, y, z ∈ S`:
+## Формальное определение
 
-- _Замыкание_ (_closure_): для `∀ x, y ∈ S` выполняется `x + y ∈ S`
-- _Ассоциативность_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
+\\((S, +)\\) является полугруппой (_semigroup_) для множества \\(S\\) и операции \\(+\\), 
+если удовлетворяет следующим свойствам для любых \\(x, y, z \in S\\):
+
+- _Замыкание_ (_closure_): для \\(\forall x, y \in S\\) выполняется \\(x + y \in S\\).
+- _Ассоциативность_ (_associativity_): для \\(\forall x, y, z \in S\\) выполняется \\((x + y) + z = x + (y + z)\\).
 
 Также говорится, что _S образует полугруппу относительно +_.
 
-## Описание
+Благодаря ассоциативности, можно корректно определить натуральную степень элемента полугруппы ("сложить n раз") как:
+
+\\(a^{n} = \overset{n}{a + ... + a}\\)
+
+Для степени элемента справедливо соотношение \\(a^{n + m} = a^{m}+a^{n}, (a^{m})^{n} = a^{mn}, \forall n,m \in \mathbb{N}\\).
+
+## Определение в виде кода на Scala
 
 ```dotty
 trait Semigroup[A]:
   def combine(x: A, y: A): A
 
-  def combineN(x: A, n: Int): Option[A] =
-    if n <= 0 then None
-    else Some(positiveSumN(x, n))
-
-  private def positiveSumN(a: A, n: Int): A =
-    @tailrec def loop(b: A, k: Int, extra: A): A =
-      if k == 1 then combine(b, extra)
+  def combineN(x: A, n: Int :| Greater[0]): A =
+    @tailrec def loop(b: A, k: Int, acc: A): A =
+      if k == 1 then combine(b, acc)
       else
-        val x = if (k & 1) == 1 then combine(b, extra) else extra
+        val x = if (k & 1) == 1 then combine(b, acc) else acc
         loop(combine(b, b), k >>> 1, x)
 
-    if n == 1 then a else loop(a, n - 1, a)
+    if n == 1 then x else loop(x, n - 1, x)
 ```
 
-Используя операцию "сложения" можно определить операцию "сложить k раз" (`combineN`).
+> О том, что такое `Int :| Greater[0]` рассказывается в [статье об уточняющих типах](../../libs/refined.md).
 
-Для операции сложения встречаются следующие наименования: 
+Для операции сложения встречаются следующие наименования:
 `combine`, `append`, `mappend` (Haskell), `op`, `plus`, `times`.
+
+## Законы в виде кода на Scala
 
 Законы полугруппы принимают следующий вид:
 
-- замыкание следует из определения функции `combine` - тип результата тот же, что и тип переменных
+- замыкание следует из определения функции `combine` - тип результата тот же, что и тип переменных.
+  При условии, конечно же, использования при реализации только [чистых функций без побочных эффектов](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D1%82%D0%BE%D1%82%D0%B0_%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B8).
 - ассоциативность формулируется так: `m.combine(x, m.combine(y, z)) == m.combine(m.combine(x, y), z)`
+
+```dotty
+import cats.data.*
+import cats.syntax.either.*
+
+trait SemigroupLaw:
+  def checkSemigroupLaw[A](x: A, y: A, z: A)(using
+      sg: Semigroup[A]
+  ): ValidatedNel[String, Unit] =
+    import sg.combine
+    Either
+      .cond[String, Unit](
+        combine(combine(x, y), z) == combine(x, combine(y, z)),
+        (),
+        "combine must be associative: (x + y) + z == x + (y + z)"
+      )
+      .toValidatedNel
+```
 
 ## Примеры
 
@@ -120,3 +145,4 @@ Semigroup.combineN(3, 5)          // 15
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-semigroup)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Semigroup.html)
 - [Spire home page](https://typelevel.org/spire)
+- [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%BB%D1%83%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B0)

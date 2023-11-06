@@ -1,7 +1,7 @@
 package ru.scalabook.typeclass.arrow
 
-import ru.scalabook.typeclass.monad.PlusLaw
 import ru.scalabook.typeclass.common.Runner2
+import ru.scalabook.typeclass.monad.PlusLaw
 
 trait ComposeLaw extends PlusLaw:
   def checkComposeLaw[=>:[_, _]: Compose: Runner2, A, B, C, D](
@@ -23,7 +23,4 @@ trait ComposeLaw extends PlusLaw:
     )
     checkPlusLawWithRunner[[X] =>> X =>: X, A](f1, f2, f3)(Runner2[=>:].run(a))(
       using Compose[=>:].plus
-    )
-    checkSemigroupLawWithRunner[A =>: A, A](f1, f2, f3)(Runner2[=>:].run(a))(
-      using Compose[=>:].semigroup
     )

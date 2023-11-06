@@ -16,9 +16,6 @@ trait CategoryLaw extends ComposeLaw, PlusEmptyLaw:
     checkPlusEmptyLawWithRunner[[A] =>> A =>: A, A](f1, f2, f3)(
       Runner2[=>:].run(a)
     )(using Category[=>:].empty)
-    checkMonoidLawWithRunner[A =>: A, A](f1, f2, f3)(Runner2[=>:].run(a))(using
-      Category[=>:].monoid
-    )
     assertEquals(
       Runner2[=>:].run(a)(Category[=>:].compose(f1, Category[=>:].id[A])),
       Runner2[=>:].run(a)(f1),

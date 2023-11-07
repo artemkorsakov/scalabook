@@ -38,6 +38,12 @@
 ```dotty
 trait Monoid[A] extends Semigroup[A]:
   def empty: A
+
+  def combineNonNegN(x: A, n: Int :| GreaterEqual[0]): A =
+    if n == 0 then empty
+    else
+      val pos: Int :| Greater[0] = n.refine
+      combineN(x, pos)
 ```
 
 > О том, что такое `Int :| GreaterEqual[0]` рассказывается в [статье об уточняющих типах](../../libs/refined.md).
@@ -54,11 +60,24 @@ trait Monoid[A] extends Semigroup[A]:
 - тождественность формулируется так: `(m.combine(x, m.empty) == x) && (m.combine(m.empty, x) == x)`
 
 ```dotty
+trait MonoidLaw extends SemigroupLaw:
+  def checkMonoidLaw[A](x: A, y: A, z: A)(using
+      Monoid[A]
+  ): ValidatedNel[String, Unit] =
+    (
+      checkSemigroupLaw(x, y, z),
+      check(
+        Monoid[A].combine(x, Monoid[A].empty) == x,
+        "right identity: x + e = x"
+      ),
+      check(
+        Monoid[A].combine(Monoid[A].empty, x) == x,
+        "left identity: e + x = x"
+      )
+    ).mapN { case (_, _, _) => () }
 ```
 
-
-
-
+Законы полугруппы (ассоциативность) определяются в родительском [SemigroupLaw](semigroup.md).
 
 ## Примеры
 

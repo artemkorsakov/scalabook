@@ -1,26 +1,47 @@
 # Группа
 
-Группа **G** — это [моноид](monoid.md) 
-с обратным \\(g^{-1}\\) для каждого элемента g. 
-Таким образом, **G** — категория с одним объектом, в которой каждая стрелка — изоморфизм.
+## Формальное определение
 
-Группа, помимо законов моноида:
+Группа **G** — это [моноид](monoid.md) с обратным \\(g^{-1}\\) для каждого элемента g.
 
-- _Замыкание_ (_closure_): для `∀ x, y ∈ S` выполняется `x + y ∈ S`
-- _Ассоциативность_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
-- _Тождественность_ (_identity_): существует `∃ e ∈ S` такой, что для `∀ x ∈ S` выполняется `e + x = x + e = x`
+Множество \\(G\\) с заданной на нём бинарной операцией +: \\(G \times G \to G\\) называется _группой_
+\\((G, +)\\), если выполнены следующие аксиомы:
 
-должна удовлетворять закону:
+- _Замыкание_ (_closure_): для \\(\forall x, y \in G\\) выполняется \\(x + y \in G\\).
+- _Ассоциативность_ (_associativity_): для \\(\forall x, y, z \in G\\) выполняется \\((x + y) + z = x + (y + z)\\).
+- _Тождественность_ или _Существование нулевого элемента_ (_identity_):
+  существует \\(\exists e \in G\\) такой, что для \\(\forall x \in G\\) выполняется \\(e + x = x + e = x\\)
+- _Обратимость_: для \\(\forall x \in G\\) существует \\(x^{-1} \in G\\) такой,
+  что \\(x + x^{-1} = x^{-1} + x = e\\)
 
-- _Обратимость_: для каждого `x ∈ S` существует \\(x^{-1}\\) такой, 
-  что x + \\(x^{-1}\\) == \\(x^{-1}\\) + x == e
+> Первые три закона наследуются от моноида.
 
-## Описание 
+## Определение в виде кода на Scala
 
 ```dotty
 trait Group[A] extends Monoid[A]:
   extension (a: A) 
     def inverse: A
+```
+
+## Законы в виде кода на Scala
+
+```dotty
+trait GroupLaw extends MonoidLaw:
+  def checkGroupLaw[A](x: A, y: A, z: A)(using
+      Group[A]
+  ): ValidatedNel[String, Unit] =
+    (
+      checkMonoidLaw(x, y, z),
+      check(
+        Group[A].combine(x, Group[A].inverse(x)) == Group[A].empty,
+        "inverse law 1: x + (-x) = 0"
+      ),
+      check(
+        Group[A].combine(Group[A].inverse(x), x) == Group[A].empty,
+        "inverse law 2: (-x) + x = 0"
+      )
+    ).mapN { case (_, _, _) => () }
 ```
 
 ## Примеры
@@ -29,9 +50,9 @@ trait Group[A] extends Monoid[A]:
 
 ```dotty
 given Group[Int] with
-  override val empty                           = 0
-  override def combine(x: Int, y: Int): Int    = x + y
-  extension (a: Int) override def inverse: Int = -a
+  val empty                           = 0
+  def combine(x: Int, y: Int): Int    = x + y
+  extension (a: Int) def inverse: Int = -a
 ```
 
 - Натуральные числа не являются группой по сложению (данное число **x** в **N**, но **-x** не находится в **N**).
@@ -39,7 +60,7 @@ given Group[Int] with
   но множество ненулевых рациональных чисел (**n/d** для любого **n, d ∈ N, n ≠ 0, d ≠ 0**) 
   является ([абелевой](abgroup.md)) группой по умножению с единичным элементом **1**.
 
-В примере ниже, конечно же числитель и знаменатель надо сокращать на НОД и "нормализовывать" знак
+В примере ниже числитель и знаменатель надо сокращать на НОД и "нормализовывать" знак
 с проверкой на **n ≠ 0, d ≠ 0**,
 но в упрощенном варианте группа для рациональных чисел будет выглядеть так:
 
@@ -49,10 +70,9 @@ final case class Rational(n: Int, d: Int):
     Rational(n * that.n, d * that.d)
 
 given Group[Rational] with
-  override val empty: Rational                             = Rational(1, 1)
-  override def combine(x: Rational, y: Rational): Rational = x * y
-  extension (a: Rational) override def inverse: Rational   = Rational(a.d, a.n)
-
+  val empty: Rational                             = Rational(1, 1)
+  def combine(x: Rational, y: Rational): Rational = x * y
+  extension (a: Rational) def inverse: Rational   = Rational(a.d, a.n)
 ```
 
 ## Реализация
@@ -84,3 +104,4 @@ import spire.syntax.group.*
 - [Algebird](https://twitter.github.io/algebird/typeclasses/group.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Grp.html)
 - [Spire home page](https://typelevel.org/spire)
+- [Wikipedia](https://ru.wikipedia.org/wiki/%D0%93%D1%80%D1%83%D0%BF%D0%BF%D0%B0_(%D0%BC%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B0))

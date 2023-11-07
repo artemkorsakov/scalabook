@@ -1,11 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
+import weaver.*
+import weaver.scalacheck.*
 
-class GroupSuite extends ScalaCheckSuite, GroupLaw:
-  property("Group[Int] должен удовлетворять законам Group") {
-    forAll { (x: Int, y: Int, z: Int) =>
-      checkGroupLaw(x, y, z)
-    }
-  }
+object GroupSuite extends SimpleIOSuite, Checkers, GroupLaw:
+  test("Int is a Group with addition and zero"):
+    forall: (x: Int, y: Int, z: Int) =>
+      whenSuccess(checkGroupLaw(x, y, z)): _ =>
+        success

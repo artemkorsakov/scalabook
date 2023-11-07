@@ -2,7 +2,7 @@ package ru.scalabook.typeclass.monad
 
 import ru.scalabook.typeclass.common.*
 import ru.scalabook.typeclass.monoid.Monoid
-import ru.scalabook.typeclass.monoid.Monoid.*
+import ru.scalabook.typeclass.monoid.Monoid.{dual, endoMonoid}
 
 trait Foldable[F[_]]:
   extension [A](fa: F[A])

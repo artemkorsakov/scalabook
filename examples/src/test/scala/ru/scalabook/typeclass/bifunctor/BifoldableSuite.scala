@@ -3,7 +3,7 @@ package ru.scalabook.typeclass.bifunctor
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import ru.scalabook.typeclass.bifunctor.Bifoldable.given
-import ru.scalabook.typeclass.monoid.Monoid.given
+import ru.scalabook.typeclass.common.Instancies.given
 
 class BifoldableSuite extends ScalaCheckSuite, BifoldableLaw:
   private val f: Int => String  = _.toString
@@ -19,7 +19,7 @@ class BifoldableSuite extends ScalaCheckSuite, BifoldableLaw:
         checkBifoldableLaw[Either, String, Char, Int](far, fla, faa)
 
         val actual =
-          Bifoldable[Either].bifoldMap(far)(f)(g)(using stringMonoidInstance)
+          Bifoldable[Either].bifoldMap(far)(f)(g)
         val expected: String =
           far match
             case Right(value) => value.toString

@@ -3,6 +3,7 @@ package ru.scalabook.typeclass.monad
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import ru.scalabook.typeclass.common.*
+import ru.scalabook.typeclass.common.Instancies.given
 
 class MonadTransformerSuite extends ScalaCheckSuite:
   property("idtMonadTransformer должен прокидывать Id внутрь монады") {

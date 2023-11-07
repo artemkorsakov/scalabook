@@ -3,8 +3,8 @@ package ru.scalabook.typeclass.monad
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import ru.scalabook.typeclass.common.*
+import ru.scalabook.typeclass.common.Instancies.given
 import ru.scalabook.typeclass.monad.Foldable.given
-import ru.scalabook.typeclass.monoid.Monoid.given
 
 class FoldableSuite extends ScalaCheckSuite, FoldableLaw:
   property("idFoldable должен 'сворачиваться'") {

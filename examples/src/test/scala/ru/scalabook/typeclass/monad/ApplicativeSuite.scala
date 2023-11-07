@@ -6,6 +6,7 @@ import ru.scalabook.typeclass.Functions.given
 import ru.scalabook.typeclass.common.*
 import ru.scalabook.typeclass.common.Runner1.stateRunner
 import ru.scalabook.typeclass.monad.Applicative.given
+import ru.scalabook.typeclass.common.Instancies.given
 
 class ApplicativeSuite extends ScalaCheckSuite, ApplicativeLaw:
   property("idApplicative должен удовлетворять законам Applicative") {

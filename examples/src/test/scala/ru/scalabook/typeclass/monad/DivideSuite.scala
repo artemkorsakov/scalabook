@@ -3,7 +3,7 @@ package ru.scalabook.typeclass.monad
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import ru.scalabook.typeclass.monad.Divide.given
-import ru.scalabook.typeclass.monoid.Monoid.sumMonoidInstance
+import ru.scalabook.typeclass.monoid.Monoid.given
 
 class DivideSuite extends ScalaCheckSuite:
   private def delta[A]: A => (A, A) = a => (a, a)

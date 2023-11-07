@@ -5,8 +5,10 @@ import cats.syntax.either.*
 import ru.scalabook.typeclass.common.Laws
 
 trait SemigroupLaw extends Laws:
-  def checkSemigroupLaw[A](x: A, y: A, z: A)(using
-      Semigroup[A]
+  def checkSemigroupLaw[A: Semigroup](
+      x: A,
+      y: A,
+      z: A
   ): ValidatedNel[String, Unit] =
     check(
       Semigroup[A].combine(Semigroup[A].combine(x, y), z) ==

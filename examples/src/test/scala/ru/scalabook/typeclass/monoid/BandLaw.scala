@@ -1,6 +1,11 @@
 package ru.scalabook.typeclass.monoid
 
-trait BandLaw extends SemigroupLaw, munit.Assertions:
-  def checkBandLaw[A](x: A, y: A, z: A)(using Band[A]): Unit =
-    checkSemigroupLaw(x, y, z)
-    assertEquals(Band[A].combine(x, x), x, "idempotency")
+import cats.data.*
+import cats.syntax.apply.*
+
+trait BandLaw extends SemigroupLaw:
+  def checkBandLaw[A: Band](x: A, y: A, z: A): ValidatedNel[String, Unit] =
+    (
+      checkSemigroupLaw(x, y, z),
+      check(Band[A].combine(x, x) == x, "idempotency: x + x = x")
+    ).mapN { case (_, _) => () }

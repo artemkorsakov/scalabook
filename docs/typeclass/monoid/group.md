@@ -28,9 +28,7 @@ trait Group[A] extends Monoid[A]:
 
 ```dotty
 trait GroupLaw extends MonoidLaw:
-  def checkGroupLaw[A](x: A, y: A, z: A)(using
-      Group[A]
-  ): ValidatedNel[String, Unit] =
+  def checkGroupLaw[A: Group](x: A, y: A, z: A): ValidatedNel[String, Unit] =
     (
       checkMonoidLaw(x, y, z),
       check(

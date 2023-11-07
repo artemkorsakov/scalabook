@@ -61,9 +61,7 @@ trait Monoid[A] extends Semigroup[A]:
 
 ```dotty
 trait MonoidLaw extends SemigroupLaw:
-  def checkMonoidLaw[A](x: A, y: A, z: A)(using
-      Monoid[A]
-  ): ValidatedNel[String, Unit] =
+  def checkMonoidLaw[A: Monoid](x: A, y: A, z: A): ValidatedNel[String, Unit] =
     (
       checkSemigroupLaw(x, y, z),
       check(

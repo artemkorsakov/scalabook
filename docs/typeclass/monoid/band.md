@@ -1,34 +1,34 @@
 # Идемпотентная полугруппа
 
+## Формальное определение
+
 _Band_ — это [полугруппа](semigroup.md), которая также является идемпотентной, 
 т.е. добавление значения к самому себе приводит к тому же значению.
 
 `Band` должна удовлетворять следующим законам:
 
-Законы, наследуемые от полугруппы:
+- _Замыкание_ (_closure_): для \\(\forall x, y \in B\\) выполняется \\(x + y \in B\\).
+- _Ассоциативность_ (_associativity_): для \\(\forall x, y, z \in B\\) выполняется \\((x + y) + z = x + (y + z)\\).
+- _Идемпотентность_ (_idempotency_): для \\(\forall x \in B\\) выполняется \\(x + x = x\\).
 
-- _Замыкание_ (_closure_): для `∀ x, y ∈ S` выполняется `x + y ∈ S`
-- _Ассоциативность_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
+> Первые два закона наследуются от полугруппы.
 
-Законы идемпотентной полугруппы:
-
-- _Идемпотентность_ (_idempotency_): для любых `a ∈ S` выполняется `a + a = a`
-
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
-
-  def combineN(x: A, n: Int): Option[A] =
-    if n <= 0 then None
-    else if n == 1 then Some(x)
-    else combineN(x, n - 1).map(y => combine(x, y))
-
 trait Band[A] extends Semigroup[A]:
-  override def combineN(x: A, n: Int): Option[A] =
-    if n <= 0 then None
-    else Some(x)
+  override def combineN(x: A, n: Int :| Greater[0]): A = x
+```
+
+## Законы в виде кода на Scala
+
+```dotty
+trait BandLaw extends SemigroupLaw:
+  def checkBandLaw[A: Band](x: A, y: A, z: A): ValidatedNel[String, Unit] =
+    (
+      checkSemigroupLaw(x, y, z),
+      check(Band[A].combine(x, x) == x, "idempotency: x + x = x")
+    ).mapN { case (_, _) => () }
 ```
 
 ## Примеры
@@ -39,10 +39,16 @@ trait Band[A] extends Semigroup[A]:
 Например, объединение множеств образуют `Band`:
 
 ```dotty
-given setBandInstance[A]: Band[Set[A]] =
+given [A]: Band[Set[A]] =
   (x: Set[A], y: Set[A]) => x ++ y
 ```
 
+## Реализация
+
+### Реализация в ScalaZ
+
+```dotty
+```
 
 ---
 

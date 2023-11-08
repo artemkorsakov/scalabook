@@ -1,28 +1,35 @@
 #  Идемпотентный моноид
 
+## Формальное определение
+
 _IdempotentMonoid_ — это [моноид](monoid.md), 
 который также является [идемпотентным](band.md),
 т.е. добавление значения к самому себе приводит к тому же значению.
 
-`IdempotentMonoid` должен удовлетворять законам своих "родителей": `Monoid`, `Band`, `Semigroup`.
+`IdempotentMonoid` должен удовлетворять законам своих "родителей":
 
-- _Замыкание_ (_closure_): для `∀ x, y ∈ S` выполняется `x + y ∈ S`
-- _Ассоциативность_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
-- _Тождественность_ (_identity_): существует `∃ e ∈ S` такой, что для `∀ x ∈ S` выполняется `e + x = x + e = x`
-- _Идемпотентность_ (_idempotency_): для любых `a ∈ S` выполняется `a + a = a`
+- _Замыкание_ (_closure_): для \\(\forall x, y \in M\\) выполняется \\(x + y \in M\\).
+- _Ассоциативность_ (_associativity_): для \\(\forall x, y, z \in M\\) выполняется \\((x + y) + z = x + (y + z)\\).
+- _Тождественность_ или _Существование нулевого элемента_ (_identity_):
+  существует \\(\exists e \in M\\) такой, что для \\(\forall x \in M\\) выполняется \\(e + x = x + e = x\\)
+- _Идемпотентность_ (_idempotency_): для \\(\forall x \in M\\) выполняется \\(x + x = x\\).
 
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
-
-trait Monoid[A] extends Semigroup[A]:
-  def empty: A
-
-trait Band[A] extends Semigroup[A]
-
 trait IdempotentMonoid[A] extends Monoid[A], Band[A]
+```
+
+## Законы в виде кода на Scala
+
+```dotty
+trait IdempotentMonoidLaw extends MonoidLaw, BandLaw:
+  def checkIdempotentMonoidLaw[A: IdempotentMonoid](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    (checkMonoidLaw(x, y, z), checkBandLaw(x, y, z)).mapN { case (_, _) => () }
 ```
 
 ## Примеры
@@ -33,11 +40,10 @@ trait IdempotentMonoid[A] extends Monoid[A], Band[A]
 Например, объединение множеств образуют `IdempotentMonoid`:
 
 ```dotty
-given setIdempotentMonoidInstance[A]: IdempotentMonoid[Set[A]] with
+given [A]: IdempotentMonoid[Set[A]] with
   override def empty: Set[A] = Set.empty[A]
   override def combine(x: Set[A], y: Set[A]): Set[A] = x ++ y
 ```
-
 
 ---
 

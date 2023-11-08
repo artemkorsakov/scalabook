@@ -1,5 +1,7 @@
 # Абелева группа
 
+## Формальное определение
+
 `AbGroup[A]` - "абелева группа", [группа](group.md), которая является [коммутативной](cmonoid.md).
 
 Помимо законов группы:
@@ -20,7 +22,7 @@
 trait AbGroup[A] extends Group[A], CMonoid[A]
 ```
 
-## Примеры
+## Определение в виде кода на Scala
 
 ### Целые числа **Z** являются абелевой группой по сложению
 
@@ -30,6 +32,13 @@ given AbGroup[Int] with
   override def combine(x: Int, y: Int): Int    = x + y
   extension (a: Int) override def inverse: Int = -a
 ```
+
+## Законы в виде кода на Scala
+
+```dotty
+```
+
+## Примеры
 
 ## Реализация
 

@@ -1,14 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.monoid.CSemigroup.given
+import weaver.*
+import weaver.scalacheck.*
 
-class CSemigroupSuite extends ScalaCheckSuite, CSemigroupLaw:
-  property(
-    "CSemigroup[Int] должен удовлетворять законам коммутативной полугруппы"
-  ) {
-    forAll { (x: Int, y: Int, z: Int) =>
-      checkCSemigroupLaw(x, y, z)
-    }
-  }
+object CSemigroupSuite extends SimpleIOSuite, Checkers, CSemigroupLaw:
+  test("Int is a commutative monoid with addition"):
+    forall: (x: Int, y: Int, z: Int) =>
+      whenSuccess(checkCSemigroupLaw(x, y, z)): _ =>
+        success

@@ -8,11 +8,11 @@ _IdempotentMonoid_ — это [моноид](monoid.md),
 
 `IdempotentMonoid` должен удовлетворять законам своих "родителей":
 
-- _Замыкание_ (_closure_): для \\(\forall x, y \in M\\) выполняется \\(x + y \in M\\).
-- _Ассоциативность_ (_associativity_): для \\(\forall x, y, z \in M\\) выполняется \\((x + y) + z = x + (y + z)\\).
+- _Замыкание_ (_closure_): для \\(\forall x, y \in IM\\) выполняется \\(x + y \in IM\\).
+- _Ассоциативность_ (_associativity_): для \\(\forall x, y, z \in IM\\) выполняется \\((x + y) + z = x + (y + z)\\).
 - _Тождественность_ или _Существование нулевого элемента_ (_identity_):
-  существует \\(\exists e \in M\\) такой, что для \\(\forall x \in M\\) выполняется \\(e + x = x + e = x\\)
-- _Идемпотентность_ (_idempotency_): для \\(\forall x \in M\\) выполняется \\(x + x = x\\).
+  существует \\(\exists e \in IM\\) такой, что для \\(\forall x \in IM\\) выполняется \\(e + x = x + e = x\\)
+- _Идемпотентность_ (_idempotency_): для \\(\forall x \in IM\\) выполняется \\(x + x = x\\).
 
 ## Определение в виде кода на Scala
 

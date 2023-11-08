@@ -6,21 +6,36 @@
 
 Помимо законов моноида:
 
-- _Замыкание_ (_closure_): для `∀ x, y ∈ S` выполняется `x + y ∈ S`
-- _Ассоциативность_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
-- _Тождественность_ (_identity_): существует `∃ e ∈ S` такой, что для `∀ x ∈ S` выполняется `e + x = x + e = x`
+- _Замыкание_ (_closure_): для \\(\forall x, y \in CM\\) выполняется \\(x + y \in CM\\).
+- _Ассоциативность_ (_associativity_): для \\(\forall x, y, z \in CM\\) выполняется \\((x + y) + z = x + (y + z)\\).
+- _Тождественность_ (_identity_): существует \\(\exists e \in CM\\) такой, 
+  что для \\(\forall x \in CM\\) выполняется \\(e + x = x + e = x\\)
 
 должен соблюдаться закон:
 
-- _Коммутативность_ (_commutative_): для `∀ x, y ∈ S` выполняется `x + y = y + x`
+- _Коммутативность_ (_commutative_): для \\(\forall x, y \in CM\\) выполняется \\(x + y = y + x\\).
 
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
 trait CMonoid[A] extends Monoid[A], CSemigroup[A]
 ```
 
-## Определение в виде кода на Scala
+## Законы в виде кода на Scala
+
+```dotty
+trait CMonoidLaw extends MonoidLaw, CSemigroupLaw:
+  def checkCMonoidLaw[A: CMonoid](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    (checkMonoidLaw(x, y, z), checkCSemigroupLaw(x, y, z)).mapN { case (_, _) =>
+      ()
+    }
+```
+
+## Примеры
 
 ### Натуральные числа N образуют коммутативный моноид относительно сложения и 0
 
@@ -29,13 +44,6 @@ given CMonoid[Int] with
   val empty                        = 0
   def combine(x: Int, y: Int): Int = x + y
 ```
-
-## Законы в виде кода на Scala
-
-```dotty
-```
-
-## Примеры
 
 ## Реализация
 

@@ -1,14 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.monoid.CMonoid.given
+import weaver.*
+import weaver.scalacheck.*
 
-class CMonoidSuite extends ScalaCheckSuite, CMonoidLaw:
-  property(
-    "CMonoid[Int] должен удовлетворять законам коммутативного моноида"
-  ) {
-    forAll { (x: Int, y: Int, z: Int) =>
-      checkCMonoidLaw(x, y, z)
-    }
-  }
+object CMonoidSuite extends SimpleIOSuite, Checkers, CMonoidLaw:
+  test("Int is a commutative monoid with addition"):
+    forall: (x: Int, y: Int, z: Int) =>
+      whenSuccess(checkCMonoidLaw(x, y, z)): _ =>
+        success

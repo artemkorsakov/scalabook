@@ -1,20 +1,22 @@
 package ru.scalabook.typeclass.monoid
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
-import org.scalacheck.{Arbitrary, Gen}
-import ru.scalabook.typeclass.monoid.MultiplicativeSemigroup.given
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.cats.given
+import io.github.iltotore.iron.constraint.all.Greater
+import ru.scalabook.typeclass.common.Generators.{smallInt, smallPosInt}
+import weaver.*
+import weaver.scalacheck.*
 
-class MultiplicativeSemigroupSuite
-    extends ScalaCheckSuite,
+object MultiplicativeSemigroupSuite
+    extends SimpleIOSuite,
+      Checkers,
       MultiplicativeSemigroupLaw:
-  opaque type SmallInt = Int
-  given Arbitrary[SmallInt] = Arbitrary[SmallInt](Gen.choose(-10, 100))
+  test("Natural numbers is a semigroup with multiplication"):
+    forall: (x: Int, y: Int, z: Int) =>
+      whenSuccess(checkMultiplicativeSemigroupLaw(x, y, z)): _ =>
+        success
 
-  property(
-    "MultiplicativeSemigroup[Int] должен удовлетворять законам полугруппы"
-  ) {
-    forAll { (x: Int, y: Int, z: Int) =>
-      checkMultiplicativeSemigroupLaw(x, y, z)
-    }
-  }
+  test("pow should multiply n times"):
+    forall(smallInt.flatMap(x => smallPosInt.map(n => (x, n)))):
+      (x: Int, n: Int :| Greater[0]) =>
+        expect.eql(math.pow(x, n).toInt, MultiplicativeSemigroup[Int].pow(x, n))

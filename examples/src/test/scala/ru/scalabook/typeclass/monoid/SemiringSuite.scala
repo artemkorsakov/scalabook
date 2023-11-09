@@ -1,12 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.monoid.Semiring.given
+import weaver.*
+import weaver.scalacheck.*
 
-class SemiringSuite extends ScalaCheckSuite, SemiringLaw:
-  property("Semiring[Int] должен удовлетворять законам полукольца") {
-    forAll { (x: Int, y: Int, z: Int) =>
-      checkSemiringLaw(x, y, z)
-    }
-  }
+object SemiringSuite extends SimpleIOSuite, Checkers, SemiringLaw:
+  test("Int is a semiring with addition and multiplication"):
+    forall: (x: Int, y: Int, z: Int) =>
+      whenSuccess(checkSemiringLaw(x, y, z)): _ =>
+        success

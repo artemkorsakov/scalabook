@@ -1,11 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
+import weaver.*
+import weaver.scalacheck.*
 
-class AbGroupSuite extends ScalaCheckSuite, AbGroupLaw:
-  property("AbGroup[Int] должен удовлетворять законам абелевой группы") {
-    forAll { (x: Int, y: Int, z: Int) =>
-      checkAbGroupLaw(x, y, z)
-    }
-  }
+object AbGroupSuite extends SimpleIOSuite, Checkers, AbGroupLaw:
+  test("Int is a Abelian group with addition"):
+    forall: (x: Int, y: Int, z: Int) =>
+      whenSuccess(checkAbGroupLaw(x, y, z)): _ =>
+        success

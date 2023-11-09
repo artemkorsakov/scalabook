@@ -20,7 +20,7 @@
 
 , а также закон тождественности по умножению:
 
-- _Существование единичного элемента_: \\(\exists 1 \in S \quad \forall x \in S \quad  x * 1 = 1 * x = x\\)
+- _Существование единичного элемента_: \\(\exists 1 \in S \quad \forall x \in S \quad x * 1 = 1 * x = x\\)
 
 ## Определение в виде кода на Scala
 
@@ -32,6 +32,21 @@ trait SemiringWithUnity[A] extends Semiring[A]:
 ## Законы в виде кода на Scala
 
 ```dotty
+trait SemiringWithUnityLaw extends SemiringLaw:
+  def checkSemiringWithUnityLaw[A: SemiringWithUnity](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkSemiringLaw(x, y, z) combine
+      check(
+        SemiringWithUnity[A].times(x, SemiringWithUnity[A].one) == x,
+        "times right identity: x * 1 = x"
+      ) combine
+      check(
+        SemiringWithUnity[A].times(SemiringWithUnity[A].one, x) == x,
+        "times left identity: 1 * x = x"
+      )
 ```
 
 ## Примеры
@@ -74,3 +89,4 @@ Rig.one[Rational]
 
 - [Spire home page](https://typelevel.org/spire)
 - [Spire User's Guide](https://typelevel.org/spire/guide.html)
+- [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%BB%D1%83%D0%BA%D0%BE%D0%BB%D1%8C%D1%86%D0%BE)

@@ -29,7 +29,7 @@ trait IdempotentMonoidLaw extends MonoidLaw, BandLaw:
       y: A,
       z: A
   ): ValidatedNel[String, Unit] =
-    (checkMonoidLaw(x, y, z), checkBandLaw(x, y, z)).mapN { case (_, _) => () }
+    checkMonoidLaw(x, y, z), checkBandLaw(x, y, z)
 ```
 
 ## Примеры

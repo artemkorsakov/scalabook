@@ -31,10 +31,7 @@ trait AbGroupLaw extends GroupLaw, CMonoidLaw:
       y: A,
       z: A
   ): ValidatedNel[String, Unit] =
-    (checkGroupLaw(x, y, z), checkCMonoidLaw(x, y, z))
-      .mapN { case (_, _) =>
-        ()
-      }
+    checkGroupLaw(x, y, z) combine checkCMonoidLaw(x, y, z)
 ```
 
 ## Примеры

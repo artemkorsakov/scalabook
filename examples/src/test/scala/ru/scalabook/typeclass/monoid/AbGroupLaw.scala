@@ -1,7 +1,6 @@
 package ru.scalabook.typeclass.monoid
 
 import cats.data.*
-import cats.syntax.apply.*
 
 trait AbGroupLaw extends GroupLaw, CMonoidLaw:
   def checkAbGroupLaw[A: AbGroup](
@@ -9,7 +8,4 @@ trait AbGroupLaw extends GroupLaw, CMonoidLaw:
       y: A,
       z: A
   ): ValidatedNel[String, Unit] =
-    (checkGroupLaw(x, y, z), checkCMonoidLaw(x, y, z))
-      .mapN { case (_, _) =>
-        ()
-      }
+    checkGroupLaw(x, y, z) combine checkCMonoidLaw(x, y, z)

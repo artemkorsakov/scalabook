@@ -10,8 +10,7 @@ object Sorting:
         .withFilter(i => ord.gt(array(i), array(i + 1)))
         .map(i => swap(array, i, i + 1))
         .nonEmpty
-    (1 until array.length).takeWhile(loop)
-    ()
+    val _ = (1 until array.length).takeWhile(loop)
 
   def selectionSort[T: Ordering](array: Array[T]): Unit =
     (0 until array.length - 1).foreach { i =>
@@ -70,7 +69,7 @@ object Sorting:
       mid: Int
   ): Unit =
     val buf = new Array[T](array.length)
-    array.copyToArray(buf)
+    val _   = array.copyToArray(buf)
 
     var i = first
     var j = mid + 1

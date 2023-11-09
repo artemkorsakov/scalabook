@@ -30,9 +30,7 @@ trait CMonoidLaw extends MonoidLaw, CSemigroupLaw:
       y: A,
       z: A
   ): ValidatedNel[String, Unit] =
-    (checkMonoidLaw(x, y, z), checkCSemigroupLaw(x, y, z)).mapN { case (_, _) =>
-      ()
-    }
+    checkMonoidLaw(x, y, z) combine checkCSemigroupLaw(x, y, z)
 ```
 
 ## Примеры

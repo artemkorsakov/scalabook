@@ -1,7 +1,6 @@
 package ru.scalabook.typeclass.monoid
 
 import cats.data.*
-import cats.syntax.either.*
 import ru.scalabook.typeclass.common.Laws
 
 trait SemigroupLaw extends Laws:

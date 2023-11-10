@@ -2,48 +2,60 @@
 
 ## Формальное определение
 
-_IdempotentMonoid_ — это [моноид](monoid.md), 
-который также является [идемпотентным](band.md),
+Идемпотентное полукольцо - это [полукольцо](semiring.md), которое также является [идемпотентным](band.md),
 т.е. добавление значения к самому себе приводит к тому же значению.
 
-`IdempotentMonoid` должен удовлетворять законам своих "родителей":
+Для полукольца с единицей должны соблюдаться все законы полукольца:
 
-- _Замыкание_ (_closure_): для \\(\forall x, y \in IM\\) выполняется \\(x + y \in IM\\).
-- _Ассоциативность_ (_associativity_): для \\(\forall x, y, z \in IM\\) выполняется \\((x + y) + z = x + (y + z)\\).
-- _Тождественность_ или _существования нейтрального элемента_ (_identity_):
-  существует \\(\exists e \in IM\\) такой, что для \\(\forall x \in IM\\) выполняется \\(e + x = x + e = x\\)
-- _Идемпотентность_ (_idempotency_): для \\(\forall x \in IM\\) выполняется \\(x + x = x\\).
+- _Замыкание сложения_ (_closure_): для \\(\forall x, y \in S\\) выполняется \\(x + y \in S\\).
+- _Ассоциативность сложения_ (_associativity_): для \\(\forall x, y, z \in S\\) выполняется \\((x + y) + z = x + (y + z)\\).
+- _Существование нулевого элемента_: существует \\(\exists 0 \in S\\) такой,
+  что для \\(\forall x \in S\\) выполняется \\(0 + x = x + 0 = x\\)
+- _Коммутативность сложения_ (_commutative_): для \\(\forall x, y \in S\\) выполняется \\(x + y = y + x\\).
+- _Замыкание умножения_ (_closure_): для \\(\forall x, y \in S\\) выполняется \\(x * y \in S\\).
+- _Ассоциативность умножения_ (_associativity_): для \\(\forall x, y, z \in S\\) выполняется \\((x * y) * z = x * (y * z)\\).
+- _Дистрибутивность_ (_distributivus_, _распределительный закон_):
+  для \\(\forall x, y, z \in S\\) выполняется \\(x * (y + z) = x * y + x * z\\) и \\((x + y) * z = x * z + y * z\\).
+- _Мультипликативное свойство нуля_: \\(a * 0 = 0 * a = 0\\)
+
+, а также закон идемпотентности сложения:
+
+- _Идемпотентность_ (_idempotency_): для \\(\forall x \in S\\) выполняется \\(x + x = x\\).
 
 ## Определение в виде кода на Scala
 
 ```dotty
-trait IdempotentMonoid[A] extends Monoid[A], Band[A]
+trait CSemiring[A] extends Semiring[A]
 ```
 
 ## Законы в виде кода на Scala
 
 ```dotty
-trait IdempotentMonoidLaw extends MonoidLaw, BandLaw:
-  def checkIdempotentMonoidLaw[A: IdempotentMonoid](
+trait CSemiringLaw extends SemiringLaw:
+  def checkCSemiringLaw[A: CSemiring](
       x: A,
       y: A,
       z: A
   ): ValidatedNel[String, Unit] =
-    checkMonoidLaw(x, y, z), checkBandLaw(x, y, z)
+    checkSemiringLaw(x, y, z) combine
+      check(
+        CSemiring[A].times(x, y) == CSemiring[A].times(y, x),
+        "commutative: x * y = y * x"
+      )
 ```
 
 ## Примеры
 
 ### Множества
 
-Некоторые операции над множествами являются идемпотентными: объединение, пересечение и т.п.
-Например, объединение множеств образуют `IdempotentMonoid`:
-
 ```dotty
-given [A]: IdempotentMonoid[Set[A]] with
-  override def empty: Set[A] = Set.empty[A]
-  override def combine(x: Set[A], y: Set[A]): Set[A] = x ++ y
+given [A]: ISemiring[Set[A]] with
+  val empty: Set[A]                         = Set.empty[A]
+  def combine(x: Set[A], y: Set[A]): Set[A] = x ++ y
+  def times(x: Set[A], y: Set[A]): Set[A]   = x.intersect(y)
 ```
+
+## Реализация
 
 ---
 

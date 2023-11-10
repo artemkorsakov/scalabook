@@ -1,12 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.monoid.Ring.given
+import weaver.*
+import weaver.scalacheck.*
 
-class RingSuite extends ScalaCheckSuite, RingLaw:
-  property("Ring[Int] должен удовлетворять законам кольца") {
-    forAll { (x: Int, y: Int, z: Int) =>
-      checkRingLaw(x, y, z)
-    }
-  }
+object RingSuite extends SimpleIOSuite, Checkers, RingLaw:
+  test("Int is a ring with addition and multiplication"):
+    forall: (x: Int, y: Int, z: Int) =>
+      whenSuccess(checkRingLaw(x, y, z)): _ =>
+        success

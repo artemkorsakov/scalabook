@@ -94,9 +94,8 @@ given compositeApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X
 case class Id[A](value: A)
 
 given idApplicative: Applicative[Id] with
-  override def unit[A](a: => A): Id[A] = Id(a)
-
-  override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab.value(fa.value))
+  override def unit[A](a: => A): Id[A]                        = Id(a)
+  override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab(fa))
 ```
 
 ### Option

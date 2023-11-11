@@ -41,15 +41,15 @@ trait Bind[F[_]] extends Apply[F]:
 ### "Обертка"
 
 ```dotty
-case class Id[A](value: A)
+import cats.Id
 
 given Bind[Id] with
   extension [A](fa: Id[A])
     override def map[B](f: A => B): Id[B] =
-      Id(f(fa.value))
+      Id(f(fa))
 
     override def flatMap[B](f: A => Id[B]): Id[B] =
-      f(fa.value)
+      f(fa)
 ```
 
 ### Option

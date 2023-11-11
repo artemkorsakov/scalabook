@@ -1,8 +1,8 @@
 package ru.scalabook.typeclass.monad
 
+import cats.Id
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.common.Id
 
 class FreeSuite extends ScalaCheckSuite:
   sealed trait Operation[A]

@@ -1,7 +1,7 @@
 package ru.scalabook.typeclass.monad
 
-import ru.scalabook.typeclass.common.*
-import ru.scalabook.typeclass.monoid.Monoid
+import cats.Id
+import ru.scalabook.typeclass.common.State
 
 trait Applicative[F[_]] extends Apply[F], InvariantApplicative[F]:
   def unit[A](a: => A): F[A]
@@ -20,10 +20,8 @@ object Applicative:
   def apply[F[_]: Applicative]: Applicative[F] = summon[Applicative[F]]
 
   given idApplicative: Applicative[Id] with
-    override def unit[A](a: => A): Id[A] = Id(a)
-    override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(
-      fab.value(fa.value)
-    )
+    override def unit[A](a: => A): Id[A]                        = Id(a)
+    override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab(fa))
 
   given optionApplicative: Applicative[Option] with
     override def unit[A](a: => A): Option[A] = Some(a)
@@ -39,32 +37,6 @@ object Applicative:
     override def apply[A, B](fab: List[A => B])(fa: List[A]): List[B] =
       fab.flatMap { aToB => fa.map(aToB) }
 
-  given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
-    override def unit[A](a: => A): Either[E, A] = Right(a)
-
-    override def apply[A, B](fab: Either[E, A => B])(
-        fa: Either[E, A]
-    ): Either[E, B] =
-      (fab, fa) match
-        case (Right(fx), Right(a)) => Right(fx(a))
-        case (Left(l), _)          => Left(l)
-        case (_, Left(l))          => Left(l)
-
-  given writerApplicative[W](using
-      monoid: Monoid[W]
-  ): Applicative[[x] =>> Writer[W, x]] with
-    override def unit[A](a: => A): Writer[W, A] =
-      Writer[W, A](() => (monoid.empty, a))
-
-    override def apply[A, B](fab: Writer[W, A => B])(
-        fa: Writer[W, A]
-    ): Writer[W, B] =
-      Writer { () =>
-        val (w0, aToB) = fab.run()
-        val (w1, a)    = fa.run()
-        (monoid.combine(w0, w1), aToB(a))
-      }
-
   given stateApplicative[S]: Applicative[[X] =>> State[S, X]] with
     override def unit[A](a: => A): State[S, A] =
       State[S, A](s => (s, a))
@@ -77,32 +49,6 @@ object Applicative:
         val (s1, a)    = fa.run(s0)
         (s1, aToB(a))
       }
-
-  given nestedApplicative[F[_], G[_]](using
-      applF: Applicative[F],
-      applG: Applicative[G],
-      functorF: Functor[F]
-  ): Applicative[[X] =>> Nested[F, G, X]] with
-    override def unit[A](a: => A): Nested[F, G, A] = Nested(
-      applF.unit(applG.unit(a))
-    )
-
-    override def apply[A, B](fab: Nested[F, G, A => B])(
-        fa: Nested[F, G, A]
-    ): Nested[F, G, B] =
-      val curriedFuncs: G[A => B] => G[A] => G[B] = gaTob =>
-        ga => applG.apply(gaTob)(ga)
-      val fgaToB: F[G[A => B]]     = fab.value
-      val fGaToGb: F[G[A] => G[B]] = functorF.map(fgaToB)(curriedFuncs)
-      val fga: F[G[A]]             = fa.value
-      val fgb: F[G[B]]             = applF.apply(fGaToGb)(fga)
-      Nested(fgb)
-
-  given Applicative[IO] with
-    override def unit[A](a: => A): IO[A] = IO(() => a)
-
-    override def apply[A, B](fab: IO[A => B])(fa: IO[A]): IO[B] =
-      IO(() => fab.run()(fa.run()))
 
   given compositeApplicative[F[_]: Applicative, G[_]: Applicative]
       : Applicative[[X] =>> F[G[X]]] with

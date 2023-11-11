@@ -1,10 +1,10 @@
 package ru.scalabook.typeclass.bifunctor
 
+import cats.Id
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
 import ru.scalabook.typeclass.common.Functions.given
 import ru.scalabook.typeclass.common.Instancies.given
-import ru.scalabook.typeclass.common.*
 
 class BitraverseSuite extends ScalaCheckSuite, BitraverseLaw:
   property("Bitraverse[Either] должен удовлетворять законам Bitraverse") {

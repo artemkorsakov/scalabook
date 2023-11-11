@@ -12,7 +12,7 @@ trait MonadPlusLaw extends MonadLaw, ApplicativePlusLaw:
       g: B => C,
       gReverse: C => B
   ): Unit =
-    checkMonadLaw[F, A, B, C](x)
+    checkMonadLaw[F, A, B, C](x): Unit
     checkApplicativePlusLaw[F, A, B, C](x, f1, f2, f3)
     assertEquals(
       MonadPlus[F].empty[A].map(_ => x),

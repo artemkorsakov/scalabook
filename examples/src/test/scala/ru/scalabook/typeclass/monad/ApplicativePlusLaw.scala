@@ -12,5 +12,5 @@ trait ApplicativePlusLaw extends ApplicativeLaw, PlusEmptyLaw:
       g: B => C,
       gReverse: C => B
   ): Unit =
-    checkApplicativeLaw[F, A, B, C](x)
+    checkApplicativeLaw[F, A, B, C](x): Unit
     checkPlusEmptyLaw[F, A](f1, f2, f3)

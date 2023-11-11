@@ -1,6 +1,7 @@
 package ru.scalabook.typeclass.bifunctor
 
-import ru.scalabook.typeclass.common.{Id, State}
+import cats.Id
+import ru.scalabook.typeclass.common.State
 import ru.scalabook.typeclass.monad.{Applicative, Traverse}
 import ru.scalabook.typeclass.monoid.Monoid
 
@@ -12,7 +13,7 @@ trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:
     ): G[F[C, D]]
 
     override def bimap[C, D](f: A => C, g: B => D): F[C, D] =
-      bitraverse[Id, C, D](a => Id(f(a)), b => Id(g(b))).value
+      bitraverse[Id, C, D](a => Id(f(a)), b => Id(g(b)))
 
     override def bifoldMap[M](f: A => M)(g: B => M)(using ma: Monoid[M]): M =
       def toState[X](f: X => M): X => State[M, X] = x =>

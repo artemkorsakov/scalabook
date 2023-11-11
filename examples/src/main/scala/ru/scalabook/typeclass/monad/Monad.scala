@@ -1,7 +1,7 @@
 package ru.scalabook.typeclass.monad
 
-import ru.scalabook.typeclass.common.*
-import ru.scalabook.typeclass.monoid.Monoid
+import cats.Id
+import ru.scalabook.typeclass.common.IO
 
 trait Monad[F[_]] extends Applicative[F], Bind[F]:
   extension [A](fa: F[A])
@@ -14,7 +14,7 @@ object Monad:
   given Monad[Id] with
     override def unit[A](a: => A): Id[A] = Id(a)
     extension [A](fa: Id[A])
-      override def flatMap[B](f: A => Id[B]): Id[B] = f(fa.value)
+      override def flatMap[B](f: A => Id[B]): Id[B] = f(fa)
 
   given Monad[Option] with
     override def unit[A](a: => A): Option[A] = Some(a)
@@ -30,39 +30,6 @@ object Monad:
 
     extension [A](fa: List[A])
       override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
-
-  given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
-    override def unit[A](a: => A): Either[E, A] = Right(a)
-
-    extension [A](fa: Either[E, A])
-      override def flatMap[B](f: A => Either[E, B]): Either[E, B] =
-        fa match
-          case Right(a) => f(a)
-          case Left(e)  => Left(e)
-
-  given writerMonad[W](using monoid: Monoid[W]): Monad[[x] =>> Writer[W, x]]
-  with
-    override def unit[A](a: => A): Writer[W, A] =
-      Writer[W, A](() => (monoid.empty, a))
-
-    extension [A](fa: Writer[W, A])
-      override def flatMap[B](f: A => Writer[W, B]): Writer[W, B] =
-        Writer[W, B] { () =>
-          val (w1, a) = fa.run()
-          val (w2, b) = f(a).run()
-          (monoid.combine(w1, w2), b)
-        }
-
-  given stateMonad[S]: Monad[[x] =>> State[S, x]] with
-    override def unit[A](a: => A): State[S, A] =
-      State[S, A](s => (s, a))
-
-    extension [A](fa: State[S, A])
-      override def flatMap[B](f: A => State[S, B]): State[S, B] =
-        State[S, B] { s =>
-          val (s1, a) = fa.run(s)
-          f(a).run(s1)
-        }
 
   given Monad[IO] with
     override def unit[A](a: => A): IO[A] = IO(() => a)

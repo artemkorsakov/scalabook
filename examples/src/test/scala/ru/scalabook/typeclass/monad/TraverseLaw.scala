@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.monad
 
-import ru.scalabook.typeclass.common.Id
+import cats.Id
 import ru.scalabook.typeclass.monad.Applicative.given
 
 trait TraverseLaw extends FunctorLaw, munit.Assertions:
@@ -16,7 +16,7 @@ trait TraverseLaw extends FunctorLaw, munit.Assertions:
     val b2HC: B => H[C] = b => Applicative[H].unit(g(b))
 
     // Обход Id эквивалентен `Functor#map`
-    assertEquals(Traverse[F].traverse(fa)(a => Id(f(a))).value, fa.map(f))
+    assertEquals(Traverse[F].traverse(fa)(a => Id(f(a))), fa.map(f))
 
     // Два последовательно зависимых эффекта могут быть объединены в один, их композицию
     val optFb: G[F[B]] = Traverse[F].traverse(fa)(a2GB)

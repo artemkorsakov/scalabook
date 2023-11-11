@@ -1,5 +1,7 @@
 # Profunctor
 
+## Формальное определение
+
 `Profunctor` ковариантен справа и контравариантен слева.
 `Profunctor` позволяет реализовать [InvariantFunctor](../monad/invariant-functor.md), 
 [Functor](../monad/functor.md) 
@@ -14,8 +16,8 @@
   `dimap(dimap(gad)(fba)(fde))(fcb)(fef) == dimap(gad)(fba compose fcb)(fef compose fde)`, где 
   `gad: A =>: D, fcb: C => B, fba: B => A, fde: D => E, fef: E => F`
 
-  
-## Описание
+
+## Определение в виде кода на Scala
 
 ```dotty
 trait Profunctor[=>:[_, _]]:

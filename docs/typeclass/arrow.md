@@ -2,7 +2,7 @@
 
 ## Схема
 
-![monoid](images/arrow.png)
+![arrow](images/arrow.png)
 
 ## Использование
 

@@ -1,5 +1,7 @@
 # Strong
 
+## Формальное определение
+
 `Strong` - сила в объединении. `Strong` расширяет [`Profunctor`](profunctor.md) и добавляет операции `first` и `second`,
 добавляющие заданное значение слева или справа от функции 
 `A =>: B => (A, C) =>: (B, C)` или `A =>: B => (C, A) =>: (C, B)`.
@@ -16,7 +18,7 @@
 - и `second' . second' == dimap unassoc assoc . second'`
 
 
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
 trait Strong[=>:[_, _]] extends Profunctor[=>:]:

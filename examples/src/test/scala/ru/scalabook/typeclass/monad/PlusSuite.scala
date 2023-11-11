@@ -1,11 +1,10 @@
 package ru.scalabook.typeclass.monad
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
+import weaver.*
+import weaver.scalacheck.*
 
-class PlusSuite extends ScalaCheckSuite, PlusLaw:
-  property("listPlusInstance должен удовлетворять законам Plus") {
-    forAll { (x: List[Int], y: List[Int], z: List[Int]) =>
-      checkPlusLaw(x, y, z)
-    }
-  }
+object PlusSuite extends SimpleIOSuite, Checkers, PlusLaw:
+  test("listPlusInstance must satisfy the Plus laws"):
+    forall: (x: List[Int], y: List[Int], z: List[Int]) =>
+      whenSuccess(checkPlusLaw(x, y, z)): _ =>
+        success

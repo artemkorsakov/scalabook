@@ -9,7 +9,7 @@ object BindSuite extends SimpleIOSuite, Checkers, BindLaw:
   private val f: Int => String     = given_Conversion_Int_String.apply
   private val g: String => Boolean = given_Conversion_String_Boolean.apply
 
-  test("idBind должен удовлетворять законам Bind"):
+  test("idBind must satisfy the Bind laws"):
     forall: (x: Int) =>
       whenSuccess(
         checkBindLaw[Id, Int, String, Boolean](

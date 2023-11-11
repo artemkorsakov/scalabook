@@ -6,7 +6,7 @@ import weaver.*
 import weaver.scalacheck.*
 
 object MonadSuite extends SimpleIOSuite, Checkers, MonadLaw:
-  test("idMonad должен удовлетворять законам монады"):
+  test("idMonad must satisfy the Monad laws"):
     forall: (x: Int) =>
       whenSuccess(checkMonadLaw[Id, Int, String, Boolean](x)): _ =>
         success

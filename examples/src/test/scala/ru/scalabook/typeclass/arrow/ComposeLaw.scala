@@ -1,9 +1,8 @@
 package ru.scalabook.typeclass.arrow
 
 import ru.scalabook.typeclass.common.Runner2
-import ru.scalabook.typeclass.monad.PlusLaw
 
-trait ComposeLaw extends PlusLaw:
+trait ComposeLaw extends munit.Assertions:
   def checkComposeLaw[=>:[_, _]: Compose: Runner2, A, B, C, D](
       ab: A =>: B,
       bc: B =>: C,
@@ -21,6 +20,9 @@ trait ComposeLaw extends PlusLaw:
       ),
       "Associativity"
     )
-    checkPlusLawWithRunner[[X] =>> X =>: X, A](f1, f2, f3)(Runner2[=>:].run(a))(
-      using Compose[=>:].plus
+    val pl = Compose[=>:].plus
+    assertEquals(
+      Runner2[=>:].run(a)(pl.plus(pl.plus(f1, f2), f3)),
+      Runner2[=>:].run(a)(pl.plus(f1, pl.plus(f2, f3))),
+      "Associativity"
     )

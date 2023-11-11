@@ -48,11 +48,33 @@ trait Field[A] extends EuclideanRing[A]:
 ## Законы в виде кода на Scala
 
 ```dotty
+trait FieldLaw extends EuclideanRingLaw:
+  def checkFieldLaw[A: Field](x: A, y: A, z: A): ValidatedNel[String, Unit] =
+    checkEuclideanRingLaw(x, y, z) combine
+      check(
+        x == Field[A].empty || Field[A].times(x, x.reciprocal) == Field[A].one,
+        "x * x^{-1} = 1"
+      )
 ```
 
 ## Примеры
 
 ### Рациональные числа со сложением и умножением
+
+```dotty
+given Field[RationalNumber] with
+  val empty: RationalNumber = RationalNumber.ZeroRationalNumber
+  val one: RationalNumber   = RationalNumber.OneRationalNumber
+  def combine(x: RationalNumber, y: RationalNumber): RationalNumber = x + y
+  def times(x: RationalNumber, y: RationalNumber): RationalNumber = x * y
+  def gcd(x: RationalNumber, y: RationalNumber): RationalNumber = one
+  def lcm(x: RationalNumber, y: RationalNumber): RationalNumber = times(x, y)
+  def quot(x: RationalNumber, y: RationalNumber): RationalNumber = x / y
+  def mod(x: RationalNumber, y: RationalNumber): RationalNumber = empty
+  extension (a: RationalNumber)
+    def inverse: RationalNumber    = RationalNumber(-a.x, a.y)
+    def reciprocal: RationalNumber = RationalNumber(a.y, a.x)
+```
 
 ## Реализация
 

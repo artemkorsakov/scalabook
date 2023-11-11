@@ -1,6 +1,8 @@
 package ru.scalabook.typeclass.monad
 
-trait CoBindLaw extends FunctorLaw, munit.Assertions:
+import cats.data.ValidatedNel
+
+trait CoBindLaw extends FunctorLaw:
   def checkCoBindLaw[F[_]: CoBind, A, B, C](
       fa: F[A],
       fab: F[A] => B,
@@ -10,10 +12,10 @@ trait CoBindLaw extends FunctorLaw, munit.Assertions:
       fReverse: B => A,
       g: B => C,
       gReverse: C => B
-  ): Unit =
-    checkFunctorLaw[F, A, B, C](fa): Unit
-    assertEquals(
-      CoBind[F].cobind(CoBind[F].cobind(fa)(fab))(fbc),
-      CoBind[F].cobind(CoBind[F].cobind(fa)(fab))(fbc), // ToDo: ???
-      "associative"
-    )
+  ): ValidatedNel[String, Unit] =
+    checkFunctorLaw[F, A, B, C](fa) combine
+      check(
+        CoBind[F].cobind(CoBind[F].cobind(fa)(fab))(fbc) ==
+          CoBind[F].cobind(CoBind[F].cobind(fa)(fab))(fbc), // ToDo: ???
+        "associative"
+      )

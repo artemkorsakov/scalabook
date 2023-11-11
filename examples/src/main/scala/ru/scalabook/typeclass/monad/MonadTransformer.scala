@@ -76,16 +76,3 @@ object MonadTransformer:
   ): MonadTransformer[OptionT, M] with
     override def lift[A](ma: M[A]): OptionT[M, A] =
       OptionT[M, A](ma.map(Some(_)))
-
-  given writerTMonadTransformer[M[_], W](using
-      outerMonad: Monad[M],
-      outerMonoid: Monoid[W]
-  ): MonadTransformer[[Y[_], X] =>> WriterT[Y, W, X], M] with
-    override def lift[A](ma: M[A]): WriterT[M, W, A] =
-      WriterT[M, W, A](() => ma.map(a => (outerMonoid.empty, a)))
-
-  given stateTMonadTransformer[M[_], S](using
-      outerMonad: Monad[M]
-  ): MonadTransformer[[Y[_], X] =>> StateT[Y, S, X], M] with
-    override def lift[A](ma: M[A]): StateT[M, S, A] =
-      StateT[M, S, A](s => ma.map(a => (s, a)))

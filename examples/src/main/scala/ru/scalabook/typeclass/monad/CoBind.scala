@@ -1,6 +1,7 @@
 package ru.scalabook.typeclass.monad
 
-import ru.scalabook.typeclass.common.*
+import cats.Id
+import ru.scalabook.typeclass.common.Env
 
 trait CoBind[F[_]] extends Functor[F]:
   extension [A](fa: F[A])
@@ -19,7 +20,7 @@ object CoBind:
 
   given CoBind[Id] with
     extension [A](as: Id[A])
-      override def map[B](f: A => B): Id[B] = Id(f(as.value))
+      override def map[B](f: A => B): Id[B] = Id(f(as))
 
       override def cobind[B](f: Id[A] => B): Id[B] = Id(f(as))
 

@@ -1,6 +1,7 @@
 package ru.scalabook.typeclass.monad
 
-import ru.scalabook.typeclass.common.*
+import cats.Id
+import ru.scalabook.typeclass.common.Env
 
 trait CoMonad[F[_]] extends CoBind[F]:
   /** Также известно как `coPoint` и `coPure` */
@@ -14,10 +15,10 @@ object CoMonad:
   def apply[F[_]: CoMonad]: CoMonad[F] = summon[CoMonad[F]]
 
   given CoMonad[Id] with
-    override def coUnit[A](fa: Id[A]): A = fa.value
+    override def coUnit[A](fa: Id[A]): A = fa
 
     extension [A](as: Id[A])
-      override def map[B](f: A => B): Id[B] = Id(f(as.value))
+      override def map[B](f: A => B): Id[B] = Id(f(as))
 
       override def cobind[B](f: Id[A] => B): Id[B] = Id(f(as))
 

@@ -1,31 +1,33 @@
 package ru.scalabook.typeclass.monad
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
+import cats.Id
+import ru.scalabook.typeclass.common.Env
 import ru.scalabook.typeclass.common.Functions.given
-import ru.scalabook.typeclass.common.{Env, Id}
-import ru.scalabook.typeclass.monad.CoMonad.given
+import weaver.*
+import weaver.scalacheck.*
 
-class CoMonadSuite extends ScalaCheckSuite, CoMonadLaw:
+object CoMonadSuite extends SimpleIOSuite, Checkers, CoMonadLaw:
   private val f: Int => String     = given_Conversion_Int_String.apply
   private val g: String => Boolean = given_Conversion_String_Boolean.apply
 
-  property("idCoMonad должен удовлетворять законам CoMonad") {
-    forAll { (x: Int) =>
-      checkCoMonadLaw[Id, Int, String, Boolean](
-        Id(x),
-        idInt => f(idInt.value),
-        idStr => g(idStr.value)
-      )
-    }
-  }
+  test("idCoMonad должен удовлетворять законам CoMonad"):
+    forall: (x: Int) =>
+      whenSuccess(
+        checkCoMonadLaw[Id, Int, String, Boolean](
+          Id(x),
+          idInt => f(idInt),
+          idStr => g(idStr)
+        )
+      ): _ =>
+        success
 
-  property("envCoMonad должен удовлетворять законам CoMonad") {
-    forAll { (x: Int, y: String) =>
-      checkCoMonadLaw[[X] =>> Env[X, String], Int, String, Boolean](
-        Env[Int, String](x, y),
-        fa => f(fa.a),
-        fb => g(fb.a)
-      )
-    }
-  }
+  test("envCoMonad должен удовлетворять законам CoMonad"):
+    forall: (x: Int, y: String) =>
+      whenSuccess(
+        checkCoMonadLaw[[X] =>> Env[X, String], Int, String, Boolean](
+          Env[Int, String](x, y),
+          fa => f(fa.a),
+          fb => g(fb.a)
+        )
+      ): _ =>
+        success

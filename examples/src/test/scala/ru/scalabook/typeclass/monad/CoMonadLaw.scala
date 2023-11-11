@@ -1,5 +1,7 @@
 package ru.scalabook.typeclass.monad
 
+import cats.data.ValidatedNel
+
 trait CoMonadLaw extends CoBindLaw:
   def checkCoMonadLaw[F[_]: CoMonad, A, B, C](
       fa: F[A],
@@ -10,15 +12,15 @@ trait CoMonadLaw extends CoBindLaw:
       fReverse: B => A,
       g: B => C,
       gReverse: C => B
-  ): Unit =
-    checkCoBindLaw(fa, fab, fbc)
-    assertEquals(
-      CoMonad[F].coFlatMap(fa)(CoMonad[F].coUnit),
-      fa,
-      "left identity"
-    )
-    assertEquals(
-      CoMonad[F].coUnit(CoMonad[F].coFlatMap(fa)(fab)),
-      fab(fa),
-      "right identity"
-    )
+  ): ValidatedNel[String, Unit] =
+    checkCoBindLaw(fa, fab, fbc) combine
+      check(
+        CoMonad[F].coFlatMap(fa)(CoMonad[F].coUnit) ==
+          fa,
+        "left identity"
+      ) combine
+      check(
+        CoMonad[F].coUnit(CoMonad[F].coFlatMap(fa)(fab)) ==
+          fab(fa),
+        "right identity"
+      )

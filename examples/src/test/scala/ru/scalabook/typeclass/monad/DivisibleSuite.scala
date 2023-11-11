@@ -1,51 +1,50 @@
 package ru.scalabook.typeclass.monad
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.monad.Divisible.given
-import ru.scalabook.typeclass.monoid.Monoid.given
+import weaver.*
+import weaver.scalacheck.*
 
-class DivisibleSuite extends ScalaCheckSuite:
-  private def delta[A]: A => (A, A) = a => (a, a)
-
-  property("Унарная функция должна удовлетворять законам Divisible") {
-    forAll { (x: Int) =>
+object DivisibleSuite extends SimpleIOSuite, Checkers, DivisibleLaw:
+  test("The unary function must satisfy the laws of Divisible"):
+    forall: (x: Int) =>
       val fa1: Int => Int = _ + 1
       val fa2: Int => Int = _ - 1
       val fa3: Int => Int = _ * 2
 
-      assertEquals(
-        (Divisible[[X] =>> X => Int]
-          .divide[Int, Int, Int](
-            Divisible[[X] =>> X => Int].divide[Int, Int, Int](fa1, fa2)(delta),
-            fa3
-          )(delta))(
-          x
-        ),
-        (Divisible[[X] =>> X => Int]
-          .divide[Int, Int, Int](
-            fa1,
-            Divisible[[X] =>> X => Int].divide[Int, Int, Int](fa2, fa3)(delta)
-          )(delta))(
-          x
-        ),
-        "composition"
-      )
-      assertEquals(
-        Divisible[[X] =>> X => Int].divide[Int, Int, Int](
-          fa1,
-          Divisible[[X] =>> X => Int].conquer[Int]
-        )(delta)(x),
-        fa1(x),
-        "rightIdentity"
-      )
-      assertEquals(
-        Divisible[[X] =>> X => Int].divide[Int, Int, Int](
-          Divisible[[X] =>> X => Int].conquer[Int],
-          fa1
-        )(delta)(x),
-        fa1(x),
-        "leftIdentity"
-      )
-    }
-  }
+      whenSuccess(
+        check(
+          (Divisible[[X] =>> X => Int]
+            .divide[Int, Int, Int](
+              Divisible[[X] =>> X => Int]
+                .divide[Int, Int, Int](fa1, fa2)(delta),
+              fa3
+            )(delta))(
+            x
+          ) ==
+            (Divisible[[X] =>> X => Int]
+              .divide[Int, Int, Int](
+                fa1,
+                Divisible[[X] =>> X => Int]
+                  .divide[Int, Int, Int](fa2, fa3)(delta)
+              )(delta))(
+              x
+            ),
+          "composition"
+        ) combine
+          check(
+            Divisible[[X] =>> X => Int].divide[Int, Int, Int](
+              fa1,
+              Divisible[[X] =>> X => Int].conquer[Int]
+            )(delta)(x) ==
+              fa1(x),
+            "rightIdentity"
+          ) combine
+          check(
+            Divisible[[X] =>> X => Int].divide[Int, Int, Int](
+              Divisible[[X] =>> X => Int].conquer[Int],
+              fa1
+            )(delta)(x) ==
+              fa1(x),
+            "leftIdentity"
+          )
+      ): _ =>
+        success

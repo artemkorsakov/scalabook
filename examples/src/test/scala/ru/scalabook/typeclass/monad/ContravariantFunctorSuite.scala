@@ -1,33 +1,35 @@
 package ru.scalabook.typeclass.monad
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
+import weaver.*
+import weaver.scalacheck.*
 
-class ContravariantFunctorSuite extends ScalaCheckSuite:
-  property(
-    "Унарная функция должна удовлетворять законам контравариантного функтора"
-  ) {
-    forAll { (x: List[Char], y: Int) =>
+object ContravariantFunctorSuite
+    extends SimpleIOSuite,
+      Checkers,
+      ContravariantFunctorLaw:
+  test("The unary function must satisfy the laws of contravariant functor"):
+    forall: (x: List[Char], y: Int) =>
       val f: List[Char] => String = _.mkString
       val g: String => Int        = _.length
       val fc: Int => Boolean      = _ % 2 == 0
 
       type F = [X] =>> X => Boolean
-      assertEquals(
-        ContravariantFunctor[F].cmap[Int, Int](fc)(identity).apply(y),
-        fc.apply(y),
-        "check identity"
-      )
-      assertEquals(
-        ContravariantFunctor[F]
-          .cmap[List[Char], String](
-            ContravariantFunctor[F].cmap[String, Int](fc)(g)
-          )(f)
-          .apply(x),
-        ContravariantFunctor[F]
-          .cmap[List[Char], Int](fc)(a => g(f(a)))
-          .apply(x),
-        "check composition"
-      )
-    }
-  }
+      whenSuccess(
+        check(
+          ContravariantFunctor[F].cmap[Int, Int](fc)(identity).apply(y) ==
+            fc.apply(y),
+          "check identity"
+        ) combine
+          check(
+            ContravariantFunctor[F]
+              .cmap[List[Char], String](
+                ContravariantFunctor[F].cmap[String, Int](fc)(g)
+              )(f)
+              .apply(x) ==
+              ContravariantFunctor[F]
+                .cmap[List[Char], Int](fc)(a => g(f(a)))
+                .apply(x),
+            "check composition"
+          )
+      ): _ =>
+        success

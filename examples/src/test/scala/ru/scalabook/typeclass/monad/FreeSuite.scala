@@ -1,10 +1,11 @@
 package ru.scalabook.typeclass.monad
 
 import cats.Id
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
+import ru.scalabook.typeclass.common.Laws
+import weaver.*
+import weaver.scalacheck.*
 
-class FreeSuite extends ScalaCheckSuite:
+object FreeSuite extends SimpleIOSuite, Checkers, Laws:
   sealed trait Operation[A]
   final case class Start(a: Int)       extends Operation[Int]
   final case class Add(a: Int, b: Int) extends Operation[Int]
@@ -18,14 +19,13 @@ class FreeSuite extends ScalaCheckSuite:
   def start(a: Int): Free[Operation, Int]       = Free.liftF(Start(a))
   def add(a: Int, b: Int): Free[Operation, Int] = Free.liftF(Add(a, b))
 
-  property("Check free monad") {
-    forAll { (a: Int, b: Int, c: Int) =>
+  test("Check free monad"):
+    forall: (a: Int, b: Int, c: Int) =>
       lazy val program = for {
         a1 <- start(a)
         a2 <- add(a1, b)
         a3 <- add(a2, c)
       } yield a3
       val result = Free.foldF(program)(OperationToId)
-      assertEquals(result, Id(a + b + c))
-    }
-  }
+      whenSuccess(check(result == Id(a + b + c), "Check free monad")): _ =>
+        success

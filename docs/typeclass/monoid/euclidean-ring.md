@@ -2,7 +2,7 @@
 
 ## Формальное определение
 
-Евклидово кольцо — это [кольцо НОД](gcdring.md) (расширяет `GCDRing[A]`),
+Евклидово кольцо — это [кольцо НОД](gcdring.md),
 которое также поддерживает евклидово деление (например, поэтапное или целочисленное деление).
 
 Формально евклидовы кольца определяют _евклидову функцию_ `f` такую, что для любого `x` и `y` в `A`,
@@ -20,21 +20,25 @@
 
 Помимо законов кольца НОД:
 
-- _Замыкание по сложению_ (_closure_): для `∀ x, y ∈ S` выполняется `x + y ∈ S`
-- _Ассоциативность по сложению_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
-- _Тождественность по сложению_ (_identity_): существует `∃ e ∈ S` такой, что для `∀ x ∈ S` выполняется `e + x = x + e = x`
-- _Обратимость по сложению_: для каждого `x ∈ S` существует \\(x^{-1}\\) такой,
-  что x + \\(x^{-1}\\) == \\(x^{-1}\\) + x == e
-- _Коммутативность по сложению_ (_commutative_): для `∀ x, y ∈ S` выполняется `x + y = y + x`
-- _Замыкание по умножению_ (_closure_): для `∀ x, y ∈ S` выполняется `x * y ∈ S`
-- _Ассоциативность по умножению_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x * y) * z = x * (y * z)`
-- _Тождественность по умножению_ (_identity_): существует `∃ one ∈ S` такой, что для `∀ x ∈ S` выполняется `one * x = x * one = x`
-- _Коммутативность по умножению_ (_commutative_): для `∀ x, y ∈ S` выполняется `x * y = y * x`
+
+- _Замыкание сложения_ (_closure_): для \\(\forall x, y \in R\\) выполняется \\(x + y \in R\\).
+- _Ассоциативность сложения_ (_associativity_): для \\(\forall x, y, z \in R\\) выполняется \\((x + y) + z = x + (y + z)\\).
+- _Существование нулевого элемента_: существует \\(\exists 0 \in R\\) такой,
+  что для \\(\forall x \in R\\) выполняется \\(0 + x = x + 0 = x\\)
+- _Обратимость сложения_: для \\(\forall x \in R\\) существует \\((-x)\\) такой,
+  что \\(x + (-x) = (-x) + x = 0\\)
+- _Коммутативность сложения_ (_commutative_): для \\(\forall x, y \in R\\) выполняется \\(x + y = y + x\\).
+- _Замыкание умножения_ (_closure_): для \\(\forall x, y \in R\\) выполняется \\(x \* y \in R\\).
+- _Ассоциативность умножения_ (_associativity_): для \\(\forall x, y, z \in R\\) выполняется \\((x \* y) \* z = x \* (y \* z)\\).
+- _Существование единичного элемента_: \\(\exists 1 \in R \quad \forall x \in R \quad x \* 1 = 1 \* x = x\\)
+- _Коммутативность умножения_: для \\(\forall x, y \in R\\) выполняется \\(x \* y = y \* x\\).
 - _Дистрибутивность_ (_distributivus_, _распределительный закон_):
-  Для любых `∀ x, y, z ∈ S` выполняется `x * (y + z) = x * y + x * z` и `(x + y) * z = x * z + y * z`.
-- `d * m === a * b` для `d = gcd(a, b)` и `m = lcm(a, b)`
-- `gcd` ассоциативен и коммутативен
-- `lcm` ассоциативен и коммутативен
+  для \\(\forall x, y, z \in R\\) выполняется \\(x \* (y + z) = x \* y + x \* z\\) и \\((x + y) \* z = x \* z + y \* z\\).
+- для \\(\forall x, y \in R\\) выполняется \\(gcd(x, y) \* lcm(x, y) = x \* y\\).
+- _Ассоциативность НОД_: для \\(\forall x, y, z \in R\\) выполняется \\(gcd(gcd(x, y), z) = gcd(x, gcd(y, z))\\).
+- _Коммутативность НОД_: для \\(\forall x, y \in R\\) выполняется \\(gcd(x, y) = gcd(y, x)\\).
+- _Ассоциативность НОК_: для \\(\forall x, y, z \in R\\) выполняется \\(lcm(lcm(x, y), z) = lcm(x, lcm(y, z))\\).
+- _Коммутативность НОК_: для \\(\forall x, y \in R\\) выполняется \\(lcm(x, y) = lcm(y, x)\\).
 
 должен соблюдаться закон:
 
@@ -52,6 +56,23 @@ trait EuclideanRing[A] extends GCDRing[A]:
 ## Законы в виде кода на Scala
 
 ```dotty
+trait EuclideanRingLaw extends GCDRingLaw:
+  def checkEuclideanRingLaw[A: EuclideanRing](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkGCDRingLaw(x, y, z) combine
+      check(
+        EuclideanRing[A].combine(
+          EuclideanRing[A].times(
+            y,
+            EuclideanRing[A].quot(x, y)
+          ),
+          EuclideanRing[A].mod(x, y)
+        ) == x,
+        "b * (a /~ b) + (a % b) = a"
+      )
 ```
 
 ## Примеры
@@ -113,3 +134,4 @@ EuclideanRing.equotmod(15, 10)
 
 - [Spire home page](https://typelevel.org/spire)
 - [Spire User's Guide](https://typelevel.org/spire/guide.html)
+- [Wikipedia](https://ru.wikipedia.org/wiki/%D0%95%D0%B2%D0%BA%D0%BB%D0%B8%D0%B4%D0%BE%D0%B2%D0%BE_%D0%BA%D0%BE%D0%BB%D1%8C%D1%86%D0%BE)

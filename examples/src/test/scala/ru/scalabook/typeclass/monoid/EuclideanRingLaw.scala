@@ -11,8 +11,11 @@ trait EuclideanRingLaw extends GCDRingLaw:
     checkGCDRingLaw(x, y, z) combine
       check(
         EuclideanRing[A].combine(
-          EuclideanRing[A].times(y, EuclideanRing[A].quot(x, y)),
+          EuclideanRing[A].times(
+            y,
+            EuclideanRing[A].quot(x, y)
+          ),
           EuclideanRing[A].mod(x, y)
         ) == x,
-        "b * (a /~ b) + (a % b) = a`"
+        "b * (a /~ b) + (a % b) = a"
       )

@@ -1,14 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.monoid.RingWithUnity.given
+import weaver.*
+import weaver.scalacheck.*
 
-class RingWithUnitySuite extends ScalaCheckSuite, RingWithUnityLaw:
-  property(
-    "RingWithUnity[Int] должен удовлетворять законам кольца с единицей"
-  ) {
-    forAll { (x: Int, y: Int, z: Int) =>
-      checkRingWithUnityLaw(x, y, z)
-    }
-  }
+object RingWithUnitySuite extends SimpleIOSuite, Checkers, RingWithUnityLaw:
+  test("Int is a ring with unity with addition, 0, multiplication and 1"):
+    forall: (x: Int, y: Int, z: Int) =>
+      whenSuccess(checkRingWithUnityLaw(x, y, z)): _ =>
+        success

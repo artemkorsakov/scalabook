@@ -1,14 +1,12 @@
 package ru.scalabook.typeclass.monoid
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.monoid.CRingWithUnity.given
+import weaver.*
+import weaver.scalacheck.*
 
-class CRingWithUnitySuite extends ScalaCheckSuite, CRingWithUnityLaw:
-  property(
-    "CRingWithUnity[Int] должен удовлетворять законам коммутативного кольца с единицей"
-  ) {
-    forAll { (x: Int, y: Int, z: Int) =>
-      checkCRingWithUnityLaw(x, y, z)
-    }
-  }
+object CRingWithUnitySuite extends SimpleIOSuite, Checkers, CRingWithUnityLaw:
+  test(
+    "Int is a commutative ring with unity with addition, 0, multiplication and 1"
+  ):
+    forall: (x: Int, y: Int, z: Int) =>
+      whenSuccess(checkCRingWithUnityLaw(x, y, z)): _ =>
+        success

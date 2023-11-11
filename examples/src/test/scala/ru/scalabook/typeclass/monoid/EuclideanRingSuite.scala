@@ -1,13 +1,11 @@
 package ru.scalabook.typeclass.monoid
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.Generators.smallNumbersGen
-import ru.scalabook.typeclass.monoid.EuclideanRing.given
+import ru.scalabook.typeclass.common.Generators.smallNumbersGen
+import weaver.*
+import weaver.scalacheck.*
 
-class EuclideanRingSuite extends ScalaCheckSuite, EuclideanRingLaw:
-  property("EuclideanRing[Int] должен удовлетворять законам евклидова кольца") {
-    forAll(smallNumbersGen) { (x: Int, y: Int, z: Int) =>
-      checkEuclideanRingLaw(x, y, z)
-    }
-  }
+object EuclideanRingSuite extends SimpleIOSuite, Checkers, EuclideanRingLaw:
+  test("EuclideanRing[Int] должен удовлетворять законам евклидова кольца"):
+    forall(smallNumbersGen): (x: Int, y: Int, z: Int) =>
+      whenSuccess( checkEuclideanRingLaw(x, y, z)): _ =>
+        success

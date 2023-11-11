@@ -6,20 +6,21 @@
 
 Для коммутативного кольца должны соблюдаться все законы кольца:
 
-- _Замыкание по сложению_ (_closure_): для `∀ x, y ∈ S` выполняется `x + y ∈ S`
-- _Ассоциативность по сложению_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x + y) + z = x + (y + z)`
-- _Тождественность по сложению_ (_identity_): существует `∃ e ∈ S` такой, что для `∀ x ∈ S` выполняется `e + x = x + e = x`
-- _Обратимость по сложению_: для каждого `x ∈ S` существует \\(x^{-1}\\) такой,
-  что x + \\(x^{-1}\\) == \\(x^{-1}\\) + x == e
-- _Коммутативность по сложению_ (_commutative_): для `∀ x, y ∈ S` выполняется `x + y = y + x`
-- _Замыкание по умножению_ (_closure_): для `∀ x, y ∈ S` выполняется `x * y ∈ S`
-- _Ассоциативность по умножению_ (_associativity_): для `∀ x, y, z ∈ S` выполняется `(x * y) * z = x * (y * z)`
+- _Замыкание сложения_ (_closure_): для \\(\forall x, y \in R\\) выполняется \\(x + y \in R\\).
+- _Ассоциативность сложения_ (_associativity_): для \\(\forall x, y, z \in R\\) выполняется \\((x + y) + z = x + (y + z)\\).
+- _Существование нулевого элемента_: существует \\(\exists 0 \in R\\) такой,
+  что для \\(\forall x \in R\\) выполняется \\(0 + x = x + 0 = x\\)
+- _Обратимость сложения_: для \\(\forall x \in R\\) существует \\(x^{-1}\\) такой,
+  что \\(x + x^{-1} = x^{-1} + x = 0\\)
+- _Коммутативность сложения_ (_commutative_): для \\(\forall x, y \in R\\) выполняется \\(x + y = y + x\\).
+- _Замыкание умножения_ (_closure_): для \\(\forall x, y \in R\\) выполняется \\(x * y \in R\\).
+- _Ассоциативность умножения_ (_associativity_): для \\(\forall x, y, z \in R\\) выполняется \\((x * y) * z = x * (y * z)\\).
 - _Дистрибутивность_ (_distributivus_, _распределительный закон_):
-  Для любых `∀ x, y, z ∈ S` выполняется `x * (y + z) = x * y + x * z` и `(x + y) * z = x * z + y * z`.
+  для \\(\forall x, y, z \in R\\) выполняется \\(x * (y + z) = x * y + x * z\\) и \\((x + y) * z = x * z + y * z\\).
 
-, а также закон коммутативности по умножению:
+, а также закон коммутативности умножения:
 
-- _Коммутативность по умножению_ (_commutative_): для `∀ x, y ∈ S` выполняется `x * y = y * x`
+- _Коммутативность умножения_: для \\(\forall x, y \in R\\) выполняется \\(x * y = y * x\\).
 
 ## Определение в виде кода на Scala
 
@@ -30,6 +31,13 @@ trait CRing[A] extends Ring[A]
 ## Законы в виде кода на Scala
 
 ```dotty
+trait CRingLaw extends RingLaw, munit.Assertions:
+  def checkCRingLaw[A: CRing](x: A, y: A, z: A): ValidatedNel[String, Unit] =
+    checkRingLaw(x, y, z) combine
+      check(
+        CRing[A].times(x, y) == CRing[A].times(y, x),
+        "times commutative: x * y = y * x"
+      )
 ```
 
 ## Примеры
@@ -74,3 +82,4 @@ CRing.zero[Rational]
 
 - [Spire home page](https://typelevel.org/spire)
 - [Spire User's Guide](https://typelevel.org/spire/guide.html)
+- [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BC%D0%BC%D1%83%D1%82%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D0%BE%D0%B5_%D0%BA%D0%BE%D0%BB%D1%8C%D1%86%D0%BE)

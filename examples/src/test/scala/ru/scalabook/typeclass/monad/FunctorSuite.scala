@@ -1,73 +1,12 @@
 package ru.scalabook.typeclass.monad
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
-import ru.scalabook.algorithms.trees.BinaryTree
-import ru.scalabook.typeclass.Functions.given
-import ru.scalabook.typeclass.common.*
-import ru.scalabook.typeclass.common.Runner1.*
-import ru.scalabook.typeclass.monad.Functor.given
+import cats.Id
+import ru.scalabook.typeclass.common.Functions.given
+import weaver.*
+import weaver.scalacheck.*
 
-class FunctorSuite extends ScalaCheckSuite, FunctorLaw:
-  property("idFunctor должен удовлетворять законам функтора") {
-    forAll { (x: Int) =>
-      assertEquals(Functor[Id].map(Id(x))(_ * 2), Id(x * 2))
-      checkFunctorLaw[Id, Int, String, Boolean](Id(x))
-    }
-  }
-
-  property("optionFunctor должен удовлетворять законам функтора") {
-    forAll { (maybeInt: Option[Int]) =>
-      checkFunctorLaw[Option, Int, String, Boolean](maybeInt)
-    }
-  }
-
-  property("listFunctor должен удовлетворять законам функтора") {
-    forAll { (list: List[Int]) =>
-      checkFunctorLaw[List, Int, String, Boolean](list)
-    }
-  }
-
-  property("eitherFunctor должен удовлетворять законам функтора") {
-    forAll { (either: Either[String, Int]) =>
-      checkFunctorLaw[[X] =>> Either[String, X], Int, String, Boolean](either)
-    }
-  }
-
-  property("writerFunctor должен удовлетворять законам функтора") {
-    forAll { (x: Int) =>
-      val writer = Writer(() => ("state", x))
-      checkFunctorLaw[[X] =>> Writer[String, X], Int, String, Boolean](writer)
-    }
-  }
-
-  property("stateFunctor должен удовлетворять законам функтора") {
-    forAll { (x: Int, s: String) =>
-      val state                               = State[String, Int](s => (s, x))
-      given Runner1[[X] =>> State[String, X]] = stateRunner[String](s)
-      checkFunctorLawWithRunner[[X] =>> State[String, X], Int, String, Boolean](
-        state
-      )
-    }
-  }
-
-  property("nestedFunctor должен удовлетворять законам функтора") {
-    forAll { (maybeInt: Option[Int]) =>
-      val nested = Nested[Id, Option, Int](Id(maybeInt))
-      checkFunctorLaw[[X] =>> Nested[Id, Option, X], Int, String, Boolean](
-        nested
-      )
-    }
-  }
-
-  property("ioFunctor должен удовлетворять законам функтора") {
-    forAll { (x: Int) =>
-      checkFunctorLaw[IO, Int, String, Boolean](IO(() => x))
-    }
-  }
-
-  property("Functor[BinaryTree] должен удовлетворять законам функтора") {
-    forAll { (list: List[Int]) =>
-      checkFunctorLaw[BinaryTree, Int, String, Boolean](BinaryTree(list))
-    }
-  }
+object FunctorSuite extends SimpleIOSuite, Checkers, FunctorLaw:
+  test("idFunctor must satisfy the Functor laws"):
+    forall: (x: Int) =>
+      whenSuccess(checkFunctorLaw[Id, Int, String, Boolean](Id(x))): _ =>
+        success

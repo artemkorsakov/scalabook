@@ -2,7 +2,7 @@ package ru.scalabook.typeclass.monad
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.Functions.given
+import ru.scalabook.typeclass.common.Functions.given
 import ru.scalabook.typeclass.common.*
 import ru.scalabook.typeclass.monad.Apply.given
 

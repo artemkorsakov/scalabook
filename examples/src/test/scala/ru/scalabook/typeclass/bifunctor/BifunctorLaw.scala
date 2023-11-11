@@ -16,14 +16,14 @@ trait BifunctorLaw extends FunctorLaw:
       fReverse,
       g,
       gReverse
-    )
+    ): Unit
     checkFunctorLaw[[X] =>> F[L, X], A, B, C](fla)(using
       bi.rightFunctor[L],
       f,
       fReverse,
       g,
       gReverse
-    )
+    ): Unit
     checkFunctorLaw[[X] =>> F[X, X], A, B, C](faa)(using
       bi.uFunctor,
       f,

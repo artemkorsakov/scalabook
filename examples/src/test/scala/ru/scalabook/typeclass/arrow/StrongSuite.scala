@@ -2,7 +2,7 @@ package ru.scalabook.typeclass.arrow
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.Functions.given
+import ru.scalabook.typeclass.common.Functions.given
 
 class StrongSuite extends ScalaCheckSuite, StrongLaw:
   private val gad: Boolean => String = given_Conversion_Boolean_String

@@ -2,7 +2,7 @@ package ru.scalabook.typeclass.bifunctor
 
 import munit.ScalaCheckSuite
 import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.Functions.given
+import ru.scalabook.typeclass.common.Functions.given
 import ru.scalabook.typeclass.common.Instancies.given
 import ru.scalabook.typeclass.common.*
 

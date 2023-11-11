@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.monad
 
-trait CoBindLaw extends FunctorLaw:
+trait CoBindLaw extends FunctorLaw, munit.Assertions:
   def checkCoBindLaw[F[_]: CoBind, A, B, C](
       fa: F[A],
       fab: F[A] => B,
@@ -11,7 +11,7 @@ trait CoBindLaw extends FunctorLaw:
       g: B => C,
       gReverse: C => B
   ): Unit =
-    checkFunctorLaw[F, A, B, C](fa)
+    checkFunctorLaw[F, A, B, C](fa): Unit
     assertEquals(
       CoBind[F].cobind(CoBind[F].cobind(fa)(fab))(fbc),
       CoBind[F].cobind(CoBind[F].cobind(fa)(fab))(fbc), // ToDo: ???

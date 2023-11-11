@@ -1,4 +1,4 @@
-package ru.scalabook.typeclass
+package ru.scalabook.typeclass.common
 
 object Functions:
   val intToInt1: Int => Int = _ * 2

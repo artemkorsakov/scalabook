@@ -1,5 +1,7 @@
 # Инвариантный функтор
 
+## Формальное определение
+
 Инвариантный функтор поддерживает операцию `xmap` (или `imap`), 
 которая преобразует `F[A]` в `F[B]` с учетом двух функций: `A => B` и `B => A`. 
 
@@ -17,8 +19,7 @@
 
 Также известен как экспоненциальный функтор.
 
-
-## Описание инвариантного функтора
+## Определение в виде кода на Scala
 
 ```dotty
 trait InvariantFunctor[F[_]]:
@@ -31,11 +32,11 @@ trait InvariantFunctor[F[_]]:
 ### "Обертка"
 
 ```dotty
-final case class Id[A](value: A)
+import cats.Id
 
 given InvariantFunctor[Id] with
-  extension [A](fa: Id[A]) 
-    override def xmap[B](f: A => B, g: B => A): Id[B] = Id(f(fa.value))
+  extension [A](fa: Id[A])
+    override def xmap[B](f: A => B, g: B => A): Id[B] = Id(f(fa))
 ```
 
 Докажем, что `Id` удовлетворяет законам инвариантного функтора.

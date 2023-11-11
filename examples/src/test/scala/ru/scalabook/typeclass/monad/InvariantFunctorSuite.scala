@@ -1,16 +1,15 @@
 package ru.scalabook.typeclass.monad
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.Functions.given
-import ru.scalabook.typeclass.common.*
-import ru.scalabook.typeclass.monad.InvariantFunctor.given
+import cats.Id
+import weaver.*
+import weaver.scalacheck.*
+import ru.scalabook.typeclass.common.Functions.given
 
-class InvariantFunctorSuite extends ScalaCheckSuite, InvariantFunctorLaw:
-  property(
-    "InvariantFunctor[Id] должен удовлетворять законам InvariantFunctor"
-  ) {
-    forAll { (x: Int) =>
-      checkInvariantFunctorLaw[Id, Int, String, Boolean](Id(x))
-    }
-  }
+object InvariantFunctorSuite
+    extends SimpleIOSuite,
+      Checkers,
+      InvariantFunctorLaw:
+  test("InvariantFunctor[Id] must satisfy the InvariantFunctor laws"):
+    forall: (x: Int) =>
+      whenSuccess(checkInvariantFunctorLaw[Id, Int, String, Boolean](Id(x))):
+        _ => success

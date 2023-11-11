@@ -3,13 +3,13 @@ package ru.scalabook.typeclass.monad
 import ru.scalabook.typeclass.common.Id
 import ru.scalabook.typeclass.monad.Applicative.given
 
-trait TraverseLaw extends FunctorLaw:
+trait TraverseLaw extends FunctorLaw, munit.Assertions:
   def checkTraverseLaw[F[_]: Traverse, G[_]: Applicative, H[
       _
   ]: Applicative, A, B, C](
       fa: F[A]
   )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B): Unit =
-    checkFunctorLaw[F, A, B, C](fa)
+    checkFunctorLaw[F, A, B, C](fa): Unit
 
     val a2GB: A => G[B] = a => Applicative[G].unit(f(a))
     val a2HB: A => H[B] = a => Applicative[H].unit(f(a))

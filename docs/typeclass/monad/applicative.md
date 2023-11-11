@@ -1,5 +1,7 @@
 # Applicative
 
+## Формальное определение
+
 `Applicative` расширяет [`Apply`](apply.md) (и [`InvariantApplicative`](invariant-applicative.md)) 
 и позволяет работать с несколькими «ящиками».
 `Applicative`, дополнительно к операциям `Apply`, реализует операцию `unit` (другие названия: `point`, `pure`),
@@ -27,7 +29,7 @@
   что применить композицию к `u`, затем `v`, а затем применить составную функцию к `w`.) 
 
 
-## Описание 
+## Определение в виде кода на Scala
 
 ```dotty
 trait Applicative[F[_]] extends Apply[F], InvariantApplicative[F]:

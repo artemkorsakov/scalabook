@@ -1,5 +1,7 @@
 # Apply
 
+## Формальное определение
+
 `Apply` реализует операцию `apply`
 (также встречаются названия `join`, `sequence`, `joinWith`, `ap`, `applicate` - названия взаимозаменяемы),
 которая объединяет `F[A]` и `F[A => B]` в `F[B]`.
@@ -14,7 +16,7 @@
 
 - Composition (композиция) - `apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)`
 
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
 trait Apply[F[_]] extends Functor[F], Semigroupal[F]:
@@ -43,12 +45,12 @@ trait Apply[F[_]] extends Functor[F], Semigroupal[F]:
 ### "Обертка"
 
 ```dotty
-final case class Id[A](value: A)
+import cats.Id
 
-given idApply: Apply[Id] with
-  override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab.value(fa.value))
+given Apply[Id] with
+  override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab(fa))
 
-  extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as.value))
+  extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as))
 ```
 
 ### Option

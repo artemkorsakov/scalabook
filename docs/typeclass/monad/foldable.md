@@ -1,5 +1,7 @@
 # Foldable
 
+## Формальное определение
+
 Класс типов Foldable предназначен для структур, которые можно свернуть (_things that can be **folded** up_).
 
 Операция _fold_ позволяет агрегировать. 
@@ -24,7 +26,7 @@ _Fold_ может использоваться для реализации `redu
 - `foldRight` соответствует `foldMap`: `fa.foldMap(Vector(_)) == fa.foldRight(Vector.empty[A])(_ +: _)`
 
 
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
 trait Foldable[F[_]]:

@@ -1,9 +1,11 @@
 # CoBind
 
+## Формальное определение
+
 `CoBind` реализует противоположные для [`Bind`](bind.md) операции.
 
 
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
 trait CoBind[F[_]] extends Functor[F]:

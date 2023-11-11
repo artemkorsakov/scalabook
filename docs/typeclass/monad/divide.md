@@ -1,5 +1,7 @@
 # Divide
 
+## Формальное определение
+
 `Divide` - контравариантный аналог [`Apply`](apply.md). 
 Он расширяет ковариантный функтор и дополнительно реализует
 операцию `divide`: `def divide[A, B, C](fa: => F[A], fb: => F[B])(f: C => (A, B)): F[C]`
@@ -10,7 +12,7 @@
   где `delta: A => (A, A) = a => (a, a)`
 
 
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
 trait Divide[F[_]] extends ContravariantFunctor[F]:

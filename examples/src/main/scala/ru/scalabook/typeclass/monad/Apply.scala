@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.monad
 
-import ru.scalabook.typeclass.common.Id
+import cats.Id
 
 trait Apply[F[_]] extends Functor[F], Semigroupal[F]:
   def apply[A, B](fab: F[A => B])(fa: F[A]): F[B]
@@ -18,21 +18,6 @@ object Apply:
   def apply[F[_]: Apply]: Apply[F] = summon[Apply[F]]
 
   given Apply[Id] with
-    override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(
-      fab.value(fa.value)
-    )
+    override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab(fa))
 
-    extension [A](as: Id[A])
-      override def map[B](f: A => B): Id[B] = Id(f(as.value))
-
-  given Apply[Option] with
-    override def apply[A, B](fab: Option[A => B])(fa: Option[A]): Option[B] =
-      (fab, fa) match
-        case (Some(aToB), Some(a)) => Some(aToB(a))
-        case _                     => None
-
-    extension [A](as: Option[A])
-      override def map[B](f: A => B): Option[B] =
-        as match
-          case Some(a) => Some(f(a))
-          case None    => None
+    extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as))

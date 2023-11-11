@@ -1,12 +1,14 @@
 # ApplicativePlus
 
+## Формальное определение
+
 `ApplicativePlus` - это моноидальный аппликативный функтор, 
 [`Applicative`](applicative.md) комбинированный с [`PlusEmpty`](plus-empty.md).
 
 `ApplicativePlus` должен удовлетворять законам своих родителей.
 
 
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
 trait ApplicativePlus[F[_]] extends Applicative[F] with PlusEmpty[F]

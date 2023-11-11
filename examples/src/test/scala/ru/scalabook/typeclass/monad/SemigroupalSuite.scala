@@ -1,16 +1,14 @@
 package ru.scalabook.typeclass.monad
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.forAll
-import ru.scalabook.typeclass.common.Id
+import cats.Id
+import ru.scalabook.typeclass.common.Instancies.given
+import weaver.*
+import weaver.scalacheck.*
 
-class SemigroupalSuite extends ScalaCheckSuite, SemigroupalLaw:
-  property("Semigroupal[Id] должен удовлетворять законам Semigroupal") {
-    forAll { (a: Int, b: String, c: Boolean) =>
-      checkSemigroupalLawWithRunner[Id, Int, String, Boolean](
-        Id(a),
-        Id(b),
-        Id(c)
-      )
-    }
-  }
+object SemigroupalSuite extends SimpleIOSuite, Checkers, SemigroupalLaw:
+  test("Semigroupal[Id] must satisfy the Semigroupal laws"):
+    forall: (a: Int, b: String, c: Boolean) =>
+      whenSuccess(
+        checkSemigroupalLaw[Id, Int, String, Boolean](Id(a), Id(b), Id(c))
+      ): _ =>
+        success

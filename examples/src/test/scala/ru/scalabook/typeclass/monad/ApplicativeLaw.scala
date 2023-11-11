@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.monad
 
-trait ApplicativeLaw extends ApplyLaw:
+trait ApplicativeLaw extends ApplyLaw, munit.Assertions:
   def checkApplicativeLaw[F[_]: Applicative, A, B, C](x: A)(using
       f: A => B,
       fReverse: B => A,
@@ -12,7 +12,7 @@ trait ApplicativeLaw extends ApplyLaw:
       fa,
       Applicative[F].unit(f),
       Applicative[F].unit(g)
-    )
+    ): Unit
     assertEquals(
       Applicative[F].apply[A, A](Applicative[F].unit(identity))(fa),
       fa,

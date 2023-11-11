@@ -1,11 +1,13 @@
 # MonadPlus
 
+## Формальное определение
+
 Класс типов `MonadPlus` предназначен для [монад](monad.md), 
 которые также могут действовать как [моноиды](../monoid/monoid.md).
 
 `MonadPlus` должен удовлетворять законам монад и моноидов.
 
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
 trait MonadPlus[F[_]] extends Monad[F] with ApplicativePlus[F]:

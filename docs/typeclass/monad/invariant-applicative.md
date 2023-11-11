@@ -1,13 +1,14 @@
 # Invariant Applicative
 
+## Формальное определение
+
 Инвариантный Applicative поддерживает операции `xunit0`, `xunit1` и т.д., 
 которые "оборачивают" тип в инвариантный функтор. 
 `InvariantApplicative` расширяет [`InvariantFunctor`](invariant-functor.md).
 
 Используется для получения класса типов продуктов и типов значений.
 
-
-## Описание инвариантного Applicative
+## Определение в виде кода на Scala
 
 ```dotty
 trait InvariantFunctor[F[_]]:

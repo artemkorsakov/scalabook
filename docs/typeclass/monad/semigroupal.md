@@ -1,5 +1,7 @@
 # Semigroupal
 
+## Формальное определение
+
 `Semigroupal` - это класс типов, который позволяет комбинировать контексты. 
 Если есть два объекта типа `F[A]` и `F[B]`, `Semigroupal[F]` позволяет объединить их для формирования объекта `F[(A, B)]`:
 `product: (F[A], F[B]) => F[(A, B)]` (также встречается название операции `tuple2`).
@@ -8,7 +10,7 @@
 
 - ассоциативность: `product(a, product(b, c)) == product(product(a, b), c)`
 
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
 trait Semigroupal[F[_]]:
@@ -20,10 +22,10 @@ trait Semigroupal[F[_]]:
 ### "Обертка"
 
 ```dotty
-final case class Id[A](value: A)
+import cats.Id
 
 given Semigroupal[Id] with
-  override def product[A, B](fa: Id[A], fb: Id[B]): Id[(A, B)] = Id((fa.value, fb.value))
+  override def product[A, B](fa: Id[A], fb: Id[B]): Id[(A, B)] = Id((fa, fb))
 ```
 
 ### Option

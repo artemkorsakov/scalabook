@@ -1,5 +1,7 @@
 # Divisible
 
+## Формальное определение
+
 `Divisible` - контравариантный аналог [`Applicative`](applicative.md). 
 Он расширяет [`Divide`](divide.md) и [`InvariantApplicative`](invariant-applicative.md).
 
@@ -9,7 +11,7 @@
 - left identity: `divide(conquer, fa)(delta) == fa`
 
 
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
 trait Divisible[F[_]] extends Divide[F], InvariantApplicative[F]:

@@ -10,7 +10,7 @@ object CoMonadSuite extends SimpleIOSuite, Checkers, CoMonadLaw:
   private val f: Int => String     = given_Conversion_Int_String.apply
   private val g: String => Boolean = given_Conversion_String_Boolean.apply
 
-  test("idCoMonad должен удовлетворять законам CoMonad"):
+  test("idCoMonad must satisfy the laws of CoMonad"):
     forall: (x: Int) =>
       whenSuccess(
         checkCoMonadLaw[Id, Int, String, Boolean](
@@ -21,7 +21,7 @@ object CoMonadSuite extends SimpleIOSuite, Checkers, CoMonadLaw:
       ): _ =>
         success
 
-  test("envCoMonad должен удовлетворять законам CoMonad"):
+  test("envCoMonad must satisfy the laws of  CoMonad"):
     forall: (x: Int, y: String) =>
       whenSuccess(
         checkCoMonadLaw[[X] =>> Env[X, String], Int, String, Boolean](

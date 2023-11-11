@@ -1,5 +1,6 @@
 package ru.scalabook.typeclass.arrow
 
+import cats.data.ValidatedNel
 import ru.scalabook.typeclass.common.Runner2
 
 trait SplitLaw extends ComposeLaw:
@@ -10,5 +11,5 @@ trait SplitLaw extends ComposeLaw:
       f1: A =>: A,
       f2: A =>: A,
       f3: A =>: A
-  )(a: A): Unit =
+  )(a: A): ValidatedNel[String, Unit] =
     checkComposeLaw[=>:, A, B, C, D](ab, bc, cd, f1, f2, f3)(a)

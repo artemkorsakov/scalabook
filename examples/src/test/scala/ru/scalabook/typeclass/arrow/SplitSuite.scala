@@ -1,23 +1,24 @@
 package ru.scalabook.typeclass.arrow
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
 import ru.scalabook.typeclass.common.Functions.{*, given}
+import weaver.*
+import weaver.scalacheck.*
 
-class SplitSuite extends ScalaCheckSuite, SplitLaw:
+object SplitSuite extends SimpleIOSuite, Checkers, SplitLaw:
   private val ab: Int => String     = given_Conversion_Int_String
   private val bc: String => Boolean = given_Conversion_String_Boolean
   private val cd: Boolean => Char   = given_Conversion_Boolean_Char
 
-  property("given Split[Function1] должен удовлетворять законам Split") {
-    forAll { (x: Int) =>
-      checkSplitLaw[Function1, Int, String, Boolean, Char](
-        ab,
-        bc,
-        cd,
-        intToInt1,
-        intToInt2,
-        intToInt3
-      )(x)
-    }
-  }
+  test("Split[Function1] must satisfy the laws of Split"):
+    forall: (x: Int) =>
+      whenSuccess(
+        checkSplitLaw[Function1, Int, String, Boolean, Char](
+          ab,
+          bc,
+          cd,
+          intToInt1,
+          intToInt2,
+          intToInt3
+        )(x)
+      ): _ =>
+        success

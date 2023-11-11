@@ -12,7 +12,7 @@ object TraverseSuite extends SimpleIOSuite, Checkers, TraverseLaw:
       ): _ =>
         success
 
-  test("optionTraverse должен удовлетворять законам Traverse"):
+  test("optionTraverse must satisfy the laws of Traverse"):
     forall: (x: Option[Int]) =>
       whenSuccess(
         checkTraverseLaw[Option, List, List, Int, String, Boolean](x)

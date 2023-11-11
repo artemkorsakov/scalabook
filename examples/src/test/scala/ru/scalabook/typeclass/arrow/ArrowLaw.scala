@@ -1,5 +1,6 @@
 package ru.scalabook.typeclass.arrow
 
+import cats.data.ValidatedNel
 import ru.scalabook.typeclass.common.Runner2
 
 trait ArrowLaw extends StrongLaw, SplitLaw, CategoryLaw:
@@ -17,7 +18,7 @@ trait ArrowLaw extends StrongLaw, SplitLaw, CategoryLaw:
       fba: B => A,
       fde: D => E,
       fef: E => F
-  )(using PF: Arrow[Function1]): Unit =
-    checkStrongLaw[=>:, A, B, C, D, E, F](gad, gab)(a, c, d)
-    checkSplitLaw[=>:, A, B, C, D](gab, bc, cd, f1, f2, f3)(a)
-    checkCategoryLaw[=>:, A, B, C, D](gab, bc, cd, f1, f2, f3)(a)
+  )(using PF: Arrow[Function1]): ValidatedNel[String, Unit] =
+    checkStrongLaw[=>:, A, B, C, D, E, F](gad, gab)(a, c, d) combine
+      checkSplitLaw[=>:, A, B, C, D](gab, bc, cd, f1, f2, f3)(a) combine
+      checkCategoryLaw[=>:, A, B, C, D](gab, bc, cd, f1, f2, f3)(a)

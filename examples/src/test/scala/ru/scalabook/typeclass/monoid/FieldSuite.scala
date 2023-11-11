@@ -7,7 +7,7 @@ import weaver.scalacheck.*
 
 object FieldSuite extends SimpleIOSuite, Checkers, FieldLaw:
   given cats.Show[RationalNumber] = cats.Show.fromToString
-  
+
   test(
     "RationalNumber is a field with unity with addition, 0, multiplication and 1"
   ):

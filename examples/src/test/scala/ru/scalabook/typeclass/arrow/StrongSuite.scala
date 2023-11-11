@@ -1,17 +1,18 @@
 package ru.scalabook.typeclass.arrow
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
 import ru.scalabook.typeclass.common.Functions.given
+import weaver.*
+import weaver.scalacheck.*
 
-class StrongSuite extends ScalaCheckSuite, StrongLaw:
+object StrongSuite extends SimpleIOSuite, Checkers, StrongLaw:
   private val gad: Boolean => String = given_Conversion_Boolean_String
 
-  property("given Strong[Function1] должен удовлетворять законам Strong") {
-    forAll { (a: Boolean, c: Int, d: String) =>
-      checkStrongLaw[Function1, Boolean, String, Int, String, Boolean, Char](
-        gad,
-        gad
-      )(a, c, d)
-    }
-  }
+  test("Strong[Function1] must satisfy the laws of Strong"):
+    forall: (a: Boolean, c: Int, d: String) =>
+      whenSuccess(
+        checkStrongLaw[Function1, Boolean, String, Int, String, Boolean, Char](
+          gad,
+          gad
+        )(a, c, d)
+      ): _ =>
+        success

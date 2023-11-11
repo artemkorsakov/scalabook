@@ -2,7 +2,7 @@ package ru.scalabook.typeclass.monad
 
 import cats.data.ValidatedNel
 
-trait BindLaw extends ApplyLaw, munit.Assertions:
+trait BindLaw extends ApplyLaw:
   def checkBindLaw[F[_]: Bind, A, B, C](
       fa: F[A],
       fab: F[A => B],

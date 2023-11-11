@@ -21,15 +21,15 @@ object Traverse:
   def apply[F[_]: Traverse]: Traverse[F] = summon[Traverse[F]]
 
   given Traverse[Option] with
-    extension[A] (fa: Option[A])
-      override def traverse[G[_] : Applicative, B](f: A => G[B]): G[Option[B]] =
+    extension [A](fa: Option[A])
+      override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Option[B]] =
         fa match
           case Some(a) => f(a).map(Some(_))
-          case None => Applicative[G].unit(None)
+          case None    => Applicative[G].unit(None)
 
   given Traverse[List] with
-    extension[A] (fa: List[A])
-      override def traverse[G[_] : Applicative, B](f: A => G[B]): G[List[B]] =
+    extension [A](fa: List[A])
+      override def traverse[G[_]: Applicative, B](f: A => G[B]): G[List[B]] =
         fa.foldRight(Applicative[G].unit(List[B]()))((a, acc) =>
           f(a).map2(acc)(_ :: _)
         )

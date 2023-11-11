@@ -11,7 +11,7 @@
 ## Определение в виде кода на Scala
 
 ```dotty
-trait ApplicativePlus[F[_]] extends Applicative[F] with PlusEmpty[F]
+trait ApplicativePlus[F[_]] extends Applicative[F], PlusEmpty[F]
 ```
 
 ## Примеры

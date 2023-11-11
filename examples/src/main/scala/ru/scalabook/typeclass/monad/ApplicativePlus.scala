@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.monad
 
-trait ApplicativePlus[F[_]] extends Applicative[F] with PlusEmpty[F]
+trait ApplicativePlus[F[_]] extends Applicative[F], PlusEmpty[F]
 
 object ApplicativePlus:
   def apply[F[_]: ApplicativePlus]: ApplicativePlus[F] =

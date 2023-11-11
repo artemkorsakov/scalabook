@@ -11,6 +11,12 @@ trait BifoldableLaw extends FoldableLaw:
   )(using bi: Bifoldable[F])(using
       mv: Monoid[Vector[A]]
   ): Unit =
-    checkFoldableLaw[[X] =>> F[X, R], A](far)(using bi.leftFoldable[R], mv)
-    checkFoldableLaw[[X] =>> F[L, X], A](fla)(using bi.rightFoldable[L], mv)
-    checkFoldableLaw[[X] =>> F[X, X], A](faa)(using bi.uFoldable, mv)
+    checkFoldableLaw[[X] =>> F[X, R], A](far)(using
+      bi.leftFoldable[R],
+      mv
+    ): Unit
+    checkFoldableLaw[[X] =>> F[L, X], A](fla)(using
+      bi.rightFoldable[L],
+      mv
+    ): Unit
+    checkFoldableLaw[[X] =>> F[X, X], A](faa)(using bi.uFoldable, mv): Unit

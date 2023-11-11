@@ -1,14 +1,13 @@
 package ru.scalabook.typeclass.monad
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.monad.ApplicativePlus.given
+import ru.scalabook.typeclass.common.Functions.given
+import weaver.*
+import weaver.scalacheck.*
 
-class ApplicativePlusSuite extends ScalaCheckSuite, ApplicativePlusLaw:
-  property(
-    "listApplicativePlusInstance должен удовлетворять законам ApplicativePlus"
-  ) {
-    forAll { (i: Int, x: List[Int], y: List[Int], z: List[Int]) =>
-      checkApplicativePlusLaw(i, x, y, z)
-    }
-  }
+object ApplicativePlusSuite extends SimpleIOSuite, Checkers, ApplicativePlusLaw:
+  test("listApplicativePlusInstance must satisfy the ApplicativePlus laws"):
+    forall: (i: Int, x: List[Int], y: List[Int], z: List[Int]) =>
+      whenSuccess(
+        checkApplicativePlusLaw[List, Int, String, Boolean](i, x, y, z)
+      ): _ =>
+        success

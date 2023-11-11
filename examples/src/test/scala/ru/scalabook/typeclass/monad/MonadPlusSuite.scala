@@ -1,12 +1,12 @@
 package ru.scalabook.typeclass.monad
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
-import ru.scalabook.typeclass.monad.MonadPlus.given
+import ru.scalabook.typeclass.common.Functions.given
+import weaver.*
+import weaver.scalacheck.*
 
-class MonadPlusSuite extends ScalaCheckSuite, MonadPlusLaw:
-  property("listMonadPlusInstance должен удовлетворять законам MonadPlus") {
-    forAll {
+object MonadPlusSuite extends SimpleIOSuite, Checkers, MonadPlusLaw:
+  test("listMonadPlusInstance must satisfy the MonadPlus laws"):
+    forall:
       (
           i: Int,
           x: List[Int],
@@ -14,11 +14,12 @@ class MonadPlusSuite extends ScalaCheckSuite, MonadPlusLaw:
           z: List[Int],
           fta: List[Option[Int]]
       ) =>
-        checkMonadPlusLaw(i, x, y, z)
-        assertEquals(
-          MonadPlus[List].filter(x)(_ % 2 == 0),
-          x.filter(_ % 2 == 0)
-        )
-        assertEquals(MonadPlus[List].unite(fta), fta.flatten)
-    }
-  }
+        whenSuccess(
+          checkMonadPlusLaw[List, Int, String, Boolean](i, x, y, z) combine
+            check(
+              MonadPlus[List].filter(x)(_ % 2 == 0) ==
+                x.filter(_ % 2 == 0)
+            ) combine
+            check(MonadPlus[List].unite(fta) == fta.flatten)
+        ): _ =>
+          success

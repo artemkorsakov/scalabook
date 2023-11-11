@@ -52,12 +52,12 @@ trait Foldable[F[_]]:
 ### "Обертка"
 
 ```dotty
-case class Id[A](value: A)
+import cats.Id
 
-given idFoldable: Foldable[Id] with
+given Foldable[Id] with
   extension [A](fa: Id[A])
     override def foldRight[B](init: B)(f: (A, B) => B): B =
-      f(fa.value, init)
+      f(fa, init)
 ```
 
 ### Option

@@ -4,6 +4,9 @@ import cats.data.ValidatedNel
 import cats.syntax.either.*
 
 trait Laws:
+  protected def check(law: Boolean): ValidatedNel[String, Unit] =
+    check(law, "")
+    
   protected def check(
       law: Boolean,
       message: => String

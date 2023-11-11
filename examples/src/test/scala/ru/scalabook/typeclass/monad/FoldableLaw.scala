@@ -1,11 +1,12 @@
 package ru.scalabook.typeclass.monad
 
-import munit.Assertions
+import cats.data.ValidatedNel
+import ru.scalabook.typeclass.common.Laws
 import ru.scalabook.typeclass.monoid.Monoid
 
-trait FoldableLaw extends Assertions:
+trait FoldableLaw extends Laws:
   def checkFoldableLaw[F[_]: Foldable, A](fa: F[A])(using
       Monoid[Vector[A]]
-  ): Unit =
-    assertEquals(fa.foldMap(Vector(_)), fa.foldLeft(Vector.empty[A])(_ :+ _))
-    assertEquals(fa.foldMap(Vector(_)), fa.foldRight(Vector.empty[A])(_ +: _))
+  ): ValidatedNel[String, Unit] =
+    check(fa.foldMap(Vector(_)) == fa.foldLeft(Vector.empty[A])(_ :+ _)) combine
+      check(fa.foldMap(Vector(_)) == fa.foldRight(Vector.empty[A])(_ +: _))

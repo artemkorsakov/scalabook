@@ -1,5 +1,7 @@
 package ru.scalabook.typeclass.monad
 
+import cats.data.ValidatedNel
+
 trait ApplicativePlusLaw extends ApplicativeLaw, PlusEmptyLaw:
   def checkApplicativePlusLaw[F[_]: ApplicativePlus, A, B, C](
       x: A,
@@ -11,6 +13,6 @@ trait ApplicativePlusLaw extends ApplicativeLaw, PlusEmptyLaw:
       fReverse: B => A,
       g: B => C,
       gReverse: C => B
-  ): Unit =
-    checkApplicativeLaw[F, A, B, C](x): Unit
-    checkPlusEmptyLaw[F, A](f1, f2, f3)
+  ): ValidatedNel[String, Unit] =
+    checkApplicativeLaw[F, A, B, C](x) combine
+      checkPlusEmptyLaw[F, A](f1, f2, f3)

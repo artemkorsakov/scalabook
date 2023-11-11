@@ -10,7 +10,7 @@
 ## Определение в виде кода на Scala
 
 ```dotty
-trait MonadPlus[F[_]] extends Monad[F] with ApplicativePlus[F]:
+trait MonadPlus[F[_]] extends Monad[F], ApplicativePlus[F]:
   def filter[A](fa: F[A])(f: A => Boolean): F[A] =
     fa.flatMap(a => if f(a) then unit(a) else empty[A])
 

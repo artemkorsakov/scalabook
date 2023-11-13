@@ -1,17 +1,15 @@
 package ru.scalabook.typeclass.bifunctor
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
 import ru.scalabook.typeclass.common.Functions.given
-import ru.scalabook.typeclass.bifunctor.Bifunctor.given
-import ru.scalabook.typeclass.common.*
+import weaver.*
+import weaver.scalacheck.*
 
-class BifunctorSuite extends ScalaCheckSuite, BifunctorLaw:
+object BifunctorSuite extends SimpleIOSuite, Checkers, BifunctorLaw:
   private val f: String => Char = _.headOption.getOrElse('a')
   private val g: Int => Boolean = _ % 2 == 0
 
-  property("Bifunctor[Either] должен удовлетворять законам Bifunctor") {
-    forAll {
+  test("Bifunctor[Either] must satisfy the laws of Bifunctor"):
+    forall:
       (
           far: Either[Int, Char],
           fla: Either[String, Int],
@@ -21,29 +19,12 @@ class BifunctorSuite extends ScalaCheckSuite, BifunctorLaw:
           fla match
             case Right(value) => Right(g(value))
             case Left(value)  => Left(f(value))
-        assertEquals(Bifunctor[Either].bimap(fla)(f, g), expected)
-        checkBifunctorLaw[Either, String, Char, Int, String, Boolean](
-          far,
-          fla,
-          faa
-        )
-    }
-  }
-
-  property("Bifunctor[Writer] должен удовлетворять законам Bifunctor") {
-    forAll { (i0: Int, i1: Int, i2: Int, i3: Int, s: String, c: Char) =>
-      val far: Writer[Int, Char]   = Writer(() => (i0, c))
-      val fla: Writer[String, Int] = Writer(() => (s, i1))
-      val faa: Writer[Int, Int]    = Writer(() => (i2, i3))
-      checkBifunctorLaw[Writer, String, Char, Int, String, Boolean](
-        far,
-        fla,
-        faa
-      )
-
-      val expected: Writer[Char, Boolean] =
-        val (a, b) = fla.run()
-        Writer { () => (f(a), g(b)) }
-      assertEquals(Bifunctor[Writer].bimap(fla)(f, g), expected)
-    }
-  }
+        whenSuccess(
+          check(Bifunctor[Either].bimap(fla)(f, g) == expected) combine
+            checkBifunctorLaw[Either, String, Char, Int, String, Boolean](
+              far,
+              fla,
+              faa
+            )
+        ): _ =>
+          success

@@ -1,6 +1,5 @@
 package ru.scalabook.typeclass.bifunctor
 
-import ru.scalabook.typeclass.common.Writer
 import ru.scalabook.typeclass.monad.Functor
 
 trait Bifunctor[F[_, _]]:
@@ -39,11 +38,3 @@ object Bifunctor:
         fab match
           case Right(value) => Right(g(value))
           case Left(value)  => Left(f(value))
-
-  given Bifunctor[Writer] with
-    extension [A, B](fab: Writer[A, B])
-      override def bimap[C, D](f: A => C, g: B => D): Writer[C, D] =
-        Writer { () =>
-          val (a, b) = fab.run()
-          (f(a), g(b))
-        }

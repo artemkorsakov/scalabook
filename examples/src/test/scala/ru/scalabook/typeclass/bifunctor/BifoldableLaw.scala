@@ -1,5 +1,6 @@
 package ru.scalabook.typeclass.bifunctor
 
+import cats.data.ValidatedNel
 import ru.scalabook.typeclass.monad.FoldableLaw
 import ru.scalabook.typeclass.monoid.Monoid
 
@@ -10,13 +11,13 @@ trait BifoldableLaw extends FoldableLaw:
       faa: F[A, A]
   )(using bi: Bifoldable[F])(using
       mv: Monoid[Vector[A]]
-  ): Unit =
+  ): ValidatedNel[String, Unit] =
     checkFoldableLaw[[X] =>> F[X, R], A](far)(using
       bi.leftFoldable[R],
       mv
-    ): Unit
-    checkFoldableLaw[[X] =>> F[L, X], A](fla)(using
-      bi.rightFoldable[L],
-      mv
-    ): Unit
-    checkFoldableLaw[[X] =>> F[X, X], A](faa)(using bi.uFoldable, mv): Unit
+    ) combine
+      checkFoldableLaw[[X] =>> F[L, X], A](fla)(using
+        bi.rightFoldable[L],
+        mv
+      ) combine
+      checkFoldableLaw[[X] =>> F[X, X], A](faa)(using bi.uFoldable, mv)

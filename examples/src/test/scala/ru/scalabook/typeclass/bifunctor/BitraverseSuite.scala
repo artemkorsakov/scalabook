@@ -1,28 +1,29 @@
 package ru.scalabook.typeclass.bifunctor
 
 import cats.Id
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
 import ru.scalabook.typeclass.common.Functions.given
 import ru.scalabook.typeclass.common.Instancies.given
+import weaver.*
+import weaver.scalacheck.*
 
-class BitraverseSuite extends ScalaCheckSuite, BitraverseLaw:
-  property("Bitraverse[Either] должен удовлетворять законам Bitraverse") {
-    forAll {
+object BitraverseSuite extends SimpleIOSuite, Checkers, BitraverseLaw:
+  test("Bitraverse[Either] must satisfy the laws of Bitraverse"):
+    forall:
       (
           far: Either[Int, Char],
           fla: Either[String, Int],
           faa: Either[Int, Int]
       ) =>
-        checkBitraverseLaw[
-          Either,
-          Id,
-          Option,
-          String,
-          Char,
-          Int,
-          String,
-          Boolean
-        ](far, fla, faa)
-    }
-  }
+        whenSuccess(
+          checkBitraverseLaw[
+            Either,
+            Id,
+            Option,
+            String,
+            Char,
+            Int,
+            String,
+            Boolean
+          ](far, fla, faa)
+        ): _ =>
+          success

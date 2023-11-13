@@ -1,9 +1,10 @@
 # Bifoldable
 
+## Формальное определение
+
 `Bifoldable` - тип, порождающий два несвязанных [`Foldable`](../monad/foldable.md).
 
-
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
 trait Bifoldable[F[_, _]]:

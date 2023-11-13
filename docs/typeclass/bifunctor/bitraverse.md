@@ -1,10 +1,11 @@
 # Bitraverse
 
+## Формальное определение
+
 `Bitraverse` - тип, порождающий два несвязанных [`Traverse`](../monad/traverse.md).
 Расширяет [`Bifoldable`](bifoldable.md) и [`Bifunctor`](bifunctor.md).
 
-
-## Описание
+## Определение в виде кода на Scala
 
 ```dotty
 trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:

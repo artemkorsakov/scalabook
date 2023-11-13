@@ -8,3 +8,4 @@ addCommandAlias(
   "scalafmtSbt; scalafmtAll; scalafixAll"
 )
 addCommandAlias("dep", "dependencyUpdates")
+addCommandAlias("prePush", "com; fix; test")

@@ -1,11 +1,12 @@
 package ru.scalabook.algorithms.games.darts
 
-import munit.FunSuite
+import weaver.FunSuite
 
-class DartsSuite extends FunSuite:
-  test("allDistinctWaysToCheckOut") {
+object DartsSuite extends FunSuite:
+  test("allDistinctWaysToCheckOut"):
     val result = Darts.allDistinctWaysToCheckOut
-    assertEquals(result(6), 11)
-    assertEquals(result.values.sum, 42336)
-    assertEquals((2 to 99).map(result.getOrElse(_, 0)).sum, 38182)
-  }
+    expect.all(
+      result(6) == 11,
+      result.values.sum == 42336,
+      (2 to 99).map(result.getOrElse(_, 0)).sum == 38182
+    )

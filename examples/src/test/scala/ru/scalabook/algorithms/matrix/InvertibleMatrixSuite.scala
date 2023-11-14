@@ -1,10 +1,10 @@
 package ru.scalabook.algorithms.matrix
 
-import munit.FunSuite
 import ru.scalabook.algorithms.numbers.RationalNumber
 import ru.scalabook.algorithms.numbers.RationalNumber.RationalNumberIsIntegral
+import weaver.FunSuite
 
-class InvertibleMatrixSuite extends FunSuite:
+object InvertibleMatrixSuite extends FunSuite:
   test("invertibleMatrix") {
     val matrix =
       InvertibleMatrix(
@@ -15,31 +15,29 @@ class InvertibleMatrixSuite extends FunSuite:
         )
       )
     val invMatrix = matrix.invertibleMatrix
-    assertEquals(
-      invMatrix,
-      InvertibleMatrix(
-        Seq(
-          Seq(RationalNumber(3), RationalNumber(-2), RationalNumber(0)),
-          Seq(RationalNumber(0), RationalNumber(3), RationalNumber(-2)),
-          Seq(RationalNumber(-2), RationalNumber(0), RationalNumber(1))
-        )
-      )
-    )
-    val iMatrix = matrix * invMatrix
+    val iMatrix   = matrix * invMatrix
 
-    assertEquals(
-      iMatrix,
-      InvertibleMatrix(
-        Seq(
-          Seq(RationalNumber(1), RationalNumber(0), RationalNumber(0)),
-          Seq(RationalNumber(0), RationalNumber(1), RationalNumber(0)),
-          Seq(RationalNumber(0), RationalNumber(0), RationalNumber(1))
+    expect.all(
+      invMatrix ==
+        InvertibleMatrix(
+          Seq(
+            Seq(RationalNumber(3), RationalNumber(-2), RationalNumber(0)),
+            Seq(RationalNumber(0), RationalNumber(3), RationalNumber(-2)),
+            Seq(RationalNumber(-2), RationalNumber(0), RationalNumber(1))
+          )
+        ),
+      iMatrix ==
+        InvertibleMatrix(
+          Seq(
+            Seq(RationalNumber(1), RationalNumber(0), RationalNumber(0)),
+            Seq(RationalNumber(0), RationalNumber(1), RationalNumber(0)),
+            Seq(RationalNumber(0), RationalNumber(0), RationalNumber(1))
+          )
         )
-      )
     )
   }
 
-  test("solveEquation") {
+  test("solveEquation"):
     val matrix =
       InvertibleMatrix(
         Seq(
@@ -48,5 +46,4 @@ class InvertibleMatrixSuite extends FunSuite:
         )
       )
     val solution = matrix.solveEquation(Seq(7, 10).map(RationalNumber(_)))
-    assertEquals(solution, Seq(RationalNumber(2), RationalNumber(1)))
-  }
+    expect.all(solution == Seq(RationalNumber(2), RationalNumber(1)))

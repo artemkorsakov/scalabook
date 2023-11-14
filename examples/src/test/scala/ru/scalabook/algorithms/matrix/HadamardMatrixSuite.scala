@@ -1,11 +1,11 @@
 package ru.scalabook.algorithms.matrix
 
-import munit.FunSuite
+import weaver.FunSuite
 
-class HadamardMatrixSuite extends FunSuite:
-  test("isHadamardMatrix") {
-    assert(HadamardMatrix(Seq(Seq(1, 1), Seq(1, -1))).isHadamardMatrix)
-    assert(
+object HadamardMatrixSuite extends FunSuite:
+  test("isHadamardMatrix"):
+    expect.all(
+      HadamardMatrix(Seq(Seq(1, 1), Seq(1, -1))).isHadamardMatrix,
       HadamardMatrix(
         Seq(
           Seq(1, 1, 1, 1),
@@ -15,4 +15,3 @@ class HadamardMatrixSuite extends FunSuite:
         )
       ).isHadamardMatrix
     )
-  }

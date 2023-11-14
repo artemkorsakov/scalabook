@@ -1,9 +1,9 @@
 package ru.scalabook.algorithms.games.dice
 
-import munit.FunSuite
 import ru.scalabook.algorithms.numbers.RationalNumber
+import weaver.FunSuite
 
-class DiceSuite extends FunSuite:
+object DiceSuite extends FunSuite:
   private val fractionsPete  = Dice(4).probabilities(9)
   private val fractionsColin = Dice(6).probabilities(6)
 
@@ -16,7 +16,6 @@ class DiceSuite extends FunSuite:
     fractionLessColin += fractionsColin(i - 1)
     fractionWin += fractionsPete(i) * fractionLessColin
 
-  test("probabilities") {
+  test("probabilities"):
     val res = math.round(fractionWin.toPercent * 10000000) / 10000000.0
-    assertEqualsDouble(res, 0.5731441, 1e-10)
-  }
+    expect.all(math.abs(res - 0.5731441) <= 1e-10)

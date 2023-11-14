@@ -1,19 +1,21 @@
 package ru.scalabook.algorithms.combinatorics
 
-import munit.FunSuite
 import ru.scalabook.algorithms.combinatorics.Coins.*
+import weaver.FunSuite
 
-class CoinsSuite extends FunSuite:
-  test("Кол-во путей получить заданную сумму из заданного состава монет") {
-    assertEquals(countWays(Array(200), 200), 1L)
-    assertEquals(countWays(Array(200), 199), 0L)
-    assertEquals(countWays(Array(1, 2, 5), 10), 10L)
-    assertEquals(countWays(Array(1, 2, 5, 10), 10), 11L)
-    assertEquals(countWays(Array(1, 2, 5, 10, 20, 50, 100, 200), 200), 73682L)
-  }
+object CoinsSuite extends FunSuite:
+  test("Number of ways to get a given amount from a given coin composition"):
+    expect.all(
+      countWays(Array(200), 200) == 1L,
+      countWays(Array(200), 199) == 0L,
+      countWays(Array(1, 2, 5), 10) == 10L,
+      countWays(Array(1, 2, 5, 10), 10) == 11L,
+      countWays(Array(1, 2, 5, 10, 20, 50, 100, 200), 200) == 73682L
+    )
 
-  test("Кол-во партиций") {
-    assertEquals(partition(10), BigInt(42))
-    assertEquals(partition(100), BigInt(190569292))
-    assertEquals(partition(1000), BigInt("24061467864032622473692149727991"))
-  }
+  test("Number of partitions"):
+    expect.all(
+      partition(10) == BigInt(42),
+      partition(100) == BigInt(190569292),
+      partition(1000) == BigInt("24061467864032622473692149727991")
+    )

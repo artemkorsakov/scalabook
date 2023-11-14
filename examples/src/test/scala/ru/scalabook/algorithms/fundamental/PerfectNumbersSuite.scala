@@ -1,12 +1,13 @@
 package ru.scalabook.algorithms.fundamental
 
-import munit.FunSuite
 import ru.scalabook.algorithms.fundamental.PerfectNumbers.*
 import ru.scalabook.algorithms.fundamental.PerfectNumbersType.*
+import weaver.FunSuite
 
-class PerfectNumbersSuite extends FunSuite:
-  test("Совершенные числа") {
-    assertEquals(perfectNumbersType(6), Perfect)
-    assertEquals(perfectNumbersType(7), Deficient)
-    assertEquals(perfectNumbersType(12), Abundant)
-  }
+object PerfectNumbersSuite extends FunSuite:
+  test("Perfect numbers"):
+    expect.all(
+      perfectNumbersType(6) == Perfect,
+      perfectNumbersType(7) == Deficient,
+      perfectNumbersType(12) == Abundant
+    )

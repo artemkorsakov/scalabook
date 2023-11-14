@@ -1,9 +1,9 @@
 package ru.scalabook.books.tlpis
 
-import munit.FunSuite
+import weaver.FunSuite
 import ru.scalabook.books.tlpis.HList.*
 
-class HListSuite extends FunSuite:
+object HListSuite extends FunSuite:
   // построение HList подобного Tuple3 ("str", true, 1.0)
   private val x = "str" :: true :: 1.0 :: HNil
 

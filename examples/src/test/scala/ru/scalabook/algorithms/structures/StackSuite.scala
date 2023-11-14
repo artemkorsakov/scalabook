@@ -1,33 +1,35 @@
 package ru.scalabook.algorithms.structures
 
-import munit.FunSuite
 import ru.scalabook.algorithms.structures.Stack.*
+import weaver.FunSuite
 
-class StackSuite extends FunSuite:
-  test("Stack.isEmpty") {
+object StackSuite extends FunSuite:
+  test("Stack.isEmpty"):
     val stack = Stack.empty[Int]
-    assert(stack.isEmpty)
-    assert(!stack.push(1).isEmpty)
-    assert(!stack.push(1).push(2).isEmpty)
-  }
+    expect.all(
+      stack.isEmpty,
+      !stack.push(1).isEmpty,
+      !stack.push(1).push(2).isEmpty
+    )
 
-  test("Stack.push") {
+  test("Stack.push"):
     val stack    = Stack.empty[Int]
     val newStack = stack.push(1)
-    assertEquals(newStack, NonEmptyStack(1, stack))
-    assertEquals(newStack.push(2), NonEmptyStack(2, newStack))
-  }
+    expect.all(
+      newStack == NonEmptyStack(1, stack),
+      newStack.push(2) == NonEmptyStack(2, newStack)
+    )
 
-  test("Stack.peek") {
+  test("Stack.peek"):
     val stack = Stack.empty[Int]
-    assertEquals(stack.peek(), None)
-    val newStack = stack.push(1)
-    assertEquals(newStack.peek(), Some((1, newStack)))
-  }
+    expect(stack.peek().isEmpty) and {
+      val newStack = stack.push(1)
+      expect(newStack.peek().contains((1, newStack)))
+    }
 
-  test("Stack.pop") {
+  test("Stack.pop"):
     val stack = Stack.empty[Int]
-    assertEquals(stack.pop(), None)
-    val newStack = stack.push(1)
-    assertEquals(newStack.pop(), Some((1, stack)))
-  }
+    expect(stack.pop().isEmpty) and {
+      val newStack = stack.push(1)
+      expect(newStack.pop().contains((1, stack)))
+    }

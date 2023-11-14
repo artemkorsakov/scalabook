@@ -1,10 +1,10 @@
 package ru.scalabook.books.tlpis
 
-import munit.FunSuite
+import weaver.FunSuite
 
 import scala.language.implicitConversions
 
-class TipSuite extends FunSuite:
+object TipSuite extends FunSuite:
   import HList.::
 
   test("Проверка индексации по типу"):

@@ -1,10 +1,10 @@
 package ru.scalabook.books.tlpis
 
-import munit.FunSuite
 import ru.scalabook.books.tlpis.HList.::
+import weaver.FunSuite
 
-class ZipWithSuite extends FunSuite:
-  test("Проверка zipWith2"):
+object ZipWithSuite extends FunSuite:
+  test("Check zipWith2"):
     def zipWith2[A, B, C](t2: (LazyList[A], LazyList[B]))(
         f: (A, B) => C
     ): LazyList[C] =
@@ -18,8 +18,9 @@ class ZipWithSuite extends FunSuite:
     val seq    = zipWith2((nats, random)) { (n, r) => if (r > 0.3) n else -n }
 
     println(seq.take(10).toList)
+    success
 
-  test("Проверка zipWith"):
+  test("Check zipWith"):
     val nats   = LazyList.from(1)
     val random = LazyList.continually(math.random)
     val seq = ZipWith.zipWith(nats :^: random :^: KNil) { case n :: r :: HNil =>
@@ -27,8 +28,9 @@ class ZipWithSuite extends FunSuite:
     }
 
     println(seq.take(10).toList)
+    success
 
-  test("Проверка foreach"):
+  test("Check foreach"):
     val a = LazyList(1, 2, 5, 3, 9, 10, 101)
     val b = LazyList("one", "two", "three", "four")
     val c = LazyList(true, false, false, true, true)
@@ -41,3 +43,5 @@ class ZipWithSuite extends FunSuite:
     // twotwo
     // threethreethreethreethree
     // four
+
+    success

@@ -1,9 +1,9 @@
 package ru.scalabook.books.tlpis
 
 import cats.Id
-import munit.FunSuite
+import weaver.FunSuite
 
-class KListSuite extends FunSuite:
+object KListSuite extends FunSuite:
   final case class MyArray(str: String, str1: String)
 
   test("Проверка KList на примере преобразования List ~> Option"):

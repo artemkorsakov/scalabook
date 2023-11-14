@@ -1,9 +1,9 @@
 package ru.scalabook.books.tlpis
 
-import munit.FunSuite
+import weaver.FunSuite
 import ru.scalabook.books.tlpis.HList.*
 
-class HZipUnzipSuite extends FunSuite:
+object HZipUnzipSuite extends FunSuite:
   test("Проверка архивирования и разархивирования двух HList"):
     // разнородный список длины 3
     // с типом Int :: String :: List[Char] :: HNil

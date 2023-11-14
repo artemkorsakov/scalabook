@@ -1,17 +1,17 @@
 package ru.scalabook.books.tlpis
 
-import munit.FunSuite
 import ru.scalabook.books.tlpis.Digit.*
+import weaver.FunSuite
 
-class DigitSuite extends FunSuite:
-  test("Проверка равенства Digit на 0") {
+object DigitSuite extends FunSuite:
+  test("Testing Digit for 0"):
     summon[Is0[Zero] =:= True]
     summon[Is0[One] =:= False]
-  }
+    success
 
-  test("Проверка сравнения двух Digit") {
+  test("Checking comparison of two Digits"):
     summon[(Zero Compare Zero) =:= EQ]
     summon[(Zero Compare One) =:= LT]
     summon[(One Compare Zero) =:= GT]
     summon[(One Compare One) =:= EQ]
-  }
+    success

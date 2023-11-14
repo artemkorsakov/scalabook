@@ -1,11 +1,11 @@
 package ru.scalabook.books.tlpis
 
-import munit.FunSuite
+import weaver.FunSuite
 import ru.scalabook.books.tlpis.HList.*
 import ru.scalabook.books.tlpis.Indexed.given
 import ru.scalabook.books.tlpis.Nat.*
 
-class IndexedSuite extends FunSuite:
+object IndexedSuite extends FunSuite:
   private val x = 3 :: true :: "asfd" :: false :: 'k' :: () :: 13 :: 9.3 :: HNil
 
   test("получение булева значения по индексу 3"):

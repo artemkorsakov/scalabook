@@ -1,12 +1,12 @@
 package ru.scalabook.books.tlpis
 
-import munit.FunSuite
 import ru.scalabook.books.tlpis.HApply.happly
+import weaver.FunSuite
 
-class HApplySuite extends FunSuite:
+object HApplySuite extends FunSuite:
   import HList.::
 
-  test("Проверка применения списка функций HList к входящим HList значениям"):
+  test("Testing to apply a list of HList functions to incoming HList values"):
     // два HList с типом Double :: Char :: HNil
     val y1 = 9.75 :: 'x' :: HNil
     val y2 = -2.125 :: 'X' :: HNil
@@ -21,9 +21,6 @@ class HApplySuite extends FunSuite:
     // проверка типов
     val z1Types: Double :: Boolean :: HNil.type = z1
 
-    // проверка значения
-    assertEquals(z1, 10.25 :: false :: HNil)
-
     // применение первого параметра HList z ко второму параметру y2
     val z2 = happly(z)(y2)
 
@@ -31,4 +28,4 @@ class HApplySuite extends FunSuite:
     val z2Types: Double :: Boolean :: HNil.type = z2
 
     // проверка значения
-    assertEquals(z2, -1.625 :: true :: HNil)
+    expect.all(z1 == 10.25 :: false :: HNil, z2 == -1.625 :: true :: HNil)

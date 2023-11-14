@@ -1,6 +1,9 @@
 package ru.scalabook.algorithms.equations
 
-import ru.scalabook.algorithms.equations.PolynomialEquation.{polynomialCoefficients, polynomialSolution}
+import ru.scalabook.algorithms.equations.PolynomialEquation.{
+  polynomialCoefficients,
+  polynomialSolution
+}
 import weaver.FunSuite
 
 object PolynomialEquationSuite extends FunSuite:

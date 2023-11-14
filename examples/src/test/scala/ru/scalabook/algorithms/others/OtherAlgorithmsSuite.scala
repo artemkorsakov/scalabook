@@ -1,10 +1,12 @@
 package ru.scalabook.algorithms.others
 
-import munit.FunSuite
 import ru.scalabook.algorithms.others.OtherAlgorithms.*
+import weaver.FunSuite
 
-class OtherAlgorithmsSuite extends FunSuite:
-  test("Функция Аккермана - проверка на небольших значениях"):
-    assertEquals(functionAckermann(1, 10), 1024)
-    assertEquals(functionAckermann(2, 4), 65536)
-    assertEquals(functionAckermann(3, 3), 65536)
+object OtherAlgorithmsSuite extends FunSuite:
+  test("Ackermann function - testing on small values"):
+    expect.all(
+      functionAckermann(1, 10) == 1024,
+      functionAckermann(2, 4) == 65536,
+      functionAckermann(3, 3) == 65536
+    )

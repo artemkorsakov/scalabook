@@ -1,35 +1,22 @@
 package ru.scalabook.algorithms.others
 
-import munit.FunSuite
 import ru.scalabook.algorithms.others.PointOnTriangleType.*
 import ru.scalabook.algorithms.others.Triangle.*
+import weaver.FunSuite
 
-class TriangleSuite extends FunSuite:
-  test("getPointOnTriangleType") {
-    assertEquals(
+object TriangleSuite extends FunSuite:
+  test("getPointOnTriangleType"):
+    expect.all(
       Triangle((-340, 495), (-153, -910), (835, -947))
-        .getPointOnTriangleType((0, 0)),
-      Inside
-    )
-    assertEquals(
+        .getPointOnTriangleType((0, 0)) == Inside,
       Triangle((-175, 41), (-421, -714), (574, -645))
-        .getPointOnTriangleType((0, 0)),
-      Outside
-    )
-    assertEquals(
+        .getPointOnTriangleType((0, 0)) == Outside,
       Triangle((-175, 41), (-421, -714), (574, -645))
-        .getPointOnTriangleType((-175, 41)),
-      OnTheSide
+        .getPointOnTriangleType((-175, 41)) == OnTheSide
     )
-  }
 
-  test("isZeroPointInside") {
-    assertEquals(
+  test("isZeroPointInside"):
+    expect.all(
       Triangle((-340, 495), (-153, -910), (835, -947)).isZeroPointInside,
-      true
+      !Triangle((-175, 41), (-421, -714), (574, -645)).isZeroPointInside
     )
-    assertEquals(
-      Triangle((-175, 41), (-421, -714), (574, -645)).isZeroPointInside,
-      false
-    )
-  }

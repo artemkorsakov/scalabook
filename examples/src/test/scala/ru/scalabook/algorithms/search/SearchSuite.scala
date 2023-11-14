@@ -1,21 +1,23 @@
 package ru.scalabook.algorithms.search
 
-import munit.FunSuite
 import ru.scalabook.algorithms.search.Search.{
   kmpSubstringSearch,
   naiveSubstringSearch
 }
+import weaver.FunSuite
 
-class SearchSuite extends FunSuite:
+object SearchSuite extends FunSuite:
   private val text   = "This is a functional implementation."
   private val search = "functional"
 
-  test("naiveSubstringSearch") {
-    assertEquals(naiveSubstringSearch(search, text), 10)
-    assertEquals(naiveSubstringSearch("search", text), -1)
-  }
+  test("naiveSubstringSearch"):
+    expect.all(
+      naiveSubstringSearch(search, text) == 10,
+      naiveSubstringSearch("search", text) == -1
+    )
 
-  test("kmpSubstringSearch") {
-    assertEquals(kmpSubstringSearch(search, text), 10)
-    assertEquals(kmpSubstringSearch("search", text), -1)
-  }
+  test("kmpSubstringSearch"):
+    expect.all(
+      kmpSubstringSearch(search, text) == 10,
+      kmpSubstringSearch("search", text) == -1
+    )

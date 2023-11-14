@@ -1,11 +1,12 @@
 package ru.scalabook.algorithms.numbers
 
-import munit.FunSuite
 import ru.scalabook.algorithms.numbers.HammingNumber.*
+import weaver.FunSuite
 
-class HammingNumberSuite extends FunSuite:
-  test("isHammingNumber") {
-    assertEquals(isHammingNumber(2125764000, 5), true)
-    assertEquals(isHammingNumber(2125764000, 7), true)
-    assertEquals(isHammingNumber(2125764000, 3), false)
-  }
+object HammingNumberSuite extends FunSuite:
+  test("isHammingNumber"):
+    expect.all(
+      isHammingNumber(2125764000, 5),
+      isHammingNumber(2125764000, 7),
+      !isHammingNumber(2125764000, 3)
+    )

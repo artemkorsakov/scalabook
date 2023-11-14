@@ -1,40 +1,33 @@
 package ru.scalabook.algorithms.sort
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
+import cats.Show
 import ru.scalabook.algorithms.sort.Sorting.*
+import weaver.SimpleIOSuite
+import weaver.scalacheck.Checkers
 
-class SortingSuite extends ScalaCheckSuite:
-  property("bubbleSort") {
-    forAll { (array: Array[Int]) =>
+object SortingSuite extends SimpleIOSuite with Checkers:
+  given Show[Array[Int]] = Show.show(_.mkString("[", ", ", "]"))
+
+  test("bubbleSort"):
+    forall: (array: Array[Int]) =>
       bubbleSort(array)
-      assert((1 until array.length).forall(i => array(i - 1) <= array(i)))
-    }
-  }
+      expect.all((1 until array.length).forall(i => array(i - 1) <= array(i)))
 
-  property("selectionSort") {
-    forAll { (array: Array[Int]) =>
+  test("selectionSort"):
+    forall: (array: Array[Int]) =>
       selectionSort(array)
-      assert((1 until array.length).forall(i => array(i - 1) <= array(i)))
-    }
-  }
+      expect.all((1 until array.length).forall(i => array(i - 1) <= array(i)))
 
-  property("insertionSort") {
-    forAll { (array: Array[Int]) =>
+  test("insertionSort"):
+    forall: (array: Array[Int]) =>
       insertionSort(array)
-      assert((1 until array.length).forall(i => array(i - 1) <= array(i)))
-    }
-  }
+      expect.all((1 until array.length).forall(i => array(i - 1) <= array(i)))
 
-  property("mergeSort") {
-    forAll { (array: Array[Int]) =>
+  test("mergeSort"):
+    forall: (array: Array[Int]) =>
       mergeSort(array)
-      assert((1 until array.length).forall(i => array(i - 1) <= array(i)))
-    }
-  }
+      expect.all((1 until array.length).forall(i => array(i - 1) <= array(i)))
 
-  property("quickSort") {
-    forAll { (list: List[Int]) =>
-      assertEquals(quickSort(list), list.sorted)
-    }
-  }
+  test("quickSort"):
+    forall: (list: List[Int]) =>
+      expect.all(quickSort(list) == list.sorted)

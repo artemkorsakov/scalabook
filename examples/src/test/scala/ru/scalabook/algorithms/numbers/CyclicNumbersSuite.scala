@@ -1,11 +1,11 @@
 package ru.scalabook.algorithms.numbers
 
-import munit.ScalaCheckSuite
 import org.scalacheck.Gen
-import org.scalacheck.Prop.*
 import ru.scalabook.algorithms.numbers.CyclicNumbers.*
+import weaver.SimpleIOSuite
+import weaver.scalacheck.Checkers
 
-class CyclicNumbersSuite extends ScalaCheckSuite:
+object CyclicNumbersSuite extends SimpleIOSuite with Checkers:
   private val FIRST_TRIANGLES =
     Array(1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91)
   private val FIRST_SQUARE      = Array(1, 4, 9, 16, 25, 36, 49, 64, 81)
@@ -14,8 +14,8 @@ class CyclicNumbersSuite extends ScalaCheckSuite:
   private val FIRST_HEPTAGONAL  = Array(1, 7, 18, 34, 55, 81)
   private val FIRST_OCTAGONAL   = Array(1, 8, 21, 40, 65, 96)
 
-  property("check firsts numbers") {
-    forAll(
+  test("check firsts numbers"):
+    forall(
       Gen.oneOf(
         Seq(
           (1 to 13).forall(i => triangleNumber(i) == FIRST_TRIANGLES(i - 1)),
@@ -26,22 +26,22 @@ class CyclicNumbersSuite extends ScalaCheckSuite:
           (1 to 6).forall(i => octagonalNumber(i) == FIRST_OCTAGONAL(i - 1))
         )
       )
-    ) { actual => actual }
-  }
+    ): actual =>
+      expect(actual)
 
-  property("check IS methods") {
-    forAll(Gen.oneOf(1 until 100)) { i =>
-      isTriangle(i) == FIRST_TRIANGLES.contains(i) &&
-      isSquare(i) == FIRST_SQUARE.contains(i) &&
-      isPentagonal(i) == FIRST_PENTAGONALS.contains(i) &&
-      isHexagonal(i) == FIRST_HEXAGONALS.contains(i) &&
-      isHeptagonal(i) == FIRST_HEPTAGONAL.contains(i) &&
-      isOctagonal(i) == FIRST_OCTAGONAL.contains(i)
-    }
-  }
+  test("check IS methods"):
+    forall(Gen.oneOf(1 until 100)): i =>
+      expect.all(
+        isTriangle(i) == FIRST_TRIANGLES.contains(i),
+        isSquare(i) == FIRST_SQUARE.contains(i),
+        isPentagonal(i) == FIRST_PENTAGONALS.contains(i),
+        isHexagonal(i) == FIRST_HEXAGONALS.contains(i),
+        isHeptagonal(i) == FIRST_HEPTAGONAL.contains(i),
+        isOctagonal(i) == FIRST_OCTAGONAL.contains(i)
+      )
 
-  property("check special is numbers") {
-    forAll(
+  test("check special is numbers"):
+    forall(
       Gen.oneOf(
         Seq(
           isPentagonal(5482660),
@@ -59,5 +59,5 @@ class CyclicNumbersSuite extends ScalaCheckSuite:
           isOctagonal(1281)
         )
       )
-    ) { actual => actual }
-  }
+    ): actual =>
+      expect(actual)

@@ -1,11 +1,11 @@
 package ru.scalabook.algorithms.numbers
 
-import munit.ScalaCheckSuite
 import org.scalacheck.Gen
-import org.scalacheck.Prop.*
 import ru.scalabook.algorithms.numbers.OtherNumbers.*
+import weaver.SimpleIOSuite
+import weaver.scalacheck.Checkers
 
-class OtherNumbersSuite extends ScalaCheckSuite:
+object OtherNumbersSuite extends SimpleIOSuite with Checkers:
   private val expectedNumerators: IndexedSeq[BigDecimal] = IndexedSeq(
     1,
     -1,
@@ -54,15 +54,15 @@ class OtherNumbersSuite extends ScalaCheckSuite:
       798, 1, 330, 1, 138, 1, 2730, 1, 6, 1, 870, 1, 14322, 1, 510, 1, 6, 1,
       1919190, 1, 6, 1, 13530)
 
-  property("bernoulli") {
-    forAll(Gen.oneOf(expectedNumerators.indices)) { i =>
-      math.abs(
-        (bernoulli(i) - expectedNumerators(i) / expectedDenominators(
-          i
-        )).toDouble
-      ) <= 1e-5
-    }
-  }
+  test("bernoulli"):
+    forall(Gen.oneOf(expectedNumerators.indices)): i =>
+      expect(
+        math.abs(
+          (bernoulli(i) - expectedNumerators(i) / expectedDenominators(
+            i
+          )).toDouble
+        ) <= 1e-5
+      )
 
   private val expectedPadovan: IndexedSeq[BigInt] = IndexedSeq(1, 0, 0, 1, 0, 1,
     1, 1, 2, 2, 3, 4, 5, 7, 9, 12, 16, 21, 28, 37, 49, 65, 86, 114, 151, 200,
@@ -70,11 +70,9 @@ class OtherNumbersSuite extends ScalaCheckSuite:
     10252, 13581, 17991, 23833, 31572, 41824, 55405, 73396, 97229, 128801,
     170625)
 
-  property("padovan") {
-    forAll(Gen.oneOf(expectedPadovan.indices)) { i =>
-      padovan(i) == expectedPadovan(i)
-    }
-  }
+  test("padovan"):
+    forall(Gen.oneOf(expectedPadovan.indices)): i =>
+      expect(padovan(i) == expectedPadovan(i))
 
   private val expectedJacobsthal: IndexedSeq[BigInt] = IndexedSeq(0, 1, 1, 3, 5,
     11, 21, 43, 85, 171, 341, 683, 1365, 2731, 5461, 10923, 21845, 43691, 87381,
@@ -82,11 +80,9 @@ class OtherNumbersSuite extends ScalaCheckSuite:
     44739243, 89478485, 178956971, 357913941, 715827883, 1431655765,
     2863311531L, 5726623061L)
 
-  property("jacobsthal") {
-    forAll(Gen.oneOf(expectedJacobsthal.indices)) { i =>
-      jacobsthal(i) == expectedJacobsthal(i)
-    }
-  }
+  test("jacobsthal"):
+    forall(Gen.oneOf(expectedJacobsthal.indices)): i =>
+      expect(jacobsthal(i) == expectedJacobsthal(i))
 
   private val expectedPell: IndexedSeq[BigInt] = IndexedSeq(0, 1, 2, 5, 12, 29,
     70, 169, 408, 985, 2378, 5741, 13860, 33461, 80782, 195025, 470832, 1136689,
@@ -94,11 +90,9 @@ class OtherNumbersSuite extends ScalaCheckSuite:
     1311738121, 3166815962L, 7645370045L, 18457556052L, 44560482149L,
     107578520350L, 259717522849L)
 
-  property("pell") {
-    forAll(Gen.oneOf(expectedPell.indices)) { i =>
-      pell(i) == expectedPell(i)
-    }
-  }
+  test("pell"):
+    forall(Gen.oneOf(expectedPell.indices)): i =>
+      expect(pell(i) == expectedPell(i))
 
   private val expectedTribonacci: IndexedSeq[BigInt] = IndexedSeq(0, 0, 1, 1, 2,
     4, 7, 13, 24, 44, 81, 149, 274, 504, 927, 1705, 3136, 5768, 10609, 19513,
@@ -106,11 +100,9 @@ class OtherNumbersSuite extends ScalaCheckSuite:
     8646064, 15902591, 29249425, 53798080, 98950096, 181997601, 334745777,
     615693474, 1132436852L)
 
-  property("tribonacci") {
-    forAll(Gen.oneOf(expectedTribonacci.indices)) { i =>
-      tribonacci(i) == expectedTribonacci(i)
-    }
-  }
+  test("tribonacci"):
+    forall(Gen.oneOf(expectedTribonacci.indices)): i =>
+      expect(tribonacci(i) == expectedTribonacci(i))
 
   private val expectedTetranacci: IndexedSeq[BigInt] = IndexedSeq(0, 0, 0, 1, 1,
     2, 4, 8, 15, 29, 56, 108, 208, 401, 773, 1490, 2872, 5536, 10671, 20569,
@@ -118,8 +110,6 @@ class OtherNumbersSuite extends ScalaCheckSuite:
     14564533, 28074040, 54114452, 104308960, 201061985, 387559437, 747044834,
     1439975216, 2775641472L)
 
-  property("tetranacci") {
-    forAll(Gen.oneOf(expectedTetranacci.indices)) { i =>
-      tetranacci(i) == expectedTetranacci(i)
-    }
-  }
+  test("tetranacci"):
+    forall(Gen.oneOf(expectedTetranacci.indices)): i =>
+      expect(tetranacci(i) == expectedTetranacci(i))

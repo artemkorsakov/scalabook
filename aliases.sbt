@@ -1,11 +1,8 @@
 addCommandAlias("com", "compile; Test / compile")
-addCommandAlias(
-  "check",
-  "scalafmtSbtCheck; scalafmtCheckAll"
-)
-addCommandAlias(
-  "fix",
-  "scalafmtSbt; scalafmtAll; scalafixAll"
-)
+addCommandAlias("check", "scalafmtSbtCheck; scalafmtCheckAll")
+addCommandAlias("fix", "scalafmtSbt; scalafmtAll; scalafixAll")
 addCommandAlias("dep", "dependencyUpdates")
-addCommandAlias("prePush", "com; fix; test")
+addCommandAlias(
+  "prePush",
+  "com; fix; test; undeclaredCompileDependencies; unusedCompileDependencies"
+)

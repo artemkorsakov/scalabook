@@ -1,11 +1,11 @@
 package ru.scalabook.blog.architectureproblems
 
-import munit.ScalaCheckSuite
 import org.scalacheck.Gen
-import org.scalacheck.Prop.*
 import ru.scalabook.blog.architectureproblems.Semigroup.doTheSemigroupLawsHold
+import weaver.*
+import weaver.scalacheck.*
 
-class SemigroupSuite extends ScalaCheckSuite:
+object SemigroupSuite extends SimpleIOSuite with Checkers:
   private val smallNumber = Gen.choose[Int](-100, 100)
   private val smallNumbers =
     for
@@ -14,20 +14,15 @@ class SemigroupSuite extends ScalaCheckSuite:
       z <- smallNumber
     yield (x, y, z)
 
-  property("Множество чисел образует полугруппу относительно умножения") {
+  test("A set of numbers forms a semigroup under multiplication"):
     given Semigroup[Int] with
       extension (x: Int) override def |+|(y: Int): Int = x * y
 
-    forAll(smallNumbers) { (x, y, z) =>
-      assert(doTheSemigroupLawsHold(x, y, z))
-    }
-  }
+    forall(smallNumbers): (x, y, z) =>
+      expect.all(doTheSemigroupLawsHold(x, y, z))
 
-  property("Множество чисел НЕ образует полугруппу относительно вычитания") {
+  pureTest("A set of numbers does not form a semigroup under subtraction"):
     given Semigroup[Int] with
       extension (x: Int) override def |+|(y: Int): Int = x - y
 
-    exists(smallNumbers) { (x, y, z) =>
-      assertEquals(doTheSemigroupLawsHold(x, y, z), false)
-    }
-  }
+    expect.all(!doTheSemigroupLawsHold(1, 2, 3))

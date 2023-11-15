@@ -1,20 +1,16 @@
 package ru.scalabook.algorithms.trees
 
-import munit.ScalaCheckSuite
-import org.scalacheck.Prop.*
 import ru.scalabook.algorithms.trees.BinaryTree.*
+import weaver.*
+import weaver.scalacheck.*
 
-class BinaryTreeSuite extends ScalaCheckSuite:
-  property("BinaryTree.size") {
-    forAll { (list: List[Int]) =>
-      assertEquals(BinaryTree(list).size, list.length)
-    }
-  }
+object BinaryTreeSuite extends SimpleIOSuite with Checkers:
+  test("BinaryTree.size"):
+    forall: (list: List[Int]) =>
+      expect.all(BinaryTree(list).size == list.length)
 
-  property("BinaryTree.depth") {
-    forAll { (list: List[Int]) =>
+  test("BinaryTree.depth"):
+    forall: (list: List[Int]) =>
       val expected =
         if list.isEmpty then 0 else list.length.toBinaryString.length
-      assertEquals(BinaryTree(list).depth, expected)
-    }
-  }
+      expect.all(BinaryTree(list).depth == expected)

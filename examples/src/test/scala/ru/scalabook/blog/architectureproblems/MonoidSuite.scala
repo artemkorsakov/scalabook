@@ -1,11 +1,11 @@
 package ru.scalabook.blog.architectureproblems
 
-import munit.ScalaCheckSuite
 import org.scalacheck.Gen
-import org.scalacheck.Prop.*
 import ru.scalabook.blog.architectureproblems.Monoid.doTheMonoidLawsHold
+import weaver.*
+import weaver.scalacheck.*
 
-class MonoidSuite extends ScalaCheckSuite:
+object MonoidSuite extends SimpleIOSuite with Checkers:
   private val smallNumber = Gen.choose[Int](-100, 100)
   private val smallNumbers =
     for
@@ -14,26 +14,21 @@ class MonoidSuite extends ScalaCheckSuite:
       z <- smallNumber
     yield (x, y, z)
 
-  property(
-    "Множество чисел образует моноид относительно умножения с единичным элементом равным 1"
-  ) {
+  test(
+    "The set of numbers forms a monoid under multiplication with the identity element equal to 1"
+  ):
     given Monoid[Int] with
       override def e: Int                              = 1
       extension (x: Int) override def |+|(y: Int): Int = x * y
 
-    forAll(smallNumbers) { (x, y, z) =>
-      assert(doTheMonoidLawsHold(x, y, z))
-    }
-  }
+    forall(smallNumbers): (x, y, z) =>
+      expect.all(doTheMonoidLawsHold(x, y, z))
 
-  property(
-    "Множество чисел НЕ образует моноид относительно умножения с единичным элементом равным 0"
-  ) {
+  pureTest(
+    "The set of numbers does not form a monoid under multiplication with the unit element equal to 0"
+  ):
     given Monoid[Int] with
       override def e: Int                              = 0
       extension (x: Int) override def |+|(y: Int): Int = x * y
 
-    exists(smallNumbers) { (x, y, z) =>
-      assertEquals(doTheMonoidLawsHold(x, y, z), false)
-    }
-  }
+    expect.all(!doTheMonoidLawsHold(1, 2, 3))

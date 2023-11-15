@@ -37,13 +37,6 @@ object Dependencies {
     val logback = "ch.qos.logback" % "logback-classic" % "1.4.11"
   }
 
-  object munit {
-    private val version = "0.7.29"
-    val core            = "org.scalameta" %% "munit"               % version
-    val catsEffect3     = "org.typelevel" %% "munit-cats-effect-3" % "1.0.7"
-    val scalacheck      = "org.scalameta" %% "munit-scalacheck"    % version
-  }
-
   object refined {
     private val version = "0.11.0"
     val core            = "eu.timepit" %% "refined"      % version
@@ -94,9 +87,6 @@ object Dependencies {
     Seq(
       cats.effectKernel,
       cats.testkit,
-      munit.core,
-      munit.catsEffect3,
-      munit.scalacheck,
       scalaz.scalacheck,
       weaver.cats,
       weaver.scalacheck

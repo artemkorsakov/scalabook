@@ -1,10 +1,10 @@
 package ru.scalabook.books.tlpis
 
-import weaver.FunSuite
 import ru.scalabook.books.tlpis.HList.*
+import weaver.FunSuite
 
 object HZipUnzipSuite extends FunSuite:
-  test("Проверка архивирования и разархивирования двух HList"):
+  test("Testing the archiving and unzipping of two HLists"):
     // разнородный список длины 3
     // с типом Int :: String :: List[Char] :: HNil
     val a = 3 :: "ai4" :: List('r', 'H') :: HNil
@@ -15,17 +15,9 @@ object HZipUnzipSuite extends FunSuite:
 
     // два свернутых HList-ов
     val c = a zip b
-    assertEquals(
-      c,
-      (3, '3') :: ("ai4", 2) :: (List('r', 'H'), 'j') :: HNil
-    )
 
     // ещё одна свертка
     val cc = c zip c.tail
-    assertEquals(
-      cc,
-      ((3, '3'), ("ai4", 2)) :: (("ai4", 2), (List('r', 'H'), 'j')) :: HNil
-    )
 
     // проверка типов
     // заметим, что четвертый элемент b удален,
@@ -49,5 +41,12 @@ object HZipUnzipSuite extends FunSuite:
     val checkCa: Int :: String :: HNil.type                        = ca
     val checkCb: Char :: Int :: HNil.type                          = cb
 
-    assertEquals(ca, 3 :: "ai4" :: HNil)
-    assertEquals(cb, '3' :: 2 :: HNil)
+    expect.all(
+      c == (3, '3') :: ("ai4", 2) :: (List('r', 'H'), 'j') :: HNil,
+      cc == ((3, '3'), ("ai4", 2)) :: (
+        ("ai4", 2),
+        (List('r', 'H'), 'j')
+      ) :: HNil,
+      ca == 3 :: "ai4" :: HNil,
+      cb == '3' :: 2 :: HNil
+    )

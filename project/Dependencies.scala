@@ -10,13 +10,22 @@ object Dependencies {
     val core         = "org.typelevel" %% "cats-core"          % version
     val effect       = "org.typelevel" %% "cats-effect"        % effectVersion
     val effectKernel = "org.typelevel" %% "cats-effect-kernel" % effectVersion
+    val effectStd    = "org.typelevel" %% "cats-effect-std"    % effectVersion
     val free         = "org.typelevel" %% "cats-free"          % version
+    val kernel       = "org.typelevel" %% "cats-kernel"        % version
     val testkit      = "org.typelevel" %% "cats-testkit"       % version
   }
 
+  object fs2 {
+    val core = "co.fs2" %% "fs2-core" % "3.7.0"
+  }
+
   object http4s {
-    val blaze = "org.http4s" %% "http4s-blaze-server" % "0.23.15"
-    val dsl   = "org.http4s" %% "http4s-dsl"          % "0.23.23"
+    private val version = "0.23.23"
+    val blaze           = "org.http4s" %% "http4s-blaze-server" % "0.23.15"
+    val core            = "org.http4s" %% "http4s-core"         % version
+    val dsl             = "org.http4s" %% "http4s-dsl"          % version
+    val server          = "org.http4s" %% "http4s-server"       % version
   }
 
   object iron {
@@ -62,25 +71,27 @@ object Dependencies {
   }
 
   object zio {
-    val core = "dev.zio" %% "zio" % "2.0.18"
+    val core        = "dev.zio" %% "zio"             % "2.0.18"
+    val stacktracer = "dev.zio" %% "zio-stacktracer" % "2.0.18"
   }
 
   val exampleLibs: Seq[ModuleID] =
     Seq(
       cats.core,
       cats.effect,
-      cats.free,
+      cats.effectKernel,
+      cats.effectStd,
+      cats.kernel,
+      fs2.core,
       http4s.blaze,
+      http4s.core,
       http4s.dsl,
+      http4s.server,
       iron.iron,
       iron.cats,
-      refined.cats,
-      refined.core,
       scalaz.core,
-      scalaz.effect,
-      scalaz.iteratee,
-      spire.spire,
-      zio.core
+      zio.core,
+      zio.stacktracer
     )
 
   val exampleTestLibs: Seq[ModuleID] =
@@ -94,10 +105,12 @@ object Dependencies {
 
   val siteLibs: Seq[ModuleID] =
     Seq(
+      cats.core,
+      cats.effect,
+      cats.effectKernel,
+      http4s.server,
       laika.core,
       laika.io,
-      laika.pdf,
-      laika.preview,
-      logback.logback
+      laika.preview
     )
 }

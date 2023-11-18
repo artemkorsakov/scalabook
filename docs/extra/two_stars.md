@@ -22,6 +22,7 @@
 | [Combining Refined Types with Type Class Derivation in Scala - Lawrence Carvalho](https://www.youtube.com/watch?v=Hq2QWbUXKbE&t)                                         | Scala 2 |  En  | 2018 | Refined                |
 | [Decorate your types with refined – Frank Thomas](https://www.youtube.com/watch?v=zExb9x3fzKs)                                                                           | Scala 2 |  En  | 2016 | Refined                |
 | [Defusing the configuration time bomb with PureConfig and Refined - Leif Wickland](https://www.youtube.com/watch?v=NjqRi-cF3-g)                                          | Scala 2 |  En  | 2017 | Refined                |
+| [Functional Structures in Scala - Michael Pilquist](https://www.youtube.com/playlist?list=PLFrwDVdSrYE6dy14XCmUtRAJuhCxuzJp0)                                            | Scala 2 |  En  | 2015 | FP                     |
 | [Getting Started with #refined - DevInsideYou](https://www.youtube.com/watch?v=aZsmapo1afQ)                                                                              | Scala 2 |  En  | 2020 | Refined                |
 | [How to Build a Functional API - Julien Truffaut](https://www.youtube.com/watch?v=__zuECMFCRc)                                                                           | Scala 2 |  En  | 2018 | FP                     |
 | [Let The Compiler Help You: How To Make The Most Of Scala's Typesystem - Markus Hauck](https://www.youtube.com/watch?v=hhXPeuJohM4)                                      | Scala 2 |  En  | 2017 | Refined                |

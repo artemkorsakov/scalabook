@@ -15,8 +15,6 @@ enum List[+A]:
   case Nil
   case Cons(head: A, tail: List[A])
 
-import List.*
-
 object List:
   def apply[A](as: A*): List[A] =
     if as.isEmpty then Nil

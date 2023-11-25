@@ -168,8 +168,10 @@ List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 
 
 **Ссылки:**
 
+- [A Monads Approach for Beginners, in Scala - Rock the JVM](https://www.youtube.com/watch?v=d-dy1x33moA&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monad.html)
 - [Cats](https://typelevel.org/cats/typeclasses/monad.html)
+- [Functional Programming in Scala, Second Edition, Chapter 11](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Monad.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad.html)
@@ -180,4 +182,5 @@ List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 
 - [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics/#monads)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#sec:monads)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monad.html)
+- [Strong Type Systems](https://blog.tmorris.net/posts/strong-type-systems/index.html)
 - [Tour of Scala](https://tourofscala.com/scala/monad)

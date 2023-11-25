@@ -1,6 +1,6 @@
-# Monads
+# Монады
 
-## Functor
+## Функтор
 
 [Функтор](../typeclass/monad/functor.md) — это преобразование из категории `A` в категорию `B`.
 Такие преобразования часто изображаются стрелкой: `A -> B` (или через метод `map`).
@@ -248,7 +248,6 @@ def replicateM[A](n: Int, fa: F[A]): F[List[A]] =
 def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
   a => f(a).flatMap(g)  
 ```
-
 
 ---
 

@@ -149,6 +149,126 @@ given optionMonoidInstance[A: Semigroup]: Monoid[Option[A]] with
       case (None, None)         => None
 ```
 
+### Множество - `Boolean`, операция - логическое И (`&&`), пустой элемент - `true`
+
+```dotty
+given booleanAnd: Monoid[Boolean] with
+  def combine(a1: Boolean, a2: Boolean): Boolean = a1 && a2
+  val empty: Boolean = true  
+```
+
+### Множество - `Boolean`, операция - логическое Или (`||`), пустой элемент - `false`
+
+```dotty
+given booleanOr: Monoid[Boolean] with
+  def combine(a1: Boolean, a2: Boolean): Boolean = a1 || a2
+  val empty: Boolean = false
+```
+
+## Использование моноидов
+
+Моноиды тесно связаны со списками.
+Например, вот как можно свернуть список, используя моноид:
+
+```dotty
+def combineAll[A](as: List[A], m: Monoid[A]): A =
+  as.foldLeft(m.empty)(m.combine)
+combineAll(List(1, 2, 3, 4), intMultiplication)
+// res4: Int = 24
+```
+
+Тот факт, что операция `combine` моноида является ассоциативной, означает, что можно выбирать,
+как сворачивать структуру данных, такую как список.
+Если есть моноид, можно уменьшить список, используя сбалансированное сворачивание (_balanced fold_),
+которое может быть более эффективным для некоторых операций, а также допускает параллелизм.
+
+В качестве примера предположим, что есть последовательность `a`, `b`, `c`, `d`,
+которую необходимо сократить, используя некоторый моноид.
+_Balanced fold_ выглядит так:
+
+```dotty
+combine(combine(a, b), combine(c, d))
+```
+
+Обратите внимание, что _balanced fold_ допускает параллелизм,
+потому что два внутренних вызова независимы друг от друга и могут выполняться одновременно.
+Но помимо этого, более сбалансированная древовидная структура может быть более эффективной в тех случаях,
+когда стоимость каждого из них пропорциональна размеру его комбинированных аргументов.
+
+Например, рассмотрим производительность этого выражения во время выполнения:
+
+```dotty
+List("lorem", "ipsum", "dolor", "sit").foldLeft("")(_ + _)
+```
+
+На каждом этапе сворачивания (_fold_) выделяется полная промежуточная строка только лишь для того,
+чтобы быть отброшенной, а `String` выделяет более крупную строку на следующем шаге.
+Напомним, что значения являются неизменяемыми, и что `String` вычисляется для строк
+и требует выделения нового массива символов и копирования `a + b` для строк `a` и `b` в этот новый массив.
+Это занимает время, пропорциональное `a.length + b.length`.
+
+Вот трассировка вычисляемого предыдущего выражения:
+
+```dotty
+List("lorem", "ipsum", "dolor", "sit").foldLeft("")(_ + _)
+List("ipsum", "dolor", "sit").foldLeft("lorem")(_ + _)
+List("dolor", "sit").foldLeft("loremipsum")(_ + _)
+List("sit").foldLeft("loremipsumdolor")(_ + _)
+List().foldLeft("loremipsumdolorsit")(_ + _)
+"loremipsumdolorsit"
+```
+
+Обратите внимание, что промежуточные строки создаются, а затем сразу же отбрасываются.
+Более эффективной стратегией было бы объединение половинок последовательности,
+что называется сбалансированным сворачиванием (_balanced fold_) —
+сначала строятся `"loremipsum"` и `"dolorsit"`, а затем они складываются вместе.
+
+
+## Операции с моноидами
+
+Моноиды можно объединять:
+если `A` и `B` - это моноиды, то кортеж `(A, B)` также является моноидом (и называется _продуктом_)
+
+```dotty
+given productMonoid[A, B](using ma: Monoid[A], mb: Monoid[B]): Monoid[(A, B)] with
+  def combine(x: (A, B), y: (A, B)): (A, B) =
+    (ma.combine(x(0), y(0)), mb.combine(x(1), y(1)))
+
+  val empty: (A, B) = (ma.empty, mb.empty)
+```
+
+Моноидом также является `Map`, если доступен моноид для его значений:
+
+```dotty
+given mapMergeMonoid[K, V](using mv: Monoid[V]): Monoid[Map[K, V]] with
+  def combine(a: Map[K, V], b: Map[K, V]): Map[K, V] =
+    (a.keySet ++ b.keySet).foldLeft(empty) { (acc, k) =>
+      acc.updated(k, mv.combine(a.getOrElse(k, mv.empty), b.getOrElse(k, mv.empty)))
+    }
+    
+  val empty: Map[K, V] = Map()
+```
+
+Моноидом является функция, результаты которой являются моноидами.
+
+```dotty
+given functionMonoid[A, B](using mb: Monoid[B]): Monoid[A => B] with
+  def combine(f: A => B, g: A => B): A => B = a => mb.combine(f(a), g(a))
+
+  val empty: A => B = _ => mb.empty
+```
+
+Тот факт, что несколько моноидов могут быть объединены в один, означает,
+что можно одновременно выполнять несколько вычислений при свертывании структуры данных.
+Например, можно взять длину и сумму списка одновременно, чтобы вычислить среднее значение:
+
+```dotty
+val p = List(1, 2, 3, 4).foldMap(a => (1, a))
+// p: Tuple2[Int, Int] = (4, 10)
+val mean = p(0) / p(1).toDouble
+// mean: Double = 0.4
+```
+
 ## Реализация
 
 ### Реализация в Cats
@@ -184,11 +304,13 @@ Monoid.isEmpty(Monoid.empty[Int]) // true
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monoid.html)
 - [Category Theory for Programmers - Bartosz Milewski](https://bartoszmilewski.com/2014/12/05/categories-great-and-small)
 - [Cats](https://typelevel.org/cats/typeclasses/monoid.html)
+- [Functional Programming in Scala, Second Edition, Chapter 10](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Monoid.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monoid.html#Monoid)
 - [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics/#monoids)
 - [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#definition-of-a-monoid)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monoid.html)
+- [Semigroups and Monoids in Scala](https://www.youtube.com/watch?v=LmBTiFYa-V4&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 - [Spire home page](https://typelevel.org/spire)
 - [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%BE%D0%B8%D0%B4)

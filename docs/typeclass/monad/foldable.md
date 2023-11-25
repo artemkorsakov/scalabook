@@ -29,22 +29,37 @@ _Fold_ может использоваться для реализации `redu
 ## Определение в виде кода на Scala
 
 ```dotty
+trait Monoid[A]:
+  def combine(a1: A, a2: A): A
+  def empty: A
+
+object Monoid:
+  def dual[A](m: Monoid[A]): Monoid[A] = new:
+    def combine(x: A, y: A): A = m.combine(y, x)
+    val empty: A = m.empty
+
+  def endoMonoid[A]: Monoid[A => A] = new:
+    def combine(a1: A => A, a2: A => A): A => A = a1 andThen a2
+    val empty: A => A = identity
+
 trait Foldable[F[_]]:
-  extension [A](fa: F[A])
-    def foldRight[B](init: B)(f: (A, B) => B): B =
-      fa.foldMap(f.curried)(using endoMonoid[B])(init)
+  import Monoid.{endoMonoid, dual}
+
+  extension [A](as: F[A])
+    def foldRight[B](acc: B)(f: (A, B) => B): B =
+      foldMap(f.curried)(using endoMonoid[B])(acc)
 
     def foldLeft[B](acc: B)(f: (B, A) => B): B =
-      fa.foldMap(a => b => f(b, a))(using dual(endoMonoid[B]))(acc)
+      foldMap(a => b => f(b, a))(using dual(endoMonoid[B]))(acc)
 
     def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
-      fa.foldRight(mb.empty)((a, b) => mb.combine(f(a), b))
+      foldRight(mb.empty)((a, b) => mb.combine(f(a), b))
 
     def combineAll(using ma: Monoid[A]): A =
-      fa.foldLeft(ma.empty)(ma.combine)
-
+      foldLeft(ma.empty)(ma.combine)
+    
     def toList: List[A] =
-      fa.foldRight(List.empty[A])(_ :: _)
+      fa.foldRight(List.empty[A])(_ :: _)  
 ```
 
 ## Примеры
@@ -165,6 +180,7 @@ Foldable[List].fold(digits)                                // 45
 
 - [Cats](https://typelevel.org/cats/typeclasses/foldable.html)
 - [Folds for Imperative Programmers](https://blog.tmorris.net/posts/folds-for-imperative-programmers/index.html)
+- [Functional Programming in Scala, Second Edition, Chapter 10](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Herding Cats](http://eed3si9n.com/herding-cats/using-monoids-to-fold.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Foldable.html)

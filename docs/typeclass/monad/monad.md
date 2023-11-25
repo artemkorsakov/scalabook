@@ -30,6 +30,94 @@ trait Monad[F[_]] extends Applicative[F], Bind[F]:
       fa.flatMap(a => unit(f(a)))
 ```
 
+### Виды монад
+
+#### Monad с `flatMap` и `unit`
+
+Монада может быть определена с помощью `flatMap` и `unit`.
+В этом случае `map` и `map2` будут определяться так:
+
+```dotty
+trait Monad[F[_]] extends Functor[F]:
+  def unit[A](a: => A): F[A]
+
+  extension [A](fa: F[A])
+    def flatMap[B](f: A => F[B]): F[B]
+
+    def map[B](f: A => B): F[B] =
+      flatMap(a => unit(f(a)))
+
+    def map2[B, C](fb: F[B])(f: (A, B) => C): F[C] =
+      fa.flatMap(a => fb.map(b => f(a, b)))
+```
+
+#### Monad с `compose` и `unit`
+
+Монада может быть определена с помощью `compose` и `unit`.
+В этом случае `flatMap` (и через неё остальные операции) будет определяться так:
+
+```dotty
+trait Monad[F[_]] extends Functor[F]:
+  def unit[A](a: => A): F[A]
+
+  def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C]
+
+  extension [A](fa: F[A])
+    def flatMapViaCompose[B](f: A => F[B]): F[B] =
+      compose[Unit, A, B](_ => fa, f)(())
+```
+
+В этом случае законы Монады примут вид:
+
+- identities:
+    - `compose(f, unit) == f`
+    - `compose(unit, f) == f`
+- associativity:
+    - `compose(compose(f, g), h) == compose(f, compose(g, h))`
+
+#### Monad с `map`, `join` и `unit`
+
+Монада может быть определена с помощью `map`, `join` (другое имя - `flatten`) и `unit`.
+В этом случае `flatMap` и `compose` могут быть определены так:
+
+```dotty
+trait Functor[F[_]]:
+  extension [A](fa: F[A]) 
+    def map[B](f: A => B): F[B]
+
+trait Monad[F[_]] extends Functor[F]:
+  def unit[A](a: => A): F[A]
+
+  extension[A] (ffa: F[F[A]])
+    def join: F[A]
+
+  extension [A](fa: F[A])
+    def flatMapViaJoinAndMap[B](f: A => F[B]): F[B] =
+      fa.map(f).join
+ 
+  def composeViaJoinAndMap[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
+    a => f(a).map(g).join      
+```
+
+### Комбинаторы монад
+
+Монада определяет некоторые комбинаторы:
+
+```dotty
+def sequence[A](fas: List[F[A]]): F[List[A]] =
+  traverse(fas)(identity)
+
+def traverse[A, B](as: List[A])(f: A => F[B]): F[List[B]] =
+  as.foldRight(unit(List.empty[B]))((a, acc) => f(a).map2(acc)(_ :: _))
+
+def replicateM[A](n: Int, fa: F[A]): F[List[A]] =
+  sequence(List.fill(n)(fa))
+
+// Kleisli arrows
+def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
+  a => f(a).flatMap(g)  
+```
+
 ## Примеры
 
 ### "Обертка"

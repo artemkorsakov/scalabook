@@ -49,6 +49,62 @@ trait Applicative[F[_]] extends Apply[F], InvariantApplicative[F]:
       apply(apply(unit(f.curried))(fa))(fb)
 ```
 
+### Виды Applicative
+
+#### Applicative с `unit` и `apply`
+
+`map2` и `map` могут быть выражены так:
+
+```dotty
+trait Applicative[F[_]] extends Functor[F]:
+  def unit[A](a: => A): F[A]
+
+  def apply[A, B](fab: F[A => B])(fa: F[A]): F[B]
+
+  extension [A](fa: F[A])
+    def map2[B,C](fb: F[B])(f: (A, B) => C): F[C] =
+      apply(apply(unit(f.curried))(fa))(fb)
+
+    def map[B](f: A => B): F[B] =
+      apply(unit(f))(fa)
+```
+
+#### Applicative с `unit` и `map2`
+
+`apply` и `map` могут быть выражены так:
+
+```dotty
+trait Applicative[F[_]] extends Functor[F]:
+  def unit[A](a: => A): F[A]
+
+  extension [A](fa: F[A])
+    def map2[B,C](fb: F[B])(f: (A, B) => C): F[C]
+
+    def map[B](f: A => B): F[B] =
+      fa.map2(unit(()))((a, _) => f(a))
+
+  def apply[A, B](fab: F[A => B])(fa: F[A]): F[B] =
+    fab.map2(fa)((f, a) => f(a))
+```
+
+### Комбинаторы Applicative
+
+`Applicative` определяет некоторые комбинаторы:
+
+```dotty
+def sequence[A](fas: List[F[A]]): F[List[A]] =
+  traverse(fas)(identity)
+
+def traverse[A,B](as: List[A])(f: A => F[B]): F[List[B]] =
+  as.foldRight(unit(List[B]()))((a, acc) => f(a).map2(acc)(_ :: _))
+
+def replicateM[A](n: Int, fa: F[A]): F[List[A]] =
+  sequence(List.fill(n)(fa))
+
+def product[A, B](fa: F[A], fb: F[B]): F[(A,B)] =
+  fa.map2(fb)((a, b) => (a, b))
+```
+
 ## Примеры
 
 ### Tuple applicative

@@ -73,6 +73,17 @@ trait SemigroupLaw extends Laws:
 
 ## Примеры
 
+### Непустой список
+
+```dotty
+case class NonEmptyList[+A](head: A, tail: List[A]):
+  def toList: List[A] = head :: tail
+
+given [A]: Semigroup[NonEmptyList[A]] with
+  def combine(x: NonEmptyList[A], y: NonEmptyList[A]) =
+    NonEmptyList(x.head, x.tail ++ y.toList)
+```
+
 ### Натуральные числа N образуют полугруппу относительно сложения
 
 ```dotty

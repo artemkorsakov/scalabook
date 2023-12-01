@@ -6,7 +6,7 @@ case class PokerCard(pokerRank: PokerRank, pokerSuit: PokerSuit)
 
 object PokerCard:
   def string2PokerCard(card: String): Option[PokerCard] =
-    if (card.length < 2 || card.length > 3) then None
+    if card.length < 2 || card.length > 3 then None
     else
       (
         PokerRank.withNameOpt(card.dropRight(1)),

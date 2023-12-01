@@ -7,9 +7,9 @@ import java.io.*
 
 object CopyFilesF extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =
-    for {
+    for
       _ <-
-        if (args.length < 2)
+        if args.length < 2 then
           IO.raiseError(
             new IllegalArgumentException("Need origin and destination files")
           )
@@ -20,7 +20,7 @@ object CopyFilesF extends IOApp:
       _ <- IO.println(
         s"$count bytes copied from ${orig.getPath} to ${dest.getPath}"
       )
-    } yield ExitCode.Success
+    yield ExitCode.Success
 
   private def copy[F[_]: Sync](origin: File, destination: File): F[Long] =
     inputOutputStreams(origin, destination).use { (in, out) =>
@@ -31,10 +31,10 @@ object CopyFilesF extends IOApp:
       in: File,
       out: File
   ): Resource[F, (InputStream, OutputStream)] =
-    for {
+    for
       inStream  <- inputStream(in)
       outStream <- outputStream(out)
-    } yield (inStream, outStream)
+    yield (inStream, outStream)
 
   private def inputStream[F[_]: Sync](f: File): Resource[F, FileInputStream] =
     Resource.make {
@@ -62,10 +62,10 @@ object CopyFilesF extends IOApp:
       buffer: Array[Byte],
       acc: Long
   ): F[Long] =
-    for {
+    for
       amount <- Sync[F].blocking(origin.read(buffer, 0, buffer.length))
       count <-
-        if (amount > -1)
+        if amount > -1 then
           Sync[F].blocking(destination.write(buffer, 0, amount)) >> transmit(
             origin,
             destination,
@@ -73,4 +73,4 @@ object CopyFilesF extends IOApp:
             acc + amount
           )
         else Sync[F].pure(acc)
-    } yield count
+    yield count

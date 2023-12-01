@@ -23,7 +23,7 @@ case class SuDoku(cells: Array[Array[Array[Int]]]):
           )
       )
 
-    if (isValid && !isNotAnswer) Some(cells.map(_.map(_.head)))
+    if isValid && !isNotAnswer then Some(cells.map(_.map(_.head)))
     else None
 
   private def isNotAnswer: Boolean =

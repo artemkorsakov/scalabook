@@ -70,10 +70,9 @@ case class RationalNumber(x: BigInt, y: BigInt):
     (numerator * r.denominator).equals(denominator * r.numerator)
 
   override def equals(obj: Any): Boolean =
-    obj match {
+    obj match
       case rn: RationalNumber => this.equal(rn)
       case _                  => false
-    }
 
   def <(r: RationalNumber): Boolean =
     numerator * r.denominator < r.numerator * denominator

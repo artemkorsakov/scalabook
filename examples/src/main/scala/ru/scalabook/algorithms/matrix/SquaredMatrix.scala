@@ -57,5 +57,5 @@ class SquaredMatrix[T](elements: Seq[Seq[T]])(using I: Integral[T])
 object SquaredMatrix:
   def identityMatrix(n: Int): SquaredMatrix[Int] =
     new SquaredMatrix[Int](
-      (0 until n).map(i => (0 until n).map(j => if (i == j) 1 else 0))
+      (0 until n).map(i => (0 until n).map(j => if i == j then 1 else 0))
     )

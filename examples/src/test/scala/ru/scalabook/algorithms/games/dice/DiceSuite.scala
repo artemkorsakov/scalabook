@@ -12,7 +12,7 @@ object DiceSuite extends FunSuite:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var fractionLessColin = new RationalNumber(0, 1)
 
-  for (i <- 1 until fractionsPete.length) do
+  for i <- 1 until fractionsPete.length do
     fractionLessColin += fractionsColin(i - 1)
     fractionWin += fractionsPete(i) * fractionLessColin
 

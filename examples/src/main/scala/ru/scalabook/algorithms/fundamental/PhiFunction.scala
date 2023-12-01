@@ -46,7 +46,7 @@ object PhiFunction:
     phiArray(1) = 1
 
     val primesArray = primesNoMoreThanN(limit)
-    for (n <- 1 to limit / 2) do
+    for n <- 1 to limit / 2 do
       var i = 0
       while i < primesArray.length && n * primesArray(i) <= limit do
         val p = primesArray(i)

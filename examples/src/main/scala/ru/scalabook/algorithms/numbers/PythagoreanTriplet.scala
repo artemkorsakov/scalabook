@@ -51,8 +51,8 @@ object PythagoreanTriplet:
       val sqrt        = math.sqrt(s2.toDouble).toLong
       val mLimit      = if sqrt * sqrt == s2 then sqrt - 1 else sqrt
 
-      for (m <- 2L to mLimit)
-        if (s2 % m == 0) {
+      for m <- 2L to mLimit do
+        if s2 % m == 0 then
           var sm = s2 / m
           while sm % 2 == 0 do // reduce the search space by
             sm /= 2 // removing all factors 2
@@ -67,6 +67,5 @@ object PythagoreanTriplet:
               val c = d * (m * m + n * n)
               arrayBuffer += PythagoreanTriplet(a, b, c)
             k += 2
-        }
 
       arrayBuffer.toSeq

@@ -18,7 +18,6 @@ object Divide:
     override def divide[A, B, C](fa: => A => R, fb: => B => R)(
         f: C => (A, B)
     ): C => R =
-      c => {
+      c =>
         val (a, b) = f(c)
         Monoid[R].combine(fa(a), fb(b))
-      }

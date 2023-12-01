@@ -90,9 +90,9 @@ object Primes:
     if n == 2 then 3
     else if n == 3 then 5
     else
-      var nextPrime = if (n % 3 == 1) n + 4 else n + 2
+      var nextPrime = if n % 3 == 1 then n + 4 else n + 2
       while !isPrime(nextPrime) do
-        nextPrime = if (nextPrime % 3 == 1) nextPrime + 4 else nextPrime + 2
+        nextPrime = if nextPrime % 3 == 1 then nextPrime + 4 else nextPrime + 2
       nextPrime
 
   @SuppressWarnings(

@@ -96,7 +96,9 @@ object Hangman extends ZIOAppDefault:
     val hangman = ZIO.attempt(hangmanStages(state.failuresCount)).orDie
     val word =
       state.word.toList
-        .map(c => if (state.guesses.map(_.char).contains(c)) s" $c " else "   ")
+        .map(c =>
+          if state.guesses.map(_.char).contains(c) then s" $c " else "   "
+        )
         .mkString
 
     val line    = List.fill(state.word.length)(" - ").mkString

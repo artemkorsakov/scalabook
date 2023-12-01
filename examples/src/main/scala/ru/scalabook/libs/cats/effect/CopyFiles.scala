@@ -6,7 +6,7 @@ import java.io.*
 
 object CopyFiles extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =
-    for {
+    for
       _ <-
         if args.length < 2 then
           IO.raiseError(
@@ -19,7 +19,7 @@ object CopyFiles extends IOApp:
       _ <- IO.println(
         s"$count bytes copied from ${orig.getPath} to ${dest.getPath}"
       )
-    } yield ExitCode.Success
+    yield ExitCode.Success
 
   private def copy(origin: File, destination: File): IO[Long] =
     inputOutputStreams(origin, destination).use { (in, out) =>

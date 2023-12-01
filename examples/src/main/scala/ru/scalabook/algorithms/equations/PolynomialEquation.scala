@@ -30,11 +30,11 @@ object PolynomialEquation:
     val aList = new Array[Long](k)
 
     val coefficientsList = coefficientsForSolutionSearching(k)
-    for (i <- k - 1 to 0 by -1) do
+    for i <- k - 1 to 0 by -1 do
       val coefficients = coefficientsList(i)
       val index        = k - coefficients.length
       var divisor      = 0L
-      for (j <- coefficients.indices) do
+      for j <- coefficients.indices do
         aList(index) += coefficients(j) * solutions(coefficients.length - 1 - j)
         (0 until index).foreach(m =>
           aList(index) -= aList(m) * coefficients(j) * math

@@ -21,11 +21,12 @@ object FreeSuite extends SimpleIOSuite, Checkers, Laws:
 
   test("Check free monad"):
     forall: (a: Int, b: Int, c: Int) =>
-      lazy val program = for {
-        a1 <- start(a)
-        a2 <- add(a1, b)
-        a3 <- add(a2, c)
-      } yield a3
+      lazy val program =
+        for
+          a1 <- start(a)
+          a2 <- add(a1, b)
+          a3 <- add(a2, c)
+        yield a3
       val result = Free.foldF(program)(OperationToId)
       whenSuccess(check(result == Id(a + b + c), "Check free monad")): _ =>
         success

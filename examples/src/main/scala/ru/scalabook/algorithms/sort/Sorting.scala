@@ -73,7 +73,7 @@ object Sorting:
 
     var i = first
     var j = mid + 1
-    for (k <- first to last)
+    for k <- first to last do
       if i > mid then
         array(k) = buf(j)
         j += 1

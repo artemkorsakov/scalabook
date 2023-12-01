@@ -50,7 +50,7 @@ case class Iteration(a: BigInt, b: BigInt, k: BigInt, d: Int):
     var m    = BigInt(-1)
     var min  = d + 1
     val last = math.sqrt(2.0 * d).toInt
-    for (i <- 1 to last) do
+    for i <- 1 to last do
       if isMCorrect(BigInt(i)) then
         val tmp = math.abs(i * i - d)
         if tmp < min then

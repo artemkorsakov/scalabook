@@ -73,7 +73,7 @@ object NumbersDescription:
       case _              => None
 
   def inRussian(number: Long): Option[String] =
-    (number match {
+    (number match
       case n if n < 21 => toRussianBase(n)
       case n if n < hundred =>
         toRussianBase((number / 10) * 10).flatMap(f =>
@@ -86,17 +86,16 @@ object NumbersDescription:
       case n if n < million =>
         val first = number / thousand
         val firstInRussian =
-          if (first % 10 == 1 && (first % hundred) / 10 != 1) {
+          if first % 10 == 1 && (first % hundred) / 10 != 1 then
             inRussian((first / 10) * 10).map(s => s"$s одна тысяча")
-          } else if (first % 10 == 2 && (first % hundred) / 10 != 1) {
+          else if first % 10 == 2 && (first % hundred) / 10 != 1 then
             inRussian((first / 10) * 10).map(s => s"$s две тысячи")
-          } else if (
+          else if
             3 <= first % 10 && first % 10 <= 4 && (first % hundred) / 10 != 1
-          ) {
+          then
             inRussian(first).map(f => f + " тысячи")
-          } else {
+          else
             inRussian(first).map(f => f + " тысяч")
-          }
         firstInRussian.flatMap(f =>
           inRussian(number % thousand).map(s => s"$f $s")
         )
@@ -104,7 +103,7 @@ object NumbersDescription:
       case n if n < trillion    => constructRussian(n, billion)
       case n if n < quadrillion => constructRussian(n, trillion)
       case _                    => None
-    }).map(ans => ans.trim)
+    ).map(ans => ans.trim)
 
   private def constructRussian(n: Long, base: Long): Option[String] =
     val first = n / base

@@ -103,8 +103,8 @@ class PokerHand(hand: String):
       PokerHandsType.THREE_OF_A_KIND,
       Seq(
         sortedRanks(2),
-        sortedRanks(if (indexThreeOfAKind == 0) 3 else 0),
-        sortedRanks(if (indexThreeOfAKind == 2) 1 else 4),
+        sortedRanks(if indexThreeOfAKind == 0 then 3 else 0),
+        sortedRanks(if indexThreeOfAKind == 2 then 1 else 4),
         PokerRank.TWO,
         PokerRank.TWO
       )
@@ -120,7 +120,7 @@ class PokerHand(hand: String):
     val isFirstEqualSecond = sortedRanks.head.rank == sortedRanks(1).rank
     val isThirdEqualFourth = sortedRanks(2).rank == sortedRanks(3).rank
     val thirdIndex =
-      if (isFirstEqualSecond && isThirdEqualFourth) 4
+      if isFirstEqualSecond && isThirdEqualFourth then 4
       else if isFirstEqualSecond then 2
       else 0
     (
@@ -144,9 +144,9 @@ class PokerHand(hand: String):
       PokerHandsType.ONE_PAIR,
       Seq(
         sortedRanks(index),
-        sortedRanks(if (index == 0) 2 else 0),
-        sortedRanks(if (index < 2) 3 else 1),
-        sortedRanks(if (index == 3) 2 else 4),
+        sortedRanks(if index == 0 then 2 else 0),
+        sortedRanks(if index < 2 then 3 else 1),
+        sortedRanks(if index == 3 then 2 else 4),
         PokerRank.TWO
       )
     )

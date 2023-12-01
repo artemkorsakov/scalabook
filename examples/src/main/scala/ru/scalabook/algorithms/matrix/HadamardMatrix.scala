@@ -10,7 +10,7 @@ class HadamardMatrix(elements: Seq[Seq[Int]])(using I: Integral[Int])
     val tl     = matrix.topLeft
     val els    = matrix.elements
     (0 until n).forall(i =>
-      (0 until n).forall(j => els(i)(j) == (if (i == j) tl else 0))
+      (0 until n).forall(j => els(i)(j) == (if i == j then tl else 0))
     )
 
   require(isHadamardMatrix)

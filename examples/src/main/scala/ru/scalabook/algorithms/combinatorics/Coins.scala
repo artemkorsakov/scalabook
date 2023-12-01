@@ -33,19 +33,16 @@ object Coins:
       var k  = s
       var op = k * (3 * k - 1) / 2
       var p  = pS
-      while (op <= n) {
-        if ((k + 1) % 2 == 0) {
+      while op <= n do
+        if (k + 1) % 2 == 0 then
           p += array(n - op)
-        } else {
+        else
           p -= array(n - op)
-        }
         k += s
         op = k * (3 * k - 1) / 2
-      }
       p
 
-    for (n <- 3 to number) {
+    for n <- 3 to number do
       val p = partitionPart(1, n, BigInt(0))
       array(n) = partitionPart(-1, n, p)
-    }
     array(number)

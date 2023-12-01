@@ -51,7 +51,7 @@ object Numerical:
         case (1, 1) => gcd(u >> 1, v >> 1) << 1
         case (1, 0) => gcd(u >> 1, v)
         case (0, 1) => gcd(u, v >> 1)
-        case (_, _) => if (u > v) gcd(u - v, v) else gcd(v - u, u)
+        case (_, _) => if u > v then gcd(u - v, v) else gcd(v - u, u)
 
   /** Return the greatest common divisor.
     */
@@ -66,7 +66,7 @@ object Numerical:
         case (1, 1) => gcd(u >> 1, v >> 1) << 1
         case (1, 0) => gcd(u >> 1, v)
         case (0, 1) => gcd(u, v >> 1)
-        case (_, _) => if (u > v) gcd(u - v, v) else gcd(v - u, u)
+        case (_, _) => if u > v then gcd(u - v, v) else gcd(v - u, u)
 
   /** Extended Euclidean algorithm.
     *

@@ -37,6 +37,7 @@ sealed trait Free[S[+_], A]:
         More(S.map(b)(y => Done(a) zip y))
       case (Right(a), Right(b)) =>
         Done((a, b))
+end Free
 
 object Free:
   private final case class FlatMap[S[+_], A, B](

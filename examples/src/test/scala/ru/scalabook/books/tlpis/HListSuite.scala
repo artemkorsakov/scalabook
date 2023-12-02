@@ -71,3 +71,4 @@ object HListSuite extends FunSuite:
         true
       case _ => false
     expect.all(checkReverseAppend)
+end HListSuite

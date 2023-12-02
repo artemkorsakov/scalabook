@@ -36,3 +36,4 @@ object Monad:
 
     extension [A](fa: IO[A])
       override def flatMap[B](f: A => IO[B]): IO[B] = f(fa.run())
+end Monad

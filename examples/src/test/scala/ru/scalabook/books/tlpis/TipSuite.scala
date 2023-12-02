@@ -62,3 +62,4 @@ object TipSuite extends FunSuite:
       bb == () :: 9.3 :: HNil,
       dropRight == 3 :: true :: "asfd" :: 'k' :: HNil
     )
+end TipSuite

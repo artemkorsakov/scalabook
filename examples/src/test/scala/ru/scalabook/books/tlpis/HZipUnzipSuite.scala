@@ -50,3 +50,4 @@ object HZipUnzipSuite extends FunSuite:
       ca == 3 :: "ai4" :: HNil,
       cb == '3' :: 2 :: HNil
     )
+end HZipUnzipSuite

@@ -26,3 +26,4 @@ object SemigroupSuite extends SimpleIOSuite with Checkers:
       extension (x: Int) override def |+|(y: Int): Int = x - y
 
     expect.all(!doTheSemigroupLawsHold(1, 2, 3))
+end SemigroupSuite

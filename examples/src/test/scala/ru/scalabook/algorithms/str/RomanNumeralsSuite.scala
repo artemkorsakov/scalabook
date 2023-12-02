@@ -38,3 +38,4 @@ object RomanNumeralsSuite extends FunSuite:
       toRoman(49).contains("XLIX"),
       toRoman(1984).contains("MCMLXXXIV")
     )
+end RomanNumeralsSuite

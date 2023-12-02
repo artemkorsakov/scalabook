@@ -22,3 +22,4 @@ object PalindromeSuite extends FunSuite:
       isPalindrome(63, 4),
       !isPalindrome(4994, 2)
     )
+end PalindromeSuite

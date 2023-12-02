@@ -45,3 +45,4 @@ object RomanNumeralSymbolSuite extends FunSuite:
       toRomanNumeralSymbol("AB").isEmpty,
       toRomanNumeralSymbol("ABC").isEmpty
     )
+end RomanNumeralSymbolSuite

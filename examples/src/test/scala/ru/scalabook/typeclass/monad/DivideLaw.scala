@@ -22,3 +22,4 @@ trait DivideLaw extends ContravariantFunctorLaw:
           Divide[F].divide(fa1, Divide[F].divide(fa2, fa3)(delta))(delta),
         "composition"
       )
+end DivideLaw

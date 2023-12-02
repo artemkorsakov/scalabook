@@ -31,6 +31,7 @@ case class PythagoreanTriplet(a: Long, b: Long, c: Long):
       val seq = mat.*(columnVector).elements
       PythagoreanTriplet(seq.head.head, seq(1).head, seq.last.head)
     }
+end PythagoreanTriplet
 
 object PythagoreanTriplet:
   val primitivePythagoreanTriplet: PythagoreanTriplet =
@@ -69,3 +70,4 @@ object PythagoreanTriplet:
             k += 2
 
       arrayBuffer.toSeq
+end PythagoreanTriplet

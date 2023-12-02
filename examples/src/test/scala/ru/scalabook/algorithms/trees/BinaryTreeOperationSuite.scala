@@ -57,3 +57,4 @@ object BinaryTreeOperationSuite extends FunSuite:
       areEqual(binaryTree, binaryTree),
       areEqual(otherBinaryTree, otherBinaryTree)
     )
+end BinaryTreeOperationSuite

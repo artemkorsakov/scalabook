@@ -24,3 +24,4 @@ object RadicalsSuite extends FunSuite:
       !isSquareFree(20),
       !isSquareFree(100)
     )
+end RadicalsSuite

@@ -61,3 +61,4 @@ object CyclicNumbersSuite extends SimpleIOSuite with Checkers:
       )
     ): actual =>
       expect(actual)
+end CyclicNumbersSuite

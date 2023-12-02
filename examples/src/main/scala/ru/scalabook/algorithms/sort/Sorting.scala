@@ -86,6 +86,7 @@ object Sorting:
       else
         array(k) = buf(i)
         i += 1
+  end mergeParts
 
   private def swap[T](array: Array[T], i: Int, j: Int): Unit =
     val temp = array(j)

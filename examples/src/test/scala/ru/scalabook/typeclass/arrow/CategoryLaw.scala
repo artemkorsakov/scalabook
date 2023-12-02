@@ -34,3 +34,5 @@ trait CategoryLaw extends ComposeLaw:
           Runner2[=>:].run(a)(f1),
         "left identity"
       )
+  end checkCategoryLaw
+end CategoryLaw

@@ -46,3 +46,5 @@ object Coins:
       val p = partitionPart(1, n, BigInt(0))
       array(n) = partitionPart(-1, n, p)
     array(number)
+  end partition
+end Coins

@@ -31,3 +31,4 @@ object Palindrome:
         k /= base
       k == revertedNumber || k == revertedNumber / base
     }
+end Palindrome

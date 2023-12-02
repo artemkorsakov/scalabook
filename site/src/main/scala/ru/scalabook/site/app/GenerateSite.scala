@@ -30,3 +30,4 @@ object GenerateSite extends IOApp:
       .parallel[F]
       .withTheme(HeliumThemes.mainTheme.build)
       .build
+end GenerateSite

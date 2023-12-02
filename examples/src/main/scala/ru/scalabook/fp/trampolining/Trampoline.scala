@@ -41,6 +41,7 @@ sealed trait Trampoline[+A]:
         More(() => a() zip Done(b))
       case (Right(a), Left(b)) =>
         More(() => Done(a) zip b())
+end Trampoline
 
 object Trampoline:
   given conv[A]: Conversion[A, Trampoline[A]] with
@@ -85,6 +86,7 @@ object State:
       .runT
       ._1
       .reverse
+end State
 
 @main def runZipIndex(): Unit =
   val list = State.zipIndex[String](List.fill(100000)(""))

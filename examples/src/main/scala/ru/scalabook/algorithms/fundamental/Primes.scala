@@ -80,6 +80,7 @@ object Primes:
 
     // Если от числа что-то осталось, то остаток тоже множитель
     if number > 1 then map + (number -> 1) else map
+  end primeFactorsWithPow
 
   /** Get next prime number for the given prime number.
     */
@@ -114,3 +115,5 @@ object Primes:
         set += i
       i += (if i % 6 == 5 then 2 else 4)
     set.toSet
+  end primeFactors
+end Primes

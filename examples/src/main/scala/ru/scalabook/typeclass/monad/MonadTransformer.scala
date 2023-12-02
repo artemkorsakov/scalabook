@@ -34,3 +34,4 @@ object MonadTransformer:
   ): MonadTransformer[OptionT, M] with
     override def lift[A](ma: M[A]): OptionT[M, A] =
       OptionT[M, A](ma.map(Some(_)))
+end MonadTransformer

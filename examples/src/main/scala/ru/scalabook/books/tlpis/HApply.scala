@@ -23,3 +23,4 @@ object HApply:
       toApply: HApply[H, HApply[In, Out]]
   ): Out =
     toApply(h)(in)
+end HApply

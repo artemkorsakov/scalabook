@@ -53,6 +53,7 @@ class SquaredMatrix[T](elements: Seq[Seq[T]])(using I: Integral[T])
       }
 
   lazy val trace: T = mainDiagonal.foldLeft(I.zero)(I.plus)
+end SquaredMatrix
 
 object SquaredMatrix:
   def identityMatrix(n: Int): SquaredMatrix[Int] =

@@ -64,3 +64,4 @@ object PrimesSuite extends SimpleIOSuite with Checkers:
       )
     ): (actual, expected) =>
       expect.all(actual == expected)
+end PrimesSuite

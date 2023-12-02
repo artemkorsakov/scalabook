@@ -98,3 +98,4 @@ object NumbersDescriptionSuite extends FunSuite:
       )
     )
   }
+end NumbersDescriptionSuite

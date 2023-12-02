@@ -69,3 +69,4 @@ object Applicative:
 
     override def apply[A, B](fab: FG[A => B])(fa: FG[A]): FG[B] =
       (Applicative[F].apply(fab._1)(fa._1), Applicative[G].apply(fab._2)(fa._2))
+end Applicative

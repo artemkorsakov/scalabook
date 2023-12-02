@@ -31,3 +31,4 @@ object SuDokuSuite extends FunSuite:
       result(7).toSeq == Array(8, 1, 4, 2, 5, 3, 7, 6, 9).toSeq,
       result(8).toSeq == Array(6, 9, 5, 4, 1, 7, 3, 8, 2).toSeq
     )
+end SuDokuSuite

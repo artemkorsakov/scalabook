@@ -24,3 +24,4 @@ trait CoMonadLaw extends CoBindLaw:
           fab(fa),
         "right identity"
       )
+end CoMonadLaw

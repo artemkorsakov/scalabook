@@ -28,3 +28,4 @@ object PythagoreanDeuceSuite extends FunSuite:
           PythagoreanTriplet(35, 12, 37)
         )
     )
+end PythagoreanDeuceSuite

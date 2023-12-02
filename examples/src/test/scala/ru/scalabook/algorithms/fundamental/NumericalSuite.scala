@@ -67,3 +67,4 @@ object NumericalSuite extends FunSuite:
 
   test("sumOfCubesTo"):
     expect.all(sumOfCubesTo(1000) == 250500250000L)
+end NumericalSuite

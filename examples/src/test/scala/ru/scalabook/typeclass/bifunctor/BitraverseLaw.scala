@@ -25,3 +25,5 @@ trait BitraverseLaw extends TraverseLaw, BifoldableLaw, BifunctorLaw:
       checkTraverseLaw[[X] =>> F[X, R], G, H, A, B, C](far) combine
       checkTraverseLaw[[X] =>> F[L, X], G, H, A, B, C](fla) combine
       checkTraverseLaw[[X] =>> F[X, X], G, H, A, B, C](faa)
+  end checkBitraverseLaw
+end BitraverseLaw

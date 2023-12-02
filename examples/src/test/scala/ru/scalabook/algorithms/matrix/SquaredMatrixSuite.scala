@@ -147,3 +147,4 @@ object SquaredMatrixSuite extends FunSuite:
 
   test("isIdentityMatrix"):
     expect.all(SquaredMatrix.identityMatrix(2).isIdentityMatrix)
+end SquaredMatrixSuite

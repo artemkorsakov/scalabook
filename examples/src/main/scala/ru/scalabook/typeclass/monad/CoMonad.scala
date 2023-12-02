@@ -33,3 +33,4 @@ object CoMonad:
       override def cobind[B](f: Env[A, R] => B): Env[B, R] =
         val Env(_, r) = as
         Env(f(as), r)
+end CoMonad

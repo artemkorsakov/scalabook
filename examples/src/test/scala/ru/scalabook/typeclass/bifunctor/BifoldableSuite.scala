@@ -25,3 +25,4 @@ object BifoldableSuite extends SimpleIOSuite, Checkers, BifoldableLaw:
           }
         ): _ =>
           success
+end BifoldableSuite

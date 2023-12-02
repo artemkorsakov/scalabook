@@ -70,3 +70,4 @@ object RationalNumberSuite extends FunSuite:
 
   test("toPercent"):
     expect.all(math.round(RationalNumber(5, 7).toPercent * 10000) == 7143L)
+end RationalNumberSuite

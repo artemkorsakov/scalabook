@@ -30,3 +30,4 @@ object FreeSuite extends SimpleIOSuite, Checkers, Laws:
       val result = Free.foldF(program)(OperationToId)
       whenSuccess(check(result == Id(a + b + c), "Check free monad")): _ =>
         success
+end FreeSuite

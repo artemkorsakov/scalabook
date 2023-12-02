@@ -30,3 +30,4 @@ object DivideSuite extends SimpleIOSuite, Checkers, DivideLaw:
         )
       ): _ =>
         success
+end DivideSuite

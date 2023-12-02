@@ -41,3 +41,4 @@ object Foldable:
         as match
           case None    => mb.empty
           case Some(a) => f(a)
+end Foldable

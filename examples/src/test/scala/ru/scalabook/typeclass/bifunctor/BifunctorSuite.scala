@@ -28,3 +28,4 @@ object BifunctorSuite extends SimpleIOSuite, Checkers, BifunctorLaw:
             )
         ): _ =>
           success
+end BifunctorSuite

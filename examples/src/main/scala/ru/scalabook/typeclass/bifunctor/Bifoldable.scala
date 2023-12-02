@@ -36,6 +36,7 @@ trait Bifoldable[F[_, _]]:
     extension [A](fa: F[A, A])
       override def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
         fa.bifoldMap[B](f)(f)
+end Bifoldable
 
 object Bifoldable:
   def apply[F[_, _]: Bifoldable]: Bifoldable[F] = summon[Bifoldable[F]]

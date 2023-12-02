@@ -42,6 +42,7 @@ trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:
     extension [A](fab: F[A, A])
       override def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[B, B]] =
         fab.bitraverse(f, f)
+end Bitraverse
 
 object Bitraverse:
   def apply[F[_, _]: Bitraverse]: Bitraverse[F] = summon[Bitraverse[F]]

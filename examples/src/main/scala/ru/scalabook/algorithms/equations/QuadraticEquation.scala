@@ -51,3 +51,4 @@ case class QuadraticEquation(a: Double, b: Double, c: Double):
         ComplexNumber(-b / den, sqrt / den),
         ComplexNumber(-b / den, -sqrt / den)
       )
+end QuadraticEquation

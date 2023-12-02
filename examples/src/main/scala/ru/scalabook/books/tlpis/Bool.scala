@@ -24,3 +24,4 @@ object Bool:
 
   def toBoolean[B <: Bool: BoolRep]: Boolean =
     summon[BoolRep[B]].value
+end Bool

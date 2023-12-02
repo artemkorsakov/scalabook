@@ -107,3 +107,4 @@ object HeliumThemes:
 
   private def addFooter(theme: Helium): Helium =
     theme.site.footer()
+end HeliumThemes

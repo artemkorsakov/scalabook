@@ -27,6 +27,7 @@ case class PythagoreanDeuce(m: Long, n: Long):
       val seq = mat.*(columnVector).elements
       PythagoreanDeuce(seq.head.head, seq.last.head)
     }
+end PythagoreanDeuce
 
 object PythagoreanDeuce:
   val primitivePythagoreanDeuce: PythagoreanDeuce = PythagoreanDeuce(2, 1)

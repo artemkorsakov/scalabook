@@ -32,3 +32,4 @@ trait GCDRingLaw extends CRingWithUnityLaw:
         GCDRing[A].lcm(x, y) == GCDRing[A].lcm(y, x),
         "lcm commutative: lcm(x, y) = lcm(y, x)"
       )
+end GCDRingLaw

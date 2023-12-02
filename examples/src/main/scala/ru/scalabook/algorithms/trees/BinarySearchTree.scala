@@ -34,3 +34,5 @@ object BinarySearchTree:
           Branch((k, value), lb, rb.updateValue(key, value))
         case Branch((_, _), lb, rb) =>
           Branch((key, value), lb, rb)
+  end extension
+end BinarySearchTree

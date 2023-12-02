@@ -34,3 +34,4 @@ object Free:
         monad.flatMap(trans.transform(a)) { aa => foldF(f(aa))(trans) }
       case FlatMap(FlatMap(a, f), g) =>
         foldF(FlatMap(a, aa => FlatMap(f(aa), g)))(trans)
+end Free

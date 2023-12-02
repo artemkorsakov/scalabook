@@ -86,3 +86,4 @@ object IndexedSuite extends FunSuite:
     val y         = x.reverse.asInstanceOf[R] // scalafix:ok
     val dropRight = y.i[_3].drop.reverse
     expect.all(dropRight == 3 :: true :: "asfd" :: false :: 'k' :: HNil)
+end IndexedSuite

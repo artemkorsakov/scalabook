@@ -33,6 +33,7 @@ trait Profunctor[=>:[_, _]]:
   def contravariantInstance[C]: ContravariantFunctor[[X] =>> =>:[X, C]] =
     new ContravariantFunctor[[X] =>> =>:[X, C]]:
       override def cmap[A, B](fa: B =>: C)(f: A => B): A =>: C = mapfst(fa)(f)
+end Profunctor
 
 object Profunctor:
   def apply[=>:[_, _]: Profunctor]: Profunctor[=>:] = summon[Profunctor[=>:]]

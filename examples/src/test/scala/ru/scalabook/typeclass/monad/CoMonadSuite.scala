@@ -31,3 +31,4 @@ object CoMonadSuite extends SimpleIOSuite, Checkers, CoMonadLaw:
         )
       ): _ =>
         success
+end CoMonadSuite

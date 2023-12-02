@@ -34,6 +34,7 @@ object TrampoliningWithStackOverflowException:
       }.runS(0)
         ._1
         .reverse
+  end State
 
 end TrampoliningWithStackOverflowException
 

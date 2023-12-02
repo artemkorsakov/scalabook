@@ -47,3 +47,4 @@ object InvertibleMatrixSuite extends FunSuite:
       )
     val solution = matrix.solveEquation(Seq(7, 10).map(RationalNumber(_)))
     expect.all(solution == Seq(RationalNumber(2), RationalNumber(1)))
+end InvertibleMatrixSuite

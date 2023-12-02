@@ -22,3 +22,4 @@ trait InvariantFunctorLaw extends Laws:
           InvariantFunctor[F].xmap(fa)(g compose f, fReverse compose gReverse),
         "composition: xmap(xmap(ma, f1, g1), f2, g2) == xmap(ma, f2 compose f1, g1 compose g2)"
       )
+end InvariantFunctorLaw

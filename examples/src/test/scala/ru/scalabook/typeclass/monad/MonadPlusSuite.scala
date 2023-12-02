@@ -23,3 +23,4 @@ object MonadPlusSuite extends SimpleIOSuite, Checkers, MonadPlusLaw:
             check(MonadPlus[List].unite(fta) == fta.flatten)
         ): _ =>
           success
+end MonadPlusSuite

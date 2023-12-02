@@ -25,6 +25,7 @@ case class SuDoku(cells: Array[Array[Array[Int]]]):
 
     if isValid && !isNotAnswer then Some(cells.map(_.map(_.head)))
     else None
+  end result
 
   private def isNotAnswer: Boolean =
     cells.exists(_.exists(_.length != 1))

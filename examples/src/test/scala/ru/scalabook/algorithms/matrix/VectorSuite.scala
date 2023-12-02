@@ -94,3 +94,4 @@ object VectorSuite extends FunSuite:
 
   test("manhattanMetric"):
     expect.all(Vector(Seq(1, 2, -3)).manhattanMetric(Seq(-1, 5, -2)) == 6)
+end VectorSuite

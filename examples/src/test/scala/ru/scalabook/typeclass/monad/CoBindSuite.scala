@@ -31,3 +31,4 @@ object CoBindSuite extends SimpleIOSuite, Checkers, CoBindLaw:
         )
       ): _ =>
         success
+end CoBindSuite

@@ -40,3 +40,4 @@ object QuadraticEquationSuite extends FunSuite:
         ComplexNumber(-1, 0.0)
       )
     )
+end QuadraticEquationSuite

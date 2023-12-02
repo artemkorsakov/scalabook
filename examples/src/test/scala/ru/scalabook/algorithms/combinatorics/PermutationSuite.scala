@@ -25,3 +25,4 @@ object PermutationSuite extends FunSuite:
           Vector(2, 3, 1, 4)
         )
     )
+end PermutationSuite

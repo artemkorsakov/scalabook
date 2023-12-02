@@ -46,3 +46,4 @@ object ZipWith:
 
   def exists[HL <: HList](kl: KList[LazyList, HL])(f: HL => Boolean): Boolean =
     zipped(kl).exists(f)
+end ZipWith

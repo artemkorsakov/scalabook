@@ -37,3 +37,4 @@ object StateF:
         yield (n, a) :: xs
       }
     ).reverse
+end StateF

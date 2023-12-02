@@ -54,3 +54,4 @@ object PolynomialEquationSuite extends FunSuite:
       polynomialSolution(11, polCoeff10) == 23772343751L
     )
   }
+end PolynomialEquationSuite

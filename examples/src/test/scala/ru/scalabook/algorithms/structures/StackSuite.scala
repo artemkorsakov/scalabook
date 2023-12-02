@@ -33,3 +33,4 @@ object StackSuite extends FunSuite:
       val newStack = stack.push(1)
       expect(newStack.pop().contains((1, stack)))
     }
+end StackSuite

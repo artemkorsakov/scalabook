@@ -57,3 +57,4 @@ object NatSuite extends FunSuite:
 
   test("Checking the calculation of several operations on Nat"):
     expect.all(toBoolean[Eq[Sq[_9], Add[_1, Mult[_8, _10]]]])
+end NatSuite

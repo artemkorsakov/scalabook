@@ -29,3 +29,4 @@ object HApplySuite extends FunSuite:
 
     // проверка значения
     expect.all(z1 == 10.25 :: false :: HNil, z2 == -1.625 :: true :: HNil)
+end HApplySuite

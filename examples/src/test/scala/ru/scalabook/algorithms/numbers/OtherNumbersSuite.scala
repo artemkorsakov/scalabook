@@ -113,3 +113,4 @@ object OtherNumbersSuite extends SimpleIOSuite with Checkers:
   test("tetranacci"):
     forall(Gen.oneOf(expectedTetranacci.indices)): i =>
       expect(tetranacci(i) == expectedTetranacci(i))
+end OtherNumbersSuite

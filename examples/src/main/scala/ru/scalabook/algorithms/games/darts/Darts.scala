@@ -30,3 +30,5 @@ object Darts:
     )
 
     integerMap
+  end allDistinctWaysToCheckOut
+end Darts

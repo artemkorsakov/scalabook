@@ -21,3 +21,4 @@ trait FunctorLaw extends InvariantFunctorLaw:
           Functor[F].map(fa)(f.andThen(g)),
         "composition: fa.map(f).map(g) == fa.map(g(f(_)))"
       )
+end FunctorLaw

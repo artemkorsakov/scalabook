@@ -70,3 +70,4 @@ object CyclicNumbers:
   def isOctagonal(n: Long): Boolean =
     val sol = math.round(1.0 / 3.0 + sqrt(n / 3.0 + 1.0 / 9.0))
     octagonalNumber(sol) == n
+end CyclicNumbers

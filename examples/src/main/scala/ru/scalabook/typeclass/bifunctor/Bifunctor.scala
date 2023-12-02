@@ -28,6 +28,7 @@ trait Bifunctor[F[_, _]]:
 
   def umap[A, B](faa: F[A, A])(f: A => B): F[B, B] =
     bimap(faa)(f, f)
+end Bifunctor
 
 object Bifunctor:
   def apply[F[_, _]: Bifunctor]: Bifunctor[F] = summon[Bifunctor[F]]

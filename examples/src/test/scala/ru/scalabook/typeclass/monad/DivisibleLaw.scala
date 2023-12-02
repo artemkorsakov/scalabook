@@ -25,3 +25,4 @@ trait DivisibleLaw extends DivideLaw:
           fa1,
         "leftIdentity"
       )
+end DivisibleLaw

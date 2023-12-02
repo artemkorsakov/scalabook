@@ -46,3 +46,4 @@ object Search:
           (newValue, prefixT :+ newValue)
       }
       ._2
+end Search

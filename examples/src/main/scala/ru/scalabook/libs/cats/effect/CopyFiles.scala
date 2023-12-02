@@ -73,3 +73,4 @@ object CopyFiles extends IOApp:
           )
         else IO.pure(acc)
     yield count
+end CopyFiles

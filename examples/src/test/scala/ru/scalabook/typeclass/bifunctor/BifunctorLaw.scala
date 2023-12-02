@@ -32,3 +32,4 @@ trait BifunctorLaw extends FunctorLaw:
         g,
         gReverse
       )
+end BifunctorLaw

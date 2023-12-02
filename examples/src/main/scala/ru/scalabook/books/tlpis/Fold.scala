@@ -24,3 +24,4 @@ trait FoldAny[Value] extends Fold[Any, Value]:
     hlist match
       case HNil              => i
       case HCons(head, tail) => foldl(tail, apply(head, i))
+end FoldAny

@@ -63,6 +63,7 @@ case class Iteration(a: BigInt, b: BigInt, k: BigInt, d: Int):
       do m += 1
 
     m
+  end getM
 
   def isMCorrect(m: BigInt): Boolean =
     (a + b * m).abs % k.abs == BigInt(0)

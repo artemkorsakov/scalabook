@@ -31,3 +31,4 @@ trait MonadPlusLaw extends MonadLaw, ApplicativePlusLaw:
           MonadPlus[F].empty[A],
         "`empty` short-circuits throughout its `join` tree"
       )
+end MonadPlusLaw

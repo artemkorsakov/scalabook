@@ -27,3 +27,4 @@ object BitraverseSuite extends SimpleIOSuite, Checkers, BitraverseLaw:
           ](far, fla, faa)
         ): _ =>
           success
+end BitraverseSuite

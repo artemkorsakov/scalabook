@@ -41,3 +41,4 @@ object BoolSuite extends FunSuite:
     "toBoolean should convert logical operations at the type level to the value level"
   ):
     expect(toBoolean[(True && False) || Not[False]])
+end BoolSuite

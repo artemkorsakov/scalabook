@@ -25,3 +25,4 @@ object Factorial:
         val next = pj / p
         loop(next, acc + next)
     loop(n, 0)
+end Factorial

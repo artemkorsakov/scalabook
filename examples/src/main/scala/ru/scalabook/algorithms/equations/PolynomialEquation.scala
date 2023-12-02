@@ -50,6 +50,7 @@ object PolynomialEquation:
       aList(index) = aList(index) / divisor
 
     aList
+  end polynomialCoefficients
 
   private def coefficientsForSolutionSearching(
       k: Int
@@ -62,3 +63,4 @@ object PolynomialEquation:
         last(i + 1) - last(i)
       ) :+ -last.last
       coefficients :+ current
+end PolynomialEquation

@@ -32,3 +32,4 @@ object MonoidSuite extends SimpleIOSuite with Checkers:
       extension (x: Int) override def |+|(y: Int): Int = x * y
 
     expect.all(!doTheMonoidLawsHold(1, 2, 3))
+end MonoidSuite

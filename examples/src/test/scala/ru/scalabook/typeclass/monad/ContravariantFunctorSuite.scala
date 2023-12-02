@@ -33,3 +33,4 @@ object ContravariantFunctorSuite
           )
       ): _ =>
         success
+end ContravariantFunctorSuite

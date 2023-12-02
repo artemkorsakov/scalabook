@@ -105,3 +105,4 @@ trait StrongLaw extends ProfunctorLaw:
 
   private def unassoc[A, B, C]: ((A, (B, C))) => ((A, B), C) =
     case (a, (b, c)) => ((a, b), c)
+end StrongLaw

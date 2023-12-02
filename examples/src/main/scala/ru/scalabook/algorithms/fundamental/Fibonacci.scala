@@ -34,3 +34,4 @@ object Fibonacci:
     (PHI.pow(n) / BigDecimal(math.sqrt(5)))
       .setScale(0, BigDecimal.RoundingMode.HALF_UP)
       .toBigInt
+end Fibonacci

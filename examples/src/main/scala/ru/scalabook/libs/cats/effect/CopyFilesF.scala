@@ -74,3 +74,4 @@ object CopyFilesF extends IOApp:
           )
         else Sync[F].pure(acc)
     yield count
+end CopyFilesF

@@ -43,3 +43,5 @@ trait ApplicativeLaw extends ApplyLaw:
           Applicative[F].apply(Applicative[F].unit(f))(fa),
         "identity"
       )
+  end checkApplicativeLaw
+end ApplicativeLaw

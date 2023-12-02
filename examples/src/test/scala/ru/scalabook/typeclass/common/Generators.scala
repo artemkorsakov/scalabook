@@ -29,3 +29,4 @@ object Generators:
       y <- Gen.posNum[Long]
     yield RationalNumber(x, y)
   )
+end Generators

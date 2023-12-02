@@ -29,3 +29,4 @@ object HammingNumber:
         if temp == 1 then isHamming = true
         i += 1
       isHamming
+end HammingNumber

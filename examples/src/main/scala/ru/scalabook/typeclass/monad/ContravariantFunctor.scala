@@ -29,6 +29,7 @@ trait ContravariantFunctor[F[_]] extends InvariantFunctor[F]:
     new ContravariantFunctor[[X] =>> (F[X], G[X])]:
       def cmap[A, B](fa: (F[B], G[B]))(f: A => B): (F[A], G[A]) =
         (self.contramap(fa._1)(f), ContravariantFunctor[G].contramap(fa._2)(f))
+end ContravariantFunctor
 
 object ContravariantFunctor:
   def apply[F[_]: ContravariantFunctor]: ContravariantFunctor[F] =
@@ -49,3 +50,4 @@ object ContravariantFunctor:
       : ContravariantFunctor[[X] =>> Function1[X, R]] with
     def cmap[A, B](function: B => R)(f: A => B): A => R =
       a => function(f(a))
+end ContravariantFunctor

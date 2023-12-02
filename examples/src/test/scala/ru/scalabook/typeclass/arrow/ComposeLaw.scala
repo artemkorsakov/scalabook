@@ -30,3 +30,4 @@ trait ComposeLaw extends Laws:
           ),
         "Associativity"
       )
+end ComposeLaw

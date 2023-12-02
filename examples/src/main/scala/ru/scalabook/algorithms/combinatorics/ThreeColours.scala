@@ -26,3 +26,4 @@ object ThreeColours:
         mid - 1,
         max
       ) + countABCRows(min, mid, max - 1)
+end ThreeColours

@@ -37,3 +37,4 @@ object FibonacciSuite extends FunSuite:
       approximateFibonacci(45) == BigInt(1134903170),
       approximateFibonacci(100) == BigInt("354224848179265190133")
     )
+end FibonacciSuite

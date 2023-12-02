@@ -114,3 +114,4 @@ object DenseSuite extends FunSuite:
     summon[Reverse[_9] =:= _9]
     summon[Reverse[_10] =:= (One :: Zero :: One :: Zero :: DNil)]
     success
+end DenseSuite

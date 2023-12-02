@@ -36,3 +36,4 @@ object Lcs:
       }
     )
     C
+end Lcs

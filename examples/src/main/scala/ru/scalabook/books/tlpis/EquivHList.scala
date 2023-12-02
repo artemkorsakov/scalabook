@@ -31,3 +31,4 @@ object EquivHList:
     def ===(a2: A): Boolean = Equiv.universal.equiv(a1, a2)
 
     def !==(a2: A): Boolean = !Equiv.universal.equiv(a1, a2)
+end EquivHList

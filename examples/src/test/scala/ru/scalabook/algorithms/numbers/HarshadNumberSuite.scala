@@ -32,3 +32,4 @@ object HarshadNumberSuite extends FunSuite:
       getStrongRightTruncatableHarshadPrimes(4).sum == 90619L,
       getStrongRightTruncatableHarshadPrimes(5).sum == 388207L
     )
+end HarshadNumberSuite

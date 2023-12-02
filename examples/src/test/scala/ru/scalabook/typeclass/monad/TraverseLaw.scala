@@ -52,3 +52,4 @@ trait TraverseLaw extends FunctorLaw:
           "Два независимых эффекта могут быть объединены в один эффект, их произведение"
         )
     }
+end TraverseLaw

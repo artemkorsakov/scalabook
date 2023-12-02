@@ -23,3 +23,4 @@ object FactorialSuite extends FunSuite:
 
   test("Calculating the multiple of dividing a factorial by a prime number"):
     expect.all(primeFactor(1000, 3) == 498)
+end FactorialSuite

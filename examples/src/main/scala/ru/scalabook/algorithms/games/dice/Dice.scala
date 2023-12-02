@@ -25,3 +25,4 @@ case class Dice(maxCube: Int):
         (steps, sum),
         (1 to maxCube).map(i => cubeCount(steps - 1, sum - i)).sum
       )
+end Dice

@@ -89,6 +89,7 @@ object CombinatorialOps:
           case hd :: tl =>
             mixmany(hd, tl.xvariations(n - 1)) ::: tl.xvariations(n)
           case _ => Nil
+    end xvariations
 
     /** Generates all permutations of this list. The order does matter.
       *
@@ -99,3 +100,5 @@ object CombinatorialOps:
       * Time - O(n!) Space - O(n!)
       */
     def xpermutations: List[List[A]] = xvariations(l.size)
+  end extension
+end CombinatorialOps

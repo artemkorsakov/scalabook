@@ -168,3 +168,4 @@ object Numerical:
   def sumOfCubesTo(n: Long): Long =
     val s = sumToGiven(n)
     s * s
+end Numerical

@@ -32,3 +32,4 @@ object Builder:
         println("Invalid config:")
         errors.iterator.foreach(println)
         println("")
+end Builder

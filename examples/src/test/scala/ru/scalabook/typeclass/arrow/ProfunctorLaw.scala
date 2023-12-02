@@ -28,3 +28,4 @@ trait ProfunctorLaw extends Laws:
           ),
         "composite"
       )
+end ProfunctorLaw

@@ -45,3 +45,4 @@ object ZipWithSuite extends FunSuite:
     // four
 
     success
+end ZipWithSuite

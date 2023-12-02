@@ -49,3 +49,4 @@ object CombinatorialOpsSuite extends FunSuite:
           List("a", "b", "c")
         )
     )
+end CombinatorialOpsSuite

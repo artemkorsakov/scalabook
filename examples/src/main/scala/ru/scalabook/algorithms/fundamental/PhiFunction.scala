@@ -54,3 +54,4 @@ object PhiFunction:
         i += 1
 
     phiArray
+end PhiFunction

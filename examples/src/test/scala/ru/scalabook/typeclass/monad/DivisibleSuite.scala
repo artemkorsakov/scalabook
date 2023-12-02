@@ -48,3 +48,4 @@ object DivisibleSuite extends SimpleIOSuite, Checkers, DivisibleLaw:
           )
       ): _ =>
         success
+end DivisibleSuite

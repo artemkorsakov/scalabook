@@ -28,3 +28,4 @@ trait SemiringLaw extends CMonoidLaw, MultiplicativeSemigroupLaw:
         Semiring[A].times(Semiring[A].empty, x) == Semiring[A].empty,
         "right zero multiplicative: 0 * a = 0"
       )
+end SemiringLaw

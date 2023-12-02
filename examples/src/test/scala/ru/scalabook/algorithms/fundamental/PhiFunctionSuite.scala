@@ -28,3 +28,4 @@ object PhiFunctionSuite extends FunSuite:
         actual != totient(index)
       }
     expect(arrayErrors.isEmpty)
+end PhiFunctionSuite

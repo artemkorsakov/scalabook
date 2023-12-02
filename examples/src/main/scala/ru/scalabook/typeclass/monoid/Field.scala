@@ -29,3 +29,5 @@ object Field:
     extension (a: RationalNumber)
       def inverse: RationalNumber    = RationalNumber(-a.x, a.y)
       def reciprocal: RationalNumber = RationalNumber(a.y, a.x)
+  end given
+end Field

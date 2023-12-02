@@ -222,3 +222,4 @@ object MatrixSuite extends FunSuite:
       Matrix(Seq(Seq(2, 0), Seq(-1, 3), Seq(7, 5))).vectorization ==
         Seq(2, -1, 7, 0, 3, 5)
     )
+end MatrixSuite

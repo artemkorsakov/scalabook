@@ -26,6 +26,7 @@ enum BinaryTree[+A]:
     case Leaf => IndexedSeq.empty
     case Branch(value, left, right) =>
       left.postorder ++ right.postorder ++ IndexedSeq(value)
+end BinaryTree
 
 object BinaryTree:
   def apply[A](a: A): BinaryTree[A] = Branch(a, Leaf, Leaf)
@@ -50,3 +51,4 @@ object BinaryTree:
       case (Branch(valueA, leftA, rightA), Branch(valueB, leftB, rightB)) =>
         valueA == valueB && areEqual(leftA, leftB) && areEqual(rightA, rightB)
       case _ => false
+end BinaryTree

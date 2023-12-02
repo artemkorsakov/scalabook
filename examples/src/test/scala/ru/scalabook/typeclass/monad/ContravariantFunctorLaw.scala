@@ -43,3 +43,4 @@ trait ContravariantFunctorLaw extends InvariantFunctorLaw:
           Runner1[F].run(ContravariantFunctor[F].cmap(fa)(fba compose fcb)),
         "composition"
       )
+end ContravariantFunctorLaw

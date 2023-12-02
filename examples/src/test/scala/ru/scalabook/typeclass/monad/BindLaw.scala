@@ -36,3 +36,4 @@ trait BindLaw extends ApplyLaw:
           fab.bind(a2b => fa.map(a2b)),
         "`ap` is consistent with `bind`"
       )
+end BindLaw

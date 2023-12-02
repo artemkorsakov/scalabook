@@ -115,3 +115,5 @@ object Hangman extends ZIOAppDefault:
            #$guesses
            #
            #""".stripMargin('#')
+  end renderState
+end Hangman

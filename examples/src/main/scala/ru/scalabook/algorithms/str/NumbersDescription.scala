@@ -162,3 +162,4 @@ object NumbersDescription:
       case 1000000000     => Some("миллиард")
       case 1000000000000L => Some("триллион")
       case _              => None
+end NumbersDescription

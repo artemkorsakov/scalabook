@@ -74,6 +74,7 @@ object ProducerConsumer extends IOApp:
          else Async[F].unit)
       _ <- producer(id, counterR, stateR)
     yield ()
+  end producer
 
   private def consumer[F[_]: Async: Console](
       id: Int,
@@ -116,3 +117,5 @@ object ProducerConsumer extends IOApp:
          else Async[F].unit)
       _ <- consumer(id, stateR)
     yield ()
+  end consumer
+end ProducerConsumer

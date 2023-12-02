@@ -25,6 +25,7 @@ object PerfectNumbers:
     if sum == n then Perfect
     else if sum < n then Deficient
     else Abundant
+end PerfectNumbers
 
 enum PerfectNumbersType:
   case Perfect, Deficient, Abundant

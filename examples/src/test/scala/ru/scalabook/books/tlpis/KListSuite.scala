@@ -26,3 +26,4 @@ object KListSuite extends FunSuite:
 
     val heads = m down head
     expect.all(heads == 1 :: "str1" :: HNil)
+end KListSuite

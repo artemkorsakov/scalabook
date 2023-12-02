@@ -26,3 +26,4 @@ class InvertibleMatrix(elements: Seq[Seq[RationalNumber]])(using
       }
       InvertibleMatrix(matrix).determinant / det
     }
+end InvertibleMatrix

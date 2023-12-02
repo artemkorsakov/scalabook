@@ -22,3 +22,4 @@ trait ArrowLaw extends StrongLaw, SplitLaw, CategoryLaw:
     checkStrongLaw[=>:, A, B, C, D, E, F](gad, gab)(a, c, d) combine
       checkSplitLaw[=>:, A, B, C, D](gab, bc, cd, f1, f2, f3)(a) combine
       checkCategoryLaw[=>:, A, B, C, D](gab, bc, cd, f1, f2, f3)(a)
+end ArrowLaw

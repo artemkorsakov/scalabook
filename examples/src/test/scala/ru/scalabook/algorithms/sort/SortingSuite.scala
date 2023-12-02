@@ -31,3 +31,4 @@ object SortingSuite extends SimpleIOSuite with Checkers:
   test("quickSort"):
     forall: (list: List[Int]) =>
       expect.all(quickSort(list) == list.sorted)
+end SortingSuite

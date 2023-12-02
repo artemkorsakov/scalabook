@@ -34,3 +34,4 @@ object PythagoreanTripletSuite extends FunSuite:
       pythagoreanTripletsWithGivenSum(1000) ==
         Seq(PythagoreanTriplet(375, 200, 425))
     )
+end PythagoreanTripletSuite

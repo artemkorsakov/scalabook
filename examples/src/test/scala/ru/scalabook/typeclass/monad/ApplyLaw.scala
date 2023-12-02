@@ -24,3 +24,4 @@ trait ApplyLaw extends FunctorLaw, SemigroupalLaw:
           )(fa),
         "composition"
       )
+end ApplyLaw

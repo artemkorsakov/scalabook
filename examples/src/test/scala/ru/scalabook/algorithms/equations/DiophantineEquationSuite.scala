@@ -28,3 +28,4 @@ object DiophantineEquationSuite extends FunSuite:
         .contains((BigInt(21), BigInt(2))),
       DiophantineEquation(61).isSuccess(BigInt(1766319049), BigInt(226153980))
     )
+end DiophantineEquationSuite

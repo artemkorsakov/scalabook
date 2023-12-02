@@ -68,3 +68,4 @@ object HarshadNumber:
 
   private def sumOfDigits(number: BigInt): Int =
     number.toString.foldLeft(0)((s, ch) => s + ch.asDigit)
+end HarshadNumber

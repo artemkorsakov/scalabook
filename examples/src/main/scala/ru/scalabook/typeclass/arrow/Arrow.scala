@@ -58,6 +58,7 @@ trait Arrow[=>:[_, _]] extends Split[=>:], Strong[=>:], Category[=>:]:
   /** Запустить два `fab` рядом друг с другом */
   def product[A, B](fab: A =>: B): (A, A) =>: (B, B) =
     split(fab, fab)
+end Arrow
 
 object Arrow:
   def apply[=>:[_, _]: Strong]: Strong[=>:] = summon[Strong[=>:]]

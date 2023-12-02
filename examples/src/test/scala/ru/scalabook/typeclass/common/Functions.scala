@@ -19,3 +19,4 @@ object Functions:
 
   given Conversion[Boolean, Char] with
     def apply(b: Boolean): Char = if b then 't' else 'f'
+end Functions

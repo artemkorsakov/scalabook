@@ -256,6 +256,7 @@ List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 
 
 **Ссылки:**
 
+- [Монада - wikipedia](https://ru.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%B0%D0%B4%D0%B0_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5))
 - [A Monads Approach for Beginners, in Scala - Rock the JVM](https://www.youtube.com/watch?v=d-dy1x33moA&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monad.html)
 - [Cats](https://typelevel.org/cats/typeclasses/monad.html)

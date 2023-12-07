@@ -26,6 +26,7 @@
 
 | Название                                                                                                                                           | Версия  | Язык | Дата | Комментарий |
 |----------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
+| [Scala. Война Эффектов. ZIO vs Cats Effect - Олег Нижников](https://www.youtube.com/watch?v=jRVvj_2yWkE)                                           | Scala 3 |  Ру  | 2021 |             |
 | [A Tour of Scala 3 - Martin Odersky](https://www.youtube.com/watch?v=_Rnrx2lo9cw)                                                                  | Scala 3 |  En  | 2023 |             |
 | [Functional Programming in Scala - DevInsideYou](https://www.youtube.com/playlist?list=PLJGDHERh23x8AD0LFiS9iPg_tKLS1i1wZ)                         | Scala 3 |  En  | 2022 |             |
 | [Proper and Basic Property-Based Testing](https://www.youtube.com/watch?v=FS_VJOQfogc)                                                             | Scala 3 |  En  | 2023 |             |

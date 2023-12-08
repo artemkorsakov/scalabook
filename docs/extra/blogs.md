@@ -12,3 +12,4 @@
 |-----------------------------------------------------------------|:----:|-----------|-------------------|
 | [Scalalaz - Русскоязычный подкаст о Scala](https://scalalaz.ru) |  Ру  | Подкаст   | info@scalalaz.ru  |
 | [Alexandru Nedelcu's blog](https://alexn.org)                   |  En  | Авторский | Alexandru Nedelcu |
+| [Wey Gu's blog](https://siwei.io/en/posts)                      |  En  | Авторский | Wey Gu            |

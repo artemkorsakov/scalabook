@@ -31,8 +31,9 @@
 
 | Название                                                                                                                                                                          | Язык | Дата | Комментарий                     |
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----:|------|---------------------------------|
-| [«Чистый» код, ужасная производительность](https://habr.com/ru/companies/sportmaster_lab/articles/728880)                                                                         |  Ru  | 2023 | Рефакторинг кода                |
+| [«Чистый» код, ужасная производительность](https://habr.com/ru/companies/sportmaster_lab/articles/728880)                                                                         |  Ру  | 2023 | Рефакторинг кода                |
 | [История применения и оценки функционального программирования](https://gist.github.com/klapaucius/f0adec8a567b7bf000c8bcf99686a9bd)                                               |  Ру  | 2022 | История ФП                      |
+| [Немного о багах](https://a-khakimov.github.io/posts/about-bugs)                                                                                                                  |  Ру  | 2021 |                                 |
 | [A bite of functional programming (in Scala)](https://scalac.io/blog/functional-programming-in-scala/)                                                                            |  En  | 2020 | Функциональное программирование |
 | [A Brief, Incomplete, and Mostly Wrong History of Programming Languages](https://james-iry.blogspot.com/2009/05/brief-incomplete-and-mostly-wrong.html)                           |  En  | 2009 | История программирования        |
 | [Bad software examples - how much can poor code hurt you?](https://softwaremill.com/bad-software-examples-how-much-can-poor-code-hurt-you/)                                       |  En  | 2023 |                                 |

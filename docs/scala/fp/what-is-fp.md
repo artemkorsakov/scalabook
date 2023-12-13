@@ -36,6 +36,10 @@ _В функциональном программировании функции
 
 - [A bite of functional programming (in Scala)](https://scalac.io/blog/functional-programming-in-scala/)
 - [Business benefits of functional programming and how to make it work for your company](https://www.youtube.com/watch?v=EcGZdzECmIk)
+- [FP vs. OO List Processing](https://blog.cleancoder.com/uncle-bob/2018/12/17/FPvsOO-List-processing.html)
+- [Functional Programming by Alexander Alvin](https://alvinalexander.com/photos/functional-programming-simplied-free-pdf-preview/)
+- [Functional Programming For The Rest of Us](https://www.defmacro.org/2006/06/19/fp.html)
+- [Functional Programming in Scala, Second Edition, Chapter 1-2](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fp-what-is-fp.html)
 - [Unleashing the Power: The Advantages of Functional Programming in the Digital Age](https://scalac.io/blog/unleashing-the-power-the-advantages-of-functional-programming-in-the-digital-age)
 - [What is Functional Programming? - Alexandru Nedelcu](https://alexn.org/blog/2017/10/15/functional-programming)

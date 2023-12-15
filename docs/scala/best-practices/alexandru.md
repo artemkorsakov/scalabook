@@ -1643,79 +1643,82 @@ def executeBlockingIO[T](cb: => T): Future[T] = {
 связанных с процессором, 
 поэтому лучше скрыть его и предоставить этот помощник.
 
-### 4.7. All public APIs SHOULD BE thread-safe
+### 4.7. Все общедоступные API ДОЛЖНЫ БЫТЬ поточно-ориентированными
 
-As a general rule of software engineering on top of the JVM,
-absolutely all public APIs from inside your process will end up being
-used in a context in which multiple threads are using these APIs at
-the same time. It's best practice for all public APIs (all components
-in your Cake for example) to be designed as thread-safe from the get
-go, because you do not want to chase concurrency bugs.
+Как общее правило разработки программного обеспечения поверх JVM: 
+абсолютно все общедоступные API внутри вашего процесса 
+в конечном итоге будут использоваться в контексте, 
+в котором несколько потоков используют эти API в одно и то же время. 
+Это лучшая практика для всех общедоступных API (все компоненты в вашем Cake, например) 
+с самого начала быть спроектированным как потокобезопасное прохождение, 
+потому что вы не хотите гоняться за ошибками параллелизма.
 
-And if a public API is not thread-safe for some reason (like the usual
-compromises made in software development), then state this fact in
-BOLD CAPITAL LETTERS.
+А если публичный API по какой-то причине не является потокобезопасным 
+(как обычно компромиссы, сделанные при разработке программного обеспечения), 
+затем укажите этот факт ЖИРНЫМИ ЗАГЛАВНЫМИ БУКВАМИ.
 
-The reason is simple - if an API is not thread-safe, then there's no
-way a user of that API can know about the way to synchronize on
-it. Example:
+Причина проста: если API не является потокобезопасным, 
+то и нет способа, которым пользователь этого API 
+может узнать о способе его синхронизации. 
+
+Пример:
 
 ```scala
 val list = mutable.List.empty[String]
 ```
 
-Lets say this mutable list is exposed. On what lock is a user supposed
-to synchronize? On the list itself? That's not enough, being a pretty
-useless lock to have in a larger context. Remember, locks are not
-composable and are very error-prone. Never leave the responsibility of
-synchronizing for contention on your users.
+Допустим, этот изменяемый список открыт. 
+По какой блокировке пользователь должен синхронизироваться? 
+В самом списке? 
+Этого недостаточно: это довольно бесполезная блокировка в более широком контексте. 
+Помните, что блокировки не являются составными и очень подвержены ошибкам. 
+Никогда не перекладывайте ответственность за синхронизацию 
+из-за конфликтов на своих пользователей.
 
-### 4.8. SHOULD avoid contention on shared reads
+### 4.8. СЛЕДУЕТ избегать конфликтов при совместном чтении
 
-Meet
-[Amdahl's Law](https://en.wikipedia.org/wiki/Amdahl's_law). Synchronizing
-with locks drastically limits the parallelization possible and thus
-vertical scalability. Reads are embarrassingly paralellizable, so
-avoid at all times doing this:
+Знакомьтесь: [Закон Амдала](https://en.wikipedia.org/wiki/Amdahl's_law). 
+Синхронизация с блокировками резко ограничивает возможное распараллеливание 
+и, таким образом, вертикальную масштабируемость. 
+Чтения досадно распараллеливаются, поэтому никогда не делайте этого:
 
 ```scala
 def fetch = synchronized { someValue }
 ```
 
-Come up with better synchronization schemes that does not involve
-synchronizing reads, like atomic references or STM. If you aren't able
-to do that, then avoid this altogether by using proper abstractions.
+Придумайте лучшие схемы синхронизации, не требующие синхронизация операций чтения, 
+таких как атомарные ссылки или STM. 
+Если вы не можете это сделать, то вообще избегайте этого, используя правильные абстракции.
 
-### 4.9. MUST provide a clearly defined and documented protocol for each component or actor that communicates over async boundaries
+### 4.9. НЕОБХОДИМО предоставить четко определенный и документированный протокол для каждого компонента или субъекта, который взаимодействует через границы асинхронности
 
-A function signature is not enough for documenting the protocol of
-problematic components. Especially when talking about communications
-over asynchronous boundaries (between threads, between processes on
-the network, etc...), the protocol needs a lot of detail on what you
-can and cannot rely on.
+Сигнатуры функции недостаточно для документирования протокола проблемных компонентов. 
+Особенно если говорить о коммуникациях через границы асинхронности (между потоками, между сетевыми процессами и т.д.), 
+протоколу требуется много подробностей о том, на что можно и нельзя полагаться.
 
-As a guideline, don't shy away from writing comments and document:
+В качестве рекомендации не уклоняйтесь от написания комментариев и документирования:
 
-- concurrency and latency concerns
-- the proper ordering of calls
-- everything that can go wrong
+- проблемы параллелизма и задержки
+- правильный порядок вызовов
+- все, что может пойти не так
 
-### 4.10. SHOULD always prefer single-producer scenarios
+### 4.10. СЛЕДУЕТ всегда отдавать предпочтение сценариям с одним производителем
 
-Shared writes are not parallelizable, whereas shared reads are
-embarrassingly parallelizable. As a metaphor, 100,000 people can watch
-the same soccer game on the same stadium at the same time (reads), but
-100,000 people cannot all use the same bathroom (writes). In a
-multi-threading scenario, prefer single producer / multi consumer
-scenarios. This has the effect of avoiding contention and performance
-problems. An app does not scale vertically with multiple producers
-pounding on the same resource, because Amdahl's Law.
+Совместная запись не подлежит распараллеливанию, 
+тогда как совместное чтение досадно параллелизуемо. 
+Метафора: 100 000 человек смогут посмотреть тот же футбольный матч на том же стадионе в то же время (читает), 
+но 100 000 человек не могут пользоваться одной и той же ванной (пишет). 
+В многопоточном сценарии предпочтительно один производитель / много потребителей.
+Это позволяет избежать конфликтов и проблем с производительностью.
+Приложение не масштабируется вертикально, 
+когда несколько производителей работают над одним и тем же ресурсом, 
+из-за закона Амдала.
 
-Checkout [LMAX Disruptor](https://lmax-exchange.github.io/disruptor/).
+Проверьте [LMAX Disruptor](https://lmax-exchange.github.io/disruptor).
 
-### 4.11. MUST NOT hardcode the thread-pool / execution context
+### 4.11. НЕЛЬЗЯ жестко запрограммировать пул потоков/контекст выполнения
 
-This is a general design issue related to the project as a whole, but don't do this:
+Это общая проблема дизайна, связанная с проектом в целом, но не делайте этого:
 
 ```scala
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -1723,19 +1726,470 @@ import scala.concurrent.ExecutionContext.Implicits.global
 def doSomething: Future[String] = ???
 ```
 
-Tight coupling between the execution context and your logic is not
-good and that import is tight-coupling, especially since in the
-context of a Play Framework application you need to use a
-[different thread-pool](https://www.playframework.com/documentation/2.5.x/ThreadPools).
+Тесная связь между контекстом выполнения и вашей логикой не является хорошей идеей, 
+а этот импорт является тесным, особенно потому, 
+что в контексте приложения Play Framework вам необходимо использовать 
+[другой пул потоков](https://www.playframework.com/documentation/2.5.x/ThreadPools).
 
-Just pass the ExecutionContext around as an implicit parameter. It's
-idiomatic and acceptable this way. Also, implicit parameters should be passed in the second group of parameters to avoid confusing implicit resolution. When passed in the first group, it allows for method calls like ```doSomething()``` that won't compile but most IDEs will show them as valid.
+Просто передайте `ExecutionContext` как неявный параметр.
+Это идиоматично и приемлемо. 
+Кроме того, неявные параметры следует передавать во второй группе параметров, 
+чтобы не запутать неявное разрешение. 
+При передаче в первой группе он позволяет вызывать такие методы, как `doSomething()`, 
+которые не будут компилироваться, но большинство IDE покажут их действительными.
 
 ```scala
 def doSomething()(implicit ec: ExecutionContext): Future[String] = ???
 ```
 
+## 5. Akka акторы
 
+### 5.1. СЛЕДУЕТ выделять состояние акторов только в ответ на сообщения, полученные извне
+
+При использовании акторов Akka их изменяемое состояние 
+всегда должно меняться в ответ на сообщения, полученные извне. 
+Часто встречается вот такой антипаттерн:
+
+```scala
+class SomeActor extends Actor {
+  private var counter = 0
+  private val scheduler = context.system.scheduler
+    .schedule(3.seconds, 3.seconds, self, Tick)
+
+  def receive = {
+    case Tick =>
+      counter += 1
+  }
+}
+```
+
+В приведенном выше примере актор назначает `Tick` каждые 3 секунды, который меняет его состояние.
+Это чрезвычайно дорогостоящая ошибка.
+Поведение актора становится совершенно недетерминированным, 
+и его невозможно проверить правильно.
+
+Если вам действительно нужно периодически что-то делать внутри актора, 
+то этот планировщик не должен инициализироваться внутри актора. 
+Выньте это.
+
+### 5.2. СЛЕДУЕТ изменять состояние акторов только с помощью `context.become` 
+
+Скажем, у нас есть актор, который изменяет свое состояние (большинство акторов так делают), 
+даже не имеет значения, какое это состояние:
+
+```scala
+class MyActor extends Actor {
+  val isInSet = mutable.Set.empty[String]
+
+  def receive = {
+    case Add(key) =>
+      isInSet += key
+      
+    case Contains(key) =>
+      sender() ! isInSet(key)
+  }
+}
+
+// Сообщения
+case class Add(key: String)
+case class Contains(key: String)
+```
+
+Поскольку мы используем Scala, мы хотим быть максимально чистыми,
+мы хотим иметь дело с неизменяемыми структурами данных и чистыми функциями,
+мы хотим перейти на FP, чтобы уменьшить область для [случайной сложности](https://en.wikipedia.org/wiki/No_Silver_Bullet), 
+и позвольте мне сказать вам,
+в вышеизложенном нет ничего чистого, неизменного или ссылочно прозрачного ;-)
+
+Посмотрите [context.become](http://doc.akka.io/docs/akka/2.3.4/scala/actors.html#Become_Unbecome):
+
+```scala
+import collection.immutable.Set
+
+class MyActor extends Actor {
+  def receive = active(Set.empty)
+
+  def active(isInSet: Set[String]): Receive = {
+    case Add(key) =>
+      context become active(isInSet + key)
+      
+    case Contains(key) =>
+      sender() ! isInSet(key)
+  }
+}
+```
+
+Если это вас не сразу насторожило, просто подождите, 
+пока вам придется смоделировать конечный автомат с 10 состояниями 
+и десятками возможных переходов и эффектов, связанных с ним, 
+и тогда вы это получите.
+
+### 5.3. НЕЛЬЗЯ раскрывать внутреннее состояние актора в асинхронных замыканиях
+
+Опять же, используя изменяемое состояние, определите проблему:
+
+```scala
+class MyActor extends Actor {
+  val isInSet = mutable.Set.empty[String]
+
+  def receive = {
+    case Add(key) =>
+      for (shouldAdd <- validate(key)) {
+        if (shouldAdd) isInSet += key
+      }
+        
+    // ...
+  }
+  
+  def validate(key: String): Future[Boolean] = ???
+}
+```
+
+Возникает хаос, двери ада открываются для целого ряда недетерминированных ошибок, 
+которые могут произойти из-за проблем с многопоточностью.
+Это общая проблема с функциями, которые выполняются асинхронно 
+и захватывают переменные, которые не предназначены для выхода из контекста.
+[Spores](http://docs.scala-lang.org/sips/pending/spores.html) — 
+это предложение по замыканиям с поддержкой макросов, 
+которые должны сделать это безопаснее, но до тех пор будьте осторожны.
+
+Прежде всего, ознакомьтесь с правилом использования `context.become` для изменения состояния, 
+что уже является шагом в правильном направлении.
+И тогда вам нужно разобраться с этим, 
+отправив нашему актору еще одно сообщение, когда наше будущее наступит:
+
+```scala
+import akka.pattern.pipeTo
+
+class MyActor extends Actor {
+  val isInSet = mutable.Set.empty[String]
+
+  def receive = {
+    case Add(key) =>
+      val f = for (isValid <- validate(key))
+        yield Validated(key, isValid)
+        
+      // отправка результата в виде сообщения обратно нашему актору
+      f pipeTo self
+
+    case Validated(key, isValid) =>
+      if (isValid) isInSet += key
+              
+    // ...
+  }
+  
+  def validate(key: String): Future[Boolean] = ???
+}
+
+// Сообщения
+case class Add(key: String)
+case class Validated(key: String, isValid: Boolean)
+```
+
+И, конечно же, мы могли бы моделировать конечный автомат, 
+который не принимает больше запросов, пока не будет выполнен последний.
+Давайте также избавимся от этой изменяемой коллекции и введем back-pressure
+(т.е. нам нужно сообщить отправителю, когда он сможет отправить следующий элемент):
+
+```scala
+import akka.pattern.pipeTo
+
+class MyActor extends Actor {
+  def receive = idle(Set.empty)
+
+  def idle(isInSet: Set[String]): Receive = {
+    case Add(key) =>
+      // отправка результата в виде сообщения обратно нашему актору
+      validate(key).map(Validated(key, _)).pipeTo(self)
+      
+      // ожидание подтверждения
+      context.become(waitForValidation(isInSet, sender()))
+  }
+
+  def waitForValidation(set: Set[String], source: ActorRef): Receive = {
+    case Validated(key, isValid) =>
+      val newSet = if (isValid) set + key else set
+      // отправка подтверждения о завершении
+      source ! Continue
+      // вернуться в режим ожидания, принимая новые запросы
+      context.become(idle(newSet))
+
+    case Add(key) =>
+      sender() ! Rejected
+  }
+
+  def validate(key: String): Future[Boolean] = ???
+}
+
+// Сообщения
+
+case class Add(key: String)
+case class Validated(key: String, isValid: Boolean)
+case object Continue
+case object Rejected
+```
+
+Да, проекты, основанные на акторах, могут оказаться непростыми.
+
+### 5.4. СЛЕДУЕТ делать back-pressure
+
+Допустим, у вас есть актор, производящий значения — 
+например, чтение элементов из RabbitMQ или вашей собственной недоделанной очереди, 
+хранящейся в таблице MySQL, или файлы, которые необходимо наблюдать и обрабатывать, 
+как только актор увидит, что они появляются в определенном каталоге и так далее.
+Этот продюсер должен передать работу нескольким переменным акторам.
+
+Проблемы:
+
+1. если очередь сообщений неограничена, 
+   то при медленных потребителях эта очередь может взорваться
+2. Распределение может быть неэффективным, 
+   так как у работника может оказаться несколько ожидающих выполнения элементов, 
+   в то время как другой работник может стоять на месте
+
+Правильный и беспроблемный дизайн делает следующее:
+
+- работники должны сигнализировать о потребности 
+  (т.е. когда они готовы обрабатывать больше элементов)
+- производитель должен производить продукцию только тогда, 
+  когда есть спрос со стороны работников
+
+Вот подробный образец с комментариями:
+
+```scala
+/**
+ * Сообщение, означающее подтверждение того, 
+ * что восходящий поток может отправить следующий элемент.
+ */
+case object Continue
+
+/**
+ * Сообщение, используемое производителем 
+ * для непрерывного опроса источника данных в состоянии опроса.
+ */
+case object PollTick
+
+/**
+ * Машина состояний с 2 состояниями:
+ *
+ *  - Ожидание, что означает, что, вероятно, существует очередь элементов, 
+ *    ожидающих отправки в нисходящий поток, но актор ожидает сигнала о требованию.
+ *    
+ *  - Опрос, что означает, что есть спрос со стороны нисходящего потока, 
+ *    но актор ждет, пока что-то произойдет.
+ *
+ * ВАЖНО: в соответствии с протоколом этот актор не должен получать несколько событий Continue — 
+ *        нижестоящий маршрутизатор должен дождаться доставки элемента, 
+ *        прежде чем отправлять следующее событие Continue этому актору.
+ */
+class Producer(source: DataSource, router: ActorRef) extends Actor {
+  import Producer.PollTick
+
+  override def preStart(): Unit = {
+    super.preStart()
+    // это игнорирует еще одно правило, которое меня волнует
+    // (акторы должны выделяться только в ответ на внешние сообщения), 
+    // но мы оставим это в обучающих целях
+    context.system.scheduler.schedule(1.second, 1.second, self, PollTick)
+  }
+
+  // актор начинает работу в режиме ожидания
+  def receive = standby
+
+  def standby: Receive = {
+    case PollTick =>
+      // игнорировать
+
+    case Continue =>
+      // сигнал о спросе, поэтому попробуйте отправить следующий элемент
+      source.next() match {
+        case None =>
+          // нет доступных позиций, перейдите в режим опроса
+          context.become(polling)
+          
+        case Some(item) =>
+          // элемент доступен, отправьте его вниз по течению 
+          // и оставайтесь в состоянии ожидания
+          router ! item
+      }
+  }
+
+  def polling: Receive = {
+    case PollTick =>
+      source.next() match {
+        case None =>
+          () // игнорировать - остается в опросе
+        case Some(item) =>
+          // элемент в наличии, спрос имеется
+          router ! item
+          // перейти в режим ожидания
+          context.become(standby)
+      }
+  }
+}
+
+/**
+ * Маршрутизатор является посредником между вышестоящим производителем и работниками, 
+ * отслеживая спрос (чтобы упростить работу производителя).
+ *
+ * ПРИМЕЧАНИЕ. Необходимо соблюдать протокол производителя, 
+ *       поэтому мы сигнализируем Continue вышестоящему производителю после 
+ *       и только после того, как элемент был отправлен в нисходящий поток 
+ *       для обработки работнику.
+ */
+class Router(producer: ActorRef) extends Actor {
+  var upstreamQueue = Queue.empty[Item]
+  var downstreamQueue = Queue.empty[ActorRef]
+
+  override def preStart(): Unit = {
+    super.preStart()
+    // сигнализирует о первоначальном спросе на upstream
+    producer ! Continue
+  }
+
+  def receive = {
+    case Continue =>
+      // сигнал о спросе поступает из нисходящего потока, если у нас есть элементы для отправки, 
+       // то отправьте его, в противном случае поставьте в очередь нижестоящего потребителя
+      if (upstreamQueue.isEmpty) {
+        downstreamQueue = downstreamQueue.enqueue(sender)
+      }
+      else {
+        // нет необходимости сигнализировать о спросе в восходящем направлении, 
+        // поскольку у нас есть элементы в очереди, просто отправьте их в нисходящий поток
+        val (item, newQueue) = upstreamQueue.dequeue
+        upstreamQueue = newQueue
+        sender ! item
+
+        // сигнализировать о спросе на другой элемент
+        producer ! Continue
+      }
+
+    case item: Item =>
+      // элемент, сигнализируемый из восходящего потока, если у нас есть потребители в очереди, 
+      // тогда сигнализируйте об этом в нисходящем направлении, 
+      // в противном случае поставьте его в очередь
+      if (downstreamQueue.isEmpty) {
+        upstreamQueue = upstreamQueue.enqueue(item)
+      }
+      else {
+        val (consumer, newQueue) = downstreamQueue.dequeue
+        downstreamQueue = newQueue
+        consumer ! item
+
+        // сигнализировать о спросе на другой элемент
+        producer ! Continue
+      }
+  }
+}
+
+class Worker(router: ActorRef) extends Actor {
+  override def preStart(): Unit = {
+    super.preStart()
+    // сигнализирует о первоначальном спросе на upstream
+    router ! Continue
+  }
+  
+  def receive = {
+    case item: Item =>
+      process(item)
+      router ! Continue
+  }
+}
+```
+
+### 5.5. НЕ СЛЕДУЕТ использовать Akka FSM
+
+Akka представляет то, что многие считают крутым DSL для создания конечных автоматов, 
+под названием [Akka FSM](http://doc.akka.io/docs/akka/current/scala/fsm.html). 
+
+Но он неадекватен, ограничивает и его использование приводит к плохим практикам. 
+Текущие проекты должны попытаться заменить его, а новые проекты должны его избегать.
+Вместо этого предпочитайте моделировать конечные автоматы с помощью `context.become`. 
+
+Три основные причины, по которым вам следует избегать Akka FSM: 
+
+1. с Akka FSM вы можете моделировать только детерминированные конечные автоматы (DFA) 
+2. Akka FSM вызывает нечистую, побочную логику в вашем акторе 
+3. Akka FSM связывает вашу бизнес-логику с Akka, что затрудняет тестирование
+
+Итак, чтобы объяснить это рассуждение. 
+С помощью Akka FSM вы можете моделировать только детерминированные конечные автоматы, 
+и в какой-то момент это приведет к неприятностям. 
+Небольшой образец:
+
+```scala
+when (Available) {
+  case Event(Setpoint(value), data) =>
+    goto(Ramping) using data.copy(setpoint=value)
+}
+
+when (Ramping) {
+  case Event(RampIsOver, data) =>
+    goto(Dispatched)
+}
+
+onTransition {
+  case Available -> Ramping =>
+    logger.info("Ramping ...")
+  case Ramping -> Dispatched =>
+    logger.info("Dispatched ...")
+}
+```
+
+Это DFA. Но большая проблема, которая возникнет, заключается в том, 
+что для любого достаточно сложного конечного автомата 
+вам понадобится инициировать несколько переходов в ответ на одно сообщение. 
+Другими словами, в конечном итоге вам захочется сделать что-то вроде этого:
+
+```scala
+firstGoto(Ramping).thenGoto(Dispatched)
+```
+
+Это выдуманный API. Akka FSM это не поддерживает. 
+И на этом этапе вам нужно будет форкнуть Akka FSM, чтобы получить его. 
+Это, конечно, [выполнимо](https://gist.github.com/alexandru/b663d50642a25a3644f4277751c5adfb). 
+Но если вы в конечном итоге используете Akka FSM для своего проекта, 
+вы явно допустили ошибку, выбрав Akka FSM. 
+И, конечно же, большинство людей никогда не подумают о форке Akka FSM, 
+поэтому в конечном итоге им придется столкнуться с труднопроверяемыми и необоснованными хаками, 
+такими как передача этому актору дополнительных внутренних сообщений.
+
+Другая причина, по которой Akka FSM неадекватна, заключается в том, 
+что он заставляет вас моделировать конечный автомат как вещь, которая изменяет свое состояние. 
+По сути, в итоге вы получите следующее:
+
+- объект с индивидуальностью и сложной бизнес-логикой (действительно, автоматы редко бывают простыми) 
+- который взаимодействует с асинхронными сообщениями
+
+
+Let me spell this out: This will have a worse outcome than the worst
+you've ever seen happening with OOP. Because this will be an object
+whose state depends on its history (e.g. with an identity) and because
+communications are async, introducing
+[nondeterminism](https://en.wikipedia.org/wiki/Nondeterministic_algorithm)
+in this logic is really, really easy.
+
+Which leads me to the fact that Akka FSM ties your business logic to
+Akka, which would be *complecting* by definition. This is bad because:
+
+- you cannot port that business logic to use another solution
+- in order to test your business logic, you now need to test that
+  actor and fake asynchronous communications (by means of
+  [akka-testkit](http://doc.akka.io/docs/akka/current/scala/testing.html))
+
+In other words, you end up locked into Akka FSM and you end up testing
+Akka actors, instead of testing your own business logic. And those
+tests, no matter what those docs say, are horrible. Because as said,
+couple stateful objects with asynchronous messages and you'll get
+something worse than the worst you've ever seen.
+
+**The solution** is to have your business logic described outside of
+any actor and leave actors to be in charge just of communications,
+preferably evolved with `context.become`, as mentioned in point `5.2`.
+At which point you no longer need to test those actors, you no longer
+need to depend on `akka-testkit`. But such a strategy will rule out
+Akka FSM entirely.
 
 ---
 

@@ -1380,6 +1380,361 @@ class MyComponent(config: MyComponentConfig, httpClient: HttpClient) {
 > и менее подверженным ошибкам по сравнению с использованием позиционирования. 
 > Выбранный здесь стиль отступов делает экземпляр похожим на `Map` или объект JSON, если хотите.
 
+## 4. Конкурентность и параллелизм
+
+### 4.1. СЛЕДУЕТ избегать параллелизма, как чумы
+
+По возможности избегайте необходимости иметь дело с параллелизмом.
+Люди, хорошо разбирающиеся в параллелизме, избегают этого, как чумы.
+
+**ВНИМАНИЕ:** проблемы параллелизма возникают не только при использовании общей памяти и потоков, 
+но и между процессами, когда возникает конкуренция за какой-либо ресурс (например, базу данных).
+
+Пример: если задание запланировано на выполнение каждую минуту с использованием cron.d в Linux 
+и это задание извлекает и обновляет элементы из очереди, сохраненной в MySQL, 
+выполнение этого задания может занять больше 1 минуты, 
+и, таким образом, вы можете получить 2 или 3 процесса, 
+выполняющихся одновременно и конкурирующих в одной и той же таблице MySQL.
+
+### 4.2. СЛЕДУЕТ использовать соответствующие абстракции только там, где это возможно — Future, Actors, Rx
+
+Узнайте о доступных абстракциях и выбирайте между ними в зависимости от поставленной задачи. 
+Не существует общего универсального решения. 
+Чем выше уровень абстракции, тем меньше возможностей у нее при решении проблем. 
+Но чем меньше возможностей и мощности, тем проще и компонуемее модель. 
+Например, многие разработчики из сообщества Scala злоупотребляют Akka Actors — 
+это здорово, но только не тогда, когда их неправильно применяют. 
+Например, не используйте Akka Actor, когда можно использовать `Future`.
+
+> "_Власть имеет тенденцию развращать, а абсолютная власть развращает абсолютно_" — Лорд Эктон
+
+Futures и Promises Scala хороши, потому что:
+
+- они по своей сути поддаются распараллеливанию за счет устранения проблем параллелизма
+- довольно эффективны, потому что при отправке задачи в неявный `ExecutionContext` 
+  контекст выполнения по умолчанию эффективно мультиплексируется между несколькими потоками 
+  (количество потоков в пуле потоков часто прямо пропорционально количеству имеющихся у вас ядер ЦП)
+- альтернативные реализации могут быть даже более простыми и эффективными, 
+  чем стандартное Future Scala, поскольку стандартное Future было разработано для общего назначения
+- модель по своей сути проста и удобна в использовании
+
+Futures и Promises плохи, потому что они сигнализируют 
+только одно значение от производителя потребителю и все — 
+если вам нужен поток или двунаправленная связь, 
+Future может быть не лучшей абстракцией.
+
+Akka Actor-ы хороши, потому что:
+
+- они упрощают двунаправленную связь через асинхронные границы - 
+  например, WebSocket является основным кандидатом на роль акторов.
+- с помощью Actors Akka вы можете легко моделировать конечные автоматы (см. `context.become`)
+- обработка сообщений имеет надежную гарантию отсутствия параллелизма — 
+  сообщения обрабатываются одно за другим, 
+  поэтому нет необходимости беспокоиться о проблемах параллелизма в контексте актора.
+- вместо реализации недоделанной очереди в памяти для обработки вещей 
+  вы можете просто использовать актора, поскольку постановка сообщений в очередь 
+  и действие на эти сообщения — это то, что они делают.
+
+Акторы Акки плохи, потому что:
+
+- они довольно низкоуровневые для многих задач
+- чрезвычайно легко моделировать акторов, которые сохраняют большое количество состояний, 
+  в результате чего получается система, которую невозможно масштабировать по горизонтали
+- из-за возможности двунаправленной связи очень легко получить потоки данных, 
+  которые настолько сложны, что ими невозможно управлять
+- моделью в целом является актор А, отправляющий сообщение актору Б, 
+  но если вам нужно смоделировать поток событий, такая тесная связь между А и Б неприемлема
+- акторы, используемые на практике с Akka, имеют тенденцию вызывать 
+  неконтролируемые побочные эффекты и подвержены ошибкам, 
+  что противоположно функциональному программированию, а не идиоматической Scala
+
+Потоковые абстракции, такие как [Play's Iteratees](https://www.playframework.com/documentation/2.5.x/Iteratees) /
+[Akka Streams](http://doc.akka.io/docs/akka-stream-and-http-experimental/2.0-M2/scala.html) /
+[RxJava](https://github.com/ReactiveX/RxJava) /
+[Reactive Streams](http://www.reactive-streams.org/) /
+[FS2](https://github.com/functional-streams-for-scala/fs2) /
+[Monix](https://github.com/alexandru/monix), хороши, потому что:
+
+- они моделируют однонаправленные коммуникации между производителями и потребителями
+- события текут в одном направлении, поэтому вы легко трансформируете и компонуете эти потоки
+- в зависимости от реализации они по умолчанию решают проблемы back-pressure
+- как и в случае с Future, из-за ограничений модель проста в использовании 
+  и гораздо более разумна и компонуема, чем акторы, а открытые операторы просто потрясающие
+
+Потоки плохи, потому что:
+
+- они касаются только однонаправленной связи, 
+  что усложняется, если вам нужна двусторонняя связь, 
+  поскольку акторы лучше ведут диалоги
+- из-за их строгого контракта (например, отсутствия одновременных уведомлений) 
+  реализация новых операторов и источников данных может быть проблематичной, 
+  но из-за этого использование на стороне потребителя остается простым
+
+Посмотрите презентацию Runar Bjarnason на эту тему, 
+потому что она потрясающая: 
+[Ограничения освобождают, свободы ограничивают](https://www.youtube.com/watch?v=GqmsQeSzMdw).
+
+### 4.3. НЕ СЛЕДУЕТ заключать чистые операции, связанные с ЦП, в стандартные фьючерсы Scala
+
+В целом это антипаттерн:
+
+```scala
+def add(x: Int, y: Int) = Future { x + y }
+```
+
+Если вы не видите там никакого ввода-вывода, это красный флаг. 
+Необдуманное размещение вещей в `Future`-ах не решит ваших проблем с производительностью. 
+Особенно в случае веб-сервера, на котором запросы уже распараллелены, 
+и вышеописанное будет выполняться в ответ на запросы.
+Запихивание частого CPU-bound в этом конструкторе `Future` 
+замедлит выполнение вашей логики, а не ускорит ее. 
+
+Кроме того, если вы хотите инициализировать `Future[T]` константой, 
+всегда используйте `Future.successful()`.
+
+### 4.4. НЕОБХОДИМО использовать Scala BlockContext для блокировки ввода-вывода
+
+Сюда входят все блокирующие операции ввода-вывода, включая SQL-запросы. 
+Реальный образец:
+
+```scala
+Future {
+  DB.withConnection { implicit connection =>
+    val query = SQL("select * from bar")
+    query()
+  }
+}
+```
+
+Блокирующие вызовы подвержены ошибкам, 
+поскольку необходимо точно знать, какой пул потоков будет затронут, 
+и, учитывая конфигурацию серверного приложения по умолчанию, 
+это может привести к недетерминированным взаимоблокировкам. 
+Это ошибка, ожидающая своего проявления на проде. 
+
+Вот упрощенный пример, демонстрирующий проблему в поучительных целях:
+
+```scala
+implicit val ec = ExecutionContext
+  .fromExecutor(Executors.newFixedThreadPool(1))
+
+def addOne(x: Int) = Future(x + 1)
+
+def multiply(x: Int, y: Int) = Future {
+  val a = addOne(x)
+  val b = addOne(y)
+  val result = for (r1 <- a; r2 <- b) yield r1 * r2
+
+  // это зайдет в тупик 
+  Await.result(result, Duration.Inf)
+}
+```
+
+Этот пример упрощен, чтобы сделать эффект детерминированным, 
+но это рано или поздно затронет все пулы потоков, 
+настроенные с верхними границами. 
+
+Блокирующие вызовы должны быть помечены вызовом `blocking`, 
+который сигнализирует `BlockContext` об операции блокировки. 
+Это очень аккуратный механизм в Scala, который сообщает `ExecutionContext` о том, 
+что происходит операция блокировки, 
+так что `ExecutionContext` может решить, что с этим делать, 
+например, добавить больше потоков в пул потоков (что и делает пул потоков ForkJoin в Scala).
+
+Весь код необходимо просмотреть, и всякий раз, 
+когда происходит блокирующий вызов, это исправление:
+
+```scala
+import scala.concurrent.blocking
+// ...
+blocking {
+  someBlockingCallHere()
+}
+```
+
+> ПРИМЕЧАНИЕ. `blocking` вызов также служит документацией, 
+> даже если базовый пул потоков не поддерживает `BlockContext`, 
+> поскольку вещи, которые блокируют, совершенно неочевидны.
+
+### 4.5. НЕ СЛЕДУЕТ блокировать
+
+Иногда вам нужно заблокировать поток внизу — 
+к сожалению, у JDBC нет неблокирующего API. 
+Однако, если у вас есть выбор, никогда, никогда не блокируйте. 
+Например, не делайте этого:
+
+```scala
+def fetchSomething: Future[String] = ???
+
+// позднее ...
+val result = Await.result(fetchSomething, 3.seconds)
+result.toUpperCase
+```
+
+Предпочитаю полностью сохранять контекст этого `Future`:
+
+```scala
+def fetchSomething: Future[String] = ???
+
+fetchSomething.map(_.toUpperCase)
+```
+
+Также проверьте [Scala-Async](https://github.com/scala/async), 
+чтобы сделать это проще.
+
+### 4.6. СЛЕДУЕТ использовать отдельный пул потоков для блокировки ввода-вывода
+
+Что касается [правила 4.4](#_4-4-необходимо-использовать-scala-blockcontext-для-блокировки-ввода-вывода), 
+если вы выполняете много блокирующих операций ввода-вывода (например, много вызовов JDBC), 
+лучше создать второй пул потоков/контекст выполнения и выполнить все блокирующие вызовы на нем, 
+оставив пул потоков приложения для работы с ресурсами, связанными с процессором. 
+
+Итак, вы можете инициализировать этот второй контекст выполнения, например:
+
+```scala
+import java.util.concurrent.Executors
+
+// ...
+private val ioThreadPool = Executors.newCachedThreadPool(
+  new ThreadFactory {
+    private val counter = new AtomicLong(0L)
+
+    def newThread(r: Runnable) = {
+      val th = new Thread(r)
+      th.setName("eon-io-thread-" + counter.getAndIncrement.toString)
+      th.setDaemon(true)
+      th
+    }
+  })
+```
+
+Обратите внимание, что здесь я предпочитаю использовать 
+неограниченный "кешированный пул потоков", поэтому у него нет ограничений. 
+При блокировании ввода-вывода идея состоит в том, 
+что у вас должно быть достаточно потоков, которые вы можете заблокировать. 
+Но если неограниченность — это слишком много, 
+в зависимости от варианта использования вы можете позже ее настроить. 
+Идея этого примера состоит в том, что вы можете начать работу. 
+
+И тогда вы можете предоставить помощника, например:
+
+```scala
+def executeBlockingIO[T](cb: => T): Future[T] = {
+  val p = Promise[T]()
+
+  ioThreadPool.execute(new Runnable {
+    def run() = try {
+      p.success(blocking(cb))
+    }
+    catch {
+      case NonFatal(ex) =>
+        logger.error(s"Uncaught I/O exception", ex)
+        p.failure(ex)
+    }
+  })
+
+  p.future
+}
+```
+
+Кроме того, не раскрывайте этот пул потоков ввода-вывода как контекст выполнения, 
+который можно импортировать как неявную область видимости, 
+потому что тогда люди по ошибке начнут использовать его для задач, 
+связанных с процессором, 
+поэтому лучше скрыть его и предоставить этот помощник.
+
+### 4.7. All public APIs SHOULD BE thread-safe
+
+As a general rule of software engineering on top of the JVM,
+absolutely all public APIs from inside your process will end up being
+used in a context in which multiple threads are using these APIs at
+the same time. It's best practice for all public APIs (all components
+in your Cake for example) to be designed as thread-safe from the get
+go, because you do not want to chase concurrency bugs.
+
+And if a public API is not thread-safe for some reason (like the usual
+compromises made in software development), then state this fact in
+BOLD CAPITAL LETTERS.
+
+The reason is simple - if an API is not thread-safe, then there's no
+way a user of that API can know about the way to synchronize on
+it. Example:
+
+```scala
+val list = mutable.List.empty[String]
+```
+
+Lets say this mutable list is exposed. On what lock is a user supposed
+to synchronize? On the list itself? That's not enough, being a pretty
+useless lock to have in a larger context. Remember, locks are not
+composable and are very error-prone. Never leave the responsibility of
+synchronizing for contention on your users.
+
+### 4.8. SHOULD avoid contention on shared reads
+
+Meet
+[Amdahl's Law](https://en.wikipedia.org/wiki/Amdahl's_law). Synchronizing
+with locks drastically limits the parallelization possible and thus
+vertical scalability. Reads are embarrassingly paralellizable, so
+avoid at all times doing this:
+
+```scala
+def fetch = synchronized { someValue }
+```
+
+Come up with better synchronization schemes that does not involve
+synchronizing reads, like atomic references or STM. If you aren't able
+to do that, then avoid this altogether by using proper abstractions.
+
+### 4.9. MUST provide a clearly defined and documented protocol for each component or actor that communicates over async boundaries
+
+A function signature is not enough for documenting the protocol of
+problematic components. Especially when talking about communications
+over asynchronous boundaries (between threads, between processes on
+the network, etc...), the protocol needs a lot of detail on what you
+can and cannot rely on.
+
+As a guideline, don't shy away from writing comments and document:
+
+- concurrency and latency concerns
+- the proper ordering of calls
+- everything that can go wrong
+
+### 4.10. SHOULD always prefer single-producer scenarios
+
+Shared writes are not parallelizable, whereas shared reads are
+embarrassingly parallelizable. As a metaphor, 100,000 people can watch
+the same soccer game on the same stadium at the same time (reads), but
+100,000 people cannot all use the same bathroom (writes). In a
+multi-threading scenario, prefer single producer / multi consumer
+scenarios. This has the effect of avoiding contention and performance
+problems. An app does not scale vertically with multiple producers
+pounding on the same resource, because Amdahl's Law.
+
+Checkout [LMAX Disruptor](https://lmax-exchange.github.io/disruptor/).
+
+### 4.11. MUST NOT hardcode the thread-pool / execution context
+
+This is a general design issue related to the project as a whole, but don't do this:
+
+```scala
+import scala.concurrent.ExecutionContext.Implicits.global
+
+def doSomething: Future[String] = ???
+```
+
+Tight coupling between the execution context and your logic is not
+good and that import is tight-coupling, especially since in the
+context of a Play Framework application you need to use a
+[different thread-pool](https://www.playframework.com/documentation/2.5.x/ThreadPools).
+
+Just pass the ExecutionContext around as an implicit parameter. It's
+idiomatic and acceptable this way. Also, implicit parameters should be passed in the second group of parameters to avoid confusing implicit resolution. When passed in the first group, it allows for method calls like ```doSomething()``` that won't compile but most IDEs will show them as valid.
+
+```scala
+def doSomething()(implicit ec: ExecutionContext): Future[String] = ???
+```
+
 
 
 ---

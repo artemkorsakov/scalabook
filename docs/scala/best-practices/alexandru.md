@@ -1922,7 +1922,6 @@ class MyActor extends Actor {
 }
 
 // Сообщения
-
 case class Add(key: String)
 case class Validated(key: String, isValid: Boolean)
 case object Continue
@@ -2049,8 +2048,9 @@ class Router(producer: ActorRef) extends Actor {
 
   def receive = {
     case Continue =>
-      // сигнал о спросе поступает из нисходящего потока, если у нас есть элементы для отправки, 
-       // то отправьте его, в противном случае поставьте в очередь нижестоящего потребителя
+      // сигнал о спросе поступает из нисходящего потока, 
+      // если у нас есть элементы для отправки, то отправьте его, 
+      // в противном случае поставьте в очередь нижестоящего потребителя
       if (upstreamQueue.isEmpty) {
         downstreamQueue = downstreamQueue.enqueue(sender)
       }
@@ -2162,34 +2162,35 @@ firstGoto(Ramping).thenGoto(Dispatched)
 - объект с индивидуальностью и сложной бизнес-логикой (действительно, автоматы редко бывают простыми) 
 - который взаимодействует с асинхронными сообщениями
 
+Позвольте мне объяснить следующее: 
+результат будет хуже, чем худший, который вы когда-либо видели при использовании ООП. 
+Поскольку это будет объект, состояние которого зависит от его истории (например, от идентификатора), 
+и поскольку связь является асинхронной, 
+введение [nondeterminism](https://en.wikipedia.org/wiki/Nondeterministic_algorithm)
+в эту логику действительно очень просто.
 
-Let me spell this out: This will have a worse outcome than the worst
-you've ever seen happening with OOP. Because this will be an object
-whose state depends on its history (e.g. with an identity) and because
-communications are async, introducing
-[nondeterminism](https://en.wikipedia.org/wiki/Nondeterministic_algorithm)
-in this logic is really, really easy.
+Это подводит меня к тому, что Akka FSM связывает вашу бизнес-логику с Akka, 
+которая по определению является _комплементарной_. 
+Это плохо, потому что: 
 
-Which leads me to the fact that Akka FSM ties your business logic to
-Akka, which would be *complecting* by definition. This is bad because:
+- вы не можете перенести эту бизнес-логику для использования другого решения
+- чтобы протестировать вашу бизнес-логику, вам теперь нужно протестировать этого актора 
+  и поддельные асинхронные коммуникации (с помощью 
+  [akka-testkit](http://doc.akka.io/docs/akka/current/scala/testing.html)) 
 
-- you cannot port that business logic to use another solution
-- in order to test your business logic, you now need to test that
-  actor and fake asynchronous communications (by means of
-  [akka-testkit](http://doc.akka.io/docs/akka/current/scala/testing.html))
+Другими словами, вы в конечном итоге оказываетесь привязанными к Akka FSM 
+и тестируете субъектов Akka вместо тестирования собственной бизнес-логики. 
+И эти тесты, что бы ни говорили документы выше, ужасны. 
+Потому что, как уже было сказано, 
+соедините объекты с состоянием с асинхронными сообщениями, 
+и вы получите нечто худшее, чем худшее, что вы когда-либо видели. 
 
-In other words, you end up locked into Akka FSM and you end up testing
-Akka actors, instead of testing your own business logic. And those
-tests, no matter what those docs say, are horrible. Because as said,
-couple stateful objects with asynchronous messages and you'll get
-something worse than the worst you've ever seen.
-
-**The solution** is to have your business logic described outside of
-any actor and leave actors to be in charge just of communications,
-preferably evolved with `context.become`, as mentioned in point `5.2`.
-At which point you no longer need to test those actors, you no longer
-need to depend on `akka-testkit`. But such a strategy will rule out
-Akka FSM entirely.
+**Решение** состоит в том, чтобы ваша бизнес-логика описывалась вне какого-либо актора 
+и чтобы акторы отвечали только за коммуникации, 
+желательно развивать с помощью `context.become`, как упоминалось в пункте `5.2`. 
+В этот момент вам больше не нужно тестировать этих акторов, 
+вам больше не нужно зависеть от `akka-testkit`. 
+Но такая стратегия полностью исключит Akka FSM.
 
 ---
 

@@ -5,7 +5,7 @@ import ru.scalabook.algorithms.fundamental.Primes.primeFactorsWithPow
 import scala.annotation.tailrec
 
 object Numerical:
-  private val delta: Double = 0.001
+  private val delta: Double = 1e-5
 
   /** Преобразование десятичного числа в двоичное */
   def decToBinConv(x: Int): String =
@@ -53,8 +53,7 @@ object Numerical:
         case (0, 1) => gcd(u, v >> 1)
         case (_, _) => if u > v then gcd(u - v, v) else gcd(v - u, u)
 
-  /** Return the greatest common divisor.
-    */
+  /** Вычисление наибольшего общего делителя. */
   def gcd(a: BigInt, b: BigInt): BigInt =
     val u = if a < 0 then -a else a
     val v = if b < 0 then -b else b
@@ -92,6 +91,9 @@ object Numerical:
     val extraEuclid = gcdex(a, m)
     if extraEuclid._1 == 1 then (extraEuclid._2 % m + m) % m
     else -1
+
+  /** Вычисление наименьшего общего кратного двух чисел */
+  def lcm(x: Long, y: Long): Long = math.abs(x * y) / gcd(x, y)
 
   /** Возведение в степень */
   def power(a: Long, n: Long): BigInt =

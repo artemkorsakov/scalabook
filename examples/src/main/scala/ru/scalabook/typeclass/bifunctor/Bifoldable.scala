@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.bifunctor
 
-import ru.scalabook.typeclass.monad.*
+import ru.scalabook.typeclass.monad.Foldable
 import ru.scalabook.typeclass.monoid.Monoid
 import ru.scalabook.typeclass.monoid.Monoid.{dual, endoMonoid}
 

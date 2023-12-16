@@ -31,7 +31,8 @@ lazy val examples = (project in file("examples"))
   .settings(
     libraryDependencies ++= exampleLibs,
     libraryDependencies ++= exampleTestLibs,
-    testFrameworks += new TestFramework("weaver.framework.CatsEffect")
+    testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
+    Test / parallelExecution := false
   )
 
 lazy val site = project

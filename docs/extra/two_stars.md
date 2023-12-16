@@ -18,6 +18,7 @@
 | Название                                                                                                                                                                 | Версия  | Язык | Дата | Комментарий            |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|------------------------|
 | [Saint Scala-митап от Яндекса](https://www.youtube.com/watch?v=04Y1IAFTLXA)                                                                                              | Scala 3 |  Ru  | 2023 |                        |
+| [Олег Нижников — Современное ФП с Tagless Final](https://www.youtube.com/watch?v=sWEtnq0ReZA)                                                                            | Scala   |  Ru  | 2023 |                        |
 | [Direct Style Scala - Martin Odersky, Scalar Conference 2023](https://www.youtube.com/watch?v=0Fm0y4K4YO8&t)                                                             | Scala 3 |  En  | 2023 | Scalar Conference 2023 |
 | [Combining Refined Types with Type Class Derivation in Scala - Lawrence Carvalho](https://www.youtube.com/watch?v=Hq2QWbUXKbE&t)                                         | Scala 2 |  En  | 2018 | Refined                |
 | [Decorate your types with refined – Frank Thomas](https://www.youtube.com/watch?v=zExb9x3fzKs)                                                                           | Scala 2 |  En  | 2016 | Refined                |

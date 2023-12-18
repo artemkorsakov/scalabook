@@ -90,6 +90,7 @@ def approximateFibonacci(n: Int): BigInt =
 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Memo.html)
 - [SICP: Абельсон Х., Сассман Д. - Структура и интерпретация компьютерных программ][sicp]
+- [Scalacaster](https://github.com/vkostyukov/scalacaster)
 - [The Art of Computer Programming - Donald E. Knuth, section 1.2.8](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 
 [sicp]: https://web.mit.edu/6.001/6.037/sicp.pdf

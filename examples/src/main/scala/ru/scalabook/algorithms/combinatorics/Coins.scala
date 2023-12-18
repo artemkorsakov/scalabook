@@ -2,7 +2,8 @@ package ru.scalabook.algorithms.combinatorics
 
 object Coins:
 
-  /** How many options to get a given sum from given coins?
+  /** Количество способов получить заданную сумму с помощью заданного набора
+    * монет.
     *
     * @see
     *   <a href="https://projecteuler.net/overview=031">detailed description</a>

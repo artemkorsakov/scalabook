@@ -128,13 +128,14 @@ def primeFactorsWithPow(n: Long): Map[Long, Long] =
   while number % 2 == 0 do
     powOfTwo += 1
     number = number >> 1
-  var map = if powOfTwo > 0 then Map(2L -> powOfTwo) else Map.empty[Long, Long]
+  var map =
+    if powOfTwo > 0 then Map(2L -> powOfTwo) else Map.empty[Long, Long]
 
   // Ищем нечетные множители
   var i = 3L
   while i <= math.sqrt(number.toDouble) do
     var pow = 0L
-    while number              % i == 0 do
+    while number % i == 0 do
       number /= i
       pow += 1
     if pow > 0 then map += i -> pow
@@ -142,6 +143,7 @@ def primeFactorsWithPow(n: Long): Map[Long, Long] =
 
   // Если от числа что-то осталось, то остаток тоже множитель
   if number > 1 then map + (number -> 1) else map
+end primeFactorsWithPow
 
 primeFactorsWithPow(777111)
 // res3: Map[Long, Long] = Map(3L -> 1L, 37L -> 1L, 7001L -> 1L)
@@ -157,6 +159,7 @@ primeFactorsWithPow(777111)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
 - [Project Euler, Problem 7](https://projecteuler.net/problem=7)
 - [SICP: Абельсон Х., Сассман Д. - Структура и интерпретация компьютерных программ][sicp]
+- [Scalacaster](https://github.com/vkostyukov/scalacaster)
 
 [sicp]: https://web.mit.edu/6.001/6.037/sicp.pdf
 [sieve]:https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D1%88%D0%B5%D1%82%D0%BE_%D0%AD%D1%80%D0%B0%D1%82%D0%BE%D1%81%D1%84%D0%B5%D0%BD%D0%B0

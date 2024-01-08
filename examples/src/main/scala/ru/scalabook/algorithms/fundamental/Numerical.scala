@@ -8,14 +8,6 @@ import scala.annotation.tailrec
 object Numerical:
   private val delta: Double = 1e-5
 
-  /** Преобразование десятичного числа в двоичное */
-  def decToBinConv(x: Int): String =
-    val seqOfDivByTwo = Iterator.iterate(x)(a => a / 2)
-    val binList = seqOfDivByTwo
-      .takeWhile(a => a > 0)
-      .map(a => a % 2)
-    binList.mkString.reverse
-
   /** Вычисление наибольшего общего делителя посредством алгоритма Евклида. */
   @tailrec
   def gcdByEuclideanAlgorithm(a: Long, b: Long): Long =
@@ -54,12 +46,11 @@ object Numerical:
         case (0, 1) => gcd(u, v >> 1)
         case (_, _) => if u > v then gcd(u - v, v) else gcd(v - u, u)
 
-  /** Modular multiplicative inverse.
+  /** Обратное по модулю число.
     *
     * @see
     *   <a
-    *   href="https://en.wikipedia.org/wiki/Modular_multiplicative_inverse">detailed
-    *   description</a>
+    *   href="https://ru.wikipedia.org/wiki/%D0%9E%D0%B1%D1%80%D0%B0%D1%82%D0%BD%D0%BE%D0%B5_%D0%BF%D0%BE_%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D1%8E_%D1%87%D0%B8%D1%81%D0%BB%D0%BE">wiki</a>
     */
   def gcdInverse(m: SafeLong, n: SafeLong): Option[SafeLong] =
     val (d, a, _) = generalizedEuclideanAlgorithm(m, n)
@@ -90,9 +81,9 @@ object Numerical:
   def lcm(x: Long, y: Long): Long = math.abs(x * y) / gcd(x, y)
 
   /** Возведение в степень */
-  def power(a: Long, n: Long): BigInt =
+  def power(a: SafeLong, n: SafeLong): SafeLong =
     @tailrec
-    def loop(base: BigInt, power: Long, acc: BigInt): BigInt =
+    def loop(base: SafeLong, power: SafeLong, acc: SafeLong): SafeLong =
       if power == 0 then acc
       else if power % 2 == 0 then loop(base * base, power / 2, acc)
       else loop(base, power - 1, base * acc)
@@ -140,10 +131,11 @@ object Numerical:
     else if x % 2 == 0 && y % 2 == 1 then isSnoob(x >> 1, y)
     else isSnoob(x >> 1, y >> 1)
 
-  /** Return the sum of the divisors of n.
+  /** Возвращает сумму делителей числа n.
     *
     * @see
-    *   <a href="https://en.wikipedia.org/wiki/Divisor_function">detailed
+    *   <a
+    *   href="https://ru.wikipedia.org/wiki/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F_%D0%B4%D0%B5%D0%BB%D0%B8%D1%82%D0%B5%D0%BB%D0%B5%D0%B9">detailed
     *   description</a>
     */
   def sumOfDivisors(number: Long): BigInt =
@@ -178,4 +170,12 @@ object Numerical:
   def sumOfCubesTo(n: Long): Long =
     val s = sumToGiven(n)
     s * s
+
+  /** Преобразование десятичного числа в двоичное */
+  def decToBinConv(x: Int): String =
+    val seqOfDivByTwo = Iterator.iterate(x)(a => a / 2)
+    val binList = seqOfDivByTwo
+      .takeWhile(a => a > 0)
+      .map(a => a % 2)
+    binList.mkString.reverse
 end Numerical

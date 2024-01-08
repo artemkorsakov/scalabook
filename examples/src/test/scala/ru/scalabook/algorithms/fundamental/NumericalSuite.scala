@@ -4,14 +4,6 @@ import ru.scalabook.algorithms.fundamental.Numerical.*
 import weaver.FunSuite
 
 object NumericalSuite extends FunSuite:
-  test("decToBinConv should convert decimal number to binary"):
-    expect.all(
-      decToBinConv(1) == "1",
-      decToBinConv(2) == "10",
-      decToBinConv(8) == "1000",
-      decToBinConv(7) == "111"
-    )
-
   test("gcd should return the greatest common divisor"):
     expect.all(
       gcdByEuclideanAlgorithm(4851, 3003) == 231L,
@@ -31,9 +23,9 @@ object NumericalSuite extends FunSuite:
 
   test("'power' should raise the number to a power"):
     expect.all(
-      power(7, 5) == BigInt(16807),
-      power(7, 6) == BigInt(117649),
-      power(7, 7) == BigInt(823543)
+      power(7, 5) == 16807,
+      power(7, 6) == 117649,
+      power(7, 7) == 823543
     )
 
   test("'sqrt' should return an approximation of the square root of a number"):
@@ -49,6 +41,17 @@ object NumericalSuite extends FunSuite:
       math.abs(cubeRootOf(27.0) - 3.0) <= 0.001,
       math.abs(cubeRootOf(137) - 5.1551) <= 0.001
     )
+
+  test("'isPowerOfTwo' should check if the number is a power of 2"):
+    expect.all(
+      isPowerOfTwo(16),
+      !isPowerOfTwo(15)
+    )
+
+  test(
+    "'isSnoob' should return true if the given numbers have the same number of bit units"
+  ):
+    expect.all(isSnoob(11, 13))
 
   test("'sumOfDivisors' should return the sum of the number's divisors"):
     expect.all(
@@ -67,4 +70,12 @@ object NumericalSuite extends FunSuite:
 
   test("sumOfCubesTo"):
     expect.all(sumOfCubesTo(1000) == 250500250000L)
+
+  test("decToBinConv should convert decimal number to binary"):
+    expect.all(
+      decToBinConv(1) == "1",
+      decToBinConv(2) == "10",
+      decToBinConv(8) == "1000",
+      decToBinConv(7) == "111"
+    )
 end NumericalSuite

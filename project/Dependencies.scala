@@ -4,19 +4,6 @@ import sbt.*
 object Dependencies {
   val Scala = "3.3.1"
 
-  object cats {
-    private val version       = "2.10.0"
-    private val effectVersion = "3.6-0142603"
-
-    val core         = "org.typelevel" %% "cats-core"          % version
-    val effect       = "org.typelevel" %% "cats-effect"        % effectVersion
-    val effectKernel = "org.typelevel" %% "cats-effect-kernel" % effectVersion
-    val effectStd    = "org.typelevel" %% "cats-effect-std"    % effectVersion
-    val free         = "org.typelevel" %% "cats-free"          % version
-    val kernel       = "org.typelevel" %% "cats-kernel"        % version
-    val testkit      = "org.typelevel" %% "cats-testkit"       % version
-  }
-
   object fs2 {
     val core = "co.fs2" %% "fs2-core" % "3.7.0"
   }
@@ -61,8 +48,19 @@ object Dependencies {
     val scalacheck      = "org.scalaz" %% "scalaz-scalacheck-binding" % version
   }
 
-  object spire {
-    val spire = "org.typelevel" %% "spire" % "0.18.0"
+  object typelevel {
+    private val catsVersion       = "2.10.0"
+    private val catsEffectVersion = "3.6-0142603"
+
+    val algebra          = "org.typelevel" %% "algebra"            % "2.8.0"
+    val catsCore         = "org.typelevel" %% "cats-core"          % catsVersion
+    val catsEffect       = "org.typelevel" %% "cats-effect"        % catsEffectVersion
+    val catsEffectKernel = "org.typelevel" %% "cats-effect-kernel" % catsEffectVersion
+    val catsEffectStd    = "org.typelevel" %% "cats-effect-std"    % catsEffectVersion
+    val catsFree         = "org.typelevel" %% "cats-free"          % catsVersion
+    val catsKernel       = "org.typelevel" %% "cats-kernel"        % catsVersion
+    val catsTestkit      = "org.typelevel" %% "cats-testkit"       % catsVersion
+    val spire            = "org.typelevel" %% "spire"              % "0.18.0"
   }
 
   object weaver {
@@ -78,11 +76,6 @@ object Dependencies {
 
   val exampleLibs: Seq[ModuleID] =
     Seq(
-      cats.core,
-      cats.effect,
-      cats.effectKernel,
-      cats.effectStd,
-      cats.kernel,
       fs2.core,
       http4s.blaze,
       http4s.core,
@@ -91,29 +84,35 @@ object Dependencies {
       iron.iron,
       iron.cats,
       scalaz.core,
-      spire.spire,
+      typelevel.algebra,
+      typelevel.catsCore,
+      typelevel.catsEffect,
+      typelevel.catsEffectKernel,
+      typelevel.catsEffectStd,
+      typelevel.catsKernel,
+      typelevel.spire,
       zio.core,
       zio.stacktracer
     )
 
   val exampleTestLibs: Seq[ModuleID] =
     Seq(
-      cats.effectKernel,
-      cats.testkit,
       scalaz.scalacheck,
+      typelevel.catsEffectKernel,
+      typelevel.catsTestkit,
       weaver.cats,
       weaver.scalacheck
     ).map(_ % Test)
 
   val siteLibs: Seq[ModuleID] =
     Seq(
-      cats.core,
-      cats.effect,
-      cats.effectKernel,
       http4s.server,
       laika.core,
       laika.io,
-      laika.preview
+      laika.preview,
+      typelevel.catsCore,
+      typelevel.catsEffect,
+      typelevel.catsEffectKernel
     )
 }
 // @formatter:on

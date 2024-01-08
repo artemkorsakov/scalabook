@@ -21,12 +21,12 @@ object NumericalSuite extends FunSuite:
   test(
     "generalizedEuclideanAlgorithm should return the greatest common divisor and coefficients"
   ):
-    expect.all(generalizedEuclideanAlgorithm(1769L, 551L) == (29L, 5L, -16L))
-
-  test("gcdex should return Extended Euclidean algorithm's result"):
     expect.all(
-      gcdex(BigInt(12121212L), BigInt(23422344L)) ==
-        (BigInt(12), BigInt(347845), BigInt(-180012))
+      generalizedEuclideanAlgorithm(1769L, 551L) == (29L, 5L, -16L),
+      generalizedEuclideanAlgorithm(
+        12121212L,
+        23422344L
+      ) == (12L, 347845L, -180012L)
     )
 
   test("'power' should raise the number to a power"):

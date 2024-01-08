@@ -1,6 +1,7 @@
 package ru.scalabook.algorithms.fundamental
 
 import ru.scalabook.algorithms.fundamental.Primes.primeFactorsWithPow
+import spire.math.SafeLong
 
 import scala.annotation.tailrec
 
@@ -53,33 +54,6 @@ object Numerical:
         case (0, 1) => gcd(u, v >> 1)
         case (_, _) => if u > v then gcd(u - v, v) else gcd(v - u, u)
 
-  /** Вычисление наибольшего общего делителя. */
-  def gcd(a: BigInt, b: BigInt): BigInt =
-    val u = if a < 0 then -a else a
-    val v = if b < 0 then -b else b
-    if u == v then u
-    else if u == 0 then v
-    else if v == 0 then u
-    else
-      ((~u & 1).toInt, (~v & 1).toInt) match
-        case (1, 1) => gcd(u >> 1, v >> 1) << 1
-        case (1, 0) => gcd(u >> 1, v)
-        case (0, 1) => gcd(u, v >> 1)
-        case (_, _) => if u > v then gcd(u - v, v) else gcd(v - u, u)
-
-  /** Extended Euclidean algorithm.
-    *
-    * @see
-    *   <a
-    *   href="https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm">detailed
-    *   description</a>
-    */
-  def gcdex(a: BigInt, b: BigInt): (BigInt, BigInt, BigInt) =
-    if a == 0 then (b, BigInt(0), BigInt(1))
-    else
-      val temp = gcdex(b % a, a)
-      (temp._1, temp._3 - (b / a) * temp._2, temp._2)
-
   /** Modular multiplicative inverse.
     *
     * @see
@@ -87,10 +61,30 @@ object Numerical:
     *   href="https://en.wikipedia.org/wiki/Modular_multiplicative_inverse">detailed
     *   description</a>
     */
-  def gcdInverse(a: BigInt, m: BigInt): BigInt =
-    val extraEuclid = gcdex(a, m)
-    if extraEuclid._1 == 1 then (extraEuclid._2 % m + m) % m
-    else -1
+  def gcdInverse(m: SafeLong, n: SafeLong): Option[SafeLong] =
+    val (d, a, _) = generalizedEuclideanAlgorithm(m, n)
+    if d == 1 then Some((a % n + n) % n) else None
+
+  private def generalizedEuclideanAlgorithm(
+      m: SafeLong,
+      n: SafeLong
+  ): (SafeLong, SafeLong, SafeLong) =
+    @tailrec
+    def loop(
+        aa: SafeLong,
+        b: SafeLong,
+        a: SafeLong,
+        bb: SafeLong,
+        c: SafeLong,
+        d: SafeLong
+    ): (SafeLong, SafeLong, SafeLong) =
+      val r = c % d
+      if r == 0 then (d, a, b)
+      else
+        val q = c / d
+        loop(aa = a, b = bb - q * b, a = aa - q * a, bb = b, c = d, d = r)
+    loop(aa = 1, b = 1, a = 0, bb = 0, c = m, d = n)
+  end generalizedEuclideanAlgorithm
 
   /** Вычисление наименьшего общего кратного двух чисел */
   def lcm(x: Long, y: Long): Long = math.abs(x * y) / gcd(x, y)

@@ -117,7 +117,31 @@ generalizedEuclideanAlgorithm(1769, 551)
 // (29, 5, -16)    
 ```
 
+## Обратное по модулю число
+
+**Алгоритм:**
+
+[Обратное по модулю целого a](https://ru.wikipedia.org/wiki/%D0%9E%D0%B1%D1%80%D0%B0%D1%82%D0%BD%D0%BE%D0%B5_%D0%BF%D0%BE_%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D1%8E_%D1%87%D0%B8%D1%81%D0%BB%D0%BE) — 
+это такое целое число x, что произведение ax сравнимо с 1 по модулю m: \\(ax \equiv 1\\) (mod m).
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+import spire.math.SafeLong
+
+def gcdInverse(m: SafeLong, n: SafeLong): Option[SafeLong] =
+  val (d, a, _) = generalizedEuclideanAlgorithm(m, n)
+  if d == 1 then Some((a % n + n) % n) else None
+```
+
 ## Наименьшее общее кратное
+
+**Алгоритм:**
 
 Наименьшее общее кратное вычисляется как произведение двух чисел, деленное на их НОД.
 

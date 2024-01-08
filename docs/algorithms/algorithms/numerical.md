@@ -296,6 +296,133 @@ def isSnoob(x: Int, y: Int): Boolean =
 // isSnoob(11, 13) // true: "1101", "1011"  
 ```
 
+## Делители числа
+
+**Алгоритм:**
+
+Согласно [функциям делителей][divisorfunc] сумму делителей числа, [разложенного на простые множители со степенями](primes.md):
+\\(n = \prod\_{i=1}^{r}\rho\_{i}^{\alpha\_{i}}\\) можно посчитать по формуле:
+
+\\(\sigma\_{1}(n) = \prod\_{i=1}^{r}\frac{\rho\_{i}^{\alpha\_{i} + 1} - 1}{\rho\_{i} - 1}\\)
+
+А количество делителей по формуле:
+
+\\(\sigma\_{0}(n) = \prod\_{i=1}^{r}(\alpha\_{i} + 1)\\)
+
+### Сумма делителей числа
+
+**Алгоритм:**
+
+\\(\sigma\_{1}(n) = \prod\_{i=1}^{r}\frac{\rho\_{i}^{\alpha\_{i} + 1} - 1}{\rho\_{i} - 1}\\)
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+def sumOfDivisors(number: Long): SafeLong =
+  val primeDivisors = primeFactorsWithPow(number)
+  primeDivisors.foldLeft(SafeLong(1)) { case (mul, (prime, power)) =>
+    val num = SafeLong(prime).pow(power + 1) - 1
+    val den = prime - 1
+    mul * (num / den)
+  }
+  
+sumOfDivisors(220) // 504  
+sumOfDivisors(284) // 504
+```
+
+### Количество делителей числа
+
+**Алгоритм:**
+
+\\(\sigma\_{0}(n) = \prod\_{i=1}^{r}(\alpha\_{i} + 1)\\)
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+def countOfDivisors(number: Long): SafeLong =
+  primeFactorsWithPow(number).values.foldLeft(SafeLong(1)): (mul, a) =>
+    mul * (a + 1)
+    
+countOfDivisors(100) // 9    
+```
+
+## Сумма первых натуральных чисел
+
+### Сумма первых натуральных чисел до заданного
+
+**Алгоритм:**
+
+Сумму первых натуральных чисел можно посчитать по формуле:
+\\(\frac{n * (n + 1)}{2}\\)
+
+**Оценка:**
+
+- **Время** - O(1)
+- **Память** - O(1)
+
+**Код:**
+
+```dotty
+def sumToGiven(n: Long): Long = n * (n + 1) / 2
+
+sumToGiven(1000000) 
+// 500000500000L
+```
+
+### Сумма квадратов первых натуральных чисел до заданного
+
+**Алгоритм:**
+
+Сумму квадратов первых натуральных чисел можно посчитать [по формуле](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%BB%D0%BD%D1%8B%D0%B9_%D0%BA%D0%B2%D0%B0%D0%B4%D1%80%D0%B0%D1%82): 
+\\(\frac{n * (n + 1) * (2 * n + 1)}{6}\\)
+
+**Оценка:**
+
+- **Время** - O(1)
+- **Память** - O(1)
+
+**Код:**
+
+```dotty
+def sumOfSquaresTo(n: Long): Long = n * (n + 1) * (2 * n + 1) / 6
+
+sumOfSquaresTo(1000) 
+// 333833500L
+```
+
+### Сумма кубов первых натуральных чисел до заданного
+
+**Алгоритм:**
+
+Сумму кубов первых натуральных чисел можно посчитать [по формуле](https://ru.wikipedia.org/wiki/%D0%9A%D1%83%D0%B1_(%D0%B0%D0%BB%D0%B3%D0%B5%D0%B1%D1%80%D0%B0)):
+\\(\left ( \frac{n * (n + 1)}{2} \right )^{2}\\)
+
+**Оценка:**
+
+- **Время** - O(1)
+- **Память** - O(1)
+
+**Код:**
+
+```dotty
+def sumOfCubesTo(n: Long): Long =
+  val s = sumToGiven(n)
+  s * s
+  
+sumOfCubesTo(1000) 
+// 250500250000L  
+```
+
 ## Рандомизация данных - Линейный конгруэнтный генератор
 
 **Алгоритм:**
@@ -355,6 +482,9 @@ def decToBinConv(x: Int): String =
     .takeWhile(a => a > 0)
     .map(a => a % 2)
   binList.mkString.reverse
+
+decToBinConv(8) // "1000"
+decToBinConv(7) // "111"  
 ```
 
 ---
@@ -363,9 +493,11 @@ def decToBinConv(x: Int): String =
 
 - [Алгоритм Евклида](https://ru.wikipedia.org/wiki/%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%D0%95%D0%B2%D0%BA%D0%BB%D0%B8%D0%B4%D0%B0)
 - [Род Стивенс - Алгоритмы. Теория и практическое применение. Глава 2. Численные алгоритмы](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854)
+- [Функция делителей][divisorfunc]
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
 - [SICP: Абельсон Х., Сассман Д. - Структура и интерпретация компьютерных программ][sicp]
 - [Scalacaster](https://github.com/vkostyukov/scalacaster)
 - [The Art of Computer Programming - Donald E. Knuth](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 
 [sicp]: https://web.mit.edu/6.001/6.037/sicp.pdf
+[divisorfunc]: https://ru.wikipedia.org/wiki/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F_%D0%B4%D0%B5%D0%BB%D0%B8%D1%82%D0%B5%D0%BB%D0%B5%D0%B9

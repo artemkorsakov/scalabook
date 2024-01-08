@@ -138,31 +138,31 @@ object Numerical:
     *   href="https://ru.wikipedia.org/wiki/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F_%D0%B4%D0%B5%D0%BB%D0%B8%D1%82%D0%B5%D0%BB%D0%B5%D0%B9">detailed
     *   description</a>
     */
-  def sumOfDivisors(number: Long): BigInt =
+  def sumOfDivisors(number: Long): SafeLong =
     val primeDivisors = primeFactorsWithPow(number)
-    primeDivisors.keySet.foldLeft(BigInt(1)) { (mul, prime) =>
-      val num = BigInt(prime).pow(primeDivisors(prime).toInt + 1) - 1
-      val den = BigInt(prime) - 1
+    primeDivisors.foldLeft(SafeLong(1)) { case (mul, (prime, power)) =>
+      val num = SafeLong(prime).pow(power + 1) - 1
+      val den = prime - 1
       mul * (num / den)
     }
 
   /** Return the count of divisors of n.
     */
-  def countOfDivisors(number: Long): Long =
-    primeFactorsWithPow(number).values.foldLeft(1L)((mul, a) => mul * (a + 1))
+  def countOfDivisors(number: Long): SafeLong =
+    primeFactorsWithPow(number).values.foldLeft(SafeLong(1)): (mul, a) =>
+      mul * (a + 1)
 
-  /** Returns the sum of numbers from 1 to a given.
-    */
+  /** Сумма чисел от 1 до заданного. */
   def sumToGiven(n: Long): Long = n * (n + 1) / 2
 
-  /** Returns the sum of squares of numbers from 1 to a given limit, inclusive.
+  /** Сумма квадратов чисел от 1 до заданного.
     *
     * @see
     *   <a href="https://en.wikipedia.org/wiki/Square_number">description</a>
     */
   def sumOfSquaresTo(n: Long): Long = n * (n + 1) * (2 * n + 1) / 6
 
-  /** Returns the sum of cubes first natural numbers.
+  /** Сумма кубов чисел от 1 до заданного.
     *
     * @see
     *   <a href="https://en.wikipedia.org/wiki/Cube_(algebra)">description</a>

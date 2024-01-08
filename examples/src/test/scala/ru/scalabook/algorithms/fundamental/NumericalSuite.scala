@@ -55,12 +55,12 @@ object NumericalSuite extends FunSuite:
 
   test("'sumOfDivisors' should return the sum of the number's divisors"):
     expect.all(
-      sumOfDivisors(220) == BigInt(504),
-      sumOfDivisors(284) == BigInt(504)
+      sumOfDivisors(220) == 504,
+      sumOfDivisors(284) == 504
     )
 
   test("'countOfDivisors' should return the number of divisors of the number"):
-    expect.all(countOfDivisors(100) == 9L)
+    expect.all(countOfDivisors(100) == 9)
 
   test("sumToGiven"):
     expect.all(sumToGiven(1000000) == 500000500000L)

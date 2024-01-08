@@ -57,21 +57,21 @@ object Primes:
   @SuppressWarnings(
     Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
   )
-  def primeFactorsWithPow(n: Long): Map[Long, Long] =
+  def primeFactorsWithPow(n: Long): Map[Long, Int] =
     var number = n
 
     // Проверяем делимость на 2
-    var powOfTwo = 0L
+    var powOfTwo = 0
     while number % 2 == 0 do
       powOfTwo += 1
       number = number >> 1
     var map =
-      if powOfTwo > 0 then Map(2L -> powOfTwo) else Map.empty[Long, Long]
+      if powOfTwo > 0 then Map(2L -> powOfTwo) else Map.empty[Long, Int]
 
     // Ищем нечетные множители
     var i = 3L
     while i <= math.sqrt(number.toDouble) do
-      var pow = 0L
+      var pow = 0
       while number % i == 0 do
         number /= i
         pow += 1

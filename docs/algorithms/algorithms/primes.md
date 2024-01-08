@@ -120,21 +120,21 @@ sieveOfEratosthenes(10)
 Простые множители числа можно найти следующим образом:
 
 ```dotty
-def primeFactorsWithPow(n: Long): Map[Long, Long] =
+def primeFactorsWithPow(n: Long): Map[Long, Int] =
   var number = n
 
   // Проверяем делимость на 2
-  var powOfTwo = 0L
+  var powOfTwo = 0
   while number % 2 == 0 do
     powOfTwo += 1
     number = number >> 1
   var map =
-    if powOfTwo > 0 then Map(2L -> powOfTwo) else Map.empty[Long, Long]
+    if powOfTwo > 0 then Map(2L -> powOfTwo) else Map.empty[Long, Int]
 
   // Ищем нечетные множители
   var i = 3L
   while i <= math.sqrt(number.toDouble) do
-    var pow = 0L
+    var pow = 0
     while number % i == 0 do
       number /= i
       pow += 1
@@ -146,7 +146,7 @@ def primeFactorsWithPow(n: Long): Map[Long, Long] =
 end primeFactorsWithPow
 
 primeFactorsWithPow(777111)
-// res3: Map[Long, Long] = Map(3L -> 1L, 37L -> 1L, 7001L -> 1L)
+// res3: Map[Long, Int] = Map(3L -> 1, 37L -> 1, 7001L -> 1)
 ```
 
 

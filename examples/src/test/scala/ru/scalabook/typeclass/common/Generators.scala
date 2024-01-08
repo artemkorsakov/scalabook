@@ -3,7 +3,7 @@ package ru.scalabook.typeclass.common
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.*
 import org.scalacheck.{Arbitrary, Gen}
-import ru.scalabook.algorithms.numbers.RationalNumber
+import spire.math.Rational
 
 object Generators:
   val smallInt: Gen[Int]                  = Gen.choose(1, 5)
@@ -23,10 +23,10 @@ object Generators:
     Gen.frequency((1, Gen.const(0)), (4, Gen.posNum[Int])).map(i => i.refine)
   )
 
-  given rationalNumberArb: Arbitrary[RationalNumber] = Arbitrary(
+  given rationalArb: Arbitrary[Rational] = Arbitrary(
     for
       x <- Gen.long
       y <- Gen.posNum[Long]
-    yield RationalNumber(x, y)
+    yield Rational(x, y)
   )
 end Generators

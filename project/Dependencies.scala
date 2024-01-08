@@ -1,5 +1,6 @@
 import sbt.*
 
+// @formatter:off
 object Dependencies {
   val Scala = "3.3.1"
 
@@ -90,6 +91,7 @@ object Dependencies {
       iron.iron,
       iron.cats,
       scalaz.core,
+      spire.spire,
       zio.core,
       zio.stacktracer
     )
@@ -114,3 +116,4 @@ object Dependencies {
       laika.preview
     )
 }
+// @formatter:on

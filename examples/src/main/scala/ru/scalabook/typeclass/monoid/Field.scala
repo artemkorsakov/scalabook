@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.monoid
 
-import ru.scalabook.algorithms.numbers.RationalNumber
+import spire.math.Rational
 
 trait Field[A] extends EuclideanRing[A]:
   extension (a: A) def reciprocal: A
@@ -10,24 +10,24 @@ trait Field[A] extends EuclideanRing[A]:
 object Field:
   def apply[A: Field]: Field[A] = summon[Field[A]]
 
-  given Field[RationalNumber] with
-    val empty: RationalNumber = RationalNumber.ZeroRationalNumber
-    val one: RationalNumber   = RationalNumber.OneRationalNumber
+  given Field[Rational] with
+    val empty: Rational = Rational(0)
+    val one: Rational   = Rational(1)
 
-    def combine(x: RationalNumber, y: RationalNumber): RationalNumber = x + y
+    def combine(x: Rational, y: Rational): Rational = x + y
 
-    def times(x: RationalNumber, y: RationalNumber): RationalNumber = x * y
+    def times(x: Rational, y: Rational): Rational = x * y
 
-    def gcd(x: RationalNumber, y: RationalNumber): RationalNumber = one
+    def gcd(x: Rational, y: Rational): Rational = one
 
-    def lcm(x: RationalNumber, y: RationalNumber): RationalNumber = times(x, y)
+    def lcm(x: Rational, y: Rational): Rational = times(x, y)
 
-    def quot(x: RationalNumber, y: RationalNumber): RationalNumber = x / y
+    def quot(x: Rational, y: Rational): Rational = x / y
 
-    def mod(x: RationalNumber, y: RationalNumber): RationalNumber = empty
+    def mod(x: Rational, y: Rational): Rational = empty
 
-    extension (a: RationalNumber)
-      def inverse: RationalNumber    = RationalNumber(-a.x, a.y)
-      def reciprocal: RationalNumber = RationalNumber(a.y, a.x)
+    extension (a: Rational)
+      def inverse: Rational    = Rational(-a.numerator, a.denominator)
+      def reciprocal: Rational = Rational(a.denominator, a.numerator)
   end given
 end Field

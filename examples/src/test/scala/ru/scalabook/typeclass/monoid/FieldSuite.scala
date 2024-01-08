@@ -1,16 +1,16 @@
 package ru.scalabook.typeclass.monoid
 
-import ru.scalabook.algorithms.numbers.RationalNumber
+import spire.math.Rational
 import ru.scalabook.typeclass.common.Generators.given
 import weaver.*
 import weaver.scalacheck.*
 
 object FieldSuite extends SimpleIOSuite, Checkers, FieldLaw:
-  given cats.Show[RationalNumber] = cats.Show.fromToString
+  given cats.Show[Rational] = cats.Show.fromToString
 
   test(
     "RationalNumber is a field with unity with addition, 0, multiplication and 1"
   ):
-    forall: (x: RationalNumber, y: RationalNumber, z: RationalNumber) =>
+    forall: (x: Rational, y: Rational, z: Rational) =>
       whenSuccess(checkFieldLaw(x, y, z)): _ =>
         success

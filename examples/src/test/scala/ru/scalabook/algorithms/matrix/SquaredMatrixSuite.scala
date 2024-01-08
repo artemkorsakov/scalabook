@@ -1,7 +1,7 @@
 package ru.scalabook.algorithms.matrix
 
-import ru.scalabook.algorithms.numbers.RationalNumber
-import ru.scalabook.algorithms.numbers.RationalNumber.RationalNumberIsIntegral
+import spire.math.Rational
+import spire.compat.integral
 import weaver.FunSuite
 
 object SquaredMatrixSuite extends FunSuite:
@@ -61,56 +61,56 @@ object SquaredMatrixSuite extends FunSuite:
       !SquaredMatrix(
         Seq(
           Seq(
-            RationalNumber(1, 3),
-            RationalNumber(1, 2),
-            RationalNumber(1, 2),
-            RationalNumber(1, 2)
+            Rational(1, 3),
+            Rational(1, 2),
+            Rational(1, 2),
+            Rational(1, 2)
           ),
           Seq(
-            RationalNumber(1, 2),
-            RationalNumber(-1, 2),
-            RationalNumber(1, 2),
-            RationalNumber(-1, 2)
+            Rational(1, 2),
+            Rational(-1, 2),
+            Rational(1, 2),
+            Rational(-1, 2)
           ),
           Seq(
-            RationalNumber(1, 2),
-            RationalNumber(1, 2),
-            RationalNumber(-1, 2),
-            RationalNumber(-1, 2)
+            Rational(1, 2),
+            Rational(1, 2),
+            Rational(-1, 2),
+            Rational(-1, 2)
           ),
           Seq(
-            RationalNumber(1, 2),
-            RationalNumber(-1, 2),
-            RationalNumber(-1, 2),
-            RationalNumber(1, 2)
+            Rational(1, 2),
+            Rational(-1, 2),
+            Rational(-1, 2),
+            Rational(1, 2)
           )
         )
       ).isOrthogonalMatrix,
       SquaredMatrix(
         Seq(
           Seq(
-            RationalNumber(1, 2),
-            RationalNumber(1, 2),
-            RationalNumber(1, 2),
-            RationalNumber(1, 2)
+            Rational(1, 2),
+            Rational(1, 2),
+            Rational(1, 2),
+            Rational(1, 2)
           ),
           Seq(
-            RationalNumber(1, 2),
-            RationalNumber(-1, 2),
-            RationalNumber(1, 2),
-            RationalNumber(-1, 2)
+            Rational(1, 2),
+            Rational(-1, 2),
+            Rational(1, 2),
+            Rational(-1, 2)
           ),
           Seq(
-            RationalNumber(1, 2),
-            RationalNumber(1, 2),
-            RationalNumber(-1, 2),
-            RationalNumber(-1, 2)
+            Rational(1, 2),
+            Rational(1, 2),
+            Rational(-1, 2),
+            Rational(-1, 2)
           ),
           Seq(
-            RationalNumber(1, 2),
-            RationalNumber(-1, 2),
-            RationalNumber(-1, 2),
-            RationalNumber(1, 2)
+            Rational(1, 2),
+            Rational(-1, 2),
+            Rational(-1, 2),
+            Rational(1, 2)
           )
         )
       ).isOrthogonalMatrix

@@ -1,17 +1,17 @@
 package ru.scalabook.algorithms.matrix
 
-import ru.scalabook.algorithms.numbers.RationalNumber
-import ru.scalabook.algorithms.numbers.RationalNumber.RationalNumberIsIntegral
 import weaver.FunSuite
+import spire.math.Rational
+import spire.compat.integral
 
 object InvertibleMatrixSuite extends FunSuite:
   test("invertibleMatrix") {
     val matrix =
       InvertibleMatrix(
         Seq(
-          Seq(RationalNumber(3), RationalNumber(2), RationalNumber(4)),
-          Seq(RationalNumber(4), RationalNumber(3), RationalNumber(6)),
-          Seq(RationalNumber(6), RationalNumber(4), RationalNumber(9))
+          Seq(Rational(3), Rational(2), Rational(4)),
+          Seq(Rational(4), Rational(3), Rational(6)),
+          Seq(Rational(6), Rational(4), Rational(9))
         )
       )
     val invMatrix = matrix.invertibleMatrix
@@ -21,17 +21,17 @@ object InvertibleMatrixSuite extends FunSuite:
       invMatrix ==
         InvertibleMatrix(
           Seq(
-            Seq(RationalNumber(3), RationalNumber(-2), RationalNumber(0)),
-            Seq(RationalNumber(0), RationalNumber(3), RationalNumber(-2)),
-            Seq(RationalNumber(-2), RationalNumber(0), RationalNumber(1))
+            Seq(Rational(3), Rational(-2), Rational(0)),
+            Seq(Rational(0), Rational(3), Rational(-2)),
+            Seq(Rational(-2), Rational(0), Rational(1))
           )
         ),
       iMatrix ==
         InvertibleMatrix(
           Seq(
-            Seq(RationalNumber(1), RationalNumber(0), RationalNumber(0)),
-            Seq(RationalNumber(0), RationalNumber(1), RationalNumber(0)),
-            Seq(RationalNumber(0), RationalNumber(0), RationalNumber(1))
+            Seq(Rational(1), Rational(0), Rational(0)),
+            Seq(Rational(0), Rational(1), Rational(0)),
+            Seq(Rational(0), Rational(0), Rational(1))
           )
         )
     )
@@ -41,10 +41,10 @@ object InvertibleMatrixSuite extends FunSuite:
     val matrix =
       InvertibleMatrix(
         Seq(
-          Seq(RationalNumber(1), RationalNumber(5)),
-          Seq(RationalNumber(2), RationalNumber(6))
+          Seq(Rational(1), Rational(5)),
+          Seq(Rational(2), Rational(6))
         )
       )
-    val solution = matrix.solveEquation(Seq(7, 10).map(RationalNumber(_)))
-    expect.all(solution == Seq(RationalNumber(2), RationalNumber(1)))
+    val solution = matrix.solveEquation(Seq(7, 10).map(Rational(_)))
+    expect.all(solution == Seq(Rational(2), Rational(1)))
 end InvertibleMatrixSuite

@@ -1,6 +1,6 @@
 package ru.scalabook.algorithms.games.dice
 
-import ru.scalabook.algorithms.numbers.RationalNumber
+import spire.math.Rational
 
 import scala.collection.mutable
 
@@ -11,10 +11,10 @@ case class Dice(maxCube: Int):
   /** An array of probabilities to get the given sums from the cube with the
     * maximum face maxCube and for a given count of steps.
     */
-  def probabilities(step: Int): Seq[RationalNumber] =
+  def probabilities(step: Int): Seq[Rational] =
     val sums  = (1 to maxCube * step).map(i => cubeCount(step, i))
     val total = sums.sum
-    sums.map(RationalNumber(_, total))
+    sums.map(Rational(_, total))
 
   private def cubeCount(steps: Int, sum: Int): Int =
     if steps < 0 || sum < steps then 0

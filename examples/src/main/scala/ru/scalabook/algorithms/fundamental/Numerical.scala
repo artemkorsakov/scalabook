@@ -14,6 +14,25 @@ object Numerical:
     if b == 0 then a
     else gcdByEuclideanAlgorithm(b, a % b)
 
+  /** Вычисление наибольшего общего делителя на основе четности чисел */
+  def gcdBasedOnParityOfNumbers(a: Long, b: Long): Long =
+    val u = math.abs(a)
+    val v = math.abs(b)
+    if u == v then u
+    else if u == 0 then v
+    else if v == 0 then u
+    else
+      (~u & 1, ~v & 1) match
+        case (1, 1) => gcdBasedOnParityOfNumbers(u >> 1, v >> 1) << 1
+        case (1, 0) => gcdBasedOnParityOfNumbers(u >> 1, v)
+        case (0, 1) => gcdBasedOnParityOfNumbers(u, v >> 1)
+        case (_, _) =>
+          if u > v then gcdBasedOnParityOfNumbers((u - v) >> 1, v)
+          else gcdBasedOnParityOfNumbers((v - u) >> 1, u)
+
+  /** Вычисление наибольшего общего делителя */
+  def gcd(a: Long, b: Long): Long = gcdByEuclideanAlgorithm(a: Long, b: Long)
+
   /** Обобщенный алгоритм Евклида. */
   def generalizedEuclideanAlgorithm(m: Long, n: Long): (Long, Long, Long) =
     @tailrec
@@ -31,20 +50,6 @@ object Numerical:
         val q = c / d
         loop(aa = a, b = bb - q * b, a = aa - q * a, bb = b, c = d, d = r)
     loop(aa = 1, b = 1, a = 0, bb = 0, c = m, d = n)
-
-  /** Вычисление наибольшего общего делителя */
-  def gcd(a: Long, b: Long): Long =
-    val u = math.abs(a)
-    val v = math.abs(b)
-    if u == v then u
-    else if u == 0 then v
-    else if v == 0 then u
-    else
-      (~u & 1, ~v & 1) match
-        case (1, 1) => gcd(u >> 1, v >> 1) << 1
-        case (1, 0) => gcd(u >> 1, v)
-        case (0, 1) => gcd(u, v >> 1)
-        case (_, _) => if u > v then gcd(u - v, v) else gcd(v - u, u)
 
   /** Обратное по модулю число.
     *
@@ -78,7 +83,8 @@ object Numerical:
   end generalizedEuclideanAlgorithm
 
   /** Вычисление наименьшего общего кратного двух чисел */
-  def lcm(x: Long, y: Long): Long = math.abs(x * y) / gcd(x, y)
+  def lcm(x: Long, y: Long): Long =
+    math.abs(x * y) / gcd(x, y)
 
   /** Возведение в степень */
   def power(a: SafeLong, n: SafeLong): SafeLong =

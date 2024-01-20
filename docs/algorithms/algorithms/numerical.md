@@ -34,7 +34,25 @@ final def gcdByEuclideanAlgorithm(a: Long, b: Long): Long =
   else gcdByEuclideanAlgorithm(b, a % b)
   
 gcdByEuclideanAlgorithm(4851, 3003)
-// res0: Long = 231L
+// 231
+```
+
+**Метрики:**
+
+Вычисление НОД всех пар первых 10000 чисел, начиная с миллиона, 
+с помощью алгоритма Евклида занимает примерно 3 секунды. 
+
+```dotty
+@main def gcdByEuclideanAlgorithmBench(): Unit =
+  val limit = 10_000
+  val start = 1_000_000
+  val end   = start + limit
+  (start until end).foreach: i =>
+    (i + 1 to end).foreach: j =>
+      gcdByEuclideanAlgorithm(j, i)
+      
+// CPU Time: 3057 ms
+// Allocation memory size: 817,66 MB      
 ```
 
 ### Алгоритм НОД на основе четности чисел
@@ -44,20 +62,20 @@ gcdByEuclideanAlgorithm(4851, 3003)
 Алгоритм, нахождения НОД, учитывающий четность чисел:
 
 - Если `u == v`, то `НОД(u, v) = u`.
-- `НОД(r, 0) = r` для любого ненулевого `r` (так как 0 делится на любое целое число).
+- `НОД(r, 0) = r` для любого ненулевого `r` (так как `0` делится на любое целое число).
 - Если `u` и `v` - четные, то `НОД(u, v) = 2 * НОД(u/2, v/2)`.
-- Если числа имеют разную четность, то НОД этих двух чисел равен НОД нечетному и четному, разделенному на 2.
-- Если оба нечетные, то можно воспользоваться алгоритмом Евклида.
+- Если числа имеют разную четность, то НОД этих двух чисел равен НОД нечетному и четному, разделенному на `2`.
+- Если оба нечетные, то вычтем из большего меньшее и продолжим (разница будет четная, можно сразу поделить на `2`)
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- **Время** - O(log n)
+- **Память** - O(log n)
 
 **Код:**
 
 ```dotty
-def gcd(a: Long, b: Long): Long =
+def gcdBasedOnParityOfNumbers(a: Long, b: Long): Long =
   val u = math.abs(a)
   val v = math.abs(b)
   if u == v then u
@@ -65,14 +83,37 @@ def gcd(a: Long, b: Long): Long =
   else if v == 0 then u
   else
     (~u & 1, ~v & 1) match
-      case (1, 1) => gcd(u >> 1, v >> 1) << 1
-      case (1, 0) => gcd(u >> 1, v)
-      case (0, 1) => gcd(u, v >> 1)
-      case (_, _) => if u > v then gcd(u - v, v) else gcd(v - u, u)
+      case (1, 1) => gcdBasedOnParityOfNumbers(u >> 1, v >> 1) << 1
+      case (1, 0) => gcdBasedOnParityOfNumbers(u >> 1, v)
+      case (0, 1) => gcdBasedOnParityOfNumbers(u, v >> 1)
+      case (_, _) =>
+        if u > v then gcdBasedOnParityOfNumbers((u - v) >> 1, v)
+        else gcdBasedOnParityOfNumbers((v - u) >> 1, u)
   
-gcd(4851, 3003)  
-// res1: Long = 231L
+gcdBasedOnParityOfNumbers(4851, 3003)  
+// 231
 ```
+
+**Метрики:**
+
+Вычисление НОД всех пар первых 10000 чисел, начиная с миллиона,
+с помощью алгоритма на основе четности чисел занимает примерно 22 секунды.
+
+```dotty
+@main def gcdBasedOnParityOfNumbersBench(): Unit =
+  val limit = 10_000
+  val start = 1_000_000
+  val end   = start + limit
+  (start until end).foreach: i =>
+    (i + 1 to end).foreach: j =>
+      gcdBasedOnParityOfNumbers(j, i
+      
+// CPU Time: 21697 ms
+// Allocation memory size: 33,11 GB      
+```
+
+> Вычисление НОД на основе алгоритма Евклида оказывается на порядок эффективнее алгоритма на основе четности чисел.
+> Во всяком случае на числах `Long` в Scala.
 
 ### Обобщенный алгоритм Евклида
 

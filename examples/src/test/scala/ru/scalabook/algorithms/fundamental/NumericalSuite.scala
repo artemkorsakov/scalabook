@@ -7,7 +7,12 @@ object NumericalSuite extends FunSuite:
   test("gcd should return the greatest common divisor"):
     expect.all(
       gcdByEuclideanAlgorithm(4851, 3003) == 231L,
-      gcd(4851, 3003) == 231L
+      gcdBasedOnParityOfNumbers(4851, 3003) == 231L,
+      (1 to 1000).forall(i =>
+        (i to 1000).forall(j =>
+          gcdByEuclideanAlgorithm(i, j) == gcdBasedOnParityOfNumbers(i, j)
+        )
+      )
     )
 
   test(

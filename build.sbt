@@ -20,7 +20,7 @@ ThisBuild / scalacOptions ++=
   )
 
 lazy val root = (project in file("."))
-  .aggregate(examples, site)
+  .aggregate(examples, bench, site)
   .settings(
     name           := "scalabook",
     publish / skip := true
@@ -34,6 +34,10 @@ lazy val examples = (project in file("examples"))
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     Test / parallelExecution := false
   )
+
+lazy val bench = (project in file("bench"))
+  .settings(name := "scalabook-bench")
+  .dependsOn(examples)
 
 lazy val site = project
   .in(file("site"))

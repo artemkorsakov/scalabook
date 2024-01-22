@@ -34,34 +34,7 @@ object Numerical:
   def gcd(a: Long, b: Long): Long = gcdByEuclideanAlgorithm(a: Long, b: Long)
 
   /** Обобщенный алгоритм Евклида. */
-  def generalizedEuclideanAlgorithm(m: Long, n: Long): (Long, Long, Long) =
-    @tailrec
-    def loop(
-        aa: Long,
-        b: Long,
-        a: Long,
-        bb: Long,
-        c: Long,
-        d: Long
-    ): (Long, Long, Long) =
-      val r = c % d
-      if r == 0 then (d, a, b)
-      else
-        val q = c / d
-        loop(aa = a, b = bb - q * b, a = aa - q * a, bb = b, c = d, d = r)
-    loop(aa = 1, b = 1, a = 0, bb = 0, c = m, d = n)
-
-  /** Обратное по модулю число.
-    *
-    * @see
-    *   <a
-    *   href="https://ru.wikipedia.org/wiki/%D0%9E%D0%B1%D1%80%D0%B0%D1%82%D0%BD%D0%BE%D0%B5_%D0%BF%D0%BE_%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D1%8E_%D1%87%D0%B8%D1%81%D0%BB%D0%BE">wiki</a>
-    */
-  def gcdInverse(m: SafeLong, n: SafeLong): Option[SafeLong] =
-    val (d, a, _) = generalizedEuclideanAlgorithm(m, n)
-    if d == 1 then Some((a % n + n) % n) else None
-
-  private def generalizedEuclideanAlgorithm(
+  def generalizedEuclideanAlgorithm(
       m: SafeLong,
       n: SafeLong
   ): (SafeLong, SafeLong, SafeLong) =
@@ -79,8 +52,19 @@ object Numerical:
       else
         val q = c / d
         loop(aa = a, b = bb - q * b, a = aa - q * a, bb = b, c = d, d = r)
+
     loop(aa = 1, b = 1, a = 0, bb = 0, c = m, d = n)
   end generalizedEuclideanAlgorithm
+
+  /** Обратное по модулю число.
+    *
+    * @see
+    *   <a
+    *   href="https://ru.wikipedia.org/wiki/%D0%9E%D0%B1%D1%80%D0%B0%D1%82%D0%BD%D0%BE%D0%B5_%D0%BF%D0%BE_%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D1%8E_%D1%87%D0%B8%D1%81%D0%BB%D0%BE">wiki</a>
+    */
+  def gcdInverse(m: SafeLong, n: SafeLong): Option[SafeLong] =
+    val (d, a, _) = generalizedEuclideanAlgorithm(m, n)
+    if d == 1 then Some((a % n + n) % n) else None
 
   /** Вычисление наименьшего общего кратного двух чисел */
   def lcm(x: Long, y: Long): Long =

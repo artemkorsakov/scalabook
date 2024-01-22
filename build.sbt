@@ -38,6 +38,9 @@ lazy val examples = (project in file("examples"))
 lazy val bench = (project in file("bench"))
   .settings(name := "scalabook-bench")
   .dependsOn(examples)
+  .settings(
+    libraryDependencies ++= benchLibs
+  )
 
 lazy val site = project
   .in(file("site"))

@@ -104,6 +104,11 @@ object Dependencies {
       weaver.scalacheck
     ).map(_ % Test)
 
+  val benchLibs: Seq[ModuleID] =
+    Seq(
+      typelevel.spire
+    )
+
   val siteLibs: Seq[ModuleID] =
     Seq(
       http4s.server,

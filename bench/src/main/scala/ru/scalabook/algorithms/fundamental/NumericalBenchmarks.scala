@@ -17,3 +17,15 @@ import ru.scalabook.algorithms.fundamental.Numerical.*
   (start until end).foreach: i =>
     (i + 1 to end).foreach: j =>
       gcdBasedOnParityOfNumbers(j, i)
+
+@main def generalizedEuclideanAlgorithmBench(): Unit =
+  val limit = 10_000
+  (2 until limit).foreach: i =>
+    (i + 1 to limit).foreach: j =>
+      generalizedEuclideanAlgorithm(j, i)
+
+@main def gcdInverseBench(): Unit =
+  val limit = 10_000
+  (2 until limit).foreach: i =>
+    (i + 1 to limit).foreach: j =>
+      gcdInverse(j, i)

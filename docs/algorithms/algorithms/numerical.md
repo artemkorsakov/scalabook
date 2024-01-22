@@ -137,25 +137,46 @@ gcdBasedOnParityOfNumbers(4851, 3003)
 **Код:**
 
 ```dotty
-def generalizedEuclideanAlgorithm(m: Long, n: Long): (Long, Long, Long) =
+def generalizedEuclideanAlgorithm(
+    m: SafeLong,
+    n: SafeLong
+): (SafeLong, SafeLong, SafeLong) =
   @tailrec
   def loop(
-      aa: Long,
-      b: Long,
-      a: Long,
-      bb: Long,
-      c: Long,
-      d: Long
-  ): (Long, Long, Long) =
+      aa: SafeLong,
+      b: SafeLong,
+      a: SafeLong,
+      bb: SafeLong,
+      c: SafeLong,
+      d: SafeLong
+  ): (SafeLong, SafeLong, SafeLong) =
     val r = c % d
     if r == 0 then (d, a, b)
     else
       val q = c / d
       loop(aa = a, b = bb - q * b, a = aa - q * a, bb = b, c = d, d = r)
+
   loop(aa = 1, b = 1, a = 0, bb = 0, c = m, d = n)
+end generalizedEuclideanAlgorithm
 
 generalizedEuclideanAlgorithm(1769, 551)
-// (29, 5, -16)    
+// (d = 29, a = 5, b = -16)    
+```
+
+**Метрики:**
+
+Вычисление обобщенного алгоритма Евклида всех пар первых 10000 чисел, начиная с 2, 
+занимает примерно 21 секунду.
+
+```dotty
+@main def generalizedEuclideanAlgorithmBench(): Unit =
+  val limit = 10_000
+  (2 until limit).foreach: i =>
+    (i + 1 to limit).foreach: j =>
+      generalizedEuclideanAlgorithm(j, i)
+      
+// CPU Time: 20321 ms
+// Allocation memory size: 58,71 GB      
 ```
 
 ## Обратное по модулю число
@@ -165,7 +186,15 @@ generalizedEuclideanAlgorithm(1769, 551)
 [Обратное по модулю целого `m`](https://ru.wikipedia.org/wiki/%D0%9E%D0%B1%D1%80%D0%B0%D1%82%D0%BD%D0%BE%D0%B5_%D0%BF%D0%BE_%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D1%8E_%D1%87%D0%B8%D1%81%D0%BB%D0%BE) — 
 это такое целое число `x`, что произведение `m*x` сравнимо с `1` по модулю `n`: \\(mx \equiv 1\\) (mod n).
 
+При вычислении обратного по модулю числа достаточно воспользоваться "Обобщенным алгоритмом Евклида".
+Если два числа `m` и `n` взаимно простые (`d = 1`), то `a` из формулы `am + bn = 1`
+и есть искомое значение.
+
+Если числа не взаимно простые, то такого числа `x` не существует.
+
 **Оценка:**
+
+Аналогична оценке Обобщенного алгоритма Евклида.
 
 - **Время** - ???
 - **Память** - ???
@@ -178,6 +207,21 @@ import spire.math.SafeLong
 def gcdInverse(m: SafeLong, n: SafeLong): Option[SafeLong] =
   val (d, a, _) = generalizedEuclideanAlgorithm(m, n)
   if d == 1 then Some((a % n + n) % n) else None
+```
+
+**Метрики:**
+
+Метрики аналогичны метрикам Обобщенного алгоритма Евклида.
+
+```dotty
+@main def generalizedEuclideanAlgorithmBench(): Unit =
+  val limit = 10_000
+  (2 until limit).foreach: i =>
+    (i + 1 to limit).foreach: j =>
+      generalizedEuclideanAlgorithm(j, i)
+      
+// CPU Time: 29643 ms
+// Allocation memory size: 62,59 GB      
 ```
 
 ## Наименьшее общее кратное

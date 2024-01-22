@@ -214,12 +214,12 @@ def gcdInverse(m: SafeLong, n: SafeLong): Option[SafeLong] =
 Метрики аналогичны метрикам Обобщенного алгоритма Евклида.
 
 ```dotty
-@main def generalizedEuclideanAlgorithmBench(): Unit =
+@main def gcdInverseBench(): Unit =
   val limit = 10_000
   (2 until limit).foreach: i =>
     (i + 1 to limit).foreach: j =>
-      generalizedEuclideanAlgorithm(j, i)
-      
+      gcdInverse(j, i)
+
 // CPU Time: 29643 ms
 // Allocation memory size: 62,59 GB      
 ```

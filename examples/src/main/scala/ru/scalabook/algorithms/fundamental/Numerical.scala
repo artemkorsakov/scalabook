@@ -143,21 +143,22 @@ object Numerical:
       mul * (a + 1)
 
   /** Сумма чисел от 1 до заданного. */
-  def sumToGiven(n: Long): Long = n * (n + 1) / 2
+  def sumToGiven(n: Long): SafeLong = SafeLong(n) * SafeLong(n + 1) / 2
 
   /** Сумма квадратов чисел от 1 до заданного.
     *
     * @see
     *   <a href="https://en.wikipedia.org/wiki/Square_number">description</a>
     */
-  def sumOfSquaresTo(n: Long): Long = n * (n + 1) * (2 * n + 1) / 6
+  def sumOfSquaresTo(n: Long): SafeLong =
+    SafeLong(n) * SafeLong(n + 1) * SafeLong(2 * n + 1) / 6
 
   /** Сумма кубов чисел от 1 до заданного.
     *
     * @see
     *   <a href="https://en.wikipedia.org/wiki/Cube_(algebra)">description</a>
     */
-  def sumOfCubesTo(n: Long): Long =
+  def sumOfCubesTo(n: Long): SafeLong =
     val s = sumToGiven(n)
     s * s
 

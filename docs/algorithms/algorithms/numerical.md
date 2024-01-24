@@ -241,6 +241,23 @@ def gcdInverse(m: SafeLong, n: SafeLong): Option[SafeLong] =
 def lcm(x: Long, y: Long): Long = math.abs(x * y) / gcd(x, y)
 ```
 
+**Метрики:**
+
+Вычисление НОК всех пар первых 10000 чисел, начиная с миллиона, занимает примерно 3,5 секунды.
+
+```dotty
+@main def lcmBench(): Unit =
+  val limit = 10_000
+  val start = 1_000_000
+  val end   = start + limit
+  (start until end).foreach: i =>
+    (i + 1 to end).foreach: j =>
+      lcm(j, i)
+      
+// CPU Time: 3535 ms
+// Allocation memory size: 2,01 GB      
+```
+
 ## Возведение числа в степень
 
 **Алгоритм:**
@@ -270,6 +287,20 @@ def power(a: SafeLong, n: SafeLong): SafeLong =
     else if power % 2 == 0 then loop(base * base, power / 2, acc)
     else loop(base, power - 1, base * acc)
   loop(a, n, 1)
+```
+
+**Метрики:**
+
+Поочередное возведение первых 100 чисел в степени от 1 до 10 занимает меньше секунды.
+
+```dotty
+@main def powerBench(): Unit =
+  (1 to 100).foreach: i =>
+    (1 to 10).foreach: j =>
+      power(j, i)
+
+// CPU Time: 678 ms
+// Allocation memory size: 13,72 MB      
 ```
 
 ## Нахождение корня
@@ -305,6 +336,19 @@ def sqrt(x: Double): Double       =
   sqrtIter(1.0)
 ```
 
+**Метрики:**
+
+Вычисление квадратного корня первых миллиона чисел занимает меньше секунды.
+
+```dotty
+@main def sqrtBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    sqrt(i)
+
+// CPU Time: 380 ms
+// Allocation memory size: 48,41 MB      
+```
+
 ## Нахождение кубического корня
 
 **Алгоритм:**
@@ -316,8 +360,8 @@ def sqrt(x: Double): Double       =
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- **Время** - O(n)
+- **Память** - O(n)
 
 **Код:**
 
@@ -337,6 +381,20 @@ def cubeRootOf(x: Double): Double =
   sqrtIter(1.0)
 ```
 
+**Метрики:**
+
+Вычисление кубического корня первых миллиона чисел занимает меньше секунды.
+Результаты аналогичны метрикам вычисления квадратного корня, т.к. алгоритмы похожие.
+
+```dotty
+@main def cubeRootOfBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    cubeRootOf(i)
+
+// CPU Time: 476 ms
+// Allocation memory size: 48,3 MB      
+```
+
 ## Степень двойки
 
 **Алгоритм:**
@@ -354,6 +412,20 @@ def cubeRootOf(x: Double): Double =
 def isPowerOfTwo(x: Int): Boolean = (x & (x - 1)) == 0
 
 isPowerOfTwo(16) // true
+```
+
+**Метрики:**
+
+Определение, является ли число степенью двойки, для первых миллиарда чисел занимает 4,5 секунды.
+Результаты аналогичны тому, как если бы мы просто прошлись по коллекции в миллиард элементов и ничего не делали.
+
+```dotty
+@main def isPowerOfTwoBench(): Unit =
+  (1 to 1_000_000_000).foreach: i =>
+    isPowerOfTwo(i)
+
+// CPU Time: 4658 ms
+// Allocation memory size: 16,04 GB      
 ```
 
 ## Количество битовых единиц
@@ -379,6 +451,21 @@ def isSnoob(x: Int, y: Int): Boolean =
   else isSnoob(x >> 1, y >> 1)
   
 // isSnoob(11, 13) // true: "1101", "1011"  
+```
+
+**Метрики:**
+
+Проверка для первых 10000 пар занимает 4,5 секунды.
+
+```dotty
+@main def isSnoobBench(): Unit =
+  val limit = 10_000
+  (1 until limit).foreach: i =>
+    (i + 1 to limit).foreach: j =>
+      isSnoob(j, i)
+
+// CPU Time: 3937 ms
+// Allocation memory size: 810 MB      
 ```
 
 ## Делители числа
@@ -420,6 +507,21 @@ sumOfDivisors(220) // 504
 sumOfDivisors(284) // 504
 ```
 
+**Метрики:**
+
+Вычисление суммы делителей первых миллиона чисел занимает 2 секунды.
+
+```dotty
+@main def isSnoobBench(): Unit =
+  val limit = 10_000
+  (1 until limit).foreach: i =>
+    (i + 1 to limit).foreach: j =>
+      isSnoob(j, i)
+
+// CPU Time: 1867 ms
+// Allocation memory size: 1,18 GB      
+```
+
 ### Количество делителей числа
 
 **Алгоритм:**
@@ -441,6 +543,19 @@ def countOfDivisors(number: Long): SafeLong =
 countOfDivisors(100) // 9    
 ```
 
+**Метрики:**
+
+Вычисление количества делителей первых миллиона чисел занимает примерно 1 секунду.
+
+```dotty
+@main def countOfDivisorsBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    countOfDivisors(i)  
+
+// CPU Time: 1216 ms
+// Allocation memory size: 435 MB      
+```
+
 ## Сумма первых натуральных чисел
 
 ### Сумма первых натуральных чисел до заданного
@@ -458,10 +573,24 @@ countOfDivisors(100) // 9
 **Код:**
 
 ```dotty
-def sumToGiven(n: Long): Long = n * (n + 1) / 2
+def sumToGiven(n: Long): SafeLong = SafeLong(n) * SafeLong(n + 1) / 2
 
 sumToGiven(1000000) 
 // 500000500000L
+```
+
+**Метрики:**
+
+Вычисление суммы от 1 до заданного числа для первого миллиона чисел занимает меньше секунды.
+Результаты аналогичны тому, как если бы мы просто прошлись по коллекции в миллион элементов и ничего не делали.
+
+```dotty
+@main def sumToGivenBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    sumToGiven(i)
+
+// CPU Time: 309 ms
+// Allocation memory size: 122,85 MB      
 ```
 
 ### Сумма квадратов первых натуральных чисел до заданного
@@ -479,10 +608,24 @@ sumToGiven(1000000)
 **Код:**
 
 ```dotty
-def sumOfSquaresTo(n: Long): Long = n * (n + 1) * (2 * n + 1) / 6
+def sumOfSquaresTo(n: Long): SafeLong = SafeLong(n) * SafeLong(n + 1) * SafeLong(2 * n + 1) / 6
 
 sumOfSquaresTo(1000) 
 // 333833500L
+```
+
+**Метрики:**
+
+Вычисление суммы квадратов от 1 до заданного числа для первого миллиона чисел занимает меньше секунды.
+Результаты аналогичны тому, как если бы мы просто прошлись по коллекции в миллион элементов и ничего не делали.
+
+```dotty
+@main def sumOfSquaresToBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    sumOfSquaresTo(i)
+
+// CPU Time: 418 ms
+// Allocation memory size: 170,55 MB      
 ```
 
 ### Сумма кубов первых натуральных чисел до заданного
@@ -500,12 +643,26 @@ sumOfSquaresTo(1000)
 **Код:**
 
 ```dotty
-def sumOfCubesTo(n: Long): Long =
+def sumOfCubesTo(n: Long): SafeLong =
   val s = sumToGiven(n)
   s * s
   
 sumOfCubesTo(1000) 
 // 250500250000L  
+```
+
+**Метрики:**
+
+Вычисление суммы кубов от 1 до заданного числа для первого миллиона чисел занимает 2 секунды.
+Результаты аналогичны тому, как если бы мы просто прошлись по коллекции в миллион элементов и ничего не делали.
+
+```dotty
+@main def sumOfCubesToBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    sumOfCubesTo(i)  
+
+// CPU Time: 1795 ms
+// Allocation memory size: 1,06 GB      
 ```
 
 ## Рандомизация данных - Линейный конгруэнтный генератор
@@ -570,6 +727,19 @@ def decToBinConv(x: Int): String =
 
 decToBinConv(8) // "1000"
 decToBinConv(7) // "111"  
+```
+
+**Метрики:**
+
+Преобразование из десятичного в двоичный формат для первого миллиона чисел занимает 2 секунды.
+
+```dotty
+@main def decToBinConvBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    decToBinConv(i)
+
+// CPU Time: 1905 ms
+// Allocation memory size: 1,59 GB      
 ```
 
 ---

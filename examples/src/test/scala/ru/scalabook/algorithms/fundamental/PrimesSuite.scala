@@ -49,19 +49,19 @@ object PrimesSuite extends SimpleIOSuite with Checkers:
     ): (actual, expected) =>
       expect.all(actual == expected)
 
-  test("nextPrime with prime array"):
-    forall(Gen.oneOf(0 until primesArray.length - 1)): i =>
-      expect.all(nextPrime(primesArray(i)) == primesArray(i + 1))
-
   test("primeFactors"):
     forall(
       Gen.oneOf(
         Seq(
-          (primeFactors(1000), Set(2, 5)),
-          (primeFactors(1024), Set(2)),
-          (primeFactors(777111), Set(3, 37, 7001))
+          (primeFactors(1000), List(5, 2)),
+          (primeFactors(1024), List(2)),
+          (primeFactors(777111), List(7001, 37, 3))
         )
       )
     ): (actual, expected) =>
       expect.all(actual == expected)
+
+  test("nextPrime with prime array"):
+    forall(Gen.oneOf(0 until primesArray.length - 1)): i =>
+      expect.all(nextPrime(primesArray(i)) == primesArray(i + 1))
 end PrimesSuite

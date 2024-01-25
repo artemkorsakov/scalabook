@@ -30,25 +30,45 @@
 lazy val primes: LazyList[Int] =
   2 #:: LazyList
     .from(3)
-    .filter { x =>
+    .filter: x =>
       val sqrtOfPrimes = primes.takeWhile(p => p <= math.sqrt(x))
       sqrtOfPrimes.forall(p => x % p != 0)
-    }
 
 primes.take(10).toList
-// res0: List[Int] = List(2, 3, 5, 7, 11, 13, 17, 19, 23, 29)
+// List(2, 3, 5, 7, 11, 13, 17, 19, 23, 29)
+```
+
+**Метрики:**
+
+Вычисление списка первых 100000 простых чисел занимает примерно 1,5 секунды.
+
+```dotty
+@main def primesBench(): Boolean =
+  primes.take(100_000).length == 100_000
+      
+// CPU Time: 1598 ms
+// Allocation memory size: 1,68 GB      
 ```
 
 ## Проверка, простое ли заданное число
 
+**Алгоритм:**
+
 Проверка заданного числа на простоту может происходить по алгоритму, предложенному 
 [в ревью следующей задачи](https://projecteuler.net/problem=7).
 
-Заметки:
+**Пояснение:**
 
 - `1` не является простым числом. 
 - Все простые числа, кроме `2`, нечетны. 
 - Все простые числа больше `3` можно записать в виде `6k ± 1`
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
 
 ```dotty
 def isPrime(n: Long): Boolean =
@@ -69,7 +89,20 @@ def isPrime(n: Long): Boolean =
     loop(5)
 
 isPrime(999_999_000_001L)
-// res1: Boolean = true
+// true
+```
+
+**Метрики:**
+
+Проверка на простоту первого миллиона чисел занимает меньше секунды.
+
+```dotty
+@main def isPrimeBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    isPrime(i)
+      
+// CPU Time: 368 ms
+// Allocation memory size: 25,24 MB      
 ```
 
 #### Тест простоты Ферма
@@ -98,10 +131,25 @@ def isProbablyPrime(p: Long, max_test: Int): Boolean =
   }
 ```
 
-
 ## Решето Эратосфена
 
+**Алгоритм:**
+
 [Решето Эратосфена][sieve] на Scala можно реализовать следующим образом:
+
+- Инициализировать массив от `0` до заданного числа со значением `true` - 
+  показателем, что число, соответствующее заданному индексу является простым
+- Вычеркнуть `0` и `1`: Значение по индексам `0` и `1` выставить в `false` - числа не простые
+- Вычеркнуть делители `2`: для индексов от `4` до заданного с шагом `2` выставить в `false`
+- Взять следующий индекс после `2`, у которого значение равно `true`, 
+  и "вычеркнуть" все числа, делящиеся на взятое.
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
 
 ```dotty
 def sieveOfEratosthenes(n: Int): Array[Boolean] =
@@ -117,16 +165,44 @@ def sieveOfEratosthenes(n: Int): Array[Boolean] =
   result
 
 sieveOfEratosthenes(10)
-// res2: Array[Boolean] = Array(
+// Array(
 //   false, false, true, true, false,
 //   true, false, true, false, false, false
 // )
 ```
 
+**Метрики:**
 
-## Нахождение простых множителей
+Определение простых чисел с помощью решета Эратосфена до миллиона занимает меньше секунды.
 
-Простые множители числа можно найти следующим образом:
+```dotty
+@main def sieveOfEratosthenesBench(): Array[Boolean] =
+  sieveOfEratosthenes(1_000_000) 
+      
+// CPU Time: 323 ms
+// Allocation memory size: 44,75 MB      
+```
+
+## Нахождение простых множителей со степенями вхождения
+
+**Алгоритм:**
+
+Простые множители числа со степенями вхождения можно найти следующим образом:
+
+- Берем заданное число
+- Делим число на 2 до тех пор, пока результат четный, и сохраняем количество делений: \\((2 \to k\_{2})\\)
+- Ищем нечетные множители: от 3 до корня от заданного числа для каждого найденного нечетного делителя
+  повторяем процедуру: делим полученный от предыдущего пункта результат на найденный нечетный делитель
+  до тех пор, пока делится. Добавляем полученное количество делений: \\((2 \to k\_{2}, d \to k\_{d})\\)
+- Если от числа что-то осталось после поиска нечетных делителей, 
+  то остаток тоже множитель со степенью 1 (потому что он больше корня исходного числа)
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
 
 ```dotty
 def primeFactorsWithPow(n: Long): Map[Long, Int] =
@@ -155,9 +231,85 @@ def primeFactorsWithPow(n: Long): Map[Long, Int] =
 end primeFactorsWithPow
 
 primeFactorsWithPow(777111)
-// res3: Map[Long, Int] = Map(3L -> 1, 37L -> 1, 7001L -> 1)
+// Map(3L -> 1, 37L -> 1, 7001L -> 1)
 ```
 
+**Метрики:**
+
+Разложение на простые множители первого миллиона чисел занимает примерно секунду.
+
+```dotty
+@main def primeFactorsWithPowBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    primeFactorsWithPow(i) 
+      
+// CPU Time: 1079 ms
+// Allocation memory size: 283,17 MB      
+```
+
+
+## Нахождение простых множителей
+
+**Алгоритм:**
+
+Простые множители числа можно найти следующим образом:
+
+- Берем заданное число
+- Делим число на 2 до тех пор, пока результат четный, и сохраняем 2 (если исходное число было четным)
+- Ищем нечетные множители: от 3 до корня от заданного числа для каждого найденного нечетного делителя
+  повторяем процедуру: делим полученный от предыдущего пункта результат на найденный нечетный делитель
+  до тех пор, пока делится. Добавляем полученный нечетный делитель.
+- Если от числа что-то осталось после поиска нечетных делителей, то остаток тоже делитель
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+def primeFactors(n: Long): List[Long] =
+  var result = List.empty[Long]
+  var number = n
+
+  // Проверяем делимость на 2
+  var marker = false
+  while number % 2 == 0 do
+    marker = true
+    number = number >> 1
+  if marker then result = 2L :: result
+
+  // Ищем нечетные множители
+  var i     = 3L
+  while i <= math.sqrt(number.toDouble) do
+    marker = false
+    while number % i == 0 do
+      marker = true
+      number /= i
+    if marker then result = i :: result
+    i += 2
+
+  // Если от числа что-то осталось, то остаток тоже множитель
+  if number > 1 then number :: result else result
+end primeFactors
+
+primeFactors(777111)
+// List(7001, 37, 3)
+```
+
+**Метрики:**
+
+Разложение на простые множители первого миллиона чисел занимает примерно секунду.
+
+```dotty
+@main def primeFactorsBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    primeFactors(i)
+      
+// CPU Time: 1054 ms
+// Allocation memory size: 117,45 MB      
+```
 
 ---
 
@@ -171,4 +323,4 @@ primeFactorsWithPow(777111)
 - [Scalacaster](https://github.com/vkostyukov/scalacaster)
 
 [sicp]: https://web.mit.edu/6.001/6.037/sicp.pdf
-[sieve]:https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D1%88%D0%B5%D1%82%D0%BE_%D0%AD%D1%80%D0%B0%D1%82%D0%BE%D1%81%D1%84%D0%B5%D0%BD%D0%B0
+[sieve]: https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D1%88%D0%B5%D1%82%D0%BE_%D0%AD%D1%80%D0%B0%D1%82%D0%BE%D1%81%D1%84%D0%B5%D0%BD%D0%B0

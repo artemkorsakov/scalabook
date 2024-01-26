@@ -63,5 +63,7 @@ object PrimesSuite extends SimpleIOSuite with Checkers:
 
   test("nextPrime with prime array"):
     forall(Gen.oneOf(0 until primesArray.length - 1)): i =>
-      expect.all(nextPrime(primesArray(i)) == primesArray(i + 1))
+      matches(nextPrime(primesArray(i))) { case Some(actual) =>
+        expect.all(primesArray(i + 1) == actual)
+      }
 end PrimesSuite

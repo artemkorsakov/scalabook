@@ -19,3 +19,7 @@ import ru.scalabook.algorithms.fundamental.Primes.*
 @main def primeFactorsBench(): Unit =
   (1 to 1_000_000).foreach: i =>
     primeFactors(i)
+
+@main def nextPrimeBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    nextPrime(i)

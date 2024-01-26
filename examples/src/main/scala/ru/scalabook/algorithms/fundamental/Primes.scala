@@ -113,12 +113,13 @@ object Primes:
   @SuppressWarnings(
     Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
   )
-  def nextPrime(n: Long): Long =
-    if n == 2 then 3
-    else if n == 3 then 5
+  def nextPrime(n: Long): Option[Long] =
+    if !isPrime(n) then None
+    else if n == 2 then Some(3)
+    else if n == 3 then Some(5)
     else
       var nextPrime = if n % 3 == 1 then n + 4 else n + 2
       while !isPrime(nextPrime) do
         nextPrime = if nextPrime % 3 == 1 then nextPrime + 4 else nextPrime + 2
-      nextPrime
+      Some(nextPrime)
 end Primes

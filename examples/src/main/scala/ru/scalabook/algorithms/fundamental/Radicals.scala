@@ -1,9 +1,9 @@
 package ru.scalabook.algorithms.fundamental
 
 import ru.scalabook.algorithms.fundamental.Primes.{
-  primesNoMoreThanN,
+  nextPrime,
   primeFactors,
-  nextPrime
+  primesNoMoreThanN
 }
 
 /** The radical of n, rad(n), is the product of distinct prime factors of n. For
@@ -27,9 +27,11 @@ object Radicals:
     var p      = 2L
     val s      = math.sqrt(n.toDouble).toLong
     var isFree = true
-    while p <= s && isFree do
+    while isFree && p <= s do
       if n % (p * p) == 0 then isFree = false
-      p = nextPrime(p)
+      nextPrime(p) match
+        case Some(nextP) => p = nextP
+        case _           => isFree = false
     isFree
 
   /** Return array of products of distinct prime factors of any n not more

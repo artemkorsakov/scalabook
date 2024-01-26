@@ -247,7 +247,6 @@ primeFactorsWithPow(777111)
 // Allocation memory size: 283,17 MB      
 ```
 
-
 ## Нахождение простых множителей
 
 **Алгоритм:**
@@ -309,6 +308,54 @@ primeFactors(777111)
       
 // CPU Time: 1054 ms
 // Allocation memory size: 117,45 MB      
+```
+
+
+## Нахождение следующего простого числа
+
+**Алгоритм:**
+
+Найти следующее простое число за заданным простым числом.
+
+- если передано `2`, то возвращаем `3`
+- если передано `3`, то возвращаем `5`
+- если передано другое просто число, то оно сравнимо либо с `1`, либо с `5` по модулю `6` 
+  (остальные делятся на `2` и/или `3`), а это означает, 
+  что проверяем по "простоту" `заданное + 4` (если `1` по модулю `6`) или `заданное + 2`,
+  если и следующее не просто, то продолжаем проверку до нахождения первого простого
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+def nextPrime(n: Long): Option[Long] =
+  if !isPrime(n) then None
+  else if n == 2 then Some(3)
+  else if n == 3 then Some(5)
+  else
+    var nextPrime = if n % 3 == 1 then n + 4 else n + 2
+    while !isPrime(nextPrime) do
+      nextPrime = if nextPrime % 3 == 1 then nextPrime + 4 else nextPrime + 2
+    Some(nextPrime)
+
+primeFactors(503) // Some(509)
+```
+
+**Метрики:**
+
+Нахождение следующего простого числа для первого миллиона чисел занимает меньше секунды.
+
+```dotty
+@main def nextPrimeBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    nextPrime(i)
+      
+// CPU Time: 548 ms
+// Allocation memory size: 28,35 MB      
 ```
 
 ---

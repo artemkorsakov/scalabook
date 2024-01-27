@@ -13,7 +13,7 @@ object BinomialCoefficient:
   @tailrec
   def binomialCoefficient(n: Int, k: Int): BigInt =
     if k < 0 || k > n then BigInt(0)
-    else if 2 * k > n then binomialCoefficient(n, n - k)
+    else if k > (n / 2) then binomialCoefficient(n, n - k)
     else
       val (num, den) = (0 until k).foldLeft((BigInt(1), BigInt(1))) {
         case ((num, den), i) =>

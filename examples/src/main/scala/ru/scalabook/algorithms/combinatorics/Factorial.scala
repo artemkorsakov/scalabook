@@ -1,10 +1,12 @@
-package ru.scalabook.algorithms.others
+package ru.scalabook.algorithms.combinatorics
+
+import spire.math.SafeLong
 
 import scala.annotation.tailrec
 
 object Factorial:
-  def factorial(n: Int): BigInt =
-    (2 to n).foldLeft(BigInt(1))((f, i) => f * BigInt(i))
+  def factorial(n: Int): SafeLong =
+    (2 to n).foldLeft(SafeLong(1))(_ * _)
 
   def approximateFactorial(n: Int): BigInt =
     (BigDecimal(math.sqrt(2 * math.Pi * n)) *

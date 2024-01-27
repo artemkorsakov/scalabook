@@ -21,6 +21,8 @@
 
 ## Алгоритм наивного поиска
 
+**Алгоритм:**
+
 - Для первого символа в тексте выполните следующий цикл сопоставления.
     - Сопоставьте первый символ искомой подстроки с текущим символом текста
     - Если есть совпадение, то сопоставьте второй символ подстроки со следующим символом текста.
@@ -37,17 +39,41 @@
    В худшем случае сложность времени выполнения наивного поиска составляет _O(mn)_, 
    где _m_ — длина искомой подстроки, а _n_ — длина текста, в котором выполняется поиск.
 
-Возможная реализация алгоритма:
+**Оценка:**
+
+- **Время** - O(mn)
+- **Память** - ???
+
+**Код:**
 
 ```dotty
 def naiveSubstringSearch(searchWord: String, source: String): Int =
-  (0 to source.length - searchWord.length)
-    .find { i => searchWord.indices.forall(j => source(j + i) == searchWord(j)) }
+  (0 to (source.length - searchWord.length))
+    .find: i =>
+      searchWord.indices.forall: j => 
+        source(j + i) == searchWord(j)
     .getOrElse(-1)
 ```
 
+**Метрики:**
+
+Поиск подстроки в 100 символов в тексте в миллион символов занимает 0,2 секунды.
+
+```dotty
+private val source: String = Random.nextString(1_000_000)
+private val searchWord: String = source.takeRight(100)
+
+@main def searchBench(): Unit =
+  println(naiveSubstringSearch(searchWord, source))
+  println(kmpSubstringSearch(searchWord, source))
+      
+// CPU Time: 169 ms
+// Allocation memory size: 120,31 MB      
+```
 
 ## Алгоритм поиска Кнута-Морриса-Пратта
+
+**Алгоритм:**
 
 - Инициализировать переменные. 
     - `m` = длина шаблона (искомая подстрока) 
@@ -270,8 +296,12 @@ def naiveSubstringSearch(searchWord: String, source: String): Int =
 
 Шаблон **x** **y** **x** **y** **x** **z** **x**
 
+**Оценка:**
 
-Возможная реализация алгоритма:
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
 
 ```dotty
 def kmpSubstringSearch(searchWord: String, source: String): Int = {
@@ -310,6 +340,21 @@ private def prefixTable(searchString: String): Vector[Int] =
     ._2
 ```
 
+**Метрики:**
+
+Поиск подстроки в 100 символов в тексте в миллион символов занимает 0,3 секунды.
+
+```dotty
+private val source: String = Random.nextString(1_000_000)
+private val searchWord: String = source.takeRight(100)
+
+@main def searchBench(): Unit =
+  println(naiveSubstringSearch(searchWord, source))
+  println(kmpSubstringSearch(searchWord, source))
+      
+// CPU Time: 301 ms
+// Allocation memory size: 346,34 MB      
+```
 
 ---
 

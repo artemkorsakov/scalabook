@@ -13,10 +13,9 @@ object Sorting:
     val _ = (1 until array.length).takeWhile(loop)
 
   def selectionSort[T: Ordering](array: Array[T]): Unit =
-    (0 until array.length - 1).foreach { i =>
+    (0 until array.length - 1).foreach: i =>
       val j = (i until array.length).minBy(j => array(j))
       swap(array, i, j)
-    }
 
   @SuppressWarnings(
     Array(
@@ -26,7 +25,7 @@ object Sorting:
   )
   def insertionSort[T: Ordering](array: Array[T]): Unit =
     val ord = summon[Ordering[T]]
-    (1 until array.length).foreach { j =>
+    (1 until array.length).foreach: j =>
       val key = array(j)
       var i   = j - 1
       while i >= 0 && ord.gt(array(i), key)
@@ -34,7 +33,6 @@ object Sorting:
         array(i + 1) = array(i)
         i -= 1
       array(i + 1) = key
-    }
 
   def mergeSort[T: ClassTag: Ordering](array: Array[T]): Unit =
     mergeSort(array, 0, array.length - 1)

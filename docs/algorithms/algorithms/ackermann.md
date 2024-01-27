@@ -1,7 +1,31 @@
 # Функция Аккермана
 
+**Алгоритм:**
+
 Следующая процедура вычисляет математическую функцию, называемую функцией Аккермана
 (**Exercise 1.10** из [SICP][sicp]):
+
+`f(x,y) = `
+
+- `0` при `y = 0`
+- `2y` при `x = 0`
+- `2` при `y = 1`
+- `f(x-1, f(x, y-1))` в иных случаях
+
+Для малых `x` функция Аккермана равносильна следующим функциям:
+
+- `functionAckermann(0, n) <=> 2*n`
+- `functionAckermann(1, n) <=> 2^n`
+- `functionAckermann(2, n) <=> 2^2^...^2 (n раз)`
+
+Функция Аккермана известна тем, что она расчет очень быстро.
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
 
 ```dotty
 def functionAckermann(x: Int, y: Int): Int =
@@ -11,11 +35,17 @@ def functionAckermann(x: Int, y: Int): Int =
   else functionAckermann(x - 1, functionAckermann(x, y - 1))
 ```
 
-Для малых `x` функция Аккермана равносильна следующим функциям:
+**Метрики:**
 
-- `functionAckermann(0, n) <=> 2*n`
-- `functionAckermann(1, n) <=> 2^n`
-- `functionAckermann(2, n) <=> 2^2^...^2 (n раз)`
+Вычисление функции Аккермана `f(3, 3)` выполняется за 0,3 секунды.
+
+```dotty
+@main def functionAckermannBench(): Unit =
+  println(functionAckermann(3, 3))
+
+// CPU Time: 326 ms
+// Allocation memory size: 9,99 MB      
+```
 
 ---
 

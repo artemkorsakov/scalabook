@@ -10,7 +10,7 @@ object NewtonsMethod:
     if math.abs(next - guess) < accuracy then next
     else newtonsMethod(g, next)
 
-  def derivative(x: Double, g: Double => Double): Double =
+  private[others] def derivative(x: Double, g: Double => Double): Double =
     (g(x + dx) - g(x)) / dx
 
   private def transform(g: Double => Double): Double => Double =

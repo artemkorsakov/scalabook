@@ -310,7 +310,6 @@ primeFactors(777111)
 // Allocation memory size: 117,45 MB      
 ```
 
-
 ## Нахождение следующего простого числа
 
 **Алгоритм:**
@@ -356,6 +355,105 @@ primeFactors(503) // Some(509)
       
 // CPU Time: 548 ms
 // Allocation memory size: 28,35 MB      
+```
+
+## Функция Эйлера
+
+**Алгоритм:**
+
+[Функция Эйлера от натурального числа](https://ru.wikipedia.org/wiki/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F_%D0%AD%D0%B9%D0%BB%D0%B5%D1%80%D0%B0).
+
+Для произвольного натурального числа значение \\(\varphi(n)\\):
+
+\\(\varphi(n) = n\prod_{p|n}^{}\frac{p - 1}{p}\\)
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+def totient(n: Long): Long =
+  if n < 1 then 0
+  else
+    var mul    = n
+    var number = n
+    if number % 2 == 0 then
+      while number % 2 == 0 do number /= 2
+      mul /= 2
+    if number % 3 == 0 then
+      while number % 3 == 0 do number /= 3
+      mul = (mul / 3) * 2
+    var i = 5L
+    while i * i <= number do
+      if number % i == 0 then
+        while number % i == 0 do number /= i
+        mul = (mul / i) * (i - 1)
+      i += (if i % 6 == 5 then 2 else 4)
+    if number > 1 then mul = (mul / number) * (number - 1)
+    mul
+
+totient(5654317604L) 
+// 2609145504
+```
+
+**Метрики:**
+
+Вычисление функции Эйлера для первого миллиона чисел занимает меньше секунды.
+
+```dotty
+@main def totientBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    totient(i)
+      
+// CPU Time: 688 ms
+// Allocation memory size: 48,63 MB      
+```
+
+#### Массив значений функций Эйлера
+
+**Алгоритм:**
+
+
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+def totientArray(limit: Int): Array[Long] =
+  val phiArray = new Array[Long](limit + 1)
+  phiArray(1) = 1
+
+  val primesArray = primesNoMoreThanN(limit)
+  for n <- 1 to limit / 2 do
+    var i = 0
+    while i < primesArray.length && n * primesArray(i) <= limit do
+      val p = primesArray(i)
+      phiArray(n * p) = phiArray(n) * (if n % p == 0 then p else p - 1)
+      i += 1
+
+  phiArray
+
+totientArray(20)
+// Array(0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8)
+```
+
+**Метрики:**
+
+Вычисление массива значений функции Эйлера для первого миллиона чисел занимает меньше секунды.
+
+```dotty
+@main def totientArrayBench(): Array[Long] =
+  totientArray(1_000_000)
+      
+// CPU Time: 627 ms
+// Allocation memory size: 107,65 MB      
 ```
 
 ---

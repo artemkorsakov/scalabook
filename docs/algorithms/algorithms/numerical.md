@@ -224,6 +224,56 @@ def gcdInverse(m: SafeLong, n: SafeLong): Option[SafeLong] =
 // Allocation memory size: 62,59 GB      
 ```
 
+## Китайская теорема об остатках
+
+**Алгоритм:**
+
+[Китайская теорема об остатках](https://ru.wikipedia.org/wiki/%D0%9A%D0%B8%D1%82%D0%B0%D0%B9%D1%81%D0%BA%D0%B0%D1%8F_%D1%82%D0%B5%D0%BE%D1%80%D0%B5%D0%BC%D0%B0_%D0%BE%D0%B1_%D0%BE%D1%81%D1%82%D0%B0%D1%82%D0%BA%D0%B0%D1%85)
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+object ChineseRemainderTheorem:
+  def solution(
+      aArray: Array[SafeLong],
+      rArray: Array[SafeLong]
+  ): Option[SafeLong] =
+    val m      = aArray.product         // Step 1
+    val mArray = aArray.map(a => m / a) // Step 2
+    val maybeMMinus1Array =
+      mArray.indices.toList.traverse: i => // Step 3
+        gcdInverse(mArray(i), aArray(i))
+    maybeMMinus1Array.map: mMinus1Array =>
+      mArray.indices.foldLeft(SafeLong(0)): (x, i) => // Step 4
+        x + (((rArray(i) * mArray(i)) % m) * mMinus1Array(i)) % m
+        
+solution(Array(2, 3), Array(1, 2)))
+// 5, потому что 5 % 2 = 1, 5 % 3 = 2
+
+solution(Array(707, 527), Array(0, 5)))
+// 258762, потому что 258762 % 707 = 0, 258762 % 527 = 5   
+```
+
+**Метрики:**
+
+Решение задачи для достаточно больших чисел вычисляется меньше чем за секунду.
+
+```dotty
+@main def solutionChineseRemainderTheoremBench(): Unit =
+  println(ChineseRemainderTheorem.solution(
+    Array(1504170715041707L, 4503599627370517L),
+    Array(0L, 8912517754604L)
+  ))
+
+// CPU Time: 676 ms
+// Allocation memory size: 28,59 MB      
+```
+
 ## Наименьшее общее кратное
 
 **Алгоритм:**
@@ -512,11 +562,9 @@ sumOfDivisors(284) // 504
 Вычисление суммы делителей первых миллиона чисел занимает 2 секунды.
 
 ```dotty
-@main def isSnoobBench(): Unit =
-  val limit = 10_000
-  (1 until limit).foreach: i =>
-    (i + 1 to limit).foreach: j =>
-      isSnoob(j, i)
+@main def sumOfDivisorsBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    sumOfDivisors(i)
 
 // CPU Time: 1867 ms
 // Allocation memory size: 1,18 GB      
@@ -554,6 +602,54 @@ countOfDivisors(100) // 9
 
 // CPU Time: 1216 ms
 // Allocation memory size: 435 MB      
+```
+
+### Совершенное число
+
+**Алгоритм:**
+
+[Совершенное число](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D0%B2%D0%B5%D1%80%D1%88%D0%B5%D0%BD%D0%BD%D0%BE%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%BE) — 
+это целое положительное число, равное сумме своих положительных делителей, исключая само число.
+
+[Недостаточное число](https://ru.wikipedia.org/wiki/%D0%9D%D0%B5%D0%B4%D0%BE%D1%81%D1%82%D0%B0%D1%82%D0%BE%D1%87%D0%BD%D1%8B%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%B0) — 
+это целое положительное число, которое меньше суммы своих положительных делителей, исключая само число.
+
+[Избыточное число](https://ru.wikipedia.org/wiki/%D0%98%D0%B7%D0%B1%D1%8B%D1%82%D0%BE%D1%87%D0%BD%D1%8B%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%B0) — 
+это целое положительное число, которое больше суммы своих положительных делителей, исключая само число.
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+enum PerfectNumbersType:
+  case Perfect, Deficient, Abundant
+  
+def perfectNumbersType(n: Long): PerfectNumbersType =
+  val sum = sumOfDivisors(n) - n
+  if sum == n then Perfect
+  else if sum < n then Deficient
+  else Abundant
+  
+perfectNumbersType(6)  // Perfect
+perfectNumbersType(7)  // Deficient
+perfectNumbersType(12) // Abundant
+```
+
+**Метрики:**
+
+Вычисление типа числа (совершенное/избыточное/недостаточное) первых миллиона чисел занимает 2 секунды.
+
+```dotty
+@main def perfectNumbersTypeBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    perfectNumbersType(i)
+
+// CPU Time: 2013 ms
+// Allocation memory size: 1,27 GB      
 ```
 
 ## Сумма первых натуральных чисел

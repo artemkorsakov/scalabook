@@ -416,7 +416,7 @@ totient(5654317604L)
 
 **Алгоритм:**
 
-
+???
 
 **Оценка:**
 
@@ -454,6 +454,62 @@ totientArray(20)
       
 // CPU Time: 627 ms
 // Allocation memory size: 107,65 MB      
+```
+
+## Радикал
+
+**Алгоритм:**
+
+Радикал числа `n`, `rad(n)`, представляет собой произведение различных простых делителей числа `n`. 
+Например, `504 = 23 × 32 × 7`, поэтому `rad(504) = 2 × 3 × 7 = 42`.
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+def rad(n: Long): Long = primeFactors(n).product
+
+// Массив радикатов
+def allRads(limit: Int): Array[Int] =
+  val rads = new Array[Int](limit + 1)
+  rads(1) = 1
+  primesNoMoreThanN(limit).foreach: p =>
+    (1 to limit / p).foreach: i =>
+      rads(i * p) = if rads(i * p) == 0 then p else rads(i * p) * p
+  rads
+
+rad(100) // 10
+rad(7)   // 7
+
+allRads(10)
+// Array(0, 1, 2, 3, 2, 5, 6, 7, 2, 3, 10)
+```
+
+**Метрики:**
+
+Вычисление радикалов от 1 до миллиона занимает 1 секунду.
+
+```dotty
+@main def radBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    rad(i)
+      
+// CPU Time: 1109 ms
+// Allocation memory size: 218,35 MB      
+```
+
+Вычисление массива радикалов первого миллиона чисел занимает 0,5 секунды.
+
+```dotty
+@main def allRadsBench(): Array[Int] =
+  allRads(1_000_000)
+      
+// CPU Time: 547 ms
+// Allocation memory size: 139,44 MB      
 ```
 
 ---

@@ -40,12 +40,8 @@ object Radicals:
   def allRads(limit: Int): Array[Int] =
     val rads = new Array[Int](limit + 1)
     rads(1) = 1
-
-    primesNoMoreThanN(limit).foreach(p =>
-      (1 to limit / p).foreach(i =>
+    primesNoMoreThanN(limit).foreach: p =>
+      (1 to limit / p).foreach: i =>
         rads(i * p) = if rads(i * p) == 0 then p else rads(i * p) * p
-      )
-    )
-
     rads
 end Radicals

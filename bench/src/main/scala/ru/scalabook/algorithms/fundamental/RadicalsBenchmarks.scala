@@ -8,3 +8,7 @@ import ru.scalabook.algorithms.fundamental.Radicals.*
 
 @main def allRadsBench(): Array[Int] =
   allRads(1_000_000)
+
+@main def isSquareFreeBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    isSquareFree(i)

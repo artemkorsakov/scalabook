@@ -460,8 +460,8 @@ totientArray(20)
 
 **Алгоритм:**
 
-Радикал числа `n`, `rad(n)`, представляет собой произведение различных простых делителей числа `n`. 
-Например, `504 = 23 × 32 × 7`, поэтому `rad(504) = 2 × 3 × 7 = 42`.
+Радикал числа n, \\(rad(n)\\), представляет собой произведение различных простых делителей числа n. 
+Например, \\(504 = 2^{3} \times 3^{2} \times 7\\), поэтому \\(rad(504) = 2 \times 3 \times 7 = 42\\).
 
 **Оценка:**
 
@@ -473,7 +473,7 @@ totientArray(20)
 ```dotty
 def rad(n: Long): Long = primeFactors(n).product
 
-// Массив радикатов
+// Массив радикалов
 def allRads(limit: Int): Array[Int] =
   val rads = new Array[Int](limit + 1)
   rads(1) = 1
@@ -491,7 +491,7 @@ allRads(10)
 
 **Метрики:**
 
-Вычисление радикалов от 1 до миллиона занимает 1 секунду.
+Вычисление радикалов чисел от 1 до миллиона занимает 1 секунду.
 
 ```dotty
 @main def radBench(): Unit =
@@ -502,7 +502,7 @@ allRads(10)
 // Allocation memory size: 218,35 MB      
 ```
 
-Вычисление массива радикалов первого миллиона чисел занимает 0,5 секунды.
+Вычисление массива радикалов для первого миллиона чисел занимает 0,5 секунды.
 
 ```dotty
 @main def allRadsBench(): Array[Int] =
@@ -511,6 +511,51 @@ allRads(10)
 // CPU Time: 547 ms
 // Allocation memory size: 139,44 MB      
 ```
+
+#### Свободное от квадратов число
+
+**Алгоритм:**
+
+[Свободное от квадратов число (или бесквадратное)](https://ru.wikipedia.org/wiki/%D0%A1%D0%B2%D0%BE%D0%B1%D0%BE%D0%B4%D0%BD%D0%BE%D0%B5_%D0%BE%D1%82_%D0%BA%D0%B2%D0%B0%D0%B4%D1%80%D0%B0%D1%82%D0%BE%D0%B2_%D1%87%D0%B8%D1%81%D0%BB%D0%BE) -
+число, которое не делится ни на один квадрат, кроме 1.
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+def isSquareFree(n: Long): Boolean =
+  var p      = 2L
+  val s      = math.sqrt(n.toDouble).toLong
+  var isFree = true
+  while isFree && p <= s do
+    if n % (p * p) == 0 then isFree = false
+    nextPrime(p) match
+      case Some(nextP) => p = nextP
+      case _           => isFree = false
+  isFree
+
+isSquareFree(10)  // true:  10 = 2 * 5
+isSquareFree(20)  // false: 20 = 2^2 * 5
+isSquareFree(100) // false: 100 = 2^2 * 5^2
+```
+
+**Метрики:**
+
+Определение, безквадратное ли число, для чисел от 1 до миллиона занимает 6 секунд.
+
+```dotty
+@main def isSquareFreeBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    isSquareFree(i)  
+      
+// CPU Time: 5620 ms
+// Allocation memory size: 2,48 GB      
+```
+
 
 ---
 

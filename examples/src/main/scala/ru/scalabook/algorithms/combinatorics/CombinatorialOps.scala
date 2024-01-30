@@ -5,7 +5,7 @@ package ru.scalabook.algorithms.combinatorics
   *
   * You can find all the ideas behind this code at blog-post:
   *
-  * http://vkostyukov.ru/posts/combinatorial-algorithms-in-scala/
+  * https://kostyukov.net/posts/combinatorial-algorithms-in-scala/
   *
   * How to use this class.
   *

@@ -1,5 +1,7 @@
 package ru.scalabook.algorithms.combinatorics
 
+import spire.math.SafeLong
+
 object Coins:
 
   /** Количество способов получить заданную сумму с помощью заданного набора
@@ -8,10 +10,12 @@ object Coins:
     * @see
     *   <a href="https://projecteuler.net/overview=031">detailed description</a>
     */
-  def countWays(coins: Array[Int], sum: Int): Long =
-    val ways = new Array[Long](sum + 1)
+  def countWays(coins: Array[Int], sum: Int): SafeLong =
+    val ways = Array.fill(sum + 1)(SafeLong(0))
     ways(0) = 1
-    coins.foreach(coin => (coin to sum).foreach(i => ways(i) += ways(i - coin)))
+    coins.foreach: coin =>
+      (coin to sum).foreach: i =>
+        ways(i) += ways(i - coin)
     ways(sum)
 
   /** A way of writing n as a sum of positive integers.
@@ -24,8 +28,8 @@ object Coins:
   def partition(number: Int): BigInt =
     val array = new Array[BigInt](number + 1)
     array(0) = BigInt(1)
-    array(1) = BigInt(1)
-    array(2) = BigInt(2)
+    if number >= 1 then array(1) = BigInt(1)
+    if number >= 2 then array(2) = BigInt(2)
 
     @SuppressWarnings(
       Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")

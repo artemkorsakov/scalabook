@@ -1,7 +1,7 @@
 package ru.scalabook.algorithms.equations
 
 /** x<sup>2</sup> – D*y<sup>2</sup> = 1 */
-case class DiophantineEquation(d: Int):
+final case class DiophantineEquation(d: Int):
 
   /** The <a href="https://en.wikipedia.org/wiki/Chakravala_method">chakravala
     * method</a> is a cyclic algorithm to solve indeterminate quadratic
@@ -26,8 +26,8 @@ case class DiophantineEquation(d: Int):
 
 end DiophantineEquation
 
-case class Iteration(a: BigInt, b: BigInt, k: BigInt, d: Int):
-  def isSuccess: Boolean = k == BigInt(1)
+final case class Iteration(a: BigInt, b: BigInt, k: BigInt, d: Int):
+  lazy val isSuccess: Boolean = k == BigInt(1)
 
   /** Update a, b and k to (a*m + N*b)/|k|, (a + b*m)/|k|, (m<sup>2</sup> - N)/k
     */
@@ -46,7 +46,7 @@ case class Iteration(a: BigInt, b: BigInt, k: BigInt, d: Int):
   @SuppressWarnings(
     Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
   )
-  def getM: BigInt =
+  private def getM: BigInt =
     var m    = BigInt(-1)
     var min  = d + 1
     val last = math.sqrt(2.0 * d).toInt
@@ -65,7 +65,7 @@ case class Iteration(a: BigInt, b: BigInt, k: BigInt, d: Int):
     m
   end getM
 
-  def isMCorrect(m: BigInt): Boolean =
+  private def isMCorrect(m: BigInt): Boolean =
     (a + b * m).abs % k.abs == BigInt(0)
 
 end Iteration

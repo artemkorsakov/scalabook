@@ -1,7 +1,10 @@
 package ru.scalabook.algorithms.others
 
-/** <a href="https://en.wikipedia.org/wiki/Triangle">Triangle</a> */
-case class Triangle(point1: (Int, Int), point2: (Int, Int), point3: (Int, Int)):
+final case class Triangle(
+    point1: (Int, Int),
+    point2: (Int, Int),
+    point3: (Int, Int)
+):
   import PointOnTriangleType.*
 
   def getPointOnTriangleType(point: (Int, Int)): PointOnTriangleType =
@@ -16,9 +19,9 @@ case class Triangle(point1: (Int, Int), point2: (Int, Int), point3: (Int, Int)):
     then Inside
     else Outside
 
-  /** Is zero point inside? */
-  def isZeroPointInside: Boolean =
+  lazy val isZeroPointInside: Boolean =
     getPointOnTriangleType((0, 0)).equals(Inside)
+end Triangle
 
 enum PointOnTriangleType:
   case Inside, Outside, OnTheSide

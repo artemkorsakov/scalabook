@@ -9,11 +9,10 @@ object PolynomialEquation:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def polynomialSolution(n: Int, aList: Array[Long]): Long =
     var number = 1L
-    aList.reverse.foldLeft(0L) { (sum, a) =>
+    aList.reverse.foldLeft(0L): (sum, a) =>
       val s = sum + a * number
       number *= n
       s
-    }
 
   /** Returns the coefficients of a polynomial equation.
     *
@@ -36,11 +35,10 @@ object PolynomialEquation:
       var divisor      = 0L
       for j <- coefficients.indices do
         aList(index) += coefficients(j) * solutions(coefficients.length - 1 - j)
-        (0 until index).foreach(m =>
+        (0 until index).foreach: m =>
           aList(index) -= aList(m) * coefficients(j) * math
             .pow(coefficients.length.toDouble - j, k - 1.0 - m)
             .toLong
-        )
         divisor += coefficients(j) * math
           .pow(
             coefficients.length.toDouble - j,
@@ -54,13 +52,13 @@ object PolynomialEquation:
 
   private def coefficientsForSolutionSearching(
       k: Int
-  ): IndexedSeq[IndexedSeq[Long]] =
-    if k == 1 then IndexedSeq(IndexedSeq(1L))
+  ): Vector[Vector[Long]] =
+    if k == 1 then Vector(Vector(1L))
     else
       val coefficients = coefficientsForSolutionSearching(k - 1)
       val last         = coefficients.last
-      val current = 1L +: (0 until last.length - 1).map(i =>
-        last(i + 1) - last(i)
-      ) :+ -last.last
+      val current = 1L +:
+        (0 until last.length - 1).map(i => last(i + 1) - last(i)).toVector :+
+        -last.last
       coefficients :+ current
 end PolynomialEquation

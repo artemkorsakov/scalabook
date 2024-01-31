@@ -173,6 +173,75 @@ DiophantineEquation(67).minimalEquation
 // Allocation memory size: 11,00 MB      
 ```
 
+## Многочлен
+
+**Алгоритм:**
+
+Определение коэффициентов многочлена (k-1)-й степени (\\(a\_{1}x^{k-1} + ... + a\_{i}x^{k-i} + ... + a\_{k}\\)) 
+при заданных k решениях (\\(s\_{1}, ... , s\_{k}\\)) для x равного \\(1, 2, ..., k\\).
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+def polynomialCoefficients(k: Int, solutions: Array[Long]): Array[Long] =
+  val aList = new Array[Long](k)
+
+  val coefficientsList = coefficientsForSolutionSearching(k)
+  for i <- k - 1 to 0 by -1 do
+    val coefficients = coefficientsList(i)
+    val index        = k - coefficients.length
+    var divisor      = 0L
+    for j <- coefficients.indices do
+      aList(index) += coefficients(j) * solutions(coefficients.length - 1 - j)
+      (0 until index).foreach: m =>
+        aList(index) -= aList(m) * coefficients(j) * math
+          .pow(coefficients.length.toDouble - j, k - 1.0 - m)
+          .toLong
+      divisor += coefficients(j) * math
+        .pow(
+          coefficients.length.toDouble - j,
+          coefficients.length.toDouble - 1
+        )
+        .toLong
+    aList(index) = aList(index) / divisor
+
+  aList
+end polynomialCoefficients
+
+private def coefficientsForSolutionSearching(
+    k: Int
+): Vector[Vector[Long]] =
+  if k == 1 then Vector(Vector(1L))
+  else
+    val coefficients = coefficientsForSolutionSearching(k - 1)
+    val last         = coefficients.last
+    val current = 1L +:
+      (0 until last.length - 1).map(i => last(i + 1) - last(i)).toVector :+
+      -last.last
+    coefficients :+ current
+
+polynomialCoefficients(3, Array(1, 683, 44287)
+// Array(21461, -63701, 42241)
+// 21461 * 1 * 1 - 63701 * 1 + 42241 = 1
+// 21461 * 2 * 2 - 63701 * 2 + 42241 = 683
+// 21461 * 3 * 3 - 63701 * 3 + 42241 = 44287
+```
+
+**Метрики:**
+
+```dotty
+@main def polynomialCoefficientsBench(): Array[Long] =
+  polynomialCoefficients(3, Array(1, 683, 44287))
+
+// CPU Time: 312 ms
+// Allocation memory size: 11,66 MB      
+```
+
 ---
 
 **Ссылки:**
@@ -180,7 +249,10 @@ DiophantineEquation(67).minimalEquation
 - [Квадратное уравнение - Wiki][square]
 - [Уравнение Пелля - Wiki][pell]
 - [Метод «чакравала» - Wiki][chakravala]
+- [Многочлен - Wiki][poly]
+
 
 [square]: https://ru.wikipedia.org/wiki/%D0%9A%D0%B2%D0%B0%D0%B4%D1%80%D0%B0%D1%82%D0%BD%D0%BE%D0%B5_%D1%83%D1%80%D0%B0%D0%B2%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5
 [pell]: https://ru.wikipedia.org/wiki/%D0%A3%D1%80%D0%B0%D0%B2%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5_%D0%9F%D0%B5%D0%BB%D0%BB%D1%8F
 [chakravala]: https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D1%82%D0%BE%D0%B4_%C2%AB%D1%87%D0%B0%D0%BA%D1%80%D0%B0%D0%B2%D0%B0%D0%BB%D0%B0%C2%BB
+[poly]: https://ru.wikipedia.org/wiki/%D0%9C%D0%BD%D0%BE%D0%B3%D0%BE%D1%87%D0%BB%D0%B5%D0%BD

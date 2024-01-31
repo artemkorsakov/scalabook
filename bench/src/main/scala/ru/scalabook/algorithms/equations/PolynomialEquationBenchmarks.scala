@@ -2,8 +2,5 @@ package ru.scalabook.algorithms.equations
 
 import ru.scalabook.algorithms.equations.PolynomialEquation.*
 
-private val goodPolynomialArrayTemp: Array[Long] =
-  (1L to 10L).map(i => i * i * i).toArray
-
-@main def polynomialCoefficientsBench(): Unit =
-  println(polynomialCoefficients(3, goodPolynomialArrayTemp))
+@main def polynomialCoefficientsBench(): Array[Long] =
+  polynomialCoefficients(3, Array(1, 683, 44287))

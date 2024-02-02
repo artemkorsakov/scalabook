@@ -838,6 +838,48 @@ decToBinConv(7) // "111"
 // Allocation memory size: 1,59 GB      
 ```
 
+## Палиндром
+
+**Алгоритм:**
+
+[Палиндром](https://ru.wikipedia.org/wiki/%D0%9F%D0%B0%D0%BB%D0%B8%D0%BD%D0%B4%D1%80%D0%BE%D0%BC) -
+число, буквосочетание, слово или текст, одинаково читающееся в обоих направлениях.
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+def isPalindrome(number: Long): Boolean = isPalindrome(number, 10)
+
+// Является ли заданное число палиндромом в системе исчисления по заданному состоянию
+def isPalindrome(number: Long, base: Int): Boolean =
+  number == 0 || number > 0 && number % base != 0 && {
+    var revertedNumber = 0L
+    var k              = number
+    while k > revertedNumber
+    do
+      revertedNumber = revertedNumber * base + k % base
+      k /= base
+    k == revertedNumber || k == revertedNumber / base
+  }
+```
+
+**Метрики:**
+
+Количество палиндромов в первом миллионе чисел (1998) рассчитывается меньше секунды.
+
+```dotty
+@main def isPalindromeBench(): Unit =
+  println((1 to 1000000).count(isPalindrome))
+      
+// CPU Time: 312 ms
+// Allocation memory size: 24,15 MB      
+```
+
 ---
 
 **Ссылки:**

@@ -8,9 +8,7 @@ object PalindromeSuite extends FunSuite:
     expect.all(
       !isPalindrome(1100),
       !isPalindrome(10),
-      isPalindrome(4994),
-      isPalindrome(BigInt("4668731596684224866951378664"), 10),
-      !isPalindrome(BigInt("4668731596684224866951378665"), 10)
+      isPalindrome(4994)
     )
 
   test("isPalindromeByBase"):

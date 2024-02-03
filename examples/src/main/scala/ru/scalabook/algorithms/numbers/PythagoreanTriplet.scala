@@ -56,8 +56,8 @@ object PythagoreanTriplet:
       for m <- 2L to mLimit do
         if s2 % m == 0 then
           var sm = s2 / m
-          while sm % 2 == 0 do // reduce the search space by
-            sm /= 2 // removing all factors 2
+          // сократим пространство поиска, удалив все делители 2
+          while sm % 2 == 0 do sm /= 2
           var k = if m % 2 == 1 then m + 2 else m + 1
           while k < 2 * m && k <= sm
           do

@@ -3,21 +3,11 @@ package ru.scalabook.algorithms.numbers
 import ru.scalabook.algorithms.combinatorics.BinomialCoefficient.*
 import scalaz.Memo
 import spire.compat.fractional
-import spire.math.Rational
+import spire.math.{Rational, SafeLong}
 
-import scala.collection.mutable
+import scala.annotation.tailrec
 
 object OtherNumbers:
-  private val padovanMap: mutable.Map[Int, BigInt] =
-    mutable.Map((0, 1), (1, 0), (2, 0))
-  private val jacobsthalMap: mutable.Map[Int, BigInt] =
-    mutable.Map((0, 0), (1, 1))
-  private val pellMap: mutable.Map[Int, BigInt] = mutable.Map((0, 0), (1, 1))
-  private val tribonacciMap: mutable.Map[Int, BigInt] =
-    mutable.Map((0, 0), (1, 0), (2, 1))
-  private val tetranacciMap: mutable.Map[Int, BigInt] =
-    mutable.Map((0, 0), (1, 0), (2, 0), (3, 1))
-
   /** <a href="https://en.wikipedia.org/wiki/Bernoulli_number">Bernoulli
     * number</a>
     */
@@ -39,8 +29,14 @@ object OtherNumbers:
     * numbers)</a> : a<sub>n</sub> = a<sub>n-2</sub> + a<sub>n-3</sub> with
     * a<sub>0</sub> = 1, a<sub>1</sub> = a<sub>2</sub> = 0.
     */
-  def padovan(i: Int): BigInt =
-    padovanMap.getOrElseUpdate(i, padovan(i - 2) + padovan(i - 3))
+  def padovan(n: Int): SafeLong =
+    @tailrec
+    def loop(a: SafeLong, b: SafeLong, c: SafeLong, i: Int): SafeLong =
+      if i == 0 then c
+      else loop(b, c, a + b, i - 1)
+    if n == 0 then 1
+    else if n <= 2 then 0
+    else loop(1, 0, 0, n - 2)
 
   /** <a href="https://oeis.org/A001045">Jacobsthal sequence (or Jacobsthal
     * numbers)</a>: a<sub>n</sub> = a<sub>n-1</sub> + 2*a<sub>n-2</sub> with
@@ -48,35 +44,56 @@ object OtherNumbers:
     *
     * Also a<sub>n</sub> = nearest integer to 2<sup>n</sup>/3.
     */
-  def jacobsthal(i: Int): BigInt =
-    jacobsthalMap.getOrElseUpdate(i, jacobsthal(i - 1) + 2 * jacobsthal(i - 2))
+  def jacobsthal(i: Int): SafeLong =
+    @tailrec
+    def loop(a: SafeLong, b: SafeLong, i: Int): SafeLong =
+      if i == 0 then b
+      else loop(b, b + 2 * a, i - 1)
+    if i <= 1 then i
+    else loop(0, 1, i - 1)
 
   /** <a href="https://oeis.org/A000129">Pell numbers</a> : a<sub>n</sub> =
-    * 2*a<sub>n-1</sub> + a<sub>n-2</sub> with a<sub>0</sub> = 0, a<sub>1</sub>
-    * \= 1.
+    * 2*a<sub>n-1</sub> + a<sub>n-2</sub>, a<sub>0</sub> = 0, a<sub>1</sub> = 1.
     */
-  def pell(i: Int): BigInt =
-    pellMap.getOrElseUpdate(i, 2 * pell(i - 1) + pell(i - 2))
+  def pell(i: Int): SafeLong =
+    @tailrec
+    def loop(a: SafeLong, b: SafeLong, i: Int): SafeLong =
+      if i == 0 then b
+      else loop(b, 2 * b + a, i - 1)
+    if i <= 1 then i
+    else loop(0, 1, i - 1)
 
   /** <a href="https://oeis.org/A000073">Tribonacci numbers</a> : a<sub>n</sub>
     * \= a<sub>n-1</sub> + a<sub>n-2</sub> + a<sub>n-3</sub> with a<sub>0</sub>
     * \= a<sub>1</sub> = 0, a<sub>2</sub> = 1.
     */
-  def tribonacci(i: Int): BigInt =
-    tribonacciMap.getOrElseUpdate(
-      i,
-      tribonacci(i - 1) + tribonacci(i - 2) + tribonacci(i - 3)
-    )
+  def tribonacci(i: Int): SafeLong =
+    @tailrec
+    def loop(a: SafeLong, b: SafeLong, c: SafeLong, i: Int): SafeLong =
+      if i == 0 then c
+      else loop(b, c, a + b + c, i - 1)
+
+    if i <= 1 then 0
+    else if i == 2 then 1
+    else loop(0, 0, 1, i - 2)
 
   /** <a href="https://oeis.org/A000078">Tetranacci numbers</a> : a<sub>n</sub>
     * \= a<sub>n-1</sub> + a<sub>n-2</sub> + a<sub>n-3</sub> + a<sub>n-4</sub>
     * with a<sub>0</sub> = a<sub>1</sub> = a<sub>2</sub> = 0, a<sub>3</sub> = 1.
     */
-  def tetranacci(i: Int): BigInt =
-    tetranacciMap.getOrElseUpdate(
-      i,
-      tetranacci(i - 1) + tetranacci(i - 2) + tetranacci(i - 3) + tetranacci(
-        i - 4
-      )
-    )
+  def tetranacci(i: Int): SafeLong =
+    @tailrec
+    def loop(
+        a: SafeLong,
+        b: SafeLong,
+        c: SafeLong,
+        d: SafeLong,
+        i: Int
+    ): SafeLong =
+      if i == 0 then d
+      else loop(b, c, d, a + b + c + d, i - 1)
+
+    if i <= 2 then 0
+    else if i == 3 then 1
+    else loop(0, 0, 0, 1, i - 3)
 end OtherNumbers

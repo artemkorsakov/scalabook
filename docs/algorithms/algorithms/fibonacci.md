@@ -1,4 +1,4 @@
-# Числа Фибоначчи и другие последовательности
+# Последовательности
 
 ## Числа Фибоначчи
 
@@ -499,151 +499,203 @@ bernoulli(50)
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- **Время** - O(n)
+- **Память** - O(1)
 
 **Код:**
 
 ```dotty
-object HarshadNumber:
+def padovan(n: Int): SafeLong =
+  @tailrec
+  def loop(a: SafeLong, b: SafeLong, c: SafeLong, i: Int): SafeLong =
+    if i == 0 then c
+    else loop(b, c, a + b, i - 1)
+  if n == 0 then 1
+  else if n <= 2 then 0
+  else loop(1, 0, 0, n - 2)
     
-getStrongRightTruncatableHarshadPrimes(3)
-// Vector(181, 211, 271, 277, 421, 457, 631)    
+padovan(100)
+// 288627200960 
 ```
 
 **Метрики:**
 
+Миллионное число Падована вычисляется за 12,5 секунд.
 
 ```dotty
-@main def getStrongRightTruncatableHarshadPrimesBench(): Unit =
-  println(getStrongRightTruncatableHarshadPrimes(9))
+@main def padovanBench(): SafeLong =
+  padovan(1_000_000)
      
-// CPU Time: 564 ms
-// Allocation memory size: 13,65 MB      
+// CPU Time: 12576 ms
+// Allocation memory size: 26,2 GB      
 ```
 
-
-## Числа харшад
+## Числа Якобсталя
 
 **Алгоритм:**
 
+[Последовательность Якобсталя (или числа Якобсталя)](https://oeis.org/A001045): 
+\\(a\_{n} = a\_{n-1} + 2*a\_{n-2}\\), где \\(a\_{0} = 0, a\_{1} = 1\\); 
+также \\(a\_{n}\\) - ближайшее целое число к \\(\frac{2^n}{3}\\).
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- **Время** - O(n)
+- **Память** - O(1)
 
 **Код:**
 
 ```dotty
-object HarshadNumber:
+def jacobsthal(i: Int): SafeLong =
+  @tailrec
+  def loop(a: SafeLong, b: SafeLong, i: Int): SafeLong =
+    if i == 0 then b
+    else loop(b, b + 2 * a, i - 1)
+  if i <= 1 then i
+  else loop(0, 1, i - 1)
     
-getStrongRightTruncatableHarshadPrimes(3)
-// Vector(181, 211, 271, 277, 421, 457, 631)    
+jacobsthal(100)
+// 422550200076076467165567735125
 ```
 
 **Метрики:**
 
+Миллионное число Якобсталя вычисляется за 55 секунд.
 
 ```dotty
-@main def getStrongRightTruncatableHarshadPrimesBench(): Unit =
-  println(getStrongRightTruncatableHarshadPrimes(9))
+@main def jacobsthalBench(): SafeLong =
+  jacobsthal(1_000_000)
      
-// CPU Time: 564 ms
-// Allocation memory size: 13,65 MB      
+// CPU Time: 55346 ms
+// Allocation memory size: 127,42 GB      
 ```
 
-
-## Числа харшад
+## Числа Пелля
 
 **Алгоритм:**
 
+[Числа Пелля](https://oeis.org/A000129):
+\\(a\_{n} = 2*a\_{n-1} + a\_{n-2}\\), где \\(a\_{0} = 0, a\_{1} = 1\\).
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- **Время** - O(n)
+- **Память** - O(1)
 
 **Код:**
 
 ```dotty
-object HarshadNumber:
+def pell(i: Int): SafeLong =
+  @tailrec
+  def loop(a: SafeLong, b: SafeLong, i: Int): SafeLong =
+    if i == 0 then b
+    else loop(b, 2 * b + a, i - 1)
+  if i <= 1 then i
+  else loop(0, 1, i - 1)
     
-getStrongRightTruncatableHarshadPrimes(3)
-// Vector(181, 211, 271, 277, 421, 457, 631)    
+pell(100)
+// 66992092050551637663438906713182313772
 ```
 
 **Метрики:**
 
+Миллионное число Пелля вычисляется за 72 секунды.
 
 ```dotty
-@main def getStrongRightTruncatableHarshadPrimesBench(): Unit =
-  println(getStrongRightTruncatableHarshadPrimes(9))
+@main def pellBench(): SafeLong =
+  pell(1_000_000)
      
-// CPU Time: 564 ms
-// Allocation memory size: 13,65 MB      
+// CPU Time: 71481 ms
+// Allocation memory size: 160,09 GB      
 ```
 
-
-## Числа харшад
+## Числа Трибоначчи
 
 **Алгоритм:**
 
+[Числа Трибоначчи](https://oeis.org/A000073): 
+\\(a\_{n} = a\_{n-1} + a\_{n-2} + a\_{n-3}\\) для \\(n \geq 3\\), с \\(a\_{0} = a\_{1} = 0, a\_{2} = 1\\).
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- **Время** - O(n)
+- **Память** - O(1)
 
 **Код:**
 
 ```dotty
-object HarshadNumber:
+def tribonacci(i: Int): SafeLong =
+  @tailrec
+  def loop(a: SafeLong, b: SafeLong, c: SafeLong, i: Int): SafeLong =
+    if i == 0 then c
+    else loop(b, c, a + b + c, i - 1)
+
+  if i <= 1 then 0
+  else if i == 2 then 1
+  else loop(0, 0, 1, i - 2)
     
-getStrongRightTruncatableHarshadPrimes(3)
-// Vector(181, 211, 271, 277, 421, 457, 631)    
+tribonacci(100)
+// 53324762928098149064722658  
 ```
 
 **Метрики:**
 
+Миллионное число Трибоначчи вычисляется за 55 секунд.
 
 ```dotty
-@main def getStrongRightTruncatableHarshadPrimesBench(): Unit =
-  println(getStrongRightTruncatableHarshadPrimes(9))
+@main def tribonacciBench(): SafeLong =
+  tribonacci(1_000_000)
      
-// CPU Time: 564 ms
-// Allocation memory size: 13,65 MB      
+// CPU Time: 54891 ms
+// Allocation memory size: 112,9 GB      
 ```
 
-
-## Числа харшад
+## Числа Тетраначчи
 
 **Алгоритм:**
 
+[Числа Тетраначчи](https://oeis.org/A000078):
+\\(a\_{n} = a\_{n-1} + a\_{n-2} + a\_{n-3} + a\_{n-4}\\) 
+для \\(n \geq 4\\), с \\(a\_{0} = a\_{1} = a\_{2} = 0, a\_{3} = 1\\).
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- **Время** - O(n)
+- **Память** - O(1)
 
 **Код:**
 
 ```dotty
-object HarshadNumber:
+def tetranacci(i: Int): SafeLong =
+  @tailrec
+  def loop(
+      a: SafeLong,
+      b: SafeLong,
+      c: SafeLong,
+      d: SafeLong,
+      i: Int
+  ): SafeLong =
+    if i == 0 then d
+    else loop(b, c, d, a + b + c + d, i - 1)
+
+  if i <= 2 then 0
+  else if i == 3 then 1
+  else loop(0, 0, 0, 1, i - 3)
     
-getStrongRightTruncatableHarshadPrimes(3)
-// Vector(181, 211, 271, 277, 421, 457, 631)    
+tetranacci(100)
+// 2505471397838180985096739296
 ```
 
 **Метрики:**
 
+Миллионное число Тетраначчи вычисляется за 80 секунд.
 
 ```dotty
-@main def getStrongRightTruncatableHarshadPrimesBench(): Unit =
-  println(getStrongRightTruncatableHarshadPrimes(9))
+@main def tetranacciBench(): SafeLong =
+  tetranacci(1_000_000)
      
-// CPU Time: 564 ms
-// Allocation memory size: 13,65 MB      
+// CPU Time: 79549 ms
+// Allocation memory size: 182,55 GB      
 ```
 
 ---

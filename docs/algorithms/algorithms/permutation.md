@@ -570,9 +570,6 @@ primeFactor(1000, 3)
 private val cache: mutable.Map[(Int, Int, Int), SafeLong] =
   mutable.Map.empty[(Int, Int, Int), SafeLong]
 
-/** We have A white balls, B black balls and C grey balls. How many different
-  * options to arrange these balls in a row?
-  */
 def countABCRows(a: Int, b: Int, c: Int): SafeLong =
   val array = Array(a, b, c)
   val min   = array.min

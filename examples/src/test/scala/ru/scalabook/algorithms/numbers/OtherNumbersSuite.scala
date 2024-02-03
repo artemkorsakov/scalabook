@@ -2,67 +2,58 @@ package ru.scalabook.algorithms.numbers
 
 import org.scalacheck.Gen
 import ru.scalabook.algorithms.numbers.OtherNumbers.*
+import spire.math.Rational
 import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
 
 object OtherNumbersSuite extends SimpleIOSuite with Checkers:
-  private val expectedNumerators: IndexedSeq[BigDecimal] = IndexedSeq(
-    1,
-    -1,
-    1,
-    0,
-    -1,
-    0,
-    1,
-    0,
-    -1,
-    0,
-    5,
-    0,
-    -691,
-    0,
-    7,
-    0,
-    -3617,
-    0,
-    43867,
-    0,
-    -174611,
-    0,
-    854513,
-    0,
-    -236364091,
-    0,
-    8553103,
-    0,
-    -23749461029L,
-    0,
-    8615841276005L,
-    0,
-    -7709321041217L,
-    0,
-    2577687858367L,
-    0,
-    BigDecimal("-26315271553053477373"),
-    0,
-    2929993913841559L,
-    0,
-    BigDecimal("-261082718496449122051")
+  private val expectedBernoulli: IndexedSeq[Rational] = IndexedSeq(
+    Rational(1, 1),
+    Rational(-1, 2),
+    Rational(1, 6),
+    Rational(0, 1),
+    Rational(-1, 30),
+    Rational(0, 1),
+    Rational(1, 42),
+    Rational(0, 1),
+    Rational(-1, 30),
+    Rational(0, 1),
+    Rational(5, 66),
+    Rational(0, 1),
+    Rational(-691, 2730),
+    Rational(0, 1),
+    Rational(7, 6),
+    Rational(0, 1),
+    Rational(-3617, 510),
+    Rational(0, 1),
+    Rational(43867, 798),
+    Rational(0, 1),
+    Rational(-174611, 330),
+    Rational(0, 1),
+    Rational(854513, 138),
+    Rational(0, 1),
+    Rational(-236364091, 2730),
+    Rational(0, 1),
+    Rational(8553103, 6),
+    Rational(0, 1),
+    Rational(-23749461029L, 870),
+    Rational(0, 1),
+    Rational(8615841276005L, 14322),
+    Rational(0, 1),
+    Rational(-7709321041217L, 510),
+    Rational(0, 1),
+    Rational(2577687858367L, 6),
+    Rational(0, 1),
+    Rational(BigInt("-26315271553053477373"), BigInt(1919190)),
+    Rational(0, 1),
+    Rational(2929993913841559L, 6),
+    Rational(0, 1),
+    Rational(BigInt("-261082718496449122051"), BigInt(13530))
   )
-  private val expectedDenominators: IndexedSeq[BigDecimal] =
-    IndexedSeq(1, 2, 6, 1, 30, 1, 42, 1, 30, 1, 66, 1, 2730, 1, 6, 1, 510, 1,
-      798, 1, 330, 1, 138, 1, 2730, 1, 6, 1, 870, 1, 14322, 1, 510, 1, 6, 1,
-      1919190, 1, 6, 1, 13530)
 
   test("bernoulli"):
-    forall(Gen.oneOf(expectedNumerators.indices)): i =>
-      expect(
-        math.abs(
-          (bernoulli(i) - expectedNumerators(i) / expectedDenominators(
-            i
-          )).toDouble
-        ) <= 1e-5
-      )
+    forall(Gen.oneOf(expectedBernoulli.indices)): i =>
+      expect(bernoulli(i) == expectedBernoulli(i))
 
   private val expectedPadovan: IndexedSeq[BigInt] = IndexedSeq(1, 0, 0, 1, 0, 1,
     1, 1, 2, 2, 3, 4, 5, 7, 9, 12, 16, 21, 28, 37, 49, 65, 86, 114, 151, 200,

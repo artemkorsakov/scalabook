@@ -1,11 +1,13 @@
 package ru.scalabook.algorithms.numbers
 
-import scala.collection.mutable
 import ru.scalabook.algorithms.combinatorics.BinomialCoefficient.*
+import scalaz.Memo
+import spire.compat.fractional
+import spire.math.Rational
+
+import scala.collection.mutable
 
 object OtherNumbers:
-  private val bernoulliMap: mutable.Map[Int, BigDecimal] =
-    mutable.Map((0, BigDecimal(1)))
   private val padovanMap: mutable.Map[Int, BigInt] =
     mutable.Map((0, 1), (1, 0), (2, 0))
   private val jacobsthalMap: mutable.Map[Int, BigInt] =
@@ -19,18 +21,19 @@ object OtherNumbers:
   /** <a href="https://en.wikipedia.org/wiki/Bernoulli_number">Bernoulli
     * number</a>
     */
-  def bernoulli(k: Int): BigDecimal =
-    if k == 1 then BigDecimal(-0.5)
-    else if k % 2 == 1 then BigDecimal(0)
-    else
-      bernoulliMap.getOrElseUpdate(
-        k,
-        0.5 - (2 to k by 2)
-          .map(l =>
-            bernoulli(k - l) * BigDecimal(binomialCoefficient(k + 1, l + 1))
-          )
-          .sum / (k + 1)
-      )
+  val bernoulli: Int => Rational =
+    Memo.mutableHashMapMemo {
+      case 0 => Rational(1)
+      case 1 => Rational(-1, 2)
+      case n if n % 2 == 1 => Rational(0)
+      case n =>
+        val s =
+          (2 to n by 2)
+            .map: l =>
+              bernoulli(n - l) * Rational(binomialCoefficient(n + 1, l + 1))
+            .sum
+        Rational(1, 2) - (s / (n + 1))
+    }
 
   /** <a href="https://oeis.org/A000931">Padovan sequence (or Padovan
     * numbers)</a> : a<sub>n</sub> = a<sub>n-2</sub> + a<sub>n-3</sub> with

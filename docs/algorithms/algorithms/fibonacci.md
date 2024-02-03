@@ -429,6 +429,223 @@ getStrongRightTruncatableHarshadPrimes(3)
 // Allocation memory size: 13,65 MB      
 ```
 
+## Числа Бернулли
+
+**Алгоритм:**
+
+[Числа Бернулли](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D0%BB%D0%B0_%D0%91%D0%B5%D1%80%D0%BD%D1%83%D0%BB%D0%BB%D0%B8)
+
+Для чисел Бернулли существует следующая рекуррентная формула:
+
+- \\(B\_{0} = 1\\)
+- \\(B\_{n}={\frac{-1}{n+1}}\sum\_{k=1}^{n}{\binom {n+1}{k+1}}B\_{n-k}, \quad n \in \mathbb {N} \\)
+
+Все числа Бернулли с нечётными номерами, кроме \\(B\_{1} = -\frac{1}{2}\\), равны нулю, 
+а знаки чисел Бернулли с чётными номерами чередуются.
+
+Поэтому формулу вычисления \\(B\_{n}\\) для четных \\(n \geq 2\\) можно упростить:
+\\(B\_{n} = \frac{1}{2} + {\frac{-1}{n+1}}\sum\_{k=2,4,...}^{n}{\binom {n+1}{k+1}}B\_{n-k}, \quad n \in \mathbb {N} \\)
+
+[Генератор чисел Бернулли](https://ru.numberempire.com/bernoullinumbers.php)
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+import scalaz.Memo
+  
+val bernoulli: Int => Rational =
+  Memo.mutableHashMapMemo {
+    case 0 => Rational(1)
+    case 1 => Rational(-1, 2)
+    case n if n % 2 == 1 => Rational(0)
+    case n =>
+      val s =
+        (2 to n by 2)
+          .map: l =>
+            bernoulli(n - l) * Rational(binomialCoefficient(n + 1, l + 1))
+          .sum
+      Rational(1, 2) - (s / (n + 1))
+  }
+        
+bernoulli(50)
+// 495057205241079648212477525/66 
+```
+
+**Метрики:**
+
+500 число Бернулли рассчитывается за 1,5 секунды.
+
+```dotty
+@main def bernoulliBench(): Unit =
+  println(bernoulli(500))
+     
+// CPU Time: 1500 ms
+// Allocation memory size: 1,37 MB      
+```
+
+## Числа Падована
+
+**Алгоритм:**
+
+[Последовательность Падована (или числа Падована)](https://oeis.org/A000931) рассчитывается по формуле:
+
+- \\(a\_{0} = 1, a\_{1} = a\_{2} = 0\\)
+- \\(a\_{n} = a\_{n-2} + a\_{n-3}\\)
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+object HarshadNumber:
+    
+getStrongRightTruncatableHarshadPrimes(3)
+// Vector(181, 211, 271, 277, 421, 457, 631)    
+```
+
+**Метрики:**
+
+
+```dotty
+@main def getStrongRightTruncatableHarshadPrimesBench(): Unit =
+  println(getStrongRightTruncatableHarshadPrimes(9))
+     
+// CPU Time: 564 ms
+// Allocation memory size: 13,65 MB      
+```
+
+
+## Числа харшад
+
+**Алгоритм:**
+
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+object HarshadNumber:
+    
+getStrongRightTruncatableHarshadPrimes(3)
+// Vector(181, 211, 271, 277, 421, 457, 631)    
+```
+
+**Метрики:**
+
+
+```dotty
+@main def getStrongRightTruncatableHarshadPrimesBench(): Unit =
+  println(getStrongRightTruncatableHarshadPrimes(9))
+     
+// CPU Time: 564 ms
+// Allocation memory size: 13,65 MB      
+```
+
+
+## Числа харшад
+
+**Алгоритм:**
+
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+object HarshadNumber:
+    
+getStrongRightTruncatableHarshadPrimes(3)
+// Vector(181, 211, 271, 277, 421, 457, 631)    
+```
+
+**Метрики:**
+
+
+```dotty
+@main def getStrongRightTruncatableHarshadPrimesBench(): Unit =
+  println(getStrongRightTruncatableHarshadPrimes(9))
+     
+// CPU Time: 564 ms
+// Allocation memory size: 13,65 MB      
+```
+
+
+## Числа харшад
+
+**Алгоритм:**
+
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+object HarshadNumber:
+    
+getStrongRightTruncatableHarshadPrimes(3)
+// Vector(181, 211, 271, 277, 421, 457, 631)    
+```
+
+**Метрики:**
+
+
+```dotty
+@main def getStrongRightTruncatableHarshadPrimesBench(): Unit =
+  println(getStrongRightTruncatableHarshadPrimes(9))
+     
+// CPU Time: 564 ms
+// Allocation memory size: 13,65 MB      
+```
+
+
+## Числа харшад
+
+**Алгоритм:**
+
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+object HarshadNumber:
+    
+getStrongRightTruncatableHarshadPrimes(3)
+// Vector(181, 211, 271, 277, 421, 457, 631)    
+```
+
+**Метрики:**
+
+
+```dotty
+@main def getStrongRightTruncatableHarshadPrimesBench(): Unit =
+  println(getStrongRightTruncatableHarshadPrimes(9))
+     
+// CPU Time: 564 ms
+// Allocation memory size: 13,65 MB      
+```
+
 ---
 
 **Ссылки:**

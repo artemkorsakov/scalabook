@@ -2,35 +2,36 @@ package ru.scalabook.algorithms.numbers
 
 import ru.scalabook.algorithms.fundamental.Numerical
 import ru.scalabook.algorithms.fundamental.Numerical.*
-import ru.scalabook.algorithms.matrix.Matrix
+import spire.math.SafeLong
 
 import scala.collection.mutable
 
 /** A Pythagorean triplet is a set of three natural numbers, a &lt; b &lt; c,
   * for which, a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup>.
   */
-case class PythagoreanTriplet(a: Long, b: Long, c: Long):
-  lazy val columnVector: Matrix[Long] = Matrix(Seq(Seq(a), Seq(b), Seq(c)))
-  private lazy val a_matrix: Matrix[Long] = Matrix(
-    Seq(Seq(1, -2, 2), Seq(2, -1, 2), Seq(2, -2, 3))
-  )
-  private lazy val b_matrix: Matrix[Long] = Matrix(
-    Seq(Seq(1, 2, 2), Seq(2, 1, 2), Seq(2, 2, 3))
-  )
-  private lazy val c_matrix: Matrix[Long] = Matrix(
-    Seq(Seq(-1, 2, 2), Seq(-2, 1, 2), Seq(-2, 2, 3))
-  )
-  private lazy val matrices = IndexedSeq(a_matrix, b_matrix, c_matrix)
-
+final case class PythagoreanTriplet(a: SafeLong, b: SafeLong, c: SafeLong):
   /** <a
     * href="https://en.wikipedia.org/wiki/Tree_of_primitive_Pythagorean_triples">Tree
     * of primitive Pythagorean triples</a>
     */
-  def nextPythagoreanTriplet: IndexedSeq[PythagoreanTriplet] =
-    matrices.map { mat =>
-      val seq = mat.*(columnVector).elements
-      PythagoreanTriplet(seq.head.head, seq(1).head, seq.last.head)
-    }
+  lazy val nextPythagoreanTriplet: Array[PythagoreanTriplet] =
+    Array(
+      PythagoreanTriplet(
+        a - 2 * b + 2 * c,
+        2 * a - b + 2 * c,
+        2 * a - 2 * b + 3 * c
+      ),
+      PythagoreanTriplet(
+        a + 2 * b + 2 * c,
+        2 * a + b + 2 * c,
+        2 * a + 2 * b + 3 * c
+      ),
+      PythagoreanTriplet(
+        -a + 2 * b + 2 * c,
+        -2 * a + b + 2 * c,
+        -2 * a + 2 * b + 3 * c
+      )
+    )
 end PythagoreanTriplet
 
 object PythagoreanTriplet:
@@ -44,8 +45,8 @@ object PythagoreanTriplet:
   @SuppressWarnings(
     Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
   )
-  def pythagoreanTripletsWithGivenSum(sum: Long): Seq[PythagoreanTriplet] =
-    if sum % 2 == 1 then Seq.empty[PythagoreanTriplet]
+  def pythagoreanTripletsWithGivenSum(sum: Long): Array[PythagoreanTriplet] =
+    if sum % 2 == 1 then new Array(0)
     else
       val arrayBuffer = mutable.ArrayBuffer.empty[PythagoreanTriplet]
       val s2          = sum / 2
@@ -60,7 +61,7 @@ object PythagoreanTriplet:
           var k = if m % 2 == 1 then m + 2 else m + 1
           while k < 2 * m && k <= sm
           do
-            if sm % k == 0 && Numerical.gcd(k, m) == 1 then
+            if sm % k == 0 && gcd(k, m) == 1 then
               val d = s2 / (k * m)
               val n = k - m
               val a = d * (m * m - n * n)
@@ -69,5 +70,5 @@ object PythagoreanTriplet:
               arrayBuffer += PythagoreanTriplet(a, b, c)
             k += 2
 
-      arrayBuffer.toSeq
+      arrayBuffer.toArray
 end PythagoreanTriplet

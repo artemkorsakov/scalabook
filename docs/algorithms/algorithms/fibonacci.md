@@ -186,6 +186,125 @@ def approximateFibonacci(n: Int): BigInt =
 // Allocation memory size: 32,74 MB      
 ```
 
+## Пифагорова тройка
+
+**Алгоритм:**
+
+[Пифагорова тройка](https://ru.wikipedia.org/wiki/%D0%9F%D0%B8%D1%84%D0%B0%D0%B3%D0%BE%D1%80%D0%BE%D0%B2%D0%B0_%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0) — 
+это набор трех натуральных чисел \\(a < b < c\\), 
+для которых \\(a^{2} + b^{2} = c^{2}\\).
+Представим \\(a = m^{2} - n^{2}, b = 2\*m\*n, c = m^{2} + n^{2}\\). Тогда \\((m,n)\\) – пифагорова двойка.
+
+[Дерево примитивных пифагоровых троек](https://ru.wikipedia.org/wiki/%D0%94%D0%B5%D1%80%D0%B5%D0%B2%D0%BE_%D0%BF%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D1%85_%D0%BF%D0%B8%D1%84%D0%B0%D0%B3%D0%BE%D1%80%D0%BE%D0%B2%D1%8B%D1%85_%D1%82%D1%80%D0%BE%D0%B5%D0%BA)
+можно построить используя как пифагорову двойку, так и пифагорову тройку.
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+Пифагорова двойка:
+
+```dotty
+final case class PythagoreanDeuce(m: SafeLong, n: SafeLong):
+  lazy val a: SafeLong                 = m * m - n * n
+  lazy val b: SafeLong                 = 2 * m * n
+  lazy val c: SafeLong                 = m * m + n * n
+  lazy val triplet: PythagoreanTriplet = PythagoreanTriplet(a, b, c)
+  lazy val nextPythagoreanDeuce: Array[PythagoreanDeuce] =
+    Array(
+      PythagoreanDeuce(2 * m - n, m),
+      PythagoreanDeuce(2 * m + n, m),
+      PythagoreanDeuce(m + 2 * n, n)
+    )
+end PythagoreanDeuce
+
+object PythagoreanDeuce:
+  val primitivePythagoreanDeuce: PythagoreanDeuce = PythagoreanDeuce(2, 1)
+    
+primitivePythagoreanDeuce.triplet 
+// PythagoreanTriplet(3, 4, 5)
+primitivePythagoreanDeuce.nextPythagoreanDeuce
+// Array(PythagoreanDeuce(3, 2), PythagoreanDeuce(5, 2), PythagoreanDeuce(4, 1))
+```
+
+Пифагорова тройка:
+
+```dotty
+final case class PythagoreanTriplet(a: SafeLong, b: SafeLong, c: SafeLong):
+  lazy val nextPythagoreanTriplet: Array[PythagoreanTriplet] =
+    Array(
+      PythagoreanTriplet(
+        a - 2 * b + 2 * c,
+        2 * a - b + 2 * c,
+        2 * a - 2 * b + 3 * c
+      ),
+      PythagoreanTriplet(
+        a + 2 * b + 2 * c,
+        2 * a + b + 2 * c,
+        2 * a + 2 * b + 3 * c
+      ),
+      PythagoreanTriplet(
+        -a + 2 * b + 2 * c,
+        -2 * a + b + 2 * c,
+        -2 * a + 2 * b + 3 * c
+      )
+    )
+end PythagoreanTriplet
+
+object PythagoreanTriplet:
+  val primitivePythagoreanTriplet: PythagoreanTriplet =
+    PythagoreanTriplet(3, 4, 5)
+    
+primitivePythagoreanTriplet.nextPythagoreanTriplet
+// Array(PythagoreanTriplet(5,12,13), PythagoreanTriplet(21,20,29), PythagoreanTriplet(15,8,17))
+```
+
+Нахождение [пифагоровых троек с заданной суммой](https://projecteuler.net/problem=9):
+
+```dotty
+def pythagoreanTripletsWithGivenSum(sum: Long): Array[PythagoreanTriplet] =
+  if sum % 2 == 1 then new Array(0)
+  else
+    val arrayBuffer = mutable.ArrayBuffer.empty[PythagoreanTriplet]
+    val s2          = sum / 2
+    val sqrt        = math.sqrt(s2.toDouble).toLong
+    val mLimit      = if sqrt * sqrt == s2 then sqrt - 1 else sqrt
+
+    for m <- 2L to mLimit do
+      if s2 % m == 0 then
+        var sm = s2 / m
+        while sm % 2 == 0 do // reduce the search space by
+          sm /= 2            // removing all factors 2
+        var k = if m % 2 == 1 then m + 2 else m + 1
+        while k < 2 * m && k <= sm
+        do
+          if sm % k == 0 && gcd(k, m) == 1 then
+            val d = s2 / (k * m)
+            val n = k - m
+            val a = d * (m * m - n * n)
+            val b = 2 * d * m * n
+            val c = d * (m * m + n * n)
+            arrayBuffer += PythagoreanTriplet(a, b, c)
+          k += 2
+
+    arrayBuffer.toArray
+```
+
+**Метрики:**
+
+Вычисление
+
+```dotty
+@main def nextPythagoreanTripletBench(): Unit =
+  println(pythagoreanTripletsWithGivenSum(1000).mkString("Array(", ", ", ")"))
+     
+// CPU Time: 640 ms
+// Allocation memory size: 15,68 MB      
+```
+
 ## Циклические последовательности
 
 **Алгоритм:**

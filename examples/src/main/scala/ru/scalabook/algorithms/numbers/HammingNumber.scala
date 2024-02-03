@@ -7,9 +7,6 @@ import ru.scalabook.algorithms.fundamental.Primes.primesNoMoreThanN
   * type n, if it has no prime factor larger than n.
   */
 object HammingNumber:
-  def isHammingNumber(number: Int, n: Int): Boolean =
-    isHammingNumber(number.toLong, n)
-
   @SuppressWarnings(
     Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
   )

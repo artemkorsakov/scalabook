@@ -186,6 +186,249 @@ def approximateFibonacci(n: Int): BigInt =
 // Allocation memory size: 32,74 MB      
 ```
 
+## Циклические последовательности
+
+**Алгоритм:**
+
+Циклические последовательности:
+
+- Треугольные числа; \\(T\_{n} = \frac{n(n+1)}{2}\\); 1, 3, 6, 10, 15, ...
+- Квадратные числа; \\(P\_{4,n} = n^{2}\\); 1, 4, 9, 16, 25, ...
+- Пятиугольные числа; \\(P\_{5,n} = \frac{n(3n−1)}{2}\\); 1, 5, 12, 22, 35, ...
+- Шестиугольные числа; \\(H\_{n} = n(2n−1)\\); 1, 6, 15, 28, 45, ...
+- Семиугольные числа; \\(P\_{7,n} = \frac{n(5n−3)}{2}\\); 1, 7, 18, 34, 55, ...
+- Восьмиугольные числа; \\(P\_{8,n} = n(3n−2)\\); 1, 8, 21, 40, 65, ...
+
+**Оценка:**
+
+- **Время** - O(1)
+- **Память** - O(1)
+
+**Код:**
+
+```dotty
+object CyclicNumbers:
+  def triangleNumber(n: SafeLong): SafeLong = n * (n + 1) / 2
+
+  def isTriangle(n: Long): Boolean =
+    val sol = math.round(-1.0 / 2.0 + sqrt(2.0 * n + 1.0 / 4.0))
+    triangleNumber(sol) == n
+
+  def squareNumber(n: SafeLong): SafeLong = n * n
+
+  def isSquare(n: Long): Boolean = sqrt(n.toDouble).isWhole
+
+  def pentagonalNumber(n: SafeLong): SafeLong = n * (3 * n - 1) / 2
+
+  def isPentagonal(n: Long): Boolean =
+    val sol = math.round(1.0 / 6.0 + sqrt(2.0 * n / 3.0 + 1.0 / 36.0))
+    pentagonalNumber(sol) == n
+
+  def hexagonalNumber(n: SafeLong): SafeLong = n * (2 * n - 1)
+
+  def isHexagonal(n: Long): Boolean =
+    val sol = math.round(1.0 / 4.0 + sqrt(n / 2.0 + 1.0 / 16.0))
+    hexagonalNumber(sol) == n
+
+  def heptagonalNumber(n: SafeLong): SafeLong = n * (5 * n - 3) / 2
+
+  def isHeptagonal(n: Long): Boolean =
+    val sol = math.round(3.0 / 10.0 + sqrt(2.0 * n / 5.0 + 9.0 / 100.0))
+    heptagonalNumber(sol) == n
+
+  def octagonalNumber(n: SafeLong): SafeLong = n * (3 * n - 2)
+
+  def isOctagonal(n: Long): Boolean =
+    val sol = math.round(1.0 / 3.0 + sqrt(n / 3.0 + 1.0 / 9.0))
+    octagonalNumber(sol) == n
+end CyclicNumbers
+
+triangleNumber(1_000_000)    // 500000500000
+squareNumber(1_000_000)      // 1000000000000
+pentagonalNumber(1_000_000)  // 1499999500000
+hexagonalNumber(1_000_000)   // 1999999000000
+heptagonalNumber(1_000_000)  // 2499998500000
+octagonalNumber(1_000_000)   // 2999998000000
+```
+
+## Гипотеза Коллатца
+
+**Алгоритм:**
+
+Берём любое натуральное число n. Если оно чётное, то делим его на 2, 
+а если нечётное, то умножаем на 3 и прибавляем 1 (получаем 3n + 1). 
+Над полученным числом выполняем те же самые действия, и так далее.
+[Гипотеза Коллатца](https://ru.wikipedia.org/wiki/%D0%93%D0%B8%D0%BF%D0%BE%D1%82%D0%B5%D0%B7%D0%B0_%D0%9A%D0%BE%D0%BB%D0%BB%D0%B0%D1%82%D1%86%D0%B0)
+заключается в том, что какое бы начальное число n мы ни взяли, рано или поздно мы получим единицу.
+
+Подсчитать `collatz` - количество итераций до получения `1` от заданного `n`:
+
+- Если `n` - четное, то `collatz(n) = collatz(n / 2) + 1`
+- Если `n` - нечетное, то `3n + 1` - четное (и не равно `1`), то `collatz(n) = collatz((3 * n + 1) / 2) + 2`
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+final case class CollatzNumber(cacheLimit: Int):
+  private val cache: Array[SafeLong] = new Array[SafeLong](cacheLimit)
+  cache(1) = SafeLong(1)
+
+  def collatz(n: Long): SafeLong =
+    if n >= cacheLimit then nextCollatz(n)
+    else
+      val m = n.toInt
+      if Option(cache(m)).isEmpty then cache(m) = nextCollatz(n)
+      cache(m)
+
+  private def nextCollatz(n: Long): SafeLong =
+    if n % 2 == 0 then collatz(n / 2) + 1
+    else collatz((3 * n + 1) / 2) + 2
+    
+collatzNumber.collatz(27) 
+// 112    
+```
+
+**Метрики:**
+
+```dotty
+private val collatzNumber = CollatzNumber(1_000_000)
+
+@main def collatzNumberBench(): Unit =
+  (1 to 10_000).foreach: i =>
+    collatzNumber.collatz(i)
+      
+// CPU Time: 288 ms
+// Allocation memory size: 16,59 MB      
+```
+
+## Числа Хэмминга
+
+**Алгоритм:**
+
+Положительное число является обобщенным числом Хэмминга типа n, если все его простые делители не превышают n.
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+def isHammingNumber(number: Long, n: Int): Boolean =
+  if number < 2 || number <= n then true
+  else if n < 2 then false
+  else
+    var temp       = number
+    val primesList = primesNoMoreThanN(n)
+    var isHamming  = false
+    var i          = 0
+    while i < primesList.length && !isHamming
+    do
+      val prime = primesList(i)
+      while temp % prime == 0
+      do temp /= prime
+      if temp == 1 then isHamming = true
+      i += 1
+    isHamming
+    
+isHammingNumber(2125764000, 5)
+// true    
+```
+
+## Числа харшад
+
+**Алгоритм:**
+
+[_Числа харшад_](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D0%BB%D0%B0_%D1%85%D0%B0%D1%80%D1%88%D0%B0%D0%B4), 
+или числа Нивена, — натуральные числа, делящиеся нацело на сумму своих цифр. 
+Таким числом является, например, 1729, так как 1729 = (1 + 7 + 2 + 9) × 91.
+
+_Сильное число Харшада_ — это число Харшада, которое при делении на сумму своих цифр дает простое число.
+
+201 — это число Харшада, поскольку оно делится на 3 (сумму своих цифр). 
+Когда мы отсекаем последнюю цифру от 201, то получаем 20, что является числом Харшада. 
+Когда мы отсекаем последнюю цифру от 20, то получаем 2, что также является числом Харшада. 
+Назовем число Харшада, которое при рекурсивном отсечении последней цифры всегда приводит к числу Харшада, 
+_отсекаемым вправо числом Харшада_.
+
+Возьмем число 2011, которое является простым. 
+Если отсечь из него последнюю цифру, то получаем 201 - сильное число Харшада, которое также отсекается вправо. 
+Назовем такие простые числа _сильными, отсекаемыми справа простыми числами Харшада_.
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+object HarshadNumber:
+  def isHarshadNumber(number: Long): Boolean = number % sumOfDigits(number) == 0
+
+  def isStrongHarshadNumber(number: Long): Boolean =
+    val sod = sumOfDigits(number)
+    number % sod == 0 && isPrime(number / sod)
+
+  def getStrongRightTruncatableHarshadPrimes(p: Int): Seq[Long] =
+    var harshadNumbers = Seq(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L)
+    (1 until p - 1).flatMap { _ =>
+      harshadNumbers = rightTruncatableHarshadNumbers(harshadNumbers)
+      harshadNumbers
+        .withFilter(isStrongHarshadNumber)
+        .flatMap(strongRightTruncatableHarshadPrimes)
+    }
+
+  private def strongRightTruncatableHarshadPrimes(
+      strongHarshadNumber: Long
+  ): Seq[Long] =
+    (1 to 9 by 2)
+      .withFilter(i => isPrime(strongHarshadNumber * 10 + i))
+      .map(strongHarshadNumber * 10 + _)
+
+  private def rightTruncatableHarshadNumbers(
+      harshadNumbers: Seq[Long]
+  ): Seq[Long] =
+    harshadNumbers.flatMap(rightTruncatableHarshadNumbers)
+
+  private def rightTruncatableHarshadNumbers(harshadNumber: Long): Seq[Long] =
+    val sod       = sumOfDigits(harshadNumber)
+    val newNumber = harshadNumber * 10
+    (0 to 9)
+      .withFilter(i => (newNumber + i) % (sod + i) == 0)
+      .map(newNumber + _)
+
+  private def sumOfDigits(number: BigInt): Int =
+    number.toString.foldLeft(0)((s, ch) => s + ch.asDigit)
+end HarshadNumber
+    
+getStrongRightTruncatableHarshadPrimes(3)
+// Vector(181, 211, 271, 277, 421, 457, 631)    
+```
+
+**Метрики:**
+
+Вычисление всех сильных, усекаемых справа простых чисел Харшада меньше \\(10^{9}\\)
+занимает меньше секунды.
+
+```dotty
+@main def getStrongRightTruncatableHarshadPrimesBench(): Unit =
+  println(getStrongRightTruncatableHarshadPrimes(9))
+      
+// Vector(181, 211, 271, 277, 421, 457, 631, 2011, 2017, 2099, 2473, 2477, 4021, 4027, 4073, 4079, 4231, 4813, 4817, 
+// 6037, 8011, 8017, 8039, 8461, 8467, 20071, 20431, 40867, 48091, 84061, 84067, 400237, 400277, 4008271, 4860013, 
+// 40000021, 80402071, 200400073, 200400077, 240840013, 400002073, 480006031)
+      
+// CPU Time: 564 ms
+// Allocation memory size: 13,65 MB      
+```
+
 ---
 
 **Ссылки:**

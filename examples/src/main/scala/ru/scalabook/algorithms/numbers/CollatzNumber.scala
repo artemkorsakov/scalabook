@@ -1,19 +1,21 @@
 package ru.scalabook.algorithms.numbers
 
+import spire.math.SafeLong
+
 /** <a href="https://en.wikipedia.org/wiki/Collatz_conjecture">Collatz
   * conjecture</a>
   */
-case class CollatzNumber(cacheLimit: Int):
-  val cache: Array[Long] = new Array[Long](cacheLimit)
-  cache(1) = 1L
+final case class CollatzNumber(cacheLimit: Int):
+  private val cache: Array[SafeLong] = new Array[SafeLong](cacheLimit)
+  cache(1) = SafeLong(1)
 
-  def collatz(n: Long): Long =
+  def collatz(n: Long): SafeLong =
     if n >= cacheLimit then nextCollatz(n)
     else
       val m = n.toInt
-      if cache(m) == 0 then cache(m) = nextCollatz(n)
+      if Option(cache(m)).isEmpty then cache(m) = nextCollatz(n)
       cache(m)
 
-  private def nextCollatz(n: Long): Long =
+  private def nextCollatz(n: Long): SafeLong =
     if n % 2 == 0 then collatz(n / 2) + 1
     else collatz((3 * n + 1) / 2) + 2

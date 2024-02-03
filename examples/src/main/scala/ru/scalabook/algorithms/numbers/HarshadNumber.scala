@@ -4,24 +4,18 @@ import ru.scalabook.algorithms.fundamental.Primes.*
 
 /** <a href="https://en.wikipedia.org/wiki/Harshad_number">Harshad number</a> */
 object HarshadNumber:
-  def isHarshadNumber(number: Int): Boolean = isHarshadNumber(number.toLong)
-
-  /** A harshad number is an integer that is divisible by the sum of its digits.
+  /** Число Харшада — это целое число, которое делится на сумму своих цифр.
     */
   def isHarshadNumber(number: Long): Boolean = number % sumOfDigits(number) == 0
 
-  def isStrongHarshadNumber(number: Int): Boolean = isStrongHarshadNumber(
-    number.toLong
-  )
-
-  /** A strong Harshad number is a harshad number that, when divided by the sum
-    * of its digits, results in a prime.
+  /** Сильное число Харшада — это число Харшада, которое при делении на сумму
+    * своих цифр дает простое число.
     */
   def isStrongHarshadNumber(number: Long): Boolean =
     val sod = sumOfDigits(number)
     number % sod == 0 && isPrime(number / sod)
 
-  /** Return all strong, right truncatable Harshad primes less than
+  /** Возвращает все сильные, усекаемые справа простые числа Харшада меньше
     * 10<sup>p</sup>.
     */
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -34,10 +28,10 @@ object HarshadNumber:
         .flatMap(strongRightTruncatableHarshadPrimes)
     }
 
-  /** Now take the number 2011 which is prime. When we truncate the last digit
-    * from it we get 201, a strong Harshad number that is also right
-    * truncatable. Let's call such primes strong, right truncatable Harshad
-    * primes.
+  /** Возьмем число 2011, которое является простым. Если отсечь из него
+    * последнюю цифру, то получаем 201 - сильное число Харшада, которое также
+    * отсекается вправо. Назовем такие простые числа сильными, отсекаемыми
+    * справа простыми числами Харшада.
     */
   private def strongRightTruncatableHarshadPrimes(
       strongHarshadNumber: Long
@@ -46,13 +40,12 @@ object HarshadNumber:
       .withFilter(i => isPrime(strongHarshadNumber * 10 + i))
       .map(strongHarshadNumber * 10 + _)
 
-  /** A Harshad or Niven number is a number that is divisible by the sum of its
-    * digits. 201 is a Harshad number because it is divisible by 3 (the sum of
-    * its digits.) When we truncate the last digit from 201, we get 20, which is
-    * a Harshad number. When we truncate the last digit from 20, we get 2, which
-    * is also a Harshad number. Let's call a Harshad number that, while
-    * recursively truncating the last digit, always results in a Harshad number
-    * a right truncatable Harshad number.
+  /** 201 — это число Харшада, поскольку оно делится на 3 (сумму своих цифр).
+    * Когда мы отсекаем последнюю цифру от 201, то получаем 20, что является
+    * числом Харшада. Когда мы отсекаем последнюю цифру от 20, то получаем 2,
+    * что также является числом Харшада. Назовем число Харшада, которое при
+    * рекурсивном отсечении последней цифры всегда приводит к числу Харшада,
+    * отсекаемым вправо числом Харшада.
     */
   private def rightTruncatableHarshadNumbers(
       harshadNumbers: Seq[Long]

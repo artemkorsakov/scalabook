@@ -28,12 +28,10 @@ object Lcs:
     C.indices.foreach(i => C(i) = new Array[Int](b.length + 1))
     a.indices.foreach(i => C(i)(0) = 0)
     b.indices.foreach(j => C(0)(j) = 0)
-    a.indices.foreach(i =>
-      b.indices.foreach { j =>
+    a.indices.foreach: i =>
+      b.indices.foreach: j =>
         C(i + 1)(j + 1) =
           if a(i) == b(j) then C(i)(j) + 1
           else math.max(C(i + 1)(j), C(i)(j + 1))
-      }
-    )
     C
 end Lcs

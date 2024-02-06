@@ -19,10 +19,5 @@ enum RomanNumeralSymbol(val id: Int):
 
 object RomanNumeralSymbol:
   def toRomanNumeralSymbol(twoChars: String): Option[RomanNumeralSymbol] =
-    RomanNumeralSymbol.values
-      .find(v => v.toString.equals(twoChars))
-      .orElse(
-        RomanNumeralSymbol.values.find(v =>
-          v.toString.equals(twoChars.head.toString)
-        )
-      )
+    RomanNumeralSymbol.values.find(_.toString.equals(twoChars)).orElse:
+      RomanNumeralSymbol.values.find(_.toString.equals(twoChars.take(1)))

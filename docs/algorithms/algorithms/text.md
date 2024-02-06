@@ -212,10 +212,96 @@ inEnglish(999999)
 // "nine hundred and ninety-nine thousand nine hundred and ninety-nine"
 ```
 
+## Римские числа
+
+**Алгоритм:**
+
+Приведение римского числа к минимальному виду.
+
+**Код:**
+
+```dotty
+enum RomanNumeralSymbol(val id: Int):
+  case I  extends RomanNumeralSymbol(1)
+  case IV extends RomanNumeralSymbol(4)
+  case V  extends RomanNumeralSymbol(5)
+  case IX extends RomanNumeralSymbol(9)
+  case X  extends RomanNumeralSymbol(10)
+  case XL extends RomanNumeralSymbol(40)
+  case L  extends RomanNumeralSymbol(50)
+  case XC extends RomanNumeralSymbol(90)
+  case C  extends RomanNumeralSymbol(100)
+  case CD extends RomanNumeralSymbol(400)
+  case D  extends RomanNumeralSymbol(500)
+  case CM extends RomanNumeralSymbol(900)
+  case M  extends RomanNumeralSymbol(1000)
+
+object RomanNumeralSymbol:
+  def toRomanNumeralSymbol(twoChars: String): Option[RomanNumeralSymbol] =
+    RomanNumeralSymbol.values.find(_.toString.equals(twoChars)).orElse:
+      RomanNumeralSymbol.values.find(_.toString.equals(twoChars.take(1)))
+      
+object RomanNumerals:
+  def toMinimalRomanNumeral(roman: String): Option[String] =
+    if roman.exists(ch => toRomanNumeralSymbol(ch.toString).isEmpty) then None
+    else
+      Some(
+        roman.toUpperCase
+          .replaceAll("IIIII", "V")
+          .replaceAll("VV", "X")
+          .replaceAll("XXXXX", "L")
+          .replaceAll("LL", "C")
+          .replaceAll("CCCCC", "D")
+          .replaceAll("DD", "M")
+          .replaceAll("VIIII", "IX")
+          .replaceAll("IIII", "IV")
+          .replaceAll("LXXXX", "XC")
+          .replaceAll("XXXX", "XL")
+          .replaceAll("DCCCC", "CM")
+          .replaceAll("CCCC", "CD")
+      )   
+      
+toMinimalRomanNumeral("VIIIIIIIIIII")
+// Some("XVI")         
+```
+
+Преобразование арабского числа в римское число и обратно.
+
+**Код:**
+
+```dotty
+def toArabic(roman: String): Option[Long] =
+  toMinimalRomanNumeral(roman).map: min =>
+    val temp = min + "  "
+    var i    = 0
+    var sum  = 0L
+    while i < min.length do
+      toRomanNumeralSymbol(temp.substring(i, i + 2)).foreach: symbol =>
+        sum += symbol.id
+        i += symbol.toString.length
+    sum
+    
+def toRoman(number: Long): Option[String] =
+  if number < 0 then None
+  else if number == 0 then Some("")
+  else
+    val maybeMax =
+      RomanNumeralSymbol.values.filter(v => v.id <= number).maxByOption(_.id)
+    for
+      max  <- maybeMax
+      rest <- toRoman(number - max.id)
+    yield s"$max$rest"
+         
+toArabic("MCMLXXXIV")  // 1984
+toRoman(1984)          // "MCMLXXXIV"    
+```
+
 ---
 
 **Ссылки:**
 
 - [Наибольшая общая подпоследовательность - Wiki][LCS]
+- [Римские цифры - Wiki](https://ru.wikipedia.org/wiki/%D0%A0%D0%B8%D0%BC%D1%81%D0%BA%D0%B8%D0%B5_%D1%86%D0%B8%D1%84%D1%80%D1%8B)
+- [About... Roman Numerals](https://projecteuler.net/about=roman_numerals)
 
 [LCS]: https://ru.wikipedia.org/wiki/%D0%9D%D0%B0%D0%B8%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%D1%8F_%D0%BE%D0%B1%D1%89%D0%B0%D1%8F_%D0%BF%D0%BE%D0%B4%D0%BF%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D1%8C

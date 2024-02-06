@@ -31,21 +31,20 @@ object RomanNumerals:
           .replaceAll("CCCC", "CD")
       )
 
-  @SuppressWarnings(
-    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
-  )
+  @SuppressWarnings(Array(
+    "scalafix:DisableSyntax.var",
+    "scalafix:DisableSyntax.while"
+  ))
   def toArabic(roman: String): Option[Long] =
-    val min = toMinimalRomanNumeral(roman)
-    if min.isEmpty then None
-    else
-      val temp = min.get + "  "
+    toMinimalRomanNumeral(roman).map: min =>
+      val temp = min + "  "
       var i    = 0
       var sum  = 0L
-      while i < min.get.length do
-        val symbol = toRomanNumeralSymbol(temp.substring(i, i + 2)).get
-        sum += symbol.id
-        i += symbol.toString.length
-      Some(sum)
+      while i < min.length do
+        toRomanNumeralSymbol(temp.substring(i, i + 2)).foreach: symbol =>
+          sum += symbol.id
+          i += symbol.toString.length
+      sum
 
 end RomanNumerals
 
@@ -54,6 +53,9 @@ object ArabicNumerals:
     if number < 0 then None
     else if number == 0 then Some("")
     else
-      val max =
-        RomanNumeralSymbol.values.filter(v => v.id <= number).maxBy(_.id)
-      toRoman(number - max.id).map(str => s"$max$str")
+      val maybeMax =
+        RomanNumeralSymbol.values.filter(v => v.id <= number).maxByOption(_.id)
+      for
+        max  <- maybeMax
+        rest <- toRoman(number - max.id)
+      yield s"$max$rest"

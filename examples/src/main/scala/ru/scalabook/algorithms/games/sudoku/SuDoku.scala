@@ -1,6 +1,6 @@
 package ru.scalabook.algorithms.games.sudoku
 
-case class SuDoku(cells: Array[Array[Array[Int]]]):
+final case class SuDoku(cells: Array[Array[Array[Int]]]):
 
   @SuppressWarnings(
     Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")

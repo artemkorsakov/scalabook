@@ -12,22 +12,17 @@ object Darts:
     var integerMap = doublePoints.map(point => point -> 1).toMap
 
     // Second step checkout
-    points.foreach(value =>
-      doublePoints.foreach { doublePoint =>
+    points.foreach: value =>
+      doublePoints.foreach: doublePoint =>
         val point = value + doublePoint
         integerMap += (point -> (integerMap.getOrElse(point, 0) + 1))
-      }
-    )
 
     // Third step checkout
-    points.indices.foreach(i =>
-      (i until points.length).foreach(j =>
-        doublePoints.foreach { doublePoint =>
+    points.indices.foreach: i =>
+      (i until points.length).foreach: j =>
+        doublePoints.foreach: doublePoint =>
           val point = points(i) + points(j) + doublePoint
           integerMap += (point -> (integerMap.getOrElse(point, 0) + 1))
-        }
-      )
-    )
 
     integerMap
   end allDistinctWaysToCheckOut

@@ -16,5 +16,8 @@ object DiceSuite extends FunSuite:
     fractionLessColin += fractionsColin(i - 1)
     fractionWin += fractionsPete(i) * fractionLessColin
 
+  test("dice 1 step"):
+    expect.all(Dice(6).probabilities(1).forall(r => r == Rational(1, 6)))
+
   test("probabilities"):
     expect.all((fractionWin.doubleValue - 0.5731441).abs <= 1e-5)

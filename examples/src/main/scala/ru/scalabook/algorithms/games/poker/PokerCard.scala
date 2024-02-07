@@ -1,8 +1,9 @@
 package ru.scalabook.algorithms.games.poker
 
+import cats.syntax.apply.*
 import ru.scalabook.algorithms.games.poker.PokerRank.*
 
-case class PokerCard(pokerRank: PokerRank, pokerSuit: PokerSuit)
+final case class PokerCard(pokerRank: PokerRank, pokerSuit: PokerSuit)
 
 object PokerCard:
   def string2PokerCard(card: String): Option[PokerCard] =
@@ -11,7 +12,4 @@ object PokerCard:
       (
         PokerRank.withNameOpt(card.dropRight(1)),
         PokerSuit.withNameOpt(card.last)
-      ) match
-        case (Some(pokerRank), Some(pokerSuit)) =>
-          Some(PokerCard(pokerRank, pokerSuit))
-        case _ => None
+      ).mapN(PokerCard.apply)

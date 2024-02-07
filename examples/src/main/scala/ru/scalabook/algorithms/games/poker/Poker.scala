@@ -1,6 +1,6 @@
 package ru.scalabook.algorithms.games.poker
 
-case class Poker(player1: String, player2: String):
+final case class Poker(player1: String, player2: String):
   private val player1Hands: PokerHand = new PokerHand(player1)
   private val player2Hands: PokerHand = new PokerHand(player2)
 

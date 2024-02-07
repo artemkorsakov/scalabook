@@ -16,3 +16,4 @@ object PokerSuite extends FunSuite:
       // Full House With Three Fours, Full House with Three Threes
       Poker("2H 2D 4C 4D 4S", "3C 3D 3S 9S 9D").doesPlayer1Win
     )
+end PokerSuite

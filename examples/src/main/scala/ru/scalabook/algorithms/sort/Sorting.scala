@@ -30,22 +30,17 @@ object Sorting:
       case Nil          => Nil
       case head :: tail => loop(head, tail, Nil, Nil)
 
-  @SuppressWarnings(
-    Array(
-      "scalafix:DisableSyntax.var",
-      "scalafix:DisableSyntax.while"
-    )
-  )
-  def insertionSort[T: Ordering](array: Array[T]): Unit =
-    val ord = summon[Ordering[T]]
-    (1 until array.length).foreach: j =>
-      val key = array(j)
-      var i   = j - 1
-      while i >= 0 && ord.gt(array(i), key)
-      do
-        array(i + 1) = array(i)
-        i -= 1
-      array(i + 1) = key
+  def insertionSort[A: Ordering](list: List[A]): List[A] =
+    @tailrec
+    def sort(as: List[A], bs: List[A]): List[A] = as match
+      case Nil    => bs
+      case h :: t => sort(t, insert(h, bs))
+
+    def insert(a: A, as: List[A]): List[A] = as match
+      case h :: t if a > h => h :: insert(a, t)
+      case _               => a :: as
+
+    sort(list, Nil)
 
   def mergeSort[T: ClassTag: Ordering](array: Array[T]): Unit =
     mergeSort(array, 0, array.length - 1)
@@ -98,10 +93,5 @@ object Sorting:
         array(k) = buf(i)
         i += 1
   end mergeParts
-
-  private def swap[T](array: Array[T], i: Int, j: Int): Unit =
-    val temp = array(j)
-    array(j) = array(i)
-    array(i) = temp
 
 end Sorting

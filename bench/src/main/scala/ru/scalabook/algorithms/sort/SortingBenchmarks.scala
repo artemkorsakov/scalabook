@@ -2,8 +2,7 @@ package ru.scalabook.algorithms.sort
 
 import ru.scalabook.algorithms.sort.Sorting.*
 
-private val unsortedArray: Array[Int] = (10_000 to 1 by -1).toArray
-private val unsortedList: List[Int]   = (10_000 to 1 by -1).toList
+private val unsortedList: List[Int] = (10_000 to 1 by -1).toList
 
 @main def bubbleSortBench(): Unit =
   bubbleSort(unsortedList)
@@ -12,7 +11,9 @@ private val unsortedList: List[Int]   = (10_000 to 1 by -1).toList
   selectionSort(unsortedList)
 
 @main def insertionSortBench(): Unit =
-  insertionSort(unsortedArray)
+  insertionSort(unsortedList)
+
+private val unsortedArray: Array[Int] = (10_000 to 1 by -1).toArray
 
 @main def mergeSortBench(): Unit =
   mergeSort(unsortedArray)
@@ -21,4 +22,4 @@ private val unsortedList: List[Int]   = (10_000 to 1 by -1).toList
   quickSort(unsortedArray.toList)
 
 @main def quickSort123Bench(): Unit =
-  println(selectionSort(List(3, 1, 4, 2)))
+  println(insertionSort(List(3, 1, 4, 2)))

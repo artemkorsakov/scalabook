@@ -19,9 +19,9 @@ object SortingSuite extends SimpleIOSuite with Checkers:
       checkSortedList(sortedList)
 
   test("insertionSort"):
-    forall: (array: Array[Int]) =>
-      insertionSort(array)
-      expect.all((1 until array.length).forall(i => array(i - 1) <= array(i)))
+    forall: (list: List[Int]) =>
+      val sortedList = insertionSort(list)
+      checkSortedList(sortedList)
 
   test("mergeSort"):
     forall: (array: Array[Int]) =>

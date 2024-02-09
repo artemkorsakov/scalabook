@@ -1,6 +1,38 @@
 package ru.scalabook.algorithms.str
 
-object Lcs:
+import scala.annotation.tailrec
+
+object StringsOps:
+  def isPalindrome(s: String): Boolean =
+    @tailrec
+    def loop(i: Int, j: Int): Boolean =
+      if i >= j then true
+      else if s.charAt(i) != s.charAt(j) then false
+      else loop(i + 1, j - 1)
+
+    loop(0, s.length - 1)
+
+  def longestPalindrome(s: String): String =
+    @tailrec
+    def check(i: Int, j: Int): Boolean =
+      if i >= j then true
+      else if s.charAt(i) == s.charAt(j) then check(i + 1, j - 1)
+      else false
+
+    @tailrec
+    def search(i: Int, l: Int, j: Int, m: Int): String =
+      if i == s.length then s.substring(j - m + 1, j + 1)
+      else if i - l > 0 && check(i - l - 1, i) then
+        if l + 2 > m then search(i + 1, l + 2, i, l + 2)
+        else search(i + 1, l + 2, j, m)
+      else if i - l >= 0 && check(i - l, i) then
+        if l + 1 > m then search(i + 1, l + 1, i, l + 1)
+        else search(i + 1, l + 1, j, m)
+      else search(i + 1, 1, j, m)
+
+    if s.isEmpty then s
+    else search(1, 1, 1, 1)
+  end longestPalindrome
 
   /** <a
     * href="https://en.wikipedia.org/wiki/Longest_common_subsequence_problem">Longest
@@ -34,4 +66,4 @@ object Lcs:
           if a(i) == b(j) then C(i)(j) + 1
           else math.max(C(i + 1)(j), C(i)(j + 1))
     C
-end Lcs
+end StringsOps

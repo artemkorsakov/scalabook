@@ -1,4 +1,71 @@
-# Текст
+# Работа со строками
+
+## Палиндром
+
+**Алгоритм:**
+
+Проверка, является ли строка палиндромом.
+
+**Оценка:**
+
+- **Время** - \\(O(n)\\)
+- **Память** - \\(O(1)\\)
+
+**Код:**
+
+```dotty
+def isPalindrome(s: String): Boolean =
+  @tailrec
+  def loop(i: Int, j: Int): Boolean =
+    if i >= j then true
+    else if s.charAt(i) != s.charAt(j) then false
+    else loop(i + 1, j - 1)
+
+  loop(0, s.length - 1)
+
+isPalindrome("лёша на полке клопа нашёл".replaceAll("\\s", ""))
+// true
+```
+
+### Самый длинный палиндром в строке
+
+Поиск самого длинного палиндрома в заданной строке 's'. 
+
+[Geeksforgeeks - Longest palindromic subsequence](https://www.geeksforgeeks.org/longest-palindromic-subsequence-dp-12/)
+
+**Оценка:**
+
+- **Время** - \\(O(n^{2})\\)
+- **Память** - \\(O(n)\\)
+
+**Код:**
+
+```dotty
+def longestPalindrome(s: String): String =
+  @tailrec
+  def check(i: Int, j: Int): Boolean =
+    if i >= j then true
+    else if s.charAt(i) == s.charAt(j) then check(i + 1, j - 1)
+    else false
+
+  @tailrec
+  def search(i: Int, l: Int, j: Int, m: Int): String =
+    if i == s.length then s.substring(j - m + 1, j + 1)
+    else if i - l > 0 && check(i - l - 1, i) then
+      if l + 2 > m then search(i + 1, l + 2, i, l + 2)
+      else search(i + 1, l + 2, j, m)
+    else if i - l >= 0 && check(i - l, i) then
+      if l + 1 > m then search(i + 1, l + 1, i, l + 1)
+      else search(i + 1, l + 1, j, m)
+    else search(i + 1, 1, j, m)
+
+  if s.isEmpty then s
+  else search(1, 1, 1, 1)
+end longestPalindrome
+
+longestPalindrome("BBABBCAB")))
+// "BBABB"
+```
 
 ## Наибольшая общая подпоследовательность
 
@@ -303,5 +370,6 @@ toRoman(1984)          // "MCMLXXXIV"
 - [Наибольшая общая подпоследовательность - Wiki][LCS]
 - [Римские цифры - Wiki](https://ru.wikipedia.org/wiki/%D0%A0%D0%B8%D0%BC%D1%81%D0%BA%D0%B8%D0%B5_%D1%86%D0%B8%D1%84%D1%80%D1%8B)
 - [About... Roman Numerals](https://projecteuler.net/about=roman_numerals)
+- [Scalacaster](https://github.com/vkostyukov/scalacaster/tree/master)
 
 [LCS]: https://ru.wikipedia.org/wiki/%D0%9D%D0%B0%D0%B8%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%D1%8F_%D0%BE%D0%B1%D1%89%D0%B0%D1%8F_%D0%BF%D0%BE%D0%B4%D0%BF%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D1%8C

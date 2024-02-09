@@ -13,13 +13,8 @@ private val unsortedList: List[Int] = (10_000 to 1 by -1).toList
 @main def insertionSortBench(): Unit =
   insertionSort(unsortedList)
 
-private val unsortedArray: Array[Int] = (10_000 to 1 by -1).toArray
-
 @main def mergeSortBench(): Unit =
-  mergeSort(unsortedArray)
+  mergeSort(unsortedList)
 
 @main def quickSortBench(): Unit =
-  quickSort(unsortedArray.toList)
-
-@main def quickSort123Bench(): Unit =
-  println(insertionSort(List(3, 1, 4, 2)))
+  quickSort((2500 to 1 by -1).toList)

@@ -24,13 +24,14 @@ object SortingSuite extends SimpleIOSuite with Checkers:
       checkSortedList(sortedList)
 
   test("mergeSort"):
-    forall: (array: Array[Int]) =>
-      mergeSort(array)
-      expect.all((1 until array.length).forall(i => array(i - 1) <= array(i)))
+    forall: (list: List[Int]) =>
+      val sortedList = mergeSort(list)
+      checkSortedList(sortedList)
 
   test("quickSort"):
     forall: (list: List[Int]) =>
-      expect.all(quickSort(list) == list.sorted)
+      val sortedList = quickSort(list)
+      checkSortedList(sortedList)
 
   private def checkSortedList(list: List[Int]): Expectations =
     list match

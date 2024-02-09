@@ -141,7 +141,7 @@ selectionSort(List(3, 1, 4, 2))
 
 **Метрики:**
 
-Сортировка по возрастанию массива с 10000 элементами, расположенными по убыванию,
+Сортировка по возрастанию списка с 10000 элементами, расположенными по убыванию,
 занимает 2 секунды.
 
 ```dotty
@@ -193,7 +193,7 @@ insertionSort(List(3, 1, 4, 2))
 
 **Метрики:**
 
-Сортировка по возрастанию массива с 10000 элементами, расположенными по убыванию,
+Сортировка по возрастанию списка с 10000 элементами, расположенными по убыванию,
 занимает меньше секунды.
 
 ```dotty
@@ -218,57 +218,74 @@ private val unsortedList: List[Int]   = (10_000 to 1 by -1).toList
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- **Время**:
+  - Худшее - \\(O(n log(n))\\)
+  - Лучшее - \\(O(n log(n))\\)
+  - Среднее - \\(O(n log(n))\\)
+- **Память** - \\(O(1)\\) для списка, \\(O(n)\\) для массива
 
 **Код:**
 
+Отличие от императивной реализации по умолчанию — это способ разделения списка на две части. 
+Обычно это решается использованием длины списка, стоимость которой составляет O(n), 
+поскольку требуется пройти от начала до конца. 
+[В этой реализации](https://github.com/vkostyukov/scalacaster/blob/master/src/sort/MergeSort.scala) 
+список разбивается на две равные части с помощью функции `halve`. 
+Эта функция выполняет простую вещь — она берет первые два элемента списка 
+и добавляет их в два отдельных списка, которые накапливают результат. 
+Другими словами, функция добавляет все четные узлы в первую часть, 
+а нечетные — во вторую. Это можно сделать за O(n).
+
 ```dotty
-def mergeSort[T: ClassTag: Ordering](array: Array[T]): Unit =
-  mergeSort(array, 0, array.length - 1)
+def mergeSort[A: Ordering](list: List[A]): List[A] =
+  def halveAndSort(as: List[A]) = sort(halve(as))
 
-private def mergeSort[T: ClassTag: Ordering](array: Array[T], first: Int, last: Int): Unit =
-  if last <= first then ()
-  else
-    val mid = first + (last - first) / 2
-    mergeSort(array, first, mid)
-    mergeSort(array, mid + 1, last)
-    mergeParts(array, first, last, mid)
+  def sort(p: (List[A], List[A])): List[A] = p match
+    case (Nil, Nil)       => Nil
+    case (ha :: Nil, Nil) => ha :: Nil
+    case (Nil, hb :: Nil) => hb :: Nil
+    case (as, bs)         => merge(halveAndSort(as), halveAndSort(bs))
 
-private def mergeParts[T: ClassTag: Ordering](array: Array[T], first: Int, last: Int, mid: Int): Unit =
-  val buf = new Array[T](array.length)
-  array.copyToArray(buf)
+  def halve(as: List[A]): (List[A], List[A]) =
+    @tailrec
+    def loop(bs: List[A], fs: List[A], ss: List[A]): (List[A], List[A]) =
+      bs match
+        case f :: s :: r => loop(r, f :: fs, s :: ss)
+        case f :: Nil    => (f :: fs, ss)
+        case Nil         => (fs, ss)
 
-  var i = first
-  var j = mid + 1
-  for (k <- first to last)
-    if i > mid then
-      array(k) = buf(j)
-      j += 1
-    else if j > last then
-      array(k) = buf(i)
-      i += 1
-    else if summon[Ordering[T]].lt(buf(j), buf(i)) then
-      array(k) = buf(j)
-      j += 1
-    else
-      array(k) = buf(i)
-      i += 1
+    loop(as, Nil, Nil)
+
+  def merge(as: List[A], bs: List[A]): List[A] =
+    @tailrec
+    def loop(cs: List[A], ds: List[A], r: List[A]): List[A] = (cs, ds) match
+      case (Nil, Nil)      => r
+      case (ha :: ta, Nil) => loop(ta, Nil, ha :: r)
+      case (Nil, hb :: tb) => loop(Nil, tb, hb :: r)
+      case (ha :: ta, hb :: tb) =>
+        if ha < hb then loop(ta, ds, ha :: r)
+        else loop(cs, tb, hb :: r)
+
+    loop(as, bs, Nil).reverse
+
+  halveAndSort(list)
+end mergeSort
+
+mergeSort(List(3, 1, 4, 2))
+// List(1, 2, 3, 4)
 ```
 
 **Метрики:**
 
-Сортировка по возрастанию массива с 10000 элементами, расположенными по убыванию,
-занимает 150 миллисекунд.
+Сортировка по возрастанию списка с 10000 элементами, расположенными по убыванию,
+занимает меньше секунды.
 
 ```dotty
-private val unsortedArray: Array[Int] = (10_000 to 1 by -1).toArray
-
-@main def selectionSortBench(): Unit =
-  selectionSort(unsortedArray)
+@main def quickSortBench(): Unit =
+  quickSort(unsortedList)
       
-// CPU Time: 144 ms
-// Allocation memory size: 410,66 MB      
+// CPU Time: 264 ms
+// Allocation memory size: 17,3 MB      
 ```
 
 ## Быстрая сортировка (quicksort)
@@ -285,26 +302,61 @@ private val unsortedArray: Array[Int] = (10_000 to 1 by -1).toArray
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- **Время**:
+  - Худшее - \\(O(n^{2})\\)
+  - Лучшее - \\(O(n log(n))\\)
+  - Среднее - \\(O(n log(n))\\)
+- **Память** - \\(O(n)\\)
 
 **Код:**
 
 ```dotty
-def quickSort[T: Ordering](list: List[T]): List[T] =
-  list match
-    case Nil      => list
-    case _ :: Nil => list
-    case h :: tail =>
-      val (p1, p2) = tail.partition(el => summon[Ordering[T]].lteq(el, h))
-      val leftToPivot = quickSort(p1)
-      val rightToPivot = quickSort(p2)
-      leftToPivot ++ (h :: rightToPivot)
+def quickSort[A: Ordering](list: List[A]): List[A] =
+  def partitionAndSort(as: List[A]): List[A] =
+    as match
+      case Nil      => as
+      case h :: Nil => as
+      case _ =>
+        val (l, p, g) = partition(as)
+        partitionAndSort(l) ::: (p :: partitionAndSort(g))
+
+  def partition(as: List[A]): (List[A], A, List[A]) =
+    @tailrec
+    def loop(
+        p: A,
+        as: List[A],
+        l: List[A],
+        g: List[A]
+    ): (List[A], A, List[A]) =
+      as match
+        case Nil             => (l, p, g)
+        case h :: t if h < p => loop(p, t, h :: l, g)
+        case h :: t          => loop(p, t, l, h :: g)
+
+    loop(as.head, as.tail, Nil, Nil)
+
+  partitionAndSort(list)
+end quickSort
+      
+quickSort(List(3, 1, 4, 2))      
+// List(1, 2, 3, 4)      
 ```
 
 **Метрики:**
 
-При такой реализации на массиве в 10000 элементов выдается `StackOverflowError`.
+Сортировка по возрастанию списка с 2500 элементами, расположенными по убыванию,
+занимает меньше секунды.
+
+
+```dotty
+@main def quickSortBench(): Unit =
+  quickSort((2500 to 1 by -1).toList)
+      
+// CPU Time: 260 ms
+// Allocation memory size: 192,58 MB      
+```
+
+На бОльших списках вылетает `StackOverflowError`. 
 
 ---
 

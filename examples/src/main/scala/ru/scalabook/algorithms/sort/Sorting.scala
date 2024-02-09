@@ -1,21 +1,34 @@
 package ru.scalabook.algorithms.sort
 
+import scala.annotation.tailrec
+import scala.math.Ordered.orderingToOrdered
 import scala.reflect.ClassTag
 
 object Sorting:
-  def bubbleSort[T: Ordering](array: Array[T]): Unit =
-    val ord = summon[Ordering[T]]
-    def loop(j: Int): Boolean =
-      (0 to array.length - 1 - j)
-        .withFilter(i => ord.gt(array(i), array(i + 1)))
-        .map(i => swap(array, i, i + 1))
-        .nonEmpty
-    val _ = (1 until array.length).takeWhile(loop)
+  def bubbleSort[A: Ordering](list: List[A]): List[A] =
+    @tailrec
+    def loop(as: List[A], zs: List[A], sorted: List[A]): List[A] =
+      as match
+        case Nil       => sorted
+        case h1 :: Nil => loop(zs, Nil, h1 :: sorted)
+        case h1 :: h2 :: t =>
+          if h1 > h2 then loop(h1 :: t, h2 :: zs, sorted)
+          else loop(h2 :: t, h1 :: zs, sorted)
 
-  def selectionSort[T: Ordering](array: Array[T]): Unit =
-    (0 until array.length - 1).foreach: i =>
-      val j = (i until array.length).minBy(j => array(j))
-      swap(array, i, j)
+    loop(list, Nil, Nil)
+
+  def selectionSort[A: Ordering](list: List[A]): List[A] =
+    @tailrec
+    def loop(max: A, tail: List[A], zs: List[A], sorted: List[A]): List[A] =
+      (tail, zs) match
+        case (Nil, Nil)             => max :: sorted
+        case (Nil, h :: t)          => loop(h, t, Nil, max :: sorted)
+        case (h :: t, _) if max > h => loop(max, t, h :: zs, sorted)
+        case (h :: t, _)            => loop(h, t, max :: zs, sorted)
+
+    list match
+      case Nil          => Nil
+      case head :: tail => loop(head, tail, Nil, Nil)
 
   @SuppressWarnings(
     Array(

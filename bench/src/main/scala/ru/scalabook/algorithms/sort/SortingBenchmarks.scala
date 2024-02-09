@@ -3,12 +3,13 @@ package ru.scalabook.algorithms.sort
 import ru.scalabook.algorithms.sort.Sorting.*
 
 private val unsortedArray: Array[Int] = (10_000 to 1 by -1).toArray
+private val unsortedList: List[Int]   = (10_000 to 1 by -1).toList
 
 @main def bubbleSortBench(): Unit =
-  bubbleSort(unsortedArray)
+  bubbleSort(unsortedList)
 
 @main def selectionSortBench(): Unit =
-  selectionSort(unsortedArray)
+  selectionSort(unsortedList)
 
 @main def insertionSortBench(): Unit =
   insertionSort(unsortedArray)
@@ -18,3 +19,6 @@ private val unsortedArray: Array[Int] = (10_000 to 1 by -1).toArray
 
 @main def quickSortBench(): Unit =
   quickSort(unsortedArray.toList)
+
+@main def quickSort123Bench(): Unit =
+  println(selectionSort(List(3, 1, 4, 2)))

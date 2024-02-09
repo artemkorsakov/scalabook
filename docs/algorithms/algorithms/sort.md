@@ -32,40 +32,55 @@
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- **Время**:
+    - Худшее - \\(O(n^{2})\\)
+    - Лучшее - \\(O(n)\\)
+    - Среднее - \\(O(n^{2})\\)
+- **Память** - \\(O(1)\\)
 
 **Код:**
 
-```dotty
-def bubbleSort[T: Ordering](array: Array[T]): Unit =
-  val ord = summon[Ordering[T]]
-  def loop(j: Int): Boolean =
-    (0 to array.length - 1 - j)
-      .withFilter(i => ord.gt(array(i), array(i + 1)))
-      .map(i => swap(array, i, i + 1))
-      .nonEmpty
-  val _ = (1 until array.length).takeWhile(loop)
+Реализация сортировки пузырьком может выглядеть так:
 
-private def swap[T](array: Array[T], i: Int, j: Int): Unit =
-  val temp = array(j)
-  array(j) = array(i)
-  array(i) = temp
+- `as` - часть неотсортированного списка, по которой ещё осталось попарно сравнить элементы
+- `zs` - часть неотсортированного списка, по которой элементы уже попарно сравнены
+- `bs` - отсортированная часть списка
+- если неотсортированная часть пустая, то возвращаем результат `bs` - отсортированная часть
+- если `as` состоит из одного элемента, то он - максимальный среди неотсортированной части
+    - добавляем максимальный в начало списка `bs` и продолжаем попарное сравнение среди `zs`
+- если `as` состоит из нескольких элементов, то сравниваем первые два между собой
+    - меняем их местами при необходимости
+
+```dotty
+def bubbleSort[A: Ordering](list: List[A]): List[A] =
+  @tailrec
+  def loop(as: List[A], zs: List[A], sorted: List[A]): List[A] =
+    as match
+      case Nil       => sorted
+      case h1 :: Nil => loop(zs, Nil, h1 :: sorted)
+      case h1 :: h2 :: t =>
+        if h1 > h2 then loop(h1 :: t, h2 :: zs, sorted)
+        else loop(h2 :: t, h1 :: zs, sorted)
+
+  loop(list, Nil, Nil)
+  
+bubbleSort(List(3, 1, 4, 2)) 
+// List(1, 2, 3, 4)
 ```
 
 **Метрики:**
 
-Сортировка по возрастанию массива с 10000 элементами, расположенными по убыванию,
-занимает 2 секунды.
+Сортировка по возрастанию списка с 10000 элементами, расположенными по убыванию,
+занимает 1,5 секунды.
 
 ```dotty
-private val unsortedArray: Array[Int] = (10_000 to 1 by -1).toArray
+private val unsortedList: List[Int]   = (10_000 to 1 by -1).toList
 
 @main def bubbleSortBench(): Unit =
-  bubbleSort(unsortedArray)
+  bubbleSort(unsortedList)
       
-// CPU Time: 2162 ms
-// Allocation memory size: 4,19 GB      
+// CPU Time: 1450 ms
+// Allocation memory size: 3,61 GB      
 ```
 
 ## Сортировка выбором (selection sort)
@@ -80,31 +95,63 @@ private val unsortedArray: Array[Int] = (10_000 to 1 by -1).toArray
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- **Время**:
+  - Худшее - \\(O(n^{2})\\)
+  - Лучшее - \\(O(n^{2})\\)
+  - Среднее - \\(O(n^{2})\\)
+- **Память** - \\(O(1)\\)
 
 **Код:**
 
+Реализация сортировки выбором может выглядеть так:
+
+- вспомогательный метод `select` принимает следующие аргументы: 
+    - `max` - текущий максимальный элемент
+    - `tail` - часть неотсортированного списка, где осталось сравнить элементы с максимальным
+    - `zs` - часть неотсортированного списка, каждый элемент которого не более максимального
+    - `sorted` - отсортированная часть списка
+- если `tail` пустой, то `max` - максимальный элемент в неотсортированной части списка
+    - если `zs` тоже пустой, то неотсортированной части не осталось, возвращаем `max :: sorted` 
+      (в отсортированной части `sorted` все элементы не менее `max`, 
+      поэтому `max :: sorted` остается отсортированным по возрастанию)
+    - если `zs` не пустой, то добавляем `max` к отсортированной части 
+      и продолжаем поиск следующего максимального элемента среди `zs`
+- если `tail` не пустой, то берем его заглавный элемент - `h`:
+    - если `max` больше `h`, то добавляем `h` в просмотренный список `zs`
+    - если нет, то добавляем `max` в просмотренный список `zs`
+    - продолжаем поиск с "новым" максимальным элементом по оставшейся части `tail`
+
 ```dotty
-def selectionSort[T: Ordering](array: Array[T]): Unit =
-  (0 until array.length - 1).foreach: i =>
-    val j = (i until array.length).minBy(j => array(j))
-    swap(array, i, j)
+def selectionSort[A: Ordering](list: List[A]): List[A] =
+  @tailrec
+  def loop(max: A, tail: List[A], zs: List[A], sorted: List[A]): List[A] =
+    (tail, zs) match
+      case (Nil, Nil)             => max :: sorted
+      case (Nil, h :: t)          => loop(h, t, Nil, max :: sorted)
+      case (h :: t, _) if max > h => loop(max, t, h :: zs, sorted)
+      case (h :: t, _)            => loop(h, t, max :: zs, sorted)
+
+  list match
+    case Nil          => Nil
+    case head :: tail => loop(head, tail, Nil, Nil)
+      
+selectionSort(List(3, 1, 4, 2))
+// List(1, 2, 3, 4)
 ```
 
 **Метрики:**
 
 Сортировка по возрастанию массива с 10000 элементами, расположенными по убыванию,
-занимает 1 секунду.
+занимает 2 секунды.
 
 ```dotty
-private val unsortedArray: Array[Int] = (10_000 to 1 by -1).toArray
+private val unsortedList: List[Int]   = (10_000 to 1 by -1).toList
 
 @main def selectionSortBench(): Unit =
-  selectionSort(unsortedArray)
+  selectionSort(unsortedList)
       
-// CPU Time: 924 ms
-// Allocation memory size: 1,6 GB      
+// CPU Time: 1733 ms
+// Allocation memory size: 3,61 GB      
 ```
 
 ## Сортировка вставками (insertion sort)
@@ -257,3 +304,4 @@ def quickSort[T: Ordering](list: List[T]): List[T] =
 **Ссылки:**
 
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
+- [Scalacaster](https://github.com/vkostyukov/scalacaster/tree/master)

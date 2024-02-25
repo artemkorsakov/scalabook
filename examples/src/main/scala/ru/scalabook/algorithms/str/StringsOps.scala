@@ -38,7 +38,7 @@ object StringsOps:
     * href="https://en.wikipedia.org/wiki/Longest_common_subsequence_problem">Longest
     * common subsequence problem</a>
     */
-  def lcs(a: String, b: String): String =
+  def longestCommonSubsequence(a: String, b: String): String =
     val C: Array[Array[Int]] = lcsLength(a, b)
     backtrack(C, a, b, a.length, b.length)
 
@@ -66,4 +66,32 @@ object StringsOps:
           if a(i) == b(j) then C(i)(j) + 1
           else math.max(C(i + 1)(j), C(i)(j + 1))
     C
+
+  def longestCommonSubstring(a: String, b: String): String =
+    @tailrec
+    def loop(
+        i: Int,
+        j: Int,
+        maxI: Int,
+        maxJ: Int,
+        acc: Map[(Int, Int), Int]
+    ): String =
+      val maxLength = acc.getOrElse((maxI, maxJ), 0)
+      if i > a.length then
+        b.substring(maxJ - maxLength, maxJ)
+      else
+        val length =
+          if i > 0 && j > 0 && a(i - 1) == b(j - 1) then
+            acc.getOrElse((i - 1, j - 1), 0) + 1
+          else 0
+        val nexAcc         = acc + ((i, j) -> length)
+        val (nextI, nextJ) = if j == b.length then (i + 1, 0) else (i, j + 1)
+        val (nextMaxI, nextMaxJ) =
+          if length >= maxLength then (i, j) else (maxI, maxJ)
+        loop(nextI, nextJ, nextMaxI, nextMaxJ, nexAcc)
+    end loop
+
+    loop(i = 0, j = 0, maxI = 0, maxJ = 0, acc = Map.empty[(Int, Int), Int])
+
+  end longestCommonSubstring
 end StringsOps

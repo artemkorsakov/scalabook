@@ -77,39 +77,84 @@ longestPalindrome("BBABBCAB")))
 **Код:**
 
 ```dotty
-object Lcs:
-  def lcs(a: String, b: String): String =
-    val C: Array[Array[Int]] = lcsLength(a, b)
-    backtrack(C, a, b, a.length, b.length)
+def longestCommonSubsequence(a: String, b: String): String =
+  val C: Array[Array[Int]] = lcsLength(a, b)
+  backtrack(C, a, b, a.length, b.length)
 
-  private def backtrack(
-      C: Array[Array[Int]],
-      aStr: String,
-      bStr: String,
-      x: Int,
-      y: Int
-  ): String =
-    if x == 0 | y == 0 then ""
-    else if aStr(x - 1) == bStr(y - 1) then
-      backtrack(C, aStr, bStr, x - 1, y - 1) + aStr(x - 1)
-    else if C(x)(y - 1) > C(x - 1)(y) then backtrack(C, aStr, bStr, x, y - 1)
-    else backtrack(C, aStr, bStr, x - 1, y)
+private def backtrack(
+    C: Array[Array[Int]],
+    aStr: String,
+    bStr: String,
+    x: Int,
+    y: Int
+): String =
+  if x == 0 | y == 0 then ""
+  else if aStr(x - 1) == bStr(y - 1) then
+    backtrack(C, aStr, bStr, x - 1, y - 1) + aStr(x - 1)
+  else if C(x)(y - 1) > C(x - 1)(y) then backtrack(C, aStr, bStr, x, y - 1)
+  else backtrack(C, aStr, bStr, x - 1, y)
 
-  private def lcsLength(a: String, b: String): Array[Array[Int]] =
-    val C = new Array[Array[Int]](a.length + 1)
-    C.indices.foreach(i => C(i) = new Array[Int](b.length + 1))
-    a.indices.foreach(i => C(i)(0) = 0)
-    b.indices.foreach(j => C(0)(j) = 0)
-    a.indices.foreach: i =>
-      b.indices.foreach: j =>
-        C(i + 1)(j + 1) =
-          if a(i) == b(j) then C(i)(j) + 1
-          else math.max(C(i + 1)(j), C(i)(j + 1))
-    C
-end Lcs
+private def lcsLength(a: String, b: String): Array[Array[Int]] =
+  val C = new Array[Array[Int]](a.length + 1)
+  C.indices.foreach(i => C(i) = new Array[Int](b.length + 1))
+  a.indices.foreach(i => C(i)(0) = 0)
+  b.indices.foreach(j => C(0)(j) = 0)
+  a.indices.foreach: i =>
+    b.indices.foreach: j =>
+      C(i + 1)(j + 1) =
+        if a(i) == b(j) then C(i)(j) + 1
+        else math.max(C(i + 1)(j), C(i)(j + 1))
+  C
  
-Lcs.lcs("nothardlythefinaltest", "zzzfinallyzzz")
-// "final"
+longestCommonSubsequence("anothertest", "notatest") 
+// "nottest"
+```
+
+## Наибольшая общая подстрока
+
+**Алгоритм:**
+
+[Наибольшая общая подстрока](https://ru.wikipedia.org/wiki/%D0%9D%D0%B0%D0%B8%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%D1%8F_%D0%BE%D0%B1%D1%89%D0%B0%D1%8F_%D0%BF%D0%BE%D0%B4%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B0).
+
+- [Наибольшая общая подстрока - GeeksForGeeks](https://www.geeksforgeeks.org/longest-common-substring-dp-29/)
+- [Наибольшая общая подстрока- ScalaCaster](https://github.com/vkostyukov/scalacaster/blob/master/src/primitive/Strings.scala#L60)
+
+**Оценка:**
+
+- **Время** - \\(O(mn)\\)
+- **Память** - \\(O(mn)\\)
+
+```dotty
+def longestCommonSubstring(a: String, b: String): String =
+  @tailrec
+  def loop(
+      i: Int,
+      j: Int,
+      maxI: Int,
+      maxJ: Int,
+      acc: Map[(Int, Int), Int]
+  ): String =
+    val maxLength = acc.getOrElse((maxI, maxJ), 0)
+    if i > a.length then
+      b.substring(maxJ - maxLength, maxJ)
+    else
+      val length =
+        if i > 0 && j > 0 && a(i - 1) == b(j - 1) then
+          acc.getOrElse((i - 1, j - 1), 0) + 1
+        else 0
+      val nexAcc         = acc + ((i, j) -> length)
+      val (nextI, nextJ) = if j == b.length then (i + 1, 0) else (i, j + 1)
+      val (nextMaxI, nextMaxJ) =
+        if length >= maxLength then (i, j) else (maxI, maxJ)
+      loop(nextI, nextJ, nextMaxI, nextMaxJ, nexAcc)
+  end loop
+
+  loop(i = 0, j = 0, maxI = 0, maxJ = 0, acc = Map.empty[(Int, Int), Int])
+
+end longestCommonSubstring
+
+longestCommonSubstring("anothertest", "notatest") 
+// "test"
 ```
 
 ## Число текстом по-русски

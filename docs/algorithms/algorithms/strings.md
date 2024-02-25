@@ -124,6 +124,8 @@ longestCommonSubsequence("anothertest", "notatest")
 - **Время** - \\(O(mn)\\)
 - **Память** - \\(O(mn)\\)
 
+**Код:**
+
 ```dotty
 def longestCommonSubstring(a: String, b: String): String =
   @tailrec
@@ -155,6 +157,70 @@ end longestCommonSubstring
 
 longestCommonSubstring("anothertest", "notatest") 
 // "test"
+```
+
+## Проверка сбалансированности скобок
+
+**Алгоритм:**
+
+Проверка, сбалансированы ли "скобки" в выражении.
+
+**Оценка:**
+
+- **Время** - \\(O(n)\\)
+- **Память** - \\(O(n)\\)
+
+**Код:**
+
+```dotty
+def validateParenthesis(s: String): Boolean =
+  @tailrec
+  def loop(i: Int, sum: Int): Boolean =
+    if i >= s.length then sum == 0
+    else if sum < 0 then false
+    else if s(i) == '(' then loop(i + 1, sum + 1)
+    else if s(i) == ')' then loop(i + 1, sum - 1)
+    else loop(i + 1, sum)
+  loop(0, 0)
+  
+validateParenthesis("(1 + (2 * 3))") // true  
+```
+
+## Поиск по шаблону
+
+Учитывая текстовую строку длиной n и шаблон длиной m, найти все вхождения шаблона в текст.
+
+**Алгоритм:**
+
+[Наивный алгоритм поиска по шаблону](https://www.geeksforgeeks.org/naive-algorithm-for-pattern-searching).
+
+**Оценка:**
+
+- **Время** - \\(O(mn)\\)
+- **Память** - \\(O(n)\\)
+
+**Код:**
+
+```dotty
+def matchNaive(s: String, p: String): List[Int] =
+  @tailrec
+  def loop(i: Int, acc: List[Int]): List[Int] =
+    if i > s.length - p.length then acc
+    else
+      matchPattern(i, 0) match
+        case Some(j) => loop(i + 1, j :: acc)
+        case _       => loop(i + 1, acc)
+
+  @tailrec
+  def matchPattern(i: Int, j: Int): Option[Int] =
+    if j == p.length then Some(i - p.length)
+    else if s.charAt(i) == p.charAt(j) then matchPattern(i + 1, j + 1)
+    else None
+
+  loop(0, List.empty)
+  
+matchNaive("AABAACAADAABAABA", "AABA") 
+// List(12, 9, 0)  
 ```
 
 ## Число текстом по-русски

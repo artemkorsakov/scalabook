@@ -94,4 +94,31 @@ object StringsOps:
     loop(i = 0, j = 0, maxI = 0, maxJ = 0, acc = Map.empty[(Int, Int), Int])
 
   end longestCommonSubstring
+
+  def validateParenthesis(s: String): Boolean =
+    @tailrec
+    def loop(i: Int, sum: Int): Boolean =
+      if i >= s.length then sum == 0
+      else if sum < 0 then false
+      else if s(i) == '(' then loop(i + 1, sum + 1)
+      else if s(i) == ')' then loop(i + 1, sum - 1)
+      else loop(i + 1, sum)
+    loop(0, 0)
+
+  def matchNaive(s: String, p: String): List[Int] =
+    @tailrec
+    def loop(i: Int, acc: List[Int]): List[Int] =
+      if i > s.length - p.length then acc
+      else
+        matchPattern(i, 0) match
+          case Some(j) => loop(i + 1, j :: acc)
+          case _       => loop(i + 1, acc)
+
+    @tailrec
+    def matchPattern(i: Int, j: Int): Option[Int] =
+      if j == p.length then Some(i - p.length)
+      else if s.charAt(i) == p.charAt(j) then matchPattern(i + 1, j + 1)
+      else None
+
+    loop(0, List.empty)
 end StringsOps

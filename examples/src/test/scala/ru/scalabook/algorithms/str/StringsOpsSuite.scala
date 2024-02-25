@@ -51,4 +51,25 @@ object StringsOpsSuite extends FunSuite:
         "zzzfinallyzzz"
       ) == "final"
     )
+
+  test("StringsOps.validateParenthesis"):
+    expect.all(
+      validateParenthesis(""),
+      !validateParenthesis("("),
+      !validateParenthesis(")"),
+      validateParenthesis("()"),
+      !validateParenthesis(")("),
+      validateParenthesis("( )"),
+      validateParenthesis("(1 + 2)"),
+      validateParenthesis("(1 + (2 * 3))"),
+      !validateParenthesis("(1 + (2 * 3)"),
+      !validateParenthesis("(1 + 2 * 3))"),
+      validateParenthesis("(1 + (2) * 3)")
+    )
+
+  test("StringsOps.matchNaive"):
+    expect.all(
+      matchNaive("THIS IS A TEST TEXT", "TEST") == List(10),
+      matchNaive("AABAACAADAABAABA", "AABA") == List(12, 9, 0)
+    )
 end StringsOpsSuite

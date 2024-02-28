@@ -157,3 +157,4 @@ nonEmptyList.fold(100)(_ + _)   // 103
 - [Род Стивенс - Алгоритмы. Теория и практическое применение. Глава 3. Связанные списки](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854)
 - [Связанный список - Wikipedia](https://ru.wikipedia.org/wiki/%D0%A1%D0%B2%D1%8F%D0%B7%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
+- [Scalacaster - List](https://github.com/vkostyukov/scalacaster/blob/master/src/collection/List.scala)

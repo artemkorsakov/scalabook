@@ -12,30 +12,98 @@ _Стек_ — это линейный список, в котором все о
 Сложность пространства для n операций `push` (_протолкнуть_) составляет _O(n)_, тогда как средний случай _O(1)_. 
 Точно так же `pop` (_вытолкнуть_) и `peek` (_заглянуть_) имеют сложность _O(1)_, что верно для `isEmpty` и `isFull`.
 
-Возможная реализация стека:
+**Оценка:**
+
+- _Заглавный элемент_ (`headOption`)
+    - **Время** - O(1)
+    - **Память** - O(1)
+- _Остаток стека без начального элемента_ (`tailOption`)
+    - **Время** - O(1)
+    - **Память** - O(1)
+- _Проверка стека на пустоту_ (`isEmpty`)
+    - **Время** - O(1)
+    - **Память** - O(1)
+- _Вычисление длины стека_ (`length`)
+    - **Время** - O(n)
+    - **Память** - O(n)
+- _Добавление элемента в стек_ (`push`)
+    - **Время** - O(1)
+    - **Память** - O(1)
+- _Выталкивание элемента из стека_ (`pop`)
+    - **Время** - O(1)
+    - **Память** - O(1)
+- _Получение элемента из стека_ (`peek`)
+    - **Время** - O(1)
+    - **Память** - O(1)
+
+**Код:**
 
 ```dotty
 enum Stack[+A]:
   case EmptyStack
   case NonEmptyStack(value: A, tail: Stack[A])
 
+  lazy val headOption: Option[A] = this match
+    case EmptyStack          => None
+    case NonEmptyStack(h, _) => Some(h)
+
+  lazy val tailOption: Option[Stack[A]] = this match
+    case EmptyStack             => None
+    case NonEmptyStack(_, tail) => Some(tail)
+
   lazy val isEmpty: Boolean = this match
     case EmptyStack          => true
     case NonEmptyStack(_, _) => false
 
-object Stack:
-  def empty[A]: Stack[A] = EmptyStack
+  lazy val length: Int = this match
+    case EmptyStack             => 0
+    case NonEmptyStack(_, tail) => 1 + tail.length
 
-  extension [A](stack: Stack[A])
-    def push[B <: A](value: B): Stack[A] = NonEmptyStack(value, stack)
+  def push[B >: A](value: B): Stack[B] = NonEmptyStack(value, this)
 
-    def pop(): Option[(A, Stack[A])] = stack match
-      case EmptyStack                 => None
-      case NonEmptyStack(value, tail) => Some((value, tail))
-      
-    def peek(): Option[(A, Stack[A])] = stack match
-      case EmptyStack              => None
-      case NonEmptyStack(value, _) => Some((value, stack))
+  def pop(): Option[(A, Stack[A])] = this match
+    case EmptyStack                 => None
+    case NonEmptyStack(value, tail) => Some((value, tail))
+
+  def peek(): Option[(A, Stack[A])] = this match
+    case EmptyStack              => None
+    case NonEmptyStack(value, _) => Some((value, this))
+
+end Stack
+```
+
+**Пример:**
+
+```dotty
+val emptyStack: Stack[Int]    = EmptyStack
+val nonEmptyStack: Stack[Int] = NonEmptyStack(2, NonEmptyStack(1, EmptyStack))
+  
+emptyStack.headOption         // None
+nonEmptyStack.headOption      // Some(2)
+
+emptyStack.tailOption         // None
+nonEmptyStack.tailOption      // Some(NonEmptyStack(1,EmptyStack))
+
+emptyStack.isEmpty            // true
+nonEmptyStack.isEmpty         // false
+
+emptyStack.length             // 0
+nonEmptyStack.length          // 2
+
+emptyStack.push(5)            
+// NonEmptyStack(5,EmptyStack)
+nonEmptyStack.push(5)
+// NonEmptyStack(5,NonEmptyStack(2,NonEmptyStack(1,EmptyStack)))
+
+emptyStack.pop()
+// None
+nonEmptyStack.pop()
+// Some((2,NonEmptyStack(1,EmptyStack)))
+
+emptyStack.peek()
+// None
+nonEmptyStack.peek()
+// Some((2,NonEmptyStack(2,NonEmptyStack(1,EmptyStack))))
 ```
 
 ---
@@ -44,3 +112,4 @@ object Stack:
 
 - [Donald E. Knuth - The Art of Computer Programming, section 2.2.1](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
+- [Scalacaster - Stack](https://github.com/vkostyukov/scalacaster/blob/master/src/collection/Stack.scala)

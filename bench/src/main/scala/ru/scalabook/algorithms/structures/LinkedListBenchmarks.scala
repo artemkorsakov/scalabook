@@ -41,3 +41,15 @@ private val nonEmptyList: LinkedList[Int] =
 @main def concatBench(): Unit =
   println(emptyList.concat(nonEmptyList))
   println(nonEmptyList.concat(nonEmptyList))
+
+@main def filterBench(): Unit =
+  println(emptyList.filter(_ % 2 == 0))
+  println(nonEmptyList.filter(_ % 2 == 0))
+
+@main def mapBench(): Unit =
+  println(emptyList.map(_ + 1))
+  println(nonEmptyList.map(_ + 1))
+
+@main def foldBench(): Unit =
+  println(emptyList.fold(100)(_ + _))
+  println(nonEmptyList.fold(100)(_ + _))

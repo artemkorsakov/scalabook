@@ -39,7 +39,16 @@ _Связанные списки_ реализованы в Scala в виде к
 - _Объединение двух списков_ (`concat`)
     - **Время** - O(n)
     - **Память** - O(n)
-  
+- _Фильтрация элементов списка_ (`filter`)
+    - **Время** - O(n)
+    - **Память** - O(n)
+- _Преобразование элементов списка_ (`map`)
+    - **Время** - O(n)
+    - **Память** - O(n)
+- _Объединение элементов списка_ (`fold`)
+    - **Время** - O(n)
+    - **Память** - O(n)
+
 **Код:**
 
 ```dotty
@@ -82,6 +91,19 @@ enum LinkedList[+A]:
   def concat[B >: A](list: LinkedList[B]): LinkedList[B] = this match
     case Nil              => list
     case Cons(head, tail) => Cons(head, tail.concat(list))  
+    
+  def filter(p: A => Boolean): LinkedList[A] = this match
+    case Nil                         => Nil
+    case Cons(head, tail) if p(head) => Cons(head, tail.filter(p))
+    case Cons(_, tail)               => tail.filter(p)
+
+  def map[B](f: A => B): LinkedList[B] = this match
+    case Nil              => Nil
+    case Cons(head, tail) => Cons(f(head), tail.map(f))
+
+  def fold[B](init: B)(op: (B, A) => B): B = this match
+    case Nil              => init
+    case Cons(head, tail) => tail.fold(op(init, head))(op)    
 end LinkedList
 ```
 
@@ -117,6 +139,15 @@ nonEmptyList.contains(2) // true
   
 emptyList.concat(nonEmptyList)    // Cons(2,Cons(1,Nil))
 nonEmptyList.concat(nonEmptyList) // Cons(2,Cons(1,Cons(2,Cons(1,Nil))))
+
+emptyList.filter(_ % 2 == 0)    // Nil
+nonEmptyList.filter(_ % 2 == 0) // Cons(2,Nil)
+
+emptyList.map(_ + 1)            // Nil
+nonEmptyList.map(_ + 1)         // Cons(3,Cons(2,Nil))
+
+emptyList.fold(100)(_ + _)      // 100
+nonEmptyList.fold(100)(_ + _)   // 103
 ```
 
 ---

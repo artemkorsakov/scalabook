@@ -93,4 +93,28 @@ object LinkedListSuite extends FunSuite:
       someElList.concat(someElList) ==
         LinkedList.Cons(3, LinkedList.Cons(2, LinkedList.Cons(1, someElList)))
     )
+
+  test("LinkedList.filter"):
+    expect.all(
+      emptyList.filter(_ % 2 == 0) == emptyList,
+      oneElList.filter(_ % 2 == 0) == emptyList,
+      someElList.filter(_ % 2 == 0) == LinkedList.Cons(2, emptyList)
+    )
+
+  test("LinkedList.map"):
+    expect.all(
+      emptyList.map(_ % 2 == 0) == emptyList,
+      oneElList.map(_ % 2 == 0) == LinkedList.Cons(false, LinkedList.Nil),
+      someElList.map(_ % 2 == 0) == LinkedList.Cons(
+        false,
+        LinkedList.Cons(true, LinkedList.Cons(false, LinkedList.Nil))
+      )
+    )
+
+  test("LinkedList.fold"):
+    expect.all(
+      emptyList.fold(10)(_ + _) == 10,
+      oneElList.fold(10)(_ + _) == 11,
+      someElList.fold(10)(_ + _) == 16
+    )
 end LinkedListSuite

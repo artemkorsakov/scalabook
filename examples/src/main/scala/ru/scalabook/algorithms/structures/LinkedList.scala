@@ -39,4 +39,18 @@ enum LinkedList[+A]:
   def concat[B >: A](list: LinkedList[B]): LinkedList[B] = this match
     case Nil              => list
     case Cons(head, tail) => Cons(head, tail.concat(list))
+
+  def filter(p: A => Boolean): LinkedList[A] = this match
+    case Nil                         => Nil
+    case Cons(head, tail) if p(head) => Cons(head, tail.filter(p))
+    case Cons(_, tail)               => tail.filter(p)
+
+  def map[B](f: A => B): LinkedList[B] = this match
+    case Nil              => Nil
+    case Cons(head, tail) => Cons(f(head), tail.map(f))
+
+  def fold[B](init: B)(op: (B, A) => B): B = this match
+    case Nil              => init
+    case Cons(head, tail) => tail.fold(op(init, head))(op)
+
 end LinkedList

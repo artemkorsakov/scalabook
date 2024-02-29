@@ -6,6 +6,83 @@
 Таким образом, это своего рода операция сопоставления с образцом. 
 Точно так же сопоставление с образцом является распространенным методом, используемым в вычислениях. 
 
+## Линейный поиск
+
+**Алгоритм:**
+
+[Линейный, последовательный поиск](https://ru.wikipedia.org/wiki/%D0%9B%D0%B8%D0%BD%D0%B5%D0%B9%D0%BD%D1%8B%D0%B9_%D0%BF%D0%BE%D0%B8%D1%81%D0%BA) — 
+алгоритм нахождения заданного значения произвольной функции на некотором отрезке.
+
+**Оценка:**
+
+- **Время**:
+    - Худшее - \\(O(n)\\)
+    - Лучшее - \\(O(1)\\)
+    - Среднее - \\(O(n)\\)
+- **Память** - \\(O(1)\\)
+
+**Код:**
+
+```dotty
+@tailrec
+def linearSearch[A](list: List[A], key: A): Option[A] =
+  list match
+    case Nil                      => None
+    case head :: _ if head == key => Some(key)
+    case _ :: tail                => linearSearch(tail, key)
+
+val text   = "This is a functional implementation."
+linearSearch(text.toList, 'a')  
+// Some(a)
+```
+
+## Бинарный поиск
+
+**Алгоритм:**
+
+[Двоичный (бинарный) поиск](https://ru.wikipedia.org/wiki/%D0%94%D0%B2%D0%BE%D0%B8%D1%87%D0%BD%D1%8B%D0%B9_%D0%BF%D0%BE%D0%B8%D1%81%D0%BA) 
+(также известен как **метод деления пополам** или **дихотомия**) — 
+классический алгоритм поиска элемента в отсортированном массиве (векторе), использующий дробление массива на половины.
+
+**Оценка:**
+
+- **Время**:
+    - Худшее - \\(O(n)\\)
+    - Лучшее - \\(O(1)\\)
+    - Среднее - \\(O(n)\\)
+- **Память** - \\(O(1)\\)
+
+**Код:**
+
+```dotty
+def binarySearch[A: Ordering](list: List[A], key: A): Option[A] =
+  def search(l: List[A], r: List[A]): Option[A] =
+    if l == r then None
+    else test(l, r, middle(l, r))
+
+  def test(l: List[A], r: List[A], m: List[A]): Option[A] =
+    if key < m.head then search(l, m)
+    else if key > m.head then search(m.tail, r)
+    else Some(m.head)
+
+  def middle(l: List[A], r: List[A]): List[A] =
+    @tailrec
+    def race(t: List[A], h: List[A]): List[A] =
+      if h != r && h.tail != r then
+        race(t.tail, h.tail.tail)
+      else t
+
+    race(l, l.tail)
+
+  search(list, Nil)
+end binarySearch
+
+binarySearch((1 to 100).toList, 45)
+// Some(45)
+```
+
+## Поиск подстроки
+
 В текстовом сопоставлении поиск подстроки - очень распространенное требование. 
 Если мы выполняем поиск подстроки вручную, то сопоставляем первый символ искомой подстроки с первым символом текста, 
 в котором выполняем сопоставление. 
@@ -19,7 +96,7 @@
 Поиск может осуществляться широким спектром алгоритмов. 
 Ниже рассмотрим несколько алгоритмов: алгоритм наивного поиска и алгоритм поиска Кнута-Морриса-Пратта.
 
-## Алгоритм наивного поиска
+### Алгоритм наивного поиска
 
 **Алгоритм:**
 
@@ -71,7 +148,7 @@ private val searchWord: String = source.takeRight(100)
 // Allocation memory size: 120,31 MB      
 ```
 
-## Алгоритм поиска Кнута-Морриса-Пратта
+### Алгоритм поиска Кнута-Морриса-Пратта
 
 **Алгоритм:**
 
@@ -361,3 +438,4 @@ private val searchWord: String = source.takeRight(100)
 **Ссылки:**
 
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
+- [Scalacaster - Search algorithms](https://github.com/vkostyukov/scalacaster/tree/master/src/search)

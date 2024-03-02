@@ -34,14 +34,11 @@ object Search:
   end binarySearch
 
   def selectionSearch[A: Ordering](list: List[A], n: Int): Option[A] =
+    @tailrec
     def partitionAndSearch(as: List[A], m: Int): Option[A] = as match
-      case Nil    => None
-      case h :: t => search(partition(h, t), m)
-
-    def search(t: (List[A], A, List[A]), m: Int): Option[A] =
-      if m <= 0 then None
-      else
-        val (l, p, g) = t
+      case Nil => None
+      case h :: t =>
+        val (l, p, g) = partition(h, t)
         val len       = l.length
         if len == m - 1 then Some(p)
         else if len >= m then partitionAndSearch(l, m)
@@ -54,14 +51,16 @@ object Search:
           less: List[A],
           p: A,
           more: List[A]
-      ): (List[A], A, List[A]) = rest match
-        case Nil             => (less, p, more)
-        case h :: t if h < p => loop(t, h :: less, p, more)
-        case h :: t          => loop(t, less, p, h :: more)
+      ): (List[A], A, List[A]) =
+        rest match
+          case Nil             => (less, p, more)
+          case h :: t if h < p => loop(t, h :: less, p, more)
+          case h :: t          => loop(t, less, p, h :: more)
 
       loop(tail, Nil, head, Nil)
 
-    partitionAndSearch(list, n)
+    if n <= 0 then None
+    else partitionAndSearch(list, n)
   end selectionSearch
 
   def naiveSubstringSearch(searchWord: String, source: String): Int =

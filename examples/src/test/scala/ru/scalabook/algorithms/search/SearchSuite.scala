@@ -6,8 +6,9 @@ import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
 
 object SearchSuite extends SimpleIOSuite with Checkers:
-  private val text   = "This is a functional implementation."
-  private val search = "functional"
+  private val text    = "This is a functional implementation."
+  private val search  = "functional"
+  private val numbers = (1 to 100).toList
 
   pureTest("linearSearch"):
     expect.all(
@@ -16,14 +17,20 @@ object SearchSuite extends SimpleIOSuite with Checkers:
     )
 
   test("binarySearch"):
-    val list = (1 to 100).toList
-    forall(Gen.choose(0, 100)): (k: Int) =>
-      expect(binarySearch((1 to 100).toList, k).contains(k))
+    forall(Gen.choose(1, 100)): (k: Int) =>
+      expect(binarySearch(numbers, k).contains(k))
 
   test("binarySearch - invalid cases"):
-    val list = (1 to 100).toList
     forall(Gen.choose(101, 200)): (k: Int) =>
-      expect(binarySearch((1 to 100).toList, k).isEmpty)
+      expect(binarySearch(numbers, k).isEmpty)
+
+  test("selectionSearch"):
+    forall(Gen.choose(1, 100)): (k: Int) =>
+      expect(selectionSearch(numbers, k).contains(k))
+
+  test("selectionSearch - invalid cases"):
+    forall(Gen.choose(101, 200)): (k: Int) =>
+      expect(binarySearch(numbers, k).isEmpty)
 
   pureTest("naiveSubstringSearch"):
     expect.all(

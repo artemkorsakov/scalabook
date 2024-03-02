@@ -11,6 +11,9 @@ private val searchWord: String = source.takeRight(100)
 @main def linearSearchBench(): Unit =
   println(linearSearch(text.toList, 'a'))
 
+@main def selectionSearchBench(): Unit =
+  println(selectionSearch((1 to 100).toList, 45))
+
 @main def searchBench(): Unit =
   println(naiveSubstringSearch(searchWord, source))
   println(kmpSubstringSearch(searchWord, source))

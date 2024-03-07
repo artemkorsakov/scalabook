@@ -27,7 +27,7 @@
 - _Удаление элемента из кучи_ (`remove`)
   - **Время** - O(log n)
   - **Память** - O(log n)
-- _Соединение двух куч_ (`merge`)
+- _Объединение двух куч_ (`merge`)
     - **Время** - O(n)
     - **Память** - O(n)
 
@@ -184,6 +184,148 @@ nonEmptyBinaryHeap.remove
 ```
 
 ## Левосторонняя куча
+
+Реализация левойсторонней кучи Окасаки, которая удовлетворяет двум свойствам:
+
+- Свойство, упорядоченное по куче: `value(node) <= value(node.left)`, а также `value(node) <= value(node.right)`
+- Свойство левосторонности: `rank(node.left) >= rank(node.right)`
+
+, где `rank` — это самый правая сущность (крайний правый путь от корня до пустого узла) кучи. 
+Объединив эти свойства вместе, можно гарантировать время выполнения не более O(log n) 
+для операций вставки/удаления в левосторонней куче.
+
+**Оценка:**
+
+- _Минимальный элемент кучи_ (`min`)
+  - **Время** - O(1)
+  - **Память** - O(1)
+- _Вставка элемента в кучу_ (`insert`)
+  - **Время** - O(log n)
+  - **Память** - O(log n)
+- _Удаление элемента из кучи_ (`remove`)
+  - **Время** - O(log n)
+  - **Память** - O(log n)
+- _Объединение двух куч_ (`merge`)
+  - **Время** - O(log n)
+  - **Память** - O(log n)
+
+**Код:**
+
+```dotty
+enum LeftistHeap[+A]:
+  import LeftistHeap.*
+
+  private case EmptyLeftistHeap
+
+  private case NonEmptyLeftistHeap(
+      min: A,
+      left: LeftistHeap[A],
+      right: LeftistHeap[A],
+      override val rank: Int
+  )
+
+  lazy val isEmpty: Boolean = this match
+    case EmptyLeftistHeap => true
+    case _                => false
+
+  val rank: Int = this match
+    case neh: NonEmptyLeftistHeap[A] => neh.rank
+    case _                           => 0
+
+  lazy val minOption: Option[A] = this match
+    case neh: NonEmptyLeftistHeap[A] => Some(neh.min)
+    case _                           => None
+
+  def insert[B >: A: Ordering](x: B): LeftistHeap[B] = this match
+    case NonEmptyLeftistHeap(min, left, right, _) =>
+      if left.rank > right.rank then bubble(min, left, right.insert(x))
+      else bubble(min, left.insert(x), right)
+    case _ => make(x)
+
+  def remove[B >: A: Ordering]: Option[LeftistHeap[B]] = this match
+    case NonEmptyLeftistHeap(_, left, right, _) => Some(merge(left, right))
+    case _                                      => None
+end LeftistHeap
+
+object LeftistHeap:
+  def empty[A]: LeftistHeap[A] = EmptyLeftistHeap
+
+  def make[A: Ordering](x: A): LeftistHeap[A] =
+    make(x, EmptyLeftistHeap, EmptyLeftistHeap)
+
+  private def make[A: Ordering](
+      x: A,
+      l: LeftistHeap[A],
+      r: LeftistHeap[A]
+  ): LeftistHeap[A] =
+    NonEmptyLeftistHeap(x, l, r, r.rank + 1)
+
+  private def bubble[A: Ordering](
+      x: A,
+      l: LeftistHeap[A],
+      r: LeftistHeap[A]
+  ): LeftistHeap[A] =
+    (l, r) match
+      case (NonEmptyLeftistHeap(y, lt, rt, _), _) if x > y =>
+        make(y, make(x, lt, rt), r)
+      case (_, NonEmptyLeftistHeap(z, lt, rt, _)) if x > z =>
+        make(z, l, make(x, lt, rt))
+      case (_, _) => make(x, l, r)
+
+  def merge[A: Ordering](x: LeftistHeap[A], y: LeftistHeap[A]): LeftistHeap[A] =
+    (x, y) match
+      case (_, EmptyLeftistHeap) => x
+      case (EmptyLeftistHeap, _) => y
+      case (
+            NonEmptyLeftistHeap(xx, xl, xr, _),
+            NonEmptyLeftistHeap(yy, yl, yr, _)
+          ) =>
+        if xx < yy then swap(xx, xl, merge(xr, y))
+        else swap(yy, yl, merge(yr, x))
+
+  private def swap[A: Ordering](
+      x: A,
+      l: LeftistHeap[A],
+      r: LeftistHeap[A]
+  ): LeftistHeap[A] =
+    if l.rank < r.rank then make(x, r, l)
+    else make(x, l, r)
+
+end LeftistHeap
+```
+
+**Пример:**
+
+```dotty
+val emptyLeftistHeap: LeftistHeap[Int] = LeftistHeap.empty
+val nonEmptyLeftistHeap: LeftistHeap[Int] = LeftistHeap.empty.insert(1).insert(2)
+ 
+emptyLeftistHeap.isEmpty       // true
+nonEmptyLeftistHeap.isEmpty    // false
+  
+emptyLeftistHeap.rank          // 0
+nonEmptyLeftistHeap.rank       // 1
+  
+emptyLeftistHeap.minOption     // None
+nonEmptyLeftistHeap.minOption  // Some(1)
+  
+emptyLeftistHeap.insert(5)
+// NonEmptyLeftistHeap(5,.,.,1)
+nonEmptyLeftistHeap.insert(5)
+// NonEmptyLeftistHeap(1,.(2,.,.,1),NonEmptyLeftistHeap(5,.,.,1),2)
+
+emptyLeftistHeap.remove
+// None
+nonEmptyLeftistHeap.remove
+// Some(NonEmptyLeftistHeap(2,.,.,1))
+
+LeftistHeap.merge(emptyLeftistHeap, emptyLeftistHeap)
+// EmptyLeftistHeap
+LeftistHeap.merge(emptyLeftistHeap, nonEmptyLeftistHeap)
+// NonEmptyLeftistHeap(1,NonEmptyLeftistHeap(2,.,.,1),.,1)
+LeftistHeap.merge(nonEmptyLeftistHeap, nonEmptyLeftistHeap)
+// NonEmptyLeftistHeap(1,NonEmptyLeftistHeap(2,.,.,1),NonEmptyLeftistHeap(1,NonEmptyLeftistHeap(2,.,.,1),.,1),2)
+```
 
 ---
 

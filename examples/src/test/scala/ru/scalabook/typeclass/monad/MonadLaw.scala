@@ -21,5 +21,5 @@ trait MonadLaw extends ApplicativeLaw, BindLaw:
         bfc
       ) combine
       check(Monad[F].unit(x).flatMap(afb) == afb(x), "left identity") combine
-      check(fa.flatMap(Monad[F].unit _) == fa, "right identity")
+      check(fa.flatMap(x => Monad[F].unit(x)) == fa, "right identity")
 end MonadLaw

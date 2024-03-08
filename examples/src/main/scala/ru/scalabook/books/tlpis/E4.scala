@@ -9,7 +9,7 @@ object E4:
       case EQ => True
       case _  => False
 
-  type isGreaterThan[D <: Dense, Max <: Dense] <: Bool =
+  infix type isGreaterThan[D <: Dense, Max <: Dense] <: Bool =
     D Compare Max match
       case GT => True
       case _  => False

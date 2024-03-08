@@ -31,7 +31,7 @@ sealed trait Trampoline[+A]:
   def map[B](f: A => B): Trampoline[B] =
     flatMap(a => Done(f(a)))
 
-  def zip[B](b: Trampoline[B]): Trampoline[(A, B)] =
+  infix def zip[B](b: Trampoline[B]): Trampoline[(A, B)] =
     (self.resume, b.resume) match
       case (Right(a), Right(b)) =>
         Done((a, b))

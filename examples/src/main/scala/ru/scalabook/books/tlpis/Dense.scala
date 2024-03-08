@@ -59,7 +59,7 @@ object Dense:
       case DCons[One, DNil] => DNil
       case DCons[One, t]    => Zero :: t
 
-  type Add[A <: Dense, B <: Dense] <: Dense =
+  infix type Add[A <: Dense, B <: Dense] <: Dense =
     A match
       case DNil => B
       case DCons[Zero, ta] =>
@@ -72,7 +72,7 @@ object Dense:
           case DCons[Zero, tb] => One :: Add[ta, tb]
           case DCons[One, tb]  => Zero :: Inc[Add[ta, tb]]
 
-  type Mult[A <: Dense, B <: Dense] <: Dense =
+  infix type Mult[A <: Dense, B <: Dense] <: Dense =
     A match
       case DNil             => DNil
       case DCons[One, DNil] => B
@@ -81,14 +81,14 @@ object Dense:
           case DNil => DNil
           case _    => Add[Mult[Dec[A], B], B]
 
-  type Exp[A <: Dense, B <: Dense] <: Dense =
+  infix type Exp[A <: Dense, B <: Dense] <: Dense =
     B match
       case DNil => _1
       case _    => Mult[A, Exp[A, Dec[B]]]
 
   type Sq[N <: Dense] = Exp[N, _2]
 
-  type Compare[A <: Dense, B <: Dense] <: Comparison =
+  infix type Compare[A <: Dense, B <: Dense] <: Comparison =
     A match
       case DNil =>
         B match

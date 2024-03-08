@@ -37,10 +37,10 @@ trait Compose[=>:[_, _]]:
   /** Ассоциативный `=>:` бинарный оператор. */
   def compose[A, B, C](f: B =>: C, g: A =>: B): A =>: C
 
-  protected[this] trait ComposePlus extends Plus[[A] =>> A =>: A]:
+  protected[arrow] trait ComposePlus extends Plus[[A] =>> A =>: A]:
     def plus[A](f1: A =>: A, f2: => A =>: A): A =>: A = self.compose(f1, f2)
 
-  protected[this] trait ComposeSemigroup[A] extends Semigroup[A =>: A]:
+  protected[arrow] trait ComposeSemigroup[A] extends Semigroup[A =>: A]:
     def combine(f1: A =>: A, f2: A =>: A): A =>: A = self.compose(f1, f2)
 
   def plus: Plus[[A] =>> A =>: A] = new ComposePlus {}

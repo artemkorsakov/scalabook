@@ -2,8 +2,8 @@ package ru.scalabook.typeclass.monoid
 
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.given
-import io.github.iltotore.iron.constraint.all.Greater
-import ru.scalabook.typeclass.common.Generators.{smallInt, smallPosInt}
+import io.github.iltotore.iron.constraint.numeric.*
+import io.github.iltotore.iron.scalacheck.numeric.given
 import weaver.*
 import weaver.scalacheck.*
 
@@ -17,6 +17,8 @@ object MultiplicativeSemigroupSuite
         success
 
   test("pow should multiply n times"):
-    forall(smallInt.flatMap(x => smallPosInt.map(n => (x, n)))):
-      (x: Int, n: Int :| Greater[0]) =>
-        expect.eql(math.pow(x, n).toInt, MultiplicativeSemigroup[Int].pow(x, n))
+    forall: (x: Int :| Interval.Open[1, 5], n: Int :| Interval.Open[1, 5]) =>
+      expect.eql(
+        math.pow(x, n).toInt,
+        MultiplicativeSemigroup[Int].pow(x, n.refineUnsafe[Greater[0]])
+      )

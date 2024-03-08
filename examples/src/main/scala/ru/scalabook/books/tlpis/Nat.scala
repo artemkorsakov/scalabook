@@ -21,7 +21,7 @@ object Nat:
       case _0 => True
       case _  => False
 
-  type Compare[A <: Nat, B <: Nat] <: Comparison =
+  infix type Compare[A <: Nat, B <: Nat] <: Comparison =
     A match
       case _0 =>
         B match

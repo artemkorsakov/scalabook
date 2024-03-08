@@ -8,7 +8,7 @@ trait Functor[F[_]]:
 sealed trait Free[S[+_], A]:
   self =>
 
-  def flatMap[B](f: A => Free[S, B]): Free[S, B] =
+  infix def flatMap[B](f: A => Free[S, B]): Free[S, B] =
     self match
       case FlatMap(a, g) => FlatMap(a, x => g(x).flatMap(f))
       case x             => FlatMap(x, f)
@@ -27,7 +27,7 @@ sealed trait Free[S[+_], A]:
           case More(k)     => Left(S.map(k)(_ flatMap f))
           case b FlatMap g => b.flatMap(x => g(x).flatMap(f)).resume
 
-  def zip[B](b: Free[S, B])(using S: Functor[S]): Free[S, (A, B)] =
+  infix def zip[B](b: Free[S, B])(using S: Functor[S]): Free[S, (A, B)] =
     (resume, b.resume) match
       case (Left(a), Left(b)) =>
         More(S.map(a)(x => More(S.map(b)(y => x zip y))))
@@ -40,7 +40,7 @@ sealed trait Free[S[+_], A]:
 end Free
 
 object Free:
-  private final case class FlatMap[S[+_], A, B](
+  private infix final case class FlatMap[S[+_], A, B](
       a: Free[S, A],
       f: A => Free[S, B]
   ) extends Free[S, B]

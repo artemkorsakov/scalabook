@@ -3,7 +3,7 @@ package ru.scalabook.typeclass.monoid
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.all.GreaterEqual
-import ru.scalabook.typeclass.common.Generators.given
+import io.github.iltotore.iron.scalacheck.numeric.given
 import weaver.*
 import weaver.scalacheck.*
 

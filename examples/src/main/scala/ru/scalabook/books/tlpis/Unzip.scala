@@ -1,7 +1,7 @@
 package ru.scalabook.books.tlpis
 
 trait Unzip[H <: HList, R1 <: HList, R2 <: HList]:
-  def unzip(h: H): (R1, R2)
+  infix def unzip(h: H): (R1, R2)
 
 object Unzip:
   import HList.::

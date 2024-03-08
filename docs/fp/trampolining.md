@@ -444,7 +444,7 @@ def fib(n: Int): Trampoline[Int] =
 Но также возможно составить их параллельно путем чередования вычислений:
 
 ```dotty
-def zip[B](b: Trampoline[B]): Trampoline[(A, B)] =
+infix def zip[B](b: Trampoline[B]): Trampoline[(A, B)] =
   (self.resume, b.resume) match
     case (Right(a), Right(b)) =>
       Done((a, b))
@@ -491,7 +491,7 @@ val hello: Trampoline[Unit] =
 sealed trait Free[S[+_], A]
 
 object Free:
-  private case class FlatMap[S[+_], A, B](
+  private infix case class FlatMap[S[+_], A, B](
       a: Free[S, A],
       f: A => Free[S, B]
   ) extends Free[S, B]
@@ -549,7 +549,7 @@ final def resume(using S: Functor[S]): Either[S[Free[S, A]], A] =
 Вот `zip`:
 
 ```dotty
-def zip[B](b: Free[S, B])(using S: Functor[S]): Free[S, (A, B)] =
+infix def zip[B](b: Free[S, B])(using S: Functor[S]): Free[S, (A, B)] =
   (resume, b.resume) match
     case (Left(a), Left(b)) =>
       More(S.map(a)(x => More(S.map(b)(y => x zip y))))

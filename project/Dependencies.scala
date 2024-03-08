@@ -2,24 +2,25 @@ import sbt.*
 
 // @formatter:off
 object Dependencies {
-  val Scala = "3.3.1"
+  val Scala = "3.4.0"
 
   object fs2 {
     val core = "co.fs2" %% "fs2-core" % "3.7.0"
   }
 
   object http4s {
-    private val version = "0.23.23"
-    val blaze           = "org.http4s" %% "http4s-blaze-server" % "0.23.15"
+    private val version = "0.23.26"
+    val blaze           = "org.http4s" %% "http4s-blaze-server" % "0.23.16"
     val core            = "org.http4s" %% "http4s-core"         % version
     val dsl             = "org.http4s" %% "http4s-dsl"          % version
     val server          = "org.http4s" %% "http4s-server"       % version
   }
 
   object iron {
-    private val version = "2.3.0"
+    private val version = "2.5.0"
     val iron            = "io.github.iltotore" %% "iron"      % version
     val cats            = "io.github.iltotore" %% "iron-cats" % version
+    val scalacheck      = "io.github.iltotore" %% "iron-scalacheck" % version
   }
 
   object laika {
@@ -41,7 +42,7 @@ object Dependencies {
   }
 
   object scalaz {
-    private val version = "7.3.7"
+    private val version = "7.3.8"
     val core            = "org.scalaz" %% "scalaz-core"               % version
     val effect          = "org.scalaz" %% "scalaz-effect"             % version
     val iteratee        = "org.scalaz" %% "scalaz-iteratee"           % version
@@ -52,7 +53,7 @@ object Dependencies {
     private val catsVersion       = "2.10.0"
     private val catsEffectVersion = "3.6-0142603"
 
-    val algebra          = "org.typelevel" %% "algebra"            % "2.8.0"
+    val algebra          = "org.typelevel" %% "algebra"            % "2.10.0"
     val catsCore         = "org.typelevel" %% "cats-core"          % catsVersion
     val catsEffect       = "org.typelevel" %% "cats-effect"        % catsEffectVersion
     val catsEffectKernel = "org.typelevel" %% "cats-effect-kernel" % catsEffectVersion
@@ -64,14 +65,15 @@ object Dependencies {
   }
 
   object weaver {
-    private val version = "0.8.3"
+    private val version = "0.8.4"
     val cats            = "com.disneystreaming" %% "weaver-cats"       % version
     val scalacheck      = "com.disneystreaming" %% "weaver-scalacheck" % version
   }
 
   object zio {
-    val core        = "dev.zio" %% "zio"             % "2.0.18"
-    val stacktracer = "dev.zio" %% "zio-stacktracer" % "2.0.18"
+    private val version = "2.0.21"
+    val core        = "dev.zio" %% "zio"             % version
+    val stacktracer = "dev.zio" %% "zio-stacktracer" % version
   }
 
   val exampleLibs: Seq[ModuleID] =
@@ -97,6 +99,7 @@ object Dependencies {
 
   val exampleTestLibs: Seq[ModuleID] =
     Seq(
+      iron.scalacheck,
       scalaz.scalacheck,
       typelevel.catsEffectKernel,
       typelevel.catsTestkit,

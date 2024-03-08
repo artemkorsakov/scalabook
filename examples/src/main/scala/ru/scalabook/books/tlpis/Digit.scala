@@ -10,7 +10,7 @@ object Digit:
       case Zero => True
       case One  => False
 
-  type Compare[A <: Digit, B <: Digit] <: Comparison =
+  infix type Compare[A <: Digit, B <: Digit] <: Comparison =
     A match
       case Zero =>
         B match

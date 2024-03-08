@@ -3,7 +3,7 @@ package ru.scalabook.typeclass.monoid
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.all.Greater
-import ru.scalabook.typeclass.common.Generators.given
+import io.github.iltotore.iron.scalacheck.numeric.given
 import ru.scalabook.typeclass.monoid.Semigroup.given
 import weaver.*
 import weaver.scalacheck.*

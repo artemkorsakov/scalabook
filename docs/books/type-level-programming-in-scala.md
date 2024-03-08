@@ -251,7 +251,7 @@ sealed trait GT extends Comparison:
 Затем мы можем определить тип `Compare`, сравнивающий два `Nat`. 
 
 ```dotty
-type Compare[A <: Nat, B <: Nat] <: Comparison =
+infix type Compare[A <: Nat, B <: Nat] <: Comparison =
   A match
     case _0 =>
       B match
@@ -438,7 +438,7 @@ type Is0[A <: Digit] =
     case Zero => True
     case One  => False
 
-type Compare[A <: Digit, B <: Digit] <: Comparison =
+infix type Compare[A <: Digit, B <: Digit] <: Comparison =
   A match
     case Zero =>
       B match
@@ -552,7 +552,7 @@ summon[Dec[_2] =:= _1]
 Операции сложения, умножения и возведения в степень определяются так:
 
 ```dotty
-type Add[A <: Dense, B <: Dense] <: Dense =
+infix type Add[A <: Dense, B <: Dense] <: Dense =
   A match
     case DNil => B
     case DCons[Zero, ta] =>
@@ -565,7 +565,7 @@ type Add[A <: Dense, B <: Dense] <: Dense =
         case DCons[Zero, tb] => One :: Add[ta, tb]
         case DCons[One, tb]  => Zero :: Inc[Add[ta, tb]]
         
-type Mult[A <: Dense, B <: Dense] <: Dense =
+infix type Mult[A <: Dense, B <: Dense] <: Dense =
   A match
     case DNil             => DNil
     case DCons[One, DNil] => B
@@ -574,7 +574,7 @@ type Mult[A <: Dense, B <: Dense] <: Dense =
         case DNil => DNil
         case _    => Add[Mult[Dec[A], B], B]   
 
-type Exp[A <: Dense, B <: Dense] <: Dense =
+infix type Exp[A <: Dense, B <: Dense] <: Dense =
   B match
     case DNil => _1
     case _    => Mult[A, Exp[A, Dec[B]]]
@@ -598,7 +598,7 @@ toInt[_4 Exp _15]           // 1073741824
 Для этого нам понадобятся функции `Reverce` и `Compare`, определенные в `Dense`:
 
 ```dotty
-type Compare[A <: Dense, B <: Dense] <: Comparison =
+infix type Compare[A <: Dense, B <: Dense] <: Comparison =
   A match
     case DNil =>
       B match
@@ -733,7 +733,7 @@ println(toBoolean[isPalindrome[_15]])
 Затем давайте проверим, является ли число палиндромом и больше текущего максимального палиндрома:
 
 ```dotty
-type isGreaterThan[D <: Dense, Max <: Dense] <: Bool =
+infix type isGreaterThan[D <: Dense, Max <: Dense] <: Bool =
   D Compare Max match
     case GT => True
     case _  => False
@@ -1314,7 +1314,7 @@ given hzipNil2[H, T <: HList]: HZip[HNil.type, H :: T, HNil.type] with
 
 ```dotty
 extension [A <: HList](a: A)
-  def zip[B <: HList, R <: HList](b: B)(using hzip: HZip[A, B, R]): R =
+  infix def zip[B <: HList, R <: HList](b: B)(using hzip: HZip[A, B, R]): R =
     hzip(a, b)
 ```
 
@@ -1349,7 +1349,7 @@ val checkCCType: ((Int, Char), (String, Int)) :: ((String, Int), (List[Char], Ch
 
 ```dotty
 trait Unzip[H <: HList, R1 <: HList, R2 <: HList]:
-  def unzip(h: H): (R1, R2)
+  infix def unzip(h: H): (R1, R2)
 ```
 
 При распаковке `HNil` создается `HNil`.
@@ -2009,17 +2009,17 @@ val heads = m transform headOption
 
 ```dotty
 sealed trait KList[+M[_], HL <: HList]:
-  def transform[N[_]](f: [A] => M[A] => N[A]): KList[N, HL]
+  infix def transform[N[_]](f: [A] => M[A] => N[A]): KList[N, HL]
   
 final case class KCons[H, T <: HList, +M[_]](head: M[H], tail: KList[M, T])
     extends KList[M, H :: T]:
   ...
-  def transform[N[_]](f: [A] => M[A] => N[A]): KList[N, H :: T] =
+  infix def transform[N[_]](f: [A] => M[A] => N[A]): KList[N, H :: T] =
     KCons(f(head), tail transform f)  
 
 sealed class KNil extends KList[Nothing, HNil.type]:
   ...
-  def transform[N[_]](f: [A] => Nothing => N[A]): KList[N, HNil.type] = KNil    
+  infix def transform[N[_]](f: [A] => Nothing => N[A]): KList[N, HNil.type] = KNil    
 ```
 
 Мы можем добавить еще один метод, который преобразует `KList` в базовый `HList`. 
@@ -2038,16 +2038,16 @@ val heads = m down head
 ```dotty
 sealed trait KList[+M[_], HL <: HList]:
   // Для преобразования KList в HList
-  def down(f: [A] => M[A] => Id[A]): HL
+  infix def down(f: [A] => M[A] => Id[A]): HL
   
 final case class KCons[H, T <: HList, +M[_]](head: M[H], tail: KList[M, T])
     extends KList[M, H :: T]:
   ...
-  def down(f: [A] => M[A] => Id[A]) = HCons(f(head), tail down f)
+  infix def down(f: [A] => M[A] => Id[A]) = HCons(f(head), tail down f)
 
 sealed class KNil extends KList[Nothing, HNil.type]:
   ...
-  def down(f: [A] => Nothing => Id[A]) = HNil
+  infix def down(f: [A] => Nothing => Id[A]) = HNil
 ```
 
 В следующем разделе мы будем использовать `down` и `transform`, 

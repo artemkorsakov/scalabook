@@ -5,7 +5,7 @@ object Dependencies {
   val Scala = "3.4.0"
 
   object fs2 {
-    val core = "co.fs2" %% "fs2-core" % "3.7.0"
+    val core = "co.fs2" %% "fs2-core" % "3.9.4"
   }
 
   object http4s {

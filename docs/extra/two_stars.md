@@ -48,6 +48,7 @@
 |-------------------------------------------------------------------------------------------------------------------------------------------|:--------:|:----:|------|-------------|
 | [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)                                                | Scala 2  |  En  | 2017 |             |
 | [Scala puzzlers](https://scalapuzzlers.com/index.html), на основе упражнений [написана книга](https://www.artima.com/shop/scala_puzzlers) | Scala 2  |  En  | 2014 |             |
+| [Scalacaster](https://github.com/vkostyukov/scalacaster/tree/master)                                                                      | Scala 2  |  En  | 2018 |             |
 
 ## Статьи
 

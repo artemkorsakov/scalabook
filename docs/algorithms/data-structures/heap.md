@@ -25,8 +25,8 @@
     - **Время** - O(log n)
     - **Память** - O(log n)
 - _Удаление элемента из кучи_ (`remove`)
-  - **Время** - O(log n)
-  - **Память** - O(log n)
+    - **Время** - O(log n)
+    - **Память** - O(log n)
 - _Объединение двух куч_ (`merge`)
     - **Время** - O(n)
     - **Память** - O(n)
@@ -197,17 +197,17 @@ nonEmptyBinaryHeap.remove
 **Оценка:**
 
 - _Минимальный элемент кучи_ (`min`)
-  - **Время** - O(1)
-  - **Память** - O(1)
+    - **Время** - O(1)
+    - **Память** - O(1)
 - _Вставка элемента в кучу_ (`insert`)
-  - **Время** - O(log n)
-  - **Память** - O(log n)
+    - **Время** - O(log n)
+    - **Память** - O(log n)
 - _Удаление элемента из кучи_ (`remove`)
-  - **Время** - O(log n)
-  - **Память** - O(log n)
+    - **Время** - O(log n)
+    - **Память** - O(log n)
 - _Объединение двух куч_ (`merge`)
-  - **Время** - O(log n)
-  - **Память** - O(log n)
+    - **Время** - O(log n)
+    - **Память** - O(log n)
 
 **Код:**
 
@@ -312,7 +312,7 @@ nonEmptyLeftistHeap.minOption  // Some(1)
 emptyLeftistHeap.insert(5)
 // NonEmptyLeftistHeap(5,.,.,1)
 nonEmptyLeftistHeap.insert(5)
-// NonEmptyLeftistHeap(1,.(2,.,.,1),NonEmptyLeftistHeap(5,.,.,1),2)
+// NonEmptyLeftistHeap(1,NonEmptyLeftistHeap(2,.,.,1),NonEmptyLeftistHeap(5,.,.,1),2)
 
 emptyLeftistHeap.remove
 // None
@@ -327,14 +327,159 @@ LeftistHeap.merge(nonEmptyLeftistHeap, nonEmptyLeftistHeap)
 // NonEmptyLeftistHeap(1,NonEmptyLeftistHeap(2,.,.,1),NonEmptyLeftistHeap(1,NonEmptyLeftistHeap(2,.,.,1),.,1),2)
 ```
 
+## Парная куча (pairing heap)
+
+[Парные кучи][pairing heap wiki] представляют собой многонаправленные древовидные структуры, упорядоченные по куче, 
+и их можно считать упрощенными кучами Фибоначчи.
+
+**Оценка:**
+
+- _Минимальный элемент кучи_ (`min`)
+    - **Время** - O(1)
+    - **Память** - O(1)
+- _Вставка элемента в кучу_ (`insert`)
+    - **Время** - O(log n)
+    - **Память** - O(log n)
+- _Удаление элемента из кучи_ (`remove`)
+    - **Время** - O(log n)
+    - **Память** - O(log n)
+- _Объединение двух куч_ (`merge`)
+    - **Время** - O(log n)
+    - **Память** - O(log n)
+
+**Код:**
+
+```dotty
+enum PairingHeap[+A]:
+
+  import PairingHeap.*
+
+  private case EmptyPairingHeap
+
+  private case NonEmptyPairingHeap(min: A, subtrees: List[PairingHeap[A]])
+
+  lazy val isEmpty: Boolean = this match
+    case EmptyPairingHeap => true
+    case _                => false
+
+  def insert[B >: A: Ordering](x: B): PairingHeap[B] =
+    merge(make(x), this)
+
+  def remove[B >: A: Ordering]: Option[PairingHeap[B]] = this match
+    case NonEmptyPairingHeap(_, subtrees) => Some(pairing(subtrees))
+    case _                                => None
+
+end PairingHeap
+
+object PairingHeap:
+  def empty[A]: PairingHeap[A] = EmptyPairingHeap
+
+  def make[A: Ordering](x: A): PairingHeap[A] =
+    NonEmptyPairingHeap(x, List.empty)
+
+  private def merge[A: Ordering](
+      x: PairingHeap[A],
+      y: PairingHeap[A]
+  ): PairingHeap[A] =
+    (x, y) match
+      case (_, EmptyPairingHeap) => x
+      case (EmptyPairingHeap, _) => y
+      case (NonEmptyPairingHeap(x1, subs1), NonEmptyPairingHeap(x2, subs2)) =>
+        if x1 < x2 then
+          NonEmptyPairingHeap(x1, NonEmptyPairingHeap(x2, subs2) :: subs1)
+        else
+          NonEmptyPairingHeap(x2, NonEmptyPairingHeap(x1, subs1) :: subs2)
+
+  @tailrec
+  private def pairing[A: Ordering](subtrees: List[PairingHeap[A]])
+      : PairingHeap[A] =
+    subtrees match
+      case Nil              => EmptyPairingHeap
+      case hd :: Nil        => hd
+      case h1 :: h2 :: tail => pairing(merge(h1, h2) :: tail)
+
+end PairingHeap
+```
+
+## Косая куча (skew heap)
+
+[Косая куча][skew heap wiki] - это самонастраивающаяся форма левой кучи, 
+которая пытается поддерживать баланс путем безусловной замены всех узлов на пути слияния при слиянии двух куч. 
+(Операция слияния также используется при добавлении и удалении значений.)
+
+
+**Оценка:**
+
+- _Минимальный элемент кучи_ (`min`)
+    - **Время** - O(1)
+    - **Память** - O(1)
+- _Вставка элемента в кучу_ (`insert`)
+    - **Время** - O(log n)
+    - **Память** - O(log n)
+- _Удаление элемента из кучи_ (`remove`)
+    - **Время** - O(log n)
+    - **Память** - O(log n)
+- _Объединение двух куч_ (`merge`)
+    - **Время** - O(log n)
+    - **Память** - O(log n)
+
+**Код:**
+
+```dotty
+enum SkewHeap[+A]:
+  import SkewHeap.*
+
+  private case EmptySkewHeap
+
+  private case NonEmptySkewHeap(
+      min: A,
+      left: SkewHeap[A],
+      right: SkewHeap[A]
+  )
+
+  lazy val isEmpty: Boolean = this match
+    case EmptySkewHeap => true
+    case _             => false
+
+  def insert[B >: A: Ordering](x: B): SkewHeap[B] =
+    merge(make(x), this)
+
+  def remove[B >: A: Ordering]: Option[SkewHeap[B]] = this match
+    case NonEmptySkewHeap(_, left, right) => Some(merge(left, right))
+    case _                                => None
+
+end SkewHeap
+
+object SkewHeap:
+  def empty[A]: SkewHeap[A] = EmptySkewHeap
+
+  def make[A: Ordering](x: A): SkewHeap[A] =
+    NonEmptySkewHeap(x, EmptySkewHeap, EmptySkewHeap)
+
+  def merge[A: Ordering](x: SkewHeap[A], y: SkewHeap[A]): SkewHeap[A] =
+    (x, y) match
+      case (_, EmptySkewHeap) => x
+      case (EmptySkewHeap, _) => y
+      case (NonEmptySkewHeap(x1, l1, r1), NonEmptySkewHeap(x2, l2, r2)) =>
+        if x1 < x2 then
+          NonEmptySkewHeap(x1, merge(NonEmptySkewHeap(x2, l2, r2), r1), l1)
+        else NonEmptySkewHeap(x2, merge(NonEmptySkewHeap(x1, l1, r1), r2), l2)
+
+end SkewHeap
+```
+
 ---
 
 **Ссылки:**
 
 - [Куча - Wiki][heap wiki]
 - [Двоичная куча - Wiki][bin heap wiki]
+- [Pairing heap - Wiki][pairing heap wiki]
+- [Skew heap - Wiki][skew heap wiki]
 - [Куча - Scalacaster](https://github.com/vkostyukov/scalacaster/blob/master/src/heap)
 - [A Functional Approach to Standard Binary Heaps - Vladimir Kostyukov](https://arxiv.org/pdf/1312.4666v1.pdf)
 
 [heap wiki]: https://ru.wikipedia.org/wiki/%D0%9A%D1%83%D1%87%D0%B0_(%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0_%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85)
 [bin heap wiki]: https://ru.wikipedia.org/wiki/%D0%94%D0%B2%D0%BE%D0%B8%D1%87%D0%BD%D0%B0%D1%8F_%D0%BA%D1%83%D1%87%D0%B0
+[pairing heap wiki]: https://en.wikipedia.org/wiki/Pairing_heap
+[skew heap wiki]: https://en.wikipedia.org/wiki/Skew_heap

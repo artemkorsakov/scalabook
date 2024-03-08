@@ -1,8 +1,16 @@
 package ru.scalabook.algorithms.trees
 
+import cats.data.NonEmptyList
+
+import scala.annotation.tailrec
+
 enum BinaryTree[+A]:
   case Leaf
   case Branch(value: A, left: BinaryTree[A], right: BinaryTree[A])
+
+  lazy val isEmpty: Boolean = this match
+    case Leaf => true
+    case _    => false
 
   lazy val size: Int = this match
     case Leaf            => 0
@@ -11,6 +19,37 @@ enum BinaryTree[+A]:
   lazy val height: Int = this match
     case Leaf            => 0
     case Branch(_, l, r) => 1 + math.max(l.height, r.height)
+
+  def rootPath[B >: A](b: B): Option[NonEmptyList[B]] = this match
+    case Leaf                              => None
+    case Branch(value, _, _) if value == b => Some(NonEmptyList.one(b))
+    case Branch(value, left, right) =>
+      left.rootPath(b).orElse(right.rootPath(b)).map: nel =>
+        value :: nel
+
+  def level(level: Int): List[A] =
+    @tailrec
+    def loop(level: Int, trees: List[BinaryTree[A]]): List[A] =
+      if level < 0 then List.empty
+      else if level == 0 then
+        trees.foldLeft(List.empty[A]) { case (acc, tree) =>
+          tree match
+            case Leaf            => acc
+            case Branch(v, _, _) => v :: acc
+        }
+      else
+        loop(
+          level - 1,
+          trees.flatMap:
+            case Branch(_, left, right) if !left.isEmpty && !right.isEmpty =>
+              List(left, right)
+            case Branch(_, left, _) if !left.isEmpty   => List(left)
+            case Branch(_, _, right) if !right.isEmpty => List(right)
+            case _ => List.empty[BinaryTree[A]]
+        )
+
+    loop(level, List(this))
+  end level
 
   lazy val preorder: IndexedSeq[A] = this match
     case Leaf => IndexedSeq.empty

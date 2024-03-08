@@ -31,27 +31,6 @@
 - уровень (_level_): это набор всех узлов на заданной глубине
 - размер (_size_): определяется как количество неконечных узлов
 
-**Оценка:**
-
-- _Размер дерева_ (`size`)
-    - **Время** - O(log n)
-    - **Память** - O(log n)
-- _Высота дерева_ (`height`)
-    - **Время** - O(log n)
-    - **Память** - O(log n)
-- _Корневой путь элемента_ (`rootPath`)
-    - **Время** - O(n)
-    - **Память** - O(n)
-- _Глубина элемента_ (`depth`)
-    - **Время** - O(n)
-    - **Память** - O(n)
-- _Вычисление уровня - все элементы на заданной глубине_ (`level`)
-    - **Время** - O(1)
-    - **Память** - O(n)
-- _Путь между элементами_ (`path`)
-    - **Время** - O(n)
-    - **Память** - O(n)
-
 **Код:**
 
 ```dotty
@@ -59,23 +38,67 @@ enum BinaryTree[+A]:
   case Leaf
   case Branch(value: A, left: BinaryTree[A], right: BinaryTree[A])
 
+  lazy val isEmpty: Boolean = this match
+    case Leaf => true
+    case _    => false
+    
   lazy val size: Int = this match
     case Leaf            => 0
     case Branch(_, l, r) => 1 + l.size + r.size
 
-  lazy val depth: Int = this match
+  lazy val height: Int = this match
     case Leaf            => 0
-    case Branch(_, l, r) => 1 + l.depth.max(r.depth)
+    case Branch(_, l, r) => 1 + math.max(l.height, r.height)
+    
+  def rootPath[B >: A](b: B): Option[NonEmptyList[B]] = this match
+    case Leaf                              => None
+    case Branch(value, _, _) if value == b => Some(NonEmptyList.one(b))
+    case Branch(value, left, right) =>
+      left.rootPath(b).orElse(right.rootPath(b)).map: nel =>
+        value :: nel
+  
+  def level(level: Int): List[A] =
+    @tailrec
+    def loop(level: Int, trees: List[BinaryTree[A]]): List[A] =
+      if level < 0 then List.empty
+      else if level == 0 then
+        trees.foldLeft(List.empty[A]) { case (acc, tree) =>
+          tree match
+            case Leaf            => acc
+            case Branch(v, _, _) => v :: acc
+        }
+      else
+        loop(
+          level - 1,
+          trees.flatMap:
+            case Branch(_, left, right) if !left.isEmpty && !right.isEmpty =>
+              List(left, right)
+            case Branch(_, left, _) if !left.isEmpty   => List(left)
+            case Branch(_, _, right) if !right.isEmpty => List(right)
+            case _ => List.empty[BinaryTree[A]]
+        )
+
+    loop(level, List(this))
+  end level      
 ```
 
 **Пример:**
 
 ```dotty
-```
+val exampleBinaryTree: BinaryTree[Char] = Branch(
+  'A',
+  Branch('B', Branch('D', Leaf, Leaf), Leaf),
+  Branch(
+    'C',
+    Branch('E', Leaf, Branch('G', Leaf, Leaf)),
+    Branch('F', Branch('H', Leaf, Leaf), Branch('J', Leaf, Leaf))
+  )
+)
 
-**Метрики:**
-
-```dotty
+exampleBinaryTree.size          // 9
+exampleBinaryTree.height        // 4
+exampleBinaryTree.rootPath('G') // Some(NonEmptyList(A, C, E, G))
+exampleBinaryTree.level(3)      // List(J, H, G)
 ```
 
 ## Построение дерева
@@ -86,22 +109,20 @@ enum BinaryTree[+A]:
 
 ```dotty
 object BinaryTree:
-  def apply[A](list: List[A]): BinaryTree[A] =
-    list match
+  def apply[A](a: A): BinaryTree[A] = Branch(a, Leaf, Leaf)
+
+  def apply[A](values: List[A]): BinaryTree[A] =
+    values match
       case Nil => Leaf
       case x :: xs =>
-        val (leftList, rightList) = xs.splitAt(xs.length / 2)
-        Branch(x, BinaryTree(leftList), BinaryTree(rightList))
-```
+        val (left, right) = xs.splitAt(xs.length / 2)
+        Branch(x, BinaryTree(left), BinaryTree(right))
 
-**Пример:**
-
-```dotty
-```
-
-**Метрики:**
-
-```dotty
+  def apply[A](values: Vector[A]): BinaryTree[A] =
+    if values.isEmpty then Leaf
+    else
+      val (left, right) = values.tail.splitAt(values.length / 2)
+      Branch(values.head, BinaryTree(left), BinaryTree(right))
 ```
 
 ## Алгоритмы обхода дерева

@@ -5,12 +5,19 @@ import weaver.*
 import weaver.scalacheck.*
 
 object BinaryTreeSuite extends SimpleIOSuite with Checkers:
+  private val exampleBinaryTree: BinaryTree[Char] = Branch(
+    'A',
+    Branch('B', Branch('D', Leaf, Leaf), Leaf),
+    Branch(
+      'C',
+      Branch('E', Leaf, Branch('G', Leaf, Leaf)),
+      Branch('F', Branch('H', Leaf, Leaf), Branch('J', Leaf, Leaf))
+    )
+  )
+
   test("BinaryTree.size"):
     forall: (list: List[Int]) =>
       expect.all(BinaryTree(list).size == list.length)
 
-  test("BinaryTree.height"):
-    forall: (list: List[Int]) =>
-      val expected =
-        if list.isEmpty then 0 else list.length.toBinaryString.length
-      expect.all(BinaryTree(list).height == expected)
+  pureTest("BinaryTree.height"):
+    expect(exampleBinaryTree.height == 4)

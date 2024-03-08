@@ -9,8 +9,8 @@ object BinaryTreeSuite extends SimpleIOSuite with Checkers:
     forall: (list: List[Int]) =>
       expect.all(BinaryTree(list).size == list.length)
 
-  test("BinaryTree.depth"):
+  test("BinaryTree.height"):
     forall: (list: List[Int]) =>
       val expected =
         if list.isEmpty then 0 else list.length.toBinaryString.length
-      expect.all(BinaryTree(list).depth == expected)
+      expect.all(BinaryTree(list).height == expected)

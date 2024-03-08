@@ -8,9 +8,9 @@ enum BinaryTree[+A]:
     case Leaf            => 0
     case Branch(_, l, r) => 1 + l.size + r.size
 
-  lazy val depth: Int = this match
+  lazy val height: Int = this match
     case Leaf            => 0
-    case Branch(_, l, r) => 1 + l.depth.max(r.depth)
+    case Branch(_, l, r) => 1 + math.max(l.height, r.height)
 
   lazy val preorder: IndexedSeq[A] = this match
     case Leaf => IndexedSeq.empty
@@ -31,12 +31,18 @@ end BinaryTree
 object BinaryTree:
   def apply[A](a: A): BinaryTree[A] = Branch(a, Leaf, Leaf)
 
-  def apply[A](list: List[A]): BinaryTree[A] =
-    list match
+  def apply[A](values: List[A]): BinaryTree[A] =
+    values match
       case Nil => Leaf
       case x :: xs =>
         val (left, right) = xs.splitAt(xs.length / 2)
         Branch(x, BinaryTree(left), BinaryTree(right))
+
+  def apply[A](values: Vector[A]): BinaryTree[A] =
+    if values.isEmpty then Leaf
+    else
+      val (left, right) = values.tail.splitAt(values.length / 2)
+      Branch(values.head, BinaryTree(left), BinaryTree(right))
 
   def areSimilar[A, B](treeA: BinaryTree[A], treeB: BinaryTree[B]): Boolean =
     (treeA, treeB) match

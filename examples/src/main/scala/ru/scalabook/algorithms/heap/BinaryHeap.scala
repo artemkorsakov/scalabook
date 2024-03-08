@@ -5,9 +5,9 @@ import scala.math.Ordered.orderingToOrdered
 enum BinaryHeap[+A]:
   import BinaryHeap.*
 
-  private case EmptyHeap
+  case Leaf
 
-  private case NonEmptyHeap(
+  private case Branch(
       min: A,
       left: BinaryHeap[A],
       right: BinaryHeap[A],
@@ -16,24 +16,24 @@ enum BinaryHeap[+A]:
   )
 
   lazy val isEmpty: Boolean = this match
-    case EmptyHeap => true
-    case _         => false
+    case Leaf => true
+    case _    => false
 
   val size: Int = this match
-    case neh: NonEmptyHeap[A] => neh.size
-    case _                    => 0
+    case neh: Branch[A] => neh.size
+    case _              => 0
 
   val height: Int = this match
-    case neh: NonEmptyHeap[A] => neh.height
-    case _                    => 0
+    case neh: Branch[A] => neh.height
+    case _              => 0
 
   lazy val minOption: Option[A] = this match
-    case neh: NonEmptyHeap[A] => Some(neh.min)
-    case _                    => None
+    case neh: Branch[A] => Some(neh.min)
+    case _              => None
 
   def insert[B >: A: Ordering](x: B): BinaryHeap[B] = this match
-    case EmptyHeap => make(x)
-    case NonEmptyHeap(min, left, right, size, height) =>
+    case Leaf => BinaryHeap(x)
+    case Branch(min, left, right, size, height) =>
       if left.size < left.height * left.height - 1 then
         bubbleUp(min, left.insert(x), right)
       else if right.size < right.height * right.height - 1 then
@@ -46,24 +46,24 @@ enum BinaryHeap[+A]:
   def remove[B >: A: Ordering]: Option[BinaryHeap[B]] =
     def floatLeft(x: A, l: BinaryHeap[A], r: BinaryHeap[A]): BinaryHeap[A] =
       l match
-        case NonEmptyHeap(y, lt, rt, _, _) => make(y, make(x, lt, rt), r)
-        case _                             => make(x, l, r)
+        case Branch(y, lt, rt, _, _) => BinaryHeap(y, BinaryHeap(x, lt, rt), r)
+        case _                       => BinaryHeap(x, l, r)
 
     def floatRight(x: A, l: BinaryHeap[A], r: BinaryHeap[A]): BinaryHeap[A] =
       r match
-        case NonEmptyHeap(y, lt, rt, _, _) => make(y, l, make(x, lt, rt))
-        case _                             => make(x, l, r)
+        case Branch(y, lt, rt, _, _) => BinaryHeap(y, l, BinaryHeap(x, lt, rt))
+        case _                       => BinaryHeap(x, l, r)
 
     def mergeChildren(l: BinaryHeap[A], r: BinaryHeap[A]): BinaryHeap[A] =
       (l, r) match
-        case (EmptyHeap, EmptyHeap) => EmptyHeap
-        case (EmptyHeap, NonEmptyHeap(rmin, rleft, rright, rsize, rheight)) =>
+        case (Leaf, Leaf) => Leaf
+        case (Leaf, Branch(rmin, rleft, rright, rsize, rheight)) =>
           floatRight(rmin, l, mergeChildren(rleft, rright))
-        case (NonEmptyHeap(lmin, lleft, lright, lsize, lheight), EmptyHeap) =>
+        case (Branch(lmin, lleft, lright, lsize, lheight), Leaf) =>
           floatLeft(lmin, mergeChildren(lleft, lright), r)
         case (
-              NonEmptyHeap(lmin, lleft, lright, lsize, lheight),
-              NonEmptyHeap(rmin, rleft, rright, rsize, rheight)
+              Branch(lmin, lleft, lright, lsize, lheight),
+              Branch(rmin, rleft, rright, rsize, rheight)
             ) =>
           if lsize < lheight * lheight - 1 then
             floatLeft(lmin, mergeChildren(lleft, lright), r)
@@ -74,50 +74,50 @@ enum BinaryHeap[+A]:
           else floatRight(rmin, l, mergeChildren(rleft, rright))
 
     def bubbleRootDown(h: BinaryHeap[A]): BinaryHeap[A] = h match
-      case NonEmptyHeap(min, left, right, _, _) =>
+      case Branch(min, left, right, _, _) =>
         bubbleDown(min, left, right)
-      case _ => EmptyHeap
+      case _ => Leaf
 
     this match
-      case NonEmptyHeap(_, left, right, _, _) =>
+      case Branch(_, left, right, _, _) =>
         Some(bubbleRootDown(mergeChildren(left, right)))
       case _ => None
   end remove
 end BinaryHeap
 
 object BinaryHeap:
-  def empty[A]: BinaryHeap[A] = EmptyHeap
+  def empty[A]: BinaryHeap[A] = Leaf
 
-  def make[A: Ordering](x: A): BinaryHeap[A] =
-    make(x, EmptyHeap, EmptyHeap)
+  def apply[A: Ordering](x: A): BinaryHeap[A] =
+    BinaryHeap(x, Leaf, Leaf)
 
-  private def make[A: Ordering](
+  private def apply[A: Ordering](
       x: A,
       l: BinaryHeap[A],
       r: BinaryHeap[A]
   ): BinaryHeap[A] =
-    NonEmptyHeap(x, l, r, l.size + r.size + 1, math.max(l.height, r.height) + 1)
+    Branch(x, l, r, l.size + r.size + 1, math.max(l.height, r.height) + 1)
 
   private def bubbleUp[A: Ordering](
       x: A,
       l: BinaryHeap[A],
       r: BinaryHeap[A]
   ): BinaryHeap[A] = (l, r) match
-    case (NonEmptyHeap(y, lt, rt, _, _), _) if x > y =>
-      make(y, make(x, lt, rt), r)
-    case (_, NonEmptyHeap(z, lt, rt, _, _)) if x > z =>
-      make(z, l, make(x, lt, rt))
-    case (_, _) => make(x, l, r)
+    case (Branch(y, lt, rt, _, _), _) if x > y =>
+      BinaryHeap(y, BinaryHeap(x, lt, rt), r)
+    case (_, Branch(z, lt, rt, _, _)) if x > z =>
+      BinaryHeap(z, l, BinaryHeap(x, lt, rt))
+    case (_, _) => BinaryHeap(x, l, r)
 
   private def bubbleDown[A: Ordering](
       x: A,
       l: BinaryHeap[A],
       r: BinaryHeap[A]
   ): BinaryHeap[A] = (l, r) match
-    case (NonEmptyHeap(y, _, _, _, _), NonEmptyHeap(z, lt, rt, _, _))
+    case (Branch(y, _, _, _, _), Branch(z, lt, rt, _, _))
         if z < y && z < x =>
-      make(z, l, bubbleDown(x, lt, rt))
-    case (NonEmptyHeap(y, lt, rt, _, _), _) if x > y =>
-      make(y, bubbleDown(x, lt, rt), r)
-    case (_, _) => make(x, l, r)
+      BinaryHeap(z, l, bubbleDown(x, lt, rt))
+    case (Branch(y, lt, rt, _, _), _) if x > y =>
+      BinaryHeap(y, bubbleDown(x, lt, rt), r)
+    case (_, _) => BinaryHeap(x, l, r)
 end BinaryHeap

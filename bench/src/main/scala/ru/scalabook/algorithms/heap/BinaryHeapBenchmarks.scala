@@ -5,6 +5,7 @@ import ru.scalabook.algorithms.heap.BinaryHeap.*
 private val emptyBinaryHeap: BinaryHeap[Int] = BinaryHeap.empty
 private val nonEmptyBinaryHeap: BinaryHeap[Int] =
   BinaryHeap.empty.insert(1).insert(2)
+
 @main def isEmptyBinaryHeapBench(): Unit =
   println(emptyBinaryHeap.isEmpty)
   println(nonEmptyBinaryHeap.isEmpty)

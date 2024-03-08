@@ -5,9 +5,9 @@ import scala.math.Ordered.orderingToOrdered
 enum LeftistHeap[+A]:
   import LeftistHeap.*
 
-  private case EmptyLeftistHeap
+  case Leaf
 
-  private case NonEmptyLeftistHeap(
+  private case Branch(
       min: A,
       left: LeftistHeap[A],
       right: LeftistHeap[A],
@@ -15,40 +15,40 @@ enum LeftistHeap[+A]:
   )
 
   lazy val isEmpty: Boolean = this match
-    case EmptyLeftistHeap => true
-    case _                => false
+    case Leaf => true
+    case _    => false
 
   val rank: Int = this match
-    case neh: NonEmptyLeftistHeap[A] => neh.rank
-    case _                           => 0
+    case neh: Branch[A] => neh.rank
+    case _              => 0
 
   lazy val minOption: Option[A] = this match
-    case neh: NonEmptyLeftistHeap[A] => Some(neh.min)
-    case _                           => None
+    case neh: Branch[A] => Some(neh.min)
+    case _              => None
 
   def insert[B >: A: Ordering](x: B): LeftistHeap[B] = this match
-    case NonEmptyLeftistHeap(min, left, right, _) =>
+    case Branch(min, left, right, _) =>
       if left.rank > right.rank then bubble(min, left, right.insert(x))
       else bubble(min, left.insert(x), right)
-    case _ => make(x)
+    case _ => LeftistHeap(x)
 
   def remove[B >: A: Ordering]: Option[LeftistHeap[B]] = this match
-    case NonEmptyLeftistHeap(_, left, right, _) => Some(merge(left, right))
-    case _                                      => None
+    case Branch(_, left, right, _) => Some(merge(left, right))
+    case _                         => None
 end LeftistHeap
 
 object LeftistHeap:
-  def empty[A]: LeftistHeap[A] = EmptyLeftistHeap
+  def empty[A]: LeftistHeap[A] = Leaf
 
-  def make[A: Ordering](x: A): LeftistHeap[A] =
-    make(x, EmptyLeftistHeap, EmptyLeftistHeap)
+  def apply[A: Ordering](x: A): LeftistHeap[A] =
+    LeftistHeap(x, Leaf, Leaf)
 
-  private def make[A: Ordering](
+  private def apply[A: Ordering](
       x: A,
       l: LeftistHeap[A],
       r: LeftistHeap[A]
   ): LeftistHeap[A] =
-    NonEmptyLeftistHeap(x, l, r, r.rank + 1)
+    Branch(x, l, r, r.rank + 1)
 
   private def bubble[A: Ordering](
       x: A,
@@ -56,19 +56,19 @@ object LeftistHeap:
       r: LeftistHeap[A]
   ): LeftistHeap[A] =
     (l, r) match
-      case (NonEmptyLeftistHeap(y, lt, rt, _), _) if x > y =>
-        make(y, make(x, lt, rt), r)
-      case (_, NonEmptyLeftistHeap(z, lt, rt, _)) if x > z =>
-        make(z, l, make(x, lt, rt))
-      case (_, _) => make(x, l, r)
+      case (Branch(y, lt, rt, _), _) if x > y =>
+        LeftistHeap(y, LeftistHeap(x, lt, rt), r)
+      case (_, Branch(z, lt, rt, _)) if x > z =>
+        LeftistHeap(z, l, LeftistHeap(x, lt, rt))
+      case (_, _) => LeftistHeap(x, l, r)
 
   def merge[A: Ordering](x: LeftistHeap[A], y: LeftistHeap[A]): LeftistHeap[A] =
     (x, y) match
-      case (_, EmptyLeftistHeap) => x
-      case (EmptyLeftistHeap, _) => y
+      case (_, Leaf) => x
+      case (Leaf, _) => y
       case (
-            NonEmptyLeftistHeap(xx, xl, xr, _),
-            NonEmptyLeftistHeap(yy, yl, yr, _)
+            Branch(xx, xl, xr, _),
+            Branch(yy, yl, yr, _)
           ) =>
         if xx < yy then swap(xx, xl, merge(xr, y))
         else swap(yy, yl, merge(yr, x))
@@ -78,7 +78,7 @@ object LeftistHeap:
       l: LeftistHeap[A],
       r: LeftistHeap[A]
   ): LeftistHeap[A] =
-    if l.rank < r.rank then make(x, r, l)
-    else make(x, l, r)
+    if l.rank < r.rank then LeftistHeap(x, r, l)
+    else LeftistHeap(x, l, r)
 
 end LeftistHeap

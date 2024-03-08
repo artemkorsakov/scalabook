@@ -49,3 +49,4 @@ _узлы дерева при условии исключения корня о�
 
 - [Donald E. Knuth - The Art of Computer Programming, section 2.3](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
+- [Scalacaster - trees](https://github.com/vkostyukov/scalacaster/tree/master/src/tree)

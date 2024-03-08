@@ -37,9 +37,9 @@
 enum BinaryHeap[+A]:
   import BinaryHeap.*
 
-  private case EmptyHeap
+  case Leaf
 
-  private case NonEmptyHeap(
+  private case Branch(
       min: A,
       left: BinaryHeap[A],
       right: BinaryHeap[A],
@@ -48,24 +48,24 @@ enum BinaryHeap[+A]:
   )
 
   lazy val isEmpty: Boolean = this match
-    case EmptyHeap => true
-    case _         => false
+    case Leaf => true
+    case _    => false
 
   val size: Int = this match
-    case neh: NonEmptyHeap[A] => neh.size
-    case _                    => 0
+    case neh: Branch[A] => neh.size
+    case _              => 0
 
   val height: Int = this match
-    case neh: NonEmptyHeap[A] => neh.height
-    case _                    => 0
+    case neh: Branch[A] => neh.height
+    case _              => 0
 
   lazy val minOption: Option[A] = this match
-    case neh: NonEmptyHeap[A] => Some(neh.min)
-    case _                    => None
+    case neh: Branch[A] => Some(neh.min)
+    case _              => None
 
   def insert[B >: A: Ordering](x: B): BinaryHeap[B] = this match
-    case EmptyHeap => make(x)
-    case NonEmptyHeap(min, left, right, size, height) =>
+    case Leaf => BinaryHeap(x)
+    case Branch(min, left, right, size, height) =>
       if left.size < left.height * left.height - 1 then
         bubbleUp(min, left.insert(x), right)
       else if right.size < right.height * right.height - 1 then
@@ -78,24 +78,24 @@ enum BinaryHeap[+A]:
   def remove[B >: A: Ordering]: Option[BinaryHeap[B]] =
     def floatLeft(x: A, l: BinaryHeap[A], r: BinaryHeap[A]): BinaryHeap[A] =
       l match
-        case NonEmptyHeap(y, lt, rt, _, _) => make(y, make(x, lt, rt), r)
-        case _                             => make(x, l, r)
+        case Branch(y, lt, rt, _, _) => BinaryHeap(y, BinaryHeap(x, lt, rt), r)
+        case _                       => BinaryHeap(x, l, r)
 
     def floatRight(x: A, l: BinaryHeap[A], r: BinaryHeap[A]): BinaryHeap[A] =
       r match
-        case NonEmptyHeap(y, lt, rt, _, _) => make(y, l, make(x, lt, rt))
-        case _                             => make(x, l, r)
+        case Branch(y, lt, rt, _, _) => BinaryHeap(y, l, BinaryHeap(x, lt, rt))
+        case _                       => BinaryHeap(x, l, r)
 
     def mergeChildren(l: BinaryHeap[A], r: BinaryHeap[A]): BinaryHeap[A] =
       (l, r) match
-        case (EmptyHeap, EmptyHeap) => EmptyHeap
-        case (EmptyHeap, NonEmptyHeap(rmin, rleft, rright, rsize, rheight)) =>
+        case (Leaf, Leaf) => Leaf
+        case (Leaf, Branch(rmin, rleft, rright, rsize, rheight)) =>
           floatRight(rmin, l, mergeChildren(rleft, rright))
-        case (NonEmptyHeap(lmin, lleft, lright, lsize, lheight), EmptyHeap) =>
+        case (Branch(lmin, lleft, lright, lsize, lheight), Leaf) =>
           floatLeft(lmin, mergeChildren(lleft, lright), r)
         case (
-              NonEmptyHeap(lmin, lleft, lright, lsize, lheight),
-              NonEmptyHeap(rmin, rleft, rright, rsize, rheight)
+              Branch(lmin, lleft, lright, lsize, lheight),
+              Branch(rmin, rleft, rright, rsize, rheight)
             ) =>
           if lsize < lheight * lheight - 1 then
             floatLeft(lmin, mergeChildren(lleft, lright), r)
@@ -106,52 +106,52 @@ enum BinaryHeap[+A]:
           else floatRight(rmin, l, mergeChildren(rleft, rright))
 
     def bubbleRootDown(h: BinaryHeap[A]): BinaryHeap[A] = h match
-      case NonEmptyHeap(min, left, right, _, _) =>
+      case Branch(min, left, right, _, _) =>
         bubbleDown(min, left, right)
-      case _ => EmptyHeap
+      case _ => Leaf
 
     this match
-      case NonEmptyHeap(_, left, right, _, _) =>
+      case Branch(_, left, right, _, _) =>
         Some(bubbleRootDown(mergeChildren(left, right)))
       case _ => None
   end remove
 end BinaryHeap
 
 object BinaryHeap:
-  def empty[A]: BinaryHeap[A] = EmptyHeap
+  def empty[A]: BinaryHeap[A] = Leaf
 
-  def make[A: Ordering](x: A): BinaryHeap[A] =
-    make(x, EmptyHeap, EmptyHeap)
+  def apply[A: Ordering](x: A): BinaryHeap[A] =
+    BinaryHeap(x, Leaf, Leaf)
 
-  private def make[A: Ordering](
+  private def apply[A: Ordering](
       x: A,
       l: BinaryHeap[A],
       r: BinaryHeap[A]
   ): BinaryHeap[A] =
-    NonEmptyHeap(x, l, r, l.size + r.size + 1, math.max(l.height, r.height) + 1)
+    Branch(x, l, r, l.size + r.size + 1, math.max(l.height, r.height) + 1)
 
   private def bubbleUp[A: Ordering](
       x: A,
       l: BinaryHeap[A],
       r: BinaryHeap[A]
   ): BinaryHeap[A] = (l, r) match
-    case (NonEmptyHeap(y, lt, rt, _, _), _) if x > y =>
-      make(y, make(x, lt, rt), r)
-    case (_, NonEmptyHeap(z, lt, rt, _, _)) if x > z =>
-      make(z, l, make(x, lt, rt))
-    case (_, _) => make(x, l, r)
+    case (Branch(y, lt, rt, _, _), _) if x > y =>
+      BinaryHeap(y, BinaryHeap(x, lt, rt), r)
+    case (_, Branch(z, lt, rt, _, _)) if x > z =>
+      BinaryHeap(z, l, BinaryHeap(x, lt, rt))
+    case (_, _) => BinaryHeap(x, l, r)
 
   private def bubbleDown[A: Ordering](
       x: A,
       l: BinaryHeap[A],
       r: BinaryHeap[A]
   ): BinaryHeap[A] = (l, r) match
-    case (NonEmptyHeap(y, _, _, _, _), NonEmptyHeap(z, lt, rt, _, _))
+    case (Branch(y, _, _, _, _), Branch(z, lt, rt, _, _))
         if z < y && z < x =>
-      make(z, l, bubbleDown(x, lt, rt))
-    case (NonEmptyHeap(y, lt, rt, _, _), _) if x > y =>
-      make(y, bubbleDown(x, lt, rt), r)
-    case (_, _) => make(x, l, r)
+      BinaryHeap(z, l, bubbleDown(x, lt, rt))
+    case (Branch(y, lt, rt, _, _), _) if x > y =>
+      BinaryHeap(y, bubbleDown(x, lt, rt), r)
+    case (_, _) => BinaryHeap(x, l, r)
 end BinaryHeap
 ```
 
@@ -174,13 +174,14 @@ emptyBinaryHeap.minOption      // None
 nonEmptyBinaryHeap.minOption   // Some(1)
 
 emptyBinaryHeap.insert(5)    
-// NonEmptyHeap(5,EmptyHeap,EmptyHeap,1,1)  
+// Branch(5,Leaf,Leaf,1,1) 
 nonEmptyBinaryHeap.insert(5)
-// NonEmptyHeap(1,NonEmptyHeap(2,EmptyHeap,EmptyHeap,1,1),NonEmptyHeap(5,EmptyHeap,EmptyHeap,1,1),3,2)
+// Branch(1,Branch(2,Leaf,Leaf,1,1),Branch(5,Leaf,Leaf,1,1),3,2)
 
-emptyBinaryHeap.remove         // None
+emptyBinaryHeap.remove         
+// None
 nonEmptyBinaryHeap.remove
-// Some(NonEmptyHeap(2,EmptyHeap,EmptyHeap,1,1))   
+// Some(Branch(2,Leaf,Leaf,1,1))
 ```
 
 ## Левосторонняя куча
@@ -215,9 +216,9 @@ nonEmptyBinaryHeap.remove
 enum LeftistHeap[+A]:
   import LeftistHeap.*
 
-  private case EmptyLeftistHeap
+  case Leaf
 
-  private case NonEmptyLeftistHeap(
+  private case Branch(
       min: A,
       left: LeftistHeap[A],
       right: LeftistHeap[A],
@@ -225,40 +226,40 @@ enum LeftistHeap[+A]:
   )
 
   lazy val isEmpty: Boolean = this match
-    case EmptyLeftistHeap => true
-    case _                => false
+    case Leaf => true
+    case _    => false
 
   val rank: Int = this match
-    case neh: NonEmptyLeftistHeap[A] => neh.rank
-    case _                           => 0
+    case neh: Branch[A] => neh.rank
+    case _              => 0
 
   lazy val minOption: Option[A] = this match
-    case neh: NonEmptyLeftistHeap[A] => Some(neh.min)
-    case _                           => None
+    case neh: Branch[A] => Some(neh.min)
+    case _              => None
 
   def insert[B >: A: Ordering](x: B): LeftistHeap[B] = this match
-    case NonEmptyLeftistHeap(min, left, right, _) =>
+    case Branch(min, left, right, _) =>
       if left.rank > right.rank then bubble(min, left, right.insert(x))
       else bubble(min, left.insert(x), right)
-    case _ => make(x)
+    case _ => LeftistHeap(x)
 
   def remove[B >: A: Ordering]: Option[LeftistHeap[B]] = this match
-    case NonEmptyLeftistHeap(_, left, right, _) => Some(merge(left, right))
-    case _                                      => None
+    case Branch(_, left, right, _) => Some(merge(left, right))
+    case _                         => None
 end LeftistHeap
 
 object LeftistHeap:
-  def empty[A]: LeftistHeap[A] = EmptyLeftistHeap
+  def empty[A]: LeftistHeap[A] = Leaf
 
-  def make[A: Ordering](x: A): LeftistHeap[A] =
-    make(x, EmptyLeftistHeap, EmptyLeftistHeap)
+  def apply[A: Ordering](x: A): LeftistHeap[A] =
+    LeftistHeap(x, Leaf, Leaf)
 
-  private def make[A: Ordering](
+  private def apply[A: Ordering](
       x: A,
       l: LeftistHeap[A],
       r: LeftistHeap[A]
   ): LeftistHeap[A] =
-    NonEmptyLeftistHeap(x, l, r, r.rank + 1)
+    Branch(x, l, r, r.rank + 1)
 
   private def bubble[A: Ordering](
       x: A,
@@ -266,19 +267,19 @@ object LeftistHeap:
       r: LeftistHeap[A]
   ): LeftistHeap[A] =
     (l, r) match
-      case (NonEmptyLeftistHeap(y, lt, rt, _), _) if x > y =>
-        make(y, make(x, lt, rt), r)
-      case (_, NonEmptyLeftistHeap(z, lt, rt, _)) if x > z =>
-        make(z, l, make(x, lt, rt))
-      case (_, _) => make(x, l, r)
+      case (Branch(y, lt, rt, _), _) if x > y =>
+        LeftistHeap(y, LeftistHeap(x, lt, rt), r)
+      case (_, Branch(z, lt, rt, _)) if x > z =>
+        LeftistHeap(z, l, LeftistHeap(x, lt, rt))
+      case (_, _) => LeftistHeap(x, l, r)
 
   def merge[A: Ordering](x: LeftistHeap[A], y: LeftistHeap[A]): LeftistHeap[A] =
     (x, y) match
-      case (_, EmptyLeftistHeap) => x
-      case (EmptyLeftistHeap, _) => y
+      case (_, Leaf) => x
+      case (Leaf, _) => y
       case (
-            NonEmptyLeftistHeap(xx, xl, xr, _),
-            NonEmptyLeftistHeap(yy, yl, yr, _)
+            Branch(xx, xl, xr, _),
+            Branch(yy, yl, yr, _)
           ) =>
         if xx < yy then swap(xx, xl, merge(xr, y))
         else swap(yy, yl, merge(yr, x))
@@ -288,8 +289,8 @@ object LeftistHeap:
       l: LeftistHeap[A],
       r: LeftistHeap[A]
   ): LeftistHeap[A] =
-    if l.rank < r.rank then make(x, r, l)
-    else make(x, l, r)
+    if l.rank < r.rank then LeftistHeap(x, r, l)
+    else LeftistHeap(x, l, r)
 
 end LeftistHeap
 ```
@@ -310,21 +311,21 @@ emptyLeftistHeap.minOption     // None
 nonEmptyLeftistHeap.minOption  // Some(1)
   
 emptyLeftistHeap.insert(5)
-// NonEmptyLeftistHeap(5,.,.,1)
+// Branch(5,Leaf,Leaf,1)
 nonEmptyLeftistHeap.insert(5)
-// NonEmptyLeftistHeap(1,NonEmptyLeftistHeap(2,.,.,1),NonEmptyLeftistHeap(5,.,.,1),2)
+// Branch(1,Branch(2,Leaf,Leaf,1),Branch(5,Leaf,Leaf,1),2)
 
 emptyLeftistHeap.remove
 // None
 nonEmptyLeftistHeap.remove
-// Some(NonEmptyLeftistHeap(2,.,.,1))
+// Some(Branch(2,Leaf,Leaf,1))
 
 LeftistHeap.merge(emptyLeftistHeap, emptyLeftistHeap)
-// EmptyLeftistHeap
+// Leaf
 LeftistHeap.merge(emptyLeftistHeap, nonEmptyLeftistHeap)
-// NonEmptyLeftistHeap(1,NonEmptyLeftistHeap(2,.,.,1),.,1)
+// Branch(1,Branch(2,Leaf,Leaf,1),Leaf,1)
 LeftistHeap.merge(nonEmptyLeftistHeap, nonEmptyLeftistHeap)
-// NonEmptyLeftistHeap(1,NonEmptyLeftistHeap(2,.,.,1),NonEmptyLeftistHeap(1,NonEmptyLeftistHeap(2,.,.,1),.,1),2)
+// Branch(1,Branch(2,Leaf,Leaf,1),Branch(1,Branch(2,Leaf,Leaf,1),Leaf,1),2)
 ```
 
 ## Парная куча (pairing heap)
@@ -354,47 +355,46 @@ enum PairingHeap[+A]:
 
   import PairingHeap.*
 
-  private case EmptyPairingHeap
-
-  private case NonEmptyPairingHeap(min: A, subtrees: List[PairingHeap[A]])
+  case Leaf
+  private case Branch(min: A, subtrees: List[PairingHeap[A]])
 
   lazy val isEmpty: Boolean = this match
-    case EmptyPairingHeap => true
-    case _                => false
+    case Leaf => true
+    case _    => false
 
   def insert[B >: A: Ordering](x: B): PairingHeap[B] =
-    merge(make(x), this)
+    merge(PairingHeap(x), this)
 
   def remove[B >: A: Ordering]: Option[PairingHeap[B]] = this match
-    case NonEmptyPairingHeap(_, subtrees) => Some(pairing(subtrees))
-    case _                                => None
+    case Branch(_, subtrees) => Some(pairing(subtrees))
+    case _                   => None
 
 end PairingHeap
 
 object PairingHeap:
-  def empty[A]: PairingHeap[A] = EmptyPairingHeap
+  def empty[A]: PairingHeap[A] = Leaf
 
-  def make[A: Ordering](x: A): PairingHeap[A] =
-    NonEmptyPairingHeap(x, List.empty)
+  def apply[A: Ordering](x: A): PairingHeap[A] =
+    Branch(x, List.empty)
 
   private def merge[A: Ordering](
       x: PairingHeap[A],
       y: PairingHeap[A]
   ): PairingHeap[A] =
     (x, y) match
-      case (_, EmptyPairingHeap) => x
-      case (EmptyPairingHeap, _) => y
-      case (NonEmptyPairingHeap(x1, subs1), NonEmptyPairingHeap(x2, subs2)) =>
+      case (_, Leaf) => x
+      case (Leaf, _) => y
+      case (Branch(x1, subs1), Branch(x2, subs2)) =>
         if x1 < x2 then
-          NonEmptyPairingHeap(x1, NonEmptyPairingHeap(x2, subs2) :: subs1)
+          Branch(x1, Branch(x2, subs2) :: subs1)
         else
-          NonEmptyPairingHeap(x2, NonEmptyPairingHeap(x1, subs1) :: subs2)
+          Branch(x2, Branch(x1, subs1) :: subs2)
 
   @tailrec
   private def pairing[A: Ordering](subtrees: List[PairingHeap[A]])
       : PairingHeap[A] =
     subtrees match
-      case Nil              => EmptyPairingHeap
+      case Nil              => Leaf
       case hd :: Nil        => hd
       case h1 :: h2 :: tail => pairing(merge(h1, h2) :: tail)
 
@@ -406,7 +406,6 @@ end PairingHeap
 [Косая куча][skew heap wiki] - это самонастраивающаяся форма левой кучи, 
 которая пытается поддерживать баланс путем безусловной замены всех узлов на пути слияния при слиянии двух куч. 
 (Операция слияния также используется при добавлении и удалении значений.)
-
 
 **Оценка:**
 
@@ -429,41 +428,36 @@ end PairingHeap
 enum SkewHeap[+A]:
   import SkewHeap.*
 
-  private case EmptySkewHeap
-
-  private case NonEmptySkewHeap(
-      min: A,
-      left: SkewHeap[A],
-      right: SkewHeap[A]
-  )
+  case Leaf
+  private case Branch(min: A, left: SkewHeap[A], right: SkewHeap[A])
 
   lazy val isEmpty: Boolean = this match
-    case EmptySkewHeap => true
-    case _             => false
+    case Leaf => true
+    case _    => false
 
   def insert[B >: A: Ordering](x: B): SkewHeap[B] =
-    merge(make(x), this)
+    merge(apply(x), this)
 
   def remove[B >: A: Ordering]: Option[SkewHeap[B]] = this match
-    case NonEmptySkewHeap(_, left, right) => Some(merge(left, right))
-    case _                                => None
+    case Branch(_, left, right) => Some(merge(left, right))
+    case _                      => None
 
 end SkewHeap
 
 object SkewHeap:
-  def empty[A]: SkewHeap[A] = EmptySkewHeap
+  def empty[A]: SkewHeap[A] = Leaf
 
-  def make[A: Ordering](x: A): SkewHeap[A] =
-    NonEmptySkewHeap(x, EmptySkewHeap, EmptySkewHeap)
+  def apply[A: Ordering](x: A): SkewHeap[A] =
+    Branch(x, Leaf, Leaf)
 
   def merge[A: Ordering](x: SkewHeap[A], y: SkewHeap[A]): SkewHeap[A] =
     (x, y) match
-      case (_, EmptySkewHeap) => x
-      case (EmptySkewHeap, _) => y
-      case (NonEmptySkewHeap(x1, l1, r1), NonEmptySkewHeap(x2, l2, r2)) =>
+      case (_, Leaf) => x
+      case (Leaf, _) => y
+      case (Branch(x1, l1, r1), Branch(x2, l2, r2)) =>
         if x1 < x2 then
-          NonEmptySkewHeap(x1, merge(NonEmptySkewHeap(x2, l2, r2), r1), l1)
-        else NonEmptySkewHeap(x2, merge(NonEmptySkewHeap(x1, l1, r1), r2), l2)
+          Branch(x1, merge(Branch(x2, l2, r2), r1), l1)
+        else Branch(x2, merge(Branch(x1, l1, r1), r2), l2)
 
 end SkewHeap
 ```

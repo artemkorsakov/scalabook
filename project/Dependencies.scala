@@ -109,6 +109,7 @@ object Dependencies {
 
   val benchLibs: Seq[ModuleID] =
     Seq(
+      typelevel.catsCore,
       typelevel.spire
     )
 

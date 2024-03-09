@@ -21,6 +21,20 @@
   
 **Код:**
 
+В предоставленном коде определены методы для работы с двоичным деревом поиска (Binary Search Tree, BST).
+
+Основные публичные методы, определенные в `extension` для `Dictionary[A]`, включают:
+
+1. `insert(key: String, value: A): Dictionary[A]` - Вставляет новую пару ключ-значение в дерево. 
+
+2. `searchKey(key: String): Option[A]` - Ищет значение по ключу. Если ключ найден, возвращает `Some(value)`, иначе - `None`.
+
+3. `updateValue(key: String, value: A): Dictionary[A]` - Обновляет значение по ключу. 
+   Если ключ не найден, он вставляет новую пару ключ-значение.
+
+4. `remove(key: String): Dictionary[A]` - Удаляет пару ключ-значение по ключу. 
+   Если ключ не найден, дерево остается неизменным.
+
 ```dotty
 object BinarySearchTree:
   opaque type Dictionary[A] = BinaryTree[(String, A)]
@@ -36,7 +50,7 @@ object BinarySearchTree:
           Branch((k, v), lb.insert(key, value), rb)
         case Branch((k, v), lb, rb) if key > k =>
           Branch((k, v), lb, rb.insert(key, value))
-        case Branch((_, _), _, _) => dict
+        case _ => dict
 
     def searchKey(key: String): Option[A] =
       dict match

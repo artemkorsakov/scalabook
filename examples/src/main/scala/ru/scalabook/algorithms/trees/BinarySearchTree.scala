@@ -16,7 +16,7 @@ object BinarySearchTree:
           Branch((k, v), lb.insert(key, value), rb)
         case Branch((k, v), lb, rb) if key > k =>
           Branch((k, v), lb, rb.insert(key, value))
-        case Branch((_, _), _, _) => dict
+        case _ => dict
 
     def searchKey(key: String): Option[A] =
       dict match

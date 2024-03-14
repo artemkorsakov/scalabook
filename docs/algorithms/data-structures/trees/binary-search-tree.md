@@ -108,14 +108,30 @@ object BinarySearchTree:
 end BinarySearchTree
 ```
 
-### Параметры дерева поиска
+## Методы двоичного дерева
+
+**Код:**
+
+В следующем коде есть несколько методов, которые "наследуются" от [двоичного дерева](binary-tree.md).
+
+```dotty
+object BinarySearchTree:  
+  extension [A](dict: Dictionary[A])    
+    def isEmpty: Boolean = dict.isEmpty
+
+    def size: Int = dict.size
+
+    def height: Int = dict.height
+
+end BinarySearchTree
+```
+
+## Параметры дерева поиска
 
 **Код:**
 
 В следующем коде есть несколько методов, которые работают с бинарными деревьями и словарями, основанными на этих деревьях. 
 
-- `size` - метод возвращает количество элементов в `Dictionary`. 
-- `isEmpty` - метод проверяет, является ли `Dictionary` пустым. 
 - `isValid` - метод проверяет, является ли `Dictionary` валидным двоичным деревом поиска. 
   Он проверяет, что для каждого узла все ключи в левом поддереве меньше ключа узла, 
   а все ключи в правом поддереве больше ключа узла.
@@ -126,10 +142,6 @@ end BinarySearchTree
 ```dotty
 object BinarySearchTree:  
   extension [A](dict: Dictionary[A])    
-    def size: Int = dict.size
-
-    def isEmpty: Boolean = dict.isEmpty
-
     def isValid: Boolean = dict match
       case Leaf                       => true
       case Branch((_, _), Leaf, Leaf) => true

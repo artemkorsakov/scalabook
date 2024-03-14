@@ -52,9 +52,11 @@ object BinarySearchTree:
               Branch(item, lb, dict)
             }.getOrElse(Leaf)
 
+    def isEmpty: Boolean = dict.isEmpty
+
     def size: Int = dict.size
 
-    def isEmpty: Boolean = dict.isEmpty
+    def height: Int = dict.height
 
     def isValid: Boolean = dict match
       case Leaf                       => true
@@ -91,4 +93,5 @@ object BinarySearchTree:
           (item, Branch((k, v), dict, rb))
         }
   end extension
+
 end BinarySearchTree

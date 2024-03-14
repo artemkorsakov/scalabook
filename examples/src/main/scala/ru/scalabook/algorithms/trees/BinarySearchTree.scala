@@ -52,6 +52,29 @@ object BinarySearchTree:
               Branch(item, lb, dict)
             }.getOrElse(Leaf)
 
+    def size: Int = dict.size
+
+    def isEmpty: Boolean = dict.isEmpty
+
+    def isValid: Boolean = dict match
+      case Leaf                       => true
+      case Branch((_, _), Leaf, Leaf) => true
+      case Branch((key, _), Leaf, rb @ Branch((keyR, _), _, _)) =>
+        key <= keyR && rb.isValid
+      case Branch((key, _), lb @ Branch((keyL, _), _, _), Leaf) =>
+        key >= keyL && lb.isValid
+      case Branch(
+            (key, _),
+            lb @ Branch((keyL, _), _, _),
+            rb @ Branch((keyR, _), _, _)
+          ) =>
+        key >= keyL && key <= keyR && lb.isValid && rb.isValid
+
+    def isBalanced: Boolean = dict match
+      case Leaf => true
+      case Branch((_, _), lb, rb) =>
+        math.abs(lb.height - rb.height) <= 1 && lb.isBalanced && rb.isBalanced
+
     private def popMax: Option[((String, A), Dictionary[A])] = dict match
       case Leaf                     => None
       case Branch((k, v), lb, Leaf) => Some(((k, v), lb))

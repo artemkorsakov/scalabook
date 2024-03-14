@@ -10,18 +10,21 @@
 **Оценка:**
 
 - _Поиск элемента_ (`search`)
-    - **Время** - O(lg n)
-    - **Память** - O(lg n)
+    - **Время** - O(log n)
+    - **Память** - O(log n)
 - _Вставка элемента_ (`insert`)
-    - **Время** - O(lg n)
-    - **Память** - O(lg n)
+    - **Время** - O(log n)
+    - **Память** - O(log n)
+- _Обновление значения элемента_ (`update`)
+    - **Время** - O(log n)
+    - **Память** - O(log n) 
 - _Удаление элемента_ (`remove`)
-    - **Время** - O(lg n)
-    - **Память** - O(lg n)
+    - **Время** - O(log n)
+    - **Память** - O(log n)
   
 **Код:**
 
-В предоставленном коде определены методы для работы с двоичным деревом поиска (Binary Search Tree, BST).
+В следующем коде определены методы для работы с двоичным деревом поиска (Binary Search Tree, BST).
 
 Основные публичные методы, определенные в `extension` для `Dictionary[A]`, включают:
 
@@ -101,6 +104,50 @@ object BinarySearchTree:
         lb.popMin.map { case (item, dict) =>
           (item, Branch((k, v), dict, rb))
         }
+  end extension
+end BinarySearchTree
+```
+
+### Параметры дерева поиска
+
+**Код:**
+
+В следующем коде есть несколько методов, которые работают с бинарными деревьями и словарями, основанными на этих деревьях. 
+
+- `size` - метод возвращает количество элементов в `Dictionary`. 
+- `isEmpty` - метод проверяет, является ли `Dictionary` пустым. 
+- `isValid` - метод проверяет, является ли `Dictionary` валидным двоичным деревом поиска. 
+  Он проверяет, что для каждого узла все ключи в левом поддереве меньше ключа узла, 
+  а все ключи в правом поддереве больше ключа узла.
+- `isBalanced` - Этот метод проверяет, является ли `Dictionary` сбалансированным двоичным деревом. 
+  Он проверяет, что для каждого узла разница высот левого и правого поддеревьев не более 1, 
+  и рекурсивно проверяет левое и правое поддеревья.
+
+```dotty
+object BinarySearchTree:  
+  extension [A](dict: Dictionary[A])    
+    def size: Int = dict.size
+
+    def isEmpty: Boolean = dict.isEmpty
+
+    def isValid: Boolean = dict match
+      case Leaf                       => true
+      case Branch((_, _), Leaf, Leaf) => true
+      case Branch((key, _), Leaf, rb @ Branch((keyR, _), _, _)) =>
+        key <= keyR && rb.isValid
+      case Branch((key, _), lb @ Branch((keyL, _), _, _), Leaf) =>
+        key >= keyL && lb.isValid
+      case Branch(
+            (key, _),
+            lb @ Branch((keyL, _), _, _),
+            rb @ Branch((keyR, _), _, _)
+          ) =>
+        key >= keyL && key <= keyR && lb.isValid && rb.isValid
+
+    def isBalanced: Boolean = dict match
+      case Leaf => true
+      case Branch((_, _), lb, rb) =>
+        math.abs(lb.height - rb.height) <= 1 && lb.isBalanced && rb.isBalanced
   end extension
 end BinarySearchTree
 ```

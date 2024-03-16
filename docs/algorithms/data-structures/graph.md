@@ -13,6 +13,59 @@ _Граф_ (_graph_) обычно определяется как множест
 Граф называется _связным_ (_connected_), если существует путь между любыми двумя его вершинами. 
 _Циклом_ называется простой путь длиной, большей или равной трем, от некоторой вершины к ней самой.
 
+**Код:**
+
+В следующем коде определены классы `Vertex`, `Edge` и `Graph`, которые представляют собой неориентированный граф.
+
+- Метод `addVertex` добавляет новую вершину в граф. Если вершина с таким же значением уже существует, 
+  то возвращает текущий граф. Если вершины с таким значением нет, то создает новую вершину и добавляет ее в граф.
+- Метод `addEdge` добавляет новое ребро в граф. Он проверяет, существуют ли исходная и конечная вершины в графе. 
+  Если хотя бы одна из вершин не найдена, то возвращает соответствующую ошибку. 
+  Если обе вершины найдены, то проверяет, существует ли уже ребро между этими вершинами. 
+  Если ребро уже существует, то возвращает соответствующую ошибку. 
+  Если ребра не существует, то создает новое ребро и добавляет его в граф.
+- Методы `findVertex` и `findEdge` служат для поиска вершин и ребер в графе соответственно. 
+
+```dotty
+final case class Vertex[A: Ordering](id: UUID, value: A):
+  def contains(value: A): Boolean = summon[Ordering[A]].equiv(this.value, value)
+
+final case class Edge[A](from: UUID, to: UUID, value: A)
+
+final case class Graph[A: Ordering, B] private (
+    vertices: Map[UUID, Vertex[A]],
+    edges: Vector[Edge[B]]
+):
+  self =>
+
+  def addVertex(value: A): Graph[A, B] =
+    if vertices.exists(_._2.contains(value)) then self
+    else
+      val newVertex = Vertex(UUID.randomUUID(), value)
+      Graph(vertices + (newVertex.id -> newVertex), edges)
+
+  def addEdge(from: A, to: A, value: B): Either[String, Graph[A, B]] =
+    for
+      fromVertex <- findVertex(from).toRight("Исходящая вершина не найдена")
+      toVertex   <- findVertex(to).toRight("Конечная вершина не найдена")
+      edge <- if findEdge(fromVertex.id, toVertex.id).isDefined then
+        Left("Эта вершина уже содержится в графе")
+      else Right(Edge(fromVertex.id, toVertex.id, value))
+    yield Graph(vertices, edges :+ edge)
+
+  private def findVertex(value: A): Option[Vertex[A]] =
+    vertices.collectFirst {
+      case (id, vertex) if vertex.contains(value) => vertex
+    }
+
+  private def findEdge(from: UUID, to: UUID): Option[Edge[B]] =
+    edges.find: edge => 
+      edge.from == from && edge.to == to ||
+      edge.from == to && edge.to == from
+
+end Graph
+```
+
 ## Свободное дерево
 
 _Свободное дерево_ (_free tree_), или дерево без корня, определяется как связный граф без циклов.

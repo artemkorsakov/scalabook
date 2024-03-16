@@ -109,4 +109,41 @@ object GraphSuite extends SimpleIOSuite with Checkers:
       expect(result2.isRight) and
       expect(result3.isRight)
 
+  pureTest("areAdjacent should return true if two vertices are adjacent"):
+    val maybeGraph =
+      Graph.empty[String, String]
+        .addVertex("A")
+        .addVertex("B")
+        .addEdge("A", "B", "edge")
+
+    whenSuccess(maybeGraph): graph =>
+      val maybeResult = graph.areAdjacent("A", "B")
+
+      whenSuccess(maybeResult): result =>
+        expect(result)
+
+  pureTest("areAdjacent should return false if two vertices are not adjacent"):
+    val maybeGraph =
+      Graph.empty[String, String]
+        .addVertex("A")
+        .addVertex("B")
+        .addVertex("C")
+        .addEdge("A", "B", "edge")
+
+    whenSuccess(maybeGraph): graph =>
+      val maybeResult = graph.areAdjacent("A", "C")
+
+      whenSuccess(maybeResult): result =>
+        expect(!result)
+
+  pureTest(
+    "areAdjacent should return an error if one of the vertices does not exist"
+  ):
+    val graph  = Graph.empty[String, String].addVertex("A")
+    val result = graph.areAdjacent("A", "B")
+
+    matches(result) { case Left(error) =>
+      expect(error == "Конечная вершина не найдена")
+    }
+
 end GraphSuite

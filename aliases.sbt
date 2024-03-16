@@ -7,3 +7,7 @@ addCommandAlias(
   "prepush",
   "com; fix; test; undeclaredCompileDependencies; unusedCompileDependencies"
 )
+addCommandAlias(
+  "fullCheck",
+  "com; check; test; undeclaredCompileDependencies; unusedCompileDependencies"
+)

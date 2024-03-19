@@ -1,7 +1,8 @@
-package ru.scalabook.algorithms.others
+package ru.scalabook.algorithms.geometry
 
-import ru.scalabook.algorithms.others.PointOnTriangleType.*
-import ru.scalabook.algorithms.others.Triangle.*
+import ru.scalabook.algorithms.geometry.PointOnTriangleType.*
+import ru.scalabook.algorithms.geometry.Triangle
+import ru.scalabook.algorithms.geometry.Triangle.*
 import weaver.FunSuite
 
 object TriangleSuite extends FunSuite:

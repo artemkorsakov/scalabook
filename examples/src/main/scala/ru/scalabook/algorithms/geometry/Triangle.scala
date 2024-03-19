@@ -1,4 +1,4 @@
-package ru.scalabook.algorithms.others
+package ru.scalabook.algorithms.geometry
 
 final case class Triangle(
     point1: (Int, Int),

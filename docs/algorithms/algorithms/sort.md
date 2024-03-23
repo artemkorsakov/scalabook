@@ -364,3 +364,4 @@ quickSort(List(3, 1, 4, 2))
 
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
 - [Scalacaster](https://github.com/vkostyukov/scalacaster/tree/master)
+- [Никлаус Вирт - Алгоритмы + Структуры данных = Программы](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs)

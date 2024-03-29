@@ -99,7 +99,7 @@ getSumOfNumbersDividedBy3Or5(10) // 23
 
 **Метрики:**
 
-Вычисление `getSumOfNumbersDividedBy3Or5(1000)` занимает несколько миллисекунд.
+Вычисление `getSumOfNumbersDividedBy3Or5(1000)` занимает меньше секунды.
 
 ### Problem 2. Even Fibonacci Numbers
 
@@ -150,7 +150,7 @@ def count(): Long =
 
 **Метрики:**
 
-Вычисление `count()` занимает несколько миллисекунд.
+Вычисление `count()` занимает меньше секунды.
 
 ### Problem 3. Largest Prime Factor
 
@@ -201,7 +201,7 @@ largestPrimeFactor(13195L) // 29
 
 **Метрики:**
 
-Вычисление `largestPrimeFactor(600851475143L)` занимает примерно 0.2 секунды.
+Вычисление `largestPrimeFactor(600851475143L)` занимает меньше секунды.
 
 ### Problem 4. Largest Palindrome Product
 
@@ -269,7 +269,7 @@ getLargestPalindrome(2) // 9009
 
 **Метрики:**
 
-Вычисление `getLargestPalindrome(3)` занимает 0,3 секунды.
+Вычисление `getLargestPalindrome(3)` занимает меньше секунды.
 
 ### Problem 5. Smallest Multiple
 
@@ -338,7 +338,7 @@ getSmallestNumberWhichDivisibleByRange(10) // 2520
 
 **Метрики:**
 
-Вычисление `getSmallestNumberWhichDivisibleByRange(20)` занимает 0,3 секунды.
+Вычисление `getSmallestNumberWhichDivisibleByRange(20)` занимает меньше секунды.
 
 ### Problem 6. Sum Square Difference
 
@@ -373,7 +373,7 @@ getDifference(10) // 2640
 
 **Метрики:**
 
-Вычисление `getDifference(100)` занимает 0,2 секунды.
+Вычисление `getDifference(100)` занимает меньше секунды.
 
 ### Problem 7. 10001st Prime
 
@@ -418,7 +418,7 @@ primes(5) // 13
 
 **Метрики:**
 
-Вычисление `primes(10000)` занимает 0,4 секунды.
+Вычисление `primes(10000)` занимает меньше секунды.
 
 ### Problem 8. Largest Product in a Series
 
@@ -508,7 +508,7 @@ getLargestProduct(number, 4) // 5832
 
 **Метрики:**
 
-Вычисление `getLargestProduct(number, 13)` занимает 0,3 секунды.
+Вычисление `getLargestProduct(number, 13)` занимает меньше секунды.
 
 ### Problem 9. Special Pythagorean Triplet
 
@@ -561,7 +561,7 @@ def pythagoreanTripletsWithGivenSum(sum: Long)
 
 **Метрики:**
 
-Вычисление `pythagoreanTripletsWithGivenSum(1000)` занимает 0,4 секунды.
+Вычисление `pythagoreanTripletsWithGivenSum(1000)` занимает меньше секунды.
 
 ### Problem 10.
 
@@ -614,11 +614,625 @@ getSumOfPrimes(10) // 17
 
 **Метрики:**
 
-Вычисление `getSumOfPrimes(2000000)` занимает 0,4 секунды.
+Вычисление `getSumOfPrimes(2000000)` занимает меньше секунды.
 
 ## Решения задач 11-20
 
-...
+### Problem 11. Largest Product in a Grid
+
+**Задача:**
+
+[Problem 11](https://projecteuler.net/problem=11)
+
+> In the 20 * 20 grid below, four numbers along a diagonal line have been marked in red.
+> 
+> 08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08
+> 
+> 49 49 99 40 17 81 18 57 60 87 17 40 98 43 69 48 04 56 62 00
+> 
+> 81 49 31 73 55 79 14 29 93 71 40 67 53 88 30 03 49 13 36 65
+> 
+> 52 70 95 23 04 60 11 42 69 24 68 56 01 32 56 71 37 02 36 91
+> 
+> 22 31 16 71 51 67 63 89 41 92 36 54 22 40 40 28 66 33 13 80
+> 
+> 24 47 32 60 99 03 45 02 44 75 33 53 78 36 84 20 35 17 12 50
+> 
+> 32 98 81 28 64 23 67 10 **26** 38 40 67 59 54 70 66 18 38 64 70
+> 
+> 67 26 20 68 02 62 12 20 95 **63** 94 39 63 08 40 91 66 49 94 21
+> 
+> 24 55 58 05 66 73 99 26 97 17 **78** 78 96 83 14 88 34 89 63 72
+> 
+> 21 36 23 09 75 00 76 44 20 45 35 **14** 00 61 33 97 34 31 33 95
+> 
+> 78 17 53 28 22 75 31 67 15 94 03 80 04 62 16 14 09 53 56 92
+> 
+> 16 39 05 42 96 35 31 47 55 58 88 24 00 17 54 24 36 29 85 57
+> 
+> 86 56 00 48 35 71 89 07 05 44 44 37 44 60 21 58 51 54 17 58
+> 
+> 19 80 81 68 05 94 47 69 28 73 92 13 86 52 17 77 04 89 55 40
+> 
+> 04 52 08 83 97 35 99 16 07 97 57 32 16 26 26 79 33 27 98 66
+> 
+> 88 36 68 87 57 62 20 72 03 46 33 67 46 55 12 32 63 93 53 69
+> 
+> 04 42 16 73 38 25 39 11 24 94 72 18 08 46 29 32 40 62 76 36
+> 
+> 20 69 36 41 72 30 23 88 34 62 99 69 82 67 59 85 74 04 36 16
+> 
+> 20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54
+> 
+> 01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48
+> 
+> The product of these numbers is `26 * 63 * 78 * 14 = 1788696`. 
+> What is the greatest product of four adjacent numbers in the same direction (up, down, left, right, or diagonally) 
+> in the 20 * 20 grid?
+
+**Алгоритм:**
+
+1. Загружаем матрицу из строки, представляющей собой сетку чисел, разделенных пробелами и переносом строк.
+2. Определяем размеры матрицы (количество строк и столбцов).
+3. Определяем функцию `maxFourProduct`, которая находит максимальное произведение четырех последовательных чисел 
+   в последовательности. Эта функция использует хвостовую рекурсию для последовательного уменьшения размера последовательности 
+   и поиска максимального произведения.
+4. Находит максимальное произведение четырех последовательных чисел в каждой строке матрицы.
+5. Находит максимальное произведение четырех последовательных чисел в каждом столбце матрицы.
+6. Находит максимальное произведение четырех последовательных чисел в каждой диагонали матрицы.
+7. Находит максимальное произведение четырех последовательных чисел в каждой обратной диагонали матрицы.
+8. Находит максимальное значение из всех найденных максимумов.
+
+В результате, код находит максимальное произведение четырех последовательных чисел в любом направлении 
+(горизонтально, вертикально или по диагонали) в заданной матрице.
+
+**Код:**
+
+```dotty
+val source =
+  "08 02 22 97 38 15 00 40 00 75 04 05 07 78 52 12 50 77 91 08\n49 49 99 40 17 81 18 57 60 87 17 40 98 43 69 48 04 56 62 00\n81 49 31 73 55 79 14 29 93 71 40 67 53 88 30 03 49 13 36 65\n52 70 95 23 04 60 11 42 69 24 68 56 01 32 56 71 37 02 36 91\n22 31 16 71 51 67 63 89 41 92 36 54 22 40 40 28 66 33 13 80\n24 47 32 60 99 03 45 02 44 75 33 53 78 36 84 20 35 17 12 50\n32 98 81 28 64 23 67 10 26 38 40 67 59 54 70 66 18 38 64 70\n67 26 20 68 02 62 12 20 95 63 94 39 63 08 40 91 66 49 94 21\n24 55 58 05 66 73 99 26 97 17 78 78 96 83 14 88 34 89 63 72\n21 36 23 09 75 00 76 44 20 45 35 14 00 61 33 97 34 31 33 95\n78 17 53 28 22 75 31 67 15 94 03 80 04 62 16 14 09 53 56 92\n16 39 05 42 96 35 31 47 55 58 88 24 00 17 54 24 36 29 85 57\n86 56 00 48 35 71 89 07 05 44 44 37 44 60 21 58 51 54 17 58\n19 80 81 68 05 94 47 69 28 73 92 13 86 52 17 77 04 89 55 40\n04 52 08 83 97 35 99 16 07 97 57 32 16 26 26 79 33 27 98 66\n88 36 68 87 57 62 20 72 03 46 33 67 46 55 12 32 63 93 53 69\n04 42 16 73 38 25 39 11 24 94 72 18 08 46 29 32 40 62 76 36\n20 69 36 41 72 30 23 88 34 62 99 69 82 67 59 85 74 04 36 16\n20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54\n01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48"
+val matrix: Array[Array[Int]] =
+  source.split("\n").map(_.split(" ").map(_.toInt))
+
+val m: Int = matrix.length
+val n: Int = matrix.head.length
+
+@tailrec
+def maxFourProduct(row: Seq[Int], max: Int = 0): Int =
+  if row.length < 4 then max
+  else maxFourProduct(row.tail, math.max(row.take(4).product, max))
+
+val maxInRows = matrix.map(maxFourProduct(_)).max
+
+val columns =
+  (0 until n).map(j => (0 until m).map(i => matrix(i)(j)))
+val maxInColumns = columns.map(maxFourProduct(_)).max
+
+val diagonals =
+  (0 until n).map(j => (0 until (n - j)).map(i => matrix(i)(j + i))) ++
+    (1 until m).map(i => (0 until (m - i)).map(j => matrix(i + j)(j)))
+val maxInDigs = diagonals.map(maxFourProduct(_)).max
+
+val oppDiagonals =
+  (0 until n).map(j => (0 to j).map(i => matrix(i)(j - i))) ++
+    (1 until m).map(i =>
+      ((n - 1) to (i + n - m) by -1).map(j => matrix(i + n - 1 - j)(j))
+    )
+val maxInOppDigs = oppDiagonals.map(maxFourProduct(_)).max
+
+val maxInMatrix =
+  math.max(
+    math.max(maxInRows, maxInColumns),
+    math.max(maxInDigs, maxInOppDigs)
+  )
+```
+
+**Метрики:**
+
+Вычисление `maxInMatrix` занимает меньше секунды.
+
+### Problem 12. Highly Divisible Triangular Number
+
+**Задача:**
+
+[Problem 12](https://projecteuler.net/problem=12)
+
+> The sequence of triangle numbers is generated by adding the natural numbers. 
+> So the 7th triangle number would be 1 + 2 + 3 + 4 + 5 + 6 + 7 = 28. 
+> The first ten terms would be: 1, 3, 6, 10, 15, 21, 28, 36, 45, 55, ... 
+> 
+> Let us list the factors of the first seven triangle numbers:
+> 
+> **1**: 1
+> 
+> **3**: 1, 3
+> 
+> **6**: 1, 2, 3, 6
+> 
+> **10**: 1, 2, 5, 10
+> 
+> **15**: 1, 3, 5, 15
+> 
+> **21**: 1, 3, 7, 21
+> 
+> **28**: 1, 2, 4, 7, 14, 28
+> 
+> We can see that 28 is the first triangle number to have over five divisors. 
+> What is the value of the first triangle number to have over five hundred divisors?
+
+**Алгоритм:**
+
+1. `getFirstTriangleNumbersWithBigCountOfDivisors(limit: Int): Long` - метод находит первое треугольное число, 
+   имеющее больше делителей, чем заданный предел. Метод использует хвостовую рекурсию 
+   для последовательного вычисления треугольных чисел и проверки их на количество делителей.
+2. `triangleNumber(n: Long): Long` - метод вычисляет n-ое треугольное число, используя формулу `n * (n + 1) / 2`.
+3. `countOfDivisors(number: Long): Long` - метод вычисляет количество делителей заданного числа. 
+   Он использует метод `primeFactorsWithPow` для получения простых множителей числа и затем считает количество делителей, 
+   используя формулу количество делителей равно произведению всех `(a + 1)`, 
+   где `a` - степень каждого простого множителя в разложении числа.
+4. `primeFactorsWithPow(n: Long): Map[Long, Int]` - описание метода приведено в описании алгоритма Problem 5.
+
+**Код:**
+
+```dotty
+def getFirstTriangleNumbersWithBigCountOfDivisors(limit: Int): Long =
+  @tailrec
+  def loop(i: Int): Long =
+    val t     = triangleNumber(i)
+    val count = countOfDivisors(t)
+    if count > limit then t else loop(i + 1)
+
+  loop(1)
+
+def triangleNumber(n: Long): Long = n * (n + 1) / 2
+
+def countOfDivisors(number: Long): Long =
+  primeFactorsWithPow(number).values.foldLeft(1L): (mul, a) =>
+    mul * (a + 1)
+
+def primeFactorsWithPow(n: Long): Map[Long, Int] =
+  @tailrec
+  def loop(n: Long, i: Long, acc: Map[Long, Int]): Map[Long, Int] =
+    if i * i > n then
+      if n == 1 then acc else acc + (n -> (acc.getOrElse(n, 0) + 1))
+    else if n                           % i == 0 then
+      loop(n / i, i, acc + (i -> (acc.getOrElse(i, 0) + 1)))
+    else loop(n, i + 1, acc)
+
+  loop(n, 2, Map.empty[Long, Int])
+  
+getFirstTriangleNumbersWithBigCountOfDivisors(5) // 28  
+```
+
+**Метрики:**
+
+Вычисление `getFirstTriangleNumbersWithBigCountOfDivisors(500)` занимает меньше секунды.
+
+### Problem 13. Large Sum
+
+**Задача:**
+
+[Problem 13](https://projecteuler.net/problem=13)
+
+> Work out the first ten digits of the sum of the following one-hundred 50-digit numbers.
+> 
+> 37107287533902102798797998220837590246510135740250
+> 46376937677490009712648124896970078050417018260538
+> ...
+
+**Алгоритм:**
+
+1. Строка `numbers` содержит длинную строку чисел, разбитую на строки длиной 50 символов.
+2. Метод `split("\n")` разделяет строку на отдельные строки по символу новой строки `\n`.
+3. Каждая строка преобразуется в `BigInt`, чтобы избежать проблем с переполнением при суммировании больших чисел.
+4. Сумма всех чисел вычисляется с помощью метода `sum`.
+
+**Код:**
+
+```dotty
+val numbers = "37107287533902102798797998220837590246510135740250\n46376937677490009712648124896970078050417018260538\n..."
+
+val count = numbers
+  .split("\n")
+  .withFilter(_.nonEmpty)
+  .map(num => BigInt(num))
+  .sum 
+```
+
+**Метрики:**
+
+Вычисление `count.toString.take(10)` занимает меньше секунды.
+
+### Problem 14. Longest Collatz Sequence
+
+**Задача:**
+
+[Problem 14](https://projecteuler.net/problem=14)
+
+> The following iterative sequence is defined for the set of positive integers:
+> 
+> \\(n \to n/2\\) (n is even)
+> 
+> \\(n \to 3n + 1\\) (n is odd)
+> 
+> Using the rule above and starting with 13, we generate the following sequence:
+> \\(13 \to 40 \to 20 \to 10 \to 5 \to 16 \to 8 \to 4 \to 2 \to 1.\\)
+> 
+> It can be seen that this sequence (starting at 13 and finishing at 1) contains 10 terms. 
+> Although it has not been proved yet (Collatz Problem), it is thought that all starting numbers finish at 1.
+> 
+> Which starting number, under one million, produces the longest chain?
+> 
+> NOTE: Once the chain starts the terms are allowed to go above one million.
+
+**Алгоритм:**
+
+Следующий код реализует алгоритм для вычисления длины последовательности Коллатца для заданного числа.
+
+1. Определяется `final case class CollatzNumber(cacheLimit: Int)`, который принимает один параметр `cacheLimit` - 
+   максимальное число, для которого будет вычисляться последовательность Коллатца.
+2. Внутри класса создается массив `cache` для кэширования уже вычисленных длин последовательностей Коллатца.
+3. В методе `collatz(n: Long)` проверяется, есть ли уже вычисленное значение для числа `n` в кэше. 
+   Если `n` больше или равно `cacheLimit`, то вычисляется последовательность Коллатца для `n`. 
+   Если `n` меньше `cacheLimit`, то проверяется, есть ли уже вычисленное значение в кэше. 
+   Если его нет, то вычисляется и сохраняется в кэш.
+4. В методе `nextCollatz(n: Long)` вычисляется следующее число в последовательности Коллатца для `n`. 
+   Если `n` четное, то следующим числом будет `n / 2`, иначе - `(3 * n + 1) / 2` (перепрыгиваем через шаг, 
+   т.к. `3 * n + 1` - четное для нечетного `n`).
+
+В итоге, код вычисляет длину последовательности Коллатца для числа 13, 
+используя кэширование для уменьшения количества повторных вычислений.
+
+**Код:**
+
+```dotty
+final case class CollatzNumber(cacheLimit: Int):
+  private val cache: Array[BigInt] = new Array[BigInt](cacheLimit)
+  cache(1) = BigInt(1L)
+
+  def collatz(n: Long): BigInt =
+    if n >= cacheLimit then nextCollatz(n)
+    else
+      val m = n.toInt
+      if Option(cache(m)).isEmpty then cache(m) = nextCollatz(n)
+      cache(m)
+
+  private def nextCollatz(n: Long): BigInt =
+    if n % 2 == 0 then collatz(n / 2) + 1
+    else collatz((3 * n + 1) / 2) + 2
+      
+val collatzNumber = CollatzNumber(1000000)
+collatzNumber.collatz(13) // 10
+```
+
+**Метрики:**
+
+Вычисление `val max = (2 until 1000000).maxBy(i => collatzNumber.collatz(i))` занимает меньше секунды.
+
+### Problem 15. Lattice Paths
+
+**Задача:**
+
+[Problem 15](https://projecteuler.net/problem=15)
+
+> Starting in the top left corner of a 2*2 grid, and only being able to move to the right and down, 
+> there are exactly 6 routes to the bottom right corner.
+> 
+> How many such routes are there through a 20*20 grid?
+
+**Алгоритм:**
+
+Метод `getGridRoads(n: Int)` вычисляет количество возможных путей из верхнего левого угла сетки до нижнего правого угла сетки, 
+которая представляет собой квадрат размера `n x n`.
+
+1. Создается двумерный массив `grid` размера `(n + 1) x (n + 1)`, где `n` - размер сетки.
+2. Все элементы последней строки и последнего столбца массива `grid` инициализируются значением 1, 
+   так как из них в нижний правый угол можно попасть только в одном направлении - вправо или вниз.
+3. Для каждой ячейки, находящейся выше последней строки и левее последнего столбца, вычисляется количество путей, 
+   которыми можно добраться из неё до цели, как сумма количества путей ячеек, расположенных справа и снизу от текущей.
+4. В конце метода возвращается количество путей из верхнего левого угла сетки до нижнего правого угла.
+
+**Код:**
+
+```dotty
+def getGridRoads(n: Int): Long =
+  val grid = new Array[Array[Long]](n + 1)
+  grid.indices.foreach(i => grid(i) = new Array[Long](n + 1))
+  for
+    j <- n to 0 by -1
+  do
+    grid(n)(j) = 1
+    grid(j)(n) = 1
+  for
+    i <- n - 1 to 0 by -1
+    j <- n - 1 to 0 by -1
+  do
+    grid(i)(j) = grid(i + 1)(j) + grid(i)(j + 1)
+  grid(0)(0)
+    
+getGridRoads(2) // 6
+```
+
+**Метрики:**
+
+Вычисление `getGridRoads(20)` занимает меньше секунды.
+
+### Problem 16. Power Digit Sum
+
+**Задача:**
+
+[Problem 16](https://projecteuler.net/problem=16)
+
+> \\(2^{15} = 32768\\) and the sum of its digits is 3 + 2 + 7 + 6 + 8 = 26. 
+> What is the sum of the digits of the number \\(2^{1000}\\)?
+
+**Алгоритм:**
+
+
+**Код:**
+
+```dotty
+val count = BigInt(2).pow(1000).toString.map(_.getNumericValue).sum
+```
+
+**Метрики:**
+
+Вычисление `count` занимает меньше секунды.
+
+### Problem 17. Number Letter Counts
+
+**Задача:**
+
+[Problem 17](https://projecteuler.net/problem=17)
+
+> If the numbers 1 to 5 are written out in words: one, two, three, four, five, 
+> then there are 3 + 3 + 5 + 4 + 4 = 19 letters used in total. 
+> 
+> If all the numbers from 1 to 1000 (one thousand) inclusive were written out in words, how many letters would be used?
+> 
+> NOTE: Do not count spaces or hyphens. For example, 342 (three hundred and forty-two) contains 23 letters 
+> and 115 (one hundred and fifteen) contains 20 letters. 
+> The use of "and" when writing out numbers is in compliance with British usage.
+
+**Алгоритм:**
+
+Следующий код представляет собой объект `NumbersDescription`, преобразующий числа в их текстовое описание на английском языке.
+
+Объект `NumbersDescription` содержит следующие компоненты:
+
+1. `private val hundred: Long`, ..., `private val trillion: Long` - константы, представляющие собой разные величины чисел.
+2. `def inEnglish(number: Long): Option[String]` - метод, который преобразует число в его текстовое описание.
+3. `private def constructEnglish(n: Long, base: Long): Option[String]` - вспомогательный метод, 
+   который используется для создания текстового описания чисел в диапазоне от `1` до `999`, умноженного на основание (тысяча, миллион и т.д.).
+4. `private def toBasicEnglishNumbers(n: Long): Option[String]` - метод, который преобразует числа от `0` до `999` в их текстовые эквиваленты.
+
+**Код:**
+
+```dotty
+object NumbersDescription:
+  private val hundred: Long     = 100
+  private val thousand: Long    = 1000
+  private val million: Long     = 1000000
+  private val billion: Long     = million * thousand
+  private val trillion: Long    = billion * thousand
+  private val quadrillion: Long = trillion * thousand
+
+  def inEnglish(number: Long): Option[String] =
+    number match
+      case n if n < 21 || (n < hundred && n % 10 == 0) =>
+        toBasicEnglishNumbers(n)
+      case n if n < hundred && n % 10 > 0 =>
+        for
+          f <- toBasicEnglishNumbers((n / 10) * 10)
+          r <- toBasicEnglishNumbers(n % 10)
+        yield s"$f-$r"
+      case n if n < thousand    => constructEnglish(n, hundred)
+      case n if n < million     => constructEnglish(n, thousand)
+      case n if n < billion     => constructEnglish(n, million)
+      case n if n < trillion    => constructEnglish(n, billion)
+      case n if n < quadrillion => constructEnglish(n, trillion)
+      case _                    => None
+
+  private def constructEnglish(n: Long, base: Long): Option[String] =
+    val rest = n % base
+    val restText =
+      if rest == 0 then Some("")
+      else if base == hundred then inEnglish(rest).map(n => s" and $n")
+      else inEnglish(rest).map(n => s" $n")
+    for
+      f  <- inEnglish(n / base)
+      s  <- toBasicEnglishNumbers(base)
+      th <- restText
+    yield s"$f $s$th"
+
+  private def toBasicEnglishNumbers(n: Long): Option[String] =
+    n match
+      case 0              => Some("")
+      case 1              => Some("one")
+      case 2              => Some("two")
+      case 3              => Some("three")
+      case 4              => Some("four")
+      case 5              => Some("five")
+      case 6              => Some("six")
+      case 7              => Some("seven")
+      case 8              => Some("eight")
+      case 9              => Some("nine")
+      case 10             => Some("ten")
+      case 11             => Some("eleven")
+      case 12             => Some("twelve")
+      case 13             => Some("thirteen")
+      case 14             => Some("fourteen")
+      case 15             => Some("fifteen")
+      case 16             => Some("sixteen")
+      case 17             => Some("seventeen")
+      case 18             => Some("eighteen")
+      case 19             => Some("nineteen")
+      case 20             => Some("twenty")
+      case 30             => Some("thirty")
+      case 40             => Some("forty")
+      case 50             => Some("fifty")
+      case 60             => Some("sixty")
+      case 70             => Some("seventy")
+      case 80             => Some("eighty")
+      case 90             => Some("ninety")
+      case 100            => Some("hundred")
+      case 1000           => Some("thousand")
+      case 1000000        => Some("million")
+      case 1000000000     => Some("billion")
+      case 1000000000000L => Some("trillion")
+      case _              => None
+end NumbersDescription
+
+val count = (1 to 1000).flatMap(i => inEnglish(i)).map(_.count(_.isLetter)).sum
+```
+
+**Метрики:**
+
+Вычисление `count` занимает меньше секунды.
+
+### Problem 18. Maximum Path Sum I
+
+**Задача:**
+
+[Problem 18](https://projecteuler.net/problem=18)
+
+> By starting at the top of the triangle below and moving to adjacent numbers on the row below, 
+> the maximum total from top to bottom is 23.
+> 
+>    3
+> 
+>   7 4
+> 
+>  2 4 6
+> 
+> 8 5 9 3
+> 
+> That is, 3 + 7 + 4 + 9 = 23.
+>
+> Find the maximum total from top to bottom of the triangle below:
+> ...
+
+**Алгоритм:**
+
+`def calculateMaxRoad(triangle: Array[Array[Long]]): Long` - метод вычисляет максимальную сумму пути 
+от вершины треугольника до основания. Он проходит по треугольнику снизу вверх, начиная с предпоследней строки, 
+и для каждого числа в строке выбирает максимальное из двух возможных чисел ниже (слева и справа) 
+и добавляет его к текущему числу. 
+Это позволяет накапливать максимальную сумму для каждого числа на пути от вершины к основанию.
+
+**Код:**
+
+```dotty
+def toTriangle(source: String): Array[Array[Long]] =
+  source.split("\n").map(_.split(" ").map(_.toLong))
+
+def calculateMaxRoad(triangle: Array[Array[Long]]): Long =
+  for
+    i <- triangle.length - 2 to 0 by -1
+  do
+    triangle(i).indices.foreach: j =>
+      triangle(i)(j) += math.max(triangle(i + 1)(j), triangle(i + 1)(j + 1))
+
+  triangle(0)(0)
+
+val simpleTriangle = "3\n7 4\n2 4 6\n8 5 9 3"
+calculateMaxRoad(toTriangle(simpleTriangle)) // 23
+```
+
+**Метрики:**
+
+Вычисление `calculateMaxRoad(toTriangle(largeTriangle))`, 
+где `largeTriangle` - "треугольник" из задачки, занимает меньше секунды.
+
+### Problem 19. Counting Sundays
+
+**Задача:**
+
+[Problem 19](https://projecteuler.net/problem=19)
+
+> You are given the following information, but you may prefer to do some research for yourself.
+> 
+> - 1 Jan 1900 was a Monday.
+> - Thirty days has September,
+> - April, June and November.
+> - All the rest have thirty-one,
+> - Saving February alone,
+> - Which has twenty-eight, rain or shine.
+> - And on leap years, twenty-nine.
+> - A leap year occurs on any year evenly divisible by 4, but not on a century unless it is divisible by 400.
+> 
+> How many Sundays fell on the first of the month during the twentieth century (1 Jan 1901 to 31 Dec 2000)?
+
+**Алгоритм:**
+
+1. `isALeapYear(year: Int): Boolean` - функция, которая определяет, является ли год високосным.
+2. `getDayOfMonths(year: Int, month: Int): Int` - функция, которая возвращает количество дней в месяце.
+3. `DayOfWeek` - перечисление, которое определяет дни недели.
+4. `getFirstSunsCount(year: Int, start: DayOfWeek): (Int, DayOfWeek)` - функция, которая считает количество воскресений,
+   которые были в первый день месяца в заданном году, начиная с заданного дня недели.
+5. В конце кода есть блок, который использует `foldLeft` для подсчета количества воскресений в первый день месяца 
+   в диапазоне лет от 1901 до 2000. Результат сохраняется в переменной `count`.
+
+**Код:**
+
+```dotty
+def isALeapYear(year: Int): Boolean =
+  (year % 400 == 0) || (year % 4 == 0 && year % 100 != 0)
+
+def getDayOfMonths(year: Int, month: Int): Int =
+  month match
+    case 4 | 6 | 9 | 11 => 30
+    case 2              => if isALeapYear(year) then 29 else 28
+    case _              => 31
+
+enum DayOfWeek:
+  case Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
+
+def getFirstSunsCount(year: Int, start: DayOfWeek): (Int, DayOfWeek) =
+  (0 to 11).foldLeft((0, start)) { case ((acc, prev), i) =>
+    val newAcc = if prev == DayOfWeek.Sunday then acc + 1 else acc
+    val next =
+      DayOfWeek.fromOrdinal((prev.ordinal + getDayOfMonths(year, i + 1)) % 7)
+    (newAcc, next)
+  }
+
+val (_, start) = getFirstSunsCount(1900, DayOfWeek.Monday)
+val (count, _) =
+  (1901 to 2000).foldLeft((0, start)) { case ((acc, prev), year) =>
+    val (days, nextStart) = getFirstSunsCount(year, prev)
+    (acc + days, nextStart)
+  }
+```
+
+**Метрики:**
+
+Вычисление `count` занимает меньше секунды.
+
+## Решения задач 21-30
+
+## Решения задач 31-40
+
+## Решения задач 41-50
+
+## Решения задач 51-60
+
+## Решения задач 61-70
+
+### Problem 67. Maximum Path Sum II
+
+**Задача:**
+
+[Problem 67](https://projecteuler.net/problem=67)
+
+**Алгоритм:**
+
+Алгоритм аналогичен решению 18-й задачи.
+
+## Решения задач 71-80
+
+## Решения задач 81-90
+
+## Решения задач 91-100
 
 ---
 

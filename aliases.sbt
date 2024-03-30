@@ -1,5 +1,5 @@
 addCommandAlias("com", "compile; Test / compile")
-addCommandAlias("check", "scalafmtSbtCheck; scalafmtCheckAll")
+addCommandAlias("fmtcheck", "scalafmtSbtCheck; scalafmtCheckAll")
 addCommandAlias("fix", "scalafmtSbt; scalafmtAll; scalafixAll")
 addCommandAlias("dep", "dependencyUpdates")
 addCommandAlias("site", "site/runMain ru.scalabook.site.app.GenerateSite")
@@ -8,6 +8,6 @@ addCommandAlias(
   "com; fix; test; undeclaredCompileDependencies; unusedCompileDependencies"
 )
 addCommandAlias(
-  "fullCheck",
-  "com; check; test; undeclaredCompileDependencies; unusedCompileDependencies"
+  "fullcheck",
+  "com; fmtcheck; test; undeclaredCompileDependencies; unusedCompileDependencies"
 )

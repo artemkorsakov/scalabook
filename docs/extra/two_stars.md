@@ -55,6 +55,7 @@
 
 | Название                                                                                                                                                                                 | Версия  | Язык | Дата | Комментарий      |
 |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|------------------|
+| [Automatically Deriving Typeclass Instances in Scala 3](https://xebia.com/blog/automatically-deriving-typeclass-instances-in-scala-3/)                                                   | Scala 3 |  En  | 2021 |                  |
 | [Cats Effect 3 - Introduction to Fibers](https://blog.rockthejvm.com/cats-effect-fibers/)                                                                                                | Scala 3 |  En  | 2021 | Cats effect      |
 | [Cats Effect vs ZIO](https://softwaremill.com/cats-effect-vs-zio/)                                                                                                                       | Scala 3 |  En  | 2023 | Cats effect, ZIO |
 | [Concurrency with Cats Effect](https://softwaremill.com/concurrency-with-cats-effect)                                                                                                    | Scala 3 |  En  | 2023 | Cats effect      |
@@ -67,6 +68,8 @@
 | [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/)                                                                                                             | Scala 3 |  En  | 2020 | Cats effect      |
 | [A simple trick to improve type safety of your Scala code](https://blog.softwaremill.com/a-simple-trick-to-improve-type-safety-of-your-scala-code-ba80559ca092)                          | Scala 2 |  En  | 2020 | Refined          |
 | [Cats Concurrency basics with Ref and Deferred](https://blog.softwaremill.com/cats-concurrency-basics-with-ref-and-deferred-399e0335630)                                                 | Scala 2 |  En  | 2020 | Cats effect      |
+| [Deriving Type Class Instances](https://typelevel.org/blog/2013/06/24/deriving-instances-1.html)                                                                                         | Scala 2 |  En  | 2013 |                  |
+| [Higher-Kinded Data in Scala](https://xebia.com/blog/higher-kinded-data-in-scala/)                                                                                                       | Scala 2 |  En  | 2023 |                  |
 | [Higher-kinded types: the difference between giving up, and moving forward](https://typelevel.org/blog/2016/08/21/hkts-moving-forward.html)                                              | Scala 2 |  En  | 2016 |                  |
 | [How we used Refined to improve type safety and error reporting in Scala](https://engineering.contentsquare.com/2021/scala-refined-types/)                                               | Scala 2 |  En  | 2021 | Refined          |
 | [Introduction to Programming with ZIO Functional Effects](https://scalac.io/blog/introduction-to-programming-with-zio-functional-effects)                                                | Scala 2 |  En  | 2021 | ZIO              |
@@ -82,6 +85,7 @@
 | [Safe, Expressive Code with Refinement Types](https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/)                                                                    | Scala 2 |  En  | 2020 | Refined          |
 | [Scala's isInstanceOf is an Anti-Pattern - Alexandru Nedelcu](https://alexn.org/blog/2019/08/11/isinstanceof-anti-pattern)                                                               | Scala 2 |  En  | 2019 |                  |
 | [Stackless Scala With Free Monads - Runar Oli Bjarnason](https://blog.higher-order.com/assets/trampolines.pdf)                                                                           | Scala 2 |  En  | 2012 | Trampoline       |
+| [Subtype type classes don't work](https://typelevel.org/blog/2016/09/30/subtype-typeclasses.html)                                                                                        | Scala 2 |  En  | 2016 |                  |
 | [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)                                                                    | Scala 2 |  En  | 2018 | Refined          |
 | [Type-Level Programming in Scala](https://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/)                                                                           | Scala 2 |  En  | 2010 |                  |
 | [Type safety with refined](https://blog.michalp.net/posts/scala/refined/)                                                                                                                | Scala 2 |  En  | 2022 | Refined          |

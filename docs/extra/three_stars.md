@@ -25,3 +25,4 @@
 | Название                                                                                                                                 |  Версия  | Язык | Дата | Комментарий |
 |------------------------------------------------------------------------------------------------------------------------------------------|:--------:|:----:|------|-------------|
 | [On Eliminating Error in Distributed Software Systems](https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems) | Scala 2  |  En  | 2019 | Refined     |
+| [Stackless Function Composition](https://mpilquist.github.io/blog/2017/03/11/stackless-function-composition/)                            | Scala 2  |  En  | 2017 |             |

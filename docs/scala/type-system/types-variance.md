@@ -176,6 +176,7 @@ val h: Function[Book, Buyable] = f
 **Ссылки:**
 
 - [Contravariance in Scala: Why Is It So Hard? - Rock the JVM](https://www.youtube.com/watch?v=b1ftkK1zhxI&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS&index=2)
+- [Of variance and functors](https://typelevel.org/blog/2016/02/04/variance-and-functors.html)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-variance.html)
 - [Variance, a Scala language concept](https://www.scala-algorithms.com/Variance/)
-- [Vivisecting the Veil of Variance](https://www.youtube.com/watch?v=dPbbqrhm-WY) 
+- [Vivisecting the Veil of Variance](https://www.youtube.com/watch?v=dPbbqrhm-WY)

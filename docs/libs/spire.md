@@ -245,3 +245,5 @@ $ sbt
 **Ссылки:**
 
 - [Spire home page](https://typelevel.org/spire)
+- [An Intro to Generic Numeric Programming with Spire](https://typelevel.org/blog/2013/07/07/generic-numeric-programming.html)
+- [How to use Spire's Ops macros in your own project](https://typelevel.org/blog/2013/10/13/spires-ops-macros.html)

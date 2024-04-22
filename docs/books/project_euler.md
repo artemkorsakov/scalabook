@@ -97,10 +97,6 @@ private def getSumOfNumbersLessThanNDividedByK(n: Long, k: Long): Long =
 getSumOfNumbersDividedBy3Or5(10) // 23
 ```
 
-**Метрики:**
-
-Вычисление `getSumOfNumbersDividedBy3Or5(1000)` занимает меньше секунды.
-
 ### Problem 2. Even Fibonacci Numbers
 
 **Задача:**
@@ -148,10 +144,6 @@ def count(): Long =
   loop(1, 2, 0)
 ```
 
-**Метрики:**
-
-Вычисление `count()` занимает меньше секунды.
-
 ### Problem 3. Largest Prime Factor
 
 **Задача:**
@@ -198,10 +190,6 @@ def largestPrimeFactor(n: Long): Long =
   
 largestPrimeFactor(13195L) // 29  
 ```
-
-**Метрики:**
-
-Вычисление `largestPrimeFactor(600851475143L)` занимает меньше секунды.
 
 ### Problem 4. Largest Palindrome Product
 
@@ -266,10 +254,6 @@ def isPalindrome(number: Long): Boolean =
     
 getLargestPalindrome(2) // 9009
 ```
-
-**Метрики:**
-
-Вычисление `getLargestPalindrome(3)` занимает меньше секунды.
 
 ### Problem 5. Smallest Multiple
 
@@ -336,10 +320,6 @@ def primeFactorsWithPow(n: Long): Map[Long, Int] =
 getSmallestNumberWhichDivisibleByRange(10) // 2520
 ```
 
-**Метрики:**
-
-Вычисление `getSmallestNumberWhichDivisibleByRange(20)` занимает меньше секунды.
-
 ### Problem 6. Sum Square Difference
 
 **Задача:**
@@ -370,10 +350,6 @@ def getDifference(n: Int): Long =
   
 getDifference(10) // 2640  
 ```
-
-**Метрики:**
-
-Вычисление `getDifference(100)` занимает меньше секунды.
 
 ### Problem 7. 10001st Prime
 
@@ -415,10 +391,6 @@ val primes = lazyPrimes.take(10001).toVector
 
 primes(5) // 13
 ```
-
-**Метрики:**
-
-Вычисление `primes(10000)` занимает меньше секунды.
 
 ### Problem 8. Largest Product in a Series
 
@@ -506,10 +478,6 @@ def getLargestProductWithoutZero(
 getLargestProduct(number, 4) // 5832
 ```
 
-**Метрики:**
-
-Вычисление `getLargestProduct(number, 13)` занимает меньше секунды.
-
 ### Problem 9. Special Pythagorean Triplet
 
 **Задача:**
@@ -559,10 +527,6 @@ def pythagoreanTripletsWithGivenSum(sum: Long)
     yield PythagoreanTriplet(a, b, c)
 ```
 
-**Метрики:**
-
-Вычисление `pythagoreanTripletsWithGivenSum(1000)` занимает меньше секунды.
-
 ### Problem 10.
 
 **Задача:**
@@ -611,10 +575,6 @@ def sieveOfEratosthenes(n: Int): Array[Boolean] =
 
 getSumOfPrimes(10) // 17
 ```
-
-**Метрики:**
-
-Вычисление `getSumOfPrimes(2000000)` занимает меньше секунды.
 
 ## Решения задач 11-20
 
@@ -727,10 +687,6 @@ val maxInMatrix =
   )
 ```
 
-**Метрики:**
-
-Вычисление `maxInMatrix` занимает меньше секунды.
-
 ### Problem 12. Highly Divisible Triangular Number
 
 **Задача:**
@@ -804,10 +760,6 @@ def primeFactorsWithPow(n: Long): Map[Long, Int] =
 getFirstTriangleNumbersWithBigCountOfDivisors(5) // 28  
 ```
 
-**Метрики:**
-
-Вычисление `getFirstTriangleNumbersWithBigCountOfDivisors(500)` занимает меньше секунды.
-
 ### Problem 13. Large Sum
 
 **Задача:**
@@ -838,10 +790,6 @@ val count = numbers
   .map(num => BigInt(num))
   .sum 
 ```
-
-**Метрики:**
-
-Вычисление `count.toString.take(10)` занимает меньше секунды.
 
 ### Problem 14. Longest Collatz Sequence
 
@@ -905,10 +853,6 @@ val collatzNumber = CollatzNumber(1000000)
 collatzNumber.collatz(13) // 10
 ```
 
-**Метрики:**
-
-Вычисление `val max = (2 until 1000000).maxBy(i => collatzNumber.collatz(i))` занимает меньше секунды.
-
 ### Problem 15. Lattice Paths
 
 **Задача:**
@@ -953,10 +897,6 @@ def getGridRoads(n: Int): Long =
 getGridRoads(2) // 6
 ```
 
-**Метрики:**
-
-Вычисление `getGridRoads(20)` занимает меньше секунды.
-
 ### Problem 16. Power Digit Sum
 
 **Задача:**
@@ -974,10 +914,6 @@ getGridRoads(2) // 6
 ```dotty
 val count = BigInt(2).pow(1000).toString.map(_.getNumericValue).sum
 ```
-
-**Метрики:**
-
-Вычисление `count` занимает меньше секунды.
 
 ### Problem 17. Number Letter Counts
 
@@ -1086,10 +1022,6 @@ end NumbersDescription
 val count = (1 to 1000).flatMap(i => inEnglish(i)).map(_.count(_.isLetter)).sum
 ```
 
-**Метрики:**
-
-Вычисление `count` занимает меньше секунды.
-
 ### Problem 18. Maximum Path Sum I
 
 **Задача:**
@@ -1138,11 +1070,6 @@ def calculateMaxRoad(triangle: Array[Array[Long]]): Long =
 val simpleTriangle = "3\n7 4\n2 4 6\n8 5 9 3"
 calculateMaxRoad(toTriangle(simpleTriangle)) // 23
 ```
-
-**Метрики:**
-
-Вычисление `calculateMaxRoad(toTriangle(largeTriangle))`, 
-где `largeTriangle` - "треугольник" из задачки, занимает меньше секунды.
 
 ### Problem 19. Counting Sundays
 
@@ -1204,11 +1131,612 @@ val (count, _) =
   }
 ```
 
-**Метрики:**
+### Problem 20. Factorial Digit Sum
 
-Вычисление `count` занимает меньше секунды.
+**Задача:**
+
+[Problem 20](https://projecteuler.net/problem=20)
+
+> \\(n!\\) means  \\(n \times (n-1) \times ... \times 3 \times 2 \times 1\\).
+> 
+> For example, \\(10! = 10 \times 9 \times ... \times 3 \times 2 \times 1 = 3628800\\),
+> and the sum of the digits in the number \\(10!\\) is \\(3 + 6 + 2 + 8 + 8 + 0 + 0 = 27\\).
+> 
+> Find the sum of the digits in the number \\(100!\\).
+
+**Алгоритм:**
+
+Следующее выражение вычисляет сумму цифр факториала числа 100.
+
+**Код:**
+
+```dotty
+def factorial(n: Int): BigInt =
+  (2 to n).foldLeft(BigInt(1))(_ * _)
+  
+val count = factorial(100).toString.map(_.getNumericValue).sum
+```
 
 ## Решения задач 21-30
+
+### Problem 21. Amicable Numbers
+
+**Задача:**
+
+[Problem 21](https://projecteuler.net/problem=21)
+
+> Let \\(d(n)\\) be defined as the sum of proper divisors of n (numbers less than n which divide evenly into n).
+> If \\(d(a) = b\\) and \\(d(b) = a\\), where \\(a \neq b\\), then a and b are an amicable pair 
+> and each of a and b are called amicable numbers.
+>
+> For example, the proper divisors of 220 are 1, 2, 4, 5, 10, 11, 20, 22, 44, 55 and 110; therefore \\(d(220) = 284\\). 
+> The proper divisors of 284 are 1, 2, 4, 71 and 142; so \\(d(284) = 220\\).
+> 
+> Evaluate the sum of all the amicable numbers under 10000.
+
+**Алгоритм:**
+
+Следующий код на Scala находит сумму "дружественных" чисел меньше 10000. 
+Числа a и b называются дружественными, если сумма делителей числа a (не считая самого числа) равна b, 
+и сумма делителей числа b равна a.
+
+1. `primeFactorsWithPow(n: Long): Map[Long, Int]` - функция, которая находит простые делители числа `n` и их степени. 
+   Описание функции приведено в Problem 5.
+2. `sumOfDivisors(number: Long): Long` - функция, которая находит сумму делителей числа `number`. 
+   Она использует `primeFactorsWithPow` для получения простых делителей и их степеней, 
+   а затем использует `foldLeft` для вычисления суммы делителей.
+3. `amicableNumbers` - выражение, которое находит все "дружественные" числа меньше 10000. 
+
+**Код:**
+
+```dotty
+def primeFactorsWithPow(n: Long): Map[Long, Int] = ... // Из Problem 5
+
+def sumOfDivisors(number: Long): Long =
+  val primeDivisors = primeFactorsWithPow(number)
+  primeDivisors.foldLeft(1L) { case (mul, (prime, power)) =>
+    val num = math.pow(prime, power + 1).toLong - 1
+    val den = prime - 1
+    mul * (num / den)
+  }
+
+val amicableNumbers =
+  (2 until 10000).flatMap: a =>
+    val b = sumOfDivisors(a) - a
+    if b > a && sumOfDivisors(b) - b == a then Some(a + b) else None
+  .sum
+```
+
+### Problem 22. Names Scores
+
+**Задача:**
+
+[Problem 22](https://projecteuler.net/problem=22)
+
+> Using names.txt, a 46K text file containing over five-thousand first names, begin by sorting it into alphabetical order. 
+> Then working out the alphabetical value for each name, multiply this value by its alphabetical position 
+> in the list to obtain a name score.
+> 
+> For example, when the list is sorted into alphabetical order, COLIN, which is worth 3 + 15 + 12 + 9 + 14 = 53, 
+> is the 938th name in the list. So, COLIN would obtain a score of \\(938 \times 53 = 49714\\).
+>
+> What is the total of all the name scores in the file?
+
+**Алгоритм:**
+
+Следующий код на Scala используется для вычисления алфавитной стоимости имен, хранящихся в файле "p022_names.txt".
+
+1. Определение функции `alphabeticalValue`, которая принимает символ `char` и возвращает его алфавитную стоимость. 
+   Алфавитная стоимость определяется как позиция символа в алфавите, если символ является буквой, иначе стоимость равна 0.
+2. Чтение имен из файла "p022_names.txt" и сохранение их в переменной `names`. 
+   Имена считываются из файла, разделены запятыми, отсортированы и сохранены в виде массива строк.
+3. Вычисление алфавитной стоимости каждого имени в отсортированном списке имен. 
+   Для каждого имени вычисляется сумма алфавитных значений его букв, умноженная на порядковый номер имени 
+   в отсортированном списке (индекс + 1).
+
+**Код:**
+
+```dotty
+def alphabeticalValue(char: Char): Int =
+  if char.isLetter then char.toUpper.toInt - 'A' + 1 else 0
+
+val names = Source
+  .fromResource("p022_names.txt")
+  .getLines
+  .toSeq
+  .mkString
+  .split(",")
+  .sorted
+val count = names.indices.map: i =>
+  (i + 1L) * names(i).map(alphabeticalValue).sum
+.sum
+```
+
+### Problem 23. Non-Abundant Sums
+
+**Задача:**
+
+[Problem 23](https://projecteuler.net/problem=23)
+
+> A perfect number is a number for which the sum of its proper divisors is exactly equal to the number. 
+> For example, the sum of the proper divisors of 28 would be 1 + 2 + 4 + 7 + 14 = 28, 
+> which means that 28 is a perfect number.
+> 
+> A number n is called deficient if the sum of its proper divisors is less than n 
+> and it is called abundant if this sum exceeds n.
+> 
+> As 12 is the smallest abundant number, 1 + 2 + 3 + 4 + 6 = 16, 
+> the smallest number that can be written as the sum of two abundant numbers is 24. 
+> By mathematical analysis, it can be shown that all integers greater than 28123 can be written as 
+> the sum of two abundant numbers. However, this upper limit cannot be reduced any further by analysis 
+> even though it is known that the greatest number that cannot be expressed as the sum of 
+> two abundant numbers is less than this limit.
+> 
+> Find the sum of all the positive integers which cannot be written as the sum of two abundant numbers.
+
+**Алгоритм:**
+
+Следующий код используется для нахождения суммы всех положительных целых чисел, 
+которые не могут быть представлены как сумма двух избыточных чисел. 
+Избыточное число - это число, сумма делителей которого превышает само число.
+
+1. Определение функции `sumOfDivisors`, которая вычисляет сумму делителей заданного числа. Описана в Problem 21.
+2. Определение функции `isAbundant`, которая проверяет, является ли число избыточным.
+3. Определение предела `limit` и нахождение всех избыточных чисел в диапазоне от `12` до `limit - 11`.
+4. Создание массива `canBeSumOfTwoAbundant` размером `limit + 1`, который будет использоваться для отметки чисел, 
+   которые могут быть представлены как сумма двух избыточных чисел.
+5. Для каждого избыточного числа `a` в диапазоне от `12` до `limit - 11`, если `a` меньше или равно половине `limit`, 
+   то для каждого избыточного числа `b` в диапазоне от `i` до `abundantNumbers.length`, 
+   если сумма `a` и `b` меньше или равна `limit`, то в массиве `canBeSumOfTwoAbundant` 
+   помечается число `s`, равное сумме `a` и `b`, как то, которое можно представить в виду суммы избыточных чисел.
+6. Нахождение суммы всех чисел от `1` до `limit`, которые не могут быть представлены как сумма двух избыточных чисел, 
+   используя массив `canBeSumOfTwoAbundant`.
+
+**Код:**
+
+```dotty
+def sumOfDivisors(number: Long): Long = ... // Из Problem 21
+
+def isAbundant(n: Long): Boolean =
+  sumOfDivisors(n) > 2 * n
+
+val limit           = 28123
+val abundantNumbers = (12 to (limit - 11)).filter(isAbundant)
+
+val half = limit / 2
+val sum =
+  val canBeSumOfTwoAbundant = new Array[Boolean](limit + 1)
+  for
+    i <- abundantNumbers.indices
+    a = abundantNumbers(i)
+    if a <= half
+    j <- i until abundantNumbers.length
+    s = a + abundantNumbers(j)
+    if s <= limit
+  do canBeSumOfTwoAbundant(s) = true
+
+  (1 to limit).filterNot(i => canBeSumOfTwoAbundant(i)).sum
+```
+
+### Problem 24. Lexicographic Permutations
+
+**Задача:**
+
+[Problem 24](https://projecteuler.net/problem=24)
+
+> A permutation is an ordered arrangement of objects. 
+> For example, 3124 is one possible permutation of the digits 1, 2, 3 and 4. 
+> If all of the permutations are listed numerically or alphabetically, we call it lexicographic order. 
+> The lexicographic permutations of 0, 1 and 2 are:
+> 
+> 012   021   102   120   201   210
+> 
+> What is the millionth lexicographic permutation of the digits 0, 1, 2, 3, 4, 5, 6, 7, 8 and 9?
+
+**Алгоритм:**
+
+Следующий код на Scala используется для нахождения i-й перестановки заданного списка чисел.
+ 
+Алгоритм работает следующим образом:
+
+- Первая цифра `i`-й (начиная с `1`) перестановки расположенных по возрастанию цифр (`rest`) - 
+  это `k`-й элемент из `rest`, где `k = (i - 1) / countOfRests`, `countOfRests` -  количество 
+  перестановок из `rest.length - 1` элементов. Это следует из того, что перед `i`-й перестановкой будет 
+  `k * countOfRests` перестановок, которые будут начинаться с цифр, занимающих индексы с `0` до `k - 1`.
+  Например, первая цифра `5`-й перестановки из `List(7, 8, 9)` - это `9 = List(7, 8, 9)(k)`, где `k = 4 / 2 = 2`,
+  потому что с `7` начинаются первые `2` элемента, с `8` - следующие `2` элемента.
+  Итого, после первых `4`-ех элементов последующие элементы начинаюся на `9`.
+- Вычислив первую цифру `i`-й перестановки, все последующие цифры можно вычислить применив алгоритм рекурсивно 
+  для `j` и `tail`, где `j = i - k * countOfRests` и `tail` - `rest` без вычесленной цифры - найти 
+  `j`-ю позицию среди перестановок оставшихся цифр.
+
+**Код:**
+
+```dotty
+def factorial(n: Int): Int = (2 to n).product
+
+@tailrec
+def getIPerm(i: Int, rest: List[Int], acc: List[Int]): List[Int] =
+  if rest.isEmpty then acc
+  else
+    val countOfRests = factorial(rest.length - 1)
+    val k            = (i - 1) / countOfRests
+    if k == 0 then getIPerm(i, rest.tail, rest.head :: acc)
+    else
+      getIPerm(
+        i - k * countOfRests,
+        rest.filterNot(_ == rest(k)),
+        rest(k) :: acc
+      )
+
+def getIPermutation(i: Int, rest: List[Int]): Long =
+  getIPerm(i, rest, List.empty[Int]).reverse.mkString.toLong
+
+getIPermutation(1, List(0, 1, 2)) // 12
+getIPermutation(2, List(0, 1, 2)) // 21
+getIPermutation(3, List(0, 1, 2)) // 102
+getIPermutation(4, List(0, 1, 2)) // 120
+getIPermutation(5, List(0, 1, 2)) // 201
+getIPermutation(6, List(0, 1, 2)) // 210
+```
+
+### Problem 25. 1000-digit Fibonacci Number
+
+**Задача:**
+
+[Problem 25](https://projecteuler.net/problem=25)
+
+> The Fibonacci sequence is defined by the recurrence relation:
+> \\(F\_{n} = F\_{n-1} + F\_{n-2}\\), where \\(F\_{1} = 1\\) and \\(F\_{2} = 1\\).
+> Hence the first  terms will be:
+> \\(F\_{1} = 1, F\_{2} = 1, F\_{3} = 2, F\_{4} = 3, F\_{5} = 5, F\_{6} = 8, F\_{7} = 13, F\_{8} = 21, F\_{9} = 34, F\_{10} = 55, F\_{11} = 89, F\_{12} = 144\\)
+> 
+> The 12th term, \\(F\_{12}\\), is the first term to contain three digits. 
+> 
+> What is the index of the first term in the Fibonacci sequence to contain 1000 digits?
+
+**Алгоритм:**
+
+Значение числа Фибоначчи можно вычислить [по формуле Бине](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D0%BB%D0%B0_%D0%A4%D0%B8%D0%B1%D0%BE%D0%BD%D0%B0%D1%87%D1%87%D0%B8#%D0%A4%D0%BE%D1%80%D0%BC%D1%83%D0%BB%D0%B0_%D0%91%D0%B8%D0%BD%D0%B5):
+
+\\(F\_{n} = \frac{(\frac{1+\sqrt{5}}{2})^{n} - (\frac{1-\sqrt{5}}{2})^{n}}{\sqrt{5}} = \frac{(\varphi)^{n} - (-\varphi)^{-n}}{\varphi - (-\varphi)^{-1}} = \frac{(\varphi)^{n} - (-\varphi)^{-n}}{2\varphi - 1}\\)
+
+Чтобы найти первое число Фибоначчи, содержащее 1000 цифр, надо найти \\(F\_{n} \simeq \frac{\varphi^{n}}{2\varphi - 1} \geq 10^{999}\\).
+
+Что эквивалентно:
+
+- \\(log\_{10}(\varphi^{n}) - log\_{10}(2\varphi - 1) \geq 999\\)
+- \\(n*log\_{10}(\varphi) \geq 999 + log\_{10}(2\varphi - 1)\\)
+- \\(n \geq \frac{999 + log\_{10}(2\varphi - 1)}{log\_{10}(\varphi)}\\)
+
+**Код:**
+
+```dotty
+val phi: Double = (1.0 + math.sqrt(5.0)) / 2.0
+val count: Int =
+  ((999 + math.log10(2 * phi - 1)) / math.log10(phi)).toInt + 1
+```
+
+### Problem 26. Reciprocal Cycles
+
+**Задача:**
+
+[Problem 26](https://projecteuler.net/problem=26)
+
+> A unit fraction contains 1 in the numerator. 
+> The decimal representation of the unit fractions with denominators 2 to n are given:
+> 
+> 1/2 = 0.5; 1/3 = 0.(3); 1/4 = 0.25; 1/5 = 0.2; 1/6 = 0.1(6); 1/7 = 0.(142857); 1/8 = 0.125; 1/9 = 0.(1); 1/10 = 0.1
+> 
+> Where 0.1(6) means 0.16666..., and has a 1-digit recurring cycle. It can be seen that \\(\frac{1}{7}\\) 
+> has a 6-digit recurring cycle.
+> 
+> Find the value of d < 1000 for which \\(\frac{1}{d}\\) contains the longest recurring cycle in its decimal fraction part.
+
+**Алгоритм:**
+
+Следующий код реализует алгоритм деления с остатком, который находит цикл в последовательности десятичных дробей.
+Функция `getRecurringCycle(d: Int)` принимает целочисленный параметр `d` и возвращает список целых чисел, 
+представляющих цикл в десятичной дроби `1/d`.
+Внутри функции `getRecurringCycle(d: Int)` определена внутренняя рекурсивная функция 
+`loop(a: Int, chain: List[Int], prev: List[Int])`.
+Внутри `loop`, если `a` равно `0`, функция возвращает пустой список `Nil` - цикла нет, 
+последовательность "остатков" закончилась. 
+В противном случае, она ищет индекс `i` числа `a` в списке `prev` (предыдущей цепи "остатков"). 
+Если `i` не равно `-1` ("остаток" повторился в `prev`), то функция возвращает перевернутую часть списка 
+`chain` от начала до индекса `i + 1`. Это означает, что мы нашли цикл в десятичной дроби.
+Если `i` равно `-1` ("остаток" **ещё** не повторился в `prev`), то функция вычисляет `k` и `r`. 
+`k` - целая часть от деления `a` на `d` (добавляется в список `chain`), 
+а `r` - остаток от деления умноженный на `10` (следующее число для аналаза). 
+Затем функция вызывает саму себя с обновленными значениями `a`, `chain` и `prev`.
+
+**Код:**
+
+Вычислить циклическую часть в дроби можно так:
+
+```dotty
+def getRecurringCycle(d: Int): List[Int] =
+  @tailrec
+  def loop(a: Int, chain: List[Int], prev: List[Int]): List[Int] =
+    if a == 0 then Nil
+    else
+      val i = prev.indexOf(a)
+      if i != -1 then chain.take(i + 1).reverse
+      else
+        val k = a / d
+        val r = (a - k * d) * 10
+        loop(r, k :: chain, a :: prev)
+
+  loop(10, Nil, Nil)
+
+getRecurringCycle(2)  // Nil
+getRecurringCycle(3)  // List(3)
+getRecurringCycle(4)  // Nil
+getRecurringCycle(5)  // Nil
+getRecurringCycle(6)  // List(6)
+getRecurringCycle(7)  // List(1, 4, 2, 8, 5, 7)
+getRecurringCycle(8)  // Nil
+getRecurringCycle(9)  // List(1)
+getRecurringCycle(10) // Nil
+```
+
+Аналогично можно вычислить длину цикла:
+
+```dotty
+def getRecurringCycleLength(d: Int): Int =
+  @tailrec
+  def loop(a: Int, chain: List[Int], prev: List[Int]): Int =
+    if a == 0 then 0
+    else
+      val i = prev.indexOf(a)
+      if i != -1 then i + 1
+      else
+        val k = a / d
+        val r = (a - k * d) * 10
+        loop(r, k :: chain, a :: prev)
+
+  loop(10, Nil, Nil)
+```
+
+### Problem 27. Quadratic Primes
+
+**Задача:**
+
+[Problem 27](https://projecteuler.net/problem=27)
+
+> Euler discovered the remarkable quadratic formula: \\(n^{2} + n + 41\\).
+>
+> It turns out that the formula will produce 40 primes for the consecutive integer values \\(0 \leq n \leq 39\\). 
+> However, when n = 40, \\(40^{2} + 40 + 41 = 40(40 + 1) + 41\\) is divisible by 41, 
+> and certainly when \\(n = 41, 41^{2} + 41 + 41\\) is clearly divisible by 41.
+> 
+> The incredible formula \\(n^{2} - 79n + 1601\\) was discovered, 
+> which produces 80 primes for the consecutive values \\(0 \leq n \leq 79\\). 
+> The product of the coefficients, -79 and 1601, is -126479.
+> 
+> Considering quadratics of the form:
+> \\(n^{2} + an + b\\), where \\(|a| < 1000\\) and \\(|b| \leq 1000\\).
+> where |n| is the modulus/absolute value of n
+> e.g. |11| = 11 and |-4| = 4
+> Find the product of the coefficients, a and b, for the quadratic expression that produces 
+> the maximum number of primes for consecutive values of n, starting with 0.
+
+**Алгоритм:**
+
+1. `isPrime(n: Long): Boolean` - функция, которая проверяет, является ли число простым.
+2. `getCountOfPrimes(a: Int, b: Int): Int` - функция, возвращающая количество простых чисел, 
+   которые равны \\(n^{2} + an + b\\) для заданных a и b, где n пробегает значения от 0 до такого первого значения k,
+   при котором результат применения формулы - составное число. При этом k <= b, 
+   т.к. при k = b имеем: \\(b^{2} + ab + b\\) делится на b.
+3. `sieveOfEratosthenes(n: Int): Array[Boolean]` - функция, которая реализует алгоритм "Решето Эратосфена" 
+   для поиска всех простых чисел до `n`. Функция описана в разделе Problem 10.
+4. `primesNoMoreThanN(n: Int): Array[Int]` - функция, которая возвращает массив всех простых чисел, не превышающих `n`.
+5. `abWithMaxCountOfPrimes: (Int, Int)` - функция, которая ищет пару `(a, b)`, для которой количество простых чисел, 
+   получаемых при подстановке в квадратичную формулу \\(n^{2} + an + b\\), является максимальным. 
+   Заменим, что b - простое число, т.к. при n = 0 результат формулы должен быть простым числом.
+   При n = 1 получим, что \\(1 + a + b\\) тоже простое число, а значит, \\(1 + a + b \geq 2 \Rightarrow a \geq 1 - b\\).
+
+**Код:**
+
+```dotty
+def isPrime(n: Long): Boolean =
+  if n < 2 then false
+  else if n < 4 then true // 2 и 3 - простые
+  else if n % 2 == 0 then false
+  else if n < 9 then true // мы уже исключили 4,6 и 8
+  else if n % 3 == 0 then false
+  else
+    val limit = math.ceil(math.sqrt(n.toDouble)).toLong
+
+    @annotation.tailrec
+    def loop(f: Long): Boolean =
+      if f > limit then true
+      else if n % f == 0 || n % (f + 2) == 0 then false
+      else loop(f + 6)
+
+    loop(5)
+
+def getCountOfPrimes(a: Int, b: Int): Int =
+  @tailrec
+  def loop(n: Int, count: Int): Int =
+    lazy val m = n * n + a * n + b
+    if n < b && isPrime(m) then loop(n + 1, count + 1)
+    else count
+
+  loop(0, 0)
+
+getCountOfPrimes(1, 41)     // 40
+getCountOfPrimes(-79, 1601) // 80
+
+def sieveOfEratosthenes(n: Int): Array[Boolean] = ... // аналогично методу из Problem 10
+
+def primesNoMoreThanN(n: Int): Array[Int] =
+  sieveOfEratosthenes(n).zipWithIndex.collect { case (true, prime) => prime }
+
+def abWithMaxCountOfPrimes: (Int, Int) =
+  val pairs =
+    for
+      b <- primesNoMoreThanN(1000)
+      a <- 1 - b to 999
+      if isPrime(1 + a + b)
+    yield (a, b)
+
+  pairs.maxBy(getCountOfPrimes)
+```
+
+### Problem 28. Number Spiral Diagonals
+
+**Задача:**
+
+[Problem 28](https://projecteuler.net/problem=28)
+
+> Starting with the number 1 and moving to the right in a clockwise direction a 5 by 5 spiral is formed as follows:
+> 
+> 21 22 23 24 25
+> 
+> 20  7  8  9 10
+> 
+> 19  6  1  2 11
+> 
+> 18  5  4  3 12
+> 
+> 17 16 15 14 13
+> 
+> It can be verified that the sum of the numbers on the diagonals is 101.
+> 
+> What is the sum of the numbers on the diagonals in a 1001 by 10001 spiral formed in the same way?
+
+**Алгоритм:**
+
+Определим \\(S\_{k}\\) как искомую сумму чисел по диагонали спирали размера \\((2k + 1) \times (2k + 1)\\).
+Тогда \\(S\_{0} = 1, S\_{1} = 25, S\_{2} = 101\\).
+
+Заметим, что \\(S\_{k} = S\_{k - 1} + d\_{1} + d\_{2} + d\_{3} + d\_{4}\\), где \\(d\_{i}\\) - числа по диагонали.
+При этом \\(d\_{i} = size\_{k - 1} + i*(row\_{k} - 1)\\), где \\(row\_{k} = 2k + 1\\) - размер стороны k-й спирали, 
+а \\(size\_{k} = row\_{k}^{2}\\) - максимальное число (или, что тоже самое, размер квадрата) k-й спирали. 
+
+Получим: 
+
+- \\(S\_{k} = S\_{k - 1} + 4size\_{k - 1} + 10(row\_{k} - 1)\\).
+- \\(S\_{k} = 1 + 4\sum\_{i = 0}^{k - 1}size\_{i} + 10\sum\_{i = 1}^{k}row\_{i} - 10k\\)
+- \\(S\_{k} = 1 + 4 + 4(4\sum\_{i = 1}^{k - 1}i^{2} + 4\sum\_{i = 1}^{k - 1}i + k - 1) + 20\sum\_{i = 1}^{k}i\\)
+- \\(S\_{k} = 1 + 24k + 16\sum\_{i = 1}^{k - 1}i^{2} + 36\sum\_{i = 1}^{k - 1}i\\)
+
+Искомая по задаче сумма - это \\(S\_{500}\\) (т.к. 1001 = 2k + 1).
+
+**Код:**
+
+```dotty
+def sumOfSquaresTo(n: Long): Long = n * (n + 1) * (2 * n + 1) / 6
+
+def sumToGiven(n: Long): Long = n * (n + 1) / 2
+
+def getCount(n: Int): Long =
+  16 * sumOfSquaresTo(n - 1) + 36 * sumToGiven(n - 1) + 24 * n + 1
+
+getCount(0) // 1
+getCount(1) // 25
+getCount(2) // 101
+```
+
+### Problem 29. Distinct Powers
+
+**Задача:**
+
+[Problem 29](https://projecteuler.net/problem=29)
+
+> Consider all integer combinations of \\(a^{b}\\) for \\(2 \leq a \leq 5\\) and \\(2 \leq a \leq 5\\).
+> 
+> If they are then placed in numerical order, with any repeats removed, we get the following sequence of 15 distinct terms:
+> 
+> 4, 8, 9, 16, 25, 27, 32, 64, 81, 125, 243, 256, 625, 1024, 3125.
+> 
+> How many distinct terms are in the sequence generated by \\(a^{b}\\) for \\(2 \leq a \leq 100\\) and \\(2 \leq a \leq 100\\)?
+
+**Алгоритм:**
+
+Следующий код демонстрирует несколько функций:
+
+1. `primeFactorsWithPow(n: Long): Map[Long, Int]` - функция находит простые множители числа `n` 
+   и возвращает их в виде `Map`, где ключ - простой множитель, а значение - степень, 
+   в которой он встречается в разложении числа `n`.
+2. `getAView(a: Int): IndexedSeq[String]` - функция принимает целое число `a` и 
+   возвращает последовательность строк, представляющих различные представления числа `a` 
+   в виде произведения простых множителей с указанными степенями.
+3. `val count = (2 to 100).flatMap(getAView).distinct.length` - код создает последовательность всех представлений чисел 
+   от 2 до 100, удаляет дубликаты и считает количество уникальных представлений.
+
+**Код:**
+
+```dotty
+def primeFactorsWithPow(n: Long): Map[Long, Int] = ... // Из Problem 5
+
+def getAView(a: Int): IndexedSeq[String] =
+  val number = primeFactorsWithPow(a)
+  (2 to 100).map: b =>
+    number
+      .map { case (key, power) => s"$key-${power * b}" }
+      .toSeq
+      .sorted
+      .mkString("--")
+
+val count = (2 to 100).flatMap(getAView).distinct.length
+```
+
+### Problem 30. Digit Fifth Powers
+
+**Задача:**
+
+[Problem 30](https://projecteuler.net/problem=30)
+
+> Surprisingly there are only three numbers that can be written as the sum of fourth powers of their digits:
+> 
+> \\(1634 = 1^{4} + 6^{4} + 3^{4} + 4^{4}, 8208 = 8^{4} + 2^{4} + 0^{4} + 8^{4}, 9474 = 9^{4} + 4^{4} + 7^{4} + 4^{4}\\)
+> 
+> As \\(1 = 1^{4}\\) is not a sum it is not included.
+> 
+> The sum of these numbers is 1634 + 8208 + 9474 = 19316.
+> 
+> Find the sum of all the numbers that can be written as the sum of fifth powers of their digits.
+
+**Алгоритм:**
+
+Следующий метод находит все числа, которые можно представить в виде суммы `p`-х степеней их цифр, 
+когда эти числа состоят из четырех цифр.
+Для начала, метод использует генератор `for` для создания всех возможных комбинаций четырех цифр. 
+Каждая цифра `a`, `b`, `c`, `d` входит в диапазон от 0 до 9.
+Затем для каждой комбинации вычисляется `p`-я степень каждой цифры и проверяется, 
+что сумма этих степеней не превышает число, составленное из этих цифр - 
+для того, чтобы избежать перебора несуществующих чисел.
+Наконец, если сумма `p`-х степеней цифр равна числу, составленному из этих цифр, 
+то это число добавляется в результирующую последовательность.
+
+Аналогично можно создать методы для чисел, состоящих от 2-х до 6-ти цифр.
+Число из одной цифры суммой не является, а число из более чем 6 цифр не может равняться сумме пятых степеней
+своих цифр, т.к. \\(k\*9^{5} = k\*59049 \leq 10^{k}\\) для всех k больше 6.
+
+**Код:**
+
+```dotty
+def getSumOfPPowersWith4Digits(p: Int): IndexedSeq[Int] =
+  for
+    a <- 1 to 9
+    ap = math.pow(a, p).toInt
+    if ap < 1000 * (a + 1)
+    b <- 0 to 9
+    bp = math.pow(b, p).toInt
+    if ap + bp < (1000 * a + 100 * (b + 1))
+    c <- 0 to 9
+    cp = math.pow(c, p).toInt
+    if ap + bp + cp < (1000 * a + 100 * b + 10 * (c + 1))
+    d <- 0 to 9
+    dp = math.pow(d, p).toInt
+    if ap + bp + cp + dp == 1000 * a + 100 * b + 10 * c + d
+  yield 1000 * a + 100 * b + 10 * c + d
+
+getSumOfFifthPowersWith4Digits(4) 
+// IndexedSeq(1634, 8208, 9474)
+```
 
 ## Решения задач 31-40
 

@@ -16,6 +16,9 @@ Scala - это красивый, выразительный язык прогр�
 
 - [Особенности Scala 3](https://docs.scala-lang.org/scala3/book/scala-features.html)
 - [From First Principles: Why Scala?](https://www.lihaoyi.com/post/FromFirstPrinciplesWhyScala.html)
+- [My Scala Story - Jacek Kunicki](https://softwaremill.com/jacek-kunicki-my-scala-story/)
+- [My Scala Story - Monica McGuigan](https://softwaremill.com/monica-mcguigan-my-scala-story/)
+- [My Scala Story - Krzysztof Ciesielski](https://softwaremill.com/krzysztof-ciesielski-my-scala-story/)
 - [Principles of developing applications in Scala](https://softwaremill.com/principles-of-developing-applications-in-scala/)
 - [Scala as a Junior Developer](https://blog.rockthejvm.com/scala-as-a-junior-dev)
 - [Scala home page][Scala home page]

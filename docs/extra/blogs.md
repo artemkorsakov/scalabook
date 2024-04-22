@@ -2,7 +2,7 @@
 
 ## Конференции
 
-Ниже приведен список прошедших конференций, отсортированный по дате конференции.
+Список конференций, отсортированный по дате.
 
 | Название                                                                                                        | Язык | Дата       | Ссылка                                |
 |-----------------------------------------------------------------------------------------------------------------|:----:|------------|---------------------------------------|
@@ -12,21 +12,37 @@
 
 ## Блоги
 
-Ниже приведен список полезных блогов по программированию.
+Список блогов по программированию, отсортированный по количеству RSS-подписчиков 
+(>5000, >1000, >750, >500, >250, >100, >75, >50, >25, >10, <10),
+по дате последнего сообщения, а затем - по алфавиту.
 
-| Название                                                                           | Язык | Автор                          |
-|------------------------------------------------------------------------------------|:----:|--------------------------------|
-| [Wey Gu's blog](https://siwei.io/en/posts)                                         |  En  | Wey Gu                         |
-| [Li Haoyi's blog](http://www.lihaoyi.com)                                          |  En  | Li Haoyi                       |
-| [One div zero - James Iry](https://james-iry.blogspot.com)                         |  En  | James Iry                      |
-| [The Clean Code Blog by Robert C. Martin (Uncle Bob)](https://blog.cleancoder.com) |  En  | Robert C. Martin               |
-| [Alexandru Nedelcu's blog](https://alexn.org)                                      |  En  | Alexandru Nedelcu              |
-| [Michael Pilquist's blog](https://mpilquist.github.io)                             |  En  | Michael Pilquist               |
-| [The Scala Programming Language Blog](https://www.scala-lang.org/blog)             |  En  | The Scala Programming Language |
+| Название                                                                           | Язык | Тема  | RSS   | Дата           |
+|------------------------------------------------------------------------------------|:----:|-------|-------|----------------|
+| [Bartosz Milewski's Blog](https://bartoszmilewski.com)                             |  En  | Math  | >5000 | менее полугода |
+| [The Clean Code Blog by Robert C. Martin (Uncle Bob)](https://blog.cleancoder.com) |  En  | Code  | >5000 | 19-01-2023     |
+| [Li Haoyi's blog](http://www.lihaoyi.com)                                          |  En  | Scala | >1000 | менее полугода |
+| [The Scala Programming Language Blog](https://www.scala-lang.org/blog)             |  En  | Scala | >1000 | менее полугода |
+| [One div zero - James Iry](https://james-iry.blogspot.com)                         |  En  | Code  | >1000 | 15-02-2013     |
+| [Typelevel Blog](http://typelevel.org/blog)                                        |  En  | Scala | >750  | менее полугода |
+| [The Comonad Reader](http://comonad.com/reader)                                    |  En  | Scala | >750  | 21-10-2022     |
+| [Higher order: Runar Bjarnason's Blog](http://blog.higher-order.com)               |  En  | Scala | >750  | 02-04-2016     |
+| [John A De Goes' Blog](http://degoes.net)                                          |  En  | Scala | >500  | 19-03-2023     |
+| [Paul Chiusano's Blog](http://pchiusano.github.io)                                 |  En  | Scala | >500  | 13-10-2020     |
+| [Jim McBeath's Blog](http://jim-mcbeath.blogspot.com)                              |  En  | Scala | >250  | 15-08-2022     |
+| [Rock the JVM Blog](https://blog.rockthejvm.com/)                                  |  En  | Scala | >100  | менее полугода |
+| [Zero Credibility Blog](https://spakhm.substack.com/about)                         |  En  | Code  | >100  | менее полугода |
+| [Heinrich Apfelmus's Blog](https://apfelmus.nfshost.com)                           |  En  | Code  | >100  | 02-05-2021     |
+| [Jesper Nordenberg's blog](http://jnordenberg.blogspot.com)                        |  En  | Scala | >75   | 10-09-2014     |
+| [Alexandru Nedelcu's blog](https://alexn.org)                                      |  En  | Scala | >50   | менее полугода |
+| [SoftwareMill Tech Blog](https://softwaremill.com/blog/)                           |  En  | Scala | >50   | менее полугода |
+| [Virtuslab Articles](https://virtuslab.com/blog/)                                  |  En  | Scala | >50   | менее полугода |
+| [Daniela Sfregola's blog](https://danielasfregola.com/)                            |  En  | Scala | >25   | 09-08-2021     |
+| [Wey Gu's blog](https://siwei.io/en/posts)                                         |  En  | Code  | >10   | 16-08-2023     |
+| [Michael Pilquist's blog](https://mpilquist.github.io)                             |  En  | Scala | <10   | 30-10-2023     |
 
 ## Подкасты
 
-Ниже приведен список полезных подкастов, отсортированный по алфавиту.
+Список подкастов, отсортированный по алфавиту.
 
 | Название                                                        | Язык | Период                     | Выпусков |
 |-----------------------------------------------------------------|:----:|----------------------------|----------|

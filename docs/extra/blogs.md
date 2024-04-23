@@ -36,9 +36,27 @@
 | [Alexandru Nedelcu's blog](https://alexn.org)                                      |  En  | Scala | >50   | менее полугода |
 | [SoftwareMill Tech Blog](https://softwaremill.com/blog/)                           |  En  | Scala | >50   | менее полугода |
 | [Virtuslab Articles](https://virtuslab.com/blog/)                                  |  En  | Scala | >50   | менее полугода |
+| [Nikita Volkov's Blog](http://nikita-volkov.github.io)                             |  En  | FP    | >50   | 02-11-2022     |
+| [Gabriel Volpe's blog](https://gvolpe.com/blog)                                    |  En  | Scala | >25   | менее полугода |
+| [Eugene Yokota's blog](https://eed3si9n.com)                                       |  En  | Scala | >25   | менее полугода |
+| [James Ward's blog](https://jamesward.com/)                                        |  En  | Scala | >25   | 05-02-2021     |
 | [Daniela Sfregola's blog](https://danielasfregola.com/)                            |  En  | Scala | >25   | 09-08-2021     |
+| [Functional Justin blog](https://justinhj.github.io/)                              |  En  | Scala | >25   | 05-02-2021     |
+| [Tony Morris's blog](https://tmorris.net/)                                         |  En  | Scala | >25   | 12-05-2020     |
+| [Colin Breck's blog](https://blog.colinbreck.com/)                                 |  En  | Code  | >10   | менее полугода |
+| [Inner Product's blog](https://www.inner-product.com/posts/)                       |  En  | Scala | >10   | менее полугода |
+| [Scalac blog](https://scalac.io/blog/)                                             |  En  | Scala | >10   | менее полугода |
+| [Yadukrishnan's blog](https://yadukrishnan.live/)                                  |  En  | Scala | >10   | 24-11-2023     |
 | [Wey Gu's blog](https://siwei.io/en/posts)                                         |  En  | Code  | >10   | 16-08-2023     |
+| [Leo Benkel's blog](https://leobenkel.com/)                                        |  En  | Scala | >10   | 22-04-2021     |
+| [Indoor Vivants blog](https://blog.indoorvivants.com/)                             |  En  | Scala | <10   | менее полугода |
+| [Jakub Kozłowski's blog](https://blog.kubukoz.com/)                                |  En  | Scala | <10   | менее полугода |
+| [Michał Pawlik's blog](https://blog.michalp.net/)                                  |  En  | Scala | <10   | менее полугода |
+| [Noel Welsh's blog](https://noelwelsh.com/)                                        |  En  | Scala | <10   | менее полугода |
 | [Michael Pilquist's blog](https://mpilquist.github.io)                             |  En  | Scala | <10   | 30-10-2023     |
+| [Tonio Gela's blog](https://toniogela.dev/)                                        |  En  | Scala | <10   | 05-10-2023     |
+| [Chris Kipp's blog](https://www.chris-kipp.io)                                     |  En  | Scala | <10   | 25-06-2023     |
+| [Juliano Alves's blog](https://juliano-alves.com/)                                 |  En  | Scala | <10   | 25-10-2022     |
 
 ## Подкасты
 

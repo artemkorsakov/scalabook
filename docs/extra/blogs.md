@@ -20,6 +20,7 @@
 |------------------------------------------------------------------------------------|:----:|-------|-------|----------------|
 | [Bartosz Milewski's Blog](https://bartoszmilewski.com)                             |  En  | Math  | >5000 | менее полугода |
 | [The Clean Code Blog by Robert C. Martin (Uncle Bob)](https://blog.cleancoder.com) |  En  | Code  | >5000 | 19-01-2023     |
+| [Joel Spolsky's blog](https://www.joelonsoftware.com/archives)                     |  En  | Code  | >1000 | 19-12-2022     |
 | [Li Haoyi's blog](http://www.lihaoyi.com)                                          |  En  | Scala | >1000 | менее полугода |
 | [The Scala Programming Language Blog](https://www.scala-lang.org/blog)             |  En  | Scala | >1000 | менее полугода |
 | [One div zero - James Iry](https://james-iry.blogspot.com)                         |  En  | Code  | >1000 | 15-02-2013     |

@@ -1740,6 +1740,394 @@ getSumOfFifthPowersWith4Digits(4)
 
 ## Решения задач 31-40
 
+### Problem 31. Coin Sums
+
+**Задача:**
+
+[Problem 31](https://projecteuler.net/problem=31)
+
+> In the United Kingdom the currency is made up of pound (£) and pence (p). 
+> There are eight coins in general circulation:
+> 1p, 2p, 5p, 10p, 20p, 50p, £1 (100p), and £2 (200p). 
+> 
+> It is possible to make £2 in the following way:
+> 1×£1 + 1×50p + 2×20p + 1×5p + 1×2p + 3×1p
+> 
+> How many different ways can £2 be made using any number of coins?
+
+**Алгоритм:**
+
+Следующий код на Scala решает задачу о размене монет.
+Он определяет функцию `countWays`, которая принимает два параметра: 
+`coins` - массив доступных монет, и `sum` - сумма, которую нужно разменять.
+
+Внутри функции создается массив `ways`, 
+который используется для хранения количества способов размена для каждой суммы от 0 до `sum`. 
+Изначально все элементы массива инициализируются нулями.
+Затем `ways(0)` устанавливается равным `1`, 
+так как существует ровно один способ размена нулевой суммы - пустой набор монет.
+
+Далее для каждой монеты из массива `coins` выполняется следующее:
+
+- Для каждой суммы `i` от `coin` до `sum`:
+    - `ways(i)` увеличивается на `ways(i - coin)`, что означает, что для текущей суммы `i` 
+      количество способов размена увеличивается на количество способов размена суммы `i - coin` без текущей монеты.
+
+В конце функция возвращает `ways(sum)` - количество способов размена суммы `sum`.
+
+**Код:**
+
+```dotty
+def countWays(coins: Array[Int], sum: Int): Long =
+  val ways = Array.fill(sum + 1)(0L)
+  ways(0) = 1
+  coins.foreach: coin =>
+    (coin to sum).foreach: i =>
+      ways(i) += ways(i - coin)
+  ways(sum)
+
+countWays(Array(1, 2, 5, 10, 20, 50, 100, 200), 200)
+```
+
+### Problem 32. Pandigital Products
+
+**Задача:**
+
+[Problem 32](https://projecteuler.net/problem=32)
+
+> We shall say that an n-digit number is pandigital if it makes use of all the digits 1 to n exactly once; 
+> for example, the 5-digit number, 15234, is 1 through 5 pandigital.
+>
+> The product 7254 is unusual, as the identity, 39 * 186 = 7254, containing multiplicand, multiplier, and product 
+> is 1 through 9 pandigital.
+>
+> Find the sum of all products whose multiplicand/multiplier/product identity can be written as a 1 through 9 pandigital.
+>
+> HINT: Some products can be obtained in more than one way so be sure to only include it once in your sum.
+
+**Алгоритм:**
+
+1. Определяем функцию `isProductCorrect`, которая проверяет, является ли произведение `product` корректным. 
+   Произведение считается корректным, если оно состоит из 4 уникальных цифр (не включая 0) 
+   и не содержит цифр, которые входят в состав множителей `multiplicand` и `multiplier`.
+2. Определяет функцию `getAllPandigital`, генерирующую все возможные комбинации множителей и произведений, 
+   которые могут быть получены путем умножения множителей (двухзначного и трехзначного, либо однозначного и четырехзначного).
+3. Внутри `getAllPandigital` также определяется вектор `candidates`, 
+   который содержит пару множителей и их произведение, отфильтрованный с помощью `isProductCorrect`.
+4. Функция `getDistinctProductSum` использует `getAllPandigital` для получения всех возможных комбинаций, 
+   извлекает уникальные произведения, суммирует их и возвращает результат.
+
+**Код:**
+
+```dotty
+def isProductCorrect(
+    multiplicand: String,
+    multiplier: String,
+    product: String
+): Boolean =
+  product.length == 4 &&
+    product.distinct.length == 4 &&
+    !product.contains('0') &&
+    (multiplicand + multiplier).forall(ch => !product.contains(ch))
+
+def getAllPandigital: IndexedSeq[IndexedSeq[(String, String, String)]] =
+  for
+    a <- 1 to 9
+    b <- 1 to 9
+    if b != a
+    c <- 1 to 9
+    if c != a && c != b
+    d <- 1 to 9
+    if d != a && d != b && d != c
+    e <- 1 to 9
+    if e != a && e != b && e != c && e != d
+  yield
+    val multiplicand1 = 10 * a + b
+    val multiplier1   = 100 * c + 10 * d + e
+    val product1      = (multiplicand1 * multiplier1).toString
+
+    val multiplicand2 = a
+    val multiplier2   = 1000 * b + multiplier1
+    val product2      = (multiplicand2 * multiplier2).toString
+
+    val candidates: Vector[(String, String, String)] =
+      Vector(
+        (multiplicand1.toString, multiplier1.toString, product1),
+        (multiplicand2.toString, multiplier2.toString, product2)
+      )
+    candidates.filter(isProductCorrect)
+
+def getDistinctProductSum: Int =
+  getAllPandigital.flatten.map(_._3.toInt).distinct.sum
+```
+
+### Problem 33. Digit Cancelling Fractions
+
+**Задача:**
+
+[Problem 33](https://projecteuler.net/problem=33)
+
+> The fraction 49/98 is a curious fraction, as an inexperienced mathematician in attempting 
+> to simplify it may incorrectly believe that 49/98 = 4/8, which is correct, is obtained by cancelling the 9s.
+>
+> We shall consider fractions like, 30/50 = 3/5, to be trivial examples.
+> 
+> There are exactly four non-trivial examples of this type of fraction, less than one in value, 
+> and containing two digits in the numerator and denominator.
+> 
+> If the product of these four fractions is given in its lowest common terms, find the value of the denominator.
+
+**Алгоритм:**
+
+Из условия задачи следует:
+
+- все четыре цифры в дроби больше 0, т.к. если встречается 0, то его вычеркивать нельзя (тривиальный пример),
+  а если он останется после вычеркивания второй цифры, то получается либо нулевая дробь (тривиальный пример),
+  либо 0 в знаменателе.
+- остаются варианты:
+    - \\(\frac{ab}{cb} = \frac{a}{c} < 1\\)
+    - \\(\frac{ac}{cb} = \frac{a}{b} < 1\\)
+    - \\(\frac{ab}{ca} = \frac{b}{c} < 1\\)
+    - \\(\frac{ab}{ac} = \frac{b}{c} < 1\\)
+- варианта \\(\frac{ab}{cb} = \frac{a}{c} < 1\\) не может быть, т.к. в этом случае 
+  \\((10\*a + b)\*c = a\*(10\*c + b) \Rightarrow a = c\\), что противоречит условию, что дробь должна быть меньше 1.
+- аналогично не может быть варианта \\(\frac{ab}{ac} = \frac{b}{c} < 1\\), т.к. в этом случае
+  \\((10\*a + b)\*c = b\*(10\*a + c) \Rightarrow 10\*a\*c = 10\*a\*b \Rightarrow b = c\\), 
+  что противоречит условию, что дробь должна быть меньше 1.
+- остаются варианты:
+    - \\(\frac{ac}{cb} = \frac{a}{b} < 1\\)
+    - \\(\frac{ab}{ca} = \frac{b}{c} < 1\\)
+- из варианта \\(\frac{ac}{cb} = \frac{a}{b} < 1\\) следует, что 
+  \\(a < b; 9\*a\*b + b\*c = 10\*a\*c \Rightarrow 9\*a\*b + b\*c < 10\*b\*c \Rightarrow a < c\\).
+  Предположим, что \\(b \geq c\\), тогда \\(9\*a\*c + c\*c \leq 10\*a\*c \Rightarrow c \leq a\\), что невозможно.
+  Значит, \\(a < b < c\\)
+- из варианта \\(\frac{ab}{ca} = \frac{b}{c} < 1\\) следует, что
+  \\(b < c; 10\*a\*c = 9\*b\*c + a\*b \Rightarrow 10\*a\*c < 9\*c\*c + a\*c \Rightarrow a < c\\).
+  Предположим, что \\(a \geq b\\), тогда \\(10\*b\*c \leq 9\*b\*c + a\*b \Rightarrow c \leq a\\), что невозможно.
+  Значит, \\(a < b < c\\)
+- Варианты \\(\frac{ac}{cb} = \frac{a}{b} < 1\\) и \\(\frac{ab}{ca} = \frac{b}{c} < 1\\) одновременно случиться не могут,
+  т.к. в этом случае \\(9\*a\*b + b\*c = 10\*a\*c = 9\*b\*c + a\*b \Rightarrow a = c\\), что невозможно.
+- Осталось перебрать все варианты...
+
+**Код:**
+
+```dotty
+def getAllFractions: IndexedSeq[(Int, Int)] =
+  (
+    for
+      a <- 1 to 7
+      b <- a + 1 to 8
+      c <- b + 1 to 9
+    yield
+      val ac = a * 10 + c
+      val cb = c * 10 + b
+      val ab = a * 10 + b
+      val ca = c * 10 + a
+      if ac * b == a * cb then Some((ac, cb))
+      else if ab * c == b * ca then Some((ab, ca))
+      else None
+  ).flatten
+
+@tailrec
+def gcd(a: Long, b: Long): Long =
+  if b == 0 then a else gcd(b, a % b)
+
+def getFractionDenominator: Long =
+  val (n, d) = getAllFractions.foldLeft((1L, 1L)) { case ((n, d), (fn, fd)) =>
+    (n * fn, d * fd)
+  }
+  d / gcd(n, d)
+```
+
+### Problem 34. Digit Factorials
+
+**Задача:**
+
+[Problem 34](https://projecteuler.net/problem=34)
+
+> 145 is a curious number, as 1! + 4! + 5! = 1 + 24 + 120 = 145.
+>
+> Find the sum of all numbers which are equal to the sum of the factorial of their digits.
+>
+> Note: As 1! = 1 and 2! = 2 are not sums they are not included.
+
+**Алгоритм:**
+
+Заметим, что достаточно рассмотреть только k-значные числа, где 2 < k < 7, т.к. \\(9!\*k < 10^{k}\\) для всех k > 7.
+Остальные варианты можно перебрать.
+
+**Код:**
+
+Для трехзначного числа перебор может быть таким, предварительно вычислив все факториалы от 0 до 9,
+чтобы не вычислять их более одного раза:
+
+```dotty
+def factorial(n: Int): BigInt =
+  (2 to n).foldLeft(BigInt(1))(_ * _)
+
+val factorials = (0 to 9).map(factorial)
+
+def getLuckyNumberWithThreeDigits: IndexedSeq[Int] =
+  for
+    a <- 1 to 9
+    limit = (a + 1) * 100
+    if factorials(a) < limit
+    b <- 0 to 9
+    if factorials(a) + factorials(b) < limit
+    c <- 0 to 9
+    if factorials(a) + factorials(b) + factorials(c) < limit
+    abc = a * 100 + b * 10 + c
+    if abc == factorials(a) + factorials(b) + factorials(c)
+  yield abc
+```
+
+### Problem 35. Circular Primes
+
+**Задача:**
+
+[Problem 35](https://projecteuler.net/problem=35)
+
+> The number, 197, is called a circular prime because all rotations of the digits: 197, 971, and 719, are themselves prime.
+> 
+> There are thirteen such primes below 100: 2, 3, 5, 7, 11, 13, 17, 31, 37, 71, 73, 79, and 97.
+> 
+> How many circular primes are there below one million?
+
+**Алгоритм:**
+
+- `getCircularRotation(n: Int): IndexedSeq[Int]` - функция принимает целое число n и возвращает последовательность 
+  целых чисел, которая является результатом циклического сдвига цифр числа n. 
+- `sieveOfEratosthenes(n: Int): Array[Boolean]` - функция реализует алгоритм "Решето Эратосфена".
+- `countPrimes(limit: Int): Int` - функция использует функцию `sieveOfEratosthenes` 
+  для получения массива простых чисел до `limit`. Затем она подсчитывает количество простых чисел, 
+  которые являются циклическими перестановками других простых чисел.
+
+**Код:**
+
+```dotty
+def getCircularRotation(n: Int): IndexedSeq[Int] =
+  if n < 10 then IndexedSeq(n)
+  else
+    val m = n.toString
+    m.indices.map: i =>
+      (m.drop(i) + m.take(i)).toInt
+
+def sieveOfEratosthenes(n: Int): Array[Boolean] = ... // из Problem 10
+
+def countPrimes(limit: Int): Int =
+  val isPrimeArr = sieveOfEratosthenes(limit)
+  isPrimeArr.indices.count: i =>
+    isPrimeArr(i) && getCircularRotation(i).forall(isPrimeArr)
+
+getCircularRotation(197) // Vector(197, 971, 719)
+countPrimes(100)         // 13
+```
+
+### Problem 36. Double-base Palindromes
+
+**Задача:**
+
+[Problem 36](https://projecteuler.net/problem=36)
+
+> The decimal number, \\(585 = 1001001001\_{2}\\) (binary), is palindromic in both bases.
+> 
+> Find the sum of all numbers, less than one million, which are palindromic in base 10 and base 2.
+> 
+> (Please note that the palindromic number, in either base, may not include leading zeros.)
+
+**Алгоритм:**
+
+Заметим, что палиндром не может заканчиваться на четную цифру, 
+т.к. в этом случае в двоичном представлении перевернутое число будет начинаться с 0, что противоречит условию задачи.
+
+1. `isPalindrome(number: Long, base: Int): Boolean` - функция проверяет, является ли число `number` палиндромом 
+   в системе счисления с основанием `base`.
+2. `getAllPalindromes` - функция использует функцию `isPalindrome` для фильтрации всех чисел от 1 до 1000000 
+   (не включая 1000000) с шагом 2. 
+   Она проверяет, являются ли числа палиндромами в десятичной и двоичной системах счисления. 
+   Функция возвращает список всех чисел, которые являются палиндромами в обеих системах счисления.
+
+**Код:**
+
+```dotty
+def isPalindrome(number: Long, base: Int): Boolean =
+  var revertedNumber = 0L
+  var k              = number
+  while k > revertedNumber
+  do
+    revertedNumber = revertedNumber * base + k % base
+    k /= base
+  k == revertedNumber || k == revertedNumber / base
+
+def getAllPalindromes =
+  (1 until 1000000 by 2).filter: i =>
+    isPalindrome(i, 10) && isPalindrome(i, 2)
+```
+
+### Problem 37.
+
+**Задача:**
+
+[Problem 37](https://projecteuler.net/problem=37)
+
+>
+
+**Алгоритм:**
+
+**Код:**
+
+```dotty
+
+```
+
+### Problem 38.
+
+**Задача:**
+
+[Problem 38](https://projecteuler.net/problem=38)
+
+>
+
+**Алгоритм:**
+
+**Код:**
+
+```dotty
+
+```
+
+### Problem 39.
+
+**Задача:**
+
+[Problem 39](https://projecteuler.net/problem=39)
+
+>
+
+**Алгоритм:**
+
+**Код:**
+
+```dotty
+
+```
+
+### Problem 40.
+
+**Задача:**
+
+[Problem 40](https://projecteuler.net/problem=40)
+
+>
+
+**Алгоритм:**
+
+**Код:**
+
+```dotty
+
+```
+
 ## Решения задач 41-50
 
 ## Решения задач 51-60

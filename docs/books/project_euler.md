@@ -2042,8 +2042,7 @@ countPrimes(100)         // 13
 
 1. `isPalindrome(number: Long, base: Int): Boolean` - функция проверяет, является ли число `number` палиндромом 
    в системе счисления с основанием `base`.
-2. `getAllPalindromes` - функция использует функцию `isPalindrome` для фильтрации всех чисел от 1 до 1000000 
-   (не включая 1000000) с шагом 2. 
+2. `getAllPalindromes` - функция использует функцию `isPalindrome` для фильтрации всех нечетных чисел от 1 до 999999. 
    Она проверяет, являются ли числа палиндромами в десятичной и двоичной системах счисления. 
    Функция возвращает список всех чисел, которые являются палиндромами в обеих системах счисления.
 
@@ -2064,68 +2063,204 @@ def getAllPalindromes =
     isPalindrome(i, 10) && isPalindrome(i, 2)
 ```
 
-### Problem 37.
+### Problem 37. Truncatable Primes
 
 **Задача:**
 
 [Problem 37](https://projecteuler.net/problem=37)
 
+> The number 3797 has an interesting property. Being prime itself, it is possible to continuously remove digits 
+> from left to right, and remain prime at each stage: 3797, 797, 97, and 7. 
+> Similarly we can work from right to left: 3797, 379, 37, and 3.
 >
+> Find the sum of the only eleven primes that are both truncatable from left to right and right to left.
+> 
+> NOTE: 2, 3, 5, and 7 are not considered to be truncatable primes.
 
 **Алгоритм:**
+
+Следующий код реализует алгоритм для нахождения всех «целочисленных чисел, 
+которые можно обрезать слева или справа и оставить простыми».
+Код находит все 11 чисел, но не гарантирует, что "других нет".
+
+[Ссылка на объяснение, почему таких чисел только 11.](https://projecteuler.net/thread=37;page=5#346003) 
 
 **Код:**
 
 ```dotty
+def sieveOfEratosthenes(n: Int): Array[Boolean] = ... // Из Problem 10
 
+def allTruncatableNumbers: Seq[Int] =
+  val isPrimes = sieveOfEratosthenes(1000000)
+
+  @tailrec
+  def isRightTruncatable(n: Int): Boolean =
+    isPrimes(n) && (n < 10 || isRightTruncatable(n / 10))
+
+  @tailrec
+  def isLeftTruncatable(n: Int): Boolean =
+    isPrimes(n) && (n < 10 || isLeftTruncatable(n.toString.tail.toInt))
+
+  (10 until 1000000).filter: n =>
+    isPrimes(n) && isRightTruncatable(n) && isLeftTruncatable(n)
+
+allTruncatableNumbers
+// Vector(23, 37, 53, 73, 313, 317, 373, 797, 3137, 3797, 739397)
 ```
 
-### Problem 38.
+### Problem 38. Pandigital Multiples
 
 **Задача:**
 
 [Problem 38](https://projecteuler.net/problem=38)
 
+> Take the number 192 and multiply it by each of 1, 2, and 3: 
+> \\(192 \times 1 = 192, 192 \times 2 = 384, 192 \times 3 = 576\\). 
 >
+> By concatenating each product we get the 1 to 9 pandigital, 192384576. 
+> We will call 192384576 the concatenated product of 192 and (1, 2, 3).
+> 
+> The same can be achieved by starting with 9 and multiplying by 1, 2, 3, 4, and 5, 
+> giving the pandigital, 918273645, which is the concatenated product of 9 and (1, 2, 3, 4, 5).
+>
+> What is the largest 1 to 9 pandigital 9-digit number that can be formed as the concatenated product of 
+> an integer with (1, 2, 3, ... , n) where n > 1?
 
 **Алгоритм:**
+
+Следующий код реализует функции для поиска наибольшего панцифрового числа, 
+которое можно получить путем объединения произведений целого числа `x` с последовательными целыми числами от `1` до `n`.
+
+1. `isPandigital(number: String): Boolean` - функция, которая проверяет, является ли строка `number` панцифровой.
+   Панцифровое число - это число, содержащее каждую цифру от 1 до 9 ровно один раз.
+2. `getProduct(n: Int, i: Int, product: String): Option[Long]` - рекурсивная функция, 
+   которая вычисляет произведение `n` на `i`, добавляет его к строке `product` и вызывает саму себя с увеличенным `i`, 
+   пока длина строки `product` не станет равной или более 9. Если строка `product` является панцифровой, 
+   функция возвращает ее в виде числа `Long`. В противном случае возвращает `None`.
+3. `getAllNumbers: Long` - функция, которая использует функцию `getProduct` для каждого числа от `2` до `9999` 
+   и возвращает наибольшее панцифровое число, которое можно получить.
+4. Числа более `9999` не подходят, т.к. уже для `i = 2` превышают 9 знаков.
 
 **Код:**
 
 ```dotty
+def isPandigital(number: String): Boolean =
+  number.length == 9 && !number.contains("0") &&
+    number.toSeq.distinct.length == 9
 
+@tailrec
+def getProduct(n: Int, i: Int, product: String): Option[Long] =
+  val newProduct = product + (n * i).toString
+  if newProduct.length < 9 then getProduct(n, i + 1, newProduct)
+  else if newProduct.length == 9 && isPandigital(newProduct) then
+    Some(newProduct.toLong)
+  else None
+
+def getAllNumbers: Long =
+  (2 until 10000).flatMap: n =>
+    getProduct(n, i = 2, product = n.toString)
+  .max
 ```
 
-### Problem 39.
+### Problem 39. Integer Right Triangles
 
 **Задача:**
 
 [Problem 39](https://projecteuler.net/problem=39)
 
+> If p is the perimeter of a right angle triangle with integral length sides, {a, b, c}, 
+> there are exactly three solutions for p = 120.
 >
+> {20, 48, 52}, {24, 45, 51}, {30, 40, 50}.
+> 
+> For which value of p <= 1000, is the number of solutions maximised?
 
 **Алгоритм:**
+
+Как вычислить Пифагорову тройку с заданной суммой [объясняется в соответствующем разделе](../algorithms/algorithms/fibonacci.md).
 
 **Код:**
 
 ```dotty
+@tailrec
+def gcd(a: Long, b: Long): Long =
+  if b == 0 then a else gcd(b, a % b)
 
+def pythagoreanTripletsWithGivenSum(sum: Long): Int =
+  if sum % 2 == 1 then 0
+  else
+    var count = 0
+    val s2          = sum / 2
+    val sqrt        = math.sqrt(s2.toDouble).toLong
+    val mLimit      = if sqrt * sqrt == s2 then sqrt - 1 else sqrt
+
+    for m <- 2L to mLimit do
+      if s2 % m == 0 then
+        var sm = s2 / m
+        // сократим пространство поиска, удалив все делители 2
+        while sm % 2 == 0 do sm /= 2
+        var k = if m % 2 == 1 then m + 2 else m + 1
+        while k < 2 * m && k <= sm
+        do
+          if sm % k == 0 && gcd(k, m) == 1 then
+            val d = s2 / (k * m)
+            val n = k - m
+            val a = d * (m * m - n * n)
+            val b = 2 * d * m * n
+            val c = d * (m * m + n * n)
+            count += 1
+          k += 2
+
+    count
+
+val count = (1 to 1000).maxBy: i =>
+  pythagoreanTripletsWithGivenSum(i)
 ```
 
-### Problem 40.
+### Problem 40. Champernowne's Constant
 
 **Задача:**
 
 [Problem 40](https://projecteuler.net/problem=40)
 
->
+> An irrational decimal fraction is created by concatenating the positive integers:
+> 0.123456789101112131415161718192021
+> 
+> It can be seen that the \\(12^{th}\\) digit of the fractional part is 1.
+> 
+> If \\(d\_{n}\\) represents the \\(n^{th}\\) digit of the fractional part, find the value of the following expression:
+> \\(d\_{1} \times d\_{10} \times d\_{100} \times d\_{1000} \times d\_{10000} \times d\_{100000} \times d\_{1000000}\\)
 
 **Алгоритм:**
+
+Следующий код реализует функции для нахождения произведения определенных цифр в последовательности чисел, 
+которая образуется путем объединения всех положительных целых чисел.
+
+1. `getCountOfDigits(d: Int): Long` - функция, которая вычисляет количество цифр в числах, состоящих из `d` цифр.
+2. `getD(d: Int): Int` - функция, которая находит цифру в числе, состоящем из `d` цифр. 
+   Она находит число, в котором находится `d`-ая цифра, и определяет, какая цифра находится в этом числе на позиции `d`.
+3. В конце кода определяется значение `count`, которое является произведением цифр, 
+   находящихся на позициях 1, 10, 100, 1000, 10000, 100000 и 1000000 в последовательности чисел.
 
 **Код:**
 
 ```dotty
+def getCountOfDigits(d: Int): Long =
+  val p = math.pow(10, d).toLong
+  d * p - (p - 1) / 9
 
+def getD(d: Int): Int =
+  val digits      = (1 to 10000).find(i => getCountOfDigits(i) >= d).get
+  val rest        = d - getCountOfDigits(digits - 1) - 1
+  val i           = rest / digits
+  val j           = (rest % digits).toInt
+  val number      = (math.pow(10, digits - 1).toLong + i).toString
+  val resultDigit = number(j).getNumericValue
+  resultDigit
+
+val count =
+  getD(1) * getD(10) * getD(100) * getD(1000) * getD(10000) *
+    getD(100000) * getD(1000000)
 ```
 
 ## Решения задач 41-50

@@ -12,10 +12,6 @@
 | [Milewski Bartosz - Category Theory for Programmers](https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface)                                                                                                                                                                     |  En  | 2014 | Теория категорий |
 | [Milewski Bartosz - The Dao of Functional Programming](https://github.com/BartoszMilewski/Publications/blob/master/TheDaoOfFP/DaoFP.pdf)                                                                                                                                                                     |  En  | 2023 | Теория категорий |
 
-
-
-## Видео
-
 ## Курсы
 
 ## Упражнения
@@ -25,3 +21,5 @@
 | Название                                                                                    | Язык | Дата | Комментарий |
 |---------------------------------------------------------------------------------------------|:----:|------|-------------|
 | [Parse, don’t validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate) |  En  | 2019 | Refined     |
+
+## Видео

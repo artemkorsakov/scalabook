@@ -13,26 +13,6 @@
 | [Scala & Design Patterns: Exploring Language Expressivity by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf) | Scala 2 |  En  | 2009 |             |
 | [Scala with Cats](https://www.scalawithcats.com/)                                                                                                         | Scala 2 |  En  | 2020 | Cats        |
 
-## Видео
-
-| Название                                                                                                                                                                 | Версия  | Язык | Дата | Комментарий            |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|------------------------|
-| [Современное ФП с Tagless Final - Олег Нижников](https://www.youtube.com/watch?v=sWEtnq0ReZA)                                                                            |  Scala  |  Ру  | 2023 |                        |
-| [О дивный контекстный мир Scala - Иван Лягаев](https://www.youtube.com/watch?v=fR0hj-Lz1Vc)                                                                              | Scala 2 |  Ру  | 2023 |                        |                                                         
-| [Direct Style Scala - Martin Odersky, Scalar Conference 2023](https://www.youtube.com/watch?v=0Fm0y4K4YO8&t)                                                             | Scala 3 |  En  | 2023 | Scalar Conference 2023 |
-| [Combining Refined Types with Type Class Derivation in Scala - Lawrence Carvalho](https://www.youtube.com/watch?v=Hq2QWbUXKbE&t)                                         | Scala 2 |  En  | 2018 | Refined                |
-| [Decorate your types with refined – Frank Thomas](https://www.youtube.com/watch?v=zExb9x3fzKs)                                                                           | Scala 2 |  En  | 2016 | Refined                |
-| [Defusing the configuration time bomb with PureConfig and Refined - Leif Wickland](https://www.youtube.com/watch?v=NjqRi-cF3-g)                                          | Scala 2 |  En  | 2017 | Refined                |
-| [Functional Structures in Scala - Michael Pilquist](https://www.youtube.com/playlist?list=PLFrwDVdSrYE6dy14XCmUtRAJuhCxuzJp0)                                            | Scala 2 |  En  | 2015 | FP                     |
-| [Getting Started with #refined - DevInsideYou](https://www.youtube.com/watch?v=aZsmapo1afQ)                                                                              | Scala 2 |  En  | 2020 | Refined                |
-| [How to Build a Functional API - Julien Truffaut](https://www.youtube.com/watch?v=__zuECMFCRc)                                                                           | Scala 2 |  En  | 2018 | FP                     |
-| [Let The Compiler Help You: How To Make The Most Of Scala's Typesystem - Markus Hauck](https://www.youtube.com/watch?v=hhXPeuJohM4)                                      | Scala 2 |  En  | 2017 | Refined                |
-| [Literal types, what they are good for? - Tamer Abdulradi](https://slideslive.com/38907881/literal-types-what-they-are-good-for)                                         | Scala 2 |  En  | 2018 | Refined                |
-| [Refined Types in Scala - Rock the JVM](https://www.youtube.com/watch?v=IDrGbsupaok)                                                                                     | Scala 2 |  En  | 2020 | Refined                |
-| [Security with Scala: Refined Types and Object Capabilities - Will Sargent](https://slideslive.com/38908776/security-with-scala-refined-types-and-object-capabilities)   | Scala 2 |  En  | 2018 | Refined                |
-| [Strings are Evil: Methods to hide the use of primitive types - Noel Welsh](https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types) | Scala 2 |  En  | 2018 | Refined                |
-| [Why types matter](https://www.youtube.com/watch?v=n1Y2V4zCZdQ)                                                                                                          | Scala 2 |  En  | 2020 | Refined                |
-
 ## Курсы
 
 | Название                                                                                                                          |  Версия  | Язык | Дата | Комментарий |
@@ -91,3 +71,23 @@
 | [Type safety with refined](https://blog.michalp.net/posts/scala/refined/)                                                                                                                | Scala 2 |  En  | 2022 | Refined          |
 | [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)                                            | Scala 2 |  En  | 2019 | Refined          |
 | [Wtf is Refined?](https://medium.com/@Methrat0n/wtf-is-refined-5008eb233194)                                                                                                             | Scala 2 |  En  | 2019 | Refined          |
+
+## Видео
+
+| Название                                                                                                                                                                 | Версия  | Язык | Дата | Комментарий            |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|------------------------|
+| [Современное ФП с Tagless Final - Олег Нижников](https://www.youtube.com/watch?v=sWEtnq0ReZA)                                                                            |  Scala  |  Ру  | 2023 |                        |
+| [О дивный контекстный мир Scala - Иван Лягаев](https://www.youtube.com/watch?v=fR0hj-Lz1Vc)                                                                              | Scala 2 |  Ру  | 2023 |                        |                                                         
+| [Direct Style Scala - Martin Odersky, Scalar Conference 2023](https://www.youtube.com/watch?v=0Fm0y4K4YO8&t)                                                             | Scala 3 |  En  | 2023 | Scalar Conference 2023 |
+| [Combining Refined Types with Type Class Derivation in Scala - Lawrence Carvalho](https://www.youtube.com/watch?v=Hq2QWbUXKbE&t)                                         | Scala 2 |  En  | 2018 | Refined                |
+| [Decorate your types with refined – Frank Thomas](https://www.youtube.com/watch?v=zExb9x3fzKs)                                                                           | Scala 2 |  En  | 2016 | Refined                |
+| [Defusing the configuration time bomb with PureConfig and Refined - Leif Wickland](https://www.youtube.com/watch?v=NjqRi-cF3-g)                                          | Scala 2 |  En  | 2017 | Refined                |
+| [Functional Structures in Scala - Michael Pilquist](https://www.youtube.com/playlist?list=PLFrwDVdSrYE6dy14XCmUtRAJuhCxuzJp0)                                            | Scala 2 |  En  | 2015 | FP                     |
+| [Getting Started with #refined - DevInsideYou](https://www.youtube.com/watch?v=aZsmapo1afQ)                                                                              | Scala 2 |  En  | 2020 | Refined                |
+| [How to Build a Functional API - Julien Truffaut](https://www.youtube.com/watch?v=__zuECMFCRc)                                                                           | Scala 2 |  En  | 2018 | FP                     |
+| [Let The Compiler Help You: How To Make The Most Of Scala's Typesystem - Markus Hauck](https://www.youtube.com/watch?v=hhXPeuJohM4)                                      | Scala 2 |  En  | 2017 | Refined                |
+| [Literal types, what they are good for? - Tamer Abdulradi](https://slideslive.com/38907881/literal-types-what-they-are-good-for)                                         | Scala 2 |  En  | 2018 | Refined                |
+| [Refined Types in Scala - Rock the JVM](https://www.youtube.com/watch?v=IDrGbsupaok)                                                                                     | Scala 2 |  En  | 2020 | Refined                |
+| [Security with Scala: Refined Types and Object Capabilities - Will Sargent](https://slideslive.com/38908776/security-with-scala-refined-types-and-object-capabilities)   | Scala 2 |  En  | 2018 | Refined                |
+| [Strings are Evil: Methods to hide the use of primitive types - Noel Welsh](https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types) | Scala 2 |  En  | 2018 | Refined                |
+| [Why types matter](https://www.youtube.com/watch?v=n1Y2V4zCZdQ)                                                                                                          | Scala 2 |  En  | 2020 | Refined                |

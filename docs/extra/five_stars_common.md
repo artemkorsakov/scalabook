@@ -9,10 +9,10 @@
 | [Искусство программирования - Дональд Э. Кнут](https://ru.wikipedia.org/wiki/%D0%98%D1%81%D0%BA%D1%83%D1%81%D1%81%D1%82%D0%B2%D0%BE_%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F) |  Ру  | 1968-по н.в | Алгоритмы   |
 | [The Art of Computer Programming - Donald E. Knuth](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)                                                                                                                            |  En  | 1968-по н.в | Алгоритмы   |
 
-## Видео
-
 ## Курсы
 
 ## Упражнения
 
 ## Статьи
+
+## Видео

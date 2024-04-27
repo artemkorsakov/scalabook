@@ -24,34 +24,6 @@
 | [The Neophyte's Guide to Scala](https://danielwestheide.com/books/the-neophytes-guide-to-scala)                                                                                                                                                     | Scala 2 |  En  | 2013 |             |
 | [The Type Astronaut's Guide to Shapeless Book](https://underscore.io/books/shapeless-guide)                                                                                                                                                         | Scala 2 |  En  | 2017 |             |
 
-## Видео
-
-| Название                                                                                                                                           | Версия  | Язык | Дата | Комментарий |
-|----------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
-| [Scala. Война Эффектов. ZIO vs Cats Effect - Олег Нижников](https://www.youtube.com/watch?v=jRVvj_2yWkE)                                           | Scala 3 |  Ру  | 2021 |             |
-| [10+ Scala Concepts You Need to Know - DevInsideYou](https://www.youtube.com/watch?v=nI57LUpjGrk)                                                  | Scala 3 |  En  | 2023 |             |
-| [A Tour of Scala 3 - Martin Odersky](https://www.youtube.com/watch?v=_Rnrx2lo9cw)                                                                  | Scala 3 |  En  | 2023 |             |
-| [Functional Programming in Scala - DevInsideYou](https://www.youtube.com/playlist?list=PLJGDHERh23x8AD0LFiS9iPg_tKLS1i1wZ)                         | Scala 3 |  En  | 2022 |             |
-| [Proper and Basic Property-Based Testing](https://www.youtube.com/watch?v=FS_VJOQfogc)                                                             | Scala 3 |  En  | 2023 |             |
-| [Scala 3 - Rock the JVM](https://www.youtube.com/watch?v=orTmm6OMaLw&list=PLmtsMNDRU0BwsVUbhsH2HMqDMPNhQ0HPc)                                      | Scala 3 |  En  | 2020 |             |
-| [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)                                        | Scala 3 |  En  | 2021 |             |
-| [Scala Tips - Rock the JVM](https://www.youtube.com/playlist?list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)                                              | Scala 3 |  En  | 2023 |             |
-| [Scala's Role in the Programming Languages Ecosystem - Martin Odersky](https://www.youtube.com/watch?v=7mTNZeiIK7E)                                | Scala 3 |  En  | 2023 |             |
-| [The Best Scala Libraries I Use in Every Project - DevInsideYou](https://www.youtube.com/watch?v=ZymD5NuOwdA)                                      | Scala 3 |  En  | 2023 |             |
-| [Typeclasses in Scala 3 - Colombia Scala meetup/Scala at the Sea](https://www.youtube.com/watch?app=desktop&v=co4LSvVoX-s)                         | Scala 3 |  En  | 2022 |             |
-| [Functional Scala - Scala in the city](https://www.youtube.com/playlist?list=PLjtl9Y7VJMWtZz3g0LjMhO54_KBL8Tfwl)                                   | Scala 2 |  En  | 2020 |             |
-| [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) | Scala 2 |  En  | 2015 |             |
-| [Language-Agnostic Tips - Rock the JVM](https://www.youtube.com/watch?v=0wmcCdoExbM&list=PLmtsMNDRU0ByxKWa4h2LMn9oXyeDEJbnC)                       | Scala 2 |  En  | 2021 |             |
-| [Scala - Your First Programming Language - DevInsideYou](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                 | Scala 2 |  En  | 2022 |             |
-| [Scala at Light Speed - Rock the JVM](https://www.youtube.com/playlist?list=PLmtsMNDRU0BxryRX4wiwrTZ661xcp6VPM)                                    | Scala 2 |  En  | 2020 |             |
-| [Scala Collections - DevInsideYou](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE)                                       | Scala 2 |  En  | 2020 |             |
-| [Scala Variables - Rock the JVM](https://www.youtube.com/watch?v=dhe1T_ttPTI&list=PLmtsMNDRU0By6XxGZIcynXYi5RaZtaZC1)                              | Scala 2 |  En  | 2020 |             |
-| [The Typeclass Pattern - An Alternative to Inheritance](https://www.youtube.com/watch?v=yYo0gANYViE)                                               | Scala 2 |  En  | 2012 |             |
-| [Tutorial: Typeclasses in Scala with Dan Rosen](https://www.youtube.com/watch?v=sVMES4RZF-8)                                                       | Scala 2 |  En  | 2012 |             |
-| [Type-Level Programming in Scala - Rock the JVM](https://www.youtube.com/watch?v=qwUYqv6lKtQ&list=PLmtsMNDRU0ByOQoz6lnihh6CtMrErNax7)              | Scala 2 |  En  | 2021 |             |
-| [Vivisecting the Veil of Variance](https://www.youtube.com/watch?v=dPbbqrhm-WY)                                                                    | Scala 2 |  En  | 2023 |             |
-| [Why are Type Classes useful in Scala? - Rock the JVM](https://www.youtube.com/watch?v=bupBZKJT0EA)                                                | Scala 2 |  En  | 2020 |             |
-
 ## Курсы
 
 | Название                                                                                                                                             | Версия  | Язык | Дата | Комментарий                                                                  |
@@ -108,3 +80,31 @@
 | [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics) | Scala 2 |  En  | 2013 |                             |
 | [The Power of Type-classes with Scala implicit defs](https://blog.tmorris.net/posts/the-power-of-type-classes-with-scala-implicit-defs/index.html)                                            | Scala 2 |  En  | 2007 |                             |
 | [What is F\[\_\] in Scala?](https://xebia.com/blog/what-is-F-with-hole-in-scala/)                                                                                                             | Scala 2 |  En  | 2021 |                             |
+
+## Видео
+
+| Название                                                                                                                                           | Версия  | Язык | Дата | Комментарий |
+|----------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
+| [Scala. Война Эффектов. ZIO vs Cats Effect - Олег Нижников](https://www.youtube.com/watch?v=jRVvj_2yWkE)                                           | Scala 3 |  Ру  | 2021 |             |
+| [10+ Scala Concepts You Need to Know - DevInsideYou](https://www.youtube.com/watch?v=nI57LUpjGrk)                                                  | Scala 3 |  En  | 2023 |             |
+| [A Tour of Scala 3 - Martin Odersky](https://www.youtube.com/watch?v=_Rnrx2lo9cw)                                                                  | Scala 3 |  En  | 2023 |             |
+| [Functional Programming in Scala - DevInsideYou](https://www.youtube.com/playlist?list=PLJGDHERh23x8AD0LFiS9iPg_tKLS1i1wZ)                         | Scala 3 |  En  | 2022 |             |
+| [Proper and Basic Property-Based Testing](https://www.youtube.com/watch?v=FS_VJOQfogc)                                                             | Scala 3 |  En  | 2023 |             |
+| [Scala 3 - Rock the JVM](https://www.youtube.com/watch?v=orTmm6OMaLw&list=PLmtsMNDRU0BwsVUbhsH2HMqDMPNhQ0HPc)                                      | Scala 3 |  En  | 2020 |             |
+| [Scala Beyond 3.0 - The Quest for Simplicity - Martin Odersky](https://www.youtube.com/watch?v=NXTjnowBx-c)                                        | Scala 3 |  En  | 2021 |             |
+| [Scala Tips - Rock the JVM](https://www.youtube.com/playlist?list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)                                              | Scala 3 |  En  | 2023 |             |
+| [Scala's Role in the Programming Languages Ecosystem - Martin Odersky](https://www.youtube.com/watch?v=7mTNZeiIK7E)                                | Scala 3 |  En  | 2023 |             |
+| [The Best Scala Libraries I Use in Every Project - DevInsideYou](https://www.youtube.com/watch?v=ZymD5NuOwdA)                                      | Scala 3 |  En  | 2023 |             |
+| [Typeclasses in Scala 3 - Colombia Scala meetup/Scala at the Sea](https://www.youtube.com/watch?app=desktop&v=co4LSvVoX-s)                         | Scala 3 |  En  | 2022 |             |
+| [Functional Scala - Scala in the city](https://www.youtube.com/playlist?list=PLjtl9Y7VJMWtZz3g0LjMhO54_KBL8Tfwl)                                   | Scala 2 |  En  | 2020 |             |
+| [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) | Scala 2 |  En  | 2015 |             |
+| [Language-Agnostic Tips - Rock the JVM](https://www.youtube.com/watch?v=0wmcCdoExbM&list=PLmtsMNDRU0ByxKWa4h2LMn9oXyeDEJbnC)                       | Scala 2 |  En  | 2021 |             |
+| [Scala - Your First Programming Language - DevInsideYou](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                 | Scala 2 |  En  | 2022 |             |
+| [Scala at Light Speed - Rock the JVM](https://www.youtube.com/playlist?list=PLmtsMNDRU0BxryRX4wiwrTZ661xcp6VPM)                                    | Scala 2 |  En  | 2020 |             |
+| [Scala Collections - DevInsideYou](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE)                                       | Scala 2 |  En  | 2020 |             |
+| [Scala Variables - Rock the JVM](https://www.youtube.com/watch?v=dhe1T_ttPTI&list=PLmtsMNDRU0By6XxGZIcynXYi5RaZtaZC1)                              | Scala 2 |  En  | 2020 |             |
+| [The Typeclass Pattern - An Alternative to Inheritance](https://www.youtube.com/watch?v=yYo0gANYViE)                                               | Scala 2 |  En  | 2012 |             |
+| [Tutorial: Typeclasses in Scala with Dan Rosen](https://www.youtube.com/watch?v=sVMES4RZF-8)                                                       | Scala 2 |  En  | 2012 |             |
+| [Type-Level Programming in Scala - Rock the JVM](https://www.youtube.com/watch?v=qwUYqv6lKtQ&list=PLmtsMNDRU0ByOQoz6lnihh6CtMrErNax7)              | Scala 2 |  En  | 2021 |             |
+| [Vivisecting the Veil of Variance](https://www.youtube.com/watch?v=dPbbqrhm-WY)                                                                    | Scala 2 |  En  | 2023 |             |
+| [Why are Type Classes useful in Scala? - Rock the JVM](https://www.youtube.com/watch?v=bupBZKJT0EA)                                                | Scala 2 |  En  | 2020 |             |

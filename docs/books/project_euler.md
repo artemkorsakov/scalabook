@@ -2265,6 +2265,285 @@ val count =
 
 ## Решения задач 41-50
 
+### Problem 41. Pandigital Prime
+
+**Задача:**
+
+[Problem 41](https://projecteuler.net/problem=41)
+
+> We shall say that an n-digit number is pandigital if it makes use of all the digits 1 to n exactly once. 
+> For example, 2143 is a 4-digit pandigital and is also prime.
+>
+> What is the largest n-digit pandigital prime that exists?
+
+**Алгоритм:**
+
+1. `isPrime` - функция, которая проверяет, является ли число простым. Она использует алгоритм "Решето Эратосфена".
+2. `xvariations` - функция, которая генерирует все возможные перестановки из списка чисел. 
+   Она использует рекурсивный подход, где каждый элемент списка вставляется на каждое возможное место 
+   в каждой возможной перестановке остальных элементов.
+3. `getAllPandigitalAndPrime` - функция, которая генерирует все панцифровые перестановки чисел от 1 до 7, 
+   проверяет каждую на простоту и возвращает список простых панцифровых чисел. 
+4. Среди 8 и 9 панцифровых чисел простых нет, т.к. сумма цифр кратна 9, а это означает, что само число делится на 9.
+
+**Код:**
+
+```dotty
+def isPrime(n: Long): Boolean = ... // Из Problem 27
+
+def xvariations(l: List[Int], n: Int): List[List[Int]] =
+  def mixmany(x: Int, ll: List[List[Int]]): List[List[Int]] =
+    ll match
+      case hd :: tl => foldone(x, hd) ::: mixmany(x, tl)
+      case _        => Nil
+
+  def foldone(x: Int, ll: List[Int]): List[List[Int]] =
+    (1 to ll.length).foldLeft(List(x :: ll))((a, i) =>
+      mixone(i, x, ll) :: a
+    )
+
+  def mixone(i: Int, x: Int, ll: List[Int]): List[Int] =
+    ll.slice(0, i) ::: (x :: ll.slice(i, ll.length))
+
+  if n > l.size then Nil
+  else
+    l match
+      case _ :: _ if n == 1 => l.map(List(_))
+      case hd :: tl =>
+        mixmany(hd, xvariations(tl, n - 1)) ::: xvariations(tl, n)
+      case _ => Nil
+end xvariations
+
+def getAllPandigitalAndPrime: Seq[Int] =
+  xvariations((1 to 7).toList, 7)
+    .withFilter(list => isPrime(list.mkString.toInt))
+    .map(_.mkString.toInt)
+```
+
+### Problem 42. Coded Triangle Numbers
+
+**Задача:**
+
+[Problem 42](https://projecteuler.net/problem=42)
+
+> The \\(n^{th}\\) term of the sequence of triangle numbers is given by, \\(t\_{n} = \frac{n(n + 1)}{2}\\); 
+> so the first ten triangle numbers are: 1, 3, 6, 10, 15, 21, 28, 36, 45, 55, ...
+>
+> By converting each letter in a word to a number corresponding to its alphabetical position and 
+> adding these values we form a word value. For example, the word value for SKY is \\(19 + 11 + 25 = 55 = t\_{10}\\). 
+> If the word value is a triangle number then we shall call the word a triangle word.
+>
+> Using words.txt (right click and 'Save Link/Target As...'), a 16K text file containing nearly two-thousand 
+> common English words, how many are triangle words?
+
+**Алгоритм:**
+
+1. `isTriangle` - функция, которая проверяет, является ли число треугольным.
+2. `alphabeticalLetterValue` - функция, которая вычисляет значение буквы в алфавитном порядке.
+3. `alphabeticalValue` - функция, которая вычисляет значение слова в алфавитном порядке.
+
+**Код:**
+
+```dotty
+def isTriangle(n: Long): Boolean =
+  val sol = math.round(-1.0 / 2.0 + sqrt(2.0 * n + 1.0 / 4.0))
+  sol * (sol + 1) / 2 == n
+
+def alphabeticalLetterValue(char: Char): Int =
+  if char.isLetter then char.toUpper.toInt - 'A' + 1 else 0
+
+def alphabeticalValue(word: String): Int =
+  word.map(alphabeticalLetterValue).sum
+  
+val names = Source.fromResource("p042_words.txt").getLines.mkString.split(",")
+val count = names.count(name => isTriangle(alphabeticalValue(name)))
+```
+
+### Problem 43. Sub-string Divisibility
+
+**Задача:**
+
+[Problem 43](https://projecteuler.net/problem=43)
+
+> The number, 1406357289, is a 0 to 9 pandigital number because it is made up of each of the digits 0 to 9 in some order, 
+> but it also has a rather interesting sub-string divisibility property.
+>
+> Let \\(d\_{1}\\) be the 1st digit, \\(d\_{2}\\) be the 2nd digit, and so on. 
+> In this way, we note the following:
+>
+> - \\(d\_{2}d\_{3}d\_{4} = 406\\) is divisible by 2
+> - \\(d\_{3}d\_{4}d\_{5} = 063\\) is divisible by 3
+> - \\(d\_{4}d\_{5}d\_{6} = 635\\) is divisible by 5
+> - \\(d\_{5}d\_{6}d\_{7} = 357\\) is divisible by 7
+> - \\(d\_{6}d\_{7}d\_{8} = 572\\) is divisible by 11
+> - \\(d\_{7}d\_{8}d\_{9} = 728\\) is divisible by 13
+> - \\(d\_{8}d\_{9}d\_{10} = 289\\) is divisible by 17
+> 
+> Find the sum of all 0 to 9 pandigital numbers with this property.
+
+**Алгоритм:**
+
+Из условия задачи следует:
+
+- \\(d\_{6} = 5\\), т.к. \\(d\_{6}\\) кратно 5, но не равно 0 из-за того, что в этом случае \\(d\_{7}d\_{8}\\) было бы
+  кратно 11, что невозможно, т.к. все цифры должны быть разными по условию задачи.
+- `lastThreeDigits` - вычисляет последние три цифры \\(d\_{8}d\_{9}d\_{10}\\): всего 53 трехзначных числа, 
+  кратных 17, ещё меньше тех чисел, цифры которых разные и не содержат 5 - таких ровно 27 штук.
+- `lastFiveDigits` - вычисляет \\(d\_{7}\\) или последние 5 цифр \\(d\_{6}d\_{7}d\_{8}d\_{9}d\_{10}, d\_{6} = 5\\),
+  проверяя, что \\(d\_{7}d\_{8}d\_{9}\\) делится на 13, \\(d\_{6}d\_{7}d\_{8}\\) делится на 11.
+  Таких чисел тоже только 27 штук.
+- `lastSixDigits` - вычисляет \\(d\_{5}\\), проверяя, что \\(d\_{5}d\_{6}d\_{7}\\) делится на 7. Таких чисел всего 2.
+- `lastEightDigits` - вычисляет \\(d\_{3}d\_{4}\\), проверяя, что \\(d\_{3}d\_{4}d\_{5}\\) делится на 3, 
+  при этом \\(d\_{4}\\) - четное. Таких чисел всего 3.
+- Оставшиеся две цифры - это \\(d\_{1}d\_{2}\\), они могут стоять в любом порядке. Итого, 2 * 3 = 6 чисел.
+
+**Код:**
+
+```dotty
+def calculateNumber: Seq[Long] =
+  val lastThreeDigits = (6 to 58)
+    .map(_ * 17)
+    .filter(i => i.toString.distinct.length == 3 && !i.toString.contains("5"))
+  val lastFiveDigits = lastThreeDigits.flatMap: candidate =>
+    (0 to 9)
+      .withFilter(d7 => d7 != 5 && !candidate.toString.contains(d7.toString))
+      .map(d7 => d7 * 1000 + candidate)
+      .withFilter(newCandidate =>
+        (newCandidate / 10) % 13 == 0 && (500 + newCandidate / 100) % 11 == 0
+      )
+      .map(newCandidate => 50000 + newCandidate)
+  val lastSixDigits = lastFiveDigits.flatMap: candidate =>
+    (0 to 9)
+      .withFilter(d5 =>
+        !candidate.toString.contains(d5.toString) &&
+          (d5 * 100 + candidate / 1000) % 7 == 0
+      )
+      .map(d5 => d5 * 100000 + candidate)
+  val lastEightDigits = lastSixDigits.flatMap: candidate =>
+    val restDigits =
+      (0 to 9).filter(i => !candidate.toString.contains(i.toString))
+    for
+      d4 <- restDigits
+      if d4 % 2 == 0
+      d3 <- restDigits
+      d5 = candidate / 100000
+      if d3 != d4 && (d3 + d4 + d5) % 3 == 0
+    yield d3.toString + d4.toString + candidate.toString
+  lastEightDigits.flatMap: candidate =>
+    val restDigits = (0 to 9).filter(i => !candidate.contains(i.toString))
+    for
+      d2 <- restDigits
+      d1 <- restDigits
+      if d1 != d2
+    yield (d1.toString + d2.toString + candidate).toLong
+end calculateNumber
+```
+
+### Problem 44.
+
+**Задача:**
+
+[Problem 44](https://projecteuler.net/problem=44)
+
+>
+
+**Алгоритм:**
+
+**Код:**
+
+```dotty
+```
+
+### Problem 45.
+
+**Задача:**
+
+[Problem 45](https://projecteuler.net/problem=45)
+
+>
+
+**Алгоритм:**
+
+**Код:**
+
+```dotty
+```
+
+### Problem 46.
+
+**Задача:**
+
+[Problem 46](https://projecteuler.net/problem=46)
+
+>
+
+**Алгоритм:**
+
+**Код:**
+
+```dotty
+```
+
+### Problem 47.
+
+**Задача:**
+
+[Problem 47](https://projecteuler.net/problem=47)
+
+>
+
+**Алгоритм:**
+
+**Код:**
+
+```dotty
+```
+
+### Problem 48.
+
+**Задача:**
+
+[Problem 48](https://projecteuler.net/problem=48)
+
+>
+
+**Алгоритм:**
+
+**Код:**
+
+```dotty
+```
+
+### Problem 49.
+
+**Задача:**
+
+[Problem 49](https://projecteuler.net/problem=49)
+
+>
+
+**Алгоритм:**
+
+**Код:**
+
+```dotty
+```
+
+### Problem 50.
+
+**Задача:**
+
+[Problem 50](https://projecteuler.net/problem=50)
+
+>
+
+**Алгоритм:**
+
+**Код:**
+
+```dotty
+```
+
 ## Решения задач 51-60
 
 ## Решения задач 61-70

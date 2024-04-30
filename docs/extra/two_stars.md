@@ -35,6 +35,7 @@
 
 | Название                                                                                                                                                                                 | Версия  | Язык | Дата | Комментарий      |
 |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|------------------|
+| [API Design for Heaps (aka Priority Queues)](https://typelevel.org/blog/2016/11/17/heaps.html)                                                                                           |  Scala  |  En  | 2016 | Структуры данных |
 | [Automatically Deriving Typeclass Instances in Scala 3](https://xebia.com/blog/automatically-deriving-typeclass-instances-in-scala-3/)                                                   | Scala 3 |  En  | 2021 |                  |
 | [Cats Effect 3 - Introduction to Fibers](https://blog.rockthejvm.com/cats-effect-fibers/)                                                                                                | Scala 3 |  En  | 2021 | Cats effect      |
 | [Cats Effect vs ZIO](https://softwaremill.com/cats-effect-vs-zio/)                                                                                                                       | Scala 3 |  En  | 2023 | Cats effect, ZIO |
@@ -67,6 +68,7 @@
 | [Stackless Scala With Free Monads - Runar Oli Bjarnason](https://blog.higher-order.com/assets/trampolines.pdf)                                                                           | Scala 2 |  En  | 2012 | Trampoline       |
 | [Subtype type classes don't work](https://typelevel.org/blog/2016/09/30/subtype-typeclasses.html)                                                                                        | Scala 2 |  En  | 2016 |                  |
 | [Tests - can we have too many?](https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md)                                                                    | Scala 2 |  En  | 2018 | Refined          |
+| [There are more types than classes](https://typelevel.org/blog/2017/02/13/more-types-than-classes.html)                                                                                  | Scala 2 |  En  | 2017 |                  |
 | [Type-Level Programming in Scala](https://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/)                                                                           | Scala 2 |  En  | 2010 |                  |
 | [Type safety with refined](https://blog.michalp.net/posts/scala/refined/)                                                                                                                | Scala 2 |  En  | 2022 | Refined          |
 | [Validate Service Configuration in Scala](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)                                            | Scala 2 |  En  | 2019 | Refined          |

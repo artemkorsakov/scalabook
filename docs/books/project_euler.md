@@ -1533,7 +1533,7 @@ def getRecurringCycleLength(d: Int): Int =
 4. `primesNoMoreThanN(n: Int): Array[Int]` - функция, которая возвращает массив всех простых чисел, не превышающих `n`.
 5. `abWithMaxCountOfPrimes: (Int, Int)` - функция, которая ищет пару `(a, b)`, для которой количество простых чисел, 
    получаемых при подстановке в квадратичную формулу \\(n^{2} + an + b\\), является максимальным. 
-   Заменим, что b - простое число, т.к. при n = 0 результат формулы должен быть простым числом.
+   Заметим, что b - простое число, т.к. при n = 0 результат формулы должен быть простым числом.
    При n = 1 получим, что \\(1 + a + b\\) тоже простое число, а значит, \\(1 + a + b \geq 2 \Rightarrow a \geq 1 - b\\).
 
 **Код:**
@@ -2798,6 +2798,763 @@ getMostConsecutivePrime(1000)
 ```
 
 ## Решения задач 51-60
+
+### Problem 51. Prime Digit Replacements
+
+**Задача:**
+
+[Problem 51](https://projecteuler.net/problem=51)
+
+> By replacing the 1st digit of the 2-digit number *3, it turns out that six of the nine possible values: 
+> 13, 23, 43, 53, 73, and 83, are all prime.
+>
+> By replacing the 3rd and 4th digits of 56**3 with the same digit, this 5-digit number is 
+> the first example having seven primes among the ten generated numbers, yielding the family: 
+> 56003, 56113, 56333, 56443, 56663, 56773, and 56993. Consequently 56003, being the first member of this family, 
+> is the smallest prime with this property.
+>
+> Find the smallest prime which, by replacing part of the number (not necessarily adjacent digits) with the same digit, 
+> is part of an eight prime value family.
+
+**Алгоритм:**
+
+##### Шаблоны
+
+Определим все возможные шаблоны для заданного числа.
+Например, для числа `56003` могут использоваться следующие шаблоны: `Vector(*6003, 5*003, 56*03, 560*3, 5600*, 56**3)`
+
+1. `getReplacements(candidate: String): IndexedSeq[String]`: функция принимает строку `candidate` 
+   и возвращает последовательность строк, представляющих все возможные варианты замены символов в строке на звездочки.
+2. `getReplacements(candidate: String, starsCount: Int, common: Option[Char]): IndexedSeq[String]`: 
+   функция является вспомогательной и используется для рекурсивного построения всех возможных вариантов замены 
+   символов на звездочки. Она принимает строку `candidate`, количество звездочек `starsCount` 
+   и необязательный символ `common`, который должен быть заменен на звездочку. 
+   Если количество звездочек меньше или равно 0 или больше лимита, функция возвращает пустую последовательность. 
+   Если количество звездочек равно 1, функция заменяет символы в строке на звездочки и возвращает их. 
+   В противном случае функция рекурсивно заменяет символы в строке на звездочки.
+
+**Код:**
+
+```dotty
+def getReplacements(candidate: String): IndexedSeq[String] =
+  (1 until candidate.length).flatMap: starsCount =>
+    getReplacements(candidate, starsCount, None)
+
+private def getReplacements(
+    candidate: String,
+    starsCount: Int,
+    common: Option[Char]
+): IndexedSeq[String] =
+  val limit = common.map(c => candidate.count(_ == c)).getOrElse(candidate.length)
+  if starsCount <= 0 || starsCount > limit then IndexedSeq.empty
+  else if starsCount == 1 then
+    candidate.indices
+      .withFilter(i => common.isEmpty || common.contains(candidate(i)))
+      .map(i => candidate.updated(i, '*'))
+  else
+    (0 until candidate.length - 1)
+      .withFilter(i => common.isEmpty || common.contains(candidate(i)))
+      .flatMap: i =>
+        val (first, second) = candidate.splitAt(i)
+        val common          = candidate(i)
+        getReplacements(second.tail, starsCount - 1, Some(common))
+          .map(tail => s"$first*$tail")
+end getReplacements
+```
+
+##### Использование шаблонов
+
+1. `getPrimeDigitReplacements(limit: Int, count: Int): Option[Int]`: функция ищет число от 10 до `limit`, 
+   у которого есть `count` простых перестановок, которые можно получить заменой одной или нескольких цифр на звездочки.
+2. `sieveOfEratosthenes(n: Int): Array[Boolean]`: функция реализует алгоритм "Решето Эратосфена" 
+   для нахождения всех простых чисел до `n`.
+3. `isExistPrimePermutations(candidate: Int, isPrime: Int => Boolean, count: Int): Boolean`: функция проверяет, 
+   есть ли у числа `candidate` `count` простых перестановок, которые можно получить заменой одной 
+   или нескольких цифр на звездочки. Она использует функцию `getReplacements` для генерации всех возможных вариантов 
+   замены цифр на звездочки и проверяет, являются ли они простыми числами.
+
+**Код:**
+
+```dotty
+def getPrimeDigitReplacements(
+    limit: Int,
+    count: Int
+): Option[Int] =
+  val isPrimeArr = sieveOfEratosthenes(limit + 1)
+  (10 to limit).find: candidate =>
+    isExistPrimePermutations(candidate, isPrimeArr.apply, count)
+
+def sieveOfEratosthenes(n: Int): Array[Boolean] =
+  val result = Array.fill(n + 1)(true)
+  result(0) = false
+  result(1) = false
+  (4 to n by 2).foreach: j =>
+    result(j) = false
+  for
+    i <- 3 to math.sqrt(n).toInt by 2
+    if result(i)
+    j <- i to n / i
+  do
+    result(j * i) = false
+  result
+
+def isExistPrimePermutations(
+    candidate: Int,
+    isPrime: Int => Boolean,
+    count: Int
+): Boolean =
+  getReplacements(candidate.toString)
+    .exists: sample =>
+      val firstIndex = if sample.startsWith("*") then 1 else 0
+      val candidates = (firstIndex to 9)
+        .flatMap: i =>
+          val number = sample.replace("*", i.toString).toInt
+          if number >= candidate && isPrime(number) then Some(number)
+          else None
+      candidates.length >= count
+```
+
+### Problem 52. Permuted Multiples
+
+**Задача:**
+
+[Problem 52](https://projecteuler.net/problem=52)
+
+> It can be seen that the number, 125874, and its double, 251748, contain exactly the same digits, 
+> but in a different order. 
+> Find the smallest positive integer, x, such that 2x, 3x, 4x, 5x, and 6x, contain the same digits.
+
+**Алгоритм:**
+
+Следующий код ищет наименьшее положительное целое число, которое имеет одинаковые цифры в своих удвоенных, 
+тройных, четверных, пятерных и шестерных разложениях.
+
+1. `containTheSameDigits(n1: Int, n2: Int): Boolean`: функция проверяет, содержат ли два числа одинаковые цифры.
+2. `findSmallestNumber(digits: Int): Option[Int]`: функция ищет наименьшее число, которое содержит одинаковые цифры 
+   в его удвоенных, тройных, четверных, пятерных и шестерных разложениях и состоящее из `digit` цифр.
+3. Очевидно, что `x` начинается с `1`, иначе `6x` имело бы на одну цифру больше, 
+   а значит не могла бы иметь тот же набор цифр, что и у `x`.
+
+**Код:**
+
+```dotty
+def containTheSameDigits(n1: Int, n2: Int): Boolean =
+  val word1 = n1.toString
+  val word2 = n2.toString
+  (word1.length == word2.length) &&
+  word1.toCharArray.sorted.sameElements(word2.toCharArray.sorted)
+
+def findSmallestNumber(digits: Int): Option[Int] =
+  val start = math.pow(10, digits - 1).toInt
+  (start until 2 * start).find: x =>
+    containTheSameDigits(x, 2 * x) &&
+      containTheSameDigits(x, 3 * x) &&
+      containTheSameDigits(x, 4 * x) &&
+      containTheSameDigits(x, 5 * x) &&
+      containTheSameDigits(x, 6 * x)
+
+val count = LazyList
+  .from(1)
+  .flatMap(findSmallestNumber)
+  .head
+```
+
+### Problem 53. Combinatoric Selections
+
+**Задача:**
+
+[Problem 53](https://projecteuler.net/problem=53)
+
+> There are exactly ten ways of selecting three from five, 12345:
+> 123, 124, 125, 134, 135, 145, 234, 235, 245, and 345.
+> 
+> In combinatorics, we use the notation, \\(\displaystyle \binom 5 3 = 10\\).
+> In general, \\(\displaystyle \binom n r = \dfrac{n!}{r!(n-r)!}\\), 
+> where \\(r \le n\\), \\(n! = n \times (n-1) \times ... \times 3 \times 2 \times 1\\), and \\(0! = 1\\).
+> 
+> It is not until n = 23, that a value exceeds one-million: \\(\displaystyle \binom {23} {10} = 1144066\\).
+> 
+> How many, not necessarily distinct, values of \\(\displaystyle \binom n r\\) for \\(1 \le n \le 100\\), 
+> are greater than one-million?
+
+**Алгоритм:**
+
+Следующий код вычисляет биномиальные коэффициенты и подсчитывает количество пар `(n, k)`, 
+для которых биномиальный коэффициент `C(n, k)` превышает миллион.
+
+1. `binomialCoefficient(n: Int, k: Int): BigInt`: функция вычисляет биномиальный коэффициент `C(n, k)` для заданных `n` и `k`.
+2. `countBinCoeffMoreThanMillion(n: Int): Int`: функция подсчитывает количество пар `(n, k)`, 
+   для которых биномиальный коэффициент `C(n, k)` превышает миллион. Она ищет первый `k` 
+   (от `1` до `n/2`, т.к. после `n/2` биномиальные коэффициенты повторяются и идут в обратном порядке), 
+   для которого `C(n, k)` превышает миллион, и вычисляет количество таких пар `(n, k)`: из общего количества
+   биномиальных коэффициентов вычитается двойное количество биномиальных коэффициентов не превышающих миллиона.
+
+**Код:**
+
+```dotty
+@tailrec
+def binomialCoefficient(n: Int, k: Int): BigInt =
+  if k < 0 || k > n then BigInt(0)
+  else if k > (n / 2) then binomialCoefficient(n, n - k)
+  else
+    val (num, den) = (0 until k).foldLeft((BigInt(1), BigInt(1))) {
+      case ((num, den), i) =>
+        (num * BigInt(n - i), den * BigInt(k - i))
+    }
+    num / den
+
+def countBinCoeffMoreThanMillion(n: Int): Int =
+  val index = (1 to n / 2).find(k => binomialCoefficient(n, k) > 1000000)
+  index.map(i => n + 1 - 2 * i).getOrElse(0)
+
+val count = (1 to 100).fold(0)((acc, n) => acc + countBinCoeffMoreThanMillion(n))
+```
+
+### Problem 54. Poker Hands
+
+**Задача:**
+
+[Problem 54](https://projecteuler.net/problem=54)
+
+> In the card game poker, a hand consists of five cards and are ranked, from lowest to highest, in the following way:
+> 
+> - **High Card**: Highest value card.
+> - **One Pair**: Two cards of the same value.
+> - **Two Pairs**: Two different pairs.
+> - **Three of a Kind**: Three cards of the same value.
+> - **Straight**: All cards are consecutive values.
+> - **Flush**: All cards of the same suit.
+> - **Full House**: Three of a kind and a pair.
+> - **Four of a Kind**: Four cards of the same value.
+> - **Straight Flush**: All cards are consecutive values of same suit.
+> - **Royal Flush**: Ten, Jack, Queen, King, Ace, in same suit.
+>
+> The cards are valued in the order: 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, King, Ace.
+> 
+> If two players have the same ranked hands then the rank made up of the highest value wins; 
+> for example, a pair of eights beats a pair of fives (see example 1 below). 
+> But if two ranks tie, for example, both players have a pair of queens, then highest cards in each hand are compared 
+> (see example 4 below); if the highest cards tie then the next highest cards are compared, and so on.
+> 
+> Consider the following five hands dealt to two players:
+> 
+> | Hand | Player 1                                            | Player 2                                             | Winner   |
+> |------|-----------------------------------------------------|------------------------------------------------------|----------|
+> | 1    | 5H 5C 6S 7S KD (Pair of Fives)                      | 2C 3S 8S 8D TD (Pair of Eights)                      | Player 2 |
+> | 2    | 5D 8C 9S JS AC (Highest card Ace)                   | 2C 5C 7D 8S QH (Highest card Queen)                  | Player 1 |
+> | 3    | 2D 9C AS AH AC (Three Aces)                         | 3D 6D 7D TD QD (Flush  with Diamonds)                | Player 2 |
+> | 4    | 4D 6S 9H QH QC (Pair of Queens - Highest card Nine) | 3D 6D 7H QD QS (Pair of Queens - Highest card Seven) | Player 1 |
+> | 5    | 2H 2D 4C 4D 4S (Full House - With Three Fours)      | 3C 3D 3S 9S 9D (Full House - with Three Threes)      | Player 1 |
+>
+> The file, poker.txt, contains one-thousand random hands dealt to two players. 
+> Each line of the file contains ten cards (separated by a single space): 
+> the first five are Player 1's cards and the last five are Player 2's cards. 
+> You can assume that all hands are valid (no invalid characters or repeated cards), 
+> each player's hand is in no specific order, and in each hand there is a clear winner.
+> 
+> How many hands does Player 1 win?
+
+**Алгоритм:**
+
+Описание алгоритма определения более сильной руки в Покере [приведено в соответствующем разделе](../algorithms/algorithms/games.md).
+
+##### Игровая карта
+
+Определение игровой карты в покере на Scala.
+
+Следующий код реализует несколько классов и типов данных, 
+которые могут быть использованы для представления карт в игре покер.
+
+1. `PokerSuit` - это перечисление, которое определяет четыре масти в покере: 
+   "D" - бубны, "S" - пики, "C" - трефы, "H" - червы.
+2. `PokerRank` - это перечисление, которое определяет 13 рангов карт в покере. 
+   Каждый ранг имеет целочисленное значение, которое представляет собой его ранг в игре. 
+   Например, "A" (туз) имеет значение 14, "K" (король) - 13 и т.д.
+3. `PokerCard` - это нерасширяемый кейс-класс, который представляет карту в покере. 
+   Он содержит два поля: `pokerRank` и `pokerSuit`, которые представляют собой ранг и масть карты соответственно.
+4. В сопутствующих объектах `PokerSuit` и `PokerRank` объявлены служебные методы. 
+   В частности, `withNameOpt` - это метод, который пытается найти элемент перечисления по его строковому представлению.
+5. В сопутствующем объекте `PokerCard` объявлен дополнительный конструктор `apply`. 
+   Этот метод принимает строку, которая представляет собой карту, например "AS" для туза пик, 
+   и пытается преобразовать ее в `PokerCard`. Если преобразование невозможно, он возвращает `None`.
+
+**Код:**
+
+```dotty
+enum PokerSuit:
+  case D, S, C, H
+
+object PokerSuit:
+  def withNameOpt(s: Char): Option[PokerSuit] =
+    PokerSuit.values.find(_.toString == s.toString)
+
+enum PokerRank(val rank: Int):
+  case A     extends PokerRank(14)
+  case K     extends PokerRank(13)
+  case Q     extends PokerRank(12)
+  case J     extends PokerRank(11)
+  case TEN   extends PokerRank(10)
+  case NINE  extends PokerRank(9)
+  case EIGHT extends PokerRank(8)
+  case SEVEN extends PokerRank(7)
+  case SIX   extends PokerRank(6)
+  case FIVE  extends PokerRank(5)
+  case FOUR  extends PokerRank(4)
+  case THREE extends PokerRank(3)
+  case TWO   extends PokerRank(2)
+
+object PokerRank:
+  implicit val pokerRankOrdering: Ordering[PokerRank] =
+    Ordering.fromLessThan((a, b) => b.rank < a.rank)
+
+  def withNameOpt(s: String): Option[PokerRank] =
+    s match
+      case "A"        => Some(PokerRank.A)
+      case "K"        => Some(PokerRank.K)
+      case "Q"        => Some(PokerRank.Q)
+      case "J"        => Some(PokerRank.J)
+      case "10" | "T" => Some(PokerRank.TEN)
+      case "9"        => Some(PokerRank.NINE)
+      case "8"        => Some(PokerRank.EIGHT)
+      case "7"        => Some(PokerRank.SEVEN)
+      case "6"        => Some(PokerRank.SIX)
+      case "5"        => Some(PokerRank.FIVE)
+      case "4"        => Some(PokerRank.FOUR)
+      case "3"        => Some(PokerRank.THREE)
+      case "2"        => Some(PokerRank.TWO)
+      case _          => None
+end PokerRank
+
+final case class PokerCard(pokerRank: PokerRank, pokerSuit: PokerSuit)
+
+object PokerCard:
+  def apply(card: String): Option[PokerCard] =
+    if card.length < 2 || card.length > 3 then None
+    else
+      for
+        pokerRank <- PokerRank.withNameOpt(card.dropRight(1))
+        pokerSuit <- PokerSuit.withNameOpt(card.last)
+      yield PokerCard(pokerRank, pokerSuit)
+```
+
+##### Покерный расклад
+
+Следующий код реализует логику игры в покер. Он включает в себя определение разных типов карт, их рангов и мастей, 
+а также определение руки в игре покер.
+
+1. `PokerHandsType` - это перечисление, определяющее все возможные типы рук в покере.
+2. `PokerHand` - это нерасширяемый кейс-класс, который представляет расклад в игре покер. 
+   Он содержит два поля: `pokerHandsType` и `ranks`, которые представляют собой тип руки и список рангов карт соответственно. Класс также содержит метод `compareTo`, который сравнивает две руки покер.
+3. В сопутствующем объекте `PokerHand` объявлены служебные методы для создания покерной руки из строки, 
+   из типа руки и ранга карты, а также для сравнения покерных раскладов.
+4. Метод `apply(hand: String)` принимает строку, представляющую собой покерный расклад, 
+   и пытается преобразовать ее в `PokerHand`. Если преобразование невозможно, он возвращает `None`.
+5. Метод `apply(pokerHandsType: PokerHandsType, rank: PokerRank)` создает покерный расклад из заданного типа руки и ранга карты.
+6. Метод `apply(cards: Array[PokerCard])` создает покерный расклад из массива карт. 
+   Он определяет тип руки и ранги карт на основе переданных карт и создает `PokerHand` с соответствующими значениями.
+7. Методы `isFiveOfAKind`, `isStraightFlush`, `isFourOfAKind`, `isFullHouse`, `isFlush`, `isStraight`, `isThreeOfAKind`, 
+   `isTwoPair`, `isOnePair` и `highCard` определяют тип руки на основе переданных карт и возвращают соответствующие значения.
+8. Методы `fourOfAKind`, `fullHouse`, `threeOfAKind`, `twoPair` и `onePair` создают покерный расклад 
+   определенного типа с соответствующими рангами карт.
+9. Метод `highCard` создает покерный расклад типа `HIGH_CARD` с соответствующими рангами карт.
+10. Метод `compareTo` сравнивает две руки покер. Он сравнивает типы рук, а затем ранги карт в случае равенства типов.
+
+**Код:**
+
+```dotty
+enum PokerHandsType:
+  case FIVE_OF_A_KIND,
+    STRAIGHT_FLUSH,
+    FOUR_OF_A_KIND,
+    FULL_HOUSE,
+    FLUSH, 
+    STRAIGHT, 
+    THREE_OF_A_KIND,
+    TWO_PAIR, 
+    ONE_PAIR, 
+    HIGH_CARD 
+
+final case class PokerHand(
+    pokerHandsType: PokerHandsType,
+    ranks: List[PokerRank]
+):
+  def compareTo(pokerHand: PokerHand): Int =
+    val typesDiff = pokerHandsType.ordinal - pokerHand.pokerHandsType.ordinal
+    if typesDiff != 0 then typesDiff
+    else
+      ranks
+        .zip(pokerHand.ranks)
+        .map((a, b) => b.rank - a.rank)
+        .find(r => r != 0)
+        .getOrElse(0)
+
+object PokerHand:
+  def apply(hand: String): Option[PokerHand] =
+    val cards = hand.split(" ").flatMap(PokerCard.apply)
+    if cards.length == 5 then Some(PokerHand(cards)) else None
+
+  def apply(pokerHandsType: PokerHandsType, rank: PokerRank): PokerHand =
+    PokerHand(pokerHandsType, List(rank))
+
+  private def apply(cards: Array[PokerCard]): PokerHand =
+    val sortedRanks         = cards.map(_.pokerRank).sorted
+    val sortedDistinctRanks = sortedRanks.distinct
+    lazy val straightPokerRank =
+      if sortedRanks.head == PokerRank.A && sortedRanks(1) == PokerRank.FIVE
+      then PokerRank.FIVE
+      else sortedRanks.head
+
+    if isFiveOfAKind(sortedDistinctRanks) then
+      PokerHand(PokerHandsType.FIVE_OF_A_KIND, cards.head.pokerRank)
+    else if isStraightFlush(sortedRanks, cards) then
+      PokerHand(PokerHandsType.STRAIGHT_FLUSH, straightPokerRank)
+    else if isFourOfAKind(sortedDistinctRanks, cards) then
+      fourOfAKind(sortedRanks)
+    else if isFullHouse(sortedDistinctRanks, cards) then
+      fullHouse(sortedRanks)
+    else if isFlush(cards) then
+      PokerHand(PokerHandsType.FLUSH, sortedRanks.toList)
+    else if isStraight(sortedRanks) then
+      PokerHand(PokerHandsType.STRAIGHT, straightPokerRank)
+    else if isThreeOfAKind(sortedDistinctRanks, cards, sortedRanks) then
+      threeOfAKind(sortedRanks)
+    else if isTwoPair(sortedDistinctRanks, cards, sortedRanks) then
+      twoPair(sortedRanks)
+    else if isOnePair(sortedDistinctRanks) then
+      onePair(sortedRanks)
+    else highCard(sortedRanks)
+    end if
+  end apply
+
+  private def isFiveOfAKind(sortedDistinctRanks: Array[PokerRank]): Boolean =
+    sortedDistinctRanks.length == 1
+
+  private def isStraightFlush(
+      sortedRanks: Array[PokerRank],
+      cards: Array[PokerCard]
+  ): Boolean =
+    isStraight(sortedRanks) && isFlush(cards)
+
+  private def isFourOfAKind(
+      sortedDistinctRanks: Array[PokerRank],
+      cards: Array[PokerCard]
+  ): Boolean =
+    val countOfRank      = sortedDistinctRanks.length
+    val countOfFirstCard = cards.count(_.pokerRank == cards.head.pokerRank)
+    countOfRank == 2 && (countOfFirstCard == 1 || countOfFirstCard == 4)
+
+  private def fourOfAKind(sortedRanks: Array[PokerRank]): PokerHand =
+    val isFirstEqualSecond = sortedRanks.head.rank == sortedRanks(1).rank
+    val pokerRank1 =
+      if isFirstEqualSecond then sortedRanks.head else sortedRanks(1)
+    val pokerRank2 =
+      if isFirstEqualSecond then sortedRanks(4) else sortedRanks.head
+    PokerHand(PokerHandsType.FOUR_OF_A_KIND, List(pokerRank1, pokerRank2))
+
+  private def isFullHouse(
+      sortedDistinctRanks: Array[PokerRank],
+      cards: Array[PokerCard]
+  ): Boolean =
+    val countOfRank      = sortedDistinctRanks.length
+    val countOfFirstCard = cards.count(_.pokerRank == cards.head.pokerRank)
+    countOfRank == 2 && (countOfFirstCard == 2 || countOfFirstCard == 3)
+
+  private def fullHouse(sortedRanks: Array[PokerRank]): PokerHand =
+    val pokerRank1 = sortedRanks(2)
+    val pokerRank2 =
+      if sortedRanks(1).rank == sortedRanks(2).rank then sortedRanks(3)
+      else sortedRanks(1)
+    PokerHand(PokerHandsType.FULL_HOUSE, List(pokerRank1, pokerRank2))
+
+  private def isFlush(cards: Array[PokerCard]): Boolean =
+    cards.map(_.pokerSuit.ordinal).distinct.length == 1
+
+  private def isStraight(sortedRanks: Array[PokerRank]): Boolean =
+    (sortedRanks sameElements
+      Array(
+        PokerRank.FIVE,
+        PokerRank.FOUR,
+        PokerRank.THREE,
+        PokerRank.TWO,
+        PokerRank.A
+      )) ||
+      (0 until sortedRanks.length - 1).forall: i =>
+        sortedRanks(i).rank - sortedRanks(i + 1).rank == 1
+
+  private def isThreeOfAKind(
+      sortedDistinctRanks: Array[PokerRank],
+      cards: Array[PokerCard],
+      sortedRanks: Array[PokerRank]
+  ): Boolean =
+    sortedDistinctRanks.length == 3 && {
+      val countOfFirstCard = cards.count(c => c.pokerRank == sortedRanks.head)
+      val countOfLastCard  = cards.count(c => c.pokerRank == sortedRanks.last)
+      (countOfFirstCard == 1 && countOfLastCard == 1) ||
+      (countOfFirstCard == 3 && countOfLastCard == 1) ||
+      (countOfFirstCard == 1 && countOfLastCard == 3)
+    }
+
+  private def threeOfAKind(sortedRanks: Array[PokerRank]): PokerHand =
+    val indexThreeOfAKind = (0 until sortedRanks.length - 2)
+      .find: i =>
+        sortedRanks(i).rank == sortedRanks(i + 1).rank &&
+          sortedRanks(i + 1).rank == sortedRanks(i + 2).rank
+      .getOrElse(0)
+    PokerHand(
+      PokerHandsType.THREE_OF_A_KIND,
+      List(
+        sortedRanks(2),
+        sortedRanks(if indexThreeOfAKind == 0 then 3 else 0),
+        sortedRanks(if indexThreeOfAKind == 2 then 1 else 4)
+      )
+    )
+
+  private def isTwoPair(
+      sortedDistinctRanks: Array[PokerRank],
+      cards: Array[PokerCard],
+      sortedRanks: Array[PokerRank]
+  ): Boolean =
+    sortedDistinctRanks.length == 3 && {
+      val countOfFirstCard = cards.count(c => c.pokerRank == sortedRanks.head)
+      val countOfLastCard  = cards.count(c => c.pokerRank == sortedRanks.last)
+      (countOfFirstCard == 2 && countOfLastCard == 2) ||
+      (countOfFirstCard == 2 && countOfLastCard == 1) ||
+      (countOfFirstCard == 1 && countOfLastCard == 2)
+    }
+
+  private def twoPair(sortedRanks: Array[PokerRank]): PokerHand =
+    val isFirstEqualSecond = sortedRanks.head.rank == sortedRanks(1).rank
+    val isThirdEqualFourth = sortedRanks(2).rank == sortedRanks(3).rank
+    val thirdIndex =
+      if isFirstEqualSecond && isThirdEqualFourth then 4
+      else if isFirstEqualSecond then 2
+      else 0
+    PokerHand(
+      PokerHandsType.TWO_PAIR,
+      List(
+        sortedRanks(1),
+        sortedRanks(3),
+        sortedRanks(thirdIndex)
+      )
+    )
+
+  private def isOnePair(sortedDistinctRanks: Array[PokerRank]): Boolean =
+    sortedDistinctRanks.length == 4
+
+  private def onePair(sortedRanks: Array[PokerRank]): PokerHand =
+    val index = (0 until sortedRanks.length - 1)
+      .find(i => sortedRanks(i).rank == sortedRanks(i + 1).rank)
+      .getOrElse(0)
+    PokerHand(
+      PokerHandsType.ONE_PAIR,
+      List(
+        sortedRanks(index),
+        sortedRanks(if index == 0 then 2 else 0),
+        sortedRanks(if index < 2 then 3 else 1),
+        sortedRanks(if index == 3 then 2 else 4)
+      )
+    )
+
+  private def highCard(sortedRanks: Array[PokerRank]): PokerHand =
+    PokerHand(PokerHandsType.HIGH_CARD, sortedRanks.toList)
+end PokerHand
+```
+
+##### Решение задачи
+
+Осталось только распарсить строковые представления раскладов и подсчитать количество выигрышей у первого игрока.
+
+```dotty
+def doesPlayer1Win(player1: String, player2: String): Boolean =
+  (PokerHand(player1), PokerHand(player2)) match
+    case (Some(player1Hand), Some(player2Hand)) =>
+      player1Hand.compareTo(player2Hand) < 0
+    case _ => false
+
+doesPlayer1Win("5H 5C 6S 7S KD", "2C 3S 8S 8D TD")  // false
+doesPlayer1Win("5D 8C 9S JS AC", "2C 5C 7D 8S QH")  // true
+doesPlayer1Win("2D 9C AS AH AC", "3D 6D 7D TD QD")  // false
+doesPlayer1Win("4D 6S 9H QH QC", "3D 6D 7H QD QS")  // true
+doesPlayer1Win("2H 2D 4C 4D 4S", "3C 3D 3S 9S 9D")  // true
+
+val count =
+  Source.fromResource("p054_poker.txt").getLines.toSeq.count: row =>
+    row.nonEmpty && {
+      val (player1, player2) = row.splitAt(15)
+      doesPlayer1Win(player1.trim, player2.trim)
+    }
+```
+
+### Problem 55. Lychrel Numbers
+
+**Задача:**
+
+[Problem 55](https://projecteuler.net/problem=55)
+
+> If we take 47, reverse and add, 47 + 74 = 121, which is palindromic.
+> 
+> Not all numbers produce palindromes so quickly. For example,
+> 
+> - 349 + 943   = 1292
+> - 1292 + 2921 = 4213
+> - 4213 + 3124 = 7337
+> 
+> That is, 349 took three iterations to arrive at a palindrome.
+> 
+> Although no one has proved it yet, it is thought that some numbers, like 196, never produce a palindrome. 
+> A number that never forms a palindrome through the reverse and add process is called a Lychrel number. 
+> Due to the theoretical nature of these numbers, and for the purpose of this problem, 
+> we shall assume that a number is Lychrel until proven otherwise. 
+> In addition you are given that for every number below ten-thousand, it will either 
+> (i) become a palindrome in less than fifty iterations, or, 
+> (ii) no one, with all the computing power that exists, has managed so far to map it to a palindrome. 
+> In fact, 10677 is the first number to be shown to require over fifty iterations before producing a palindrome: 
+> 4668731596684224866951378664 (53 iterations, 28-digits).
+> 
+> Surprisingly, there are palindromic numbers that are themselves Lychrel numbers; the first example is 4994.
+> How many Lychrel numbers are there below ten-thousand?
+
+**Алгоритм:**
+
+1. `isPalindrome(number: BigInt): Boolean` - функция проверяет, является ли число палиндромом.
+2. `getLychrelIterations(n: BigInt, iterations: Int = 0): Int` - функция реализует итеративный процесс, 
+   который проверяет, является ли число [Число Лишрел](https://ru.wikipedia.org/wiki/%D0%9F%D1%80%D0%BE%D0%B1%D0%BB%D0%B5%D0%BC%D0%B0_196).
+   Число Лишрел - это число, которое не является палиндромом, но при добавлении его реверсированного числа 
+   (т.е., числа, записанного теми же цифрами, но в обратном порядке) в результате получается палиндром. 
+   Функция использует рекурсию для проверки, сколько итераций необходимо, чтобы число стало палиндромом, 
+   или достигается максимальное количество итераций (50).
+
+**Код:**
+
+```dotty
+def isPalindrome(number: BigInt): Boolean = ... // Из Problem 4
+
+@tailrec
+def getLychrelIterations(n: BigInt, iterations: Int = 0): Int =
+  if iterations >= 50 then 50
+  else
+    val m   = BigInt(n.toString.reverse)
+    val sum = n + m
+    if isPalindrome(sum) then iterations + 1
+    else getLychrelIterations(sum, iterations + 1)
+
+def isLychrel(n: Int): Boolean = getLychrelIterations(n) >= 50
+
+getLychrelIterations(47)   // 1
+getLychrelIterations(74)   // 1
+getLychrelIterations(4213) // 1
+getLychrelIterations(3124) // 1
+getLychrelIterations(1292) // 2
+getLychrelIterations(2921) // 2
+getLychrelIterations(349)  // 3
+getLychrelIterations(943)  // 3
+```
+
+### Problem 56. Powerful Digit Sum
+
+**Задача:**
+
+[Problem 56](https://projecteuler.net/problem=56)
+
+> A googol (\\(10^{100}\\)) is a massive number: one followed by one-hundred zeros; 
+> \\(100^{100}\\) is almost unimaginably large: one followed by two-hundred zeros. 
+> Despite their size, the sum of the digits in each number is only 1.
+> 
+> Considering natural numbers of the form, \\(a^{b}\\), where \\(a, b \lt 100\\), what is the maximum digital sum?
+
+**Код:**
+
+```dotty
+val counts =
+  for
+    a <- 1 until 100
+    b <- 1 until 100
+  yield BigInt(a).pow(b).toString.map(_.getNumericValue).sum
+counts.max  
+```
+
+### Problem 57. Square Root Convergents
+
+**Задача:**
+
+[Problem 57](https://projecteuler.net/problem=57)
+
+> It is possible to show that the square root of two can be expressed as an infinite continued fraction.
+> 
+> \\(\sqrt 2 = 1 + \frac 1 {2+ \frac 1 {2 +\frac 1 {2+ \dots}}}\\)
+> 
+> By expanding this for the first four iterations, we get:
+> 
+> - \\(1 + \frac 1 2 = \frac  32 = 1.5\\)
+> - \\(1 + \frac 1 {2 + \frac 1 2} = \frac 7 5 = 1.4\\)
+> - \\(1 + \frac 1 {2 + \frac 1 {2+\frac 1 2}} = \frac {17}{12} = 1.41666 \dots\\)
+> - \\(1 + \frac 1 {2 + \frac 1 {2+\frac 1 {2+\frac 1 2}}} = \frac {41}{29} = 1.41379 \dots\\)
+> 
+> The next three expansions are \\(\frac {99}{70}\\), \\(\frac {239}{169}\\), and \\(\frac {577}{408}\\), 
+> but the eighth expansion, \\(\frac {1393}{985}\\), is the first example where the number of digits 
+> in the numerator exceeds the number of digits in the denominator.
+> 
+> In the first one-thousand expansions, how many fractions contain a numerator with more digits than the denominator?
+
+**Алгоритм:**
+
+
+**Код:**
+
+```dotty
+
+```
+
+### Problem 58.
+
+**Задача:**
+
+[Problem 58](https://projecteuler.net/problem=58)
+
+>
+
+**Алгоритм:**
+
+
+**Код:**
+
+```dotty
+
+```
+
+### Problem 59.
+
+**Задача:**
+
+[Problem 59](https://projecteuler.net/problem=59)
+
+>
+
+**Алгоритм:**
+
+
+**Код:**
+
+```dotty
+
+```
+
+### Problem 60.
+
+**Задача:**
+
+[Problem 60](https://projecteuler.net/problem=60)
+
+>
+
+**Алгоритм:**
+
+
+**Код:**
+
+```dotty
+
+```
 
 ## Решения задач 61-70
 

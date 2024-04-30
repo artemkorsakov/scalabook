@@ -147,9 +147,27 @@ Nim.getX(1, 2, 3)
 - **Время** - ???
 - **Память** - ???
 
-**Код:**
+##### Игровая карта
 
-Игровая карта
+Определение игровой карты в покере на Scala.
+
+Следующий код реализует несколько классов и типов данных,
+которые могут быть использованы для представления карт в игре покер.
+
+1. `PokerSuit` - это перечисление, которое определяет четыре масти в покере:
+   "D" - бубны, "S" - пики, "C" - трефы, "H" - червы.
+2. `PokerRank` - это перечисление, которое определяет 13 рангов карт в покере.
+   Каждый ранг имеет целочисленное значение, которое представляет собой его ранг в игре.
+   Например, "A" (туз) имеет значение 14, "K" (король) - 13 и т.д.
+3. `PokerCard` - это нерасширяемый кейс-класс, который представляет карту в покере.
+   Он содержит два поля: `pokerRank` и `pokerSuit`, которые представляют собой ранг и масть карты соответственно.
+4. В сопутствующих объектах `PokerSuit` и `PokerRank` объявлены служебные методы.
+   В частности, `withNameOpt` - это метод, который пытается найти элемент перечисления по его строковому представлению.
+5. В сопутствующем объекте `PokerCard` объявлен дополнительный конструктор `apply`.
+   Этот метод принимает строку, которая представляет собой карту, например "AS" для туза пик,
+   и пытается преобразовать ее в `PokerCard`. Если преобразование невозможно, он возвращает `None`.
+
+**Код:**
 
 ```dotty
 enum PokerSuit:
@@ -175,6 +193,9 @@ enum PokerRank(val rank: Int):
   case TWO   extends PokerRank(2)
 
 object PokerRank:
+  implicit val pokerRankOrdering: Ordering[PokerRank] =
+    Ordering.fromLessThan((a, b) => b.rank < a.rank)
+
   def withNameOpt(s: String): Option[PokerRank] =
     s match
       case "A"        => Some(PokerRank.A)
@@ -191,211 +212,241 @@ object PokerRank:
       case "3"        => Some(PokerRank.THREE)
       case "2"        => Some(PokerRank.TWO)
       case _          => None
-      
+end PokerRank
+
 final case class PokerCard(pokerRank: PokerRank, pokerSuit: PokerSuit)
 
 object PokerCard:
-  def string2PokerCard(card: String): Option[PokerCard] =
+  def apply(card: String): Option[PokerCard] =
     if card.length < 2 || card.length > 3 then None
     else
-      (
-        PokerRank.withNameOpt(card.dropRight(1)),
-        PokerSuit.withNameOpt(card.last)
-      ).mapN(PokerCard.apply)      
+      for
+        pokerRank <- PokerRank.withNameOpt(card.dropRight(1))
+        pokerSuit <- PokerSuit.withNameOpt(card.last)
+      yield PokerCard(pokerRank, pokerSuit)
 ```
 
-Покерная рука
+
+##### Покерный расклад
+
+Следующий код реализует логику игры в покер. Он включает в себя определение разных типов карт, их рангов и мастей,
+а также определение руки в игре покер.
+
+1. `PokerHandsType` - это перечисление, определяющее все возможные типы рук в покере.
+2. `PokerHand` - это нерасширяемый кейс-класс, который представляет расклад в игре покер.
+   Он содержит два поля: `pokerHandsType` и `ranks`, которые представляют собой тип руки и список рангов карт соответственно. Класс также содержит метод `compareTo`, который сравнивает две руки покер.
+3. В сопутствующем объекте `PokerHand` объявлены служебные методы для создания покерной руки из строки,
+   из типа руки и ранга карты, а также для сравнения покерных раскладов.
+4. Метод `apply(hand: String)` принимает строку, представляющую собой покерный расклад,
+   и пытается преобразовать ее в `PokerHand`. Если преобразование невозможно, он возвращает `None`.
+5. Метод `apply(pokerHandsType: PokerHandsType, rank: PokerRank)` создает покерный расклад из заданного типа руки и ранга карты.
+6. Метод `apply(cards: Array[PokerCard])` создает покерный расклад из массива карт.
+   Он определяет тип руки и ранги карт на основе переданных карт и создает `PokerHand` с соответствующими значениями.
+7. Методы `isFiveOfAKind`, `isStraightFlush`, `isFourOfAKind`, `isFullHouse`, `isFlush`, `isStraight`, `isThreeOfAKind`,
+   `isTwoPair`, `isOnePair` и `highCard` определяют тип руки на основе переданных карт и возвращают соответствующие значения.
+8. Методы `fourOfAKind`, `fullHouse`, `threeOfAKind`, `twoPair` и `onePair` создают покерный расклад
+   определенного типа с соответствующими рангами карт.
+9. Метод `highCard` создает покерный расклад типа `HIGH_CARD` с соответствующими рангами карт.
+10. Метод `compareTo` сравнивает две руки покер. Он сравнивает типы рук, а затем ранги карт в случае равенства типов.
+
+**Код:**
 
 ```dotty
 enum PokerHandsType:
-  case FIVE_OF_A_KIND, // All cards are equal
-    STRAIGHT_FLUSH,    // A straight flush is a hand that contains five cards of sequential rank, all of the same suit
-    FOUR_OF_A_KIND,    // Four of a kind is a hand that contains four cards of one rank and one card of another rank
-    FULL_HOUSE,        // A full house is a hand that contains three cards of one rank and two cards of another rank
-    FLUSH,             // A flush is a hand that contains five cards all of the same suit, not all of sequential rank
-    STRAIGHT,          // A straight is a hand that contains five cards of sequential rank, not all of the same suit
-    THREE_OF_A_KIND,   // Three of a kind is a hand that contains three cards of one rank and two cards of two other ranks (the kickers)
-    TWO_PAIR,          // Two pair is a hand that contains two cards of one rank, two cards of another rank and one card of a third rank (the kicker)
-    ONE_PAIR,          // One pair is a hand that contains two cards of one rank and three cards of three other ranks (the kickers)
-    HIGH_CARD          // High card is a hand that does not fall into any other category
+  case FIVE_OF_A_KIND,
+    STRAIGHT_FLUSH,
+    FOUR_OF_A_KIND,
+    FULL_HOUSE,
+    FLUSH, 
+    STRAIGHT, 
+    THREE_OF_A_KIND,
+    TWO_PAIR, 
+    ONE_PAIR, 
+    HIGH_CARD 
 
-final class PokerHand(hand: String):
-  private val split: Array[String] = hand.split(" ")
-  require(split.length == 5)
-  private val cards: Seq[PokerCard] = split.flatMap(string2PokerCard).toSeq
-  private val sortedRanks: Seq[PokerRank] =
-    cards
-      .map(card => card.pokerRank)
-      .sortWith((pr1, pr2) => pr2.rank - pr1.rank < 0)
-  private val sortedDistinctRanks: Seq[PokerRank] = sortedRanks.distinct
+final case class PokerHand(
+    pokerHandsType: PokerHandsType,
+    ranks: List[PokerRank]
+):
+  def compareTo(pokerHand: PokerHand): Int =
+    val typesDiff = pokerHandsType.ordinal - pokerHand.pokerHandsType.ordinal
+    if typesDiff != 0 then typesDiff
+    else
+      ranks
+        .zip(pokerHand.ranks)
+        .map((a, b) => b.rank - a.rank)
+        .find(r => r != 0)
+        .getOrElse(0)
 
-  private lazy val isFiveOfAKind: Boolean =
-    sortedDistinctRanks.length == 1
-  private lazy val fiveOfAKind: (PokerHandsType, Seq[PokerRank]) =
-    (
-      PokerHandsType.FIVE_OF_A_KIND,
-      Seq(
-        cards.head.pokerRank,
-        PokerRank.TWO,
-        PokerRank.TWO,
-        PokerRank.TWO,
-        PokerRank.TWO
-      )
-    )
+object PokerHand:
+  def apply(hand: String): Option[PokerHand] =
+    val cards = hand.split(" ").flatMap(PokerCard.apply)
+    if cards.length == 5 then Some(PokerHand(cards)) else None
 
-  private lazy val isStraightFlush: Boolean =
-    isStraight && isFlush
-  private lazy val straightFlush: (PokerHandsType, Seq[PokerRank]) =
-    (PokerHandsType.STRAIGHT_FLUSH, straight._2)
+  def apply(pokerHandsType: PokerHandsType, rank: PokerRank): PokerHand =
+    PokerHand(pokerHandsType, List(rank))
 
-  private lazy val isStraight: Boolean =
-    sortedRanks == Seq(
-      PokerRank.FIVE,
-      PokerRank.FOUR,
-      PokerRank.THREE,
-      PokerRank.TWO,
-      PokerRank.A
-    ) || (0 until sortedRanks.length - 1).forall(i =>
-      sortedRanks(i).rank - sortedRanks(i + 1).rank == 1
-    )
-  private lazy val straight: (PokerHandsType, Seq[PokerRank]) =
-    val pokerRank =
+  private def apply(cards: Array[PokerCard]): PokerHand =
+    val sortedRanks         = cards.map(_.pokerRank).sorted
+    val sortedDistinctRanks = sortedRanks.distinct
+    lazy val straightPokerRank =
       if sortedRanks.head == PokerRank.A && sortedRanks(1) == PokerRank.FIVE
       then PokerRank.FIVE
       else sortedRanks.head
-    (
-      PokerHandsType.STRAIGHT,
-      Seq(pokerRank, PokerRank.TWO, PokerRank.TWO, PokerRank.TWO, PokerRank.TWO)
-    )
 
-  private lazy val isFlush: Boolean =
-    cards.map(_.pokerSuit.ordinal).distinct.length == 1
-  private lazy val flush: (PokerHandsType, Seq[PokerRank]) =
-    (PokerHandsType.FLUSH, sortedRanks)
+    if isFiveOfAKind(sortedDistinctRanks) then
+      PokerHand(PokerHandsType.FIVE_OF_A_KIND, cards.head.pokerRank)
+    else if isStraightFlush(sortedRanks, cards) then
+      PokerHand(PokerHandsType.STRAIGHT_FLUSH, straightPokerRank)
+    else if isFourOfAKind(sortedDistinctRanks, cards) then
+      fourOfAKind(sortedRanks)
+    else if isFullHouse(sortedDistinctRanks, cards) then
+      fullHouse(sortedRanks)
+    else if isFlush(cards) then
+      PokerHand(PokerHandsType.FLUSH, sortedRanks.toList)
+    else if isStraight(sortedRanks) then
+      PokerHand(PokerHandsType.STRAIGHT, straightPokerRank)
+    else if isThreeOfAKind(sortedDistinctRanks, cards, sortedRanks) then
+      threeOfAKind(sortedRanks)
+    else if isTwoPair(sortedDistinctRanks, cards, sortedRanks) then
+      twoPair(sortedRanks)
+    else if isOnePair(sortedDistinctRanks) then
+      onePair(sortedRanks)
+    else highCard(sortedRanks)
+    end if
+  end apply
 
-  private lazy val isFourOfAKind: Boolean =
+  private def isFiveOfAKind(sortedDistinctRanks: Array[PokerRank]): Boolean =
+    sortedDistinctRanks.length == 1
+
+  private def isStraightFlush(
+      sortedRanks: Array[PokerRank],
+      cards: Array[PokerCard]
+  ): Boolean =
+    isStraight(sortedRanks) && isFlush(cards)
+
+  private def isFourOfAKind(
+      sortedDistinctRanks: Array[PokerRank],
+      cards: Array[PokerCard]
+  ): Boolean =
     val countOfRank      = sortedDistinctRanks.length
-    val countOfFirstCard = cards.count(c => c.pokerRank == cards.head.pokerRank)
+    val countOfFirstCard = cards.count(_.pokerRank == cards.head.pokerRank)
     countOfRank == 2 && (countOfFirstCard == 1 || countOfFirstCard == 4)
-  private lazy val fourOfAKind: (PokerHandsType, Seq[PokerRank]) =
+
+  private def fourOfAKind(sortedRanks: Array[PokerRank]): PokerHand =
     val isFirstEqualSecond = sortedRanks.head.rank == sortedRanks(1).rank
     val pokerRank1 =
       if isFirstEqualSecond then sortedRanks.head else sortedRanks(1)
     val pokerRank2 =
       if isFirstEqualSecond then sortedRanks(4) else sortedRanks.head
-    (
-      PokerHandsType.FOUR_OF_A_KIND,
-      Seq(pokerRank1, pokerRank2, PokerRank.TWO, PokerRank.TWO, PokerRank.TWO)
-    )
+    PokerHand(PokerHandsType.FOUR_OF_A_KIND, List(pokerRank1, pokerRank2))
 
-  private lazy val isFullHouse: Boolean =
+  private def isFullHouse(
+      sortedDistinctRanks: Array[PokerRank],
+      cards: Array[PokerCard]
+  ): Boolean =
     val countOfRank      = sortedDistinctRanks.length
-    val countOfFirstCard = cards.count(c => c.pokerRank == cards.head.pokerRank)
+    val countOfFirstCard = cards.count(_.pokerRank == cards.head.pokerRank)
     countOfRank == 2 && (countOfFirstCard == 2 || countOfFirstCard == 3)
-  private lazy val fullHouse: (PokerHandsType, Seq[PokerRank]) =
+
+  private def fullHouse(sortedRanks: Array[PokerRank]): PokerHand =
     val pokerRank1 = sortedRanks(2)
     val pokerRank2 =
       if sortedRanks(1).rank == sortedRanks(2).rank then sortedRanks(3)
       else sortedRanks(1)
-    (
-      PokerHandsType.FULL_HOUSE,
-      Seq(pokerRank1, pokerRank2, PokerRank.TWO, PokerRank.TWO, PokerRank.TWO)
-    )
+    PokerHand(PokerHandsType.FULL_HOUSE, List(pokerRank1, pokerRank2))
 
-  private lazy val isThreeOfAKind: Boolean =
+  private def isFlush(cards: Array[PokerCard]): Boolean =
+    cards.map(_.pokerSuit.ordinal).distinct.length == 1
+
+  private def isStraight(sortedRanks: Array[PokerRank]): Boolean =
+    (sortedRanks sameElements
+      Array(
+        PokerRank.FIVE,
+        PokerRank.FOUR,
+        PokerRank.THREE,
+        PokerRank.TWO,
+        PokerRank.A
+      )) ||
+      (0 until sortedRanks.length - 1).forall: i =>
+        sortedRanks(i).rank - sortedRanks(i + 1).rank == 1
+
+  private def isThreeOfAKind(
+      sortedDistinctRanks: Array[PokerRank],
+      cards: Array[PokerCard],
+      sortedRanks: Array[PokerRank]
+  ): Boolean =
     sortedDistinctRanks.length == 3 && {
       val countOfFirstCard = cards.count(c => c.pokerRank == sortedRanks.head)
       val countOfLastCard  = cards.count(c => c.pokerRank == sortedRanks.last)
-      (countOfFirstCard == 1 && countOfLastCard == 1) || (countOfFirstCard == 3 && countOfLastCard == 1) || (countOfFirstCard == 1 && countOfLastCard == 3)
+      (countOfFirstCard == 1 && countOfLastCard == 1) ||
+      (countOfFirstCard == 3 && countOfLastCard == 1) ||
+      (countOfFirstCard == 1 && countOfLastCard == 3)
     }
-  private lazy val threeOfAKind: (PokerHandsType, Seq[PokerRank]) =
+
+  private def threeOfAKind(sortedRanks: Array[PokerRank]): PokerHand =
     val indexThreeOfAKind = (0 until sortedRanks.length - 2)
-      .find(i =>
-        sortedRanks(i).rank == sortedRanks(i + 1).rank && sortedRanks(
-          i + 1
-        ).rank == sortedRanks(i + 2).rank
-      )
+      .find: i =>
+        sortedRanks(i).rank == sortedRanks(i + 1).rank &&
+          sortedRanks(i + 1).rank == sortedRanks(i + 2).rank
       .getOrElse(0)
-    (
+    PokerHand(
       PokerHandsType.THREE_OF_A_KIND,
-      Seq(
+      List(
         sortedRanks(2),
         sortedRanks(if indexThreeOfAKind == 0 then 3 else 0),
-        sortedRanks(if indexThreeOfAKind == 2 then 1 else 4),
-        PokerRank.TWO,
-        PokerRank.TWO
+        sortedRanks(if indexThreeOfAKind == 2 then 1 else 4)
       )
     )
 
-  private lazy val isTwoPair: Boolean =
+  private def isTwoPair(
+      sortedDistinctRanks: Array[PokerRank],
+      cards: Array[PokerCard],
+      sortedRanks: Array[PokerRank]
+  ): Boolean =
     sortedDistinctRanks.length == 3 && {
       val countOfFirstCard = cards.count(c => c.pokerRank == sortedRanks.head)
       val countOfLastCard  = cards.count(c => c.pokerRank == sortedRanks.last)
-      (countOfFirstCard == 2 && countOfLastCard == 2) || (countOfFirstCard == 2 && countOfLastCard == 1) || (countOfFirstCard == 1 && countOfLastCard == 2)
+      (countOfFirstCard == 2 && countOfLastCard == 2) ||
+      (countOfFirstCard == 2 && countOfLastCard == 1) ||
+      (countOfFirstCard == 1 && countOfLastCard == 2)
     }
-  private lazy val twoPair: (PokerHandsType, Seq[PokerRank]) =
+
+  private def twoPair(sortedRanks: Array[PokerRank]): PokerHand =
     val isFirstEqualSecond = sortedRanks.head.rank == sortedRanks(1).rank
     val isThirdEqualFourth = sortedRanks(2).rank == sortedRanks(3).rank
     val thirdIndex =
       if isFirstEqualSecond && isThirdEqualFourth then 4
       else if isFirstEqualSecond then 2
       else 0
-    (
+    PokerHand(
       PokerHandsType.TWO_PAIR,
-      Seq(
+      List(
         sortedRanks(1),
         sortedRanks(3),
-        sortedRanks(thirdIndex),
-        PokerRank.TWO,
-        PokerRank.TWO
+        sortedRanks(thirdIndex)
       )
     )
 
-  private lazy val isOnePair: Boolean =
+  private def isOnePair(sortedDistinctRanks: Array[PokerRank]): Boolean =
     sortedDistinctRanks.length == 4
-  private lazy val onePair: (PokerHandsType, Seq[PokerRank]) =
+
+  private def onePair(sortedRanks: Array[PokerRank]): PokerHand =
     val index = (0 until sortedRanks.length - 1)
       .find(i => sortedRanks(i).rank == sortedRanks(i + 1).rank)
       .getOrElse(0)
-    (
+    PokerHand(
       PokerHandsType.ONE_PAIR,
-      Seq(
+      List(
         sortedRanks(index),
         sortedRanks(if index == 0 then 2 else 0),
         sortedRanks(if index < 2 then 3 else 1),
-        sortedRanks(if index == 3 then 2 else 4),
-        PokerRank.TWO
+        sortedRanks(if index == 3 then 2 else 4)
       )
     )
 
-  private lazy val highCard: (PokerHandsType, Seq[PokerRank]) =
-    (PokerHandsType.HIGH_CARD, sortedRanks)
-
-  val (pokerHandsType: PokerHandsType, ranks: Seq[PokerRank]) =
-    if isFiveOfAKind then fiveOfAKind
-    else if isStraightFlush then straightFlush
-    else if isFourOfAKind then fourOfAKind
-    else if isFullHouse then fullHouse
-    else if isFlush then flush
-    else if isStraight then straight
-    else if isThreeOfAKind then threeOfAKind
-    else if isTwoPair then twoPair
-    else if isOnePair then onePair
-    else highCard
-
-  def compareTo(pokerHand: PokerHand): Int =
-    val diff =
-      pokerHandsType.ordinal.compareTo(pokerHand.pokerHandsType.ordinal)
-    if diff != 0 then diff
-    else
-      ranks.indices
-        .map(i => pokerHand.ranks(i).rank.compareTo(ranks(i).rank))
-        .find(r => r != 0)
-        .getOrElse(0)
-
-  def ==(pokerHand: PokerHand): Boolean    = this.equal(pokerHand)
-  def equal(pokerHand: PokerHand): Boolean = compareTo(pokerHand) == 0
-
+  private def highCard(sortedRanks: Array[PokerRank]): PokerHand =
+    PokerHand(PokerHandsType.HIGH_CARD, sortedRanks.toList)
 end PokerHand
 ```
 

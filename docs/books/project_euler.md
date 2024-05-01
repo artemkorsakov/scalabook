@@ -3498,62 +3498,306 @@ counts.max
 
 **Алгоритм:**
 
+Обозначим дробь в текущей итерации как \\(\frac{a}{b}\\). 
+Тогда дробь в следующей итерации станет равна \\(1 + \frac{1}{1 + \frac{a}{b}} = \frac{a + 2b}{a + b}\\).
+Начав с первой итерации \\(\frac{3}{2}\\) можно пройтись по всем дробям и посчитать искамое количество.
 
 **Код:**
 
 ```dotty
+def hasNumMoreDigitsThenDen(num: BigInt, den: BigInt): Int =
+  if num.toString.length > den.toString.length then 1 else 0
 
+def getNextFraction(num: BigInt, den: BigInt): (BigInt, BigInt) =
+  (num + 2 * den, num + den)
+
+val (count, _) =
+  (1 to 1000).foldLeft((0, (BigInt(3), BigInt(2)))) {
+    case ((count, (num, den)), _) =>
+      (count + hasNumMoreDigitsThenDen(num, den), getNextFraction(num, den))
+  }
 ```
 
-### Problem 58.
+### Problem 58. Spiral Primes
 
 **Задача:**
 
 [Problem 58](https://projecteuler.net/problem=58)
 
->
+> Starting with 1 and spiralling anticlockwise in the following way, a square spiral with side length 7 is formed.
+> 
+> <br> 37 36 35 34 33 32 31
+> <br> 38 17 16 15 14 13 30
+> <br> 39 18  5  4  3 12 29
+> <br> 40 19  6  1  2 11 28
+> <br> 41 20  7  8  9 10 27
+> <br> 42 21 22 23 24 25 26
+> <br> 43 44 45 46 47 48 49
+> 
+> It is interesting to note that the odd squares lie along the bottom right diagonal, 
+> but what is more interesting is that 8 out of the 13 numbers lying along both diagonals are prime; 
+> that is, a ratio of \\(8/13 \approx 62\%\\).
+> 
+> If one complete new layer is wrapped around the spiral above, a square spiral with side length 9 will be formed. 
+> If this process is continued, what is the side length of the square spiral for which 
+> the ratio of primes along both diagonals first falls below \\(10\%\\)?
 
 **Алгоритм:**
 
+Следующий код ищет самую маленькую сторону квадрата, на диагоналях которого доля простых чисел меньше заданного процента.
+
+1. `type PrimesCount = Long`, `type AllCount = Long`, `type Side = Long`, `type State = (PrimesCount, AllCount, Side)` - 
+   определение типов, описывающих текущее состояние итерации.
+2. `def isPrime(n: Long): Boolean` - функция, которая проверяет, является ли число простым.
+3. `def getNextState: State => State` - функция, которая вычисляет следующее состояние системы:
+    - `PrimesCount` - вычисляется количество простых чисел на углах квадрата. В правом нижнем углу расположено число,
+      равное квадрату стороны (составное), а в остальных углах - квадрат стороны минус `i` умножить на 
+      сторону квадрата уменьшенную на 1, где `i` - 1, 2 или 3.
+    - `AllCount` - общее количество чисел увеличивается на 4.
+    - `Side` - сторона квадрата увеличивается на 2.
+4. `@tailrec def findFirstRatioLessThanGiven(state: State, percent: Int): Long` - рекурсивная функция, 
+   которая ищет сторону квадрата, на диагонали которого доля простых чисел меньше заданного процента.
+5. `val count = findFirstRatioLessThanGiven((3, 5, 3), 10)` - это вызов функции `findFirstRatioLessThanGiven` 
+   с начальным состоянием и процентом.
 
 **Код:**
 
 ```dotty
+type PrimesCount = Long
+type AllCount    = Long
+type Side        = Long
+type State       = (PrimesCount, AllCount, Side)
 
+def isPrime(n: Long): Boolean =
+  if n < 2 then false
+  else if n < 4 then true // 2 и 3 - простые
+  else if n % 2 == 0 then false
+  else if n < 9 then true // мы уже исключили 4,6 и 8
+  else if n % 3 == 0 then false
+  else
+    val limit = math.ceil(math.sqrt(n.toDouble)).toLong
+
+    @annotation.tailrec
+    def loop(f: Long): Boolean =
+      if f > limit then true
+      else if n % f == 0 || n % (f + 2) == 0 then false
+      else loop(f + 6)
+
+    loop(5)
+
+def getNextState: State => State =
+  (primesCount, allCount, side) =>
+    val nextSide          = side + 2
+    val rightBottomNumber = nextSide * nextSide
+    val primeCountOnTheSides =
+      (1 to 3).count(i => isPrime(rightBottomNumber - i * (nextSide - 1)))
+    (primesCount + primeCountOnTheSides, allCount + 4, nextSide)
+
+@tailrec
+def findFirstRatioLessThanGiven(state: State, percent: Int): Long =
+  val (primesCount, allCount, side) = state
+  if primesCount * 100 / allCount < percent then side
+  else findFirstRatioLessThanGiven(getNextState(state), percent)
+
+val count = findFirstRatioLessThanGiven((3, 5, 3), 10)
 ```
 
-### Problem 59.
+### Problem 59. XOR Decryption
 
 **Задача:**
 
 [Problem 59](https://projecteuler.net/problem=59)
 
->
+> Each character on a computer is assigned a unique code and the preferred standard is ASCII 
+> (American Standard Code for Information Interchange). 
+> For example, uppercase A = 65, asterisk (*) = 42, and lowercase k = 107.
+> 
+> A modern encryption method is to take a text file, convert the bytes to ASCII, 
+> then XOR each byte with a given value, taken from a secret key. 
+> The advantage with the XOR function is that using the same encryption key on the cipher text, 
+> restores the plain text; for example, 65 XOR 42 = 107, then 107 XOR 42 = 65.
+> 
+> For unbreakable encryption, the key is the same length as the plain text message, and the key is made up of random bytes. 
+> The user would keep the encrypted message and the encryption key in different locations, 
+> and without both "halves", it is impossible to decrypt the message.
+> 
+> Unfortunately, this method is impractical for most users, so the modified method is to use a password as a key. 
+> If the password is shorter than the message, which is likely, the key is repeated cyclically throughout the message. 
+> The balance for this method is using a sufficiently long password key for security, but short enough to be memorable.
+> 
+> Your task has been made easy, as the encryption key consists of three lower case characters. 
+> Using 0059_cipher.txt (right click and 'Save Link/Target As...'), a file containing the encrypted ASCII codes, 
+> and the knowledge that the plain text must contain common English words, 
+> decrypt the message and find the sum of the ASCII values in the original text.
 
 **Алгоритм:**
 
+Определим следующие функции:
+
+1. Функция `decrypt`, которая принимает ключ и массив символов, и возвращает новый массив символов, 
+   полученных путем применения операции XOR к каждому символу исходного массива с соответствующим символом ключа.
+2. Функция `toMessage`, которая преобразует массив дешифрованных символов в строку.
+3. Функция `findCorrectKey`, которая принимает ключ и массив символов, дешифрует символы, преобразует их в строку, 
+   и проверяет, содержит ли эта строка фразу `" and "` (распространенный английский союз).
+4. Генерация всех возможных ключей из строк, состоящих из трех символов, где каждый символ - это буква от `'a'` до `'z'`.
+5. Поиск первого ключа из сгенерированных, который применяется к массиву символов 
+   и дает "правильное" сообщение (содержит фразу `" and "`).
+6. Если ключ найден, то он используется для дешифровки массива символов и вычисляется сумма всех дешифрованных символов. 
 
 **Код:**
 
 ```dotty
+def decrypt(key: String, symbols: Array[Int]): IndexedSeq[Int] =
+  symbols.indices.map: i =>
+    symbols(i) ^ key(i % 3).toInt
 
+def toMessage(decryptedSymbols: IndexedSeq[Int]): String =
+  decryptedSymbols.map(_.toChar).mkString
+
+def findCorrectKey(key: String, symbols: Array[Int]): Boolean =
+  val decryptedSymbols = decrypt(key, symbols)
+  val message          = toMessage(decryptedSymbols)
+  message.contains(" and ")
+
+val symbols: Array[Int] =
+  Source
+    .fromResource("p059_cipher.txt")
+    .getLines
+    .toSeq
+    .mkString
+    .trim
+    .split(",")
+    .map(_.toInt)
+val keys =
+  for
+    a <- 'a' to 'z'
+    b <- 'a' to 'z'
+    c <- 'a' to 'z'
+  yield s"$a$b$c"
+
+val maybeKey = keys.find(key => findCorrectKey(key, symbols))
+val count    = maybeKey.map(key => decrypt(key, symbols).sum).getOrElse(0)
 ```
 
-### Problem 60.
+### Problem 60. Prime Pair Sets
 
 **Задача:**
 
 [Problem 60](https://projecteuler.net/problem=60)
 
->
+> The primes 3, 7, 109, and 673, are quite remarkable. By taking any two primes and concatenating them in any order 
+> the result will always be prime. For example, taking 7 and 109, both 7109 and 1097 are prime. 
+> The sum of these four primes, 792, represents the lowest sum for a set of four primes with this property.
+> 
+> Find the lowest sum for a set of five primes for which any two primes concatenate to produce another prime.
 
 **Алгоритм:**
 
+##### Добавление нового простого числа к коллекции "взаимно простых при слиянии"
+
+Назовем простые числа "взаимно простыми при слиянии" если их слияние в любом порядке остается простым.
+Например, 7 и 109 - "взаимно простые при слиянии", т.к. 7109 и 1097 - простые.
+
+Определим функцию `areConcatenationsPrime`, которая проверяет, являются ли два заданных простыми числа простыми числами, 
+если они объединяются друг с другом. Например, если `prime1` равно 7 и `prime2` равно 3, 
+то эта функция проверяет, являются ли числа 73 и 37 простыми числами.
+Функция `areConcatenationsPrime` использует мемоизацию для хранения результатов проверок,
+что позволяет избежать повторных вычислений для одних и тех же пар простых чисел.
+
+Также определяется функция `isPrime`, которая проверяет, является ли число простым. 
+
+Определим функцию `areConcatenationsPrime`, принимающую новое простое число и коллекцию "взаимно простых при слиянии" чисел,
+и возвращающую `true` - если это новое простое число можно добавить к коллекции так, чтобы новая коллекция
+также осталась "взаимно простой при слиянии".
 
 **Код:**
 
 ```dotty
+def areConcatenationsPrime(
+    prime: Int,
+    combination: List[Int]
+): Boolean =
+  combination.forall: prime2 =>
+    areConcatenationsPrime(prime, prime2)
 
+val memory = mutable.Map.empty[(Int, Int), Boolean]
+
+def areConcatenationsPrime(prime1: Int, prime2: Int): Boolean =
+  memory.getOrElseUpdate(
+    (prime1, prime2), {
+      val first = s"$prime1$prime2"
+      first.map(_.getNumericValue).sum % 3 != 0 &&
+      isPrime(first.toLong) && isPrime(s"$prime2$prime1".toLong)
+    }
+  )
+
+def isPrime(n: Long): Boolean = ... // Из Problem 27
+```
+
+##### Нахождение комбинаций "взаимно простых при слиянии" заданного размера
+
+1. `filterCombinations` - функция, которая фильтрует комбинации простых чисел на основе заданного количества. 
+   Она использует рекурсивную функцию `loop` для итеративного увеличения количества комбинаций. 
+   В каждой итерации увеличивает текущее количество комбинаций, обновляя `combinations`, 
+   используя `enrichCombinations` для дополнения комбинаций новыми элементами. 
+
+2. `enrichCombinations` - функция, которая дополняет комбинации новыми элементами. 
+   Она принимает массив простых чисел, индекс и текущую комбинацию. 
+   Она использует `areConcatenationsPrime` для проверки, "подходит" ли новое простое число комбинации, 
+   и, если это так, добавляет его.
+
+**Код:**
+
+```dotty
+def filterCombinations(
+    primes: Array[Int],
+    count: Int
+): IndexedSeq[List[Int]] =
+  @tailrec
+  def loop(
+      current: Int,
+      combinations: IndexedSeq[List[Int]]
+  ): IndexedSeq[List[Int]] =
+    if current == count then combinations
+    else
+      val newCombinations =
+        combinations.flatMap: combination =>
+          val max   = combination.head
+          val index = primes.indexOf(max) + 1
+          enrichCombinations(primes, index, combination)
+      loop(current + 1, newCombinations)
+
+  loop(1, primes.map(List(_)))
+end filterCombinations
+
+def enrichCombinations(
+    primes: Array[Int],
+    index: Int,
+    combination: List[Int]
+): IndexedSeq[List[Int]] =
+  (index until primes.length).collect:
+    case i if areConcatenationsPrime(primes(i), combination) =>
+      primes(i) :: combination
+```
+
+##### Поиск комбинации с минимальной суммой
+
+Итого: формируем массив простых чисел меньше 10000 и, используя `filterCombinations`, 
+находим искомую комбинацию с минимальной суммой.
+
+**Код:**
+
+```dotty
+def primesNoMoreThanN(n: Int): Array[Int] = ... // Из Problem 27
+
+def minCombinations(primes: Array[Int], count: Int): List[Int] =
+  filterCombinations(primes, count)
+    .minByOption(_.sum)
+    .getOrElse(List.empty)
+    
+val primes = primesNoMoreThanN(10000)    
+minCombinations(primes, 4)
+// 3, 7, 109, and 673    
 ```
 
 ## Решения задач 61-70

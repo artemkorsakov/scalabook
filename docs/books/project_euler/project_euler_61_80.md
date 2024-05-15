@@ -412,10 +412,96 @@ getSumOfNum(10) // 17
 
 **Алгоритм:**
 
+[Метод «чакравала»](https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D1%82%D0%BE%D0%B4_%C2%AB%D1%87%D0%B0%D0%BA%D1%80%D0%B0%D0%B2%D0%B0%D0%BB%D0%B0%C2%BB) 
+для решения [уравнения Пелля](https://ru.wikipedia.org/wiki/%D0%A3%D1%80%D0%B0%D0%B2%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5_%D0%9F%D0%B5%D0%BB%D0%BB%D1%8F).
+
+Рассмотрим переход к следующей итерации согласно методу «чакравала»:
+
+- Итерация задается четверкой (a, b, k, d) такой, что \\(a^2 - d \times b^2 = k\\)
+- Итерация считается успешной, если k равно 1 - решение уравнения Пелля найдено
+- Для получения следующей итерации используется подстановка:
+  \\(a \leftarrow {\frac {am+db}{|k|}}, b \leftarrow {\frac {a+bm}{|k|}}, k \leftarrow {\frac {m^{2}-d}{k}}\\)
+- m подбирается следующим образом:
+    - m считается корректным, если a + b * m кратно |k|
+    - положительное m подбирается таким, чтобы \\(m^2 - d\\) было минимальным по модулю
+    - вначале проверяем все "корректные" m от 1 до \\(\sqrt{2d}\\)
+    - если таких не найдено, то начиная с \\(\sqrt{2d} + 1\\) ищем первое "корректное" m
+
+```dotty
+final case class Iteration(a: BigInt, b: BigInt, k: BigInt, d: Int):
+  lazy val isSuccess: Boolean = k == BigInt(1)
+
+  private lazy val getM: BigInt =
+    val last = BigInt(math.sqrt(2.0 * d).toInt)
+    val maybeM =
+      (BigInt(1) to last)
+        .filter(isMCorrect)
+        .minByOption(i => (i * i - d).abs)
+
+    @tailrec
+    def loop(m: BigInt): BigInt =
+      if isMCorrect(m) then m else loop(m + 1)
+
+    maybeM.getOrElse(loop(last + 1))
+  end getM
+
+  def getNext: Iteration =
+    if isSuccess then this
+    else
+      val m    = getM
+      val newA = (a * m + b * d) / k.abs
+      val newB = (a + b * m) / k.abs
+      val newK = (m * m - d) / k
+      Iteration(newA, newB, newK, d)
+
+  private def isMCorrect(m: BigInt): Boolean =
+    (a + b * m) % k.abs == BigInt(0)
+
+end Iteration
+```
+
+Для получения минимального решения уравнения Пелля:
+
+- проверяем, что d - не является полным квадратом
+- задаем первую итерацию:
+    - а - ближайшее целое к корню из d
+    - \\(k = a^2 - d\\)
+    - b = 1
+- ищем первую успешную (k = 1) итерацию
+
 **Код:**
 
 ```dotty
+final case class DiophantineEquation(d: Int):
 
+  def minimalEquation: Option[(BigInt, BigInt)] =
+    val sd = math.sqrt(d.toDouble)
+    if sd.isWhole then None
+    else
+      val a = BigInt(math.round(sd))
+      val k = a.pow(2) - d
+
+      @tailrec
+      def loop(iteration: Iteration): Option[(BigInt, BigInt)] =
+        if iteration.isSuccess then Some((iteration.a, iteration.b))
+        else loop(iteration.getNext)
+
+      loop(Iteration(a, BigInt(1), k, d))
+
+DiophantineEquation(67).minimalEquation
+// Some((48842,5967))
+```
+
+Итоговое решение задачи:
+
+**Код:**
+
+```dotty
+def getDWithLargestX(lim: Int): Int =
+  (1 to lim).maxBy: d =>
+    DiophantineEquation(d).minimalEquation.map(_._1).getOrElse(BigInt(0))
+
+getDWithLargestX(7) // 5
 ```
 
 ## Задача №67
@@ -430,28 +516,159 @@ getSumOfNum(10) // 17
 
 [Задача №68 - Magic 5-gon Ring](https://projecteuler.net/problem=68)
 
->
+> Consider the following "magic" 3-gon ring, filled with the numbers 1 to 6, and each line adding to nine.
+> 
+> ![](https://projecteuler.net/resources/images/0068_1.png?1678992052)
+> 
+> Working **clockwise**, and starting from the group of three with the numerically lowest external node 
+> (4,3,2 in this example), each solution can be described uniquely. 
+> For example, the above solution can be described by the set: 4,3,2; 6,2,1; 5,1,3.
+> 
+> It is possible to complete the ring with four different totals: 9, 10, 11, and 12. 
+> There are eight solutions in total.
+> 
+> | Total | Solution Set        |
+> |-------|---------------------|
+> | 9     | 4,2,3; 5,3,1; 6,1,2 |
+> | 9     | 4,3,2; 6,2,1; 5,1,3 |
+> | 10    | 2,3,5; 4,5,1; 6,1,3 |
+> | 10    | 2,5,3; 6,3,1; 4,1,5 |
+> | 11    | 1,4,6; 3,6,2; 5,2,4 |
+> | 11    | 1,6,4; 5,4,2; 3,2,6 |
+> | 12    | 1,5,6; 2,6,4; 3,4,5 |
+> | 12    | 1,6,5; 3,5,4; 2,4,6 |
+> 
+> By concatenating each group it is possible to form 9-digit strings; the maximum string for a 3-gon ring is 432621513.
+> 
+> Using the numbers 1 to 10, and depending on arrangements, it is possible to form 16- and 17-digit strings. 
+> What is the maximum **16-digit** string for a "magic" 5-gon ring?
 
 **Алгоритм:**
+
+Определим, что "магическое" пятиугольное кольцо задается соотношением 
+\\(a \to b \to c \Rightarrow d \to c \to e \Rightarrow f \to e \to g \Rightarrow h \to g \to i \Rightarrow j \to i \to b\\), где
+
+- (a, b, c, d, e, f, g, h, i, j) - различные числа от 1 до 10
+- a + b + c = d + c + e = f + e + g = h + g + i = j + i + b. Следовательно:
+    - e = a + b - d
+    - g = d + c - f
+    - i = f + e - h
+    - h + g == b + j 
+    - j + i == a + c
+
+Условия нахождения максимального 16-значного кольца говорит о том, что 10 должна находиться на "внешней вершине",
+иначе она "учитывалась" бы дважды и получилось бы 17-е число.
+Т.к. решение не зависит от "вращения" кольца, то можно предположить a равным 10,
+т.е. начать поиск решения с "десятки".
+
+Учитывая предыдущие ограничения перебор может быть таким:
 
 **Код:**
 
 ```dotty
-
+def solutions: IndexedSeq[Long] =
+  val a = 10
+  for
+    b <- 1 to 9
+    c <- 1 to 9
+    if c != b
+    d <- 1 to 9
+    if d != b && d != c
+    e = 10 + b - d
+    if 1 <= e && e <= 9 && e != b && e != c && e != d
+    f <- 1 to 9
+    if f != b && f != c && f != d && f != e
+    g = d + c - f
+    if 1 <= g && g <= 9 && g != b && g != c && g != d && g != e && g != f
+    h <- 1 to 9
+    if h != b && h != c && h != d && h != e && h != f && h != g
+    i = f + e - h
+    if 1 <= i && i <= 9 && i != b && i != c && i != d && i != e && i != f && i != g && i != h
+    j = 45 - b - c - d - e - f - g - h - i
+    if j != b && j != c && j != d && j != e && j != f && j != g && j != h && j != i
+    if h + g == b + j && j + i == 10 + c
+  yield
+    val min = math.min(math.min(d, f), math.min(h, j))
+    if min == d then s"$d$c$e$f$e$g$h$g$i$j$i$b$a$b$c".toLong
+    else if min == f then s"$f$e$g$h$g$i$j$i$b$a$b$c$d$c$e".toLong
+    else if min == h then s"$h$g$i$j$i$b$a$b$c$d$c$e$f$e$g".toLong
+    else s"$j$i$b$a$b$c$d$c$e$f$e$g$h$g$i".toLong
+  end for
 ```
 
 ## Задача №69
 
 [Задача №69 - Totient Maximum](https://projecteuler.net/problem=69)
 
+> Euler's totient function, \\(\phi(n)\\) (sometimes called the phi function), is defined as the number of 
+> positive integers not exceeding n which are relatively prime to n. 
+> For example, as 1, 2, 4, 5, 7, and 8, are all less than or equal to nine and relatively prime to nine, \\(\phi(9)=6\\).
 >
+> | n  | Relatively Prime | phi(n) | n/phi(n)  |
+> |----|------------------|--------|-----------|
+> | 2  | 1                | 1      | 2         |
+> | 3  | 1,2              | 2      | 1.5       |
+> | 4  | 1,3              | 2      | 2         |
+> | 5  | 1,2,3,4          | 4      | 1.25      |
+> | 6  | 1,5              | 2      | 3         |
+> | 7  | 1,2,3,4,5,6      | 6      | 1.1666... |
+> | 8  | 1,3,5,7          | 4      | 2         | 
+> | 9  | 1,2,4,5,7,8      | 6      | 1.5       |
+> | 10 | 1,3,7,9          | 4      | 2.5       |
+> 
+> It can be seen that n = 6 produces a maximum \\(n/\phi(n)\\) for \\(n \leq 10\\).
+> 
+> Find the value of \\(n \leq 1000000\\) for which \\(n/\phi(n)\\) is a maximum.
 
 **Алгоритм:**
+
+Согласно [функции Эйлера от натурального числа](https://ru.wikipedia.org/wiki/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F_%D0%AD%D0%B9%D0%BB%D0%B5%D1%80%D0%B0):
+\\(\varphi (n)=n \prod _{p\mid n} \left( 1 - {\frac {1}{p}}\right), n > 1\\).
+
+Это означает, что \\(\frac{n }{\varphi (n)} = \prod _{p\mid n} \left({\frac {p}{p - 1}}\right)\\).
+
+Получается, что на соотношение \\(\frac{n }{\varphi (n)}\\) не влияет то, с какой степенью в n входит p.
+Т.е. для \\(m = p\_1^{a\_1} \times p\_2^{a\_2} \times ... \times p\_k^{a\_k} \\) 
+и \\(o = p\_1 \times p\_2 \times ... \times p\_k \\) выполняется \\(\frac{m}{\varphi (m)} = \frac{o}{\varphi (o)}\\). 
+Поэтому можно рассматривать только те числа, которые являются произведениями различных простых чисел.
+
+Учитывая, что \\(\frac{p\_i}{p\_i - 1} > \frac{p\_j}{p\_j - 1} \\) если \\(p\_i < p\_j\\),
+максимальное соотношение \\(\frac{n }{\varphi (n)}\\) среди всех чисел менее limit
+будет для такого \\(n = p\_1 \times p\_2 \times ... \times p\_k \\) меньшего limit, 
+которое является произведением наименьших возможных различных простых чисел (\\(p\_1 = 2, p\_2 = 3, p\_3 = 5\\) и т.д.),
+при том, что \\(n * p\_{k + 1}\\) уже становится больше limit.
+
+Т.к. для всех остальных чисел \\(m = p\_1^{a\_1} \times p\_2^{a\_2} \times ... \times p\_q^{a\_q}\\) меньших limit
+следует:
+
+- \\(q \leq k\\), т.к. иначе \\(n * p\_{k + 1}\\) было бы меньше limit
+- \\(\frac{m}{\varphi (m)} \leq \frac{n}{\varphi (n)}\\), т.к. для всех \\(1 \leq i \leq q\\) выполняется
+  \\(\frac{p\_i}{p\_i - 1} \leq \frac{ithp}{ithp - 1}\\), где ithp - i-е наименьшее простое число.
 
 **Код:**
 
 ```dotty
+def isPrime(n: Long): Boolean = ... // Из Problem 27
 
+def nextPrime(n: Long): Long =
+  if !isPrime(n) then 2
+  else if n == 2 then 3
+  else if n == 3 then 5
+  else
+    var nextPrime = if n % 3 == 1 then n + 4 else n + 2
+    while !isPrime(nextPrime) do
+      nextPrime = if nextPrime % 3 == 1 then nextPrime + 4 else nextPrime + 2
+    nextPrime
+
+def getMax(limit: Long): Long =
+  @tailrec
+  def loop(acc: Long, p: Long): Long =
+    if acc * p > limit then acc
+    else loop(acc * p, nextPrime(p))
+
+  loop(1, 2)
+
+getMax(10) // 6
 ```
 
 ## Задача №70

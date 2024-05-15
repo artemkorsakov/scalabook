@@ -416,7 +416,14 @@ totient(5654317604L)
 
 **Алгоритм:**
 
-???
+Согласно обобщенной функции мультипликативности функции Эйлера:
+\\(\varphi (m \cdot n) = \varphi (m) \cdot \varphi (n) \cdot {\frac {d}{\varphi (d)}}\\)
+, где d - наибольший общий делитель n и m, получим, что для всех простых p:
+
+- \\(\varphi (n \cdot p) = \varphi (n) \cdot p\\), если n делится на p
+- \\(\varphi (n \cdot p) = \varphi (n) \cdot (p - 1)\\), если n не делится на p
+
+Т.о. на основе массива простых чисел можно составить массив значений функции Эйлера.
 
 **Оценка:**
 
@@ -431,12 +438,13 @@ def totientArray(limit: Int): Array[Long] =
   phiArray(1) = 1
 
   val primesArray = primesNoMoreThanN(limit)
-  for n <- 1 to limit / 2 do
-    var i = 0
-    while i < primesArray.length && n * primesArray(i) <= limit do
-      val p = primesArray(i)
+  primesArray.foreach: p =>
+    phiArray(p) = p - 1
+  
+  (2 to limit / 2).foreach: n =>
+    val pLimit = limit / n
+    primesArray.withFilter(_ <= pLimit).foreach: p =>
       phiArray(n * p) = phiArray(n) * (if n % p == 0 then p else p - 1)
-      i += 1
 
   phiArray
 

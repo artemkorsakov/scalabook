@@ -98,33 +98,35 @@ QuadraticEquation(1, -2, 2).solutionsInComplexNumbers
 
 [Метод «чакравала»][chakravala] для решения [уравнения Пелля][pell].
 
-**Оценка:**
+Рассмотрим переход к следующей итерации согласно методу «чакравала»:
 
-- **Время** - ???
-- **Память** - ???
-
-**Код:**
+- Итерация задается четверкой (a, b, k, d) такой, что \\(a^2 - d \times b^2 = k\\)
+- Итерация считается успешной, если k равно 1 - решение уравнения Пелля найдено
+- Для получения следующей итерации используется подстановка:
+  \\(a \leftarrow {\frac {am+db}{|k|}}, b \leftarrow {\frac {a+bm}{|k|}}, k \leftarrow {\frac {m^{2}-d}{k}}\\)
+- m подбирается следующим образом:
+    - m считается корректным, если a + b * m кратно |k|
+    - положительное m подбирается таким, чтобы \\(m^2 - d\\) было минимальным по модулю
+    - вначале проверяем все "корректные" m от 1 до \\(\sqrt{2d}\\) 
+    - если таких не найдено, то начиная с \\(\sqrt{2d} + 1\\) ищем первое "корректное" m
 
 ```dotty
-final case class DiophantineEquation(d: Int):
-
-  def minimalEquation: Option[(BigInt, BigInt)] =
-    if math.sqrt(d.toDouble).isWhole then None
-    else
-      val a         = BigInt(math.round(math.sqrt(d.toDouble)))
-      val k         = a.pow(2) - d
-      var iteration = Iteration(a, BigInt(1), k, d)
-      while !iteration.isSuccess
-      do iteration = iteration.getNext
-      Some((iteration.a, iteration.b))
-
-  def isSuccess(x: BigInt, y: BigInt): Boolean =
-    x.pow(2) == y.pow(2) * d + 1
-
-end DiophantineEquation
-
 final case class Iteration(a: BigInt, b: BigInt, k: BigInt, d: Int):
   lazy val isSuccess: Boolean = k == BigInt(1)
+
+  private lazy val getM: BigInt =
+    val last = BigInt(math.sqrt(2.0 * d).toInt)
+    val maybeM =
+      (BigInt(1) to last)
+        .filter(isMCorrect)
+        .minByOption(i => (i * i - d).abs)
+
+    @tailrec
+    def loop(m: BigInt): BigInt =
+      if isMCorrect(m) then m else loop(m + 1)
+
+    maybeM.getOrElse(loop(last + 1))
+  end getM
 
   def getNext: Iteration =
     if isSuccess then this
@@ -132,32 +134,42 @@ final case class Iteration(a: BigInt, b: BigInt, k: BigInt, d: Int):
       val m    = getM
       val newA = (a * m + b * d) / k.abs
       val newB = (a + b * m) / k.abs
-      val newK = (m.pow(2) - d) / k
+      val newK = (m * m - d) / k
       Iteration(newA, newB, newK, d)
 
-  private def getM: BigInt =
-    var m    = BigInt(-1)
-    var min  = d + 1
-    val last = math.sqrt(2.0 * d).toInt
-    for i <- 1 to last do
-      if isMCorrect(BigInt(i)) then
-        val tmp = math.abs(i * i - d)
-        if tmp < min then
-          min = tmp
-          m = BigInt(i)
-
-    if m == BigInt(-1) then
-      m = BigInt(last + 1)
-      while !isMCorrect(m)
-      do m += 1
-
-    m
-  end getM
-
   private def isMCorrect(m: BigInt): Boolean =
-    (a + b * m).abs % k.abs == BigInt(0)
+    (a + b * m) % k.abs == BigInt(0)
 
 end Iteration
+```
+
+Для получения минимального решения уравнения Пелля:
+
+- проверяем, что d - не является полным квадратом
+- задаем первую итерацию:
+    - а - ближайшее целое к корню из d
+    - \\(k = a^2 - d\\)
+    - b = 1
+- ищем первую успешную (k = 1) итерацию
+
+**Код:**
+
+```dotty
+final case class DiophantineEquation(d: Int):
+
+  def minimalEquation: Option[(BigInt, BigInt)] =
+    val sd = math.sqrt(d.toDouble)
+    if sd.isWhole then None
+    else
+      val a = BigInt(math.round(sd))
+      val k = a.pow(2) - d
+
+      @tailrec
+      def loop(iteration: Iteration): Option[(BigInt, BigInt)] =
+        if iteration.isSuccess then Some((iteration.a, iteration.b))
+        else loop(iteration.getNext)
+
+      loop(Iteration(a, BigInt(1), k, d))
 
 DiophantineEquation(67).minimalEquation
 // Some((48842,5967))

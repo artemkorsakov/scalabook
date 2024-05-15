@@ -325,22 +325,90 @@ val count = (1 to 10000).count(n => getFraction(n) % 2 == 1)
 
 [Задача №65 - Convergents of e](https://projecteuler.net/problem=65)
 
+> The square root of 2 can be written as an infinite continued fraction.
+> 
+> \\(\sqrt{2} = 1 + \frac{1}{2 + \frac{1}{2 + \frac{1}{2 + \frac{1}{2 + ...}}}}\\)
+> 
+> The infinite continued fraction can be written, \\(\sqrt{2} = \[1; (2)\]\\), (2) indicates that 2 repeats **ad infinitum**. 
+> In a similar way, \\(\sqrt{23} = \[4; (1, 3, 1, 8)\]\\).
+> 
+> It turns out that the sequence of partial values of continued fractions for square roots provide 
+> the best rational approximations. Let us consider the convergents for \\(\sqrt{2}\\).
 >
+> \\(1 + \frac{1}{2} = \frac{3}{2}\\)
+> 
+> \\(1 + \frac{1}{2 + \frac{1}{2}} = \frac{7}{5}\\)
+> 
+> \\(1 + \frac{1}{2 + \frac{1}{2 + \frac{1}{2}}} = \frac{17}{12}\\)
+> 
+> \\(1 + \frac{1}{2 + \frac{1}{2 + \frac{1}{2 + \frac{1}{2}}}} = \frac{41}{29}\\)
+>
+> Hence the sequence of the first ten convergents for \\(\sqrt{2}\\) are:
+> 
+> \\(1, \frac{3}{2}, \frac{7}{5}, \frac{17}{12}, \frac{41}{29}, \frac{99}{70}, \frac{239}{169}, \frac{577}{408}, \frac{1393}{985}, \frac{3363}{2378}, ...\\)
+> 
+> What is most surprising is that the important mathematical constant,
+> 
+> \\(e = \[2; 1, 2, 1, 1, 4, 1, 1, 6, 1, ... , 1, 2k, 1, ...\]\\).
+> 
+> The first ten terms in the sequence of convergents for e are:
+> 
+> \\(2, 3, \frac{8}{3}, \frac{11}{4}, \frac{19}{7}, \frac{87}{32}, \frac{106}{39}, \frac{193}{71}, \frac{1264}{465}, \frac{1457}{536}, ... \\)
+> 
+> The sum of digits in the numerator of the \\(10^{th}\\) convergent is 1 + 4 + 5 + 7 = 17.
+> 
+> Find the sum of digits in the numerator of the \\(100^{th}\\) convergent of the continued fraction for e.
 
 **Алгоритм:**
+
+1. `getESequence(n: Int): IndexedSeq[Int]` - функция генерирует последовательность чисел цепных дробей, 
+   которая используется для вычисления числа Эйлера.
+2. `getEFractions(n: Int): (BigInt, BigInt)` - функция возвращает n-ю цепную дробь (с перевернутыми числителем и знаменателем).
+   Для получения n-й цепной дроби проходим последовательность `getESequence(n)` справа, получая следующую итерацию дроби
+   и переворачиваем её для следующей итерации.
 
 **Код:**
 
 ```dotty
+def getESequence(n: Int): IndexedSeq[Int] =
+   if n < 3 then IndexedSeq(2, 1).take(n)
+   else
+     val chain = (2 to n / 3).flatMap(i => IndexedSeq(1, 1, 2 * i))
+     IndexedSeq(2, 1, 2).take(n) ++ chain ++ (1 to n % 3).map(_ => 1)
 
+def getEFractions(n: Int): (BigInt, BigInt) =
+  getESequence(n).foldRight((BigInt(0), BigInt(1))) { case (i, (num, den)) =>
+    (den, i * den + num)
+  }
+
+def getSumOfNum(n: Int): BigInt =
+  val (_, num) = getEFractions(n)
+  num.toString.map(_.getNumericValue).sum
+
+getSumOfNum(10) // 17
 ```
-
 
 ## Задача №66
 
 [Задача №66 - Diophantine Equation](https://projecteuler.net/problem=66)
 
+> Consider quadratic Diophantine equations of the form: \\(x^2 - Dy^2 = 1\\)
+> 
+> For example, when D=13, the minimal solution in x is \\(649^2 - 13 \times 180^2 = 1\\).
+> 
+> It can be assumed that there are no solutions in positive integers when D is square.
+> 
+> By finding minimal solutions in x for D = {2, 3, 5, 6, 7}, we obtain the following:
+> 
+> - \\(3^2 - 2 \times 2^2 = 1\\)
+> - \\(2^2 - 3 \times 1^2 = 1\\)
+> - \\(9^2 - 5 \times 4^2 = 1\\)
+> - \\(5^2 - 6 \times 2^2 = 1\\)
+> - \\(8^2 - 7 \times 3^2 = 1\\)
+> 
+> Hence, by considering minimal solutions in x for \\(D \le 7\\), the largest x is obtained when D=5.
 >
+> Find the value of \\(D \le 1000\\) in minimal solutions of x for which the largest value of x is obtained.
 
 **Алгоритм:**
 
@@ -358,7 +426,6 @@ val count = (1 to 10000).count(n => getFraction(n) % 2 == 1)
 
 Алгоритм аналогичен решению 18-й задачи.
 
-
 ## Задача №68
 
 [Задача №68 - Magic 5-gon Ring](https://projecteuler.net/problem=68)
@@ -372,7 +439,6 @@ val count = (1 to 10000).count(n => getFraction(n) % 2 == 1)
 ```dotty
 
 ```
-
 
 ## Задача №69
 
@@ -527,7 +593,6 @@ val count = (1 to 10000).count(n => getFraction(n) % 2 == 1)
 ```dotty
 
 ```
-
 
 ## Задача №80
 

@@ -438,13 +438,12 @@ def totientArray(limit: Int): Array[Long] =
   phiArray(1) = 1
 
   val primesArray = primesNoMoreThanN(limit)
-  primesArray.foreach: p =>
-    phiArray(p) = p - 1
-  
-  (2 to limit / 2).foreach: n =>
-    val pLimit = limit / n
-    primesArray.withFilter(_ <= pLimit).foreach: p =>
+  for n <- 1 to limit / 2 do
+    var i = 0
+    while i < primesArray.length && n * primesArray(i) <= limit do
+      val p = primesArray(i)
       phiArray(n * p) = phiArray(n) * (if n % p == 0 then p else p - 1)
+      i += 1
 
   phiArray
 

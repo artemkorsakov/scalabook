@@ -675,71 +675,368 @@ getMax(10) // 6
 
 [Задача №70 - Totient Permutation](https://projecteuler.net/problem=70)
 
->
+> Euler's totient function, \\(\phi(n)\\) (sometimes called the phi function), is used to determine 
+> the number of positive numbers less than or equal to n which are relatively prime to n. 
+> For example, as 1, 2, 4, 5, 7, and 8, are all less than nine and relatively prime to nine, 
+> \\(\phi(9)=6\\).
+> 
+> The number 1 is considered to be relatively prime to every positive number, so \\(\phi(1)=1\\). 
+> 
+> Interestingly, \\(\phi(87109)=79180\\), and it can be seen that 87109 is a permutation of 79180.
+> 
+> Find the value of n, \\(1 \lt n \lt 10^7\\), for which \\(\phi(n)\\) is a permutation of n and 
+> the ratio \\(n/\phi(n)\\) produces a minimum.
 
 **Алгоритм:**
+
+Согласно [алгоритму расчета функции Эйлера](../../algorithms/algorithms/primes.md) 
+создается массив всех значений функции Эйлера менее 10 миллионов.
+Затем перебираются все варианты, удовлетворяющие условию задачи.
 
 **Код:**
 
 ```dotty
+def totientArray(limit: Int): Array[Long] =
+  val phiArray = new Array[Long](limit + 1)
+  phiArray(1) = 1
 
+  val primesArray = primesNoMoreThanN(limit)
+  for n <- 1 to limit / 2 do
+    var i = 0
+    while i < primesArray.length && n * primesArray(i) <= limit do
+      val p = primesArray(i)
+      phiArray(n * p) = phiArray(n) * (if n % p == 0 then p else p - 1)
+      i += 1
+
+  phiArray
+  
+def getMin(limit: Int): Int =
+  val totients = totientArray(limit)
+  (2 until limit).minBy: n =>
+    val phi = totients(n)
+    if phi.toString.sorted == n.toString.sorted then n.toDouble / phi
+    else Int.MaxValue
 ```
 
 ## Задача №71
 
 [Задача №71 - Ordered Fractions](https://projecteuler.net/problem=71)
 
->
+> Consider the fraction, \\(\dfrac n d\\), where n and d are positive integers. 
+> If \\(n \lt d\\) and \\(\operatorname{HCF}(n,d)=1\\), it is called a reduced proper fraction.
+> 
+> If we list the set of reduced proper fractions for \\(d \le 8\\) in ascending order of size, we get:
+> 
+> \\(\frac 1 8, \frac 1 7, \frac 1 6, \frac 1 5, \frac 1 4, \frac 2 7, \frac 1 3, \frac 3 8, \frac 2 5, \frac 3 7, \frac 1 2, \frac 4 7, \frac 3 5, \frac 5 8, \frac 2 3, \frac 5 7, \frac 3 4, \frac 4 5, \frac 5 6, \frac 6 7, \frac 7 8\\)
+> 
+> It can be seen that \\(\dfrac 2 5\\) is the fraction immediately to the left of \\(\dfrac 3 7\\).
+> 
+> By listing the set of reduced proper fractions for \\(d \le 1000000\\) in ascending order of size, 
+> find the numerator of the fraction immediately to the left of \\(\dfrac 3 7\\).
 
 **Алгоритм:**
+
+1. Допустим известен знаменатель дроби \\(d\_1\\). Чему равен числитель \\(n\_1\\)?
+   \\(\frac{n\_1}{d\_1} < \frac{3}{7} \Rightarrow n\_1 < \frac{3*d\_1}{7}\\)
+2. Остается перебрать все знаменатели от 2 до d.
 
 **Код:**
 
 ```dotty
+def getFractionByD(d: Int): Int =
+  val n = 3.0 * d / 7
+  if n.isWhole then n.toInt - 1 else n.toInt
 
+def getFraction(d: Int): (Int, Int) =
+  (2 to d).foldLeft((0, 1)) { case ((n1, d1), d2) =>
+    val n2 = getFractionByD(d2)
+    if n1 * d2 <= n2 * d1 then (n2, d2) else (n1, d1)
+  }
+
+getFraction(8) // (2, 5)
 ```
 
 ## Задача №72
 
 [Задача №72 - Counting Fractions](https://projecteuler.net/problem=72)
 
+> Consider the fraction, \\(\dfrac n d\\), where n and d are positive integers.
+> If \\(n \lt d\\) and \\(\operatorname{HCF}(n,d)=1\\), it is called a reduced proper fraction.
 >
+> If we list the set of reduced proper fractions for \\(d \le 8\\) in ascending order of size, we get:
+>
+> \\(\frac 1 8, \frac 1 7, \frac 1 6, \frac 1 5, \frac 1 4, \frac 2 7, \frac 1 3, \frac 3 8, \frac 2 5, \frac 3 7, \frac 1 2, \frac 4 7, \frac 3 5, \frac 5 8, \frac 2 3, \frac 5 7, \frac 3 4, \frac 4 5, \frac 5 6, \frac 6 7, \frac 7 8\\)
+>
+> It can be seen that there are 21 elements in this set.
+> 
+> How many elements would be contained in the set of reduced proper fractions for \\(d \le 1000000\\)?
 
 **Алгоритм:**
+
+Достаточно подсчитать функцию Эйлера для каждого числа от 2 до миллиона и сложить все вместе.
 
 **Код:**
 
 ```dotty
+def getCount(d: Int): Long =
+  val totients = totientArray(d) // Из Problem 70
+  totients.sum - totients(1)
 
+getCount(8) // 21
 ```
 
 ## Задача №73
 
 [Задача №73 - Counting Fractions in a Range](https://projecteuler.net/problem=73)
 
+> Consider the fraction, \\(\dfrac n d\\), where n and d are positive integers.
+> If \\(n \lt d\\) and \\(\operatorname{HCF}(n,d)=1\\), it is called a reduced proper fraction.
 >
+> If we list the set of reduced proper fractions for \\(d \le 8\\) in ascending order of size, we get:
+>
+> \\(\frac 1 8, \frac 1 7, \frac 1 6, \frac 1 5, \frac 1 4, \frac 2 7, \frac 1 3, \frac 3 8, \frac 2 5, \frac 3 7, \frac 1 2, \frac 4 7, \frac 3 5, \frac 5 8, \frac 2 3, \frac 5 7, \frac 3 4, \frac 4 5, \frac 5 6, \frac 6 7, \frac 7 8\\)
+>
+> It can be seen that there are 3 fractions between \\(\dfrac 1 3\\) and \\(\dfrac 1 2\\).
+> 
+> How many fractions lie between \\(\dfrac 1 3\\) and \\(\dfrac 1 2\\) in the sorted set of reduced proper fractions 
+> for \\(d \le 12000\\)?
 
 **Алгоритм:**
+
+Необходимо найти для всех знаменателей (d) от 5 до лимита, количество числителей (n), взаимно простых с d, 
+таких что \\(\frac d 3 < n < \frac d 2\\). 
 
 **Код:**
 
 ```dotty
+@tailrec
+def gcd(a: Long, b: Long): Long =
+  if b == 0 then a else gcd(b, a % b)
 
+def getCountForD(d: Int): Int =
+  val start = (d / 3.0).toInt + 1
+  val finish0 = d / 2.0
+  val finish = if finish0.isWhole then finish0.toInt - 1 else finish0.toInt
+  (start to finish).count(n => gcd(n, d) == 1)
+
+def getCount(limit: Int): Long = (5 to limit).map(getCountForD).sum
+
+getCount(8) // 3
 ```
 
 ## Задача №74
 
 [Задача №74 - Digit Factorial Chains](https://projecteuler.net/problem=74)
 
+> The number 145 is well known for the property that the sum of the factorial of its digits is equal to 145:
+> 1! + 4! + 5! = 1 + 24 + 120 = 145.
+> 
+> Perhaps less well known is 169, in that it produces the longest chain of numbers that link back to 169; 
+> it turns out that there are only three such loops that exist:
+> 
+> - \\(169 \to 363601 \to 1454 \to 169\\)
+> - \\(871 \to 45361 \to 871\\)
+> - \\(872 \to 45362 \to 872\\)
 >
+> It is not difficult to prove that EVERY starting number will eventually get stuck in a loop. 
+> For example,
+>
+> - \\(69 \to 363600 \to 1454 \to 169 \to 363601 (\to 1454)\\)
+> - \\(78 \to 45360 \to 871 \to 45361 (\to 871)\\)
+> - \\(540 \to 145 (\to 145)\\)
+>
+> Starting with 69 produces a chain of five non-repeating terms, 
+> but the longest non-repeating chain with a starting number below one million is sixty terms.
+> 
+> How many chains, with a starting number below one million, contain exactly sixty non-repeating terms?
 
 **Алгоритм:**
+
+Подсчет "цепочки" для одного числа большой проблемы не доставляет. 
+Но в случае миллиона чисел грубый подсчет не подойдет, т.к. он многократно увеличивает необходимость
+считать "цепочку" для одного и того же числа. Например, для чисел 69, 363600 и 1454 придется три раза вычислять цепочку
+для 1454. Поэтому необходимо сохранять в памяти подсчитанные значения для последующего переиспользования.
+
+Это можно сделать с помощью [Функционального состояния](../../fp/state.md).
+
+Для начала определим функцию, подсчитывающую сумму факториалов цифр заданного числа:
+
+- запомним факториалы всех цифр в коллекции `factorials`
 
 **Код:**
 
 ```dotty
-
+val factorials = (0 to 9).map(i => (2 to i).product)
+@tailrec
+def getDigitFactorials(n: Int, acc: Int = 0): Int =
+  val newAcc = acc + factorials(n % 10)
+  if n < 10 then newAcc
+  else getDigitFactorials(n / 10, newAcc)
+  
+getDigitFactorials(145) // 145  
 ```
+
+Определим тип `Memory` для хранения значений длины "цепочки" для заданных чисел.
+И `MemoryState` - как вычисление нового состояния по переданному числу, для которого необходимо вычистить длину цепочки.
+
+```dotty
+opaque type Memory = Map[Int, Int]
+private val initialMemory: Memory = Map.empty[Int, Int]
+
+opaque type MemoryState = Memory => (Int, Memory)
+```
+
+Опередим саму "цепочку" `Chain` как цепочку чисел, имеющих начальное значение, текущее, а также всю цепочку.
+Например, цепочка `(145)` будет задаваться как `Chain(145, 145, List(145))` - цепочка длины 1 с начальным и конечным
+значением равным 145. При этом конструктор сделаем приватным, чтобы цепочку можно было создавать только по
+начальному значению. Это гарантирует, что цепочка в любой момент времени не пустая,
+т.к. создать её можно только по начальному значению и изменять её можно только добавляя звенья цепи.
+
+```dotty
+final case class Chain private (initial: Int, current: Int, links: List[Int]):
+  def add(number: Int): Chain =
+    Chain(initial, number, number :: links)
+
+object Chain:
+  def apply(initial: Int): Chain =
+    Chain(initial, initial, List(initial))
+```
+
+Определим метод `getChainLoop`, который для заданной цепочки обновляет состояние памяти:
+
+Если для текущего звена цепи в памяти уже сохранено значение, например, для цепи \\(69 \to 363600 \to 1454\\)
+в памяти нашлось значение для 1454, то значит, мы наткнулись на ранее подсчитанный цикл,
+в который не входит "хвост" цепи (69 и 363600) 
+(иначе значения из хвоста были бы внутри цикла и тоже были бы сохранены в памяти).
+Это означает, что необходимо добавить "хвост" цепи в память: 
+для каждого следующего числа из хвоста значение длины цепи будет на 1 больше предыдущего значения.
+Обновленную память и значение для первого звена цепи возвращаем в качестве обновленного состояния.
+
+```dotty
+final case class Chain private (initial: Int, current: Int, links: List[Int]):
+  ...
+
+  def addTailToMemory(count: Int): MemoryState = memory =>
+    val updatedMemory =
+      links.zipWithIndex.tail.foldLeft(memory) {
+        case (acc, (item, index)) =>
+          acc + (item -> (count + index))
+      }
+    (updatedMemory(initial), updatedMemory)
+end Chain   
+```
+
+```dotty
+def getChainLoop(chain: Chain): MemoryState = memory =>
+  if memory.contains(chain.current) then
+    val count = memory(chain.current)
+    chain.addTailToMemory(count)(memory)
+  else
+    ???
+```
+
+Если значения длины цепочки для текущего звена не найдено, то вычисляем следующее звено цепи - `next`.
+Если `next` - новое звено цепи и его нет в текущей цепочке, то значит, до цикла мы ещё не добрались,
+поэтому вызываем `getChainLoop` для новой цепочки с добавленным звеном `next`.
+
+```dotty
+def getChainLoop(chain: Chain): MemoryState = memory =>
+  if memory.contains(chain.current) then
+    ...
+  else
+    val next = getDigitFactorials(chain.current)
+    val idx = chain.links.indexOf(next)
+    if idx == -1 then getChainLoop(chain.add(next))(memory)
+    else ???
+```
+
+Если же следующего звено уже есть в цепочке, то мы наткнулись на цикл, который ещё не сохранен в памяти.
+Необходимо этот цикл рассчитать и обновить в памяти.
+
+Например, цепочка \\(69 \to 363600 \to 1454 \to 169 \to 363601\\) приводит к следующему элементу 1454,
+который уже есть в цепи.
+
+- Если следующий элемент найден по индексу `idx`, то это означает, что первые `idx + 1` звеньев цепи составляют цикл,
+  а последующий звенья цепи лишь приводят к этому циклу.
+- Для звеньев цепи из цикла длина "цепи" равна длине цикла, т.е. `idx + 1`.
+- Для последующих звеньев - на 1 больше, чем длина цепи предыдущего звена.
+
+```dotty
+final case class Chain private (initial: Int, current: Int, links: List[Int]):
+  ...
+
+  def addAllChainToMemory(cycleIndex: Int): MemoryState = memory =>
+    val updatedMemory =
+      links.zipWithIndex.foldLeft(memory) {
+        case (acc, (item, index)) =>
+          val count = math.max(cycleIndex, index)
+          acc + (item -> (count + 1))
+      }
+
+    (updatedMemory(initial), updatedMemory)
+end Chain
+```
+
+Итого, `getChainLoop` примет вид:
+
+```dotty
+def getChainLoop(chain: Chain): MemoryState = memory =>
+  if memory.contains(chain.current) then
+    val count = memory(chain.current)
+    chain.addTailToMemory(count)(memory)
+  else
+    val next = getDigitFactorials(chain.current)
+    val idx  = chain.links.indexOf(next)
+    if idx == -1 then getChainLoop(chain.add(next))(memory)
+    else chain.addAllChainToMemory(idx)(memory)
+```
+
+Для отдельно заданного значения длину цепи можно подсчитать так:
+
+```dotty
+def getChain(n: Int): Int =
+  getChainLoop(Chain(n))(initialMemory)._1
+```
+
+Но этот способ не использует накопленные знания в памяти, получая на входе пустую память. Он неэффективен.
+
+Создадим метод `getMemoryState` для получения `MemoryState` по заданному числу, 
+для которого рассчитывается длина цепи с использованием памяти.
+
+```dotty
+opaque type MemoryState = Memory => (Int, Memory)
+
+object MemoryState:
+  extension (underlying: MemoryState)
+    def run(s: Memory): (Int, Memory) = underlying(s)
+    
+def getMemoryState(n: Int): MemoryState =
+  getChainLoop(Chain(n))  
+  
+val (count, memory) = getMemoryState(169).run(initialMemory)
+// (3, Map(1454 -> 3, 363601 -> 3, 169 -> 3))  
+
+val (count1, memory1) = getMemoryState(363600).run(memory)
+// (3, Map(1454 -> 3, 363601 -> 3, 169 -> 3, 363600 -> 4))   
+```
+
+В результате подсчет количества чисел, для которых длина цепочки равна 60, с использованием памяти 
+для сохранения уже посчитанных значений и с использованием методов функционального программирования выглядит так:
+
+```dotty
+val limit = 1_000_000
+val (_, result) =
+  (1 until limit)
+    .foldLeft((initialMemory, 0)) { case ((memory, acc), i) =>
+      val (count, newMemory) = getMemoryState(i).run(memory)
+      val newAcc             = if count == 60 then acc + 1 else acc
+      (newMemory, newAcc)
+    }
+    
+result // Ответ по задаче
+```
+
+Подсчет для миллиона чисел выполняется за 2 секунды.
 
 ## Задача №75
 

@@ -1042,84 +1042,315 @@ result // Ответ по задаче
 
 [Задача №75 - Singular Integer Right Triangles](https://projecteuler.net/problem=75)
 
+> It turns out that \\(12 cm\\) is the smallest length of wire that can be bent to form an integer sided 
+> right angle triangle in exactly one way, but there are many more examples.
+> 
+> - \\(12 cm\\): \\((3,4,5)\\)
+> - \\(24 cm\\): \\((6,8,10)\\)
+> - \\(30 cm\\): \\((5,12,13)\\)
+> - \\(36 cm\\): \\((9,12,15)\\)
+> - \\(40 cm\\): \\((8,15,17)\\)
+> - \\(48 cm\\): \\((12,16,20)\\)
+> 
+> In contrast, some lengths of wire, like \\(20 cm\\), cannot be bent to form an integer sided right angle triangle, 
+> and other lengths allow more than one solution to be found; 
+> for example, using \\(120 cm\\) it is possible to form exactly three different integer sided right angle triangles.
+> \\(120 cm\\): \\((30,40,50)\\), \\((20,48,52)\\), \\((24,45,51)\\)
 >
+> Given that **L** is the length of the wire, for how many values of \\(L \le 1500000\\) can exactly one integer 
+> sided right angle triangle be formed?
 
 **Алгоритм:**
+
+Нахождение пифагоровых троек с заданной суммой [описано в соответствующем разделе](../../algorithms/algorithms/fibonacci.md).
 
 **Код:**
 
 ```dotty
+@tailrec
+def gcd(a: Long, b: Long): Long =
+  if b == 0 then a else gcd(b, a % b)
 
+def isExactlyOneWay(sum: Long): Boolean =
+  val s2     = sum / 2
+  val sqrt   = math.sqrt(s2.toDouble).toLong
+  val mLimit = if sqrt * sqrt == s2 then sqrt - 1 else sqrt
+
+  @tailrec
+  def loop(m: Long, count: Int): Int =
+    if m > mLimit || count > 1 then count
+    else if s2 % m == 0 then
+      var sm = s2 / m
+      while sm % 2 == 0 do sm /= 2
+      val startK = if m % 2 == 1 then m + 2 else m + 1
+      val endK   = math.min(2 * m, sm + 1)
+      val ncount =
+        (startK until endK by 2).count(k => sm % k == 0 && gcd(k, m) == 1)
+      loop(m + 1, count + ncount)
+    else loop(m + 1, count)
+
+  loop(m = 2L, count = 0) == 1
+
+end isExactlyOneWay
+
+val count = (2 to 1500000 by 2).count(l => isExactlyOneWay(l))
 ```
 
 ## Задача №76
 
 [Задача №76 - Counting Summations](https://projecteuler.net/problem=76)
 
+> It is possible to write five as a sum in exactly six different ways:
 >
+> - 4 + 1
+> - 3 + 2
+> - 3 + 1 + 1
+> - 2 + 2 + 1
+> - 2 + 1 + 1 + 1
+> - 1 + 1 + 1 + 1 + 1
+>
+> How many different ways can one hundred be written as a sum of at least two positive integers?
 
 **Алгоритм:**
+
+Это [классическая задача о нахождении количества партиций](../../algorithms/algorithms/permutation.md) -
+количество способов записи n в виде суммы натуральных чисел.
+Единственное изменение - не подходит случай записи числа в виде суммы из одного элемента - себя самого.
+Поэтому итоговый ответ - число партиций минус 1.
 
 **Код:**
 
 ```dotty
+def partition(number: Int): BigInt =
+  val array = new Array[BigInt](number + 1)
+  array(0) = BigInt(1)
+  if number >= 1 then array(1) = BigInt(1)
+  if number >= 2 then array(2) = BigInt(2)
 
+  def partitionPart(s: Int, n: Int, pS: BigInt): BigInt =
+    var k  = s
+    var op = k * (3 * k - 1) / 2
+    var p  = pS
+    while op <= n do
+      if (k + 1) % 2 == 0 then
+        p += array(n - op)
+      else
+        p -= array(n - op)
+      k += s
+      op = k * (3 * k - 1) / 2
+    p
+
+  for n <- 3 to number do
+    val p = partitionPart(1, n, BigInt(0))
+    array(n) = partitionPart(-1, n, p)
+  array(number)
+end partition
+
+def optionsToGetSumAsASumOfAtLeastTwoPositiveNumbers(sum: Int): BigInt =
+  partition(sum) - 1
+
+optionsToGetSumAsASumOfAtLeastTwoPositiveNumbers(5) // 6
 ```
 
 ## Задача №77
 
 [Задача №77 - Prime Summations](https://projecteuler.net/problem=77)
 
+> It is possible to write ten as the sum of primes in exactly five different ways:
+> 
+> - 7 + 3
+> - 5 + 5
+> - 5 + 3 + 2
+> - 3 + 3 + 2 + 2
+> - 2 + 2 + 2 + 2 + 2
 >
+> What is the first value which can be written as the sum of primes in over five thousand different ways?
 
 **Алгоритм:**
+
+- Составим "достаточно большой" список простых чисел (достаточно взять все простые числа меньше 100)
+- Дальше - классическая задачка о том, сколькими способами можно собрать заданную сумму исходя из 
+  заданного набор монет - эта задача обсуждается в Problem 31
+- Найти первое число, которое можно собрать более чем 5000 способами
 
 **Код:**
 
 ```dotty
+def primesNoMoreThanN(n: Int): Array[Int] = ... // Из Problem 27
 
+lazy val primes = primesNoMoreThanN(100)
+
+def countWays(coins: Array[Int], sum: Int): Long = ... // Из Problem 31
+
+countWays(primes, 10) // 5
+
+val count = LazyList
+  .from(1)
+  .find(i => countWays(primes, i) >= 5000)
+  .getOrElse(-1)
 ```
 
 ## Задача №78
 
 [Задача №78 - Coin Partitions](https://projecteuler.net/problem=78)
 
+> Let p(n) represent the number of different ways in which n coins can be separated into piles. 
+> For example, five coins can be separated into piles in exactly seven different ways, so p(5)=7.
 >
+> - OOOOO
+> - OOOO   O
+> - OOO   OO
+> - OOO   O   O
+> - OO   OO   O
+> - OO   O   O   O
+> - O   O   O   O   O
+>
+> Find the least value of $n$ for which p(n) is divisible by one million.
 
 **Алгоритм:**
+
+Как и в Problem 76 - это [классическая задача о нахождении количества партиций](../../algorithms/algorithms/permutation.md) -
+количество способов записи n в виде суммы натуральных чисел.
+
+В данном случае необходимо составить "достаточно большой" массив значений партиций (100000 достаточно).
+А затем найти в массиве первый индекс, значение по которому делится на миллион.
 
 **Код:**
 
 ```dotty
+def partitionArray(number: Int): Array[BigInt] =
+  val array = new Array[BigInt](number + 1)
+  array(0) = BigInt(1)
+  array(1) = BigInt(1)
+  array(2) = BigInt(2)
 
+  def partitionPart(s: Int, n: Int, pS: BigInt): BigInt =
+    var k  = s
+    var op = k * (3 * k - 1) / 2
+    var p  = pS
+    while op <= n do
+      if (k + 1) % 2 == 0 then
+        p += array(n - op)
+      else
+        p -= array(n - op)
+      k += s
+      op = k * (3 * k - 1) / 2
+    p
+
+  for n <- 3 to number do
+    val p = partitionPart(1, n, BigInt(0))
+    array(n) = partitionPart(-1, n, p)
+  array
+end partitionArray
+
+def findFirst(n: Int): Option[Int] =
+  val arr = partitionArray(n)
+  arr.indices.find(i => arr(i) % 1000000 == 0)
 ```
 
 ## Задача №79
 
 [Задача №79 - Passcode Derivation](https://projecteuler.net/problem=79)
 
+> A common security method used for online banking is to ask the user for three random characters from a passcode. 
+> For example, if the passcode was 531278, they may ask for the 2nd, 3rd, and 5th characters; 
+> the expected reply would be: 317.
+> 
+> The text file, keylog.txt, contains fifty successful login attempts.
 >
+> Given that the three characters are always asked for in order, analyse the file so as to determine 
+> the shortest possible secret passcode of unknown length.
 
 **Алгоритм:**
+
+1. `getRestNumbers` - функция, принимающая на вход последовательность строк `numbers` и символ `digit`. 
+   Возвращает новую последовательность строк, в которой каждая строка начинается с символа `digit`, 
+   если она уже начинается с этого символа, иначе она остается неизменной. 
+   Затем фильтрует эту последовательность, удаляя пустые строки и 
+   строки, которые являются подстроками других строк в последовательности.
+
+2. `getMinCode` - функция, реализующая алгоритм для нахождения минимальной последовательности цифр,
+   в которую "входит" каждое число из `numbers` ("входит" означает, что присутствуют все цифры из числа в том же порядке,
+   но, возможно, со вставками других чисел: например, 680 входит в 61890 (цифры на 1, 3, 5 местах)). 
+   Если длина последовательности меньше или равна 1, то возвращается первый элемент последовательности 
+   или пустая строка, если последовательность пуста. 
+   Если во всех числах цифры разные, то возвращается объединение чисел - не имеет значения, в каком порядке объединять,
+   т.к. более короткий вариант получить не удастся - решение должно содержать все цифры.
+   Если все символы в кандидате уникальны, то он и является минимальным кодом. 
+   В противном случае функция находит все уникальные первые символы в строках и для каждого из них формирует 
+   "оставшиеся" числа (`getRestNumbers`), и рекурсивно вызывает `getMinCode` для этих чисел. 
+   Результаты этих вызовов объединяются с первым символом, и функция возвращает строку с минимальной длиной.
 
 **Код:**
 
 ```dotty
+def getRestNumbers(numbers: Seq[String], digit: Char): Seq[String] =
+  val restNumbers = numbers.map: number =>
+    if number.head == digit then number.tail else number
 
+  restNumbers.filterNot: number =>
+    number.isEmpty ||
+      restNumbers.exists: restNumber =>
+        restNumber != number && restNumber.contains(number)
+  .distinct
+
+def getMinCode(numbers: Seq[String]): String =
+  if numbers.length <= 1 then
+    numbers.headOption.getOrElse("")
+  else
+    val candidate = numbers.mkString
+    if candidate.distinct.length == candidate.length then candidate
+    else
+      val firstDigits = numbers.map(_(0)).distinct
+      firstDigits
+        .map: digit =>
+          val restNumbers = getRestNumbers(numbers, digit)
+          s"$digit${getMinCode(restNumbers)}"
+        .minBy(_.length)
+
+getMinCode(Seq("680", "180", "690")) 
+// "61890"
+
+getMinCode(Seq("319", "680", "180", "690", "129", "620", "762")) 
+// "31768290"
 ```
 
 ## Задача №80
 
 [Задача №80 - Square Root Digital Expansion](https://projecteuler.net/problem=80)
 
->
+> It is well known that if the square root of a natural number is not an integer, then it is irrational. 
+> The decimal expansion of such square roots is infinite without any repeating pattern at all.
+> 
+> The square root of two is 1.41421356237309504880..., and the digital sum of the first one hundred decimal digits is 475.
+> 
+> For the first one hundred natural numbers, find the total of the digital sums of the first one hundred decimal digits 
+> for all the irrational square roots.
 
 **Алгоритм:**
+
+Алгоритм вычисления квадратного корня [методом Ньютона описан в соответствующем разделе](../../algorithms/algorithms/numerical.md).
 
 **Код:**
 
 ```dotty
+def sqrt(n: BigInt): BigInt =
+  var a = BigInt(1)
+  var b = (n >> 5) + BigInt(8)
+  while b >= a
+  do
+    val mid = (a + b) >> 1
+    if mid * mid > n then b = mid - 1 else a = mid + 1
+  a - 1
 
+def getFirst100Sum(n: Int): Int =
+  val s = math.sqrt(n)
+  if s.isWhole then 0
+  else
+    val sbi = sqrt(BigInt(n) * BigInt(10).pow(10000))
+    sbi.toString.take(100).map(_.getNumericValue).sum
+
+getFirst100Sum(2) // 475
 ```
 
 ---

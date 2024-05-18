@@ -8,6 +8,7 @@
 |-----------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
 | [Programming Scala, 3rd Edition by Dean Wampler](https://deanwampler.github.io/books/programmingscala.html)                                               | Scala 3 |  En  | 2021 |             |
 | [Refinement types for Scala](https://github.com/fthomas/refined)                                                                                          | Scala 3 |  En  |      | Refined     |
+| [Functional and Reactive Domain Modeling by Debasish Ghosh](https://www.manning.com/books/functional-and-reactive-domain-modeling)                        | Scala 2 |  En  | 2016 |             |
 | [Hands-on Scala Programming by Li Haoyi](https://www.handsonscala.com/)                                                                                   | Scala 2 |  En  | 2020 |             |
 | [Pure functional HTTP APIs in Scala by Jens Grassel](https://leanpub.com/pfhais)                                                                          | Scala 2 |  En  | 2022 |             |
 | [Scala & Design Patterns: Exploring Language Expressivity by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf) | Scala 2 |  En  | 2009 |             |

@@ -153,6 +153,7 @@ def compose[A, B, C](f: B => C, g: A => B): A => C =
 
 **Ссылки:**
 
+- [Харрисон - Введение в функциональное программирование](https://nsu.ru/xmlui/bitstream/handle/nsu/8874/Harrison.pdf?sequence=1)
 - [A bite of functional programming (in Scala)](https://scalac.io/blog/functional-programming-in-scala/)
 - [Business benefits of functional programming and how to make it work for your company](https://www.youtube.com/watch?v=EcGZdzECmIk)
 - [FP vs. OO List Processing](https://blog.cleancoder.com/uncle-bob/2018/12/17/FPvsOO-List-processing.html)

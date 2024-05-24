@@ -58,6 +58,7 @@ Project Euler – великолепный ресурс для тех, кто х
 
 - [Project Euler site][euler]
 - [Project Euler chat][euler_chat]
+- [Проект Эйлера на русском](https://euler.jakumo.org/problems.html)
 
 [euler]: https://projecteuler.net
 [euler_chat]: https://projecteuler.chat

@@ -4,14 +4,14 @@
 
 [Задача №21 - Amicable Numbers](https://projecteuler.net/problem=21)
 
-> Let \\(d(n)\\) be defined as the sum of proper divisors of n (numbers less than n which divide evenly into n).
-> If \\(d(a) = b\\) and \\(d(b) = a\\), where \\(a \neq b\\), then a and b are an amicable pair 
-> and each of a and b are called amicable numbers.
+> Пусть \\(d(n)\\) определяется как сумма делителей n (числа меньше n, делящие n нацело).
+> Если \\(d(a) = b\\) и \\(d(b) = a\\), где \\(a \neq b\\), то a и b называются дружественной парой, 
+> а каждое из чисел a и b - дружественным числом.
 >
-> For example, the proper divisors of 220 are 1, 2, 4, 5, 10, 11, 20, 22, 44, 55 and 110; therefore \\(d(220) = 284\\). 
-> The proper divisors of 284 are 1, 2, 4, 71 and 142; so \\(d(284) = 220\\).
+> Например, делителями числа 220 являются 1, 2, 4, 5, 10, 11, 20, 22, 44, 55 и 110, поэтому \\(d(220) = 284\\).
+> Делители 284 - 1, 2, 4, 71, 142, поэтому \\(d(284) = 220\\).
 > 
-> Evaluate the sum of all the amicable numbers under 10000.
+> Подсчитайте сумму всех дружественных чисел меньше 10000.
 
 **Алгоритм:**
 
@@ -52,14 +52,15 @@ val amicableNumbers =
 
 **Задача:**
 
-> Using names.txt, a 46K text file containing over five-thousand first names, begin by sorting it into alphabetical order. 
-> Then working out the alphabetical value for each name, multiply this value by its alphabetical position 
-> in the list to obtain a name score.
-> 
-> For example, when the list is sorted into alphabetical order, COLIN, which is worth 3 + 15 + 12 + 9 + 14 = 53, 
-> is the 938th name in the list. So, COLIN would obtain a score of \\(938 \times 53 = 49714\\).
+> Используйте names.txt, текстовый файл размером 46 КБ, содержащий более пяти тысяч имен. 
+> Начните с сортировки в алфавитном порядке. 
+> Затем подсчитайте алфавитные значения каждого имени и умножьте это значение на порядковый номер имени 
+> в отсортированном списке для получения количества очков имени.
 >
-> What is the total of all the name scores in the file?
+> Например, если список отсортирован по алфавиту, имя COLIN (алфавитное значение которого 3 + 15 + 12 + 9 + 14 = 53) 
+> является 938-м в списке. Поэтому, имя COLIN получает \\(938 \times 53 = 49714\\) очков.
+>
+> Какова сумма очков имен в файле?
 
 **Алгоритм:**
 
@@ -95,21 +96,20 @@ val count = names.indices.map: i =>
 
 [Задача №23 - Non-Abundant Sums](https://projecteuler.net/problem=23)
 
-> A perfect number is a number for which the sum of its proper divisors is exactly equal to the number. 
-> For example, the sum of the proper divisors of 28 would be 1 + 2 + 4 + 7 + 14 = 28, 
-> which means that 28 is a perfect number.
+> Совершенным числом называется число, у которого сумма его делителей равна самому числу. 
+> Например, сумма делителей числа 28 равна 1 + 2 + 4 + 7 + 14 = 28, что означает, что число 28 является совершенным числом.
 > 
-> A number n is called deficient if the sum of its proper divisors is less than n 
-> and it is called abundant if this sum exceeds n.
-> 
-> As 12 is the smallest abundant number, 1 + 2 + 3 + 4 + 6 = 16, 
-> the smallest number that can be written as the sum of two abundant numbers is 24. 
-> By mathematical analysis, it can be shown that all integers greater than 28123 can be written as 
-> the sum of two abundant numbers. However, this upper limit cannot be reduced any further by analysis 
-> even though it is known that the greatest number that cannot be expressed as the sum of 
-> two abundant numbers is less than this limit.
-> 
-> Find the sum of all the positive integers which cannot be written as the sum of two abundant numbers.
+> Число n называется недостаточным, если сумма его делителей меньше n, 
+> и называется избыточным, если сумма его делителей больше n.
+>
+> Так как число 12 является наименьшим избыточным числом (1 + 2 + 3 + 4 + 6 = 16), 
+> наименьшее число, которое может быть записано как сумма двух избыточных чисел, равно 24. 
+> Используя математический анализ, можно показать, что все целые числа больше 28123 могут быть записаны 
+> как сумма двух избыточных чисел. Эта граница не может быть уменьшена дальнейшим анализом, 
+> даже несмотря на то, что наибольшее число, которое не может быть записано как сумма двух избыточных чисел, 
+> меньше этой границы.
+>
+> Найдите сумму всех положительных чисел, которые не могут быть записаны как сумма двух избыточных чисел.
 
 **Алгоритм:**
 
@@ -159,14 +159,14 @@ val sum =
 
 [Задача №24 - Lexicographic Permutations](https://projecteuler.net/problem=24)
 
-> A permutation is an ordered arrangement of objects. 
-> For example, 3124 is one possible permutation of the digits 1, 2, 3 and 4. 
-> If all of the permutations are listed numerically or alphabetically, we call it lexicographic order. 
-> The lexicographic permutations of 0, 1 and 2 are:
-> 
+> Перестановка - это упорядоченная выборка объектов. 
+> К примеру, 3124 является одной из возможных перестановок из цифр 1, 2, 3 и 4. 
+> Если все перестановки приведены в порядке возрастания или алфавитном порядке, 
+> то такой порядок будем называть словарным. Словарные перестановки из цифр 0, 1 и 2 представлены ниже:
+>
 > 012   021   102   120   201   210
-> 
-> What is the millionth lexicographic permutation of the digits 0, 1, 2, 3, 4, 5, 6, 7, 8 and 9?
+>
+> Какова миллионная словарная перестановка из цифр 0, 1, 2, 3, 4, 5, 6, 7, 8 и 9?
 
 **Алгоритм:**
 
@@ -219,14 +219,15 @@ getIPermutation(6, List(0, 1, 2)) // 210
 
 [Задача №25 - 1000-digit Fibonacci Number](https://projecteuler.net/problem=25)
 
-> The Fibonacci sequence is defined by the recurrence relation:
-> \\(F\_{n} = F\_{n-1} + F\_{n-2}\\), where \\(F\_{1} = 1\\) and \\(F\_{2} = 1\\).
-> Hence the first  terms will be:
+> Последовательность Фибоначчи определяется рекурсивным правилом:
+> \\(F\_{n} = F\_{n-1} + F\_{n-2}\\), где \\(F\_{1} = 1\\) и \\(F\_{2} = 1\\).
+> 
+> Таким образом, первые 12 членов последовательности равны:
 > \\(F\_{1} = 1, F\_{2} = 1, F\_{3} = 2, F\_{4} = 3, F\_{5} = 5, F\_{6} = 8, F\_{7} = 13, F\_{8} = 21, F\_{9} = 34, F\_{10} = 55, F\_{11} = 89, F\_{12} = 144\\)
 > 
-> The 12th term, \\(F\_{12}\\), is the first term to contain three digits. 
+> Двенадцатый член \\(F\_{12}\\) - первый член последовательности, который содержит три цифры.
 > 
-> What is the index of the first term in the Fibonacci sequence to contain 1000 digits?
+> Каков порядковый номер первого члена последовательности Фибоначчи, содержащего 1000 цифр?
 
 **Алгоритм:**
 
@@ -254,15 +255,16 @@ val count: Int =
 
 [Задача №26 - Reciprocal Cycles](https://projecteuler.net/problem=26)
 
-> A unit fraction contains 1 in the numerator. 
-> The decimal representation of the unit fractions with denominators 2 to n are given:
+> Единичная дробь имеет 1 в числителе. 
+> Десятичные представления единичных дробей со знаменателями от 2 до 10 даны ниже:
 > 
 > 1/2 = 0.5; 1/3 = 0.(3); 1/4 = 0.25; 1/5 = 0.2; 1/6 = 0.1(6); 1/7 = 0.(142857); 1/8 = 0.125; 1/9 = 0.(1); 1/10 = 0.1
 > 
-> Where 0.1(6) means 0.16666..., and has a 1-digit recurring cycle. It can be seen that \\(\frac{1}{7}\\) 
-> has a 6-digit recurring cycle.
+> Где 0.1(6) значит 0.166666..., и имеет повторяющуюся последовательность из одной цифры. 
+> Заметим, что \\(\frac{1}{7}\\) имеет повторяющуюся последовательность из 6 цифр.
 > 
-> Find the value of d < 1000 for which \\(\frac{1}{d}\\) contains the longest recurring cycle in its decimal fraction part.
+> Найдите значение d < 1000, для которого \\(\frac{1}{d}\\) в десятичном виде содержит самую длинную 
+> повторяющуюся последовательность цифр.
 
 **Алгоритм:**
 
@@ -333,22 +335,25 @@ def getRecurringCycleLength(d: Int): Int =
 
 [Задача №27 - Quadratic Primes](https://projecteuler.net/problem=27)
 
-> Euler discovered the remarkable quadratic formula: \\(n^{2} + n + 41\\).
+> Эйлер опубликовал свою замечательную квадратичную формулу: \\(n^{2} + n + 41\\).
 >
-> It turns out that the formula will produce 40 primes for the consecutive integer values \\(0 \leq n \leq 39\\). 
-> However, when n = 40, \\(40^{2} + 40 + 41 = 40(40 + 1) + 41\\) is divisible by 41, 
-> and certainly when \\(n = 41, 41^{2} + 41 + 41\\) is clearly divisible by 41.
+> Оказалось, что согласно данной формуле можно получить 40 простых чисел, последовательно подставляя значения \\(0 \leq n \leq 39\\). 
+> Однако, при n=40, \\(40^{2} + 40 + 41 = 40(40 + 1) + 41\\) делится на 41 без остатка, и, очевидно, 
+> при \\(n = 41, 41^{2} + 41 + 41\\) делится на 41 без остатка.
+>
+> При помощи компьютеров была найдена невероятная формула \\(n^{2} - 79n + 1601\\), 
+> согласно которой можно получить 80 простых чисел для последовательных значений \\(0 \leq n \leq 79\\). 
+> Произведение коэффициентов −79 и 1601 равно −126479.
+>
+> Рассмотрим квадратичную формулу вида:
+> \\(n^{2} + an + b\\), где \\(|a| < 1000\\) и \\(|b| \leq 1000\\).
+>
+> где |n| является модулем (абсолютным значением) n.
+> К примеру, |11|=11 и |−4|=4.
 > 
-> The incredible formula \\(n^{2} - 79n + 1601\\) was discovered, 
-> which produces 80 primes for the consecutive values \\(0 \leq n \leq 79\\). 
-> The product of the coefficients, -79 and 1601, is -126479.
-> 
-> Considering quadratics of the form:
-> \\(n^{2} + an + b\\), where \\(|a| < 1000\\) and \\(|b| \leq 1000\\).
-> where |n| is the modulus/absolute value of n
-> e.g. |11| = 11 and |-4| = 4
-> Find the product of the coefficients, a and b, for the quadratic expression that produces 
-> the maximum number of primes for consecutive values of n, starting with 0.
+> Найдите произведение коэффициентов a и b квадратичного выражения, 
+> согласно которому можно получить максимальное количество простых чисел для последовательных значений n, 
+> начиная со значения n = 0.
 
 **Алгоритм:**
 
@@ -417,7 +422,7 @@ def abWithMaxCountOfPrimes: (Int, Int) =
 
 [Задача №28 - Number Spiral Diagonals](https://projecteuler.net/problem=28)
 
-> Starting with the number 1 and moving to the right in a clockwise direction a 5 by 5 spiral is formed as follows:
+> Начиная с числа 1 и двигаясь дальше вправо по часовой стрелке, образуется следующая спираль 5 на 5:
 > 
 > 21 22 23 24 25
 > 
@@ -429,9 +434,9 @@ def abWithMaxCountOfPrimes: (Int, Int) =
 > 
 > 17 16 15 14 13
 > 
-> It can be verified that the sum of the numbers on the diagonals is 101.
+> Можно убедиться, что сумма чисел в диагоналях равна 101.
 > 
-> What is the sum of the numbers on the diagonals in a 1001 by 10001 spiral formed in the same way?
+> Какова сумма чисел в диагоналях спирали 1001 на 1001, образованной таким же способом?
 
 **Алгоритм:**
 
@@ -470,13 +475,21 @@ getCount(2) // 101
 
 [Задача №29 - Distinct Powers](https://projecteuler.net/problem=29)
 
-> Consider all integer combinations of \\(a^{b}\\) for \\(2 \leq a \leq 5\\) and \\(2 \leq a \leq 5\\).
+> Рассмотрим все целочисленные комбинации \\(a^{b}\\) для \\(2 \leq a \leq 5\\) и \\(2 \leq a \leq 5\\).
 > 
-> If they are then placed in numerical order, with any repeats removed, we get the following sequence of 15 distinct terms:
+> \\(2^2=4, 2^3=8, 2^4=16, 2^5=32\\)
+> 
+> \\(3^2=9, 3^3=27, 3^4=81, 3^5=243\\)
+> 
+> \\(4^2=16, 4^3=64, 4^4=256, 4^5=1024\\)
+> 
+> \\(5^2=25, 5^3=125, 5^4=625, 5^5=3125\\)
+> 
+> Если их расположить в порядке возрастания, исключив повторения, мы получим следующую последовательность из 15 различных членов:
 > 
 > 4, 8, 9, 16, 25, 27, 32, 64, 81, 125, 243, 256, 625, 1024, 3125.
 > 
-> How many distinct terms are in the sequence generated by \\(a^{b}\\) for \\(2 \leq a \leq 100\\) and \\(2 \leq a \leq 100\\)?
+> Сколько различных членов имеет последовательность \\(a^{b}\\) для \\(2 \leq a \leq 100\\) и \\(2 \leq a \leq 100\\)?
 
 **Алгоритм:**
 
@@ -512,15 +525,15 @@ val count = (2 to 100).flatMap(getAView).distinct.length
 
 [Задача №30 - Digit Fifth Powers](https://projecteuler.net/problem=30)
 
-> Surprisingly there are only three numbers that can be written as the sum of fourth powers of their digits:
+> Удивительно, но существует только три числа, которые могут быть записаны в виде суммы четвертых степеней их цифр:
 > 
 > \\(1634 = 1^{4} + 6^{4} + 3^{4} + 4^{4}, 8208 = 8^{4} + 2^{4} + 0^{4} + 8^{4}, 9474 = 9^{4} + 4^{4} + 7^{4} + 4^{4}\\)
 > 
-> As \\(1 = 1^{4}\\) is not a sum it is not included.
+> \\(1 = 1^{4}\\) не считается, так как это - не сумма.
 > 
-> The sum of these numbers is 1634 + 8208 + 9474 = 19316.
+> Сумма этих чисел равна 1634 + 8208 + 9474 = 19316.
 > 
-> Find the sum of all the numbers that can be written as the sum of fifth powers of their digits.
+> Найдите сумму всех чисел, которые могут быть записаны в виде суммы пятых степеней их цифр.
 
 **Алгоритм:**
 
@@ -565,14 +578,13 @@ getSumOfFifthPowersWith4Digits(4)
 
 [Задача №31 - Coin Sums](https://projecteuler.net/problem=31)
 
-> In the United Kingdom the currency is made up of pound (£) and pence (p). 
-> There are eight coins in general circulation:
-> 1p, 2p, 5p, 10p, 20p, 50p, £1 (100p), and £2 (200p). 
-> 
-> It is possible to make £2 in the following way:
+> В Англии валютой являются фунты стерлингов £ и пенсы p, и в обращении есть восемь монет:
+> 1p, 2p, 5p, 10p, 20p, 50p, £1 (100p) и £2 (200p).
+>
+> £2 возможно составить следующим образом:
 > 1×£1 + 1×50p + 2×20p + 1×5p + 1×2p + 3×1p
-> 
-> How many different ways can £2 be made using any number of coins?
+>
+> Сколькими разными способами можно составить £2, используя любое количество монет?
 
 **Алгоритм:**
 
@@ -612,15 +624,17 @@ countWays(Array(1, 2, 5, 10, 20, 50, 100, 200), 200)
 
 [Задача №32 - Pandigital Products](https://projecteuler.net/problem=32)
 
-> We shall say that an n-digit number is pandigital if it makes use of all the digits 1 to n exactly once; 
-> for example, the 5-digit number, 15234, is 1 through 5 pandigital.
+> Каждое n-значное число, которое содержит каждую цифру от 1 до n ровно один раз, будем считать пан-цифровым; 
+> к примеру, 5-значное число 15234 является пан-цифровым, т.к. содержит цифры от 1 до 5.
+> 
+> Произведение 7254 является необычным, поскольку равенство 39 × 186 = 7254, 
+> состоящее из множимого, множителя и произведения является пан-цифровым, т.е. содержит цифры от 1 до 9.
 >
-> The product 7254 is unusual, as the identity, 39 * 186 = 7254, containing multiplicand, multiplier, and product 
-> is 1 through 9 pandigital.
+> Найдите сумму всех пан-цифровых произведений, для которых равенство "множимое × множитель = произведение" 
+> можно записать цифрами от 1 до 9, используя каждую цифру только один раз.
 >
-> Find the sum of all products whose multiplicand/multiplier/product identity can be written as a 1 through 9 pandigital.
->
-> HINT: Some products can be obtained in more than one way so be sure to only include it once in your sum.
+> Замечание: Некоторые произведения можно получить несколькими способами, поэтому убедитесь, 
+> что включили их в сумму лишь единожды.
 
 **Алгоритм:**
 
@@ -682,15 +696,16 @@ def getDistinctProductSum: Int =
 
 [Задача №33 - Digit Cancelling Fractions](https://projecteuler.net/problem=33)
 
-> The fraction 49/98 is a curious fraction, as an inexperienced mathematician in attempting 
-> to simplify it may incorrectly believe that 49/98 = 4/8, which is correct, is obtained by cancelling the 9s.
+> Дробь 49/98 является любопытной, поскольку неопытный математик, пытаясь сократить ее, будет ошибочно полагать, 
+> что 49/98 = 4/8, являющееся истиной, получено вычеркиванием девяток.
 >
-> We shall consider fractions like, 30/50 = 3/5, to be trivial examples.
-> 
-> There are exactly four non-trivial examples of this type of fraction, less than one in value, 
-> and containing two digits in the numerator and denominator.
-> 
-> If the product of these four fractions is given in its lowest common terms, find the value of the denominator.
+> Дроби вида 30/50 = 3/5 будем считать тривиальными примерами.
+>
+> Существует ровно 4 нетривиальных примера дробей подобного типа, которые меньше единицы и 
+> содержат двухзначные числа как в числителе, так и в знаменателе.
+>
+> Пусть произведение этих четырех дробей дано в виде несократимой дроби 
+> (числитель и знаменатель дроби не имеют общих сомножителей). Найдите знаменатель этой дроби.
 
 **Алгоритм:**
 
@@ -758,11 +773,11 @@ def getFractionDenominator: Long =
 
 [Задача №34 - Digit Factorials](https://projecteuler.net/problem=34)
 
-> 145 is a curious number, as 1! + 4! + 5! = 1 + 24 + 120 = 145.
->
-> Find the sum of all numbers which are equal to the sum of the factorial of their digits.
->
-> Note: As 1! = 1 and 2! = 2 are not sums they are not included.
+> 145 является любопытным числом, поскольку 1! + 4! + 5! = 1 + 24 + 120 = 145.
+> 
+> Найдите сумму всех чисел, каждое из которых равно сумме факториалов своих цифр.
+> 
+> Замечание: поскольку 1! = 1 и 2! = 2 не являются суммами, учитывать их не следует.
 
 **Алгоритм:**
 
@@ -798,11 +813,12 @@ def getLuckyNumberWithThreeDigits: IndexedSeq[Int] =
 
 [Задача №35 - Circular Primes](https://projecteuler.net/problem=35)
 
-> The number, 197, is called a circular prime because all rotations of the digits: 197, 971, and 719, are themselves prime.
+> Число 197 называется круговым простым числом, потому что все перестановки его цифр с конца в начало 
+> являются простыми числами: 197, 719 и 971.
 > 
-> There are thirteen such primes below 100: 2, 3, 5, 7, 11, 13, 17, 31, 37, 71, 73, 79, and 97.
-> 
-> How many circular primes are there below one million?
+> Существует тринадцать таких простых чисел меньше 100: 2, 3, 5, 7, 11, 13, 17, 31, 37, 71, 73, 79 и 97.
+>
+> Сколько существует круговых простых чисел меньше миллиона?
 
 **Алгоритм:**
 
@@ -838,11 +854,11 @@ countPrimes(100)         // 13
 
 [Задача №36 - Double-base Palindromes](https://projecteuler.net/problem=36)
 
-> The decimal number, \\(585 = 1001001001\_{2}\\) (binary), is palindromic in both bases.
-> 
-> Find the sum of all numbers, less than one million, which are palindromic in base 10 and base 2.
-> 
-> (Please note that the palindromic number, in either base, may not include leading zeros.)
+> Десятичное число \\(585 = 1001001001\_{2}\\) (в двоичной системе), является палиндромом по обоим основаниям.
+>
+> Найдите сумму всех чисел меньше миллиона, являющихся палиндромами по основаниям 10 и 2.
+>
+> Замечание: Пожалуйста, обратите внимание на то, что палиндромы не могут начинаться с нуля ни в одном из оснований.
 
 **Алгоритм:**
 
@@ -876,13 +892,14 @@ def getAllPalindromes =
 
 [Задача №37 - Truncatable Primes](https://projecteuler.net/problem=37)
 
-> The number 3797 has an interesting property. Being prime itself, it is possible to continuously remove digits 
-> from left to right, and remain prime at each stage: 3797, 797, 97, and 7. 
-> Similarly we can work from right to left: 3797, 379, 37, and 3.
+> Число 3797 обладает интересным свойством. Будучи само по себе простым числом, 
+> из него можно последовательно выбрасывать цифры слева направо, число же при этом остается простым на каждом этапе: 
+> 3797, 797, 97, 7. Точно таким же способом можно выбрасывать цифры справа налево: 3797, 379, 37, 3.
 >
-> Find the sum of the only eleven primes that are both truncatable from left to right and right to left.
-> 
-> NOTE: 2, 3, 5, and 7 are not considered to be truncatable primes.
+> Найдите сумму единственных одиннадцати простых чисел, из которых можно выбрасывать цифры как справа налево, 
+> так и слева направо, но числа при этом остаются простыми.
+>
+> Замечание: числа 2, 3, 5 и 7 таковыми не считаются.
 
 **Алгоритм:**
 
@@ -919,17 +936,17 @@ allTruncatableNumbers
 
 [Задача №38 - Pandigital Multiples](https://projecteuler.net/problem=38)
 
-> Take the number 192 and multiply it by each of 1, 2, and 3: 
-> \\(192 \times 1 = 192, 192 \times 2 = 384, 192 \times 3 = 576\\). 
+> Возьмем число 192 и умножим его по очереди на 1, 2 и 3:
+> \\(192 \times 1 = 192, 192 \times 2 = 384, 192 \times 3 = 576\\).
 >
-> By concatenating each product we get the 1 to 9 pandigital, 192384576. 
-> We will call 192384576 the concatenated product of 192 and (1, 2, 3).
-> 
-> The same can be achieved by starting with 9 and multiplying by 1, 2, 3, 4, and 5, 
-> giving the pandigital, 918273645, which is the concatenated product of 9 and (1, 2, 3, 4, 5).
+> Объединяя все три произведения, получим девятизначное число 192384576 из цифр от 1 до 9 (пан-цифровое число). 
+> Будем называть число 192384576 объединенным произведением 192 и (1,2,3)
 >
-> What is the largest 1 to 9 pandigital 9-digit number that can be formed as the concatenated product of 
-> an integer with (1, 2, 3, ... , n) where n > 1?
+> Таким же образом можно начать с числа 9 и по очереди умножать его на 1, 2, 3, 4 и 5, 
+> что в итоге дает пан-цифровое число 918273645, являющееся объединенным произведением 9 и (1,2,3,4,5).
+>
+> Какое самое большое девятизначное пан-цифровое число можно образовать как объединенное произведение целого числа 
+> и (1,2, ... , n), где n > 1?
 
 **Алгоритм:**
 
@@ -971,12 +988,12 @@ def getAllNumbers: Long =
 
 [Задача №39 - Integer Right Triangles](https://projecteuler.net/problem=39)
 
-> If p is the perimeter of a right angle triangle with integral length sides, {a, b, c}, 
-> there are exactly three solutions for p = 120.
+> Если p - периметр прямоугольного треугольника с целочисленными длинами сторон {a, b, c}, 
+> то существует ровно три решения для p = 120:
 >
-> {20, 48, 52}, {24, 45, 51}, {30, 40, 50}.
-> 
-> For which value of p <= 1000, is the number of solutions maximised?
+> {20, 48, 52}, {24, 45, 51}, {30, 40, 50}
+>
+> Какое значение p ≤ 1000 дает максимальное число решений?
 
 **Алгоритм:**
 
@@ -1024,12 +1041,14 @@ val count = (1 to 1000).maxBy: i =>
 
 [Задача №40 - Champernowne's Constant](https://projecteuler.net/problem=40)
 
-> An irrational decimal fraction is created by concatenating the positive integers:
-> 0.123456789101112131415161718192021
-> 
-> It can be seen that the \\(12^{th}\\) digit of the fractional part is 1.
-> 
-> If \\(d\_{n}\\) represents the \\(n^{th}\\) digit of the fractional part, find the value of the following expression:
+> Дана иррациональная десятичная дробь, образованная объединением натуральных чисел:
+> 0.123456789101112131415161718192021...
+>
+> Видно, что 12-я цифра дробной части - 1.
+>
+> Также дано, что \\(d\_{n}\\) представляет собой n-ю цифру дробной части. 
+> Найдите значение следующего выражения:
+>
 > \\(d\_{1} \times d\_{10} \times d\_{100} \times d\_{1000} \times d\_{10000} \times d\_{100000} \times d\_{1000000}\\)
 
 **Алгоритм:**

@@ -345,10 +345,59 @@ val (n, m) = pairs.minBy(difference)
 
 **Алгоритм:**
 
+- Составим список всех простых чисел меньших корня из пятидесяти миллионов (т.к. \\(p^2 + 2^3 + 2^4 < 50000000\\))
+- Пойдем по каждому a из списка от меньшего к большему до тех пор, пока \\(a^2 + a^3 + a^4 < 50000000\\)
+- Пойдем по каждому b из списка от меньшего к большему, начиная со значения a, 
+  до тех пор, пока \\(b^2 + a^3 + a^4 < 50000000\\)
+- Пойдем по каждому c из списка от меньшего к большему, начиная со значения b,
+  до тех пор, пока \\(c^2 + b^3 + a^4 < 50000000\\)
+- Составим все 6 возможных вариантов сумм из этих трех чисел
+    - \\(a^2 + b^3 + c^4\\)
+    - \\(a^2 + c^3 + b^4\\)
+    - \\(b^2 + a^3 + c^4\\)
+    - \\(b^2 + c^3 + a^4\\)
+    - \\(c^2 + a^3 + b^4\\)
+    - \\(c^2 + b^3 + a^4\\)
+- Сохраним в памяти те суммы, которые меньше пятидесяти миллионов (`memory(number) = true`)
+    - При этом, возможно, получение дубликата и такое число уже сохранено в памяти
+- Посчитаем количество сохраненных в памяти чисел
+
 **Код:**
 
 ```dotty
+def getCountOfPossibleSum(limit: Int): Long =
+  val maxPrime               = math.sqrt(limit).toInt
+  val primes                 = primesNoMoreThanN(maxPrime) // метод определен в Problem 27
+  val memory: Array[Boolean] = new Array[Boolean](limit)
+  for
+    i <- primes.indices
+    a = primes(i).toLong
+    if a * a + a * a * a + a * a * a * a < limit
+    j <- i until primes.length
+    b = primes(j).toLong
+    if b * b < limit - a * a * a * (1 + a)
+    k <- j until primes.length
+    c   = primes(k).toLong
+    cba = c * c + b * b * b + a * a * a * a
+    if cba < limit
+  do
+    memory(cba.toInt) = true
+    val acb = a * a + c * c * c + b * b * b * b
+    if acb < limit then memory(acb.toInt) = true
+    val bac = b * b + a * a * a + c * c * c * c
+    if bac < limit then memory(bac.toInt) = true
+    val bca = b * b + c * c * c + a * a * a * a
+    if bca < limit then memory(bca.toInt) = true
+    val cab = c * c + a * a * a + b * b * b * b
+    if cab < limit then memory(cab.toInt) = true
+    val abc = a * a + b * b * b + c * c * c * c
+    if abc < limit then memory(abc.toInt) = true
+  end for
+  memory.count(identity)
+end getCountOfPossibleSum
 
+getCountOfPossibleSum(50)  // 4
+getCountOfPossibleSum(500) // 53
 ```
 
 ## Задача №88
@@ -416,10 +465,35 @@ val (n, m) = pairs.minBy(difference)
 
 **Алгоритм:**
 
+Достаточно минимизировать цифры от меньшего к большему (\\(I \to V \to X \to ...\\)),
+следуя определениям Римских цифр. 
+От меньшего к большему, т.к. замена меньшего, например I добавляет большее число (V),
+что может привести к необходимости и его последующей замены.
+
 **Код:**
 
 ```dotty
+def toMinimalRomanNumeral(roman: String): String =
+  roman.toUpperCase
+    .replaceAll("IIIII", "V")
+    .replaceAll("VV", "X")
+    .replaceAll("XXXXX", "L")
+    .replaceAll("LL", "C")
+    .replaceAll("CCCCC", "D")
+    .replaceAll("DD", "M")
+    .replaceAll("VIIII", "IX")
+    .replaceAll("IIII", "IV")
+    .replaceAll("LXXXX", "XC")
+    .replaceAll("XXXX", "XL")
+    .replaceAll("DCCCC", "CM")
+    .replaceAll("CCCC", "CD")
 
+val names = Source.fromResource("p089_roman.txt").getLines.toSeq
+val count =
+  names.map: number =>
+    val minimal = toMinimalRomanNumeral(number)
+    number.length - minimal.length
+  .sum
 ```
 
 ## Задача №90

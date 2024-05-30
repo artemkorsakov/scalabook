@@ -467,7 +467,7 @@ getCountOfPossibleSum(500) // 53
 
 Достаточно минимизировать цифры от меньшего к большему (\\(I \to V \to X \to ...\\)),
 следуя определениям Римских цифр. 
-От меньшего к большему, т.к. замена меньшего, например I добавляет большее число (V),
+От меньшего к большему, т.к. замена меньшего, например I, добавляет большее число (V),
 что может привести к необходимости и его последующей замены.
 
 **Код:**
@@ -554,10 +554,36 @@ val count =
 
 **Алгоритм:**
 
+Обозначим (a, b, c) как квадраты сторон треугольника \\((0, 0), (x\_1, y\_1), (x\_2, y\_2)\\).
+Этот треугольник является прямоугольным, если сумма двух квадратов равна третьему:
+
 **Код:**
 
 ```dotty
+def isRightTriangle(x1: Int, y1: Int, x2: Int, y2: Int): Boolean =
+  val a = x1 * x1 + y1 * y1
+  val b = x2 * x2 + y2 * y2
+  val c = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)
+  (a + b == c || a + c == b || b + c == a)
+```
 
+Чтобы не рассматривать каждый треугольник дважды (в случаях \\((x\_1, y\_1), (x\_2, y\_2)\\) и \\((x\_2, y\_2), (x\_1, y\_1)\\))
+условимся, что \\(x\_1 \leq x\_2\\), а если \\(x\_1 = x\_2\\), то \\(y\_1 < y\_2\\).
+
+```dotty
+def trianglesCount(limit: Int): Long =
+  val triangles =
+    for
+      x1 <- 0 to limit
+      y1 <- 0 to limit
+      if x1 + y1 > 0
+      x2 <- x1 to limit
+      y2 <- (if x1 == x2 then y1 + 1 else 0) to limit
+      if isRightTriangle(x1, y1, x2, y2)
+    yield 1
+  triangles.sum
+
+trianglesCount(2) // 14
 ```
 
 ## Задача №92
@@ -579,10 +605,35 @@ val count =
 
 **Алгоритм:**
 
+Для каждого числа от одного до десяти миллионов считаем следующий элемент в последовательности - 
+сумма квадратов цифр текущего числа.
+Если наткнулись на 1 или 89, то сохраняем в памяти результат для всех чисел из последовательности,
+чтобы не вычислять дважды для одного и того же числа.
+
 **Код:**
 
 ```dotty
+@tailrec
+def getSquareSum(n: Int, acc: Int = 0): Int =
+  if n <= 0 then acc
+  else
+    val r = n % 10
+    getSquareSum(n / 10, acc + r * r)
 
+val limit: Int = 10_000_000
+
+val memory: Array[Byte] = new Array[Byte](limit)
+memory(1) = 1
+memory(89) = 89
+
+def getCycleNumber(n: Int): Byte =
+  if memory(n) > 0 then memory(n)
+  else
+    val m = getSquareSum(n)
+    memory(n) = getCycleNumber(m)
+    memory(n)
+
+val count = (1 until limit).count(n => getCycleNumber(n) == 89)
 ```
 
 ## Задача №93
@@ -630,10 +681,40 @@ val count =
 
 **Алгоритм:**
 
+Согласно условиям задачи возможны [два равнобедренных треугольника](https://ru.wikipedia.org/wiki/%D0%A0%D0%B0%D0%B2%D0%BD%D0%BE%D0%B1%D0%B5%D0%B4%D1%80%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%82%D1%80%D0%B5%D1%83%D0%B3%D0%BE%D0%BB%D1%8C%D0%BD%D0%B8%D0%BA), 
+где `a` - одна из двух равных сторон:
+
+- \\((a, a, a - 1)\\): периметр равен \\(3a - 1\\), площадь - \\(\frac{(a - 1) \times \sqrt{(3a - 1)(a + 1)}}{4}\\)
+- \\((a, a, a + 1)\\): периметр равен \\(3a + 1\\), площадь - \\(\frac{(a + 1) \times \sqrt{(3a + 1)(a - 1)}}{4}\\)
+
+Заметим, что a - нечетное число (2k + 1), т.к. в противном случае площадь не будет целым числом, 
+т.к. числитель не будет кратным 2.
+
+В таком случае получим:
+
+- \\((2k + 1, 2k + 1, 2k)\\): периметр равен \\(6k + 2\\), площадь - \\(k \times \sqrt{(3k + 1)(k + 1)}\\)
+- \\((2k + 1, 2k + 1, 2k + 2)\\): периметр равен \\(6k + 4\\), площадь - \\((k + 1) \times \sqrt{(3k + 2)k}\\)
+
 **Код:**
 
 ```dotty
+def isBigTriangleCorrect(k: Long): Boolean =
+  val p = k * (3 * k + 2)
+  val s = math.sqrt(p).toLong
+  s * s == p
 
+def isSmallTriangleCorrect(k: Long): Boolean =
+  val p = (k + 1) * (3 * k + 1)
+  val s = math.sqrt(p).toLong
+  s * s == p
+
+def getSumOfPerimeters(k: Long): Long =
+  (if isBigTriangleCorrect(k) then 6 * k + 4 else 0) +
+    (if isSmallTriangleCorrect(k) then 6 * k + 2 else 0)
+
+val limit = 1_000_000_000L
+val last  = (limit - 4) / 6
+val count = (1L to last).foldLeft(0L)((acc, k) => acc + getSumOfPerimeters(k))
 ```
 
 ## Задача №95
@@ -716,7 +797,8 @@ val count =
 **Код:**
 
 ```dotty
-
+val module = BigInt("10000000000")
+val lastTenDigits = (BigInt(2).modPow(BigInt(7830457), module) * 28433 + 1).mod(module).toLong
 ```
 
 ## Задача №98
@@ -761,10 +843,18 @@ val count =
 
 **Алгоритм:**
 
+Для сравнения чисел достаточно взять логарифм от предполагаемого числа 
+вместо попытки вычислить его возведением в большую степень.
+
 **Код:**
 
 ```dotty
+def parseString(row: String): Double =
+  val (first, second) = row.splitAt(row.indexOf(","))
+  math.log(first.toLong) * second.tail.toDouble
 
+val lines   = Source.fromResource("p099_base_exp.txt").getLines.toArray
+val maxLine = lines.indices.maxBy(i => parseString(lines(i))) + 1
 ```
 
 ## Задача №100
@@ -784,10 +874,38 @@ val count =
 
 **Алгоритм:**
 
+Пусть b - количество синих шаров, а r - красных. Тогда по условию задачи:
+\\(\frac{b}{b + r} \times \frac{b - 1}{b + r - 1} = \frac{1}{2}\\).
+
+Проведем некоторую последовательность вычислений:
+
+1. \\(2b^2 - 2b = b^2 + br - b + br + r^2 - r\\)
+2. \\(b^2 - b = r(2b + r - 1)\\)
+3. Пусть \\(x = 2b + r - 1\\), тогда \\(r = x - 2b + 1\\)
+4. \\(b^2 - b = x^2 - 2bx + x\\)
+5. \\(b(2x + b) = x^2 + x + b\\)
+6. Пусть \\(y = 2x + b\\), тогда \\(b = y - 2x\\)
+7. \\(y^2 - 2xy = x^2 + y - x\\)
+8. \\(y^2 - y = x(2y + x - 1)\\) - то же самое уравнение, что и во втором пункте
+
+Получается, что если пара (b, r) удовлетворяет уравнению, то и следующая пара (5b + 2r - 2, 2b + r - 1) (с б**о**льшими числами)
+также будет удовлетворять уравнению.
+
+Самая меньшая возможная пара (b, r) - это пара с r = 1 и следовательно \\(\frac{2b(b - 1)}{(b + 1)b} = 1 \Rightarrow b = 3\\).
+
+Первые пары: \\((3, 1) \Rightarrow (15, 6) \Rightarrow (85, 35) \Rightarrow (493, 204) \Rightarrow ... \\)
+
+> Правда, нет гарантии, что это единственный способ генерации следующих пар
+
 **Код:**
 
 ```dotty
+@tailrec
+def getBlueDiscs(blue: Long, red: Long): Long =
+  if blue + red > 1_000_000_000_000L then blue
+  else getBlueDiscs(5 * blue + 2 * red - 2, 2 * blue + red - 1)
 
+val count = getBlueDiscs(3, 1)
 ```
 
 ---

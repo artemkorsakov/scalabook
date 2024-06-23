@@ -32,7 +32,8 @@ ZIO позволяет создавать масштабируемые, усто
     - [ZIO Homepage](https://zio.dev)
     - [ZIO GitHub](https://github.com/zio/zio)
 - [7 ZIO experts share why they choose ZIO](https://scalac.io/blog/zio-experts-share-why-they-choose-zio-scala)
-- [Cats Effect vs ZIO](https://softwaremill.com/cats-effect-vs-zio/)
+- [Cats Effect vs ZIO](https://softwaremill.com/cats-effect-vs-zio)
+- [How to learn ZIO? And Functional Programming](https://scalac.io/blog/how-to-learn-zio-and-functional-programming)
 - [Why Developers Should Pay Attention to ZIO in 2023](https://scalac.io/blog/why-developers-should-pay-attention-to-zio-in-2023)
 - [Why you should choose ZIO in your next project. Benefits of functional programming in ZIO](https://www.youtube.com/watch?v=xpHY43VuOLo)
 - Primeros pasos con ZIO - Первые шаги с ZIO:

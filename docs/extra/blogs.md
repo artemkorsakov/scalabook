@@ -43,6 +43,7 @@
 | [Indoor Vivants blog](https://blog.indoorvivants.com/)                             |  En  | Scala | <10   | менее полугода |
 | [Jakub Kozłowski's blog](https://blog.kubukoz.com/)                                |  En  | Scala | <10   | менее полугода |
 | [Michał Pawlik's blog](https://blog.michalp.net/)                                  |  En  | Scala | <10   | менее полугода |
+| [Michał Sitko blog](https://msitko.pl/blog)                                        |  En  | Scala | <10   | менее полугода |
 | [Noel Welsh's blog](https://noelwelsh.com/)                                        |  En  | Scala | <10   | менее полугода |
 | [Michael Pilquist's blog](https://mpilquist.github.io)                             |  En  | Scala | <10   | 30-10-2023     |
 | [Tonio Gela's blog](https://toniogela.dev/)                                        |  En  | Scala | <10   | 05-10-2023     |
@@ -55,7 +56,8 @@
 
 | Название                                                        | Язык | Период                     | Выпусков |
 |-----------------------------------------------------------------|:----:|----------------------------|----------|
-| [Scala Love](https://scala.love/)                               |  En  | с 27-01-2019 по 09-10-2020 | 24       |
+| [Flatmappers](https://flatmappers.com)                          |  Ру  | с 07-05-2023 по н.в.       | 25       |
+| [Scala Love](https://scala.love)                                |  En  | с 27-01-2019 по 09-10-2020 | 24       |
 | [Scalalaz - Русскоязычный подкаст о Scala](https://scalalaz.ru) |  Ру  | с 07-08-2016 по 15-10-2022 | 110      |
 
 ## Конференции

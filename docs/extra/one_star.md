@@ -74,11 +74,17 @@
 | [Why are Type Classes Useful in Scala? - Rock the JVM](https://blog.rockthejvm.com/why-are-typeclasses-useful/)                                                                               | Scala 3 |  En  | 2020 |                             |
 | [Имплиситы и тайпклассы в Scala](https://blog.ainur-khakimov.ru/posts/scala-implicits-and-typeclasses/)                                                                                       | Scala 2 |  Ру  | 2024 |                             |
 | [Benchmarking Scala Collections](http://www.lihaoyi.com/post/BenchmarkingScalaCollections.html)                                                                                               | Scala 2 |  En  | 2016 |                             |
+| [Best practice for natural Ordering](https://alexn.org/blog/2020/11/17/best-practice-for-ordering-comparable)                                                                                 | Scala 2 |  En  | 2020 |                             |
 | [Fatal Warnings and Linting in Scala - Alexandru Nedelcu](https://alexn.org/blog/2020/05/26/scala-fatal-warnings)                                                                             | Scala 2 |  En  | 2020 |                             |
 | [Martians vs Monads: Null Considered Harmful](https://james-iry.blogspot.com/2007/08/martians-vs-monads-null-considered.html)                                                                 | Scala 2 |  En  | 2007 |                             |
+| [My Dos and Don'ts in sbt Build Definitions](https://www.chris-kipp.io/blog/my-dos-and-donts-in-sbt-build-definitions)                                                                        | Scala 2 |  En  | 2021 |                             |
 | [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes)                                                              | Scala 2 |  En  | 2012 |                             |
 | [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics) | Scala 2 |  En  | 2013 |                             |
+| [Shared package code? Fear no more!](https://danielasfregola.com/2014/12/28/shared-package-code-fear-no-more)                                                                                 | Scala 2 |  En  | 2014 |                             |
+| [Super Powers to Qualified Access Modifiers](https://danielasfregola.com/2014/12/31/super-powers-to-qualified-access-modifiers)                                                               | Scala 2 |  En  | 2014 |                             |
+| [Tail Recursive Functions in Scala](https://alexn.org/blog/2021/01/26/tail-recursive-functions-in-scala)                                                                                      | Scala 2 |  En  | 2021 |                             |
 | [The Power of Type-classes with Scala implicit defs](https://blog.tmorris.net/posts/the-power-of-type-classes-with-scala-implicit-defs/index.html)                                            | Scala 2 |  En  | 2007 |                             |
+| [Traits are better than Legos!](https://danielasfregola.com/2014/12/24/traits-are-better-than-legos)                                                                                          | Scala 2 |  En  | 2014 |                             |
 | [What is F\[\_\] in Scala?](https://xebia.com/blog/what-is-F-with-hole-in-scala/)                                                                                                             | Scala 2 |  En  | 2021 |                             |
 
 ## Видео
@@ -96,6 +102,7 @@
 | [Scala's Role in the Programming Languages Ecosystem - Martin Odersky](https://www.youtube.com/watch?v=7mTNZeiIK7E)                                | Scala 3 |  En  | 2023 |             |
 | [The Best Scala Libraries I Use in Every Project - DevInsideYou](https://www.youtube.com/watch?v=ZymD5NuOwdA)                                      | Scala 3 |  En  | 2023 |             |
 | [Typeclasses in Scala 3 - Colombia Scala meetup/Scala at the Sea](https://www.youtube.com/watch?app=desktop&v=co4LSvVoX-s)                         | Scala 3 |  En  | 2022 |             |
+| [Basics of Object-Orientation - Mark Lewis](https://www.youtube.com/watch?v=ILk_WBYsqec&list=PLF6CAC63C615DB881)                                   | Scala 2 |  En  | 2013 |             |
 | [Functional Scala - Scala in the city](https://www.youtube.com/playlist?list=PLjtl9Y7VJMWtZz3g0LjMhO54_KBL8Tfwl)                                   | Scala 2 |  En  | 2020 |             |
 | [Introduction to Programming and Problem Solving Using Scala](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) | Scala 2 |  En  | 2015 |             |
 | [Language-Agnostic Tips - Rock the JVM](https://www.youtube.com/watch?v=0wmcCdoExbM&list=PLmtsMNDRU0ByxKWa4h2LMn9oXyeDEJbnC)                       | Scala 2 |  En  | 2021 |             |

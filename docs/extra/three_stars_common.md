@@ -23,3 +23,9 @@
 | [Parse, don’t validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate) |  En  | 2019 | Refined     |
 
 ## Видео
+
+| Название                                                                                                                        | Язык | Дата | Комментарий |
+|---------------------------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
+| [Functional Programming Group](https://www.youtube.com/watch?app=desktop&v=s2ay9nEW3ak&list=PLNo5uJesLLQjRmM9lASwVeL0fFtJuKU0U) |  Ру  | 2018 |             |
+
+

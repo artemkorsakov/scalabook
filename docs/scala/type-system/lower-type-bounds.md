@@ -72,3 +72,4 @@ birdList.prepend(EuropeanSwallow())
 **Ссылки:**
 
 - [Scala tour, Lower type bounds](https://docs.scala-lang.org/ru/tour/lower-type-bounds.html)
+- [Type Parameterisation](https://danielasfregola.com/2015/02/02/type-parameterisation)

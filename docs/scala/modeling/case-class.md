@@ -110,6 +110,7 @@ def handleMessages(message: Message): Unit = message match
 
 **Ссылки:**
 
+- [How to use Case Classes in Scala](https://danielasfregola.com/2015/02/16/how-to-use-case-classes-in-scala)
 - [Scala3 book, domain modeling tools](https://docs.scala-lang.org/scala3/book/domain-modeling-tools.html)
 - [Scala3 book, taste modeling](https://docs.scala-lang.org/scala3/book/taste-modeling.html)
 - [Scala3 book, taste objects](https://docs.scala-lang.org/scala3/book/taste-objects.html)

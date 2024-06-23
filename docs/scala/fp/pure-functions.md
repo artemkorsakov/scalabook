@@ -117,4 +117,5 @@ def sum(xs: List[Int]): Int = xs match
 
 **Ссылки:**
 
+- [Pure Functions](https://danielasfregola.com/2015/04/07/pure-functions)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fp-pure-functions.html)

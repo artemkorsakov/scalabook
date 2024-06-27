@@ -1598,16 +1598,16 @@ def fermatTest(n: Long): Boolean =
 def fastIsPrime(n: Long, times: Int): Boolean =
   (times <= 0) || (fermatTest(n) && fastIsPrime(n, times - 1))
 
-fastIsPrime(19, 100)   
-fastIsPrime(199, 100)  
-fastIsPrime(1999, 100) 
+fastIsPrime(19, 100)   // true
+fastIsPrime(199, 100)  // true
+fastIsPrime(1999, 100) // true 
 
-fastIsPrime(561, 100)  
-fastIsPrime(1105, 100) 
-fastIsPrime(1729, 100) 
-fastIsPrime(2465, 100) 
-fastIsPrime(2821, 100) 
-fastIsPrime(6601, 100) 
+fastIsPrime(561, 100)  // false
+fastIsPrime(1105, 100) // false
+fastIsPrime(1729, 100) // false
+fastIsPrime(2465, 100) // false
+fastIsPrime(2821, 100) // false
+fastIsPrime(6601, 100) // false
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/DRqIItJmTxmmhIDoRYaTzw)

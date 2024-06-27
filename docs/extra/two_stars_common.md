@@ -24,11 +24,13 @@
 
 ## Статьи
 
-| Название                                                                                                        | Язык | Дата | Комментарий |
-|-----------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
-| [Strong Type Systems](https://blog.tmorris.net/posts/strong-type-systems/index.html)                            |  En  | 2007 |             |
-| [In Defense of OOFP - Alexandru Nedelcu](https://alexn.org/blog/2018/02/12/in-defense-oofp)                     |  En  | 2018 |             |
-| [What is Functional Programming? - Alexandru Nedelcu](https://alexn.org/blog/2017/10/15/functional-programming) |  En  | 2017 |             |
+| Название                                                                                                                                                                        | Язык | Дата | Комментарий |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
+| [Category Theory Resources](https://github.com/prathyvsh/category-theory-resources)                                                                                             |  En  | 2023 |             |
+| [In Defense of OOFP - Alexandru Nedelcu](https://alexn.org/blog/2018/02/12/in-defense-oofp)                                                                                     |  En  | 2018 |             |
+| [Infinity Category Theory Offers a Bird’s-Eye View of Mathematics](https://www.scientificamerican.com/article/infinity-category-theory-offers-a-birds-eye-view-of-mathematics1) |  En  | 2021 |             |
+| [Strong Type Systems](https://blog.tmorris.net/posts/strong-type-systems/index.html)                                                                                            |  En  | 2007 |             |
+| [What is Functional Programming? - Alexandru Nedelcu](https://alexn.org/blog/2017/10/15/functional-programming)                                                                 |  En  | 2017 |             |
 
 ## Видео
 

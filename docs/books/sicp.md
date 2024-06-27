@@ -820,6 +820,27 @@ pascalsTriangle(4, 2)
 > Нарисуйте дерево, иллюстрирующее процесс,
 > который порождается процедурой `count-change` из раздела 1.2.2 при размене `11` центов.
 >
+> ```dotty
+> def countChange(amount: Int): Int =
+>   def firstDenomination(kindOfCoins: Int): Int =
+>     if kindOfCoins == 1 then 1
+>     else if kindOfCoins == 2 then 5
+>     else if kindOfCoins == 3 then 10
+>     else if kindOfCoins == 4 then 25
+>     else 50
+> 
+>   def cc(amount: Int, kindOfCoins: Int): Int =
+>     if amount == 0 then 1
+>     else if amount < 0 || kindOfCoins == 0 then 0
+>     else
+>       cc(amount, kindOfCoins - 1) +
+>         cc(amount - firstDenomination(kindOfCoins), kindOfCoins)
+> 
+>   cc(amount, 5)
+> 
+> countChange(100) // 292
+> ```
+>
 > Каковы порядки роста памяти и числа шагов,
 > используемых этим процессом при увеличении суммы, которую требуется разменять?
 
@@ -895,6 +916,8 @@ pascalsTriangle(4, 2)
     - `cc -39 5`
         - `0`
 
+Порядки роста памяти и числа шагов равны \\(\Theta (n^2)\\).
+
 #### Упражнение 1.15
 
 > Синус угла (заданного в радианах) можно вычислить, если воспользоваться приближением `sin x ≈ x` при малых `x`
@@ -943,6 +966,19 @@ sine(12.15)
 [Scala worksheet](https://scastie.scala-lang.org/4qEcEUi1Q7GDvTDGrkAbQQ)
 
 ### 1.2.4. Возведение в степень
+
+Метод возведения в степень с логарифмической сложностью:
+
+```dotty
+def isEven(n: Int): Boolean = n % 2 == 0
+
+def square(n: Int): Int = n * n
+
+def fastExpt(b: Int, n: Int): Int =
+  if n == 0 then 1
+  else if isEven(n) then square(fastExpt(b, n / 2))
+  else b * fastExpt(b, n - 1)
+```
 
 #### Упражнение 1.16
 
@@ -996,11 +1032,9 @@ power(2, 10)
 На Scala эта программа будет выглядеть так:
 
 ```dotty
-def double(n: Long): Long =
-  n << 1
+def double(n: Long): Long = n << 1
 
-def halve(n: Long): Long =
-  n >> 1
+def halve(n: Long): Long = n >> 1
 
 def fastMul(a: Long, b: Long): Long =
   if b == 0 then 0L
@@ -1017,16 +1051,14 @@ fastMul(22, 10)
 
 > Используя результаты упражнений 1.16 и 1.17, разработайте процедуру,
 > которая порождает итеративный процесс для умножения двух чисел с помощью сложения, удвоения и деления пополам,
-> и затрачивает логарифмическое число шагов40.
+> и затрачивает логарифмическое число шагов.
 
 На Scala эта программа будет выглядеть так:
 
 ```dotty
-def double(n: Long): Long =
-  n << 1
+def double(n: Long): Long = n << 1
 
-def halve(n: Long): Long =
-  n >> 1
+def halve(n: Long): Long = n >> 1
 
 def fastMul(a: Long, b: Long): Long =
   @scala.annotation.tailrec
@@ -1041,7 +1073,6 @@ fastMul(22, 10)
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/MNMMlUBVTuejpjevIBuz3g)
-
 
 #### Упражнение 1.19
 
@@ -1116,6 +1147,16 @@ fastFib(30)
 
 ### 1.2.5. Нахождение наибольшего общего делителя
 
+Вычисление НОД с помощью алгоритма Евклида:
+
+```dotty
+@annotation.tailrec
+def gcd(a: Int, b: Int): Int =
+  if b == 0 then a else gcd(b, a % b)
+  
+gcd(4851, 3003) // 231   
+```
+
 #### Упражнение 1.20
 
 > Процесс, порождаемый процедурой, разумеется, зависит от того, по каким правилам работает интерпретатор.
@@ -1136,7 +1177,45 @@ fastFib(30)
 
 Нормальный порядок:
 
-???
+```
+gcd 206 40
+
+if (= 40 0)
+   206
+   (gcd 40 (remainder 206 40))
+
+gcd 40 (remainder 206 40)
+
+if (= (remainder 206 40) 0)                   // +1
+   40
+   (gcd (remainder 206 40) (remainder 40 (remainder 206 40)))    
+
+gcd (remainder 206 40) (remainder 40 (remainder 206 40)) 
+
+if (= (remainder 40 (remainder 206 40)) 0)    // +2
+   (remainder 206 40)
+   (gcd (remainder 40 (remainder 206 40)) (remainder (remainder 206 40) (remainder 40 (remainder 206 40))))    
+
+Пусть a = (remainder 40 (remainder 206 40)), b = (remainder (remainder 206 40) a)
+
+gcd a b 
+
+if (= b 0)                                    // +4
+   a
+   (gcd b c)
+
+, где c = reminder (remainder 40 (remainder 206 40)) (remainder (remainder 206 40) (remainder 40 (remainder 206 40)))
+
+gcd b c
+
+if (= c 0)                                   // +7
+   2
+   (gcd c (reminder b c))
+
+2
+```
+
+Итого, 14 вычислений при нормальном порядке.
 
 Аппликативный порядок:
 
@@ -1145,7 +1224,7 @@ if (= 40 0)
    206
    (gcd 40 (remainder 206 40))
 
-gcd 40 (remainder 206 40)     // 1
+gcd 40 (remainder 206 40)     // +1
 
 gcd 40 6
 
@@ -1153,7 +1232,7 @@ if (= 6 0)
    40
    (gcd 6 (remainder 40 6))    
 
-gcd 6 (remainder 40 6)        // 2
+gcd 6 (remainder 40 6)        // +1
 
 gcd 6 4
 
@@ -1161,7 +1240,7 @@ if (= 4 0)
    6
    (gcd 4 (remainder 6 4))    
 
-gcd 4 (remainder 6 4)         // 3
+gcd 4 (remainder 6 4)         // +1
 
 gcd 4 2
 
@@ -1169,7 +1248,7 @@ if (= 2 0)
    4
    (gcd 2 (remainder 4 2))
 
-gcd 2 (remainder 4 2)         // 4
+gcd 2 (remainder 4 2)         // +1
 
 gcd 2 0
 
@@ -1180,6 +1259,7 @@ if (= 0 0)
 2   
 ```
 
+Итого, всего 5 вычислений при аппликативном порядке.
 
 ### 1.2.6. Пример: проверка на простоту
 
@@ -1339,9 +1419,40 @@ Seq(1009, 1013, 1019, 10007, 10009, 10037, 100003, 100019, 100043, 1000003,
 > Модифицируйте процедуру **timed-prime-test** из упражнения 1.22 так,
 > чтобы она использовала **fast-prime?** (метод Ферма) и проверьте каждое из 12 простых чисел, найденных в этом упражнении.
 > Исходя из того, что у теста Ферма порядок роста **Θ(log n)**,
-> то какого соотношения времени Вы бы ожидали между проверкой на простоту поблизости от **1 000 000** и поблизости от **1000**
+> то какого соотношения времени Вы бы ожидали между проверкой на простоту поблизости от **1 000 000** и поблизости от **1000**.
 > Подтверждают ли это Ваши данные?
 > Можете ли Вы объяснить наблюдаемое несоответствие, если оно есть?
+
+На Scala эта программа будет выглядеть так:
+
+```dotty
+import java.time.Instant
+import scala.util.Random
+
+@annotation.tailrec
+def isProbablyPrime(p: Long, max_test: Int): Boolean =
+  (max_test <= 0) || {
+    (BigInt(Random.nextLong(p)).modPow(p - 1, p) == 1) &&
+    isProbablyPrime(p, max_test - 1)
+  }
+
+def reportPrime(elapsedTime: Long): Unit =
+  println(" *** ")
+  println(s"${elapsedTime} ms")
+
+def startPrimeTest(n: Long, startTime: Long): Option[Long] =
+  if isProbablyPrime(n, 10) then
+    println(s"n = $n")
+    reportPrime(Instant.now().toEpochMilli - startTime)
+    Some(n)
+  else None
+
+def timedPrimeTest(n: Long): Option[Long] =
+  startPrimeTest(n, Instant.now().toEpochMilli())
+```
+
+[Scala worksheet](https://scastie.scala-lang.org/RS80pTdYSR2Q9ErgcLHo4w)
+
 
 #### Упражнение 1.25
 

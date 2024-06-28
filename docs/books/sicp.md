@@ -921,7 +921,7 @@ pascalsTriangle(4, 2)
 #### Упражнение 1.15
 
 > Синус угла (заданного в радианах) можно вычислить, если воспользоваться приближением `sin x ≈ x` при малых `x`
-> и употребить тригонометрическое тождество `sin(x) = 3sin(x/3) − 4sin³(x/3)`
+> и употребить тригонометрическое тождество \\(sin(x) = 3sin(\frac{x}{3}) - 4sin^{3}(\frac{x}{3})\\)
 > для уменьшения значения аргумента `sin`.
 > (В этом упражнении будем считать, что угол «достаточно мал», если он не больше 0.1 радиана.)
 >
@@ -1533,18 +1533,12 @@ def expmod(base: Long, exp: Long, m: Long): Long =
 def fermatTest(n: Long): Boolean =
   (2L until n).forall(a => expmod(a, n, n) == a)
 
-fermatTest(561)  
-// res34: Boolean = true  
-fermatTest(1105) 
-// res35: Boolean = true 
-fermatTest(1729) 
-// res36: Boolean = true 
-fermatTest(2465) 
-// res37: Boolean = true 
-fermatTest(2821) 
-// res38: Boolean = true 
-fermatTest(6601) 
-// res39: Boolean = true 
+fermatTest(561)   // true  
+fermatTest(1105)  // true 
+fermatTest(1729)  // true 
+fermatTest(2465)  // true 
+fermatTest(2821)  // true 
+fermatTest(6601)  // true 
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/YAeohITfTfCb1kwDB9VNGw)

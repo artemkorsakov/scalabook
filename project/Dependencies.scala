@@ -24,11 +24,11 @@ object Dependencies {
   }
 
   object laika {
-    private val version = "0.19.5"
-    val core            = "org.planet42" %% "laika-core"    % version
-    val io              = "org.planet42" %% "laika-io"      % version
-    val pdf             = "org.planet42" %% "laika-pdf"     % version
-    val preview         = "org.planet42" %% "laika-preview" % version
+    private val version = "1.1.0"
+    val core            = "org.typelevel" %% "laika-core"    % version
+    val io              = "org.typelevel" %% "laika-io"      % version
+    val pdf             = "org.typelevel" %% "laika-pdf"     % version
+    val preview         = "org.typelevel" %% "laika-preview" % version
   }
 
   object logback {

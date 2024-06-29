@@ -2,11 +2,11 @@ package ru.scalabook.site.app
 
 import cats.effect.*
 import laika.api.*
+import laika.config.SyntaxHighlighting
 import laika.format.*
-import laika.io.implicits.*
-import laika.io.model.InputTree
-import laika.markdown.github.GitHubFlavor
-import laika.parse.code.SyntaxHighlighting
+import laika.format.Markdown.GitHubFlavor
+import laika.io.model.*
+import laika.io.syntax.*
 import laika.preview.ServerBuilder
 import ru.scalabook.site.syntax.HeliumThemes
 

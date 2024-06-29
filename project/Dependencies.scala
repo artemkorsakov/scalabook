@@ -2,14 +2,14 @@ import sbt.*
 
 // @formatter:off
 object Dependencies {
-  val Scala = "3.4.0"
+  val Scala = "3.4.2"
 
   object fs2 {
-    val core = "co.fs2" %% "fs2-core" % "3.9.4"
+    val core = "co.fs2" %% "fs2-core" % "3.10.2"
   }
 
   object http4s {
-    private val version = "0.23.26"
+    private val version = "0.23.27"
     val blaze           = "org.http4s" %% "http4s-blaze-server" % "0.23.16"
     val core            = "org.http4s" %% "http4s-core"         % version
     val dsl             = "org.http4s" %% "http4s-dsl"          % version
@@ -17,7 +17,7 @@ object Dependencies {
   }
 
   object iron {
-    private val version = "2.5.0"
+    private val version = "2.6.0"
     val iron            = "io.github.iltotore" %% "iron"      % version
     val cats            = "io.github.iltotore" %% "iron-cats" % version
     val scalacheck      = "io.github.iltotore" %% "iron-scalacheck" % version
@@ -50,10 +50,10 @@ object Dependencies {
   }
 
   object typelevel {
-    private val catsVersion       = "2.10.0"
+    private val catsVersion       = "2.12.0"
     private val catsEffectVersion = "3.6-0142603"
 
-    val algebra          = "org.typelevel" %% "algebra"            % "2.10.0"
+    val algebra          = "org.typelevel" %% "algebra"            % "2.12.0"
     val catsCore         = "org.typelevel" %% "cats-core"          % catsVersion
     val catsEffect       = "org.typelevel" %% "cats-effect"        % catsEffectVersion
     val catsEffectKernel = "org.typelevel" %% "cats-effect-kernel" % catsEffectVersion

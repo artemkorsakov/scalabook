@@ -10,7 +10,7 @@ trait Monoid[A] extends Semigroup[A]:
   def combineNonNegN(x: A, n: Int :| GreaterEqual[0]): A =
     if n == 0 then empty
     else
-      val pos: Int :| Greater[0] = n.refine
+      val pos: Int :| Greater[0] = n.refineUnsafe
       combineN(x, pos)
 
 object Monoid:

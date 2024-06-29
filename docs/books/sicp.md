@@ -2277,6 +2277,17 @@ tanCf(1.0, 100)
 
 [Метод Ньютона описан в соответствующем разделе](../algorithms/algorithms/newton.md)
 
+В общем случае языки программирования накладывают ограничения на способы, с
+помощью которых можно манипулировать элементами вычисления. 
+Говорят, что элементы, на которые накладывается наименьшее число ограничений, имеют статус элементов
+вычисления _первого класса_ (_first-class_) или полноправных. 
+Вот некоторые из их «прав и привилегий»:
+
+- Их можно называть с помощью переменных.
+- Их можно передавать в процедуры в качестве аргументов.
+- Их можно возвращать из процедур в виде результата.
+- Их можно включать в структуры данных.
+
 #### Упражнение 1.40
 
 > Определите процедуру `cubic`, которую можно было бы использовать совместно с процедурой `newtons-method`
@@ -2295,7 +2306,7 @@ def cubic(a: Double, b: Double, c: Double): Double => Double = x =>
   cube(x) + a * square(x) + b * x + c
 ```
 
-[Scala worksheet](https://scastie.scala-lang.org/5K8VDuv3QhqbnVbO955asw)
+[Scala worksheet](https://scastie.scala-lang.org/y23lqOQTSgGCmR1FbPDKKw)
 
 
 #### Упражнение 1.41
@@ -2317,8 +2328,7 @@ def double[T](f: T => T): T => T = x => f(f(x))
 
 // (((double (double double)) inc) 5)
 val f: (Int => Int) => (Int => Int) = double(double(double))
-f(inc)(5)
-// res59: Int = 21
+f(inc)(5) // 21
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/GwhY4i7zTse1kU4xAw6LKQ)
@@ -2345,8 +2355,7 @@ def compose[A, B, C](f: B => C, g: A => B): A => C = x => f(g(x))
 val square: Int => Int = x => x * x
 val inc: Int => Int = x => x + 1
 
-compose(square, inc)(6)
-// res62: Int = 49
+compose(square, inc)(6) // 49
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/hKt6WdQETDCLqfafsx7uHQ)
@@ -2383,8 +2392,7 @@ def repeated[A](f: A => A, n: Int): A => A =
   else repeated(compose(f, f), n - 1)
 
 val square: Int => Int = x => x * x
-repeated(square, 2)(5)
-// res64: Int = 625
+repeated(square, 2)(5) // 625
 ```
 
 [Scala worksheet](https://scastie.scala-lang.org/YnKFqK1dTEaThXI09u1s1A)

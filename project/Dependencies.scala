@@ -51,7 +51,7 @@ object Dependencies {
 
   object typelevel {
     private val catsVersion       = "2.12.0"
-    private val catsEffectVersion = "3.6-0142603"
+    private val catsEffectVersion = "3.6-623178c"
 
     val algebra          = "org.typelevel" %% "algebra"            % "2.12.0"
     val catsCore         = "org.typelevel" %% "cats-core"          % catsVersion
@@ -71,7 +71,7 @@ object Dependencies {
   }
 
   object zio {
-    private val version = "2.0.21"
+    private val version = "2.1.5"
     val core        = "dev.zio" %% "zio"             % version
     val stacktracer = "dev.zio" %% "zio-stacktracer" % version
   }

@@ -11,7 +11,7 @@
 Правильное это понимание или неправильно - вопрос для обсуждения.
 И если вы хотите мне что-то подсказать или поправить, 
 то для этого на каждой странице есть кнопка "Редактировать страницу" в правом меню.
-Она приведет к исходникам, расположенным на [gitflic.ru](https://gitflic.ru).
+Она приведет к исходникам, расположенным на [gitverse.ru](https://gitverse.ru).
 В них можно внести изменения и отправить "Запрос на слияние", 
 в комментариях к которому можно будет обсудить изменения.
 
@@ -30,7 +30,7 @@
 
 **Ссылки:**
 
-- [Мой профиль на gitflic](https://gitflic.ru/user/artemkorsakov)
+- [Мой профиль на gitverse](https://gitverse.ru/artemkorsakov)
 - [Мой профиль на github](https://github.com/artemkorsakov)
-- [Исходный код](https://gitflic.ru/project/artemkorsakov/scalabook)
+- [Исходный код](https://gitverse.ru/artemkorsakov/scalabook)
 - artemkorsakov@mail.ru

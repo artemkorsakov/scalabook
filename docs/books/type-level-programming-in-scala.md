@@ -2203,7 +2203,7 @@ ZipWith.zipped(a :^: b :^: c :^: KNil) foreach { case n :: s :: b :: HNil =>
 **Ссылки:**
 
 - [Исходный код][source]
-- [Исходный код тестов](https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Ftest%2Fscala%2Fru%2Fscalabook%2Fbooks%2Ftlpis&branch=master)
+- [Исходный код тестов](https://gitverse.ru/artemkorsakov/scalabook/content/master/examples/src/test/scala/ru/scalabook/books/tlpis)
 - ["Type-Level Programming in Scala"][blog]
     - [Part 1: Type Recursion][part 1]
     - [Part 2: implicitly and =:=][part 2]
@@ -2230,7 +2230,7 @@ ZipWith.zipped(a :^: b :^: c :^: KNil) foreach { case n :: s :: b :: HNil =>
 - [In Dotty try match types as a replacement for type projections](https://stackoverflow.com/questions/59101681/dotty-cannot-infer-result-type-of-generic-scala-function-taking-type-parameter-t) 
 - [Converting code using simple type projections to dotty](https://users.scala-lang.org/t/converting-code-using-simple-type-projections-to-dotty/6516)
 
-[source]: https://gitflic.ru/project/artemkorsakov/scalabook/file?file=examples%2Fsrc%2Fmain%2Fscala%2Fru%2Fscalabook%2Fbooks%2Ftlpis&branch=master
+[source]: https://gitverse.ru/artemkorsakov/scalabook/content/master/examples/src/main/scala/ru/scalabook/books/tlpis
 [blog]: https://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/
 [part 1]: https://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/
 [part 2]: https://apocalisp.wordpress.com/2010/06/10/type-level-programming-in-scala-part-2-implicitly-and/

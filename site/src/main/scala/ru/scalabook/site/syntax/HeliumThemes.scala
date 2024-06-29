@@ -88,7 +88,7 @@ object HeliumThemes:
         enabled = true,
         depth = 1,
         sourceBaseURL = Some(
-          "https://gitflic.ru/project/artemkorsakov/scalabook/blob?file=docs"
+          "https://gitverse.ru/artemkorsakov/scalabook/edit/master/docs/"
         ),
         sourceLinkText = "Редактировать страницу",
         keepOnSmallScreens = false

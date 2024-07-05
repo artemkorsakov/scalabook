@@ -200,11 +200,204 @@ getMinThreeWaysSum(matrix) // 994
 
 **Алгоритм:**
 
+Для начала определим поля Монополии, карточки "Общественная казна" и "Шанс".
+
 **Код:**
 
 ```dotty
+trait CC
+trait CH
 
+enum MonopolyField(val i: Byte):
+  case GO   extends MonopolyField(0)
+  case A1   extends MonopolyField(1)
+  case CC1  extends MonopolyField(2), CC
+  case A2   extends MonopolyField(3)
+  case T1   extends MonopolyField(4)
+  case R1   extends MonopolyField(5)
+  case B1   extends MonopolyField(6)
+  case CH1  extends MonopolyField(7), CH
+  case B2   extends MonopolyField(8)
+  case B3   extends MonopolyField(9)
+  case JAIL extends MonopolyField(10)
+  case C1   extends MonopolyField(11)
+  case U1   extends MonopolyField(12)
+  case C2   extends MonopolyField(13)
+  case C3   extends MonopolyField(14)
+  case R2   extends MonopolyField(15)
+  case D1   extends MonopolyField(16)
+  case CC2  extends MonopolyField(17), CC
+  case D2   extends MonopolyField(18)
+  case D3   extends MonopolyField(19)
+  case FP   extends MonopolyField(20)
+  case E1   extends MonopolyField(21)
+  case CH2  extends MonopolyField(22), CH
+  case E2   extends MonopolyField(23)
+  case E3   extends MonopolyField(24)
+  case R3   extends MonopolyField(25)
+  case F1   extends MonopolyField(26)
+  case F2   extends MonopolyField(27)
+  case U2   extends MonopolyField(28)
+  case F3   extends MonopolyField(29)
+  case G2J  extends MonopolyField(30)
+  case G1   extends MonopolyField(31)
+  case G2   extends MonopolyField(32)
+  case CC3  extends MonopolyField(33), CC
+  case G3   extends MonopolyField(34)
+  case R4   extends MonopolyField(35)
+  case CH3  extends MonopolyField(36), CH
+  case H1   extends MonopolyField(37)
+  case T2   extends MonopolyField(38)
+  case H2   extends MonopolyField(39)
+end MonopolyField
+
+enum CommunityChest:
+  case AdvanceToGO, GoToJAIL, Stay0, Stay1, Stay2, Stay3, Stay4, Stay5, Stay6,
+    Stay7, Stay8, Stay9, Stay10, Stay11, Stay12, Stay13
+
+enum Chance:
+  case AdvanceToGO, GoToJAIL, GoToC1, GoToE3, GoToH2, GoToR1, GoToNextR1,
+    GoToNextR2, GoToNextU, GoBack3Squares, Stay0, Stay1, Stay2, Stay3, Stay4,
+    Stay5
 ```
+
+Определим класс для текущего набора карточек "Общественная казна" и "Шанс", 
+а также методы переноса верхней карты вниз колоды.
+Метод `initialCards` перемешивает карточки в начале игры.
+
+**Код:**
+
+```dotty
+final case class Cards(
+    cardsCC: Vector[CommunityChest],
+    cardsCH: Vector[Chance]
+):
+  def shiftCC: Cards =
+    Cards(cardsCC.drop(1) ++ cardsCC.headOption, cardsCH)
+
+  def shiftCH: Cards =
+    Cards(cardsCC, cardsCH.drop(1) ++ cardsCH.headOption)
+
+def initialCards: Cards = Cards(
+  Random.shuffle(CommunityChest.values.toVector),
+  Random.shuffle(Chance.values.toVector)
+)
+```
+
+Определим в качестве текущего статуса определенный набор карт в данный момент, а также количество выброшенных дублей.
+
+**Код:**
+
+```dotty
+type MonopolyStatus = (Cards, Byte)
+type MonopolyState  = MonopolyStatus => (MonopolyField, MonopolyStatus)
+```
+
+Если игрок встал на поле "Общественная казна", то переход к следующему полю происходит согласно правилам:
+
+> Когда игрок попадает на клетку CC или CH, он берет верхнюю карту с соответствующей колоды и, после
+> выполнения указанных на ней инструкций, возвращает ее в низ колоды. 
+> В каждой колоде 16 карт, однако для решения этой задачи важны только карты, связанные с перемещением игрока. 
+> Любые другие инструкции игнорируются и игрок остается на той же клетке.
+> 
+> Общественный фонд (2/16 карт):
+> 
+> - Пройдите к GO
+> - Идите в JAIL
+
+**Код:**
+
+```dotty
+def goFromCC(field: CC & MonopolyField): MonopolyState = (cards, doubles) =>
+  cards.cardsCC.headOption match
+    case Some(CommunityChest.AdvanceToGO) =>
+      (MonopolyField.GO, (cards.shiftCC, doubles))
+    case Some(CommunityChest.GoToJAIL) =>
+      (MonopolyField.JAIL, (cards.shiftCC, doubles))
+    case _ => (field, (cards.shiftCC, doubles))
+```
+
+Если игрок встал на поле "Шанс", то переход к следующему полю происходит согласно правилам:
+
+> Когда игрок попадает на клетку CC или CH, он берет верхнюю карту с соответствующей колоды и, после
+> выполнения указанных на ней инструкций, возвращает ее в низ колоды. 
+> В каждой колоде 16 карт, однако для решения этой задачи важны только карты, связанные с перемещением игрока. 
+> Любые другие инструкции игнорируются и игрок остается на той же клетке.
+> 
+> Chance (10/16 cards):
+> 
+> - Пройдите к GO
+> - Идите в JAIL
+> - Идите на C1
+> - Идите на E3
+> - Идите на H2
+> - Идите на R1
+> - Пройдите к следующей R (железнодорожная станция)
+> - Пройдите к следующей R
+> - Пройдите к следующей U (коммунальное предприятие)
+> - Вернитесь назад на 3 клетки
+
+```dotty
+def goFromCH(field: CH & MonopolyField): MonopolyState = (cards, doubles) =>
+  cards.cardsCH.headOption match
+    case Some(Chance.AdvanceToGO) =>
+      (MonopolyField.GO, (cards.shiftCH, doubles))
+    case Some(Chance.GoToJAIL) =>
+      (MonopolyField.JAIL, (cards.shiftCH, doubles))
+    case Some(Chance.GoToC1) => (MonopolyField.C1, (cards.shiftCH, doubles))
+    case Some(Chance.GoToE3) => (MonopolyField.E3, (cards.shiftCH, doubles))
+    case Some(Chance.GoToH2) => (MonopolyField.H2, (cards.shiftCH, doubles))
+    case Some(Chance.GoToR1) => (MonopolyField.R1, (cards.shiftCH, doubles))
+    case Some(Chance.GoToNextR1) | Some(Chance.GoToNextR2) =>
+      field match
+        case MonopolyField.CH1 =>
+          (MonopolyField.R2, (cards.shiftCH, doubles))
+        case MonopolyField.CH2 =>
+          (MonopolyField.R3, (cards.shiftCH, doubles))
+        case MonopolyField.CH3 =>
+          (MonopolyField.R1, (cards.shiftCH, doubles))
+    case Some(Chance.GoToNextU) =>
+      field match
+        case MonopolyField.CH1 =>
+          (MonopolyField.U1, (cards.shiftCH, doubles))
+        case MonopolyField.CH2 =>
+          (MonopolyField.U2, (cards.shiftCH, doubles))
+        case MonopolyField.CH3 =>
+          (MonopolyField.U1, (cards.shiftCH, doubles))
+    case Some(Chance.GoBack3Squares) =>
+      field match
+        case MonopolyField.CH1 =>
+          (MonopolyField.T1, (cards.shiftCH, doubles))
+        case MonopolyField.CH2 =>
+          (MonopolyField.D3, (cards.shiftCH, doubles))
+        case MonopolyField.CH3 =>
+          goFromCC(MonopolyField.CC3)(cards.shiftCH, doubles)
+    case _ => (field, (cards.shiftCH, doubles))
+```
+
+Переход к следующей клетке из текущей:
+
+> В дополнение к G2J и одной карте в CC и в CH, которые приказывают игроку отправиться в тюрьму, 
+> также если игрок выкидывает три дубля подряд, он не двигается в свой третий ход, а отправляется сразу в тюрьму.
+
+```dotty
+def goToNextField(
+    field: MonopolyField,
+    dice1: Byte,
+    dice2: Byte
+): MonopolyState = (cards, doubles) =>
+  val newDoubles = if dice1 == dice2 then (doubles + 1).toByte else 0
+  if newDoubles == 3 then (MonopolyField.JAIL, (cards, 0))
+  else
+    val newFieldOrdinal = (field.i + dice1 + dice2) % 40
+    MonopolyField.fromOrdinal(newFieldOrdinal) match
+      case MonopolyField.G2J => (MonopolyField.JAIL, (cards, newDoubles))
+      case cc: (CC & MonopolyField) => goFromCC(cc)(cards, newDoubles)
+      case ch: (CH & MonopolyField) => goFromCH(ch)(cards, newDoubles)
+      case newField                 => (newField, (cards, newDoubles))
+```
+
+
 
 ## Задача №85
 

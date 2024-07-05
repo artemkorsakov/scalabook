@@ -397,7 +397,51 @@ def goToNextField(
       case newField                 => (newField, (cards, newDoubles))
 ```
 
+Получение итоговой статистики:
 
+- задаем число граней на кубике и количество "испытаний"
+- начинаем с поля `GO`, с перемешанными картами "Общественная казна" и "Шанс", а также нулевым числом дублей
+- используя итеративную функцию, принимающую текущее поле, статус, собранную статистику и номер итерации,
+  проходимся по текущей итерации:
+    - если мы достигли заданного числа испытаний, то возвращаем собранную статистику
+    - "бросаем кубики"
+    - используя `goToNextField` вычисляем следующее поле и следующий статус
+    - рекурсивно вызываем функцию для новых поля и статуса, обновленной статистики и числа итераций
+
+```dotty
+def getFieldStatistics(maxDiceValue: Byte,count: Int): Vector[(MonopolyField, Int)] =
+  val initialField                          = MonopolyField.GO
+  val initialMonopolyStatus: MonopolyStatus = (initialCards, 0)
+
+  @tailrec
+  def loop(
+      field: MonopolyField,
+      status: MonopolyStatus,
+      statistics: Map[MonopolyField, Int],
+      counter: Int
+  ): Map[MonopolyField, Int] =
+    if counter >= count then statistics
+    else
+      val dice1                 = (Random.nextInt(maxDiceValue) + 1).toByte
+      val dice2                 = (Random.nextInt(maxDiceValue) + 1).toByte
+      val (newField, newStatus) = goToNextField(field, dice1, dice2)(status)
+      loop(
+        newField,
+        newStatus,
+        statistics + (newField -> (statistics.getOrElse(newField, 0) + 1)),
+        counter + 1
+      )
+
+  loop(initialField, initialMonopolyStatus, Map.empty, 0)
+    .toVector.sortBy(-_._2)
+```
+
+Итого, для шестигранного кубика и миллиона испытаний получим следующий топ-3:
+
+```dotty
+val stats1 = getFieldStatistics(6, 1000000).take(3)
+// Vector((JAIL,62355), (E3,31815), (GO,31010))
+```
 
 ## Задача №85
 

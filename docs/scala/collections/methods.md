@@ -470,6 +470,15 @@ a.reduce(_ * _)
 - [Изменяемые и неизменяемые коллекции][collections-2.13]
 - [Архитектура коллекций Scala][architecture-of-scala-213-collections]
 - [collections API][api]
+- [SKB – Scala flatMap](https://leobenkel.com/2020/09/skb-scala-flatmap/)
+- [SKB – Scala foldLeft](https://leobenkel.com/2020/09/skb-scala-foldleft/)
+- [SKB – Scala List Filter Method](https://leobenkel.com/2020/08/skb-scala-list-filter-method/)
+- [SKB – Scala List Flatten](https://leobenkel.com/2020/08/skb-scala-list-flatten/)
+- [SKB – Scala List of Option flatten](https://leobenkel.com/2020/12/skb-scala-list-of-option-flatten/)
+- [SKB – Scala List parallel](https://leobenkel.com/2020/09/skb-scala-list-parallel/)
+- [SKB – Scala List zip](https://leobenkel.com/2020/11/skb-scala-list-zip/)
+- [SKB – Scala Map for List](https://leobenkel.com/2020/07/skb-scala-map-for-list/)
+
 
 [collections-2.13]: https://docs.scala-lang.org/ru/overviews/collections-2.13/overview.html
 [architecture-of-scala-213-collections]: https://docs.scala-lang.org/overviews/core/architecture-of-scala-213-collections.html

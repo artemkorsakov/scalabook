@@ -66,3 +66,4 @@ val map = (1 to 3).map(e => (e, e.toString)).toMap
 - [Scala3 book, Collections Types](https://docs.scala-lang.org/scala3/book/collections-classes.html)
 - [Scala, Immutable collections](https://docs.scala-lang.org/ru/overviews/collections-2.13/concrete-immutable-collection-classes.html)
 - [Scala, Mutable collections](https://docs.scala-lang.org/ru/overviews/collections-2.13/concrete-mutable-collection-classes.html)
+- [SKB – Scala Range](https://leobenkel.com/2020/09/skb-scala-range/)

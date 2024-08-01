@@ -109,3 +109,4 @@ end Completions
 
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/ca-implicit-conversions.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/contextual/conversions.html)
+- [SKB – Scala implicit conversion](https://leobenkel.com/2020/11/skb-scala-implicit-conversion/)

@@ -180,3 +180,4 @@ summon[Foo[String]].value
 - [Givens vs. Implicits in Scala 3 - Rock the JVM](https://blog.rockthejvm.com/givens-vs-implicits/)
 - [Implicit vs Scala 3's Given](https://alexn.org/blog/2022/05/11/implicit-vs-scala-3-given)
 - [Scala 3: How Givens Can Work with Implicits - Rock the JVM](https://blog.rockthejvm.com/givens-and-implicits/)
+- [SKB – Scala implicit val](https://leobenkel.com/2020/10/skb-scala-implicit-val/)

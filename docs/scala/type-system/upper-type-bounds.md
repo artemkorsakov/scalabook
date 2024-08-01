@@ -48,4 +48,5 @@ val lionContainer = PetContainer[Lion](Lion())
 **Ссылки:**
 
 - [Scala tour, Upper type bounds](https://docs.scala-lang.org/ru/tour/upper-type-bounds.html)
+- [SKB – Scala upper constraint](https://leobenkel.com/2020/11/skb-scala-upper-constraint/)
 - [Type Parameterisation](https://danielasfregola.com/2015/02/02/type-parameterisation)

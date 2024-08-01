@@ -42,6 +42,7 @@ _В функциональном программировании функции
 - [Functional Programming For The Rest of Us](https://www.defmacro.org/2006/06/19/fp.html)
 - [Functional Programming in Scala, Second Edition, Chapter 1-2](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fp-what-is-fp.html)
+- [SKB – Scala Recursion](https://leobenkel.com/2020/10/skb-scala-recursion/)
 - [Unleashing the Power: The Advantages of Functional Programming in the Digital Age](https://scalac.io/blog/unleashing-the-power-the-advantages-of-functional-programming-in-the-digital-age)
 - [What's Functional Programming All About?](https://www.lihaoyi.com/post/WhatsFunctionalProgrammingAllAbout.html)
 - [What is Functional Programming? - Alexandru Nedelcu](https://alexn.org/blog/2017/10/15/functional-programming)

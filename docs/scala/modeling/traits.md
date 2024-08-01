@@ -211,4 +211,6 @@ Trait-ы [scala.Product](https://scala-lang.org/api/3.x/scala/Product.html),
 - [Scala3 book, taste objects](https://docs.scala-lang.org/scala3/book/taste-objects.html)
 - [Scala3, Reference](https://docs.scala-lang.org/scala3/reference/other-new-features/trait-parameters.html)
 - [Scala3, Transparent Traits](https://docs.scala-lang.org/scala3/reference/other-new-features/transparent-traits.html)
+- [SKB – Scala Sealed](https://leobenkel.com/2020/10/skb-scala-sealed/)
+- [SKB – Scala trait](https://leobenkel.com/2020/10/skb-scala-trait/)
 - [The Practical (and Subtle) Differences Between Traits and Abstract Classes in Scala - Rock the JVM](https://www.youtube.com/watch?v=_7ULjOILxhI&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)

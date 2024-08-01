@@ -193,3 +193,7 @@ foo(new Foo("first", 2, 3, 4))
 **Ссылки:**
 
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/changed-features/pattern-matching.html)
+- [SKB – Scala case class unapply](https://leobenkel.com/2020/11/skb-scala-case-class-unapply/)
+- [SKB – Scala List pattern matching](https://leobenkel.com/2020/12/skb-scala-list-pattern-matching/)
+- [SKB – Scala Option pattern matching](https://leobenkel.com/2020/12/skb-scala-option-pattern-matching/)
+- [SKB – Scala unapply magic](https://leobenkel.com/2020/12/skb-scala-unapply-magic/)

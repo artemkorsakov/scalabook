@@ -115,3 +115,4 @@ ints.foreach(println)
 
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/taste-functions.html)
 - [Scala3 book, Anonymous Functions](https://docs.scala-lang.org/scala3/book/fun-anonymous-functions.html)
+- [SKB – Scala _ placeholder](https://leobenkel.com/2020/11/skb-scala-_-placeholder/)

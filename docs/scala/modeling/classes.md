@@ -194,3 +194,5 @@ object StringBuilder:
 - [Scala3 book, taste modeling](https://docs.scala-lang.org/scala3/book/taste-modeling.html)
 - [Scala3 book, taste objects](https://docs.scala-lang.org/scala3/book/taste-objects.html)
 - [Scala 3 Reference, Universal Apply Methods](https://docs.scala-lang.org/scala3/reference/other-new-features/creator-applications.html)
+- [Scala Classes – Syntax, Declaration, Use case, Examples](https://leobenkel.com/2019/10/scala-classes/)
+- [SKB – Scala Class new](https://leobenkel.com/2020/07/skb-scala-class-new/)

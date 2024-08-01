@@ -45,3 +45,5 @@ println(stack.pop())
 **Ссылки:**
 
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-generics.html)
+- [SKB – Scala Generic Trait](https://leobenkel.com/2020/10/skb-scala-generic-trait/)
+- [SKB – Scala higher kind](https://leobenkel.com/2020/12/skb-scala-higher-kind/)

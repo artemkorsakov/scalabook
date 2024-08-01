@@ -114,4 +114,7 @@ def handleMessages(message: Message): Unit = message match
 - [Scala3 book, domain modeling tools](https://docs.scala-lang.org/scala3/book/domain-modeling-tools.html)
 - [Scala3 book, taste modeling](https://docs.scala-lang.org/scala3/book/taste-modeling.html)
 - [Scala3 book, taste objects](https://docs.scala-lang.org/scala3/book/taste-objects.html)
+- [SKB – Scala Case Class](https://leobenkel.com/2020/08/skb-scala-case-class/)
+- [SKB – Scala case class copy](https://leobenkel.com/2020/11/skb-scala-case-class-copy/)
+- [SKB – Scala case object](https://leobenkel.com/2020/10/skb-scala-case-object/)
 - [Using Case Classes to Structure Your Data](https://danielasfregola.com/2018/02/01/using-case-classes-to-structure-your-data)

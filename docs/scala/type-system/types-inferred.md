@@ -31,3 +31,4 @@ Scala сама выводит типы, как показано выше.
 **Ссылки:**
 
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-inferred.html)
+- [SKB – Scala defined type](https://leobenkel.com/2020/09/skb-scala-defined-type/)

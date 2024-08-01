@@ -330,5 +330,6 @@ val res1: concurrent.Future[Int] = Future(Success(4))
 **Ссылки:**
 
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/concurrency.html)
+- [SKB – Scala Future](https://leobenkel.com/2020/10/skb-scala-future/)
 
 [Futures and Promises]: https://docs.scala-lang.org/overviews/core/futures.html

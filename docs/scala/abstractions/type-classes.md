@@ -59,6 +59,7 @@ Scala 3 предлагает дополнительные функции, кот
 **Ссылки:**
 
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/types-type-classes.html)
+- [SKB – Scala Typeclass](https://leobenkel.com/2021/01/skb-scala-typeclass/)
 - [The Power of Type-classes with Scala implicit defs](https://blog.tmorris.net/posts/the-power-of-type-classes-with-scala-implicit-defs/index.html)
 - [Why are Type Classes Useful in Scala? - Rock the JVM](https://blog.rockthejvm.com/why-are-typeclasses-useful/)
 

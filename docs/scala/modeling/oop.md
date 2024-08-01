@@ -359,8 +359,10 @@ s2.changeValue(3)
 - [Scala3 book, domain modeling oop](https://docs.scala-lang.org/scala3/book/domain-modeling-oop.html)
 - [Scala3 book, taste modeling](https://docs.scala-lang.org/scala3/book/taste-modeling.html)
 - [Scala3 book, taste objects](https://docs.scala-lang.org/scala3/book/taste-objects.html)
+- [Functional Programming vs OOP](https://scalac.io/blog/functional-programming-vs-oop/)
 - [Odersky and Zenger. Scalable component abstractions][Odersky and Zenger]
 - [Scala 3 Reference, Open classes](https://docs.scala-lang.org/scala3/reference/other-new-features/open-classes.html)
-- [Functional Programming vs OOP](https://scalac.io/blog/functional-programming-vs-oop/)
+- [SKB – Scala constraint inheritance](https://leobenkel.com/2020/12/skb-scala-constraint-inheritance/)
+- [SKB – Scala multiple inheritance](https://leobenkel.com/2020/12/skb-scala-multiple-inheritance/)
 
 [Odersky and Zenger]: https://dl.acm.org/doi/10.1145/1103845.1094815

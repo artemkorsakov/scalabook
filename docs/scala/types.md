@@ -372,5 +372,10 @@ val y: Float = x
 - [Scala3 book, String interpolation][interpolation]
 - [Scala3 Safer pattern matching with matchable](https://medium.com/scala-3/scala-3-safer-pattern-matching-with-matchable-f0396430ded6?source=rss----de7527e0301e---4)
 - [How to create your own String interpolator in Scala - Rock the JVM](https://www.youtube.com/watch?v=J6Vnn7aHYAk&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
+- [Scala Variables – Syntax, Declaration, Use case, Examples](https://leobenkel.com/2019/10/scala-variables/)
+- [SKB – Scala difference between val, lazy val and def](https://leobenkel.com/2020/07/skb-scala-val-lazy-def/)
+- [SKB – Scala literal identifiers](https://leobenkel.com/2020/12/skb-scala-literal-identifiers/)
+- [SKB – Scala String Format](https://leobenkel.com/2020/10/skb-scala-string-format/)
+- [SKB – Scala String Interpolation](https://leobenkel.com/2020/07/skb-scala-string-interpolation/)
 
 [interpolation]: https://docs.scala-lang.org/scala3/book/string-interpolation.html

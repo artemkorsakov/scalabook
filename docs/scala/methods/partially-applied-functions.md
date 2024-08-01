@@ -24,3 +24,4 @@ add2(42)
 - Category Theory for Programmers - Bartosz Milewski:
     - [Теория категорий для программистов](https://henrychern.files.wordpress.com/2023/05/mil-ct3.pdf#page=149)
     - [Category Theory for Programmers, Function Types](https://bartoszmilewski.com/2015/03/13/function-types/)
+- [SKB – Scala Curry](https://leobenkel.com/2020/09/skb-scala-curry/)

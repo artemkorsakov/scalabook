@@ -48,3 +48,4 @@ printList(lst.tail)
 
 - [Scala3 book, Method Features](https://docs.scala-lang.org/scala3/book/methods-most.html)
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/changed-features/vararg-splices.html)
+- [SKB – Scala Repeated Parameters](https://leobenkel.com/2020/10/skb-scala-repeated-parameters/)

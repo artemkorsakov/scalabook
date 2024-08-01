@@ -21,3 +21,4 @@
 **Ссылки:**
 
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/taste-hello-world.html)
+- [SKB – Scala main](https://leobenkel.com/2020/09/skb-scala-main/)

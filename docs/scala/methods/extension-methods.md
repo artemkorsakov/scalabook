@@ -44,3 +44,4 @@ aCircle.area
 
 - [Scala3 book, Method Features](https://docs.scala-lang.org/scala3/book/methods-most.html)
 - [Scala 3: Extension Methods - Rock the JVM](https://blog.rockthejvm.com/scala-3-extension-methods/)
+- [SKB – Scala implicit class](https://leobenkel.com/2020/09/skb-scala-implicit-class/)

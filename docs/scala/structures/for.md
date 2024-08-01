@@ -40,8 +40,8 @@ do
 ```dotty
 for
   i <- 1 to 2
-j <- 'a' to 'b'
-k <- 1 to 10 by 5
+  j <- 'a' to 'b'
+  k <- 1 to 10 by 5
 do
   println(s"i = $i, j = $j, k = $k")
 // i = 1, j = a, k = 1

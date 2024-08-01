@@ -28,6 +28,7 @@
 | Название                                                                                                                                  |  Версия  | Язык | Дата | Комментарий |
 |-------------------------------------------------------------------------------------------------------------------------------------------|:--------:|:----:|------|-------------|
 | [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)                                                | Scala 2  |  En  | 2017 |             |
+| [20 Intermediate Scala Exercises](https://blog.tmorris.net/posts/20-intermediate-scala-exercises/index.html)                              | Scala 2  |  En  | 2008 |             |
 | [Scala puzzlers](https://scalapuzzlers.com/index.html), на основе упражнений [написана книга](https://www.artima.com/shop/scala_puzzlers) | Scala 2  |  En  | 2014 |             |
 | [Scalacaster](https://github.com/vkostyukov/scalacaster/tree/master)                                                                      | Scala 2  |  En  | 2018 |             |
 | [Scalgos](https://github.com/pathikrit/scalgos/tree/master)                                                                               | Scala 2  |  En  | 2015 |             |
@@ -48,10 +49,12 @@
 | [Time traveling in tests with Cats Effect](https://blog.softwaremill.com/time-traveling-in-tests-with-cats-effect-b22084f6a89)                                                           | Scala 3 |  En  | 2020 | Cats effect      |
 | [Type Classes](https://typelevel.org/cats/typeclasses.html)                                                                                                                              | Scala 3 |  En  |      |                  |
 | [What is an Effect?](https://www.inner-product.com/posts/what-is-an-effect/)                                                                                                             | Scala 3 |  En  | 2020 | Cats effect      |
+| [A Beginner-Friendly Tour through Functional Programming in Scala](https://degoes.net/articles/easy-monads)                                                                              | Scala 2 |  En  | 2016 |                  |
 | [A simple trick to improve type safety of your Scala code](https://blog.softwaremill.com/a-simple-trick-to-improve-type-safety-of-your-scala-code-ba80559ca092)                          | Scala 2 |  En  | 2020 | Refined          |
 | [Algebraic API Design - Types, Functions, Properties](https://typelevel.org/blog/2019/02/06/algebraic-api-design.html)                                                                   | Scala 2 |  En  | 2019 |                  |
 | [Cats Concurrency basics with Ref and Deferred](https://blog.softwaremill.com/cats-concurrency-basics-with-ref-and-deferred-399e0335630)                                                 | Scala 2 |  En  | 2020 | Cats effect      |
 | [Compile time dimensional analysis with Libra](https://typelevel.org/blog/2017/06/13/libra.html)                                                                                         | Scala 2 |  En  | 2017 |                  |
+| [console games in Scala](https://eed3si9n.com/console-games-in-scala)                                                                                                                    | Scala 2 |  En  | 2018 |                  |
 | [Deriving Type Class Instances](https://typelevel.org/blog/2013/06/24/deriving-instances-1.html)                                                                                         | Scala 2 |  En  | 2013 |                  |
 | [Equivalence versus Equality](https://typelevel.org/blog/2017/04/02/equivalence-vs-equality.html)                                                                                        | Scala 2 |  En  | 2017 |                  |
 | [Higher-Kinded Data in Scala](https://xebia.com/blog/higher-kinded-data-in-scala/)                                                                                                       | Scala 2 |  En  | 2023 |                  |

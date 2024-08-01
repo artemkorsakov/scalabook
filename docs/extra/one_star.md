@@ -38,16 +38,19 @@
 | [Scala 3 New Features - Rock the JVM](https://rockthejvm.com/p/scala-3-new-features)                                                                 | Scala 3 |  En  | 2023 |                                                                              |
 | [Введение в Scala](https://stepik.org/course/16243/promo)                                                                                            | Scala 2 |  Ру  | 2019 |                                                                              |
 | [Основы Scala](https://stepik.org/course/89974/promo)                                                                                                | Scala 2 |  Ру  | 2021 |                                                                              |
+| [Scala Knowledge Bits](https://leobenkel.com/category/scala/knowledge-bits)                                                                          | Scala 2 |  En  | 2020 |                                                                              |
 | [Scala Tutorial](https://stepik.org/course/55498/promo)                                                                                              | Scala 2 |  En  | 2021 |                                                                              |
 
 ## Упражнения
 
-| Название                                                    | Версия  | Язык | Дата | Комментарий |
-|-------------------------------------------------------------|:-------:|:----:|------|-------------|
-| [Exercism - Scala track](https://exercism.org/tracks/scala) | Scala 2 |  En  |      |             |
-| [Scala exercises](https://www.scala-exercises.org/)         | Scala 2 |  En  |      |             |
-| [Scala tutorials](http://scalatutorials.com/tour/)          | Scala 2 |  En  |      |             |
-| [Tour of Scala](https://tourofscala.com/)                   | Scala 2 |  En  |      |             |
+| Название                                                                                     | Версия  | Язык | Дата | Комментарий |
+|----------------------------------------------------------------------------------------------|:-------:|:----:|------|-------------|
+| [Exercism - Scala track](https://exercism.org/tracks/scala)                                  | Scala 2 |  En  |      |             |
+| [Learn X in Y minutes](https://learnxinyminutes.com/docs/scala)                              | Scala 2 |  En  |      |             |
+| [Revised Scala Exercises](https://blog.tmorris.net/posts/revised-scala-exercises/index.html) | Scala 2 |  En  |      |             |
+| [Scala exercises](https://www.scala-exercises.org/)                                          | Scala 2 |  En  | 2008 |             |
+| [Scala tutorials](http://scalatutorials.com/tour/)                                           | Scala 2 |  En  |      |             |
+| [Tour of Scala](https://tourofscala.com/)                                                    | Scala 2 |  En  |      |             |
 
 ## Статьи
 
@@ -63,11 +66,14 @@
 | [Immutable Collections should be Your Default](https://alexn.org/blog/2022/10/27/immutable-collections-your-default/?pk_campaign=rss)                                                         | Scala 3 |  En  | 2022 |                             |
 | [Infix operator notation](https://medium.com/scala-3/scala-3-infix-operator-notation-26bd7c13d0a3?source=rss----de7527e0301e---4)                                                             | Scala 3 |  En  | 2023 |                             |
 | [In Scala 3, use 4 Spaces for Indentation](https://alexn.org/blog/2023/11/08/in-scala-3-use-4-spaces-for-indentation)                                                                         | Scala 3 |  En  | 2023 |                             |
+| [Learning Scala: Function Literals](https://jamesward.com/2011/10/17/learning-scala-function-literals)                                                                                        |  Scala  |  En  | 2011 |                             |
 | [Let’s Talk About the Scala 3 Indentation - Rock the JVM](https://blog.rockthejvm.com/scala-3-indentation/)                                                                                   | Scala 3 |  En  | 2020 |                             |
 | [Principles of developing applications in Scala](https://softwaremill.com/principles-of-developing-applications-in-scala/)                                                                    | Scala 3 |  En  | 2023 |                             |
 | [Scala as a Junior Developer](https://blog.rockthejvm.com/scala-as-a-junior-dev)                                                                                                              | Scala 3 |  En  | 2023 |                             |
 | [Scala Made Simple for Beginners](https://yadukrishnan.live/scala-made-simple-for-beginners-a-gentle-introduction-to-kickstarting-your-scala-learning)                                        | Scala 3 |  En  | 2023 |                             |
+| [Scala pros and cons](https://jim-mcbeath.blogspot.com/2010/12/scala-pros-and-cons.html)                                                                                                      |  Scala  |  En  | 2010 |                             |
 | [Scripting with Scala](https://alexn.org/blog/2022/09/13/scripting-with-scala/)                                                                                                               | Scala 3 |  En  | 2023 |                             |
+| [Ten things I like about Scala 3](https://eed3si9n.com/10things)                                                                                                                              | Scala 3 |  En  | 2024 |                             |
 | [TestContainers in Scala: Use Integration Tests for building your services](https://scalac.io/blog/testcontainers-in-scala-use-integration-tests-for-building-your-services/)                 | Scala 3 |  En  | 2023 |                             |
 | [Two types of futures](https://softwaremill.com/two-types-of-futures/)                                                                                                                        | Scala 3 |  En  | 2023 |                             |
 | [What's Functional Programming All About?](https://www.lihaoyi.com/post/WhatsFunctionalProgrammingAllAbout.html)                                                                              |  Scala  |  En  | 2017 |                             |
@@ -80,6 +86,7 @@
 | [My Dos and Don'ts in sbt Build Definitions](https://www.chris-kipp.io/blog/my-dos-and-donts-in-sbt-build-definitions)                                                                        | Scala 2 |  En  | 2021 |                             |
 | [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes)                                                              | Scala 2 |  En  | 2012 |                             |
 | [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics) | Scala 2 |  En  | 2013 |                             |
+| [Scala and Evaluation Strategy](https://eed3si9n.com/scala-and-evaluation-strategy)                                                                                                           | Scala 2 |  En  | 2009 |                             |
 | [Shared package code? Fear no more!](https://danielasfregola.com/2014/12/28/shared-package-code-fear-no-more)                                                                                 | Scala 2 |  En  | 2014 |                             |
 | [Super Powers to Qualified Access Modifiers](https://danielasfregola.com/2014/12/31/super-powers-to-qualified-access-modifiers)                                                               | Scala 2 |  En  | 2014 |                             |
 | [Tail Recursive Functions in Scala](https://alexn.org/blog/2021/01/26/tail-recursive-functions-in-scala)                                                                                      | Scala 2 |  En  | 2021 |                             |

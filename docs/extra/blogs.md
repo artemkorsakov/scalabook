@@ -19,7 +19,6 @@
 | [Higher order: Runar Bjarnason's Blog](http://blog.higher-order.com)               |  En  | Scala | >750  | 02-04-2016     |
 | [John A De Goes' Blog](http://degoes.net)                                          |  En  | Scala | >500  | 19-03-2023     |
 | [Paul Chiusano's Blog](http://pchiusano.github.io)                                 |  En  | Scala | >500  | 13-10-2020     |
-| [Jim McBeath's Blog](http://jim-mcbeath.blogspot.com)                              |  En  | Scala | >250  | 15-08-2022     |
 | [Rock the JVM Blog](https://blog.rockthejvm.com/)                                  |  En  | Scala | >100  | менее полугода |
 | [Zero Credibility Blog](https://spakhm.substack.com/about)                         |  En  | Code  | >100  | менее полугода |
 | [Heinrich Apfelmus's Blog](https://apfelmus.nfshost.com)                           |  En  | Code  | >100  | 02-05-2021     |

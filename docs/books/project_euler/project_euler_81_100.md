@@ -558,10 +558,99 @@ val (n, m) = pairs.minBy(difference)
 
 **Алгоритм:**
 
+Обозначим длины сторон параллелепипеда от меньшей к большей за x, y, z. Тогда \\(1 \le x \le y \le z \le M\\).
+Если отобразить параллелепипед на плоскость так, чтобы меньшая сторона "продолжила" среднюю, то получиться
+прямоугольник со сторонами (x + y, z). 
+Тогда длина кратчайшего пути исходного параллелепипеда равна \\(\sqrt{(x + y)^2 + z^2}\\).
+Это [Пифагорова тройка](../../algorithms/algorithms/fibonacci.md).
+Обозначим эту тройку как (a, b, c).
+
+Тогда количество решений для заданной Пифагоровой тройки будет равно количеству допустимых x таких, 
+чтобы выполнялись следующий условия:
+
+- \\(1 \le x \le y \le z \le limit\\)
+- \\(x + y = a\\)
+- \\(z = b\\)
+- Следовательно:
+    - \\(a \le 2 \times limit\\)
+    - \\(b \le limit\\)
+    - \\(1 \le x \le a - x \le b \Rightarrow max(1, a - b) \le x \le \frac{a}{2} \\)
+
+Получаем, что количество решений для заданных a, b и M равно \\(max(\frac{a}{2} - max(a - b, 1) + 1, 0)\\)
+
 **Код:**
 
 ```dotty
+def getCountForLegs(a: Long, b: Long, limit: Long): Long =
+  if a > 2 * limit || b > limit then 0
+  else math.max((a / 2) - math.max(1, a - b) + 1, 0)
+```
 
+Для заданной примитивной Пифагоровой тройки (a, b, c) будем строить все Пифагоровы тройки с кратными катетами (k\*a, k\*b, k\*c) 
+до тех пор, пока количество решений для таких троек больше нуля.
+Очевидно, что если для \\(k\_{1}\\) количество решений равно нулю, то для всех больших \\(k\_{2}\\) 
+количество решений также будет равняться нулю, т.к. катеты вышли за пределы лимита. 
+
+К тому же сумма меньших сторон исходного параллелепипеда (x + y) может равняться 
+либо одному катету Пифагоровой тройки (a), либо другому (b).
+
+**Код:**
+
+```dotty
+def getCountForPythagoreanTriplet(
+    triplet: PythagoreanTriplet,
+    limit: Int
+): Long =
+  getCountForSimilarLegs(triplet.a, triplet.b, limit) + getCountForSimilarLegs(triplet.b, triplet.a, limit)
+
+def getCountForSimilarLegs(a: Long, b: Long, limit: Long): Long =
+  @tailrec
+  def loop(aa: Long, bb: Long, acc: Long): Long =
+    val count = getCountForLegs(aa, bb, limit)
+    if count == 0 then acc
+    else loop(aa + a, bb + b, acc + count)
+
+  loop(a, b, 0)
+```
+
+[Примитивные Пифагоровы тройки генерятся согласно заданному алгоритму](../../algorithms/algorithms/fibonacci.md).
+
+Пройдемся по всем текущим пифагоровым тройкам, начиная с исходной (3, 4, 5) и если среди текущих есть те, 
+что генерят положительную сумму, то оставляем их для подсчета следующих троек.
+Если нет, то заканчиваем подсчет.
+
+**Код:**
+
+```dotty
+private val primitivePythagoreanTriplet: PythagoreanTriplet =
+  PythagoreanTriplet(3, 4, 5)
+
+def getCountForM(limit: Int): Long =
+  @tailrec
+  def loop(triplets: List[PythagoreanTriplet], acc: Long): Long =
+    val (validTriplets, sum) = getCountForPythagoreanTriplets(triplets, limit)
+
+    val newAcc = acc + sum
+    if validTriplets.isEmpty then newAcc
+    else
+      val next = validTriplets.flatMap(_.nextPythagoreanTriplet)
+      loop(next, newAcc)
+
+  loop(List(primitivePythagoreanTriplet), 0)
+
+def getCountForPythagoreanTriplets(
+    triplets: List[PythagoreanTriplet],
+    limit: Int
+): (List[PythagoreanTriplet], Long) =
+  triplets.foldLeft((List.empty[PythagoreanTriplet], 0L)) {
+    case ((validTriplets, sum), triplet) =>
+      val count = getCountForPythagoreanTriplet(triplet, limit)
+      if count == 0 then (validTriplets, sum)
+      else (triplet :: validTriplets, sum + count)
+  }
+  
+getCountForM(99)  // 1975
+getCountForM(100) // 2060
 ```
 
 ## Задача №87

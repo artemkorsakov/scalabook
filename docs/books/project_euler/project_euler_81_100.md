@@ -986,10 +986,143 @@ val count = (1 until limit).count(n => getCycleNumber(n) == 89)
 
 **Алгоритм:**
 
+Определим необходимые операции: сложение, вычитание, умножение и деление. 
+При этом надо иметь в виду, что операции должны производиться над `Double`, 
+т.к. только итоговое число после выполнения всех трех операции должно быть целым.
+Например, как в случае с \\(4 * (3 + \frac{1}{2}) = 4 * 3.5 = 14\\).
+
 **Код:**
 
 ```dotty
+enum Oper:
+  case Add, Sub, Mul, Div
 
+def calculate(a: Double, b: Double, op: Oper): Double =
+  op match
+    case Oper.Add => a + b
+    case Oper.Sub => a - b
+    case Oper.Mul => a * b
+    case Oper.Div => a / b
+```
+
+Для уже заданных чисел и операций (a op1 b op2 c op3 d) определим все возможные комбинации скобок, 
+задающих порядок выполнения:
+
+- ((a op1 b) op2 (c op3 d))
+- (((a op1 b) op2 c) op3 d)
+- (a op1 ((b op2 c) op3 d))
+- ((a op1 (b op2 c)) op3 d)
+- (a op1 (b op2 (c op3 d)))
+
+**Код:**
+
+```dotty
+def calculateDifferentCompositions(
+    a: Int,
+    b: Int,
+    c: Int,
+    d: Int,
+    first: Oper,
+    second: Oper,
+    third: Oper
+): SortedSet[Int] =
+  val case132 = calculate(
+    calculate(a.toDouble, b.toDouble, first),
+    calculate(c.toDouble, d.toDouble, third),
+    second
+  )
+  val case123 =
+    calculate(
+      calculate(calculate(a.toDouble, b.toDouble, first), c.toDouble, second),
+      d.toDouble,
+      third
+    )
+  val case312 = calculate(
+    a.toDouble,
+    calculate(calculate(b.toDouble, c.toDouble, second), d.toDouble, third),
+    first
+  )
+  val case213 =
+    calculate(
+      calculate(a.toDouble, calculate(b.toDouble, c.toDouble, second), first),
+      d.toDouble,
+      third
+    )
+  val case321 = calculate(
+    a.toDouble,
+    calculate(b.toDouble, calculate(c.toDouble, d.toDouble, third), second),
+    first
+  )
+  SortedSet(case132, case123, case312, case213, case321).collect {
+    case x if x.isWhole => x.toInt
+  }
+end calculateDifferentCompositions
+```
+
+Составим все возможные комбинации операций для заданного набора чисел (a, b, c, d):
+
+```dotty
+def calculateDifferentOperations(
+    a: Int,
+    b: Int,
+    c: Int,
+    d: Int
+): SortedSet[Int] =
+  val numbers =
+    for
+      first  <- Oper.values.toSeq
+      second <- Oper.values
+      third  <- Oper.values
+      result <-
+        calculateDifferentCompositions(a, b, c, d, first, second, third)
+    yield result
+
+  SortedSet.from(numbers)
+  
+calculateDifferentOperations(4, 3, 1, 2)  
+// SortedSet(-12, -7, -5, -4, -2, -1, 0, 
+// 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 21, 22, 24, 26, 32, 36)
+```
+
+Для заданного набора чисел (a, b, c, d) определим максимальную длину последовательности натуральных чисел,
+входящих в результаты, полученные перестановкой этих чисел для различных комбинаций:
+
+> [Перестановку можно получить по стандартному алгоритму](../../algorithms/algorithms/permutation.md).
+
+```dotty
+def getMaxLength(a: Int, b: Int, c: Int, d: Int): Int =
+  val set = calculateDifferentOperations(a, b, c, d)
+  LazyList.from(1).takeWhile(i => set.contains(i)).length
+  
+private def calculateDifferentPositions(
+    a: Int,
+    b: Int,
+    c: Int,
+    d: Int
+): SortedSet[Int] =
+  val result = xpermutations(List(a, b, c, d)).collect {
+    case a :: b :: c :: d :: Nil => calculateDifferentOperations(a, b, c, d)
+  }.flatten
+  SortedSet.from(result)
+
+private def xpermutations[A](l: List[A]): List[List[A]] = ...
+
+getMaxLength(1, 2, 3, 4) // 28  
+```
+
+Искомое множество четырех отличных цифр a < b < c < d, с помощью которых можно получить 
+максимально длинное множество последовательных натуральных чисел от 1 до n можно найти так:
+
+```dotty
+lazy val getSetWithMaxLength: (Int, Int, Int, Int) =
+  val sets =
+    for
+      a <- 1 to 6
+      b <- a + 1 to 7
+      c <- b + 1 to 8
+      d <- c + 1 to 9
+    yield (a, b, c, d)
+  sets.maxBy { case (a, b, c, d) => getMaxLength(a, b, c, d) }
 ```
 
 ## Задача №94

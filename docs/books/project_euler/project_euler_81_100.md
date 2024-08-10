@@ -1199,10 +1199,132 @@ val count = (1L to last).foldLeft(0L)((acc, k) => acc + getSumOfPerimeters(k))
 
 **Алгоритм:**
 
+Для вычисления цепочки дружественных чисел воспользуемся рекурсивной функцией:
+
+- если текущее число больше лимита, то цепочки, удовлетворяющей исходной задачи, не существует
+- если текущее число уже встречается среди пройденных, то цепочка найдена
+- в противном случае находим сумму собственных делителей и рекурсивно вызываем функцию со следующим числом
+
 **Код:**
 
 ```dotty
+def getChain(n: Int): Vector[Int] =
+  getChain(n, Vector.empty[Int])
 
+@tailrec
+private def getChain(n: Int, prev: Vector[Int]): Vector[Int] =
+  if n >= limit then Vector.empty[Int]
+  else if prev.contains(n) then prev
+  else
+    val m = (sumOfDivisors(n) - n).toInt  // Из Problem 25
+    getChain(m, prev :+ n)
+    
+getChain(28)    // Vector(28)
+getChain(12496) // Vector(12496, 14288, 15472, 14536, 14264)   
+```
+
+В случае поиска самой длинной цепочки дружественных чисел необходимо сохранять состояние, 
+которое бы запоминало длину цепочки для всех чисел из цепочки во избежания повторного вычисления. 
+Например, при вычислении цепочки для 12496 (\\(12496 \to 14288 \to 15472 \to 14536 \to 14264 (\to 12496 \to ...)\\))
+мы уже знаем длину цепочки для 5 чисел и при необходимости вычислить длину цепочки для, скажем, 14264, 
+мы уже сразу можем дать ответ - не стоит вычислять эту цепочку повторно.
+
+Определим состояние:
+
+**Код:**
+
+```dotty
+opaque type Memory = Map[Int, Int]
+val initialMemory: Memory = Map.empty[Int, Int]
+
+opaque type MemoryState = Memory => (Int, Memory)
+
+object MemoryState:
+  extension (underlying: MemoryState)
+    def run(s: Memory): (Int, Memory) = underlying(s)
+```
+
+При вычислении длины цепочки для заданного числа возможны следующие случаи:
+
+- Случай 1: Если в цепочке встретилось число больше лимита, то для всех элементов цепочки устанавливаем длину равную 0.
+- Необходимо отметить, что не все числа образуют цепочку дружественных чисел. 
+  Например, \\(5916 \to 9204 \to 14316 \to ... 14316\\). Числа 5916 и 9204 цепочки не образуют, 
+  только 14316 и последующие звенья. Поэтому для 5916 и 9204 длина цепочки также равна 0.
+- Случай 2: Если встретилось число, для которого длина цепочки уже известна 
+  (например, вначале вычислили длину цепочки для 14316, а потом попытались вычислить для 5916), 
+  то длина цепочки для всех звеньев перед текущим равна 0, потому что если бы они образовали зацикленную цепочку,
+  то для всех этих звеньев длина уже была бы известна.
+- Если же цепочки ещё нет и мы сразу попадем на число, длина цепочки которого уже вычислялась, то выдаем значение из памяти.
+- Случай 3: Если длина цепи для заданного числа не известна, но это число встретилось в цепочке, 
+  то делим цепь на две части: зацикленный кусок и кусок перед циклом. 
+  Длина цепи для элементов цикличного куска равна длине этого куска.
+  Длина цепи для элементов перед циклом равна 0
+- Случай 4: В противном случае добавляем число в цепь и рекурсивно вызываем функцию с новым числом, 
+  равным сумме собственных делителей исходного числа.
+
+**Код:**
+
+```dotty
+def getChainLength(n: Int): MemoryState =
+  getChainLength(n, Vector.empty[Int])
+
+private def getChainLength(
+    n: Int,
+    previousNumbers: Vector[Int]
+): MemoryState = memory =>
+  if n >= limit then                        // Случай 1
+    val newMemory =
+      previousNumbers.foldLeft(memory) { case (memory, number) =>
+        if number <= limit then memory + (number -> 0) else memory
+      }
+    (0, newMemory)
+  else if memory.contains(n) then           // Случай 2
+    val newMemory =
+      previousNumbers.foldLeft(memory) { case (memory, number) =>
+        memory + (number -> 0)
+      }
+    (if previousNumbers.isEmpty then newMemory(n) else 0, newMemory)
+  else if previousNumbers.contains(n) then  // Случай 3
+    val (itemBeforeCycle, cycleChain) =
+      previousNumbers.splitAt(previousNumbers.indexOf(n))
+
+    val memoryWithAddedBeforeCycleItems = itemBeforeCycle.foldLeft(memory) {
+      case (memory, number) => memory + (number -> 0)
+    }
+
+    val l = cycleChain.length
+    val memoryWithAddedCycle =
+      cycleChain.foldLeft(memoryWithAddedBeforeCycleItems) {
+        case (memory, number) => memory + (number -> l)
+      }
+
+    (memoryWithAddedCycle(previousNumbers(0)), memoryWithAddedCycle)
+  else                                      // Случай 4
+    val m = (sumOfDivisors(n) - n).toInt
+    getChainLength(m, previousNumbers :+ n)(memory)
+  end if
+    
+getChainLength(28).run(initialMemory)._1    // 1
+getChainLength(12496).run(initialMemory)._1 // 5 
+```
+
+Осталось найти минимальное число из самой длинной цепочки дружественных чисел:
+
+- В качестве выходного результата будем выдавать максимальную длину цепочки среди уже обработанных чисел
+
+**Код:**
+
+```dotty
+lazy val maxChain: Int =
+  val state: MemoryState = memory =>
+    (2 to limit).foldLeft((0, memory)) { case ((maxLength, memory), i) =>
+      val (l, newMemory) = getChainLength(i).run(memory)
+      (math.max(maxLength, l), newMemory)
+    }
+
+  val (maxLength, memory) = state(initialMemory)
+
+  memory.collect { case (number, length) if length == maxLength => number }.min
 ```
 
 ## Задача №96
@@ -1279,10 +1401,149 @@ val lastTenDigits = (BigInt(2).modPow(BigInt(7830457), module) * 28433 + 1).mod(
 
 **Алгоритм:**
 
+Для заданного слова определяем все возможные наборы возможных замен букв на цифры:
+
+- составляем список уникальных букв
+- определяем рекурсивную функцию, которая для заданного набора ещё не сопоставленных с цифрами букв 
+  и уже определенного набора ключей будет определять ключи для оставшихся букв
+    - если буквы кончились, то все наборы ключей найдены
+    - если буквы остались, то для первой определяем возможные ключи: это набор ключей из ещё не разобранных цифр
+    - рекурсивно вызываем функцию для определения ключей оставшихся букв
+
 **Код:**
 
 ```dotty
+def getPossibleCasesForAnagrams(word: String): List[Map[Char, Byte]] =
+  val letters = word.toCharArray.distinct.toList
 
+  @tailrec
+  def loop(
+      letters: List[Char],
+      possibleKeys: List[Map[Char, Byte]]
+  ): List[Map[Char, Byte]] =
+    letters match
+      case Nil => possibleKeys
+      case head :: tail =>
+        val newKeys = possibleKeys.flatMap(addNewValueForLetter(head, _))
+        loop(tail, newKeys)
+
+  loop(letters = letters, possibleKeys = List(Map.empty[Char, Byte]))
+end getPossibleCasesForAnagrams
+
+def addNewValueForLetter(
+    letter: Char,
+    keys: Map[Char, Byte]
+): List[Map[Char, Byte]] =
+  val existedValues = keys.values.toList
+  val newValues =
+    (0 to 9).filterNot(i => existedValues.contains(i.toByte)).toList
+  newValues.map(i => keys + (letter -> i.toByte))
+```
+
+Если заданы два слова-анаграммы и набор ключей, то определим является ли эта пара слов квадратными анаграммами
+и, если да, то какой максимальный квадрат. По условиям задачи отсеиваем числа, начинающиеся с нуля.
+
+**Код:**
+
+```dotty
+def getSquareNumbers(
+    word1: String,
+    word2: String,
+    keys: Map[Char, Byte]
+): Option[Int] =
+  (toNumber(word1, keys), toNumber(word2, keys)) match
+    case (Some(number1), Some(number2))
+        if isSquare(number1) && isSquare(number2) =>
+      Some(number1 max number2)
+    case _ => None
+
+def isSquare(n: Int): Boolean =
+  val m = math.sqrt(n).toInt
+  m * m == n
+
+def toNumber(word: String, keys: Map[Char, Byte]): Option[Int] =
+  val number = word.flatMap(keys.get).mkString
+
+  if number.length != word.length || number.headOption.contains('0') then None
+  else number.toIntOption
+    
+getSquareNumbers(
+  "CARE",
+  "RACE",
+  Map('A' -> 2, 'C' -> 1, 'E' -> 6, 'R' -> 9)
+)
+// Some(9216)
+```
+
+Теперь соединим вместе полученные функции:
+
+- по заданной паре анаграмм определим все возможные наборы ключей
+- определим максимальное число квадратных анаграмм по всем наборам ключей
+
+**Код:**
+
+```dotty
+def getPossibleNumbersForAnagrams(
+    word1: String,
+    word2: String
+): Option[Int] =
+  getPossibleCasesForAnagrams(word1).flatMap: keys =>
+    getSquareNumbers(word1, word2, keys)
+  .maxOption
+  
+getPossibleNumbersForAnagrams("CARE", "RACE")
+// Some(9216)
+```
+
+- По коллекции анаграмм определим все варианты пар анаграмм
+- Для каждой пары определим максимальное число квадратных анаграмм
+- Определим максимальное среди максимальных
+
+**Код:**
+
+```dotty
+def getMaxSquareNumberByAnagrams(anagrams: List[String]): Option[Int] =
+  getAllAnagramPairs(anagrams).flatMap: (a, b) =>
+    getPossibleNumbersForAnagrams(a, b)
+  .maxOption
+
+def getAllAnagramPairs(anagrams: List[String]): List[(String, String)] =
+  @tailrec
+  def loop(
+      anagrams: List[String],
+      acc: List[(String, String)]
+  ): List[(String, String)] =
+    anagrams match
+      case Nil                    => acc
+      case first :: Nil           => acc
+      case first :: second :: Nil => (first, second) :: acc
+      case first :: tail =>
+        val anagramsWithFirst = tail.map(second => (first, second))
+        loop(tail, anagramsWithFirst ::: acc)
+
+  loop(anagrams, List.empty)
+  
+getMaxSquareNumberByAnagrams(List("CARE", "RACE"))
+// Some(9216)
+
+getAllAnagramPairs(List("RACE", "CARE", "ARCE"))
+// List(("CARE", "ARCE"), ("RACE", "CARE"), ("RACE", "ARCE")) 
+```
+
+Теперь осталось только сгруппировать все слова на наборы анаграмм 
+(два слова анаграммы если отсортированный набор их символов совпадает),
+отсеять наборы с менее чем двумя элементами и подсчитать максимальное число по каждому набору.
+В конце берем максимум.
+
+**Код:**
+
+```dotty
+def getMaxSquareNumber(words: List[String]): Option[Int] =
+  words.groupBy(_.sorted)
+    .values
+    .toList
+    .withFilter(_.size > 1)
+    .flatMap(getMaxSquareNumberByAnagrams).maxOption
 ```
 
 ## Задача №99

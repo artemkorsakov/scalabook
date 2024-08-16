@@ -465,6 +465,83 @@ end PokerHand
 - **Время** - ???
 - **Память** - ???
 
+В первую очередь определим ячейку для игры Су Доку:
+
+- Возможные значения ячейки - от 1 до 9
+- В начальном состоянии ячейка может содержать любое из значений от 1 до 9
+- Значение ячейки определено, если из возможных значений остался только один вариант
+- В ячейку можно установить определенное значение
+
+**Код:**
+
+```dotty
+enum SuDokuCellValue:
+  case One, Two, Three, Four, Five, Six, Seven, Eight, Nine
+
+final case class SuDokuCell(possibleValues: Set[SuDokuCellValue]):
+  lazy val maybeValue: Option[SuDokuCellValue] =
+    if possibleValues.size == 1 then possibleValues.headOption
+    else None
+
+object SuDokuCell:
+  val initial: SuDokuCell = SuDokuCell(SuDokuCellValue.values.toSet)
+
+  def apply(cellValue: SuDokuCellValue): SuDokuCell = SuDokuCell(Set(cellValue))
+```
+
+Изменять состояние ячейки можно не только путем установки конкретного значения, 
+но и путем удаления из списка возможных части значений.
+
+- Доступно удаление значения из списка возможных
+
+**Код:**
+
+```dotty
+enum SuDokuCellValue:
+  case One, Two, Three, Four, Five, Six, Seven, Eight, Nine
+
+final case class SuDokuCell(possibleValues: Set[SuDokuCellValue]):
+  lazy val maybeValue: Option[SuDokuCellValue] =
+    if possibleValues.size == 1 then possibleValues.headOption
+    else None
+
+  def removeValue(cellValue: SuDokuCellValue): Option[SuDokuCell] =
+    maybeValue match
+      case Some(value) if value == cellValue => None
+      case _ => Some(SuDokuCell(possibleValues - cellValue))
+
+object SuDokuCell:
+  val initial: SuDokuCell = SuDokuCell(SuDokuCellValue.values.toSet)
+
+  def apply(cellValue: SuDokuCellValue): SuDokuCell = SuDokuCell(Set(cellValue))
+```
+
+
+Определим поле \\(9 \times 9\\) для игры Су Доку и добавим следующие операции:
+
+- `removeValue` - удаление значения из заданной ячейки
+- `setValue` - установка заданного значения в заданную ячейку
+
+Эти операции позволят нам определить первоначальное состояние игры, когда заполнены некоторые ячейки.
+
+**Код:**
+
+```dotty
+final case class SuDoku(cells: Vector[Vector[SuDokuCell]]):
+  def setValue(i: Int, j: Int, value: SuDokuCellValue): Option[SuDoku] = ???
+
+  def removeValue(i: Int, j: Int, value: SuDokuCellValue): Option[SuDoku] =
+    if doesCellNotExist(i, j) then None
+    else
+      cells(i)(j).removeValue(value).map: updatedCell =>
+        SuDoku(
+          cells.updated(i, cells(i).updated(j, updatedCell))
+        )
+
+  private def doesCellNotExist(i: Int, j: Int): Boolean =
+    cells.length <= i || cells(i).length <= j
+```
+
 **Код:**
 
 ```dotty

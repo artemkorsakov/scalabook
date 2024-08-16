@@ -24,7 +24,7 @@ object Dependencies {
   }
 
   object laika {
-    private val version = "1.1.0"
+    private val version = "1.2.0"
     val core            = "org.typelevel" %% "laika-core"    % version
     val io              = "org.typelevel" %% "laika-io"      % version
     val pdf             = "org.typelevel" %% "laika-pdf"     % version
@@ -71,7 +71,7 @@ object Dependencies {
   }
 
   object zio {
-    private val version = "2.1.5"
+    private val version = "2.1.7"
     val core        = "dev.zio" %% "zio"             % version
     val stacktracer = "dev.zio" %% "zio-stacktracer" % version
   }

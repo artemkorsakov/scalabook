@@ -4,10 +4,10 @@ addCommandAlias("fix", "scalafmtSbt; scalafmtAll; scalafixAll")
 addCommandAlias("dep", "dependencyUpdates")
 addCommandAlias("site", "site/runMain ru.scalabook.site.app.GenerateSite")
 addCommandAlias(
-  "prepush",
-  "com; fix; test; undeclaredCompileDependencies; unusedCompileDependencies"
+  "prePush",
+  "clean; com; test; fix; undeclaredCompileDependencies; unusedCompileDependencies"
 )
 addCommandAlias(
-  "fullcheck",
+  "fullCheck",
   "com; fmtcheck; test; undeclaredCompileDependencies; unusedCompileDependencies"
 )

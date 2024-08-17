@@ -1,6 +1,6 @@
 package ru.scalabook.algorithms.games.sudoku
 
-import ru.scalabook.algorithms.games.sudoku.SuDoku.toSuDoku
+import ru.scalabook.algorithms.games.sudoku.SuDokuOld.toSuDoku
 
 @main def sudokuBench(): Unit =
   val maybeSuDoku = toSuDoku(

@@ -1,13 +1,13 @@
 package ru.scalabook.algorithms.games.sudoku
 
+import ru.scalabook.algorithms.games.sudoku.SuDokuCell.{SuDokuCellOper, execute}
 import ru.scalabook.algorithms.games.sudoku.SuDokuCellValue.*
-
 import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
 
 object SuDokuCellSuite extends SimpleIOSuite with Checkers:
   pureTest(
-    "SuDokuCell.apply should create a SuDokuCell with all possible values"
+    "SuDokuCell.initial should create a SuDokuCell with all possible values"
   ):
     val cell = SuDokuCell.initial
     expect.all(
@@ -17,25 +17,133 @@ object SuDokuCellSuite extends SimpleIOSuite with Checkers:
     )
 
   test(
-    "SuDokuCell with one possible value should return that value as maybeValue"
-  ):
-    forall: (cellValue: SuDokuCellValue) =>
-      val cell = SuDokuCell(cellValue)
-      whenSuccess(cell.maybeValue): actual =>
-        expect.same(cellValue, actual)
-
-  test(
     "SuDokuCell with multiple possible values should return None as maybeValue"
   ):
     forall: (cellValues: Set[SuDokuCellValue]) =>
+      println(s"cellValues = $cellValues")
       val cell = SuDokuCell(cellValues)
-      expect(
-        cellValues.size == 1 || cell.maybeValue.isEmpty
-      )
+      if cellValues.size == 1 then
+        expect(cell.maybeValue.contains(cellValues.head))
+      else
+        expect(cell.maybeValue.isEmpty)
+
+  pureTest("SuDokuCell execute should correctly set a single value"):
+    val initialCell = SuDokuCell.initial
+    val inputs      = List((SuDokuCellOper.Set, SuDokuCellValue.One))
+
+    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+
+    expect.all(
+      result,
+      cell.possibleValues == Set(SuDokuCellValue.One),
+      cell.maybeValue.contains(SuDokuCellValue.One)
+    )
+
+  pureTest("SuDokuCell execute should correctly set a single value twice"):
+    val initialCell = SuDokuCell.initial
+    val input       = (SuDokuCellOper.Set, SuDokuCellValue.One)
+    val inputs      = List(input, input)
+
+    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+
+    expect.all(
+      result,
+      cell.possibleValues == Set(SuDokuCellValue.One),
+      cell.maybeValue.contains(SuDokuCellValue.One)
+    )
+
+  pureTest("SuDokuCell execute should correctly remove a value"):
+    val initialCell = SuDokuCell(Set(SuDokuCellValue.One, SuDokuCellValue.Two))
+    val inputs      = List((SuDokuCellOper.Remove, SuDokuCellValue.One))
+
+    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+
+    expect.all(
+      result,
+      cell.possibleValues == Set(SuDokuCellValue.Two),
+      cell.maybeValue.contains(SuDokuCellValue.Two)
+    )
+
+  pureTest("SuDokuCell execute should correctly remove a value twice"):
+    val initialCell = SuDokuCell(Set(SuDokuCellValue.One, SuDokuCellValue.Two))
+    val input       = (SuDokuCellOper.Remove, SuDokuCellValue.One)
+    val inputs      = List(input, input)
+
+    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+
+    expect.all(
+      result,
+      cell.possibleValues == Set(SuDokuCellValue.Two),
+      cell.maybeValue.contains(SuDokuCellValue.Two)
+    )
 
   pureTest(
-    "SuDokuCell with no possible values should return None as maybeValue"
+    "SuDokuCell execute should not set a value if it is not in possibleValues"
   ):
-    val cell = SuDokuCell(Set.empty)
-    expect(cell.maybeValue.isEmpty)
+    val initialCell = SuDokuCell(Set(SuDokuCellValue.Two))
+    val inputs      = List((SuDokuCellOper.Set, SuDokuCellValue.One))
+
+    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+
+    expect.all(
+      !result,
+      cell == initialCell
+    )
+
+  pureTest(
+    "SuDokuCell execute should not remove a value if it is the only possible value"
+  ):
+    val initialCell = SuDokuCell(Set(SuDokuCellValue.One))
+    val inputs      = List((SuDokuCellOper.Remove, SuDokuCellValue.One))
+
+    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+
+    expect.all(
+      !result,
+      cell == initialCell
+    )
+
+  pureTest("SuDokuCell execute should handle multiple operations"):
+    val initialCell = SuDokuCell.initial
+    val inputs = List(
+      (SuDokuCellOper.Remove, SuDokuCellValue.One),
+      (SuDokuCellOper.Set, SuDokuCellValue.Two)
+    )
+
+    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+
+    expect.all(
+      result,
+      cell.possibleValues == Set(SuDokuCellValue.Two),
+      cell.maybeValue.contains(SuDokuCellValue.Two)
+    )
+
+  pureTest(
+    "SuDokuCell execute should handle multiple operations with invalid operation"
+  ):
+    val initialCell = SuDokuCell.initial
+    val inputs = List(
+      (SuDokuCellOper.Remove, SuDokuCellValue.One),
+      (SuDokuCellOper.Set, SuDokuCellValue.One),
+      (SuDokuCellOper.Remove, SuDokuCellValue.Two),
+      (SuDokuCellOper.Remove, SuDokuCellValue.Three),
+      (SuDokuCellOper.Remove, SuDokuCellValue.Four)
+    )
+
+    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+
+    expect.all(
+      !result,
+      cell.possibleValues == Set(
+        SuDokuCellValue.Two,
+        SuDokuCellValue.Three,
+        SuDokuCellValue.Four,
+        SuDokuCellValue.Five,
+        SuDokuCellValue.Six,
+        SuDokuCellValue.Seven,
+        SuDokuCellValue.Eight,
+        SuDokuCellValue.Nine
+      )
+    )
+
 end SuDokuCellSuite

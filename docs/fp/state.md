@@ -276,7 +276,7 @@ object Candy:
 object Candy:
   def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] =
     for
-      _ <- State.traverse(inputs)(input => State.modify(update(input)))
+      _ <- State.traverse(inputs)(input => State.modify(updateMachine(input)))
       s <- State.get
     yield (s.coins, s.candies)
 ```

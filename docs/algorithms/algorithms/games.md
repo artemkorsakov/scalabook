@@ -458,236 +458,107 @@ end PokerHand
 
 **Алгоритм:**
 
-Судоку.
+Допустимые значения ячейки игры Су Доку - это цифры от 1 до 9:
+
+**Код:**
+
+```dotty
+enum SuDokuCellValue:
+  case One, Two, Three, Four, Five, Six, Seven, Eight, Nine
+```
+
+Сама ячейка должна удовлетворять следующим условиям:
+
+- В начальном состоянии ячейка может содержать любое из значений от 1 до 9
+- Значение ячейки определено, если из возможных значений остался только один вариант
+
+**Код:**
+
+```dotty
+final case class SuDokuCell(possibleValues: Set[SuDokuCellValue]):
+  lazy val maybeValue: Option[SuDokuCellValue] =
+    if possibleValues.size == 1 then possibleValues.headOption
+    else None
+    
+object SuDokuCell:
+  val initial: SuDokuCell = SuDokuCell(SuDokuCellValue.values.toSet) 
+  
+SuDokuCell.initial.maybeValue    
+// None
+SuDokuCell(Set(SuDokuCellValue.Three)).maybeValue  
+// Some(Three)   
+```
+
+Ячейка должна поддерживать следующие операции:
+
+- В ячейку можно установить определенное значение в качестве единственного, если оно находится среди возможных значений
+- Из возможных значений ячейки можно удалить значение, только если это не единственное возможное значение ячейки 
+
+Определим новый тип описывающий [функциональное состояние](../../fp/state.md) ячейки `SuDokuCellState`, 
+который по заданной ячейке возвращает кортеж из двух элементов, 
+где слева - признак, успешно ли завершилась предыдущая операция,
+а справа - последнее стабильное состояние ячейки.
+
+**Код:**
+
+```dotty
+object SuDokuCell:
+  enum SuDokuCellOper:
+    case Set, Remove
+
+  type SuDokuCellState  = State[SuDokuCell, Boolean]
+  type SuDokuCellInput  = (SuDokuCellOper, SuDokuCellValue)
+  opaque type SuDokuCellOutput = (Boolean, SuDokuCell)
+
+  private val updateCell
+      : SuDokuCellInput => SuDokuCellOutput => SuDokuCellOutput =
+    (operation, value) =>
+      (result, cell) =>
+        (operation, value, result) match
+          case (SuDokuCellOper.Set, value, true)
+              if cell.possibleValues.contains(value) =>
+            (true, SuDokuCell(Set(value)))
+          case (SuDokuCellOper.Remove, value, true)
+              if cell.possibleValues != Set(value) =>
+            (true, SuDokuCell(cell.possibleValues - value))
+          case _ =>
+            (false, cell)
+
+  def execute(inputs: List[SuDokuCellInput]): SuDokuCellState =
+    State[SuDokuCell, Boolean] { cell =>
+      val state =
+        for
+          _ <- State.traverse(inputs)(input =>
+            State.modify[SuDokuCellOutput](updateCell(input))
+          )
+          output <- State.get
+        yield output._1
+
+      state.run((true, cell))._2
+    }
+
+end SuDokuCell
+
+val inputs = List(
+  (SuDokuCellOper.Remove, SuDokuCellValue.One),
+  (SuDokuCellOper.Set, SuDokuCellValue.Two)
+)
+
+SuDokuCell.execute(inputs).run(SuDokuCell.initial)
+// (true, SuDokuCell(Set(Two)))
+```
+
+???
+
+**Код:**
+
+```dotty
+```
 
 **Оценка:**
 
 - **Время** - ???
 - **Память** - ???
-
-В первую очередь определим ячейку для игры Су Доку:
-
-- Возможные значения ячейки - от 1 до 9
-- В начальном состоянии ячейка может содержать любое из значений от 1 до 9
-- Значение ячейки определено, если из возможных значений остался только один вариант
-- В ячейку можно установить определенное значение
-
-**Код:**
-
-```dotty
-enum SuDokuCellValue:
-  case One, Two, Three, Four, Five, Six, Seven, Eight, Nine
-
-final case class SuDokuCell(possibleValues: Set[SuDokuCellValue]):
-  lazy val maybeValue: Option[SuDokuCellValue] =
-    if possibleValues.size == 1 then possibleValues.headOption
-    else None
-
-object SuDokuCell:
-  val initial: SuDokuCell = SuDokuCell(SuDokuCellValue.values.toSet)
-
-  def apply(cellValue: SuDokuCellValue): SuDokuCell = SuDokuCell(Set(cellValue))
-```
-
-Изменять состояние ячейки можно не только путем установки конкретного значения, 
-но и путем удаления из списка возможных части значений.
-
-- Доступно удаление значения из списка возможных
-
-**Код:**
-
-```dotty
-enum SuDokuCellValue:
-  case One, Two, Three, Four, Five, Six, Seven, Eight, Nine
-
-final case class SuDokuCell(possibleValues: Set[SuDokuCellValue]):
-  lazy val maybeValue: Option[SuDokuCellValue] =
-    if possibleValues.size == 1 then possibleValues.headOption
-    else None
-
-  def removeValue(cellValue: SuDokuCellValue): Option[SuDokuCell] =
-    maybeValue match
-      case Some(value) if value == cellValue => None
-      case _ => Some(SuDokuCell(possibleValues - cellValue))
-
-object SuDokuCell:
-  val initial: SuDokuCell = SuDokuCell(SuDokuCellValue.values.toSet)
-
-  def apply(cellValue: SuDokuCellValue): SuDokuCell = SuDokuCell(Set(cellValue))
-```
-
-
-Определим поле \\(9 \times 9\\) для игры Су Доку и добавим следующие операции:
-
-- `removeValue` - удаление значения из заданной ячейки
-- `setValue` - установка заданного значения в заданную ячейку
-
-Эти операции позволят нам определить первоначальное состояние игры, когда заполнены некоторые ячейки.
-
-**Код:**
-
-```dotty
-final case class SuDoku(cells: Vector[Vector[SuDokuCell]]):
-  def setValue(i: Int, j: Int, value: SuDokuCellValue): Option[SuDoku] = ???
-
-  def removeValue(i: Int, j: Int, value: SuDokuCellValue): Option[SuDoku] =
-    if doesCellNotExist(i, j) then None
-    else
-      cells(i)(j).removeValue(value).map: updatedCell =>
-        SuDoku(
-          cells.updated(i, cells(i).updated(j, updatedCell))
-        )
-
-  private def doesCellNotExist(i: Int, j: Int): Boolean =
-    cells.length <= i || cells(i).length <= j
-```
-
-**Код:**
-
-```dotty
-final case class SuDoku(cells: Array[Array[Array[Int]]]):
-
-  @SuppressWarnings(
-    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
-  )
-  def result: Option[Array[Array[Int]]] =
-    var hasToRemove = true
-    var isValid     = true
-    while isValid && isNotAnswer && hasToRemove
-    do
-      hasToRemove = false
-      cells.indices.foreach(i =>
-        cells(i).indices
-          .withFilter(j => cells(i)(j).length != 1)
-          .foreach(j =>
-            cells(i)(j).withFilter(!setValueWithoutChanges(i, j, _)).foreach {
-              value =>
-                hasToRemove = true
-                if !removeValue(i, j, value) then isValid = false
-            }
-          )
-      )
-
-    if isValid && !isNotAnswer then Some(cells.map(_.map(_.head)))
-    else None
-  end result
-
-  private def isNotAnswer: Boolean =
-    cells.exists(_.exists(_.length != 1))
-
-  /** Set the specified value in the specified field.
-    */
-  private def setValue(i: Int, j: Int, value: Int): Boolean =
-    val tempSuDoku = copySuDoku
-    tempSuDoku.cells(i)(j) = Array(value)
-    val result = tempSuDoku.removeValueFromRowColSqr(
-      i,
-      j,
-      value
-    ) && tempSuDoku.isSuDokuMatrixValid
-    if result then
-      tempSuDoku.cells.indices.foreach(i => cells(i) = tempSuDoku.cells(i))
-    result
-
-  /** Set the specified value in the specified field but then return to the
-    * previous state of the cells regardless of the result.
-    */
-  private def setValueWithoutChanges(i: Int, j: Int, value: Int): Boolean =
-    val tempSuDoku = copySuDoku
-    tempSuDoku.cells(i)(j) = Array(value)
-    tempSuDoku.removeValueFromRowColSqr(
-      i,
-      j,
-      value
-    ) && tempSuDoku.isSuDokuMatrixValid
-
-  /** Check that each row contains digits from 1 to 9 at least once. Check that
-    * each column contains digits from 1 to 9 at least once.
-    */
-  private def isSuDokuMatrixValid: Boolean =
-    !(1 to 9).exists(n => cells.exists(_.forall(c => !c.contains(n)))) &&
-      !(1 to 9).exists(n =>
-        cells.head.indices.exists(j =>
-          cells.map(_(j)).forall(c => !c.contains(n))
-        )
-      )
-
-  /** Removes a given value from the row, column, and square to which the point
-    * belongs.
-    */
-  private def removeValueFromRowColSqr(i: Int, j: Int, value: Int): Boolean =
-    (0 to 8).forall(k =>
-      k == j || removeValue(i, k, value)
-    ) && // Removes a given value from the row
-      (0 to 8).forall(k =>
-        k == i || removeValue(k, j, value)
-      ) &&                 // Removes a given value from the column
-      (0 to 2).forall(k => // Removes a given value from the square
-        (0 to 2).forall { l =>
-          val r = (i / 3) * 3 + k
-          val c = (j / 3) * 3 + l
-          (r == i && c == j) || removeValue(r, c, value)
-        }
-      )
-
-  /** Removes a given value from the cell (i, j). */
-  private def removeValue(i: Int, j: Int, value: Int): Boolean =
-    if cells(i)(j).length == 1 then cells(i)(j).head != value
-    else
-      cells(i)(j) = cells(i)(j).filter(_ != value)
-      cells(i)(j).length != 1 || setValue(i, j, cells(i)(j).head)
-
-  private def copySuDoku: SuDoku =
-    SuDoku(cells.map(_.map(_.map(identity))))
-
-end SuDoku
-
-object SuDoku:
-  def apply(): SuDoku =
-    val defaultCells = (0 to 8)
-      .map(_ => (0 to 8).map(_ => Array(1, 2, 3, 4, 5, 6, 7, 8, 9)).toArray)
-      .toArray
-    SuDoku(defaultCells)
-
-  def toSuDoku(source: String): Option[SuDoku] =
-    val sudoku = SuDoku()
-    val rows   = source.trim.split("\n")
-    val isCorrect = (0 to 8).forall(i =>
-      (0 to 8).forall { j =>
-        val d = rows(i).charAt(j).getNumericValue
-        d == 0 || sudoku.setValue(i, j, d)
-      }
-    )
-    if isCorrect then Some(sudoku) else None
-
-end SuDoku
-
-val maybeSuDoku = toSuDoku(
-  "003020600\n" +
-    "900305001\n" +
-    "001806400\n" +
-    "008102900\n" +
-    "700000008\n" +
-    "006708200\n" +
-    "002609500\n" +
-    "800203009\n" +
-    "005010300"
-)
-
-maybeSuDoku.foreach: sudoku =>
-  sudoku.result.foreach: result =>
-    result.foreach(row => println(row.mkString("Array(", ", ", ")")))
-
-// Array(4, 8, 3, 9, 2, 1, 6, 5, 7)
-// Array(9, 6, 7, 3, 4, 5, 8, 2, 1)
-// Array(2, 5, 1, 8, 7, 6, 4, 9, 3)
-// Array(5, 4, 8, 1, 3, 2, 9, 7, 6)
-// Array(7, 2, 9, 5, 6, 4, 1, 3, 8)
-// Array(1, 3, 6, 7, 9, 8, 2, 4, 5)
-// Array(3, 7, 2, 6, 8, 9, 5, 1, 4)
-// Array(8, 1, 4, 2, 5, 3, 7, 6, 9)
-// Array(6, 9, 5, 4, 1, 7, 3, 8, 2)
-```
 
 **Метрики:**
 

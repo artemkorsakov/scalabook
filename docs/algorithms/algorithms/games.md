@@ -226,7 +226,6 @@ object PokerCard:
       yield PokerCard(pokerRank, pokerSuit)
 ```
 
-
 ##### Покерный расклад
 
 Следующий код реализует логику игры в покер. Он включает в себя определение разных типов карт, их рангов и мастей,
@@ -234,16 +233,19 @@ object PokerCard:
 
 1. `PokerHandsType` - это перечисление, определяющее все возможные типы рук в покере.
 2. `PokerHand` - это нерасширяемый кейс-класс, который представляет расклад в игре покер.
-   Он содержит два поля: `pokerHandsType` и `ranks`, которые представляют собой тип руки и список рангов карт соответственно. Класс также содержит метод `compareTo`, который сравнивает две руки покер.
+   Он содержит два поля: `pokerHandsType` и `ranks`, которые представляют собой тип руки и список рангов карт
+   соответственно. Класс также содержит метод `compareTo`, который сравнивает две руки покер.
 3. В сопутствующем объекте `PokerHand` объявлены служебные методы для создания покерной руки из строки,
    из типа руки и ранга карты, а также для сравнения покерных раскладов.
 4. Метод `apply(hand: String)` принимает строку, представляющую собой покерный расклад,
    и пытается преобразовать ее в `PokerHand`. Если преобразование невозможно, он возвращает `None`.
-5. Метод `apply(pokerHandsType: PokerHandsType, rank: PokerRank)` создает покерный расклад из заданного типа руки и ранга карты.
+5. Метод `apply(pokerHandsType: PokerHandsType, rank: PokerRank)` создает покерный расклад из заданного типа руки и
+   ранга карты.
 6. Метод `apply(cards: Array[PokerCard])` создает покерный расклад из массива карт.
    Он определяет тип руки и ранги карт на основе переданных карт и создает `PokerHand` с соответствующими значениями.
 7. Методы `isFiveOfAKind`, `isStraightFlush`, `isFourOfAKind`, `isFullHouse`, `isFlush`, `isStraight`, `isThreeOfAKind`,
-   `isTwoPair`, `isOnePair` и `highCard` определяют тип руки на основе переданных карт и возвращают соответствующие значения.
+   `isTwoPair`, `isOnePair` и `highCard` определяют тип руки на основе переданных карт и возвращают соответствующие
+   значения.
 8. Методы `fourOfAKind`, `fullHouse`, `threeOfAKind`, `twoPair` и `onePair` создают покерный расклад
    определенного типа с соответствующими рангами карт.
 9. Метод `highCard` создает покерный расклад типа `HIGH_CARD` с соответствующими рангами карт.
@@ -500,10 +502,10 @@ SuDokuCell(Set(SuDokuCellValue.Three)).maybeValue
 Ячейка должна поддерживать следующие операции:
 
 - В ячейку можно установить определенное значение в качестве единственного, если оно находится среди возможных значений
-- Из возможных значений ячейки можно удалить значение, только если это не единственное возможное значение ячейки 
+- Из возможных значений ячейки можно удалить значение, только если это не единственное возможное значение ячейки
 
-Определим новый тип описывающий [функциональное состояние](../../fp/state.md) ячейки `SuDokuCellState`, 
-который по заданной ячейке возвращает кортеж из двух элементов, 
+Определим новый тип описывающий [функциональное состояние](../../fp/state.md) ячейки `SuDokuCellState`,
+который по заданной ячейке возвращает кортеж из двух элементов,
 где слева - признак, успешно ли завершилась предыдущая операция,
 а справа - последнее стабильное состояние ячейки.
 
@@ -565,7 +567,7 @@ SuDokuCell.execute(inputs).run(SuDokuCell.initial)
 final case class SuDoku(cells: Vector[Vector[SuDokuCell]]):
   val isCorrect: Boolean =
     cells.length == 9 && cells.forall(_.length == 9)
-
+    
 object SuDoku:
   val initial: SuDoku =
     val defaultCells =
@@ -583,6 +585,17 @@ object SuDoku:
   type Column = Int
   object Column:
     def isCorrect(col: Int): Boolean = 0 <= col && col < 9
+    
+  def getBlock(i: Row, j: Column): IndexedSeq[(Row, Column)] =
+    if Row.isCorrect(i) && Column.isCorrect(j) then 
+      for
+        k <- 0 to 2
+        l <- 0 to 2
+      yield
+        val r = (i / 3) * 3 + k
+        val c = (j / 3) * 3 + l
+        (r, c)
+    else IndexedSeq.empty
 ```
 
 Определим общую операцию изменения состояния игры Су Доку:
@@ -612,7 +625,7 @@ object SuDoku:
 end SuDoku    
 ```
 
-Следующее, что нам понадобится - это установка начального состояния в игре, 
+Следующее, что нам понадобится - это установка начального состояния в игре,
 когда заполнены часть полей из известных значений.
 
 Поэтому остановимся на операции установки значения в заданное поле.
@@ -621,7 +634,8 @@ end SuDoku
 - установка заданного значения в поле (i, j)
 - удаление заданного значения из строчки i за исключением ячейки (i, j)
 - удаление заданного значения из столбца j за исключением ячейки (i, j)
-- удаление заданного значения из квадрата \\(3 \times 3\\), которому принадлежит ячейка (i, j), за исключением самой ячейки 
+- удаление заданного значения из квадрата \\(3 \times 3\\), которому принадлежит ячейка (i, j), за исключением самой
+  ячейки
 
 Определим побочные операции установки и удаления значения в заданном поле:
 
@@ -670,6 +684,56 @@ object SuDokuInner:
 end SuDokuInner   
 ```
 
+Три более сложные побочные операции на удаление можно определить через простое удаление, определенное выше:
+
+- удаление заданного значения из строчки i за исключением ячейки (i, j)
+- удаление заданного значения из столбца j за исключением ячейки (i, j)
+- удаление заданного значения из квадрата \\(3 \times 3\\), которому принадлежит ячейка (i, j), за исключением самой
+  ячейки
+
+**Код:**
+
+```dotty
+object SuDokuComplexInner:
+  enum SuDokuInnerComplexOperation:
+    case RemoveFromRow, RemoveFromColumn, RemoveFromBlock
+
+  type SuDokuComplexInnerInput =
+    (SuDokuInnerComplexOperation, Row, Column, SuDokuCellValue)
+
+  private val updateSuDoku
+      : SuDokuComplexInnerInput => SuDokuOutput => SuDokuOutput =
+    (operation, i, j, value) =>
+      (result, sudoku) =>
+        (operation, result) match
+          case (RemoveFromRow, true) =>
+            val inputs: List[SuDokuInnerInput] =
+              (0 to 8).flatMap: k =>
+                if k == j then None
+                else Some((SuDokuInnerOperation.RemoveFromCell, i, k, value))
+              .toList
+            SuDokuInner.execute(inputs).run(sudoku)
+          case (RemoveFromColumn, true) =>
+            val inputs: List[SuDokuInnerInput] =
+              (0 to 8).flatMap: k =>
+                if k == i then None
+                else Some((SuDokuInnerOperation.RemoveFromCell, k, j, value))
+              .toList
+            SuDokuInner.execute(inputs).run(sudoku)
+          case (RemoveFromBlock, true) =>
+            val inputs: List[SuDokuInnerInput] =
+              SuDoku.getBlock(i, j).flatMap: (r, c) =>
+                if r == i && c == j then None
+                else Some((SuDokuInnerOperation.RemoveFromCell, r, c, value))
+              .toList
+            SuDokuInner.execute(inputs).run(sudoku)
+          case _ => (false, sudoku)
+
+  def execute(inputs: List[SuDokuComplexInnerInput]): SuDokuState =
+    SuDoku.executeInnerOperation(inputs, updateSuDoku)
+
+end SuDokuComplexInner
+```
 
 **Оценка:**
 

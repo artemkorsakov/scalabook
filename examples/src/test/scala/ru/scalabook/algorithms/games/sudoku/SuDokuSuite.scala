@@ -44,4 +44,57 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
   ):
     forall: (col: InvalidFieldLength) =>
       expect(!Column.isCorrect(col.toInvalidInt))
+
+  pureTest(
+    "SuDoku.getBlock should return correct block indices for valid row and column"
+  ):
+    val blockIndices = SuDoku.getBlock(1, 1)
+
+    val expectedIndices = IndexedSeq(
+      (0, 0),
+      (0, 1),
+      (0, 2),
+      (1, 0),
+      (1, 1),
+      (1, 2),
+      (2, 0),
+      (2, 1),
+      (2, 2)
+    )
+
+    expect(blockIndices == expectedIndices)
+
+  pureTest(
+    "SuDoku.getBlock should return correct block indices for another valid row and column"
+  ):
+    val blockIndices = SuDoku.getBlock(4, 5)
+
+    val expectedIndices = IndexedSeq(
+      (3, 3),
+      (3, 4),
+      (3, 5),
+      (4, 3),
+      (4, 4),
+      (4, 5),
+      (5, 3),
+      (5, 4),
+      (5, 5)
+    )
+
+    expect(blockIndices == expectedIndices)
+
+  pureTest("SuDoku.getBlock should return empty sequence for invalid row"):
+    val blockIndices = SuDoku.getBlock(9, 1)
+    expect(blockIndices.isEmpty)
+
+  pureTest("SuDoku.getBlock should return empty sequence for invalid column"):
+    val blockIndices = SuDoku.getBlock(1, 9)
+    expect(blockIndices.isEmpty)
+
+  pureTest(
+    "SuDoku.getBlock should return empty sequence for both invalid row and column"
+  ):
+    val blockIndices = SuDoku.getBlock(9, 9)
+    expect(blockIndices.isEmpty)
+
 end SuDokuSuite

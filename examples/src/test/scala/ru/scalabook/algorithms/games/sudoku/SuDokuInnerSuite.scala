@@ -18,12 +18,14 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
       expect.all(
         result,
         sudoku.isCorrect,
-        sudoku.cells(i)(j).maybeValue.contains(value),
-        (0 to 8).forall: r =>
-          (0 to 8).forall: c =>
-            (i == r && j == c) ||
-              sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
-      )
+        sudoku.cells(i)(j).maybeValue.contains(value)
+      ) and
+        forEach((0 to 8).toList): (r: Int) =>
+          forEach((0 to 8).toList): (c: Int) =>
+            expect(
+              (i == r && j == c) ||
+                sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
+            )
 
   test("SuDokuInner.execute should correctly remove a value from a cell"):
     forall: (row: FieldLength, col: FieldLength, value: SuDokuCellValue) =>
@@ -38,13 +40,14 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
       expect.all(
         result,
         sudoku.isCorrect,
-        sudoku.cells(i)(j)
-          .possibleValues == (SuDokuCellValue.values.toSet - value),
-        (0 to 8).forall: r =>
-          (0 to 8).forall: c =>
-            (i == r && j == c) ||
-              sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
-      )
+        sudoku.cells(i)(j).possibleValues == (SuDokuCellValue.values.toSet - value)
+      ) and
+        forEach((0 to 8).toList): (r: Int) =>
+          forEach((0 to 8).toList): (c: Int) =>
+            expect(
+              (i == r && j == c) ||
+                sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
+            )
 
   pureTest(
     "SuDokuInner.execute should not execute an operation if a sudoku is incorrect"
@@ -101,12 +104,14 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
 
     expect.all(
       !result,
-      sudoku.cells(0)(0).maybeValue.contains(SuDokuCellValue.Two),
-      (0 to 8).forall: r =>
-        (0 to 8).forall: c =>
-          (0 == r && 0 == c) ||
-            sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
-    )
+      sudoku.cells(0)(0).maybeValue.contains(SuDokuCellValue.Two)
+    ) and
+      forEach((0 to 8).toList): (r: Int) =>
+        forEach((0 to 8).toList): (c: Int) =>
+          expect(
+            (0 == r && 0 == c) ||
+              sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
+          )
 
   pureTest(
     "execute should not remove a value if it is the only possible value"
@@ -121,12 +126,14 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
 
     expect.all(
       !result,
-      sudoku.cells(0)(0).maybeValue.contains(SuDokuCellValue.One),
-      (0 to 8).forall: r =>
-        (0 to 8).forall: c =>
-          (0 == r && 0 == c) ||
-            sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
-    )
+      sudoku.cells(0)(0).maybeValue.contains(SuDokuCellValue.One)
+    ) and
+      forEach((0 to 8).toList): (r: Int) =>
+        forEach((0 to 8).toList): (c: Int) =>
+          expect(
+            (0 == r && 0 == c) ||
+              sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
+          )
 
   pureTest(
     "SuDokuInner.execute should not execute an operation if the previous operation is incorrect"
@@ -142,12 +149,14 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
 
     expect.all(
       !result,
-      sudoku.cells(0)(0).maybeValue.contains(SuDokuCellValue.Two),
-      (0 to 8).forall: r =>
-        (0 to 8).forall: c =>
-          (0 == r && 0 == c) ||
-            sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
-    )
+      sudoku.cells(0)(0).maybeValue.contains(SuDokuCellValue.Two)
+    ) and
+      forEach((0 to 8).toList): (r: Int) =>
+        forEach((0 to 8).toList): (c: Int) =>
+          expect(
+            (0 == r && 0 == c) ||
+              sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
+          )
 
   pureTest("SuDokuInner.execute should handle multiple operations"):
     val initialSudoku = SuDoku.initial
@@ -165,11 +174,13 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
       sudoku.cells(0)(0).possibleValues == (SuDokuCellValue.values
         .toSet - SuDokuCellValue.One - SuDokuCellValue.Two),
       sudoku.cells(1)(1).maybeValue.contains(SuDokuCellValue.One),
-      sudoku.cells(2)(2).maybeValue.contains(SuDokuCellValue.Two),
-      (0 to 8).forall: r =>
-        (0 to 8).forall: c =>
-          (0 == r && 0 == c) || (1 == r && 1 == c) || (2 == r && 2 == c) ||
-            sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
-    )
+      sudoku.cells(2)(2).maybeValue.contains(SuDokuCellValue.Two)
+    ) and
+      forEach((0 to 8).toList): (r: Int) =>
+        forEach((0 to 8).toList): (c: Int) =>
+          expect(
+            (0 == r && 0 == c) || (1 == r && 1 == c) || (2 == r && 2 == c) ||
+              sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
+          )
 
 end SuDokuInnerSuite

@@ -15,17 +15,11 @@ package object sudoku:
     cell.possibleValues.map(v => Show[SuDokuCellValue].show(v)).toList.sorted
       .mkString("(", ",", ")")
 
-/*object SuDokuGenerators:
-  given Show[SuDoku] = Show.show[SuDoku]: (field: SuDoku) =>
-    field.cells.map: row =>
-      row.map(_.show).mkString("[", ";", "]")
-    .mkString("{", " ", "}")
-
   opaque type FieldLength = Int
   private val fieldLengthGen: Gen[FieldLength] =
     Gen.choose(0, 8)
   given Arbitrary[FieldLength] = Arbitrary(fieldLengthGen)
-  given Show[FieldLength]      = Show.fromToString
+  given Show[FieldLength] = Show.fromToString
   extension (i: FieldLength)
     def toInt: Int = i
 
@@ -33,8 +27,16 @@ package object sudoku:
   private val invalidFieldLengthGen: Gen[InvalidFieldLength] =
     Gen.oneOf(Gen.negNum[Int], Gen.choose(9, Int.MaxValue))
   given Arbitrary[InvalidFieldLength] = Arbitrary(invalidFieldLengthGen)
-  given Show[InvalidFieldLength]      = Show.fromToString
+  given Show[InvalidFieldLength] = Show.fromToString
   extension (i: InvalidFieldLength)
     def toInvalidInt: Int = i
+
+/*object SuDokuGenerators:
+  given Show[SuDoku] = Show.show[SuDoku]: (field: SuDoku) =>
+    field.cells.map: row =>
+      row.map(_.show).mkString("[", ";", "]")
+    .mkString("{", " ", "}")
+
+
 end SuDokuGenerators
  */

@@ -12,7 +12,8 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
 
     expect.all(
       sudoku.cells.length == 9,
-      sudoku.cells.forall(_.length == 9)
+      sudoku.cells.forall(_.length == 9),
+      sudoku.isCorrect
     )
 
   pureTest(
@@ -26,25 +27,21 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
 
     expect(allCellsHaveInitialValues)
 
-  pureTest(
-    "SuDoku.Row.isCorrect should return true if the row is correct"
-  ):
-    forEach((0 to 8).toVector): (row: Int) =>
-      expect(Row.isCorrect(row))
-    .and
-    expect.all(
-      !Row.isCorrect(-1),
-      !Row.isCorrect(9)
-    )
+  test("SuDoku.Row.isCorrect should return true if the row is correct"):
+    forall: (row: FieldLength) =>
+      expect(Row.isCorrect(row.toInt))
 
-  pureTest(
-    "SuDoku.Column.isCorrect should return true if the column is correct"
+  test("SuDoku.Row.isCorrect should return false if the row is not correct"):
+    forall: (row: InvalidFieldLength) =>
+      expect(!Row.isCorrect(row.toInvalidInt))
+
+  test("SuDoku.Column.isCorrect should return true if the column is correct"):
+    forall: (col: FieldLength) =>
+      expect(Column.isCorrect(col.toInt))
+
+  test(
+    "SuDoku.Column.isCorrect should return false if the column is not correct"
   ):
-    forEach((0 to 8).toVector): (col: Int) =>
-      expect(Column.isCorrect(col))
-    .and
-    expect.all(
-      !Column.isCorrect(-1),
-      !Column.isCorrect(9)
-    )
+    forall: (col: InvalidFieldLength) =>
+      expect(!Column.isCorrect(col.toInvalidInt))
 end SuDokuSuite

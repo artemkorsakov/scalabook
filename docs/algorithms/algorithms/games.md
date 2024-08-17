@@ -548,12 +548,120 @@ SuDokuCell.execute(inputs).run(SuDokuCell.initial)
 // (true, SuDokuCell(Set(Two)))
 ```
 
-???
+Поле игры Су Доку представляет собой ячейки \\(9 \times 9\\).
+В начальном состоянии в каждой ячейке поля список возможных значений равен от 1 до 9.
 
 **Код:**
 
 ```dotty
+final case class SuDoku(cells: Vector[Vector[SuDokuCell]]):
+  val isCorrect: Boolean =
+    cells.length == 9 && cells.forall(_.length == 9)
+
+object SuDoku:
+  val initial: SuDoku =
+    val defaultCells =
+      (0 to 8)
+        .toVector
+        .map: _ =>
+          (0 to 8).toVector.map: _ =>
+            SuDokuCell.initial
+
+    SuDoku(defaultCells)
+    
+  type Row          = Int
+  object Row:
+    def isCorrect(row: Int): Boolean = 0 <= row && row < 9
+  type Column = Int
+  object Column:
+    def isCorrect(col: Int): Boolean = 0 <= col && col < 9
 ```
+
+Определим общую операцию изменения состояния игры Су Доку:
+
+**Код:**
+
+```dotty
+object SuDoku:
+  type SuDokuState  = State[SuDoku, Boolean]
+  type SuDokuOutput = (Boolean, SuDoku)
+
+  def executeInnerOperation[A](
+      inputs: List[A],
+      update: A => SuDokuOutput => SuDokuOutput
+  ): SuDokuState =
+    State[SuDoku, Boolean] { sudoku =>
+      val state =
+        for
+          _ <- State.traverse(inputs)(input =>
+            State.modify[SuDokuOutput](update(input))
+          )
+          output <- State.get
+        yield output._1
+
+      state.run((true, sudoku))._2
+    }
+end SuDoku    
+```
+
+Следующее, что нам понадобится - это установка начального состояния в игре, 
+когда заполнены часть полей из известных значений.
+
+Поэтому остановимся на операции установки значения в заданное поле.
+Эта операция состоит из четырех побочных операций:
+
+- установка заданного значения в поле (i, j)
+- удаление заданного значения из строчки i за исключением ячейки (i, j)
+- удаление заданного значения из столбца j за исключением ячейки (i, j)
+- удаление заданного значения из квадрата \\(3 \times 3\\), которому принадлежит ячейка (i, j), за исключением самой ячейки 
+
+Определим побочные операции установки и удаления значения в заданном поле:
+
+**Код:**
+
+```dotty
+object SuDokuInner:
+  enum SuDokuInnerOperation:
+    case SetToCell, RemoveFromCell
+
+  type SuDokuInnerInput = (SuDokuInnerOperation, Row, Column, SuDokuCellValue)
+
+  private val updateSuDoku: SuDokuInnerInput => SuDokuOutput => SuDokuOutput =
+    (operation, i, j, value) =>
+      (result, sudoku) =>
+        val isCorrect =
+          sudoku.isCorrect && Row.isCorrect(i) && Column.isCorrect(j) && result
+
+        if isCorrect then
+          operation match
+            case SetToCell =>
+              updateCell(SuDokuCellOper.Set, sudoku, i, j, value)
+            case RemoveFromCell =>
+              updateCell(SuDokuCellOper.Remove, sudoku, i, j, value)
+        else (false, sudoku)
+
+  private def updateCell(
+      oper: SuDokuCellOper,
+      sudoku: SuDoku,
+      i: Int,
+      j: Int,
+      value: SuDokuCellValue
+  ): (Boolean, SuDoku) =
+    val oldCell = sudoku.cells(i)(j)
+    val (result, newCell) =
+      SuDokuCell.execute(List((oper, value))).run(oldCell)
+    if result then
+      val newCells =
+        sudoku.cells.updated(i, sudoku.cells(i).updated(j, newCell))
+      (true, SuDoku(newCells))
+    else (false, sudoku)
+
+  def execute(inputs: List[SuDokuInnerInput]): SuDokuState =
+    SuDoku.executeInnerOperation(inputs, updateSuDoku)
+
+end SuDokuInner   
+```
+
 
 **Оценка:**
 

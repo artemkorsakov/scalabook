@@ -1,5 +1,6 @@
 package ru.scalabook.algorithms.games.sudoku
 
+import cats.syntax.show.*
 import ru.scalabook.algorithms.games.sudoku.SuDoku.{Column, Row}
 import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
@@ -97,4 +98,67 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
     val blockIndices = SuDoku.getBlock(9, 9)
     expect(blockIndices.isEmpty)
 
+  pureTest(
+    "SuDoku.setValue should set the value of a cell"
+  ):
+    val initialSudoku = SuDoku.initial
+    val (result, sudoku) =
+      SuDoku.setValue(0, 2, SuDokuCellValue.Three).run(initialSudoku)
+
+    expect(
+      sudoku.show ==
+        "{[(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(3);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9)] " +
+        "[(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)]}"
+    )
+
 end SuDokuSuite
+
+/*
+ test("setValue should correctly set a value in a cell") {
+    forall(Gen.posNum[Int].suchThat(_ <= 9), Gen.posNum[Int].suchThat(_ <= 9), Gen.posNum[Int].suchThat(_ <= 9)) { (row, col, value) =>
+      val initialSudoku = SuDoku.initial
+      val state = SuDoku.setValue(row, col, SuDokuCellValue(value))
+      val (result, updatedSudoku) = state.run(initialSudoku).value
+
+      expect(result == true) and
+        expect(updatedSudoku.cells(row)(col).value == SuDokuCellValue(value))
+    }
+  }
+
+  test("setValue should return false if row is out of bounds") {
+    forall(Gen.posNum[Int].suchThat(_ > 9), Gen.posNum[Int].suchThat(_ <= 9), Gen.posNum[Int].suchThat(_ <= 9)) { (row, col, value) =>
+      val initialSudoku = SuDoku.initial
+      val state = SuDoku.setValue(row, col, SuDokuCellValue(value))
+      val (result, updatedSudoku) = state.run(initialSudoku).value
+
+      expect(result == false)
+    }
+  }
+
+  test("setValue should return false if column is out of bounds") {
+    forall(Gen.posNum[Int].suchThat(_ <= 9), Gen.posNum[Int].suchThat(_ > 9), Gen.posNum[Int].suchThat(_ <= 9)) { (row, col, value) =>
+      val initialSudoku = SuDoku.initial
+      val state = SuDoku.setValue(row, col, SuDokuCellValue(value))
+      val (result, updatedSudoku) = state.run(initialSudoku).value
+
+      expect(result == false)
+    }
+  }
+
+  test("setValue should return false if value is out of bounds") {
+    forall(Gen.posNum[Int].suchThat(_ <= 9), Gen.posNum[Int].suchThat(_ <= 9), Gen.posNum[Int].suchThat(_ > 9)) { (row, col, value) =>
+      val initialSudoku = SuDoku.initial
+      val state = SuDoku.setValue(row, col, SuDokuCellValue(value))
+      val (result, updatedSudoku) = state.run(initialSudoku).value
+
+      expect(result == false)
+    }
+  }
+ */

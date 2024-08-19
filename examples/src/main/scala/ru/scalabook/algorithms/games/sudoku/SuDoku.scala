@@ -1,6 +1,14 @@
 package ru.scalabook.algorithms.games.sudoku
 
 import ru.scalabook.algorithms.games.sudoku.SuDoku.*
+import ru.scalabook.algorithms.games.sudoku.SuDokuComplexInner.{
+  SuDokuComplexInnerInput,
+  SuDokuInnerComplexOperation
+}
+import ru.scalabook.algorithms.games.sudoku.SuDokuInner.{
+  SuDokuInnerInput,
+  SuDokuInnerOperation
+}
 import ru.scalabook.fp.state.State
 
 final case class SuDoku(cells: Vector[Vector[SuDokuCell]]):
@@ -53,50 +61,40 @@ object SuDoku:
 
       state.run((true, sudoku))._2
     }
-end SuDoku
 
-/*
-/** Устанавливает заданное значение в ячейку. */
-def setValue(i: Int, j: Int, value: SuDokuCellValue): Option[SuDoku] = ???
+  private type SuDokuInput =
+    (Row, Column, SuDokuCellValue)
 
-//  private def setValue(i: Int, j: Int, value: Int): Boolean =
-//    val tempSuDoku = copySuDoku
-//    tempSuDoku.cells(i)(j) = Array(value)
-//    val result =
-//      tempSuDoku.removeValueFromRowColSqr(i, j, value) &&
-//        tempSuDoku.isSuDokuMatrixValid
-//    if result then
-//      tempSuDoku.cells.indices.foreach(i => cells(i) = tempSuDoku.cells(i))
-//    result
+  private val updateSuDoku: SuDokuInput => SuDokuOutput => SuDokuOutput =
+    (i, j, value) =>
+      (result, sudoku) =>
+        if !result then (false, sudoku)
+        else
+          val inputsSet: List[SuDokuInnerInput] =
+            List((SuDokuInnerOperation.SetToCell, i, j, value))
+          val (resultSet, sudokuSet) =
+            SuDokuInner.execute(inputsSet).run(sudoku)
 
-object SuDoku:
-  def toSuDoku(source: String): Option[SuDoku] =
-    val sudoku = SuDoku()
-    val rows   = source.trim.split("\n")
+          val inputsRemove: List[SuDokuComplexInnerInput] =
+            List(
+              (SuDokuInnerComplexOperation.RemoveFromRow, i, j, value),
+              (SuDokuInnerComplexOperation.RemoveFromColumn, i, j, value),
+              (SuDokuInnerComplexOperation.RemoveFromBlock, i, j, value)
+            )
+          val (resultRemove, sudokuRemove) =
+            SuDokuComplexInner.execute(inputsRemove).run(sudokuSet)
 
-    (0 to 8).foldLeft(Option(sudoku)) { case (maybeSudoku, i) =>
-      (0 to 8).foldLeft(maybeSudoku) { case (maybeSudoku, j) =>
-        getValue(rows, i, j) match
-          case Some(value) => maybeSudoku.flatMap(_.setValue(i, j, value))
-          case None        => None
-      }
-    }
+          if resultRemove then (true, sudokuRemove) else (false, sudoku)
 
-  end toSuDoku
-
-  private def getValue(
-      rows: Array[String],
-      i: Int,
-      j: Int
-  ): Option[SuDokuCellValue] =
-    if 0 <= i && i < rows.length && 0 <= j && j < rows(i).length then None
-    else
-      val value = rows(i).charAt(j).getNumericValue
-      if 1 <= value && value <= 9 then
-        Try(SuDokuCellValue.fromOrdinal(value - 1)).toOption
-      else None
+  /** Устанавливает заданное значение в ячейку. */
+  def setValue(i: Int, j: Int, value: SuDokuCellValue): SuDokuState =
+    val inputs: List[SuDokuInput] = List((i, j, value))
+    SuDoku.executeInnerOperation(inputs, updateSuDoku)
 
 end SuDoku
+
+//  private def isNotAnswer: Boolean =
+//    cells.exists(_.exists(_.length != 1))
 
 //  @SuppressWarnings(
 //    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
@@ -123,18 +121,34 @@ end SuDoku
 //    else None
 //  end result
 
-//  private def isNotAnswer: Boolean =
-//    cells.exists(_.exists(_.length != 1))
-
-//  /** Set the specified value in the specified field but then return to the
-//    * previous state of the cells regardless of the result.
-//    */
-//  private def setValueWithoutChanges(i: Int, j: Int, value: Int): Boolean =
-//    val tempSuDoku = copySuDoku
-//    tempSuDoku.cells(i)(j) = Array(value)
-//    tempSuDoku.removeValueFromRowColSqr(i, j, value) &&
-//      tempSuDoku.isSuDokuMatrixValid
+//object SuDoku:
+//  def toSuDoku(source: String): Option[SuDoku] =
+//    val sudoku = SuDoku()
+//    val rows   = source.trim.split("\n")
 //
+//    (0 to 8).foldLeft(Option(sudoku)) { case (maybeSudoku, i) =>
+//      (0 to 8).foldLeft(maybeSudoku) { case (maybeSudoku, j) =>
+//        getValue(rows, i, j) match
+//          case Some(value) => maybeSudoku.flatMap(_.setValue(i, j, value))
+//          case None        => None
+//      }
+//    }
+//
+//  end toSuDoku
+//
+//  private def getValue(
+//      rows: Array[String],
+//      i: Int,
+//      j: Int
+//  ): Option[SuDokuCellValue] =
+//    if 0 <= i && i < rows.length && 0 <= j && j < rows(i).length then None
+//    else
+//      val value = rows(i).charAt(j).getNumericValue
+//      if 1 <= value && value <= 9 then
+//        Try(SuDokuCellValue.fromOrdinal(value - 1)).toOption
+//      else None
+//
+//end SuDoku
 
 //@main def problem96(): Unit =
 //  lazy val bigSudoku =
@@ -153,4 +167,3 @@ end SuDoku
 //      .sum
 //
 //  require(sum == 24702)
- */

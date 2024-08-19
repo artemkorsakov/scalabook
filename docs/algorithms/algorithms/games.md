@@ -735,6 +735,45 @@ object SuDokuComplexInner:
 end SuDokuComplexInner
 ```
 
+После того как подготовлены все побочные операции, перейдем к операции установки единственного значения в ячейку.
+
+Напомню, что при установке конкретного значения в заданную ячейку необходимо не только задать значение в эту ячейку, 
+а также и удалить значение из списка возможных значений во всех ячейках той же строки, того же столбца и того же блока.
+При этом, если в выполняемой пачке операций возникла ситуация, когда одна из операций не выполнилась,
+то необходимо вернуться в исходное состояние, бывшее до выполнения всей цепочки операций.
+
+**Код:**
+
+```dotty
+private type SuDokuInput =
+  (Row, Column, SuDokuCellValue)
+
+private val updateSuDoku: SuDokuInput => SuDokuOutput => SuDokuOutput =
+  (i, j, value) =>
+    (result, sudoku) =>
+      if !result then (false, sudoku)
+      else
+        val inputsSet: List[SuDokuInnerInput] =
+          List((SuDokuInnerOperation.SetToCell, i, j, value))
+        val (resultSet, sudokuSet) =
+          SuDokuInner.execute(inputsSet).run(sudoku)
+
+        val inputsRemove: List[SuDokuComplexInnerInput] =
+          List(
+            (SuDokuInnerComplexOperation.RemoveFromRow, i, j, value),
+            (SuDokuInnerComplexOperation.RemoveFromColumn, i, j, value),
+            (SuDokuInnerComplexOperation.RemoveFromBlock, i, j, value)
+          )
+        val (resultRemove, sudokuRemove) =
+          SuDokuComplexInner.execute(inputsRemove).run(sudokuSet)
+
+        if resultRemove then (true, sudokuRemove) else (false, sudoku)
+
+def setValue(i: Int, j: Int, value: SuDokuCellValue): SuDokuState =
+  val inputs: List[SuDokuInput] = List((i, j, value))
+  SuDoku.executeInnerOperation(inputs, updateSuDoku)
+```
+
 **Оценка:**
 
 - **Время** - ???

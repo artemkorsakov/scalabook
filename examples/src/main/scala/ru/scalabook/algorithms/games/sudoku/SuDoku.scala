@@ -62,7 +62,7 @@ object SuDoku:
       state.run((true, sudoku))._2
     }
 
-  private type SuDokuInput =
+  type SuDokuInput =
     (Row, Column, SuDokuCellValue)
 
   private val updateSuDoku: SuDokuInput => SuDokuOutput => SuDokuOutput =
@@ -90,6 +90,9 @@ object SuDoku:
   def setValue(i: Int, j: Int, value: SuDokuCellValue): SuDokuState =
     val inputs: List[SuDokuInput] = List((i, j, value))
     SuDoku.executeInnerOperation(inputs, updateSuDoku)
+
+  def setValues(inputs: SuDokuInput*): SuDokuState =
+    SuDoku.executeInnerOperation(inputs.toList, updateSuDoku)
 
 end SuDoku
 

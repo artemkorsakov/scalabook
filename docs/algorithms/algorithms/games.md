@@ -745,7 +745,7 @@ end SuDokuComplexInner
 **Код:**
 
 ```dotty
-private type SuDokuInput =
+type SuDokuInput =
   (Row, Column, SuDokuCellValue)
 
 private val updateSuDoku: SuDokuInput => SuDokuOutput => SuDokuOutput =
@@ -772,6 +772,9 @@ private val updateSuDoku: SuDokuInput => SuDokuOutput => SuDokuOutput =
 def setValue(i: Int, j: Int, value: SuDokuCellValue): SuDokuState =
   val inputs: List[SuDokuInput] = List((i, j, value))
   SuDoku.executeInnerOperation(inputs, updateSuDoku)
+  
+def setValues(inputs: SuDokuInput*): SuDokuState =
+  SuDoku.executeInnerOperation(inputs.toList, updateSuDoku)  
 ```
 
 **Оценка:**

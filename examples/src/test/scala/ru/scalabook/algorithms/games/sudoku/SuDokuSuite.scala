@@ -1,7 +1,12 @@
 package ru.scalabook.algorithms.games.sudoku
 
 import cats.syntax.show.*
-import ru.scalabook.algorithms.games.sudoku.SuDoku.{Column, Row}
+import ru.scalabook.algorithms.games.sudoku.SuDoku.{
+  Column,
+  Row,
+  SuDokuInput,
+  getBlock
+}
 import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
 
@@ -98,14 +103,13 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
     val blockIndices = SuDoku.getBlock(9, 9)
     expect(blockIndices.isEmpty)
 
-  pureTest(
-    "SuDoku.setValue should set the value of a cell"
-  ):
+  pureTest("SuDoku.setValue should correctly set a value in a cell - example"):
     val initialSudoku = SuDoku.initial
     val (result, sudoku) =
       SuDoku.setValue(0, 2, SuDokuCellValue.Three).run(initialSudoku)
 
-    expect(
+    expect.all(
+      result,
       sudoku.show ==
         "{[(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(3);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9)] " +
         "[(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
@@ -118,47 +122,76 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
         "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)]}"
     )
 
+  test("SuDoku.setValue should correctly set a value in a cell"):
+    forall: (row: FieldLength, col: FieldLength, value: SuDokuCellValue) =>
+      val initialSudoku    = SuDoku.initial
+      val i                = row.toInt
+      val j                = col.toInt
+      val state            = SuDoku.setValue(i, j, value)
+      val (result, sudoku) = state.run(initialSudoku)
+
+      val expectedValues = SuDokuCellValue.values.toSet - value
+      val blockIdx       = getBlock(i, j)
+
+      expect.all(
+        result,
+        sudoku.cells(i)(j).maybeValue.contains(value)
+      ).and(
+        forEach((0 to 8).toList): c =>
+          expect(
+            c == j || sudoku.cells(i)(c).possibleValues == expectedValues
+          )
+      ).and(
+        forEach((0 to 8).toList): r =>
+          expect(
+            r == i || sudoku.cells(r)(j).possibleValues == expectedValues
+          )
+      ).and(
+        forEach(blockIdx.toList): (r, c) =>
+          expect(
+            (r == i && c == j) ||
+              sudoku.cells(r)(c).possibleValues == expectedValues
+          )
+      )
+        .and(
+          forEach((0 to 8).toList): r =>
+            forEach((0 to 8).toList): c =>
+              expect(
+                r == i || c == j || blockIdx.contains((r, c)) ||
+                  sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
+              )
+        )
+
+  pureTest("SuDoku.setValue should false if one of the operators fails"):
+    val initialSudoku = SuDoku.initial
+    val inputs: Seq[SuDokuInput] = Seq(
+      (0, 0, SuDokuCellValue.One),
+      (0, 1, SuDokuCellValue.Two),
+      (0, 2, SuDokuCellValue.Three),
+      (0, 3, SuDokuCellValue.Four),
+      (0, 4, SuDokuCellValue.Five),
+      (0, 5, SuDokuCellValue.Six),
+      (0, 6, SuDokuCellValue.Seven),
+      (0, 7, SuDokuCellValue.Eight),
+      (8, 8, SuDokuCellValue.Nine)
+    )
+    val (result, sudoku) =
+      SuDoku.setValues(inputs*).run(initialSudoku)
+
+    val expectedSudoku =
+      "{[(1);(2);(3);(4);(5);(6);(7);(8);(9)] " +
+        "[(4,5,6,7,8,9);(4,5,6,7,8,9);(4,5,6,7,8,9);(1,2,3,7,8,9);(1,2,3,7,8,9);(1,2,3,7,8,9);(1,2,3,4,5,6,9);(1,2,3,4,5,6,9);(1,2,3,4,5,6,9)] " +
+        "[(4,5,6,7,8,9);(4,5,6,7,8,9);(4,5,6,7,8,9);(1,2,3,7,8,9);(1,2,3,7,8,9);(1,2,3,7,8,9);(1,2,3,4,5,6,9);(1,2,3,4,5,6,9);(1,2,3,4,5,6,9)] " +
+        "[(2,3,4,5,6,7,8,9);(1,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,5,6,7,8,9);(1,2,3,4,6,7,8,9);(1,2,3,4,5,7,8,9);(1,2,3,4,5,6,8,9);(1,2,3,4,5,6,7,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(2,3,4,5,6,7,8,9);(1,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,5,6,7,8,9);(1,2,3,4,6,7,8,9);(1,2,3,4,5,7,8,9);(1,2,3,4,5,6,8,9);(1,2,3,4,5,6,7,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(2,3,4,5,6,7,8,9);(1,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,5,6,7,8,9);(1,2,3,4,6,7,8,9);(1,2,3,4,5,7,8,9);(1,2,3,4,5,6,8,9);(1,2,3,4,5,6,7,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(2,3,4,5,6,7,8,9);(1,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,5,6,7,8,9);(1,2,3,4,6,7,8,9);(1,2,3,4,5,7,8,9);(1,2,3,4,5,6,8,9);(1,2,3,4,5,6,7,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(2,3,4,5,6,7,8,9);(1,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,5,6,7,8,9);(1,2,3,4,6,7,8,9);(1,2,3,4,5,7,8,9);(1,2,3,4,5,6,8,9);(1,2,3,4,5,6,7,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(2,3,4,5,6,7,8,9);(1,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,5,6,7,8,9);(1,2,3,4,6,7,8,9);(1,2,3,4,5,7,8,9);(1,2,3,4,5,6,8,9);(1,2,3,4,5,6,7,9);(1,2,3,4,5,6,7,8,9)]}"
+
+    expect.all(
+      !result,
+      sudoku.show == expectedSudoku
+    )
+
 end SuDokuSuite
-
-/*
- test("setValue should correctly set a value in a cell") {
-    forall(Gen.posNum[Int].suchThat(_ <= 9), Gen.posNum[Int].suchThat(_ <= 9), Gen.posNum[Int].suchThat(_ <= 9)) { (row, col, value) =>
-      val initialSudoku = SuDoku.initial
-      val state = SuDoku.setValue(row, col, SuDokuCellValue(value))
-      val (result, updatedSudoku) = state.run(initialSudoku).value
-
-      expect(result == true) and
-        expect(updatedSudoku.cells(row)(col).value == SuDokuCellValue(value))
-    }
-  }
-
-  test("setValue should return false if row is out of bounds") {
-    forall(Gen.posNum[Int].suchThat(_ > 9), Gen.posNum[Int].suchThat(_ <= 9), Gen.posNum[Int].suchThat(_ <= 9)) { (row, col, value) =>
-      val initialSudoku = SuDoku.initial
-      val state = SuDoku.setValue(row, col, SuDokuCellValue(value))
-      val (result, updatedSudoku) = state.run(initialSudoku).value
-
-      expect(result == false)
-    }
-  }
-
-  test("setValue should return false if column is out of bounds") {
-    forall(Gen.posNum[Int].suchThat(_ <= 9), Gen.posNum[Int].suchThat(_ > 9), Gen.posNum[Int].suchThat(_ <= 9)) { (row, col, value) =>
-      val initialSudoku = SuDoku.initial
-      val state = SuDoku.setValue(row, col, SuDokuCellValue(value))
-      val (result, updatedSudoku) = state.run(initialSudoku).value
-
-      expect(result == false)
-    }
-  }
-
-  test("setValue should return false if value is out of bounds") {
-    forall(Gen.posNum[Int].suchThat(_ <= 9), Gen.posNum[Int].suchThat(_ <= 9), Gen.posNum[Int].suchThat(_ > 9)) { (row, col, value) =>
-      val initialSudoku = SuDoku.initial
-      val state = SuDoku.setValue(row, col, SuDokuCellValue(value))
-      val (result, updatedSudoku) = state.run(initialSudoku).value
-
-      expect(result == false)
-    }
-  }
- */

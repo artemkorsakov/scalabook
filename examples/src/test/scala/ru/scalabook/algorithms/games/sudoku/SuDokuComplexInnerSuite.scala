@@ -113,11 +113,10 @@ object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
     "SuDokuComplexInner.execute should not execute an operation if the previous operation is incorrect"
   ):
     val initialSudoku = SuDoku.initial
-    val innerInputs: List[SuDokuInnerInput] = List(
+    val innerInput: SuDokuInnerInput =
       (SuDokuInnerOperation.SetToCell, 0, 0, SuDokuCellValue.One)
-    )
     val (_, sudokuWithGivenCell) =
-      SuDokuInner.execute(innerInputs).run(initialSudoku)
+      SuDokuInner.execute(innerInput).run(initialSudoku)
 
     val inputs: List[SuDokuComplexInnerInput] =
       List(

@@ -10,10 +10,13 @@ import ru.scalabook.algorithms.games.sudoku.SuDokuInner.{
   SuDokuInnerOperation
 }
 import ru.scalabook.fp.state.State
+import scala.annotation.tailrec
 
 final case class SuDoku(cells: Vector[Vector[SuDokuCell]]):
   val isCorrect: Boolean =
     cells.length == 9 && cells.forall(_.length == 9)
+
+  val hasSolution: Boolean = cells.forall(_.forall(_.maybeValue.isDefined))
 
 object SuDoku:
   val initial: SuDoku =
@@ -70,10 +73,10 @@ object SuDoku:
       (result, sudoku) =>
         if !result then (false, sudoku)
         else
-          val inputsSet: List[SuDokuInnerInput] =
-            List((SuDokuInnerOperation.SetToCell, i, j, value))
+          val inputSet: SuDokuInnerInput =
+            (SuDokuInnerOperation.SetToCell, i, j, value)
           val (resultSet, sudokuSet) =
-            SuDokuInner.execute(inputsSet).run(sudoku)
+            SuDokuInner.execute(inputSet).run(sudoku)
 
           val inputsRemove: List[SuDokuComplexInnerInput] =
             List(
@@ -88,41 +91,71 @@ object SuDoku:
 
   /** Устанавливает заданное значение в ячейку. */
   def setValue(i: Int, j: Int, value: SuDokuCellValue): SuDokuState =
-    val inputs: List[SuDokuInput] = List((i, j, value))
-    SuDoku.executeInnerOperation(inputs, updateSuDoku)
+    setValues((i, j, value))
 
   def setValues(inputs: SuDokuInput*): SuDokuState =
     SuDoku.executeInnerOperation(inputs.toList, updateSuDoku)
 
+  /** Поиск решения головоломки:
+    *
+    * Головоломка может быть решена:
+    *
+    *   - если найдено решение
+    *   - если по-прежнему есть значения, которые можно вычеркнуть
+    *
+    * Решение головоломки:
+    *
+    *   - проходимся по каждой строчке и по каждому столбцу
+    *   - ищем такие значения, которые при вставке в заданное поле приводят к
+    *     ошибке - это означает, что в данную ячейку значение вставлять нельзя и
+    *     его можно вычеркнуть
+    *   - вычеркиваем значение и ищем следующее такое же
+    */
+  def getSolution: SuDokuState =
+    State[SuDoku, Boolean] {
+      (sudoku: SuDoku) =>
+        @tailrec
+        def loopByCell(sudoku: SuDoku, i: Int, j: Int): SuDokuOutput =
+          if i >= 9 then (true, sudoku) // Дошли до конца поля
+          else if j >= 9 then
+            // Дошли до конца столбца, переходим к следующей строке
+            loopByCell(sudoku, i + 1, 0)
+          else
+            val currentValues = sudoku.cells(i)(j).possibleValues
+            if currentValues.size == 1 then
+              // Значение определено, переходим к следующему столбцу
+              loopByCell(sudoku, i, j + 1)
+            else // Ищем невалидное значение в ячейке
+              val maybeInvalidValue = currentValues.find: value =>
+                !setValue(i, j, value).run(sudoku)._1
+              maybeInvalidValue match
+                case None => loopByCell(sudoku, i, j + 1)
+                case Some(invalidValue) =>
+                  val input: SuDokuInnerInput =
+                    (SuDokuInnerOperation.RemoveFromCell, i, j, invalidValue)
+                  val (result, newSudoku) =
+                    SuDokuInner.execute(input).run(sudoku)
+                  // Если результат успешен, то ищем в заданной ячейке следующее невалидное значение
+                  if result then loopByCell(newSudoku, i, j)
+                  // Если не успешен, значит решение головоломки не существует
+                  else (false, sudoku)
+            end if
+
+        @tailrec
+        def loop(sudoku: SuDoku): SuDokuOutput =
+          val (result, newSudoku) = loopByCell(sudoku, 0, 0)
+
+          if result && sudoku == newSudoku then
+            // Ничего не изменилось, не можем найти решение
+            (result, sudoku)
+          else if result then
+            // Вычеркнуты некоторые значения, переходим к следующей итерации
+            loop(newSudoku)
+          else (false, sudoku)
+
+        loop(sudoku)
+    }
 end SuDoku
-
-//  private def isNotAnswer: Boolean =
-//    cells.exists(_.exists(_.length != 1))
-
-//  @SuppressWarnings(
-//    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
-//  )
-//  def result: Option[Array[Array[Int]]] =
-//    var hasToRemove = true
-//    var isValid     = true
-//    while isValid && isNotAnswer && hasToRemove
-//    do
-//      hasToRemove = false
-//      cells.indices.foreach(i =>
-//        cells(i).indices
-//          .withFilter(j => cells(i)(j).length != 1)
-//          .foreach(j =>
-//            cells(i)(j).withFilter(!setValueWithoutChanges(i, j, _)).foreach {
-//              value =>
-//                hasToRemove = true
-//                if !removeValue(i, j, value) then isValid = false
-//            }
-//          )
-//      )
-//
-//    if isValid && !isNotAnswer then Some(cells.map(_.map(_.head)))
-//    else None
-//  end result
 
 //object SuDoku:
 //  def toSuDoku(source: String): Option[SuDoku] =

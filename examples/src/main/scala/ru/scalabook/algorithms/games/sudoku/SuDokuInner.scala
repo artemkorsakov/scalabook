@@ -42,7 +42,7 @@ object SuDokuInner:
       (true, SuDoku(newCells))
     else (false, sudoku)
 
-  def execute(inputs: List[SuDokuInnerInput]): SuDokuState =
-    SuDoku.executeInnerOperation(inputs, updateSuDoku)
+  def execute(inputs: SuDokuInnerInput*): SuDokuState =
+    SuDoku.executeInnerOperation(inputs.toList, updateSuDoku)
 
 end SuDokuInner

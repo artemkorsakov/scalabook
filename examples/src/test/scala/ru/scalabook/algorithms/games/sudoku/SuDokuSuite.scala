@@ -194,4 +194,61 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
       sudoku.show == expectedSudoku
     )
 
+  pureTest("SuDoku.result"):
+    val initialSudoku = SuDoku.initial
+    val inputs: Seq[SuDokuInput] = Seq(
+      (0, 2, SuDokuCellValue.Three),
+      (0, 4, SuDokuCellValue.Two),
+      (0, 6, SuDokuCellValue.Six),
+      (1, 0, SuDokuCellValue.Nine),
+      (1, 3, SuDokuCellValue.Three),
+      (1, 5, SuDokuCellValue.Five),
+      (1, 8, SuDokuCellValue.One),
+      (2, 2, SuDokuCellValue.One),
+      (2, 3, SuDokuCellValue.Eight),
+      (2, 5, SuDokuCellValue.Six),
+      (2, 6, SuDokuCellValue.Four),
+      (3, 2, SuDokuCellValue.Eight),
+      (3, 3, SuDokuCellValue.One),
+      (3, 5, SuDokuCellValue.Two),
+      (3, 6, SuDokuCellValue.Nine),
+      (4, 0, SuDokuCellValue.Seven),
+      (4, 8, SuDokuCellValue.Eight),
+      (5, 2, SuDokuCellValue.Six),
+      (5, 3, SuDokuCellValue.Seven),
+      (5, 5, SuDokuCellValue.Eight),
+      (5, 6, SuDokuCellValue.Two),
+      (6, 2, SuDokuCellValue.Two),
+      (6, 3, SuDokuCellValue.Six),
+      (6, 5, SuDokuCellValue.Nine),
+      (6, 6, SuDokuCellValue.Five),
+      (7, 0, SuDokuCellValue.Eight),
+      (7, 3, SuDokuCellValue.Two),
+      (7, 5, SuDokuCellValue.Three),
+      (7, 8, SuDokuCellValue.Nine),
+      (8, 2, SuDokuCellValue.Five),
+      (8, 4, SuDokuCellValue.One),
+      (8, 5, SuDokuCellValue.Three)
+    )
+
+    val (_, sudoku) =
+      SuDoku.setValues(inputs*).run(initialSudoku)
+
+    val (result, sudokuWithSolution) = SuDoku.getSolution.run(sudoku)
+
+    val expectedSudoku =
+      "{[(4);(8);(3);(9);(2);(1);(6);(5);(7)] " +
+        "[(9);(6);(7);(3);(4);(5);(8);(2);(1)] " +
+        "[(2);(5);(1);(8);(7);(6);(4);(9);(3)] " +
+        "[(5);(4);(8);(1);(3);(2);(9);(7);(6)] " +
+        "[(7);(2);(9);(5);(6);(4);(1);(3);(8)] " +
+        "[(1);(3);(6);(7);(9);(8);(2);(4);(5)] " +
+        "[(3);(7);(2);(6);(8);(9);(5);(1);(4)] " +
+        "[(8);(1);(4);(2);(5);(3);(7);(6);(9)] " +
+        "[(6);(9);(5);(4);(1);(7);(3);(8);(2)]}"
+
+    expect.all(
+      result,
+      sudokuWithSolution.show == expectedSudoku
+    )
 end SuDokuSuite

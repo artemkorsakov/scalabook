@@ -10,10 +10,10 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
       val initialSudoku = SuDoku.initial
       val i             = row.toInt
       val j             = col.toInt
-      val inputs: List[SuDokuInnerInput] =
-        List((SuDokuInnerOperation.SetToCell, i, j, value))
+      val input: SuDokuInnerInput =
+        (SuDokuInnerOperation.SetToCell, i, j, value)
 
-      val (result, sudoku) = SuDokuInner.execute(inputs).run(initialSudoku)
+      val (result, sudoku) = SuDokuInner.execute(input).run(initialSudoku)
 
       expect.all(
         result,
@@ -32,10 +32,10 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
       val initialSudoku = SuDoku.initial
       val i             = row.toInt
       val j             = col.toInt
-      val inputs: List[SuDokuInnerInput] =
-        List((SuDokuInnerOperation.RemoveFromCell, i, j, value))
+      val input: SuDokuInnerInput =
+        (SuDokuInnerOperation.RemoveFromCell, i, j, value)
 
-      val (result, sudoku) = SuDokuInner.execute(inputs).run(initialSudoku)
+      val (result, sudoku) = SuDokuInner.execute(input).run(initialSudoku)
 
       expect.all(
         result,
@@ -53,10 +53,10 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
     "SuDokuInner.execute should not execute an operation if a sudoku is incorrect"
   ):
     val initialSudoku = SuDoku(Vector.empty)
-    val inputs: List[SuDokuInnerInput] =
-      List((SuDokuInnerOperation.SetToCell, 0, 0, SuDokuCellValue.One))
+    val input: SuDokuInnerInput =
+      (SuDokuInnerOperation.SetToCell, 0, 0, SuDokuCellValue.One)
 
-    val (result, sudoku) = SuDokuInner.execute(inputs).run(initialSudoku)
+    val (result, sudoku) = SuDokuInner.execute(input).run(initialSudoku)
 
     expect.all(
       !result,
@@ -67,10 +67,10 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
     "SuDokuInner.execute should not execute an operation if a row is incorrect"
   ):
     val initialSudoku = SuDoku.initial
-    val inputs: List[SuDokuInnerInput] =
-      List((SuDokuInnerOperation.SetToCell, 9, 0, SuDokuCellValue.One))
+    val input: SuDokuInnerInput =
+      (SuDokuInnerOperation.SetToCell, 9, 0, SuDokuCellValue.One)
 
-    val (result, sudoku) = SuDokuInner.execute(inputs).run(initialSudoku)
+    val (result, sudoku) = SuDokuInner.execute(input).run(initialSudoku)
 
     expect.all(
       !result,
@@ -81,10 +81,10 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
     "SuDokuInner.execute should not execute an operation if a column is incorrect"
   ):
     val initialSudoku = SuDoku.initial
-    val inputs: List[SuDokuInnerInput] =
-      List((SuDokuInnerOperation.SetToCell, 0, 9, SuDokuCellValue.One))
+    val input: SuDokuInnerInput =
+      (SuDokuInnerOperation.SetToCell, 0, 9, SuDokuCellValue.One)
 
-    val (result, sudoku) = SuDokuInner.execute(inputs).run(initialSudoku)
+    val (result, sudoku) = SuDokuInner.execute(input).run(initialSudoku)
 
     expect.all(
       !result,
@@ -100,7 +100,7 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
       (SuDokuInnerOperation.SetToCell, 0, 0, SuDokuCellValue.One)
     )
 
-    val (result, sudoku) = SuDokuInner.execute(inputs).run(initialSudoku)
+    val (result, sudoku) = SuDokuInner.execute(inputs*).run(initialSudoku)
 
     expect.all(
       !result,
@@ -122,7 +122,7 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
       (SuDokuInnerOperation.RemoveFromCell, 0, 0, SuDokuCellValue.One)
     )
 
-    val (result, sudoku) = SuDokuInner.execute(inputs).run(initialSudoku)
+    val (result, sudoku) = SuDokuInner.execute(inputs*).run(initialSudoku)
 
     expect.all(
       !result,
@@ -145,7 +145,7 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
       (SuDokuInnerOperation.SetToCell, 1, 1, SuDokuCellValue.One)
     )
 
-    val (result, sudoku) = SuDokuInner.execute(inputs).run(initialSudoku)
+    val (result, sudoku) = SuDokuInner.execute(inputs*).run(initialSudoku)
 
     expect.all(
       !result,
@@ -167,7 +167,7 @@ object SuDokuInnerSuite extends SimpleIOSuite with Checkers:
       (SuDokuInnerOperation.SetToCell, 2, 2, SuDokuCellValue.Two)
     )
 
-    val (result, sudoku) = SuDokuInner.execute(inputs).run(initialSudoku)
+    val (result, sudoku) = SuDokuInner.execute(inputs*).run(initialSudoku)
 
     expect.all(
       result,

@@ -1,9 +1,7 @@
 package ru.scalabook.algorithms.games.sudoku
 
-import ru.scalabook.algorithms.games.sudoku.SuDokuOld.toSuDoku
-
 @main def sudokuBench(): Unit =
-  val maybeSuDoku = toSuDoku(
+  val (_, sudoku) = SuDoku.toSuDoku(
     "003020600\n" +
       "900305001\n" +
       "001806400\n" +
@@ -14,7 +12,6 @@ import ru.scalabook.algorithms.games.sudoku.SuDokuOld.toSuDoku
       "800203009\n" +
       "005010300"
   )
+  val (_, sudokuWithSolution) = SuDoku.getSolution.run(sudoku)
 
-  maybeSuDoku.foreach: sudoku =>
-    sudoku.result.foreach: result =>
-      result.foreach(row => println(row.mkString("Array(", ", ", ")")))
+  println(s"Sudoku: $sudokuWithSolution")

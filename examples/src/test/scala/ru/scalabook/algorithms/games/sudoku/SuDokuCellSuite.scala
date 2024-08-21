@@ -20,7 +20,6 @@ object SuDokuCellSuite extends SimpleIOSuite with Checkers:
     "SuDokuCell with multiple possible values should return None as maybeValue"
   ):
     forall: (cellValues: Set[SuDokuCellValue]) =>
-      println(s"cellValues = $cellValues")
       val cell = SuDokuCell(cellValues)
       if cellValues.size == 1 then
         expect(cell.maybeValue.contains(cellValues.head))

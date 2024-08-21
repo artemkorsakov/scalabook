@@ -194,7 +194,9 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
       sudoku.show == expectedSudoku
     )
 
-  pureTest("SuDoku.result"):
+  pureTest(
+    "SuDoku.getSolution should return the solution of the sudoku puzzle"
+  ):
     val initialSudoku = SuDoku.initial
     val inputs: Seq[SuDokuInput] = Seq(
       (0, 2, SuDokuCellValue.Three),
@@ -250,5 +252,49 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
     expect.all(
       result,
       sudokuWithSolution.show == expectedSudoku
+    )
+
+  pureTest("SuDoku.toSuDoku should convert a string to a SuDoku puzzle"):
+    val (convertedResult, convertedSudoku) = SuDoku.toSuDoku(
+      "003020600\n" +
+        "900305001\n" +
+        "001806400\n" +
+        "008102900\n" +
+        "700000008\n" +
+        "006708200\n" +
+        "002609500\n" +
+        "800203009\n" +
+        "005010300"
+    )
+    val (solutionResult, sudokuWithSolution) =
+      SuDoku.getSolution.run(convertedSudoku)
+
+    val expectedConvertedSudoku =
+      "{[(4,5);(4,5,7,8);(3);(4,9);(2);(1,4,7);(6);(5,7,8,9);(5,7)] " +
+        "[(9);(2,4,6,7,8);(4,7);(3);(4,7);(5);(7,8);(2,7,8);(1)] " +
+        "[(2,5);(2,5,7);(1);(8);(7,9);(6);(4);(2,3,5,7,9);(2,3,5,7)] " +
+        "[(3,4,5);(3,4,5);(8);(1);(3,4,5,6);(2);(9);(3,4,5,6,7);(3,4,5,6,7)] " +
+        "[(7);(1,2,3,4,5,9);(4,9);(4,5,9);(3,4,5,6,9);(4);(1);(1,3,4,5,6);(8)] " +
+        "[(1,3,4,5);(1,3,4,5,9);(6);(7);(3,4,5,9);(8);(2);(1,3,4,5);(3,4,5)] " +
+        "[(1,3,4);(1,3,4,7);(2);(6);(4,7,8);(9);(5);(1,4,7,8);(4,7)] " +
+        "[(8);(1,4,6,7);(4,7);(2);(4,5,7);(3);(1,7);(1,4,6,7);(9)] " +
+        "[(4,6);(4,6,7,9);(5);(4);(1);(4,7);(3);(2,4,6,7,8);(2,4,6,7)]}"
+
+    val expectedSudokuWithSolution =
+      "{[(4);(8);(3);(9);(2);(1);(6);(5);(7)] " +
+        "[(9);(6);(7);(3);(4);(5);(8);(2);(1)] " +
+        "[(2);(5);(1);(8);(7);(6);(4);(9);(3)] " +
+        "[(5);(4);(8);(1);(3);(2);(9);(7);(6)] " +
+        "[(7);(2);(9);(5);(6);(4);(1);(3);(8)] " +
+        "[(1);(3);(6);(7);(9);(8);(2);(4);(5)] " +
+        "[(3);(7);(2);(6);(8);(9);(5);(1);(4)] " +
+        "[(8);(1);(4);(2);(5);(3);(7);(6);(9)] " +
+        "[(6);(9);(5);(4);(1);(7);(3);(8);(2)]}"
+
+    expect.all(
+      convertedResult,
+      convertedSudoku.show == expectedConvertedSudoku,
+      solutionResult,
+      sudokuWithSolution.show == expectedSudokuWithSolution
     )
 end SuDokuSuite

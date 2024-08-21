@@ -11,6 +11,7 @@ import ru.scalabook.algorithms.games.sudoku.SuDokuInner.{
 }
 import ru.scalabook.fp.state.State
 import scala.annotation.tailrec
+import scala.util.Try
 
 final case class SuDoku(cells: Vector[Vector[SuDokuCell]]):
   val isCorrect: Boolean =
@@ -155,51 +156,26 @@ object SuDoku:
 
         loop(sudoku)
     }
+
+  def toSuDoku(source: String): SuDokuOutput =
+    val rows = source.trim.split("\n")
+
+    def getValue(i: Int, j: Int): Option[SuDokuCellValue] =
+      if 0 <= i && i < rows.length && 0 <= j && j < rows(i).length then
+        val value = rows(i).charAt(j).getNumericValue
+        if 1 <= value && value <= 9 then
+          Try(SuDokuCellValue.fromOrdinal(value - 1)).toOption
+        else None
+      else None
+
+    val inputs: IndexedSeq[SuDokuInput] =
+      for
+        i     <- 0 to 8
+        j     <- 0 to 8
+        value <- getValue(i, j)
+      yield (i, j, value)
+
+    setValues(inputs*).run(SuDoku.initial)
+
+  end toSuDoku
 end SuDoku
-
-//object SuDoku:
-//  def toSuDoku(source: String): Option[SuDoku] =
-//    val sudoku = SuDoku()
-//    val rows   = source.trim.split("\n")
-//
-//    (0 to 8).foldLeft(Option(sudoku)) { case (maybeSudoku, i) =>
-//      (0 to 8).foldLeft(maybeSudoku) { case (maybeSudoku, j) =>
-//        getValue(rows, i, j) match
-//          case Some(value) => maybeSudoku.flatMap(_.setValue(i, j, value))
-//          case None        => None
-//      }
-//    }
-//
-//  end toSuDoku
-//
-//  private def getValue(
-//      rows: Array[String],
-//      i: Int,
-//      j: Int
-//  ): Option[SuDokuCellValue] =
-//    if 0 <= i && i < rows.length && 0 <= j && j < rows(i).length then None
-//    else
-//      val value = rows(i).charAt(j).getNumericValue
-//      if 1 <= value && value <= 9 then
-//        Try(SuDokuCellValue.fromOrdinal(value - 1)).toOption
-//      else None
-//
-//end SuDoku
-
-//@main def problem96(): Unit =
-//  lazy val bigSudoku =
-//    Source.fromResource("p096_sudoku.txt").getLines.toSeq.mkString("\n")
-//  lazy val sources: Array[String] =
-//    bigSudoku.split("Grid \\d{1,2}").filter(_.trim.nonEmpty)
-//
-//  lazy val sum =
-//    sources
-//      .flatMap(source =>
-//        for
-//          sudoku <- toSuDoku(source)
-//          res    <- sudoku.result
-//        yield res.head.take(3).mkString.toInt
-//      )
-//      .sum
-//
-//  require(sum == 24702)

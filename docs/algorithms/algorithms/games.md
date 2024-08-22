@@ -731,12 +731,14 @@ sudoku1.cells(2)(1)
 // SuDokuCell(HashSet(Four, Three, One, Nine, Eight, Six, Seven, Two))
 ```
 
-Три более сложные побочные операции на удаление можно определить через простое удаление, определенное выше:
+Три более сложные побочные операции на удаление:
 
 - удаление заданного значения из строчки i за исключением ячейки (i, j)
 - удаление заданного значения из столбца j за исключением ячейки (i, j)
-- удаление заданного значения из квадрата \\(3 \times 3\\), которому принадлежит ячейка (i, j), за исключением самой
-  ячейки
+- удаление заданного значения из квадрата \\(3 \times 3\\), которому принадлежит ячейка (i, j), 
+  за исключением самой ячейки
+
+можно определить через "простое" удаление, определенное выше:
 
 **Код:**
 
@@ -780,6 +782,24 @@ object SuDokuComplexInner:
     SuDoku.executeInnerOperation(inputs, updateSuDoku)
 
 end SuDokuComplexInner
+
+val initialSudoku = SuDoku.initial
+val inputs: List[SuDokuComplexInnerInput] =
+  List(
+    (SuDokuInnerComplexOperation.RemoveFromRow, 1, 1, SuDokuCellValue.Six),
+    (SuDokuInnerComplexOperation.RemoveFromColumn, 1, 1, SuDokuCellValue.Six),
+    (SuDokuInnerComplexOperation.RemoveFromBlock, 1, 1, SuDokuCellValue.Six)
+  )
+val (_, sudoku) = SuDokuComplexInner.execute(inputs).run(initialSudoku)
+
+sudoku.cells(1)(1)
+// SuDokuCell(HashSet(Five, Nine, One, Seven, Three, Two, Eight, Four, Six))
+sudoku.cells(0)(0)
+// SuDokuCell(HashSet(Five, Nine, One, Seven, Three, Two, Eight, Four))
+sudoku.cells(1)(0)
+// SuDokuCell(HashSet(Five, Nine, One, Seven, Three, Two, Eight, Four))
+sudoku.cells(0)(1) 
+// SuDokuCell(HashSet(Five, Nine, One, Seven, Three, Two, Eight, Four))
 ```
 
 После того как подготовлены все побочные операции, перейдем к операции установки единственного значения в ячейку.
@@ -798,46 +818,62 @@ type SuDokuInput =
 private val updateSuDoku: SuDokuInput => SuDokuOutput => SuDokuOutput =
   (i, j, value) =>
     (result, sudoku) =>
-      if !result then (false, sudoku)
-      else
-        val inputSet: SuDokuInnerInput =
-          (SuDokuInnerOperation.SetToCell, i, j, value)
-        val (resultSet, sudokuSet) =
-          SuDokuInner.execute(inputSet).run(sudoku)
+      val inputSet: SuDokuInnerInput =
+        (SuDokuInnerOperation.SetToCell, i, j, value)
+      val (resultSet, sudokuSet) =
+        SuDokuInner.execute(inputSet).run(sudoku)
 
-        val inputsRemove: List[SuDokuComplexInnerInput] =
-          List(
-            (SuDokuInnerComplexOperation.RemoveFromRow, i, j, value),
-            (SuDokuInnerComplexOperation.RemoveFromColumn, i, j, value),
-            (SuDokuInnerComplexOperation.RemoveFromBlock, i, j, value)
-          )
-        val (resultRemove, sudokuRemove) =
-          SuDokuComplexInner.execute(inputsRemove).run(sudokuSet)
+      val inputsRemove: List[SuDokuComplexInnerInput] =
+        List(
+          (SuDokuInnerComplexOperation.RemoveFromRow, i, j, value),
+          (SuDokuInnerComplexOperation.RemoveFromColumn, i, j, value),
+          (SuDokuInnerComplexOperation.RemoveFromBlock, i, j, value)
+        )
+      val (resultRemove, sudokuRemove) =
+        SuDokuComplexInner.execute(inputsRemove).run(sudokuSet)
 
-        if resultRemove then (true, sudokuRemove) else (false, sudoku)
+      // Если все операции завершились успешно, то...
+      if result && resultSet && resultRemove then (true, sudokuRemove)
+      else (false, sudoku)
 
 /** Устанавливает заданное значение в ячейку. */
 def setValue(i: Int, j: Int, value: SuDokuCellValue): SuDokuState =
   setValues((i, j, value))
 
+/** Устанавливает заданные значения в пачку ячеек. */
 def setValues(inputs: SuDokuInput*): SuDokuState =
-  SuDoku.executeInnerOperation(inputs.toList, updateSuDoku) 
+  SuDoku.executeInnerOperation(inputs.toList, updateSuDoku)
+  
+val initialSudoku = SuDoku.initial
+val (result, sudoku) =
+  SuDoku.setValue(0, 2, SuDokuCellValue.Three).run(initialSudoku)
+
+sudoku.cells(0)(2)
+// SuDokuCell(Set(Three))
+sudoku.cells(0)(0)
+// SuDokuCell(HashSet(Nine, Two, One, Four, Eight, Six, Seven, Five))
+sudoku.cells(1)(2)
+// SuDokuCell(HashSet(Nine, Two, One, Four, Eight, Six, Seven, Five))
+sudoku.cells(1)(1)  
+// SuDokuCell(HashSet(Nine, Two, One, Four, Eight, Six, Seven, Five)) 
 ```
 
-Поиск решения головоломки:
+##### Поиск решения головоломки
 
-Головоломка может быть решена:
-
-- если найдено решение
-- если по-прежнему есть значения, которые можно вычеркнуть
-
-Решение головоломки:
+Поиск значений, которые можно вычеркнуть:
 
 - проходимся по каждой строчке и по каждому столбцу
-- ищем такие значения, которые при вставке в заданное поле приводят к
-  ошибке - это означает, что в данную ячейку значение вставлять нельзя и
-  его можно вычеркнуть
-- вычеркиваем значение и ищем следующее такое же
+- в каждой ячейке ищем среди списка возможных такие значения, 
+  которые при вставке в заданное поле приводят к ошибке - 
+  это означает, что в данную ячейку такое значение вставлять нельзя и его можно вычеркнуть
+- вычеркиваем значение
+- пытаемся найти следующий кандидат на вычеркивание в той же ячейке
+- если в ячейке не осталось значений, которые можно вычеркнуть, то переходим к следующей ячейке
+
+Головоломка решается до тех пор, пока:
+
+- не найдено решение
+- если есть значения, которые можно вычеркнуть
 
 **Код:**
 
@@ -847,28 +883,32 @@ def getSolution: SuDokuState =
     (sudoku: SuDoku) =>
       @tailrec
       def loopByCell(sudoku: SuDoku, i: Int, j: Int): SuDokuOutput =
-        if i >= 9 then (true, sudoku) // Дошли до конца поля
-        else if j >= 9 then
-          // Дошли до конца столбца, переходим к следующей строке
-          loopByCell(sudoku, i + 1, 0)
+        // Дошли до конца поля
+        if i >= 9 then (true, sudoku)
+        // Дошли до конца столбца, переходим к следующей строке
+        else if j >= 9 then loopByCell(sudoku, i + 1, 0)
         else
           val currentValues = sudoku.cells(i)(j).possibleValues
-          // Значение определено, переходим к следующему столбцу
-          if currentValues.size == 1 then loopByCell(sudoku, i, j + 1)
-          else // Ищем невалидное значение в ячейке
+          // Точное значение определено, переходим к следующей ячейке
+          if currentValues.size == 1 then
+            loopByCell(sudoku, i, j + 1)
+          else // Ищем значение в ячейке, которое можно вычеркнуть
             val maybeInvalidValue = currentValues.find: value =>
               !setValue(i, j, value).run(sudoku)._1
             maybeInvalidValue match
+              // Такого значения нет, переходим к следующей ячейке
               case None => loopByCell(sudoku, i, j + 1)
               case Some(invalidValue) =>
                 val input: SuDokuInnerInput =
                   (SuDokuInnerOperation.RemoveFromCell, i, j, invalidValue)
                 val (result, newSudoku) =
                   SuDokuInner.execute(input).run(sudoku)
-                // Если результат успешен, то ищем в заданной ячейке следующее невалидное значение
-                if result then loopByCell(sudoku, i, j)
-                // Если не успешен, значит решение головоломки не существует
+                // Если результат вычеркивания успешен,
+                // то ищем в заданной ячейке следующий кандидат на вычеркивание
+                if result then loopByCell(newSudoku, i, j)
+                // Если не успешен, значит решения головоломки не существует
                 else (false, sudoku)
+          end if
 
       @tailrec
       def loop(sudoku: SuDoku): SuDokuOutput =
@@ -920,15 +960,6 @@ val (result, sudokuWithSolution) = SuDoku.getSolution.run(sudoku)
 // 8;1;4;2;5;3;7;6;9
 // 6;9;5;4;1;7;3;8;2
 ```
-
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
-
-**Метрики:**
-
-???
 
 ---
 

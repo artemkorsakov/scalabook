@@ -30,9 +30,7 @@ object SuDoku:
 
     SuDoku(defaultCells)
 
-  type SuDokuState  = State[SuDoku, Boolean]
-  type SuDokuOutput = (Boolean, SuDoku)
-  type Row          = Int
+  type Row = Int
   object Row:
     def isCorrect(row: Int): Boolean = 0 <= row && row < 9
   type Column = Int
@@ -49,6 +47,9 @@ object SuDoku:
         val c = (j / 3) * 3 + l
         (r, c)
     else IndexedSeq.empty
+
+  type SuDokuState  = State[SuDoku, Boolean]
+  type SuDokuOutput = (Boolean, SuDoku)
 
   def executeInnerOperation[A](
       inputs: List[A],

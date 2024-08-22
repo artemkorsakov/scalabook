@@ -10,11 +10,10 @@ final case class SuDokuCell(possibleValues: Set[SuDokuCellValue]):
 object SuDokuCell:
   val initial: SuDokuCell = SuDokuCell(SuDokuCellValue.values.toSet)
 
-  enum SuDokuCellOper:
+  enum SuDokuCellOperation:
     case Set, Remove
 
-  type SuDokuCellState         = State[SuDokuCell, Boolean]
-  type SuDokuCellInput         = (SuDokuCellOper, SuDokuCellValue)
+  type SuDokuCellInput         = (SuDokuCellOperation, SuDokuCellValue)
   opaque type SuDokuCellOutput = (Boolean, SuDokuCell)
 
   private val updateCell
@@ -22,20 +21,22 @@ object SuDokuCell:
     (operation, value) =>
       (result, cell) =>
         (operation, value, result) match
-          case (SuDokuCellOper.Set, value, true)
+          // Устанавливаем значение в ячейке только если это значение среди допустимых
+          case (SuDokuCellOperation.Set, value, true)
               if cell.possibleValues.contains(value) =>
             (true, SuDokuCell(Set(value)))
-          case (SuDokuCellOper.Remove, value, true)
+          // Удаляем значение в ячейке только если это не единственное значение из допустимых
+          case (SuDokuCellOperation.Remove, value, true)
               if cell.possibleValues != Set(value) =>
             (true, SuDokuCell(cell.possibleValues - value))
           case _ =>
             (false, cell)
 
-  def execute(inputs: List[SuDokuCellInput]): SuDokuCellState =
+  def execute(inputs: SuDokuCellInput*): State[SuDokuCell, Boolean] =
     State[SuDokuCell, Boolean] { cell =>
       val state =
         for
-          _ <- State.traverse(inputs)(input =>
+          _ <- State.traverse(inputs.toList)(input =>
             State.modify[SuDokuCellOutput](updateCell(input))
           )
           output <- State.get

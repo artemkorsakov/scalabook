@@ -468,7 +468,7 @@ end PokerHand
 
 **Алгоритм:**
 
-Допустимые значения ячейки игры Су Доку - это цифры от 1 до 9:
+Определим список допустимых значений ячейки игры Су Доку - это цифры от 1 до 9:
 
 **Код:**
 
@@ -480,7 +480,7 @@ enum SuDokuCellValue:
 Сама ячейка должна удовлетворять следующим условиям:
 
 - В начальном состоянии ячейка может содержать любое из значений от 1 до 9
-- Значение ячейки определено, если из возможных значений остался только один вариант
+- Точное значение ячейки определено, если из возможных значений остался только один вариант
 
 **Код:**
 
@@ -492,11 +492,15 @@ final case class SuDokuCell(possibleValues: Set[SuDokuCellValue]):
     
 object SuDokuCell:
   val initial: SuDokuCell = SuDokuCell(SuDokuCellValue.values.toSet) 
-  
+
+SuDokuCell.initial.possibleValues
+// HashSet(One, Two, Three, Four, Five, Six, Seven, Eight, Nine)
 SuDokuCell.initial.maybeValue    
 // None
-SuDokuCell(Set(SuDokuCellValue.Three)).maybeValue  
-// Some(Three)   
+SuDokuCell(Set(SuDokuCellValue.Three)).possibleValues 
+// Set(Three)
+SuDokuCell(Set(SuDokuCellValue.Three)).maybeValue 
+// Some(Three)
 ```
 
 Ячейка должна поддерживать следующие операции:
@@ -513,11 +517,10 @@ SuDokuCell(Set(SuDokuCellValue.Three)).maybeValue
 
 ```dotty
 object SuDokuCell:
-  enum SuDokuCellOper:
+  enum SuDokuCellOperation:
     case Set, Remove
 
-  type SuDokuCellState  = State[SuDokuCell, Boolean]
-  type SuDokuCellInput  = (SuDokuCellOper, SuDokuCellValue)
+  type SuDokuCellInput         = (SuDokuCellOperation, SuDokuCellValue)
   opaque type SuDokuCellOutput = (Boolean, SuDokuCell)
 
   private val updateCell
@@ -525,20 +528,24 @@ object SuDokuCell:
     (operation, value) =>
       (result, cell) =>
         (operation, value, result) match
-          case (SuDokuCellOper.Set, value, true)
+          // Устанавливаем значение в ячейке 
+          // только если это значение среди допустимых
+          case (SuDokuCellOperation.Set, value, true)
               if cell.possibleValues.contains(value) =>
             (true, SuDokuCell(Set(value)))
-          case (SuDokuCellOper.Remove, value, true)
+          // Удаляем значение в ячейке 
+          // только если это не единственное значение из допустимых
+          case (SuDokuCellOperation.Remove, value, true)
               if cell.possibleValues != Set(value) =>
             (true, SuDokuCell(cell.possibleValues - value))
           case _ =>
             (false, cell)
 
-  def execute(inputs: List[SuDokuCellInput]): SuDokuCellState =
+  def execute(inputs: SuDokuCellInput*): State[SuDokuCell, Boolean] =
     State[SuDokuCell, Boolean] { cell =>
       val state =
         for
-          _ <- State.traverse(inputs)(input =>
+          _ <- State.traverse(inputs.toList)(input =>
             State.modify[SuDokuCellOutput](updateCell(input))
           )
           output <- State.get
@@ -550,16 +557,22 @@ object SuDokuCell:
 end SuDokuCell
 
 val inputs = List(
-  (SuDokuCellOper.Remove, SuDokuCellValue.One),
-  (SuDokuCellOper.Set, SuDokuCellValue.Two)
+  (SuDokuCellOperation.Remove, SuDokuCellValue.One),
+  (SuDokuCellOperation.Remove, SuDokuCellValue.Two)
 )
+SuDokuCell.execute(inputs*).run(SuDokuCell.initial)
+// (true,SuDokuCell(HashSet(Three, Four, Eight, Seven, Nine, Six, Five)))
 
-SuDokuCell.execute(inputs).run(SuDokuCell.initial)
-// (true, SuDokuCell(Set(Two)))
+val input = (SuDokuCellOperation.Set, SuDokuCellValue.Two)
+SuDokuCell.execute(input).run(SuDokuCell.initial)
+// (true,SuDokuCell(Set(Two)))
 ```
 
-Поле игры Су Доку представляет собой ячейки \\(9 \times 9\\).
-В начальном состоянии в каждой ячейке поля список возможных значений равен от 1 до 9.
+Определим, что такое поле для игры Су Доку:
+
+- Поле игры Су Доку представляет собой ячейки \\(9 \times 9\\).
+- В начальном состоянии в каждой ячейке поля список возможных значений равен от 1 до 9.
+- Решение игры найдено, если в каждом поле осталось ровно по одному значению
 
 **Код:**
 
@@ -587,20 +600,37 @@ object SuDoku:
   type Column = Int
   object Column:
     def isCorrect(col: Int): Boolean = 0 <= col && col < 9
+    
+val sudoku = SuDoku.initial
+sudoku.isCorrect     // true
+sudoku.hasSolution   // false
+```
 
-  def getBlock(i: Row, j: Column): IndexedSeq[(Row, Column)] =
-    if Row.isCorrect(i) && Column.isCorrect(j) then
-      for
-        k <- 0 to 2
-        l <- 0 to 2
-      yield
-        val r = (i / 3) * 3 + k
-        val c = (j / 3) * 3 + l
-        (r, c)
-    else IndexedSeq.empty
+Кроме того, каждая ячейка принадлежит определенному блоку \\(3 \times 3\\):
+
+**Код:**
+
+```dotty
+def getBlock(i: Row, j: Column): IndexedSeq[(Row, Column)] =
+  if Row.isCorrect(i) && Column.isCorrect(j) then
+    for
+      k <- 0 to 2
+      l <- 0 to 2
+    yield
+      val r = (i / 3) * 3 + k
+      val c = (j / 3) * 3 + l
+      (r, c)
+  else IndexedSeq.empty
+
+SuDoku.getBlock(4, 4)
+// Vector((3,3), (3,4), (3,5), (4,3), (4,4), (4,5), (5,3), (5,4), (5,5))  
 ```
 
 Определим общую операцию изменения состояния игры Су Доку:
+для любого типа входящих данных `A` и заданной операции `update`
+(`update` по значению типа `A` возвращает функцию преобразования из `SuDokuOutput` в `SuDokuOutput`, 
+где `SuDokuOutput` - кортеж из двух элементов: результат выполнения предыдущей операции и поле Су Доку)
+возвращает функциональное состояние `SuDokuState`:
 
 **Код:**
 
@@ -623,19 +653,19 @@ object SuDoku:
         yield output._1
 
       state.run((true, sudoku))._2
-    }   
+    }  
 ```
 
 Следующее, что нам понадобится - это установка начального состояния в игре,
 когда заполнены часть полей из известных значений.
 
-Поэтому остановимся на операции установки значения в заданное поле.
+Поэтому остановимся на операции установки значения в заданное поле (i, j).
 Эта операция состоит из четырех побочных операций:
 
 - установка заданного значения в поле (i, j)
 - удаление заданного значения из строчки i за исключением ячейки (i, j)
 - удаление заданного значения из столбца j за исключением ячейки (i, j)
-- удаление заданного значения из квадрата \\(3 \times 3\\), которому принадлежит ячейка (i, j), за исключением самой
+- удаление заданного значения из блока \\(3 \times 3\\), которому принадлежит ячейка (i, j), за исключением самой
   ячейки
 
 Определим побочные операции установки и удаления значения в заданном поле:
@@ -652,19 +682,22 @@ object SuDokuInner:
   private val updateSuDoku: SuDokuInnerInput => SuDokuOutput => SuDokuOutput =
     (operation, i, j, value) =>
       (result, sudoku) =>
+        // Выполняем операцию только если поле, строка и столбец корректные,
+        // а также если предыдущая операция завершилась успешно
         val isCorrect =
           sudoku.isCorrect && Row.isCorrect(i) && Column.isCorrect(j) && result
 
         if isCorrect then
           operation match
             case SetToCell =>
-              updateCell(SuDokuCellOper.Set, sudoku, i, j, value)
+              updateCell(SuDokuCellOperation.Set, sudoku, i, j, value)
             case RemoveFromCell =>
-              updateCell(SuDokuCellOper.Remove, sudoku, i, j, value)
+              updateCell(SuDokuCellOperation.Remove, sudoku, i, j, value)
         else (false, sudoku)
 
+  // Определяем текущую ячейку, выполняем операцию, в случае успеха обновляем ячейку
   private def updateCell(
-      oper: SuDokuCellOper,
+      oper: SuDokuCellOperation,
       sudoku: SuDoku,
       i: Int,
       j: Int,
@@ -672,7 +705,7 @@ object SuDokuInner:
   ): (Boolean, SuDoku) =
     val oldCell = sudoku.cells(i)(j)
     val (result, newCell) =
-      SuDokuCell.execute(List((oper, value))).run(oldCell)
+      SuDokuCell.execute((oper, value)).run(oldCell)
     if result then
       val newCells =
         sudoku.cells.updated(i, sudoku.cells(i).updated(j, newCell))
@@ -682,7 +715,20 @@ object SuDokuInner:
   def execute(inputs: SuDokuInnerInput*): SuDokuState =
     SuDoku.executeInnerOperation(inputs.toList, updateSuDoku)
 
-end SuDokuInner  
+end SuDokuInner 
+
+val initialSudoku = SuDoku.initial
+val set: SuDokuInnerInput =
+  (SuDokuInnerOperation.SetToCell, 1, 2, SuDokuCellValue.Six)
+val (_, sudoku0) = SuDokuInner.execute(set).run(initialSudoku)
+sudoku0.cells(1)(2)
+// SuDokuCell(Set(Six))
+
+val remove: SuDokuInnerInput =
+  (SuDokuInnerOperation.RemoveFromCell, 2, 1, SuDokuCellValue.Five)
+val (_, sudoku1) = SuDokuInner.execute(remove).run(initialSudoku)
+sudoku1.cells(2)(1)
+// SuDokuCell(HashSet(Four, Three, One, Nine, Eight, Six, Seven, Two))
 ```
 
 Три более сложные побочные операции на удаление можно определить через простое удаление, определенное выше:

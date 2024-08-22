@@ -1,6 +1,9 @@
 package ru.scalabook.algorithms.games.sudoku
 
-import ru.scalabook.algorithms.games.sudoku.SuDokuCell.{SuDokuCellOper, execute}
+import ru.scalabook.algorithms.games.sudoku.SuDokuCell.{
+  SuDokuCellOperation,
+  execute
+}
 import ru.scalabook.algorithms.games.sudoku.SuDokuCellValue.*
 import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
@@ -28,9 +31,9 @@ object SuDokuCellSuite extends SimpleIOSuite with Checkers:
 
   pureTest("SuDokuCell execute should correctly set a single value"):
     val initialCell = SuDokuCell.initial
-    val inputs      = List((SuDokuCellOper.Set, SuDokuCellValue.One))
+    val input       = (SuDokuCellOperation.Set, SuDokuCellValue.One)
 
-    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+    val (result, cell) = SuDokuCell.execute(input).run(initialCell)
 
     expect.all(
       result,
@@ -40,10 +43,10 @@ object SuDokuCellSuite extends SimpleIOSuite with Checkers:
 
   pureTest("SuDokuCell execute should correctly set a single value twice"):
     val initialCell = SuDokuCell.initial
-    val input       = (SuDokuCellOper.Set, SuDokuCellValue.One)
+    val input       = (SuDokuCellOperation.Set, SuDokuCellValue.One)
     val inputs      = List(input, input)
 
-    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+    val (result, cell) = SuDokuCell.execute(inputs*).run(initialCell)
 
     expect.all(
       result,
@@ -53,9 +56,9 @@ object SuDokuCellSuite extends SimpleIOSuite with Checkers:
 
   pureTest("SuDokuCell execute should correctly remove a value"):
     val initialCell = SuDokuCell(Set(SuDokuCellValue.One, SuDokuCellValue.Two))
-    val inputs      = List((SuDokuCellOper.Remove, SuDokuCellValue.One))
+    val input       = (SuDokuCellOperation.Remove, SuDokuCellValue.One)
 
-    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+    val (result, cell) = SuDokuCell.execute(input).run(initialCell)
 
     expect.all(
       result,
@@ -65,10 +68,10 @@ object SuDokuCellSuite extends SimpleIOSuite with Checkers:
 
   pureTest("SuDokuCell execute should correctly remove a value twice"):
     val initialCell = SuDokuCell(Set(SuDokuCellValue.One, SuDokuCellValue.Two))
-    val input       = (SuDokuCellOper.Remove, SuDokuCellValue.One)
+    val input       = (SuDokuCellOperation.Remove, SuDokuCellValue.One)
     val inputs      = List(input, input)
 
-    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+    val (result, cell) = SuDokuCell.execute(inputs*).run(initialCell)
 
     expect.all(
       result,
@@ -80,9 +83,9 @@ object SuDokuCellSuite extends SimpleIOSuite with Checkers:
     "SuDokuCell execute should not set a value if it is not in possibleValues"
   ):
     val initialCell = SuDokuCell(Set(SuDokuCellValue.Two))
-    val inputs      = List((SuDokuCellOper.Set, SuDokuCellValue.One))
+    val input       = (SuDokuCellOperation.Set, SuDokuCellValue.One)
 
-    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+    val (result, cell) = SuDokuCell.execute(input).run(initialCell)
 
     expect.all(
       !result,
@@ -93,9 +96,9 @@ object SuDokuCellSuite extends SimpleIOSuite with Checkers:
     "SuDokuCell execute should not remove a value if it is the only possible value"
   ):
     val initialCell = SuDokuCell(Set(SuDokuCellValue.One))
-    val inputs      = List((SuDokuCellOper.Remove, SuDokuCellValue.One))
+    val input       = (SuDokuCellOperation.Remove, SuDokuCellValue.One)
 
-    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+    val (result, cell) = SuDokuCell.execute(input).run(initialCell)
 
     expect.all(
       !result,
@@ -105,11 +108,11 @@ object SuDokuCellSuite extends SimpleIOSuite with Checkers:
   pureTest("SuDokuCell execute should handle multiple operations"):
     val initialCell = SuDokuCell.initial
     val inputs = List(
-      (SuDokuCellOper.Remove, SuDokuCellValue.One),
-      (SuDokuCellOper.Set, SuDokuCellValue.Two)
+      (SuDokuCellOperation.Remove, SuDokuCellValue.One),
+      (SuDokuCellOperation.Set, SuDokuCellValue.Two)
     )
 
-    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+    val (result, cell) = SuDokuCell.execute(inputs*).run(initialCell)
 
     expect.all(
       result,
@@ -122,14 +125,14 @@ object SuDokuCellSuite extends SimpleIOSuite with Checkers:
   ):
     val initialCell = SuDokuCell.initial
     val inputs = List(
-      (SuDokuCellOper.Remove, SuDokuCellValue.One),
-      (SuDokuCellOper.Set, SuDokuCellValue.One),
-      (SuDokuCellOper.Remove, SuDokuCellValue.Two),
-      (SuDokuCellOper.Remove, SuDokuCellValue.Three),
-      (SuDokuCellOper.Remove, SuDokuCellValue.Four)
+      (SuDokuCellOperation.Remove, SuDokuCellValue.One),
+      (SuDokuCellOperation.Set, SuDokuCellValue.One),
+      (SuDokuCellOperation.Remove, SuDokuCellValue.Two),
+      (SuDokuCellOperation.Remove, SuDokuCellValue.Three),
+      (SuDokuCellOperation.Remove, SuDokuCellValue.Four)
     )
 
-    val (result, cell) = SuDokuCell.execute(inputs).run(initialCell)
+    val (result, cell) = SuDokuCell.execute(inputs*).run(initialCell)
 
     expect.all(
       !result,

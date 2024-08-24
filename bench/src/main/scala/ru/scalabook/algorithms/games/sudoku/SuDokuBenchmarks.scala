@@ -12,6 +12,6 @@ package ru.scalabook.algorithms.games.sudoku
       "800203009\n" +
       "005010300"
   )
-  val (_, sudokuWithSolution) = SuDoku.getSolution.run(sudoku)
+  val (_, sudokuWithSolution) = SuDoku.solutionState.run(sudoku)
 
   println(s"Sudoku: $sudokuWithSolution")

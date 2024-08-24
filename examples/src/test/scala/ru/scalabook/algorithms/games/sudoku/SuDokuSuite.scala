@@ -5,7 +5,9 @@ import ru.scalabook.algorithms.games.sudoku.SuDoku.{
   Column,
   Row,
   SuDokuInput,
-  getBlock
+  blockSingleValueLoop,
+  getBlock,
+  getSingleValues
 }
 import ru.scalabook.algorithms.games.sudoku.SuDokuCellValue.Six
 import weaver.SimpleIOSuite
@@ -290,7 +292,7 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
     val (_, sudoku) =
       SuDoku.setValues(inputs*).run(initialSudoku)
 
-    val (result, sudokuWithSolution) = SuDoku.getSolution.run(sudoku)
+    val (result, sudokuWithSolution) = SuDoku.solutionState.run(sudoku)
 
     val expectedSudoku =
       "{[(4);(8);(3);(9);(2);(1);(6);(5);(7)] " +
@@ -321,7 +323,7 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
         "005010300"
     )
     val (solutionResult, sudokuWithSolution) =
-      SuDoku.getSolution.run(convertedSudoku)
+      SuDoku.solutionState.run(convertedSudoku)
 
     val expectedConvertedSudoku =
       "{[(4,5);(4,5,7,8);(3);(4,9);(2);(1,4,7);(6);(5,7,8,9);(5,7)] " +
@@ -352,6 +354,116 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
       sudokuWithSolution.show == expectedSudokuWithSolution
     )
 
+  pureTest(
+    "SuDoku.hasSolution should return true if a SuDoku puzzle has a solution"
+  ):
+    val (convertedResult, convertedSudoku) = SuDoku.toSuDoku(
+      "483921657\n" +
+        "967345821\n" +
+        "251876493\n" +
+        "548132976\n" +
+        "729564138\n" +
+        "136798245\n" +
+        "372689514\n" +
+        "814253769\n" +
+        "695417382"
+    )
+
+    expect.all(
+      convertedResult,
+      convertedSudoku.isCorrect,
+      convertedSudoku.hasSolution
+    )
+
+  pureTest(
+    "SuDoku.getSingleValues should return a list of the single values in a SuDoku puzzle"
+  ):
+    val (result, sudoku) = SuDoku.toSuDoku(
+      "000000907\n" +
+        "000420180\n" +
+        "300705426\n" +
+        "100904000\n" +
+        "050000040\n" +
+        "000507009\n" +
+        "926108000\n" +
+        "834059000\n" +
+        "517000000"
+    )
+
+    val block00        = getBlock(0, 0)
+    val singleValues00 = getSingleValues(sudoku, block00)
+
+    val block03        = getBlock(0, 3)
+    val singleValues03 = getSingleValues(sudoku, block03)
+
+    val block06        = getBlock(0, 6)
+    val singleValues06 = getSingleValues(sudoku, block06)
+
+    val block30        = getBlock(3, 0)
+    val singleValues30 = getSingleValues(sudoku, block30)
+
+    val block33        = getBlock(3, 3)
+    val singleValues33 = getSingleValues(sudoku, block33)
+
+    val block36        = getBlock(3, 6)
+    val singleValues36 = getSingleValues(sudoku, block36)
+
+    val block60        = getBlock(6, 0)
+    val singleValues60 = getSingleValues(sudoku, block60)
+
+    val block63        = getBlock(6, 3)
+    val singleValues63 = getSingleValues(sudoku, block63)
+
+    val block66        = getBlock(6, 6)
+    val singleValues66 = getSingleValues(sudoku, block66)
+
+    expect.all(
+      result,
+      singleValues00.isEmpty,
+      singleValues03 == List((2, 4, SuDokuCellValue.Nine)),
+      singleValues06.isEmpty,
+      singleValues30 == List((4, 2, SuDokuCellValue.Nine)),
+      singleValues33.isEmpty,
+      singleValues36.isEmpty,
+      singleValues60.isEmpty,
+      singleValues63 == List((6, 4, SuDokuCellValue.Seven)),
+      singleValues66 == List((8, 7, SuDokuCellValue.Nine))
+    )
+
+  pureTest(
+    "SuDoku.blockSingleValueLoop should set all single values in a SuDoku puzzle"
+  ):
+    val (initialResult, initialSudoku) = SuDoku.toSuDoku(
+      "000000907\n" +
+        "000420180\n" +
+        "300705426\n" +
+        "100904000\n" +
+        "050000040\n" +
+        "000507009\n" +
+        "926108000\n" +
+        "834059000\n" +
+        "517000000"
+    )
+
+    val (result, sudoku) = blockSingleValueLoop(initialSudoku, 0, 0)
+
+    val expectedSudoku =
+      "{[(2,4,6);(4,6,8);(1,2,5,8);(3,6,8);(1,3,6,8);(1,3,6);(9);(3,5);(7)] " +
+        "[(6,7);(6,7,9);(5);(4);(2);(3,6);(1);(8);(3,5)] " +
+        "[(3);(8);(1,8);(7);(9);(5);(4);(2);(6)] " +
+        "[(1);(6,7,8);(2,3,8);(9);(3,6,8);(4);(2,3,5,6,7,8);(3,5,6,7);(2,3,5,8)] " +
+        "[(2,6,7);(5);(9);(2,3,6,8);(1,3,6,8);(1,2,3,6);(2,3,6,7,8);(4);(1,2,3,8)] " +
+        "[(2,4,6);(4,6,8);(2,3,8);(5);(1,3,6,8);(7);(2,3,6,8);(1,3,6);(9)] " +
+        "[(9);(2);(6);(1);(7);(8);(3,5);(3,5);(3,4,5)] " +
+        "[(8);(3);(4);(2,6);(5);(9);(2,6,7);(1,6,7);(1,2)] " +
+        "[(5);(1);(7);(2,3,6);(3,4,6);(2,3,6);(2,3,6,8);(9);(2,3,4,8)]}"
+
+    expect.all(
+      initialResult,
+      result,
+      sudoku.show == expectedSudoku
+    )
+
   pureTest("SuDoku.toSuDoku should convert a string to a SuDoku puzzle"):
     val (convertedResult, convertedSudoku) = SuDoku.toSuDoku(
       "000000907\n" +
@@ -365,18 +477,18 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
         "507000000"
     )
     val (solutionResult, sudokuWithSolution) =
-      SuDoku.getSolution.run(convertedSudoku)
+      SuDoku.solutionState.run(convertedSudoku)
 
     val expectedSudokuWithSolution =
-      "{[(2,4,6);(4,6,8);(1,2,5,8);(3,6,8);(1,3,6,8);(1,3,6);(9);(3,5);(7)] " +
-        "[(6,7);(6,7,9);(5,9);(4);(2);(3,6);(1);(8);(3,5)] " +
-        "[(3);(8,9);(1,8,9);(7);(1,8,9);(5);(4);(2);(6)] " +
-        "[(1);(6,7,8);(2,3,8);(9);(3,6,8);(4);(2,3,5,6,7,8);(3,5,6,7);(2,3,5,8)] " +
-        "[(2,6,7);(5);(2,3,8,9);(2,3,6,8);(1,3,6,8);(1,2,3,6);(2,3,6,7,8);(4);(1,2,3,8)] " +
-        "[(2,4,6);(4,6,8);(2,3,8);(5);(1,3,6,8);(7);(2,3,6,8);(1,3,6);(9)] " +
-        "[(9);(2);(6);(1);(3,4,7);(8);(3,5,7);(3,5,7);(3,4,5)] " +
-        "[(8);(3);(4);(2,6);(5);(9);(2,6,7);(1,6,7);(1,2)] " +
-        "[(5);(1);(7);(2,3,6);(3,4,6);(2,3,6);(2,3,6,8);(3,6,9);(2,3,4,8)]}"
+      "{[(4);(6);(2);(8);(3);(1);(9);(5);(7)] " +
+        "[(7);(9);(5);(4);(2);(6);(1);(8);(3)] " +
+        "[(3);(8);(1);(7);(9);(5);(4);(2);(6)] " +
+        "[(1);(7);(3);(9);(8);(4);(2);(6);(5)] " +
+        "[(6);(5);(9);(3);(1);(2);(7);(4);(8)] " +
+        "[(2);(4);(8);(5);(6);(7);(3);(1);(9)] " +
+        "[(9);(2);(6);(1);(7);(8);(5);(3);(4)] " +
+        "[(8);(3);(4);(2);(5);(9);(6);(7);(1)] " +
+        "[(5);(1);(7);(6);(4);(3);(8);(9);(2)]}"
 
     expect.all(
       convertedResult,

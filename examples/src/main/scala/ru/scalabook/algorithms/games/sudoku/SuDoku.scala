@@ -114,7 +114,7 @@ object SuDoku:
 
   /** Устанавливает заданные значения в пачку ячеек. */
   def setValues(inputs: SuDokuInput*): SuDokuState =
-    SuDoku.executeInnerOperation(inputs.toList, updateSuDoku)
+    executeInnerOperation(inputs.toList, updateSuDoku)
 
   /** Поиск значений, которые можно вычеркнуть:
     *
@@ -156,68 +156,79 @@ object SuDoku:
             else (false, sudoku)
       end if
 
-//  @tailrec
-//  private def blockSingleValueLoop(
-//      sudoku: SuDoku,
-//      i: Int,
-//      j: Int
-//  ): SuDokuOutput =
-//    // Дошли до конца поля
-//    if i >= 9 then (true, sudoku)
-//    // Дошли до конца столбца, переходим к следующему блоку
-//    else if j >= 9 then blockSingleValueLoop(sudoku, i + 3, 0)
-//    else
-//      val block        = getBlock(i, j)
-//      val singleValues = getSingleValues(sudoku, block)
-//      if singleValues.isEmpty then blockSingleValueLoop(sudoku, i, j + 3)
-//      else
-//        val (result, sudoku2) = setValues(singleValues*).run(sudoku)
-//        if result then blockSingleValueLoop(sudoku2, i, j + 3)
-//        else (false, sudoku)
-//
-//  /** Находим такую ячейку и такие значения, которые не встречаются в других
-//    * ячейках блока, но которые не единственные в своих ячейках
-//    */
-//  private def getSingleValues(
-//      sudoku: SuDoku,
-//      block: IndexedSeq[(Row, Column)]
-//  ) =
-//    block.foldLeft(List.empty[SuDokuInput]) {
-//      case (acc, (i, j)) =>
-//        val values = sudoku.cells(i)(j).possibleValues
-//        val maybeSingleValue =
-//          if values.size == 1 then None
-//          else
-//            values.find: value =>
-//              block.forall: (ii, jj) =>
-//                (ii == i && jj == j) || !sudoku.cells(ii)(jj).possibleValues
-//                  .contains(value)
-//        maybeSingleValue match
-//          case None        => acc
-//          case Some(value) => (i, j, value) :: acc
-//    }
+  /** Находим такое значение в ячейке, которое не встречается в других ячейках
+    * блока, но при этом это значение не единственное в своей ячейке.
+    *
+    * Такие значения можно установить единственными в своих ячейках, тем самым
+    * уменьшив возможные варианты для других значений.
+    *
+    * В каждой ячейке возможно максимум одно такое значение, иначе Су Доку
+    * составлено некорректно.
+    */
+  def getSingleValues(
+      sudoku: SuDoku,
+      block: IndexedSeq[(Row, Column)]
+  ): List[(Row, Column, SuDokuCellValue)] =
+    block.foldLeft(List.empty[SuDokuInput]) {
+      case (acc, (i, j)) =>
+        val cell = sudoku.cells(i)(j)
+        if cell.maybeValue.isDefined then acc
+        else
+          val values = cell.possibleValues
+          values
+            .find: value =>
+              block.forall: (k, l) =>
+                (k == i && l == j) ||
+                  !sudoku.cells(k)(l).possibleValues.contains(value)
+            .map: value =>
+              (i, j, value) :: acc
+            .getOrElse(acc)
+    }
+
+  /** Устанавливает значения-одичночки. */
+  @tailrec
+  def blockSingleValueLoop(
+      sudoku: SuDoku,
+      i: Int,
+      j: Int
+  ): SuDokuOutput =
+    // Дошли до конца поля
+    if i >= 9 then (true, sudoku)
+    // Дошли до конца столбца, переходим к следующему блоку
+    else if j >= 9 then blockSingleValueLoop(sudoku, i + 3, 0)
+    else
+      val block        = getBlock(i, j)
+      val singleValues = getSingleValues(sudoku, block)
+      if singleValues.isEmpty then
+        // Если значений-одиночек нет, переходим к следующему блоку
+        blockSingleValueLoop(sudoku, i, j + 3)
+      else
+        // Если есть устанавливаем такие значения
+        val (result, sudoku2) = setValues(singleValues*).run(sudoku)
+        // Если установка закончилась успешно, переходим к следующему блоку
+        if result then blockSingleValueLoop(sudoku2, i, j + 3)
+        else (false, sudoku)
+
+  private val crossOutState = State[SuDoku, Boolean](crossOutLoop(_, 0, 0))
+  private val blockSingleValueState =
+    State[SuDoku, Boolean](blockSingleValueLoop(_, 0, 0))
+  private val loopState =
+    crossOutState.map2(blockSingleValueState)(_ && _)
+
+  @tailrec
+  private def solutionLoop(sudoku: SuDoku): SuDokuOutput =
+    val (result, newSudoku) = loopState.run(sudoku)
+    if !result then (false, sudoku)
+    else if sudoku != newSudoku then solutionLoop(newSudoku)
+    else (result, sudoku)
 
   /** Головоломка решается до тех пор, пока:
     *
     *   - не найдено решение
     *   - если есть значения, которые можно вычеркнуть
+    *   - если есть значения, которые можно вставить только в одну ячейку
     */
-  def getSolution: SuDokuState =
-    State[SuDoku, Boolean] {
-      (sudoku: SuDoku) =>
-
-        @tailrec
-        def loop(sudoku: SuDoku): SuDokuOutput =
-          val (result, newSudoku) = crossOutLoop(sudoku, 0, 0)
-          if result && sudoku == newSudoku then
-            // Ничего не изменилось, не можем найти решение
-            (result, sudoku)
-          else if result then
-            loop(newSudoku)
-          else (false, sudoku)
-
-        loop(sudoku)
-    }
+  val solutionState: SuDokuState = State[SuDoku, Boolean](solutionLoop)
 
   def toSuDoku(source: String): SuDokuOutput =
     val rows = source.trim.split("\n")

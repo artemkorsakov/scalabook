@@ -6,8 +6,7 @@ import ru.scalabook.algorithms.games.sudoku.SuDoku.*
 
 final case class SuDoku(cells: Map[SuDokuIndex, SuDokuCell]):
   def getCell(row: SuDokuRow, column: SuDokuColumn): Option[SuDokuCell] =
-    val block = SuDokuBlock.getBlock(row, column)
-    getCell((row, column, block))
+    getCell(SuDokuIndex(row, column))
 
   def getCell(index: SuDokuIndex): Option[SuDokuCell] = cells.get(index)
 
@@ -23,8 +22,6 @@ object SuDoku:
   given Show[SuDoku] = Show.show[SuDoku]: (sudoku: SuDoku) =>
     SuDokuRow.values.map: row =>
       SuDokuColumn.values.map: col =>
-        val block              = SuDokuBlock.getBlock(row, col)
-        val index: SuDokuIndex = (row, col, block)
         sudoku.getCell(row, col).map(_.show).getOrElse("()").padTo(20, ' ')
       .mkString("|", "|", "|")
     .mkString("", "\n", "")
@@ -34,9 +31,7 @@ object SuDoku:
       for
         row <- SuDokuRow.values
         col <- SuDokuColumn.values
-      yield
-        val block = SuDokuBlock.getBlock(row, col)
-        (row, col, block) -> SuDokuCell.initial
+      yield SuDokuIndex(row, col) -> SuDokuCell.initial
 
     SuDoku(defaultCells.toMap)
 

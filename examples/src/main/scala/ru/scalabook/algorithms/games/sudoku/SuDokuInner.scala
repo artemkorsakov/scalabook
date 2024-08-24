@@ -14,17 +14,13 @@ object SuDokuInner:
   enum SuDokuInnerOperation:
     case SetToCell, RemoveFromCell
 
-  type SuDokuInnerInput = (SuDokuInnerOperation, Row, Column, SuDokuCellValue)
+  type SuDokuInnerInput =
+    (SuDokuInnerOperation, SuDokuRow, SuDokuColumn, SuDokuCellValue)
 
   private val updateSuDoku: SuDokuInnerInput => SuDokuOutput => SuDokuOutput =
     (operation, i, j, value) =>
       (result, sudoku) =>
-        // Выполняем операцию только если поле, строка и столбец корректные,
-        // а также если предыдущая операция завершилась успешно
-        val isCorrect =
-          sudoku.isCorrect && Row.isCorrect(i) && Column.isCorrect(j) && result
-
-        if isCorrect then
+        if result && sudoku.isCorrect then
           operation match
             case SetToCell =>
               updateCell(SuDokuCellOperation.Set, sudoku, i, j, value)
@@ -36,18 +32,19 @@ object SuDokuInner:
   private def updateCell(
       oper: SuDokuCellOperation,
       sudoku: SuDoku,
-      i: Int,
-      j: Int,
+      i: SuDokuRow,
+      j: SuDokuColumn,
       value: SuDokuCellValue
   ): (Boolean, SuDoku) =
-    val oldCell = sudoku.cells(i)(j)
-    val (result, newCell) =
-      SuDokuCell.execute((oper, value)).run(oldCell)
-    if result then
-      val newCells =
-        sudoku.cells.updated(i, sudoku.cells(i).updated(j, newCell))
-      (true, SuDoku(newCells))
-    else (false, sudoku)
+    sudoku.getCell(i, j) match
+      case None => (false, sudoku)
+      case Some(oldCell) =>
+        val (result, newCell) = SuDokuCell.execute((oper, value)).run(oldCell)
+        if result then
+          val index    = SuDokuIndex(i, j)
+          val newCells = sudoku.cells.updated(index, newCell)
+          (true, SuDoku(newCells))
+        else (false, sudoku)
 
   def execute(inputs: SuDokuInnerInput*): SuDokuState =
     SuDokuSolver.executeInnerOperation(inputs.toList, updateSuDoku)

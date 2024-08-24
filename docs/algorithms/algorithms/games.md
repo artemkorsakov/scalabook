@@ -613,10 +613,13 @@ SuDokuBlock.getBlock(SuDokuRow.Fourth, SuDokuColumn.First)
   
 type SuDokuIndex = (SuDokuRow, SuDokuColumn, SuDokuBlock)
 
+object SuDokuIndex:
+  def apply(row: SuDokuRow, column: SuDokuColumn): SuDokuIndex =
+    (row, column, SuDokuBlock.getBlock(row, column))
+    
 final case class SuDoku(cells: Map[SuDokuIndex, SuDokuCell]):
   def getCell(row: SuDokuRow, column: SuDokuColumn): Option[SuDokuCell] =
-    val block = SuDokuBlock.getBlock(row, column)
-    getCell((row, column, block))
+    getCell(SuDokuIndex(row, column))
   
   def getCell(index: SuDokuIndex): Option[SuDokuCell] = cells.get(index)     
 ```
@@ -630,9 +633,7 @@ object SuDoku:
       for
         row <- SuDokuRow.values
         col <- SuDokuColumn.values
-      yield
-        val block = SuDokuBlock.getBlock(row, col)
-        (row, col, block) -> SuDokuCell.initial
+      yield SuDokuIndex(row, col) -> SuDokuCell.initial
 
     SuDoku(defaultCells.toMap)
 ```
@@ -673,10 +674,8 @@ sudoku.hasSolution   // false
 где `SuDokuOutput` - кортеж из двух элементов: результат выполнения предыдущей операции и поле Су Доку)
 возвращает функциональное состояние `SuDokuState`:
 
-
-
 ```dotty
-object SuDoku:
+object SuDokuSolver:
   type SuDokuState  = State[SuDoku, Boolean]
   type SuDokuOutput = (Boolean, SuDoku)
 
@@ -690,11 +689,12 @@ object SuDoku:
           _ <- State.traverse(inputs)(input =>
             State.modify[SuDokuOutput](update(input))
           )
-          output <- State.get
-        yield output._1
+          (result, _) <- State.get[SuDokuOutput]
+        yield result
 
-      state.run((true, sudoku))._2
-    }  
+      val (_, output) = state.run((true, sudoku))
+      output
+    }
 ```
 
 Следующее, что нам понадобится - это установка начального состояния в игре,
@@ -711,24 +711,18 @@ object SuDoku:
 
 Определим побочные операции установки и удаления значения в заданном поле:
 
-
-
 ```dotty
 object SuDokuInner:
   enum SuDokuInnerOperation:
     case SetToCell, RemoveFromCell
 
-  type SuDokuInnerInput = (SuDokuInnerOperation, Row, Column, SuDokuCellValue)
+  type SuDokuInnerInput =
+    (SuDokuInnerOperation, SuDokuRow, SuDokuColumn, SuDokuCellValue)
 
   private val updateSuDoku: SuDokuInnerInput => SuDokuOutput => SuDokuOutput =
     (operation, i, j, value) =>
       (result, sudoku) =>
-        // Выполняем операцию только если поле, строка и столбец корректные,
-        // а также если предыдущая операция завершилась успешно
-        val isCorrect =
-          sudoku.isCorrect && Row.isCorrect(i) && Column.isCorrect(j) && result
-
-        if isCorrect then
+        if result && sudoku.isCorrect then
           operation match
             case SetToCell =>
               updateCell(SuDokuCellOperation.Set, sudoku, i, j, value)
@@ -740,36 +734,51 @@ object SuDokuInner:
   private def updateCell(
       oper: SuDokuCellOperation,
       sudoku: SuDoku,
-      i: Int,
-      j: Int,
+      i: SuDokuRow,
+      j: SuDokuColumn,
       value: SuDokuCellValue
   ): (Boolean, SuDoku) =
-    val oldCell = sudoku.cells(i)(j)
-    val (result, newCell) =
-      SuDokuCell.execute((oper, value)).run(oldCell)
-    if result then
-      val newCells =
-        sudoku.cells.updated(i, sudoku.cells(i).updated(j, newCell))
-      (true, SuDoku(newCells))
-    else (false, sudoku)
+    sudoku.getCell(i, j) match
+      case None => (false, sudoku)
+      case Some(oldCell) =>
+        val (result, newCell) = SuDokuCell.execute((oper, value)).run(oldCell)
+        if result then
+          val index    = SuDokuIndex(i, j)
+          val newCells = sudoku.cells.updated(index, newCell)
+          (true, SuDoku(newCells))
+        else (false, sudoku)
 
   def execute(inputs: SuDokuInnerInput*): SuDokuState =
-    SuDoku.executeInnerOperation(inputs.toList, updateSuDoku)
+    SuDokuSolver.executeInnerOperation(inputs.toList, updateSuDoku)
 
-end SuDokuInner 
+end SuDokuInner
+```
 
+Результат выполнения операций установки и удаления значения:
+
+```dotty
 val initialSudoku = SuDoku.initial
 val set: SuDokuInnerInput =
-  (SuDokuInnerOperation.SetToCell, 1, 2, SuDokuCellValue.Six)
+  (
+    SuDokuInnerOperation.SetToCell,
+    SuDokuRow.First,
+    SuDokuColumn.Second,
+    SuDokuCellValue.Six
+  )
 val (_, sudoku0) = SuDokuInner.execute(set).run(initialSudoku)
-sudoku0.cells(1)(2)
-// SuDokuCell(Set(Six))
+sudoku0.getCell(SuDokuRow.First, SuDokuColumn.Second)
+// Some(SuDokuCell(Set(Six)))
 
 val remove: SuDokuInnerInput =
-  (SuDokuInnerOperation.RemoveFromCell, 2, 1, SuDokuCellValue.Five)
+  (
+    SuDokuInnerOperation.RemoveFromCell,
+    SuDokuRow.Second,
+    SuDokuColumn.First,
+    SuDokuCellValue.Five
+  )
 val (_, sudoku1) = SuDokuInner.execute(remove).run(initialSudoku)
-sudoku1.cells(2)(1)
-// SuDokuCell(HashSet(Four, Three, One, Nine, Eight, Six, Seven, Two))
+sudoku1.getCell(SuDokuRow.Second, SuDokuColumn.First)
+// Some(SuDokuCell(HashSet(Eight, Six, Seven, Nine, Four, Two, Three, One)))
 ```
 
 Три более сложные побочные операции на удаление:

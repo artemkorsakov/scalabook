@@ -7,6 +7,7 @@ import ru.scalabook.algorithms.games.sudoku.SuDoku.{
   SuDokuInput,
   getBlock
 }
+import ru.scalabook.algorithms.games.sudoku.SuDokuCellValue.Six
 import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
 
@@ -19,8 +20,61 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
     expect.all(
       sudoku.cells.length == 9,
       sudoku.cells.forall(_.length == 9),
-      sudoku.isCorrect
+      sudoku.isCorrect,
+      !sudoku.hasSolution
     )
+
+  pureTest("SuDoku should not be correct if cells are not 9x9"):
+    val incorrectRow  = Vector.fill(8)(Vector.fill(9)(SuDokuCell.initial))
+    val incorrectCols = Vector.fill(9)(Vector.fill(8)(SuDokuCell.initial))
+    expect.all(
+      !SuDoku(incorrectRow).isCorrect,
+      !SuDoku(incorrectCols).isCorrect
+    )
+
+  pureTest("SuDoku should not be correct if cells have empty possible values"):
+    val incorrectCells = Vector.fill(9)(Vector.fill(9)(SuDokuCell(Set())))
+    val sudoku         = SuDoku(incorrectCells)
+    expect(!sudoku.isCorrect)
+
+  test("SuDoku should not be correct if rows have duplicate values"):
+    forall:
+      (
+          row: FieldLength,
+          col1: FieldLength,
+          col2: FieldLength,
+          value: SuDokuCellValue
+      ) =>
+        val sudoku = SuDoku.initial
+        val cell   = SuDokuCell(Set(value))
+        val col3   = if col1 == col2 then (col2.toInt + 1) % 9 else col2.toInt
+        val incorrectRow =
+          sudoku.cells(row.toInt)
+            .updated(col1.toInt, cell)
+            .updated(col3, cell)
+        val updateCells = sudoku.cells.updated(row.toInt, incorrectRow)
+        expect(!SuDoku(updateCells).isCorrect)
+
+  test("SuDoku should not be correct if cols have duplicate values"):
+    forall:
+      (
+          row1: FieldLength,
+          row2: FieldLength,
+          col: FieldLength,
+          value: SuDokuCellValue
+      ) =>
+        val sudoku = SuDoku.initial
+        val cell   = SuDokuCell(Set(value))
+        val row3   = if row1 == row2 then (row2.toInt + 1) % 9 else row2.toInt
+
+        val incorrectRow1 = sudoku.cells(row1.toInt).updated(col.toInt, cell)
+        val incorrectRow2 = sudoku.cells(row3.toInt).updated(col.toInt, cell)
+
+        val updateCells =
+          sudoku.cells
+            .updated(row1.toInt, incorrectRow1)
+            .updated(row3.toInt, incorrectRow2)
+        expect(!SuDoku(updateCells).isCorrect)
 
   pureTest(
     "SuDoku.initial should have all cells with the same initial possible values"
@@ -294,6 +348,38 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
     expect.all(
       convertedResult,
       convertedSudoku.show == expectedConvertedSudoku,
+      solutionResult,
+      sudokuWithSolution.show == expectedSudokuWithSolution
+    )
+
+  pureTest("SuDoku.toSuDoku should convert a string to a SuDoku puzzle"):
+    val (convertedResult, convertedSudoku) = SuDoku.toSuDoku(
+      "000000907\n" +
+        "000420180\n" +
+        "000705026\n" +
+        "100904000\n" +
+        "050000040\n" +
+        "000507009\n" +
+        "920108000\n" +
+        "034059000\n" +
+        "507000000"
+    )
+    val (solutionResult, sudokuWithSolution) =
+      SuDoku.getSolution.run(convertedSudoku)
+
+    val expectedSudokuWithSolution =
+      "{[(2,4,6);(4,6,8);(1,2,5,8);(3,6,8);(1,3,6,8);(1,3,6);(9);(3,5);(7)] " +
+        "[(6,7);(6,7,9);(5,9);(4);(2);(3,6);(1);(8);(3,5)] " +
+        "[(3);(8,9);(1,8,9);(7);(1,8,9);(5);(4);(2);(6)] " +
+        "[(1);(6,7,8);(2,3,8);(9);(3,6,8);(4);(2,3,5,6,7,8);(3,5,6,7);(2,3,5,8)] " +
+        "[(2,6,7);(5);(2,3,8,9);(2,3,6,8);(1,3,6,8);(1,2,3,6);(2,3,6,7,8);(4);(1,2,3,8)] " +
+        "[(2,4,6);(4,6,8);(2,3,8);(5);(1,3,6,8);(7);(2,3,6,8);(1,3,6);(9)] " +
+        "[(9);(2);(6);(1);(3,4,7);(8);(3,5,7);(3,5,7);(3,4,5)] " +
+        "[(8);(3);(4);(2,6);(5);(9);(2,6,7);(1,6,7);(1,2)] " +
+        "[(5);(1);(7);(2,3,6);(3,4,6);(2,3,6);(2,3,6,8);(3,6,9);(2,3,4,8)]}"
+
+    expect.all(
+      convertedResult,
       solutionResult,
       sudokuWithSolution.show == expectedSudokuWithSolution
     )

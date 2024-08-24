@@ -15,9 +15,23 @@ import scala.util.Try
 
 final case class SuDoku(cells: Vector[Vector[SuDokuCell]]):
   val isCorrect: Boolean =
-    cells.length == 9 && cells.forall(_.length == 9)
+    cells.length == 9 &&
+      cells.forall(_.length == 9) &&
+      cells.forall(_.forall(_.possibleValues.nonEmpty)) &&
+      cells.forall(row => hasUniqueValues(row)) &&
+      (0 to 8).forall(j => hasUniqueValues(cells.map(row => row(j)))) && {
+        val blocks =
+          for
+            i <- 0 to 6 by 3
+            j <- 0 to 6 by 3
+          yield getBlock(i, j)
+        blocks.forall: block =>
+          val blockCells = block.map((i, j) => cells(i.toInt)(j.toInt))
+          hasUniqueValues(blockCells)
+      }
 
-  val hasSolution: Boolean = cells.forall(_.forall(_.maybeValue.isDefined))
+  val hasSolution: Boolean =
+    isCorrect && cells.forall(_.forall(_.maybeValue.isDefined))
 
 object SuDoku:
   val initial: SuDoku =
@@ -29,6 +43,10 @@ object SuDoku:
             SuDokuCell.initial
 
     SuDoku(defaultCells)
+
+  private def hasUniqueValues(cells: IndexedSeq[SuDokuCell]): Boolean =
+    val values = cells.flatMap(_.maybeValue)
+    values.distinct.size == values.size
 
   type Row = Int
   object Row:
@@ -98,62 +116,103 @@ object SuDoku:
   def setValues(inputs: SuDokuInput*): SuDokuState =
     SuDoku.executeInnerOperation(inputs.toList, updateSuDoku)
 
-  /** Поиск решения головоломки:
-    *
-    * Головоломка может быть решена:
-    *
-    *   - если найдено решение
-    *   - если по-прежнему есть значения, которые можно вычеркнуть
-    *
-    * Решение головоломки:
+  /** Поиск значений, которые можно вычеркнуть:
     *
     *   - проходимся по каждой строчке и по каждому столбцу
-    *   - ищем такие значения, которые при вставке в заданное поле приводят к
-    *     ошибке - это означает, что в данную ячейку значение вставлять нельзя и
-    *     его можно вычеркнуть
-    *   - вычеркиваем значение и ищем следующее такое же
+    *   - в каждой ячейке ищем среди списка возможных такие значения, которые
+    *     при вставке в заданное поле приводят к ошибке - это означает, что в
+    *     данную ячейку такое значение вставлять нельзя и его можно вычеркнуть
+    *   - вычеркиваем значение
+    *   - пытаемся найти следующий кандидат на вычеркивание в той же ячейке
+    *   - если в ячейке не осталось значений, которые можно вычеркнуть, то
+    *     переходим к следующей ячейке
+    */
+  @tailrec
+  private def crossOutLoop(sudoku: SuDoku, i: Int, j: Int): SuDokuOutput =
+    // Дошли до конца поля
+    if i >= 9 then (true, sudoku)
+    // Дошли до конца столбца, переходим к следующей строке
+    else if j >= 9 then crossOutLoop(sudoku, i + 1, 0)
+    else
+      val currentValues = sudoku.cells(i)(j).possibleValues
+      // Точное значение определено, переходим к следующей ячейке
+      if currentValues.size == 1 then
+        crossOutLoop(sudoku, i, j + 1)
+      else // Ищем значение в ячейке, которое можно вычеркнуть
+        val maybeInvalidValue = currentValues.find: value =>
+          !setValue(i, j, value).run(sudoku)._1
+        maybeInvalidValue match
+          // Такого значения нет, переходим к следующей ячейке
+          case None => crossOutLoop(sudoku, i, j + 1)
+          case Some(invalidValue) =>
+            val input: SuDokuInnerInput =
+              (SuDokuInnerOperation.RemoveFromCell, i, j, invalidValue)
+            val (result, newSudoku) =
+              SuDokuInner.execute(input).run(sudoku)
+            // Если результат вычеркивания успешен,
+            // то ищем в заданной ячейке следующий кандидат на вычеркивание
+            if result then crossOutLoop(newSudoku, i, j)
+            // Если не успешен, значит решения головоломки не существует
+            else (false, sudoku)
+      end if
+
+//  @tailrec
+//  private def blockSingleValueLoop(
+//      sudoku: SuDoku,
+//      i: Int,
+//      j: Int
+//  ): SuDokuOutput =
+//    // Дошли до конца поля
+//    if i >= 9 then (true, sudoku)
+//    // Дошли до конца столбца, переходим к следующему блоку
+//    else if j >= 9 then blockSingleValueLoop(sudoku, i + 3, 0)
+//    else
+//      val block        = getBlock(i, j)
+//      val singleValues = getSingleValues(sudoku, block)
+//      if singleValues.isEmpty then blockSingleValueLoop(sudoku, i, j + 3)
+//      else
+//        val (result, sudoku2) = setValues(singleValues*).run(sudoku)
+//        if result then blockSingleValueLoop(sudoku2, i, j + 3)
+//        else (false, sudoku)
+//
+//  /** Находим такую ячейку и такие значения, которые не встречаются в других
+//    * ячейках блока, но которые не единственные в своих ячейках
+//    */
+//  private def getSingleValues(
+//      sudoku: SuDoku,
+//      block: IndexedSeq[(Row, Column)]
+//  ) =
+//    block.foldLeft(List.empty[SuDokuInput]) {
+//      case (acc, (i, j)) =>
+//        val values = sudoku.cells(i)(j).possibleValues
+//        val maybeSingleValue =
+//          if values.size == 1 then None
+//          else
+//            values.find: value =>
+//              block.forall: (ii, jj) =>
+//                (ii == i && jj == j) || !sudoku.cells(ii)(jj).possibleValues
+//                  .contains(value)
+//        maybeSingleValue match
+//          case None        => acc
+//          case Some(value) => (i, j, value) :: acc
+//    }
+
+  /** Головоломка решается до тех пор, пока:
+    *
+    *   - не найдено решение
+    *   - если есть значения, которые можно вычеркнуть
     */
   def getSolution: SuDokuState =
     State[SuDoku, Boolean] {
       (sudoku: SuDoku) =>
-        @tailrec
-        def loopByCell(sudoku: SuDoku, i: Int, j: Int): SuDokuOutput =
-          // Дошли до конца поля
-          if i >= 9 then (true, sudoku)
-          // Дошли до конца столбца, переходим к следующей строке
-          else if j >= 9 then loopByCell(sudoku, i + 1, 0)
-          else
-            val currentValues = sudoku.cells(i)(j).possibleValues
-            // Точное значение определено, переходим к следующей ячейке
-            if currentValues.size == 1 then
-              loopByCell(sudoku, i, j + 1)
-            else // Ищем значение в ячейке, которое можно вычеркнуть
-              val maybeInvalidValue = currentValues.find: value =>
-                !setValue(i, j, value).run(sudoku)._1
-              maybeInvalidValue match
-                // Такого значения нет, переходим к следующей ячейке
-                case None => loopByCell(sudoku, i, j + 1)
-                case Some(invalidValue) =>
-                  val input: SuDokuInnerInput =
-                    (SuDokuInnerOperation.RemoveFromCell, i, j, invalidValue)
-                  val (result, newSudoku) =
-                    SuDokuInner.execute(input).run(sudoku)
-                  // Если результат вычеркивания успешен,
-                  // то ищем в заданной ячейке следующий кандидат на вычеркивание
-                  if result then loopByCell(newSudoku, i, j)
-                  // Если не успешен, значит решения головоломки не существует
-                  else (false, sudoku)
-            end if
 
         @tailrec
         def loop(sudoku: SuDoku): SuDokuOutput =
-          val (result, newSudoku) = loopByCell(sudoku, 0, 0)
-
+          val (result, newSudoku) = crossOutLoop(sudoku, 0, 0)
           if result && sudoku == newSudoku then
             // Ничего не изменилось, не можем найти решение
             (result, sudoku)
           else if result then
-            // Вычеркнуты некоторые значения, переходим к следующей итерации
             loop(newSudoku)
           else (false, sudoku)
 

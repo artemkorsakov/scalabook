@@ -466,11 +466,9 @@ end PokerHand
 ![](https://projecteuler.net/project/images/p096_1.png)
 ![](https://projecteuler.net/project/images/p096_2.png)
 
-**Алгоритм:**
+### Ячейка Су Доку
 
 Определим список допустимых значений ячейки игры Су Доку - это цифры от 1 до 9:
-
-**Код:**
 
 ```dotty
 enum SuDokuCellValue:
@@ -479,10 +477,9 @@ enum SuDokuCellValue:
 
 Сама ячейка должна удовлетворять следующим условиям:
 
-- В начальном состоянии ячейка может содержать любое из значений от 1 до 9
+- У ячейки есть множество допустимых значений
 - Точное значение ячейки определено, если из возможных значений остался только один вариант
-
-**Код:**
+- В начальном состоянии ячейка может содержать любое из значений от 1 до 9
 
 ```dotty
 final case class SuDokuCell(possibleValues: Set[SuDokuCellValue]):
@@ -493,14 +490,14 @@ final case class SuDokuCell(possibleValues: Set[SuDokuCellValue]):
 object SuDokuCell:
   val initial: SuDokuCell = SuDokuCell(SuDokuCellValue.values.toSet) 
 
-SuDokuCell.initial.possibleValues
-// HashSet(One, Two, Three, Four, Five, Six, Seven, Eight, Nine)
-SuDokuCell.initial.maybeValue    
-// None
 SuDokuCell(Set(SuDokuCellValue.Three)).possibleValues 
 // Set(Three)
 SuDokuCell(Set(SuDokuCellValue.Three)).maybeValue 
 // Some(Three)
+SuDokuCell.initial.possibleValues
+// HashSet(One, Two, Three, Four, Five, Six, Seven, Eight, Nine)
+SuDokuCell.initial.maybeValue    
+// None
 ```
 
 Ячейка должна поддерживать следующие операции:
@@ -508,50 +505,47 @@ SuDokuCell(Set(SuDokuCellValue.Three)).maybeValue
 - В ячейку можно установить определенное значение в качестве единственного, если оно находится среди возможных значений
 - Из возможных значений ячейки можно удалить значение, только если это не единственное возможное значение ячейки
 
-Определим новый тип описывающий [функциональное состояние](../../fp/state.md) ячейки `SuDokuCellState`,
-который по заданной ячейке возвращает кортеж из двух элементов,
+Определим новый тип описывающий [функциональное состояние](../../fp/state.md) ячейки `State[SuDokuCell, Boolean]`,
+который по заданной ячейке возвращает выходное состояние `(Boolean, SuDokuCell)` - кортеж из двух элементов,
 где слева - признак, успешно ли завершилась предыдущая операция,
 а справа - последнее стабильное состояние ячейки.
-
-**Код:**
 
 ```dotty
 object SuDokuCell:
   enum SuDokuCellOperation:
     case Set, Remove
 
-  type SuDokuCellInput         = (SuDokuCellOperation, SuDokuCellValue)
-  opaque type SuDokuCellOutput = (Boolean, SuDokuCell)
+  private type Input  = (SuDokuCellOperation, SuDokuCellValue)
+  private type Output = (Boolean, SuDokuCell)
 
-  private val updateCell
-      : SuDokuCellInput => SuDokuCellOutput => SuDokuCellOutput =
+  private val updateCell: Input => Output => Output =
     (operation, value) =>
       (result, cell) =>
         (operation, value, result) match
-          // Устанавливаем значение в ячейке 
-          // только если это значение среди допустимых
+          // Устанавливаем значение в ячейке только если это значение среди допустимых
           case (SuDokuCellOperation.Set, value, true)
               if cell.possibleValues.contains(value) =>
             (true, SuDokuCell(Set(value)))
-          // Удаляем значение в ячейке 
-          // только если это не единственное значение из допустимых
+          // Удаляем значение в ячейке только если это не единственное значение из допустимых
           case (SuDokuCellOperation.Remove, value, true)
               if cell.possibleValues != Set(value) =>
             (true, SuDokuCell(cell.possibleValues - value))
-          case _ =>
+          case _ => // Операция не может быть выполнена
             (false, cell)
 
-  def execute(inputs: SuDokuCellInput*): State[SuDokuCell, Boolean] =
+  def execute(inputs: (SuDokuCellOperation, SuDokuCellValue)*)
+      : State[SuDokuCell, Boolean] =
     State[SuDokuCell, Boolean] { cell =>
       val state =
         for
           _ <- State.traverse(inputs.toList)(input =>
-            State.modify[SuDokuCellOutput](updateCell(input))
+            State.modify[Output](updateCell(input))
           )
-          output <- State.get
-        yield output._1
+          (result, _) <- State.get[Output]
+        yield result
 
-      state.run((true, cell))._2
+      val (_, output) = state.run((true, cell))
+      output
     }
 
 end SuDokuCell
@@ -561,17 +555,20 @@ val inputs = List(
   (SuDokuCellOperation.Remove, SuDokuCellValue.Two)
 )
 SuDokuCell.execute(inputs*).run(SuDokuCell.initial)
-// (true,SuDokuCell(HashSet(Three, Four, Eight, Seven, Nine, Six, Five)))
+// (true,SuDokuCell(HashSet(Six, Four, Seven, Eight, Five, Nine, Three)))
 
 val input = (SuDokuCellOperation.Set, SuDokuCellValue.Two)
 SuDokuCell.execute(input).run(SuDokuCell.initial)
 // (true,SuDokuCell(Set(Two)))
 ```
 
+### Поле для игры Су Доку
+
 Определим, что такое поле для игры Су Доку:
 
-- Поле игры Су Доку представляет собой ячейки \\(9 \times 9\\).
-- В начальном состоянии в каждой ячейке поля список возможных значений равен от 1 до 9.
+- Поле игры Су Доку представляет собой ячейки \\(9 \times 9\\)
+- Поле игры Су Доку содержит девять блоков \\(3 \times 3\\)
+- Изначально в каждой ячейке поля список возможных значений равен от 1 до 9
 - Решение игры найдено, если в каждом поле осталось ровно по одному значению
 
 **Код:**
@@ -657,6 +654,8 @@ object SuDoku:
     val values = cells.flatMap(_.maybeValue)
     values.distinct.size == values.size
 ```
+
+### Команды
 
 Определим общую операцию изменения состояния игры Су Доку:
 для любого типа входящих данных `A` и заданной операции `update`

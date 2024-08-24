@@ -4,6 +4,10 @@ import ru.scalabook.algorithms.games.sudoku.SuDokuCell.SuDokuCellOperation
 import ru.scalabook.algorithms.games.sudoku.SuDoku.*
 import ru.scalabook.algorithms.games.sudoku.SuDokuInner.*
 import ru.scalabook.algorithms.games.sudoku.SuDokuInner.SuDokuInnerOperation.*
+import ru.scalabook.algorithms.games.sudoku.SuDokuSolver.{
+  SuDokuOutput,
+  SuDokuState
+}
 import ru.scalabook.fp.state.State
 
 object SuDokuInner:
@@ -46,6 +50,6 @@ object SuDokuInner:
     else (false, sudoku)
 
   def execute(inputs: SuDokuInnerInput*): SuDokuState =
-    SuDoku.executeInnerOperation(inputs.toList, updateSuDoku)
+    SuDokuSolver.executeInnerOperation(inputs.toList, updateSuDoku)
 
 end SuDokuInner

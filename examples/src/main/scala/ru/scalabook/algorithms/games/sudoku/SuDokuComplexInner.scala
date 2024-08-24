@@ -8,6 +8,7 @@ import ru.scalabook.algorithms.games.sudoku.SuDokuInner.{
   SuDokuInnerInput,
   SuDokuInnerOperation
 }
+import ru.scalabook.algorithms.games.sudoku.SuDokuSolver.*
 
 object SuDokuComplexInner:
   enum SuDokuInnerComplexOperation:
@@ -45,6 +46,6 @@ object SuDokuComplexInner:
           case _ => (false, sudoku)
 
   def execute(inputs: List[SuDokuComplexInnerInput]): SuDokuState =
-    SuDoku.executeInnerOperation(inputs, updateSuDoku)
+    SuDokuSolver.executeInnerOperation(inputs, updateSuDoku)
 
 end SuDokuComplexInner

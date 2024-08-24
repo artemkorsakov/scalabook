@@ -13,11 +13,10 @@ object SuDokuCell:
   enum SuDokuCellOperation:
     case Set, Remove
 
-  type SuDokuCellInput         = (SuDokuCellOperation, SuDokuCellValue)
-  opaque type SuDokuCellOutput = (Boolean, SuDokuCell)
+  private type Input  = (SuDokuCellOperation, SuDokuCellValue)
+  private type Output = (Boolean, SuDokuCell)
 
-  private val updateCell
-      : SuDokuCellInput => SuDokuCellOutput => SuDokuCellOutput =
+  private val updateCell: Input => Output => Output =
     (operation, value) =>
       (result, cell) =>
         (operation, value, result) match
@@ -29,20 +28,22 @@ object SuDokuCell:
           case (SuDokuCellOperation.Remove, value, true)
               if cell.possibleValues != Set(value) =>
             (true, SuDokuCell(cell.possibleValues - value))
-          case _ =>
+          case _ => // Операция не может быть выполнена
             (false, cell)
 
-  def execute(inputs: SuDokuCellInput*): State[SuDokuCell, Boolean] =
+  def execute(inputs: (SuDokuCellOperation, SuDokuCellValue)*)
+      : State[SuDokuCell, Boolean] =
     State[SuDokuCell, Boolean] { cell =>
       val state =
         for
           _ <- State.traverse(inputs.toList)(input =>
-            State.modify[SuDokuCellOutput](updateCell(input))
+            State.modify[Output](updateCell(input))
           )
-          output <- State.get
-        yield output._1
+          (result, _) <- State.get[Output]
+        yield result
 
-      state.run((true, cell))._2
+      val (_, output) = state.run((true, cell))
+      output
     }
 
 end SuDokuCell

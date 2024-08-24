@@ -1,39 +1,25 @@
 package ru.scalabook.algorithms.games
 
-import cats.Show
-import cats.syntax.show.*
 import org.scalacheck.{Arbitrary, Gen}
+import ru.scalabook.algorithms.games.sudoku.*
 
 package object sudoku:
-  given Show[SuDokuCellValue] = Show.show[SuDokuCellValue]:
-    (value: SuDokuCellValue) =>
-      (value.ordinal + 1).toString
   private val suDokuCellValueGen: Gen[SuDokuCellValue] =
     Gen.oneOf(SuDokuCellValue.values.toSeq)
   given Arbitrary[SuDokuCellValue] = Arbitrary(suDokuCellValueGen)
-
-  given Show[SuDokuCell] = Show.show[SuDokuCell]: (cell: SuDokuCell) =>
-    cell.possibleValues.map(v => Show[SuDokuCellValue].show(v)).toList.sorted
-      .mkString("(", ",", ")")
-
-  opaque type FieldLength = Int
-  private val fieldLengthGen: Gen[FieldLength] =
-    Gen.choose(0, 8)
-  given Arbitrary[FieldLength] = Arbitrary(fieldLengthGen)
-  given Show[FieldLength]      = Show.fromToString
-  extension (i: FieldLength)
-    def toInt: Int = i
-
-  opaque type InvalidFieldLength = Int
-  private val invalidFieldLengthGen: Gen[InvalidFieldLength] =
-    Gen.oneOf(Gen.negNum[Int], Gen.choose(9, Int.MaxValue))
-  given Arbitrary[InvalidFieldLength] = Arbitrary(invalidFieldLengthGen)
-  given Show[InvalidFieldLength]      = Show.fromToString
-  extension (i: InvalidFieldLength)
-    def toInvalidInt: Int = i
-
-  given Show[SuDoku] = Show.show[SuDoku]: (field: SuDoku) =>
-    field.cells.map: row =>
-      row.map(_.show).mkString("[", ";", "]")
-    .mkString("{", " ", "}")
+  private val suDokuRowGen: Gen[SuDokuRow] =
+    Gen.oneOf(SuDokuRow.values.toSeq)
+  given Arbitrary[SuDokuRow] = Arbitrary(suDokuRowGen)
+  private val suDokuColumnGen: Gen[SuDokuColumn] =
+    Gen.oneOf(SuDokuColumn.values.toSeq)
+  given Arbitrary[SuDokuColumn] = Arbitrary(suDokuColumnGen)
+  private val suDokuBlockGen: Gen[SuDokuBlock] =
+    Gen.oneOf(SuDokuBlock.values.toSeq)
+  given Arbitrary[SuDokuBlock] = Arbitrary(suDokuBlockGen)
+  private val suDokuIndexGen: Gen[SuDokuIndex] =
+    for
+      row    <- suDokuRowGen
+      column <- suDokuColumnGen
+    yield (row, column, SuDokuBlock.getBlock(row, column))
+  given Arbitrary[SuDokuIndex] = Arbitrary(suDokuIndexGen)
 end sudoku

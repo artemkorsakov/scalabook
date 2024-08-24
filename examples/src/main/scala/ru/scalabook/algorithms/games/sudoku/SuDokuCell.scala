@@ -1,5 +1,6 @@
 package ru.scalabook.algorithms.games.sudoku
 
+import cats.Show
 import ru.scalabook.fp.state.State
 
 final case class SuDokuCell(possibleValues: Set[SuDokuCellValue]):
@@ -8,6 +9,10 @@ final case class SuDokuCell(possibleValues: Set[SuDokuCellValue]):
     else None
 
 object SuDokuCell:
+  given Show[SuDokuCell] = Show.show[SuDokuCell]: (cell: SuDokuCell) =>
+    cell.possibleValues.map(v => Show[SuDokuCellValue].show(v)).toList.sorted
+      .mkString("(", ",", ")")
+
   val initial: SuDokuCell = SuDokuCell(SuDokuCellValue.values.toSet)
 
   enum SuDokuCellOperation:

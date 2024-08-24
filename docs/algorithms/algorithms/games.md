@@ -568,91 +568,101 @@ SuDokuCell.execute(input).run(SuDokuCell.initial)
 
 - Поле игры Су Доку представляет собой ячейки \\(9 \times 9\\)
 - Поле игры Су Доку содержит девять блоков \\(3 \times 3\\)
-- Изначально в каждой ячейке поля список возможных значений равен от 1 до 9
-- Решение игры найдено, если в каждом поле осталось ровно по одному значению
+- Каждая ячейка принадлежит определенной строке, столбцу, блоку
 
-**Код:**
+Пронумеруем блоки как показано в таблице:
+
+|       | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|-------|---|---|---|---|---|---|---|---|---|
+| **1** | 1 | 1 | 1 | 2 | 2 | 2 | 3 | 3 | 3 |
+| **2** | 1 | 1 | 1 | 2 | 2 | 2 | 3 | 3 | 3 |
+| **3** | 1 | 1 | 1 | 2 | 2 | 2 | 3 | 3 | 3 |
+| **4** | 4 | 4 | 4 | 5 | 5 | 5 | 6 | 6 | 6 |
+| **5** | 4 | 4 | 4 | 5 | 5 | 5 | 6 | 6 | 6 |
+| **6** | 4 | 4 | 4 | 5 | 5 | 5 | 6 | 6 | 6 |
+| **7** | 7 | 7 | 7 | 8 | 8 | 8 | 9 | 9 | 9 |
+| **8** | 7 | 7 | 7 | 8 | 8 | 8 | 9 | 9 | 9 |
+| **9** | 7 | 7 | 7 | 8 | 8 | 8 | 9 | 9 | 9 |
 
 ```dotty
-final case class SuDoku(cells: Vector[Vector[SuDokuCell]])
+enum SuDokuRow:
+  case First, Second, Third, Fourth, Fifth, Sixth, Seventh, Eighth, Ninth
+  
+enum SuDokuColumn:
+  case First, Second, Third, Fourth, Fifth, Sixth, Seventh, Eighth, Ninth
+  
+enum SuDokuBlock:
+  case First, Second, Third, Fourth, Fifth, Sixth, Seventh, Eighth, Ninth
+  
+object SuDokuBlock:
+  def getBlock(row: SuDokuRow, col: SuDokuColumn): SuDokuBlock =
+    (row, col) match
+      case (r, c) if r.ordinal < 3 && c.ordinal < 3 => SuDokuBlock.First
+      case (r, c) if r.ordinal < 3 && c.ordinal < 6 => SuDokuBlock.Second
+      case (r, c) if r.ordinal < 3                  => SuDokuBlock.Third
+      case (r, c) if r.ordinal < 6 && c.ordinal < 3 => SuDokuBlock.Fourth
+      case (r, c) if r.ordinal < 6 && c.ordinal < 6 => SuDokuBlock.Fifth
+      case (r, c) if r.ordinal < 6                  => SuDokuBlock.Sixth
+      case (_, c) if c.ordinal < 3                  => SuDokuBlock.Seventh
+      case (_, c) if c.ordinal < 6                  => SuDokuBlock.Eighth
+      case _                                        => SuDokuBlock.Ninth
+end SuDokuBlock
+  
+SuDokuBlock.getBlock(SuDokuRow.Fourth, SuDokuColumn.First)
+// Fourth
+  
+type SuDokuIndex = (SuDokuRow, SuDokuColumn, SuDokuBlock)
 
+final case class SuDoku(cells: Map[SuDokuIndex, SuDokuCell]):
+  def getCell(row: SuDokuRow, column: SuDokuColumn): Option[SuDokuCell] =
+    val block = SuDokuBlock.getBlock(row, column)
+    getCell((row, column, block))
+  
+  def getCell(index: SuDokuIndex): Option[SuDokuCell] = cells.get(index)     
+```
+
+Изначально в каждой ячейке Су Доку список возможных значений равен от 1 до 9.
+
+```dotty
 object SuDoku:
   val initial: SuDoku =
     val defaultCells =
-      (0 to 8)
-        .toVector
-        .map: _ =>
-          (0 to 8).toVector.map: _ =>
-            SuDokuCell.initial
+      for
+        row <- SuDokuRow.values
+        col <- SuDokuColumn.values
+      yield
+        val block = SuDokuBlock.getBlock(row, col)
+        (row, col, block) -> SuDokuCell.initial
 
-    SuDoku(defaultCells)
-
-  type Row          = Int
-  object Row:
-    def isCorrect(row: Int): Boolean = 0 <= row && row < 9
-  type Column = Int
-  object Column:
-    def isCorrect(col: Int): Boolean = 0 <= col && col < 9
-    
-val sudoku = SuDoku.initial
-sudoku.isCorrect     // true
-sudoku.hasSolution   // false
-```
-
-Кроме того, каждая ячейка принадлежит определенному блоку \\(3 \times 3\\):
-
-**Код:**
-
-```dotty
-def getBlock(i: Row, j: Column): IndexedSeq[(Row, Column)] =
-  if Row.isCorrect(i) && Column.isCorrect(j) then
-    for
-      k <- 0 to 2
-      l <- 0 to 2
-    yield
-      val r = (i / 3) * 3 + k
-      val c = (j / 3) * 3 + l
-      (r, c)
-  else IndexedSeq.empty
-
-SuDoku.getBlock(4, 4)
-// Vector((3,3), (3,4), (3,5), (4,3), (4,4), (4,5), (5,3), (5,4), (5,5))  
+    SuDoku(defaultCells.toMap)
 ```
 
 Поле для игры в Су Доку корректное при выполнении следующих условий:
 
-- Размер поля \\(9 \times 9\\)
-- Нет ячеек с пустыми списком
-- В каждой строчке нет двух ячеек с одним и тем же определенным значением
-- В каждом столбце нет двух ячеек с одним и тем же определенным значением
-- В каждом блоке нет двух ячеек с одним и тем же определенным значением
+- В каждой строчке нет двух ячеек с одним и тем же известным значением
+- В каждом столбце нет двух ячеек с одним и тем же известным значением
+- В каждом блоке нет двух ячеек с одним и тем же известным значением
 
-**Код:**
+Кроме того, решение игры найдено, если значение каждой ячейки известно.
 
 ```dotty
-final case class SuDoku(cells: Vector[Vector[SuDokuCell]]):
+final case class SuDoku(cells: Map[SuDokuIndex, SuDokuCell]): 
   val isCorrect: Boolean =
-    cells.length == 9 &&
-      cells.forall(_.length == 9) &&
-      cells.forall(_.forall(_.possibleValues.nonEmpty)) &&
-      cells.forall(row => hasUniqueValues(row)) &&
-      (0 to 8).forall(j => hasUniqueValues(cells.map(row => row(j)))) && {
-        val block =
-          for
-            i          <- 0 to 6 by 3
-            j          <- 0 to 6 by 3
-            (row, col) <- getBlock(i, j)
-          yield cells(row)(col)
-        hasUniqueValues(block)
-      }
+    cells.groupBy(_._1._1).forall((_, c) => hasUniqueValues(c.values)) &&
+      cells.groupBy(_._1._2).forall((_, c) => hasUniqueValues(c.values)) &&
+      cells.groupBy(_._1._3).forall((_, c) => hasUniqueValues(c.values))
 
   val hasSolution: Boolean =
-    isCorrect && cells.forall(_.forall(_.maybeValue.isDefined))
+    isCorrect && cells.forall(_._2.maybeValue.isDefined)
 
 object SuDoku:
-  private def hasUniqueValues(cells: IndexedSeq[SuDokuCell]): Boolean =
+  private def hasUniqueValues(cells: Iterable[SuDokuCell]): Boolean =
     val values = cells.flatMap(_.maybeValue)
-    values.distinct.size == values.size
+    values.toSet.size == values.size
+    
+val sudoku = SuDoku.initial
+sudoku.isCorrect     // true
+sudoku.hasSolution   // false   
 ```
 
 ### Команды
@@ -663,7 +673,7 @@ object SuDoku:
 где `SuDokuOutput` - кортеж из двух элементов: результат выполнения предыдущей операции и поле Су Доку)
 возвращает функциональное состояние `SuDokuState`:
 
-**Код:**
+
 
 ```dotty
 object SuDoku:
@@ -701,7 +711,7 @@ object SuDoku:
 
 Определим побочные операции установки и удаления значения в заданном поле:
 
-**Код:**
+
 
 ```dotty
 object SuDokuInner:
@@ -771,7 +781,7 @@ sudoku1.cells(2)(1)
 
 можно определить через "простое" удаление, определенное выше:
 
-**Код:**
+
 
 ```dotty
 object SuDokuComplexInner:
@@ -840,7 +850,7 @@ sudoku.cells(0)(1)
 При этом, если в выполняемой пачке операций возникла ситуация, когда одна из операций не выполнилась,
 то необходимо вернуться в исходное состояние, бывшее до выполнения всей цепочки операций.
 
-**Код:**
+
 
 ```dotty
 type SuDokuInput =
@@ -901,7 +911,7 @@ sudoku.cells(1)(1)
 - пытаемся найти следующий кандидат на вычеркивание в той же ячейке
 - если в ячейке не осталось значений, которые можно вычеркнуть, то переходим к следующей ячейке
 
-**Код:**
+
 
 ```dotty
 @tailrec
@@ -939,7 +949,7 @@ def crossOutLoop(sudoku: SuDoku, i: Int, j: Int): SuDokuOutput =
 - не найдено решение
 - если есть значения, которые можно вычеркнуть
 
-**Код:**
+
 
 ```dotty
 def getSolution: SuDokuState =

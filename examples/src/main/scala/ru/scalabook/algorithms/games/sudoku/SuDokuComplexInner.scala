@@ -12,10 +12,11 @@ import ru.scalabook.algorithms.games.sudoku.SuDokuSolver.*
 
 object SuDokuComplexInner:
   enum SuDokuInnerComplexOperation:
-    case RemoveFromRow, RemoveFromColumn, RemoveFromBlock
+    case RemoveFromRow, RemoveFromColumn, RemoveFromBlock,
+      RemoveFromRowExceptBlock, RemoveFromColumnExceptBlock
 
   type SuDokuComplexInnerInput =
-    (SuDokuInnerComplexOperation, Row, Column, SuDokuCellValue)
+    (SuDokuInnerComplexOperation, SuDokuRow, SuDokuColumn, SuDokuCellValue)
 
   private val updateSuDoku
       : SuDokuComplexInnerInput => SuDokuOutput => SuDokuOutput =
@@ -24,24 +25,55 @@ object SuDokuComplexInner:
         (operation, result) match
           case (RemoveFromRow, true) =>
             val inputs: List[SuDokuInnerInput] =
-              (0 to 8).flatMap: k =>
-                if k == j then None
-                else Some((SuDokuInnerOperation.RemoveFromCell, i, k, value))
-              .toList
+              SuDokuColumn
+                .values
+                .withFilter(k => k != j)
+                .map(k => (SuDokuInnerOperation.RemoveFromCell, i, k, value))
+                .toList
             SuDokuInner.execute(inputs*).run(sudoku)
           case (RemoveFromColumn, true) =>
             val inputs: List[SuDokuInnerInput] =
-              (0 to 8).flatMap: k =>
-                if k == i then None
-                else Some((SuDokuInnerOperation.RemoveFromCell, k, j, value))
-              .toList
+              SuDokuRow
+                .values
+                .withFilter(k => k != i)
+                .map(k => (SuDokuInnerOperation.RemoveFromCell, k, j, value))
+                .toList
             SuDokuInner.execute(inputs*).run(sudoku)
           case (RemoveFromBlock, true) =>
+            val block = SuDokuBlock.getBlock(i, j)
             val inputs: List[SuDokuInnerInput] =
-              SuDoku.getBlock(i, j).flatMap: (r, c) =>
-                if r == i && c == j then None
-                else Some((SuDokuInnerOperation.RemoveFromCell, r, c, value))
-              .toList
+              sudoku
+                .cells
+                .keys
+                .withFilter: (r, c, b) =>
+                  b == block && (r != i || c != j)
+                .map: (r, c, _) =>
+                  (SuDokuInnerOperation.RemoveFromCell, r, c, value)
+                .toList
+            SuDokuInner.execute(inputs*).run(sudoku)
+          case (RemoveFromRowExceptBlock, true) =>
+            val block = SuDokuBlock.getBlock(i, j)
+            val inputs: List[SuDokuInnerInput] =
+              sudoku
+                .cells
+                .keys
+                .withFilter: (r, _, b) =>
+                  r == i && b != block
+                .map: (r, c, _) =>
+                  (SuDokuInnerOperation.RemoveFromCell, r, c, value)
+                .toList
+            SuDokuInner.execute(inputs*).run(sudoku)
+          case (RemoveFromColumnExceptBlock, true) =>
+            val block = SuDokuBlock.getBlock(i, j)
+            val inputs: List[SuDokuInnerInput] =
+              sudoku
+                .cells
+                .keys
+                .withFilter: (_, c, b) =>
+                  c == j && b != block
+                .map: (r, c, _) =>
+                  (SuDokuInnerOperation.RemoveFromCell, r, c, value)
+                .toList
             SuDokuInner.execute(inputs*).run(sudoku)
           case _ => (false, sudoku)
 

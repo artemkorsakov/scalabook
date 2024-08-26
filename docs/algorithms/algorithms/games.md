@@ -522,11 +522,13 @@ object SuDokuCell:
     (operation, value) =>
       (result, cell) =>
         (operation, value, result) match
-          // Устанавливаем значение в ячейке только если это значение среди допустимых
+          // Устанавливаем значение в ячейке только если 
+          // это значение среди допустимых
           case (SuDokuCellOperation.Set, value, true)
               if cell.possibleValues.contains(value) =>
             (true, SuDokuCell(Set(value)))
-          // Удаляем значение в ячейке только если это не единственное значение из допустимых
+          // Удаляем значение в ячейке только если 
+          // это не единственное значение из допустимых
           case (SuDokuCellOperation.Remove, value, true)
               if cell.possibleValues != Set(value) =>
             (true, SuDokuCell(cell.possibleValues - value))
@@ -644,7 +646,25 @@ object SuDoku:
 - В каждом столбце нет двух ячеек с одним и тем же известным значением
 - В каждом блоке нет двух ячеек с одним и тем же известным значением
 
+|                  | Тот же столбец |     | Тот же блок |
+|------------------|----------------|-----|-------------|
+| **Та же строка** | 1?             | 1?  | ...         |
+| ...              | 1?             | ... | ...         |
+| **Тот же блок**  | ...            | ... | 1?          |
+
 Кроме того, решение игры найдено, если значение каждой ячейки известно.
+
+|       | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|-------|---|---|---|---|---|---|---|---|---|
+| **1** | 4 | 8 | 3 | 9 | 2 | 1 | 6 | 5 | 7 |
+| **2** | 9 | 6 | 7 | 3 | 4 | 5 | 8 | 2 | 1 |
+| **3** | 2 | 5 | 1 | 8 | 7 | 6 | 4 | 9 | 3 |
+| **4** | 5 | 4 | 8 | 1 | 3 | 2 | 9 | 7 | 6 |
+| **5** | 7 | 2 | 9 | 5 | 6 | 4 | 1 | 3 | 8 |
+| **6** | 1 | 3 | 6 | 7 | 9 | 8 | 2 | 4 | 5 |
+| **7** | 3 | 7 | 2 | 6 | 8 | 9 | 5 | 1 | 4 |
+| **8** | 8 | 1 | 4 | 2 | 5 | 3 | 7 | 6 | 9 |
+| **9** | 6 | 9 | 5 | 4 | 1 | 7 | 3 | 8 | 2 |
 
 ```dotty
 final case class SuDoku(cells: Map[SuDokuIndex, SuDokuCell]): 
@@ -708,6 +728,8 @@ object SuDokuSolver:
 - удаление заданного значения из столбца j за исключением ячейки (i, j)
 - удаление заданного значения из блока \\(3 \times 3\\), которому принадлежит ячейка (i, j), за исключением самой
   ячейки
+
+#### Элементарные побочные операции
 
 Определим побочные операции установки и удаления значения в заданном поле:
 
@@ -781,6 +803,8 @@ sudoku1.getCell(SuDokuRow.Second, SuDokuColumn.First)
 // Some(SuDokuCell(HashSet(Eight, Six, Seven, Nine, Four, Two, Three, One)))
 ```
 
+#### Многоступенчатые побочные операции
+
 Три более сложные побочные операции на удаление:
 
 - удаление заданного значения из строчки i за исключением ячейки (i, j)
@@ -788,9 +812,19 @@ sudoku1.getCell(SuDokuRow.Second, SuDokuColumn.First)
 - удаление заданного значения из квадрата \\(3 \times 3\\), которому принадлежит ячейка (i, j), 
   за исключением самой ячейки
 
-можно определить через "простое" удаление, определенное выше:
+|       | 1     | 2     | 3     | 4     | 5     | 6     | 7     | 8     | 9     |
+|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
+| **1** | 7     | ~~7~~ | ~~7~~ | ~~7~~ | ~~7~~ | ~~7~~ | ~~7~~ | ~~7~~ | ~~7~~ |
+| **2** | ~~7~~ | ~~7~~ | ~~7~~ |       |       |       |       |       |       |
+| **3** | ~~7~~ | ~~7~~ | ~~7~~ |       |       |       |       |       |       |
+| **4** | ~~7~~ |       |       |       |       |       |       |       |       |
+| **5** | ~~7~~ |       |       |       |       |       |       |       |       |
+| **6** | ~~7~~ |       |       |       |       |       |       |       |       |
+| **7** | ~~7~~ |       |       |       |       |       |       |       |       |
+| **8** | ~~7~~ |       |       |       |       |       |       |       |       |
+| **9** | ~~7~~ |       |       |       |       |       |       |       |       |
 
-
+Эти операции можно определить через "простое" удаление, определенное выше:
 
 ```dotty
 object SuDokuComplexInner:
@@ -798,7 +832,7 @@ object SuDokuComplexInner:
     case RemoveFromRow, RemoveFromColumn, RemoveFromBlock
 
   type SuDokuComplexInnerInput =
-    (SuDokuInnerComplexOperation, Row, Column, SuDokuCellValue)
+    (SuDokuInnerComplexOperation, SuDokuRow, SuDokuColumn, SuDokuCellValue)
 
   private val updateSuDoku
       : SuDokuComplexInnerInput => SuDokuOutput => SuDokuOutput =
@@ -807,50 +841,136 @@ object SuDokuComplexInner:
         (operation, result) match
           case (RemoveFromRow, true) =>
             val inputs: List[SuDokuInnerInput] =
-              (0 to 8).flatMap: k =>
-                if k == j then None
-                else Some((SuDokuInnerOperation.RemoveFromCell, i, k, value))
-              .toList
+              SuDokuColumn
+                .values
+                .withFilter(k => k != j)
+                .map(k => (SuDokuInnerOperation.RemoveFromCell, i, k, value))
+                .toList
             SuDokuInner.execute(inputs*).run(sudoku)
           case (RemoveFromColumn, true) =>
             val inputs: List[SuDokuInnerInput] =
-              (0 to 8).flatMap: k =>
-                if k == i then None
-                else Some((SuDokuInnerOperation.RemoveFromCell, k, j, value))
-              .toList
+              SuDokuRow
+                .values
+                .withFilter(k => k != i)
+                .map(k => (SuDokuInnerOperation.RemoveFromCell, k, j, value))
+                .toList
             SuDokuInner.execute(inputs*).run(sudoku)
           case (RemoveFromBlock, true) =>
+            val block = SuDokuBlock.getBlock(i, j)
             val inputs: List[SuDokuInnerInput] =
-              SuDoku.getBlock(i, j).flatMap: (r, c) =>
-                if r == i && c == j then None
-                else Some((SuDokuInnerOperation.RemoveFromCell, r, c, value))
-              .toList
+              sudoku
+                .cells
+                .keys
+                .withFilter: (r, c, b) =>
+                  b == block && (r != i || c != j)
+                .map: (r, c, _) =>
+                  (SuDokuInnerOperation.RemoveFromCell, r, c, value)
+                .toList
             SuDokuInner.execute(inputs*).run(sudoku)
           case _ => (false, sudoku)
 
   def execute(inputs: List[SuDokuComplexInnerInput]): SuDokuState =
-    SuDoku.executeInnerOperation(inputs, updateSuDoku)
+    SuDokuSolver.executeInnerOperation(inputs, updateSuDoku)
 
 end SuDokuComplexInner
+```
 
+Результат выполнения операций:
+
+```dotty
 val initialSudoku = SuDoku.initial
 val inputs: List[SuDokuComplexInnerInput] =
   List(
-    (SuDokuInnerComplexOperation.RemoveFromRow, 1, 1, SuDokuCellValue.Six),
-    (SuDokuInnerComplexOperation.RemoveFromColumn, 1, 1, SuDokuCellValue.Six),
-    (SuDokuInnerComplexOperation.RemoveFromBlock, 1, 1, SuDokuCellValue.Six)
+    (RemoveFromRow, SuDokuRow.Second, SuDokuColumn.Second, Six),
+    (RemoveFromColumn, SuDokuRow.Second, SuDokuColumn.Second, Six),
+    (RemoveFromBlock, SuDokuRow.Second, SuDokuColumn.Second, Six)
   )
 val (_, sudoku) = SuDokuComplexInner.execute(inputs).run(initialSudoku)
 
-sudoku.cells(1)(1)
-// SuDokuCell(HashSet(Five, Nine, One, Seven, Three, Two, Eight, Four, Six))
-sudoku.cells(0)(0)
-// SuDokuCell(HashSet(Five, Nine, One, Seven, Three, Two, Eight, Four))
-sudoku.cells(1)(0)
-// SuDokuCell(HashSet(Five, Nine, One, Seven, Three, Two, Eight, Four))
-sudoku.cells(0)(1) 
-// SuDokuCell(HashSet(Five, Nine, One, Seven, Three, Two, Eight, Four))
+sudoku.getCell(SuDokuRow.Second, SuDokuColumn.Second)
+// Some(SuDokuCell(HashSet(Two, Five, Four, One, Six, Seven, Three, Nine, Eight)))
+sudoku.getCell(SuDokuRow.First, SuDokuColumn.First)
+// Some(SuDokuCell(HashSet(Two, Five, Four, One, Seven, Three, Nine, Eight)))
+sudoku.getCell(SuDokuRow.Second, SuDokuColumn.First)
+// Some(SuDokuCell(HashSet(Two, Five, Four, One, Seven, Three, Nine, Eight)))
+sudoku.getCell(SuDokuRow.First, SuDokuColumn.Second)
+// Some(SuDokuCell(HashSet(Two, Five, Four, One, Seven, Three, Nine, Eight)))
 ```
+
+Также возможны ситуации, когда какое-то число может быть только в определенной строке или
+определенном столбце блока, даже если неизвестно, в какой именно ячейке может находиться такое число.
+
+Например, у нас имеется блок:
+
+|       | 1     | 2     | 3 |
+|-------|-------|-------|---|
+| **1** | (1,2) | (1,3) | 4 |
+| **2** | (2,3) | 5     | 6 |
+| **3** | 7     | 8     | 9 |
+
+Вне зависимости от того, где будет в итоге расположено число 1 - в ячейке (1,1) или ячейке (1,2) 
+точно известно, что оно будет расположено в 1 строке.
+
+Аналогично известно, что число 2 будет точно расположено в 1 столбце.
+
+Это означает, что 1 можно вычеркнуть из первой строки других блоков, а 2 - из первого столбца других блоков.
+
+Например:
+
+|       | 1     | 2     | 3 | 4     | 5     | 6     | 7     | 8     | 9     |
+|-------|-------|-------|---|-------|-------|-------|-------|-------|-------|
+| **1** | (1,2) | (1,3) | 4 | ~~1~~ | ~~1~~ | ~~1~~ | ~~1~~ | ~~1~~ | ~~1~~ |
+| **2** | (2,3) | 5     | 6 |       |       |       |       |       |       |
+| **3** | 7     | 8     | 9 |       |       |       |       |       |       |
+| **4** | ~~2~~ |       |   |       |       |       |       |       |       |
+| **5** | ~~2~~ |       |   |       |       |       |       |       |       |
+| **6** | ~~2~~ |       |   |       |       |       |       |       |       |
+| **7** | ~~2~~ |       |   |       |       |       |       |       |       |
+| **8** | ~~2~~ |       |   |       |       |       |       |       |       |
+| **9** | ~~2~~ |       |   |       |       |       |       |       |       |
+
+Добавим эти две операции:
+
+```dotty
+enum SuDokuInnerComplexOperation:
+  case ..., RemoveFromRowExceptBlock, RemoveFromColumnExceptBlock
+  
+private val updateSuDoku
+    : SuDokuComplexInnerInput => SuDokuOutput => SuDokuOutput =
+  (operation, i, j, value) =>
+    (result, sudoku) =>
+      (operation, result) match
+        ...
+        case (RemoveFromRowExceptBlock, true) =>
+          val block = SuDokuBlock.getBlock(i, j)
+          val inputs: List[SuDokuInnerInput] =
+            sudoku
+              .cells
+              .keys
+              .withFilter: (r, _, b) =>
+                r == i && b != block
+              .map: (r, c, _) =>
+                (SuDokuInnerOperation.RemoveFromCell, r, c, value)
+              .toList
+          SuDokuInner.execute(inputs*).run(sudoku)
+        case (RemoveFromColumnExceptBlock, true) =>
+          val block = SuDokuBlock.getBlock(i, j)
+          val inputs: List[SuDokuInnerInput] =
+            sudoku
+              .cells
+              .keys
+              .withFilter: (_, c, b) =>
+                c == j && b != block
+              .map: (r, c, _) =>
+                (SuDokuInnerOperation.RemoveFromCell, r, c, value)
+              .toList
+          SuDokuInner.execute(inputs*).run(sudoku)
+        case _ => (false, sudoku)  
+```
+
+
+
+#### Основные операции
 
 После того как подготовлены все побочные операции, перейдем к операции установки единственного значения в ячейку.
 
@@ -858,8 +978,6 @@ sudoku.cells(0)(1)
 а также и удалить значение из списка возможных значений во всех ячейках той же строки, того же столбца и того же блока.
 При этом, если в выполняемой пачке операций возникла ситуация, когда одна из операций не выполнилась,
 то необходимо вернуться в исходное состояние, бывшее до выполнения всей цепочки операций.
-
-
 
 ```dotty
 type SuDokuInput =

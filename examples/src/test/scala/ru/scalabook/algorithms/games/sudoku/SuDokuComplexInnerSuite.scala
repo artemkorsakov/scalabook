@@ -9,119 +9,103 @@ import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
 
 object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
+  private val initialValues = SuDokuCellValue.values.toSet
+
   test("SuDokuComplexInner.execute should correctly remove a value from a row"):
-    forall: (row: FieldLength, col: FieldLength, value: SuDokuCellValue) =>
+    forall: (row: SuDokuRow, col: SuDokuColumn, value: SuDokuCellValue) =>
       val initialSudoku = SuDoku.initial
-      val i             = row.toInt
-      val j             = col.toInt
       val inputs: List[SuDokuComplexInnerInput] =
-        List((SuDokuInnerComplexOperation.RemoveFromRow, i, j, value))
+        List((SuDokuInnerComplexOperation.RemoveFromRow, row, col, value))
 
       val (result, sudoku) =
         SuDokuComplexInner.execute(inputs).run(initialSudoku)
 
       expect.all(
         result,
-        sudoku.isCorrect,
-        sudoku.cells(i)(j).possibleValues == SuDokuCellValue.values.toSet
+        sudoku.isCorrect
       ).and(
-        forEach((0 to 8).toList): c =>
-          expect(
-            c == j ||
-              sudoku.cells(i)(c)
-                .possibleValues == (SuDokuCellValue.values.toSet - value)
-          )
+        forEach(sudoku.cells.toVector):
+          (index: SuDokuIndex, cell: SuDokuCell) =>
+            if index._1 == row && index._2 != col then
+              expect(cell.possibleValues == initialValues - value)
+            else
+              expect(cell.possibleValues == initialValues)
       )
-        .and(
-          forEach((0 to 8).toList): r =>
-            forEach((0 to 8).toList): c =>
-              expect(
-                (i == r) ||
-                  sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
-              )
-        )
 
   test("SuDokuComplexInner.execute should correctly remove a value from a row"):
-    forall: (row: FieldLength, col: FieldLength, value: SuDokuCellValue) =>
+    forall: (row: SuDokuRow, col: SuDokuColumn, value: SuDokuCellValue) =>
       val initialSudoku = SuDoku.initial
-      val i             = row.toInt
-      val j             = col.toInt
       val inputs: List[SuDokuComplexInnerInput] =
-        List((SuDokuInnerComplexOperation.RemoveFromColumn, i, j, value))
+        List((SuDokuInnerComplexOperation.RemoveFromColumn, row, col, value))
 
       val (result, sudoku) =
         SuDokuComplexInner.execute(inputs).run(initialSudoku)
 
       expect.all(
         result,
-        sudoku.isCorrect,
-        sudoku.cells(i)(j).possibleValues == SuDokuCellValue.values.toSet
+        sudoku.isCorrect
       ).and(
-        forEach((0 to 8).toList): r =>
-          expect(
-            r == i ||
-              sudoku.cells(r)(j)
-                .possibleValues == (SuDokuCellValue.values.toSet - value)
-          )
+        forEach(sudoku.cells.toVector):
+          (index: SuDokuIndex, cell: SuDokuCell) =>
+            if index._1 != row && index._2 == col then
+              expect(cell.possibleValues == initialValues - value)
+            else
+              expect(cell.possibleValues == initialValues)
       )
-        .and(
-          forEach((0 to 8).toList): r =>
-            forEach((0 to 8).toList): c =>
-              expect(
-                (c == j) ||
-                  sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
-              )
-        )
 
   test(
     "SuDokuComplexInner.execute should correctly remove a value from a block"
   ):
-    forall: (row: FieldLength, col: FieldLength, value: SuDokuCellValue) =>
+    forall: (row: SuDokuRow, col: SuDokuColumn, value: SuDokuCellValue) =>
       val initialSudoku = SuDoku.initial
-      val i             = row.toInt
-      val j             = col.toInt
       val inputs: List[SuDokuComplexInnerInput] =
-        List((SuDokuInnerComplexOperation.RemoveFromBlock, i, j, value))
+        List((SuDokuInnerComplexOperation.RemoveFromBlock, row, col, value))
 
       val (result, sudoku) =
         SuDokuComplexInner.execute(inputs).run(initialSudoku)
 
-      val blockIdx = SuDoku.getBlock(i, j)
+      val block = SuDokuBlock.getBlock(row, col)
 
       expect.all(
         result,
-        sudoku.isCorrect,
-        sudoku.cells(i)(j).possibleValues == SuDokuCellValue.values.toSet
+        sudoku.isCorrect
       ).and(
-        forEach(blockIdx.toList): (r, c) =>
-          expect(
-            (r == i && c == j) ||
-              sudoku.cells(r)(c)
-                .possibleValues == (SuDokuCellValue.values.toSet - value)
-          )
+        forEach(sudoku.cells.toVector):
+          (index: SuDokuIndex, cell: SuDokuCell) =>
+            if index._3 == block && (index._1 != row || index._2 != col) then
+              expect(cell.possibleValues == initialValues - value)
+            else
+              expect(cell.possibleValues == initialValues)
       )
-        .and(
-          forEach((0 to 8).toList): r =>
-            forEach((0 to 8).toList): c =>
-              expect(
-                blockIdx.contains((r, c)) ||
-                  sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
-              )
-        )
 
   pureTest(
     "SuDokuComplexInner.execute should not execute an operation if the previous operation is incorrect"
   ):
     val initialSudoku = SuDoku.initial
     val innerInput: SuDokuInnerInput =
-      (SuDokuInnerOperation.SetToCell, 0, 0, SuDokuCellValue.One)
+      (
+        SuDokuInnerOperation.SetToCell,
+        SuDokuRow.First,
+        SuDokuColumn.First,
+        SuDokuCellValue.One
+      )
     val (_, sudokuWithGivenCell) =
       SuDokuInner.execute(innerInput).run(initialSudoku)
 
     val inputs: List[SuDokuComplexInnerInput] =
       List(
-        (SuDokuInnerComplexOperation.RemoveFromRow, 0, 1, SuDokuCellValue.One),
-        (SuDokuInnerComplexOperation.RemoveFromRow, 1, 1, SuDokuCellValue.Two)
+        (
+          SuDokuInnerComplexOperation.RemoveFromRow,
+          SuDokuRow.First,
+          SuDokuColumn.Second,
+          SuDokuCellValue.One
+        ),
+        (
+          SuDokuInnerComplexOperation.RemoveFromRow,
+          SuDokuRow.Second,
+          SuDokuColumn.Second,
+          SuDokuCellValue.Two
+        )
       )
 
     val (result, sudoku) =
@@ -133,53 +117,91 @@ object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
     )
 
   test("SuDokuComplexInner.execute should handle multiple operations"):
-    forall: (row: FieldLength, col: FieldLength, value: SuDokuCellValue) =>
+    forall: (row: SuDokuRow, col: SuDokuColumn, value: SuDokuCellValue) =>
       val initialSudoku = SuDoku.initial
-      val i             = row.toInt
-      val j             = col.toInt
       val inputs: List[SuDokuComplexInnerInput] =
         List(
-          (SuDokuInnerComplexOperation.RemoveFromRow, i, j, value),
-          (SuDokuInnerComplexOperation.RemoveFromColumn, i, j, value),
-          (SuDokuInnerComplexOperation.RemoveFromBlock, i, j, value)
+          (SuDokuInnerComplexOperation.RemoveFromRow, row, col, value),
+          (SuDokuInnerComplexOperation.RemoveFromColumn, row, col, value),
+          (SuDokuInnerComplexOperation.RemoveFromBlock, row, col, value)
         )
 
       val (result, sudoku) =
         SuDokuComplexInner.execute(inputs).run(initialSudoku)
 
-      val blockIdx       = SuDoku.getBlock(i, j)
-      val expectedValues = SuDokuCellValue.values.toSet - value
+      val block = SuDokuBlock.getBlock(row, col)
 
       expect.all(
         result,
-        sudoku.isCorrect,
-        sudoku.cells(i)(j).possibleValues == SuDokuCellValue.values.toSet
+        sudoku.isCorrect
       ).and(
-        forEach((0 to 8).toList): c =>
-          expect(
-            c == j ||
-              sudoku.cells(i)(c).possibleValues == expectedValues
-          )
-      ).and(
-        forEach((0 to 8).toList): r =>
-          expect(
-            r == i ||
-              sudoku.cells(r)(j).possibleValues == expectedValues
-          )
-      ).and(
-        forEach(blockIdx.toList): (r, c) =>
-          expect(
-            (r == i && c == j) ||
-              sudoku.cells(r)(c).possibleValues == expectedValues
-          )
+        forEach(sudoku.cells.toVector):
+          (index: SuDokuIndex, cell: SuDokuCell) =>
+            if index._1 == row && index._2 != col ||
+              index._1 != row && index._2 == col ||
+              index._3 == block && (index._1 != row || index._2 != col)
+            then
+              expect(cell.possibleValues == initialValues - value)
+            else
+              expect(cell.possibleValues == initialValues)
       )
-        .and(
-          forEach((0 to 8).toList): r =>
-            forEach((0 to 8).toList): c =>
-              expect(
-                r == i || c == j || blockIdx.contains((r, c)) ||
-                  sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
-              )
-        )
+
+  test(
+    "SuDokuComplexInner.execute should correctly remove a value from a row except the block"
+  ):
+    forall: (row: SuDokuRow, col: SuDokuColumn, value: SuDokuCellValue) =>
+      val initialSudoku = SuDoku.initial
+      val inputs: List[SuDokuComplexInnerInput] =
+        List((
+          SuDokuInnerComplexOperation.RemoveFromRowExceptBlock,
+          row,
+          col,
+          value
+        ))
+
+      val block = SuDokuBlock.getBlock(row, col)
+      val (result, sudoku) =
+        SuDokuComplexInner.execute(inputs).run(initialSudoku)
+
+      expect.all(
+        result,
+        sudoku.isCorrect
+      ).and(
+        forEach(sudoku.cells.toVector):
+          (index: SuDokuIndex, cell: SuDokuCell) =>
+            if index._1 == row && index._3 != block then
+              expect(cell.possibleValues == initialValues - value)
+            else
+              expect(cell.possibleValues == initialValues)
+      )
+
+  test(
+    "SuDokuComplexInner.execute should correctly remove a value from a column except the block"
+  ):
+    forall: (row: SuDokuRow, col: SuDokuColumn, value: SuDokuCellValue) =>
+      val initialSudoku = SuDoku.initial
+      val inputs: List[SuDokuComplexInnerInput] =
+        List((
+          SuDokuInnerComplexOperation.RemoveFromRowExceptBlock,
+          row,
+          col,
+          value
+        ))
+
+      val block = SuDokuBlock.getBlock(row, col)
+      val (result, sudoku) =
+        SuDokuComplexInner.execute(inputs).run(initialSudoku)
+
+      expect.all(
+        result,
+        sudoku.isCorrect
+      ).and(
+        forEach(sudoku.cells.toVector):
+          (index: SuDokuIndex, cell: SuDokuCell) =>
+            if index._2 == col && index._3 != block then
+              expect(cell.possibleValues == initialValues - value)
+            else
+              expect(cell.possibleValues == initialValues)
+      )
 
 end SuDokuComplexInnerSuite

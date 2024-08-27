@@ -8,7 +8,7 @@ enum SuDokuRow:
 object SuDokuRow:
   given Show[SuDokuRow] = Show.show[SuDokuRow]: (row: SuDokuRow) =>
     (row.ordinal + 1).toString
-    
+
   def next(row: SuDokuRow): Option[SuDokuRow] =
     val next   = row.ordinal + 1
     val values = SuDokuRow.values

@@ -1070,8 +1070,48 @@ object SuDokuColumn:
     if next >= values.length then None else Some(values(next))
 
 object SuDokuSolver:
-  ???
-  
+  @tailrec
+  private def crossOutLoop(
+      sudoku: SuDoku,
+      maybeRow: Option[SuDokuRow],
+      maybeColumn: Option[SuDokuColumn]
+  ): SuDokuOutput =
+    val maybeCell =
+      for
+        row  <- maybeRow
+        col  <- maybeColumn
+        cell <- sudoku.getCell(row, col)
+      yield cell
+    (maybeRow, maybeColumn, maybeCell) match
+      case (None, _, _) => // Дошли до конца поля
+        (true, sudoku)
+      case (Some(row), None, _) => // Дошли до конца строки
+        crossOutLoop(sudoku, SuDokuRow.next(row), Some(SuDokuColumn.First))
+      case (Some(row), Some(col), None) => // Некорректная ячейка
+        (false, sudoku)
+      case (Some(row), Some(col), Some(sudokuCell)) =>
+        val currentValues = sudokuCell.possibleValues
+        // Точное значение определено, переходим к следующей ячейке
+        if currentValues.size == 1 then
+          crossOutLoop(sudoku, maybeRow, SuDokuColumn.next(col))
+        else // Ищем значение в ячейке, которое можно вычеркнуть
+          val maybeInvalidValue = currentValues.find: value =>
+            !setValue(row, col, value).run(sudoku)._1
+          maybeInvalidValue match
+            // Такого значения нет, переходим к следующей ячейке
+            case None => crossOutLoop(sudoku, maybeRow, SuDokuColumn.next(col))
+            case Some(invalidValue) =>
+              val input: SuDokuInnerInput =
+                (SuDokuInnerOperation.RemoveFromCell, row, col, invalidValue)
+              val (result, newSudoku) =
+                SuDokuInner.execute(input).run(sudoku)
+              // Если результат вычеркивания успешен,
+              // то ищем в заданной ячейке следующий кандидат на вычеркивание
+              if result then crossOutLoop(sudoku, maybeRow, maybeColumn)
+              // Если не успешен, значит решения головоломки не существует
+              else (false, sudoku)
+    end match
+  end crossOutLoop
 ```
 
 ##### Единственно возможное место для значения в блоке

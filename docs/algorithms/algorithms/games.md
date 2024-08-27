@@ -720,13 +720,13 @@ object SuDokuSolver:
 Следующее, что нам понадобится - это установка начального состояния в игре,
 когда заполнены часть полей из известных значений.
 
-Поэтому остановимся на операции установки значения в заданное поле (i, j).
+Поэтому остановимся на операции установки значения в заданное поле {i, j}.
 Эта операция состоит из четырех побочных операций:
 
-- установка заданного значения в поле (i, j)
-- удаление заданного значения из строчки i за исключением ячейки (i, j)
-- удаление заданного значения из столбца j за исключением ячейки (i, j)
-- удаление заданного значения из блока \\(3 \times 3\\), которому принадлежит ячейка (i, j), за исключением самой
+- установка заданного значения в поле {i, j}
+- удаление заданного значения из строчки i за исключением ячейки {i, j}
+- удаление заданного значения из столбца j за исключением ячейки {i, j}
+- удаление заданного значения из блока \\(3 \times 3\\), которому принадлежит ячейка {i, j}, за исключением самой
   ячейки
 
 #### Элементарные побочные операции
@@ -807,9 +807,9 @@ sudoku1.getCell(SuDokuRow.Second, SuDokuColumn.First)
 
 Три более сложные побочные операции на удаление:
 
-- удаление заданного значения из строчки i за исключением ячейки (i, j)
-- удаление заданного значения из столбца j за исключением ячейки (i, j)
-- удаление заданного значения из квадрата \\(3 \times 3\\), которому принадлежит ячейка (i, j), 
+- удаление заданного значения из строчки i за исключением ячейки {i, j}
+- удаление заданного значения из столбца j за исключением ячейки {i, j}
+- удаление заданного значения из квадрата \\(3 \times 3\\), которому принадлежит ячейка {i, j}, 
   за исключением самой ячейки
 
 |       | 1     | 2     | 3     | 4     | 5     | 6     | 7     | 8     | 9     |
@@ -908,7 +908,7 @@ sudoku.getCell(SuDokuRow.First, SuDokuColumn.Second)
 | **2** | (2,3) | 5     | 6 |
 | **3** | 7     | 8     | 9 |
 
-Вне зависимости от того, где будет в итоге расположено число 1 - в ячейке (1,1) или ячейке (1,2) 
+Вне зависимости от того, где будет в итоге расположено число 1 - в ячейке {1,1} или ячейке {1,2} 
 точно известно, что оно будет расположено в 1 строке.
 
 Аналогично известно, что число 2 будет точно расположено в 1 столбце.
@@ -968,11 +968,11 @@ private val updateSuDoku
         case _ => (false, sudoku)  
 ```
 
-
-
 #### Основные операции
 
-После того как подготовлены все побочные операции, перейдем к операции установки единственного значения в ячейку.
+После того как подготовлены все побочные операции, перейдем к основным.
+
+##### Установка единственного возможного значения в ячейку
 
 Напомню, что при установке конкретного значения в заданную ячейку необходимо не только задать значение в эту ячейку, 
 а также и удалить значение из списка возможных значений во всех ячейках той же строки, того же столбца и того же блока.
@@ -981,7 +981,7 @@ private val updateSuDoku
 
 ```dotty
 type SuDokuInput =
-  (Row, Column, SuDokuCellValue)
+  (SuDokuRow, SuDokuColumn, SuDokuCellValue)
 
 private val updateSuDoku: SuDokuInput => SuDokuOutput => SuDokuOutput =
   (i, j, value) =>
@@ -1000,76 +1000,88 @@ private val updateSuDoku: SuDokuInput => SuDokuOutput => SuDokuOutput =
       val (resultRemove, sudokuRemove) =
         SuDokuComplexInner.execute(inputsRemove).run(sudokuSet)
 
-      // Если все операции завершились успешно, то...
       if result && resultSet && resultRemove then (true, sudokuRemove)
       else (false, sudoku)
 
-/** Устанавливает заданное значение в ячейку. */
-def setValue(i: Int, j: Int, value: SuDokuCellValue): SuDokuState =
+def setValue(
+    i: SuDokuRow,
+    j: SuDokuColumn,
+    value: SuDokuCellValue
+): SuDokuState =
   setValues((i, j, value))
 
-/** Устанавливает заданные значения в пачку ячеек. */
 def setValues(inputs: SuDokuInput*): SuDokuState =
-  SuDoku.executeInnerOperation(inputs.toList, updateSuDoku)
+  executeInnerOperation(inputs.toList, updateSuDoku)
   
 val initialSudoku = SuDoku.initial
 val (result, sudoku) =
-  SuDoku.setValue(0, 2, SuDokuCellValue.Three).run(initialSudoku)
+  SuDokuSolver.setValue(SuDokuRow.First, SuDokuColumn.Third, SuDokuCellValue.Three).run(initialSudoku)
 
-sudoku.cells(0)(2)
-// SuDokuCell(Set(Three))
-sudoku.cells(0)(0)
-// SuDokuCell(HashSet(Nine, Two, One, Four, Eight, Six, Seven, Five))
-sudoku.cells(1)(2)
-// SuDokuCell(HashSet(Nine, Two, One, Four, Eight, Six, Seven, Five))
-sudoku.cells(1)(1)  
-// SuDokuCell(HashSet(Nine, Two, One, Four, Eight, Six, Seven, Five)) 
+sudoku.getCell(SuDokuRow.First, SuDokuColumn.Third)
+// Some(SuDokuCell(Set(Three)))
+sudoku.getCell(SuDokuRow.First, SuDokuColumn.First)
+// Some(SuDokuCell(HashSet(Eight, Two, Four, One, Six, Nine, Five, Seven)))
+sudoku.getCell(SuDokuRow.Second, SuDokuColumn.Third)
+// Some(SuDokuCell(HashSet(Eight, Two, Four, One, Six, Nine, Five, Seven)))
+sudoku.getCell(SuDokuRow.Second, SuDokuColumn.Second)
+// Some(SuDokuCell(HashSet(Eight, Two, Four, One, Six, Nine, Five, Seven)))
 ```
 
-##### Поиск решения головоломки
+##### Поиск значений, которые можно вычеркнуть
 
-Поиск значений, которые можно вычеркнуть:
+Найдем такие значения, которые можно вычеркнуть из ячейки, т.к. установка значений в поле приводит к ошибке.
+
+В следующем примере в ячейке {1,2} нельзя установить значение 9, т.к. в противном случае это приведет к ошибке,
+при попытке вычеркнуть значение 9 из ячейки {3,3}
+
+|       | 1     | 2       | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|-------|-------|---------|---|---|---|---|---|---|---|
+| **1** | (1,2) | (1,3,9) | 4 |   |   |   |   |   |   |
+| **2** | (2,3) | 5       | 6 |   |   |   |   |   |   |
+| **3** | 7     | 8       | 9 |   |   |   |   |   |   |
+| **4** |       |         |   |   |   |   |   |   |   |
+| **5** |       |         |   |   |   |   |   |   |   |
+| **6** |       |         |   |   |   |   |   |   |   |
+| **7** |       |         |   |   |   |   |   |   |   |
+| **8** |       |         |   |   |   |   |   |   |   |
+| **9** |       |         |   |   |   |   |   |   |   |
+
+**Алгоритм:**
 
 - проходимся по каждой строчке и по каждому столбцу
-- в каждой ячейке ищем среди списка возможных такие значения, 
-  которые при вставке в заданное поле приводят к ошибке - 
+- в каждой ячейке ищем среди списка возможных такие значения,
+  которые при вставке в заданное поле приводят к ошибке -
   это означает, что в данную ячейку такое значение вставлять нельзя и его можно вычеркнуть
 - вычеркиваем значение
 - пытаемся найти следующий кандидат на вычеркивание в той же ячейке
 - если в ячейке не осталось значений, которые можно вычеркнуть, то переходим к следующей ячейке
 
-
-
 ```dotty
-@tailrec
-def crossOutLoop(sudoku: SuDoku, i: Int, j: Int): SuDokuOutput =
-  // Дошли до конца поля
-  if i >= 9 then (true, sudoku)
-  // Дошли до конца столбца, переходим к следующей строке
-  else if j >= 9 then crossOutLoop(sudoku, i + 1, 0)
-  else
-    val currentValues = sudoku.cells(i)(j).possibleValues
-    // Точное значение определено, переходим к следующей ячейке
-    if currentValues.size == 1 then
-      crossOutLoop(sudoku, i, j + 1)
-    else // Ищем значение в ячейке, которое можно вычеркнуть
-      val maybeInvalidValue = currentValues.find: value =>
-        !setValue(i, j, value).run(sudoku)._1
-      maybeInvalidValue match
-        // Такого значения нет, переходим к следующей ячейке
-        case None => crossOutLoop(sudoku, i, j + 1)
-        case Some(invalidValue) =>
-          val input: SuDokuInnerInput =
-            (SuDokuInnerOperation.RemoveFromCell, i, j, invalidValue)
-          val (result, newSudoku) =
-            SuDokuInner.execute(input).run(sudoku)
-          // Если результат вычеркивания успешен,
-          // то ищем в заданной ячейке следующий кандидат на вычеркивание
-          if result then crossOutLoop(newSudoku, i, j)
-          // Если не успешен, значит решения головоломки не существует
-          else (false, sudoku)
-    end if
+object SuDokuRow:
+  def next(row: SuDokuRow): Option[SuDokuRow] =
+    val next   = row.ordinal + 1
+    val values = SuDokuRow.values
+    if next >= values.length then None else Some(values(next))
+
+object SuDokuColumn:
+  def next(row: SuDokuColumn): Option[SuDokuColumn] =
+    val next   = row.ordinal + 1
+    val values = SuDokuColumn.values
+    if next >= values.length then None else Some(values(next))
+
+object SuDokuSolver:
+  ???
+  
 ```
+
+##### Единственно возможное место для значения в блоке
+
+
+
+##### Удаления значения из строки или столбца других блоков
+
+
+#### Поиск решения головоломки
 
 Головоломка решается до тех пор, пока:
 

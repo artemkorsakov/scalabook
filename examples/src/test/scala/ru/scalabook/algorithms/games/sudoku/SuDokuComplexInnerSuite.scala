@@ -182,7 +182,7 @@ object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
       val initialSudoku = SuDoku.initial
       val inputs: List[SuDokuComplexInnerInput] =
         List((
-          SuDokuInnerComplexOperation.RemoveFromRowExceptBlock,
+          SuDokuInnerComplexOperation.RemoveFromColumnExceptBlock,
           row,
           col,
           value

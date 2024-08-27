@@ -1,7 +1,8 @@
 package ru.scalabook.algorithms.games.sudoku
 
-//import ru.scalabook.algorithms.games.sudoku.SuDoku.*
-//import ru.scalabook.algorithms.games.sudoku.SuDokuInner.*
+import ru.scalabook.algorithms.games.sudoku.SuDoku.*
+import ru.scalabook.algorithms.games.sudoku.SuDokuComplexInner.*
+import ru.scalabook.algorithms.games.sudoku.SuDokuInner.*
 import ru.scalabook.fp.state.State
 
 //import scala.annotation.tailrec
@@ -28,50 +29,52 @@ object SuDokuSolver:
       output
     }
 
-//  type SuDokuInput =
-//    (Row, Column, SuDokuCellValue)
-//
-//  private val updateSuDoku: SuDokuInput => SuDokuOutput => SuDokuOutput =
-//    (i, j, value) =>
-//      (result, sudoku) =>
-//        val inputSet: SuDokuInnerInput =
-//          (SuDokuInnerOperation.SetToCell, i, j, value)
-//        val (resultSet, sudokuSet) =
-//          SuDokuInner.execute(inputSet).run(sudoku)
-//
-//        val inputsRemove: List[SuDokuComplexInnerInput] =
-//          List(
-//            (SuDokuInnerComplexOperation.RemoveFromRow, i, j, value),
-//            (SuDokuInnerComplexOperation.RemoveFromColumn, i, j, value),
-//            (SuDokuInnerComplexOperation.RemoveFromBlock, i, j, value)
-//          )
-//        val (resultRemove, sudokuRemove) =
-//          SuDokuComplexInner.execute(inputsRemove).run(sudokuSet)
-//
-//        if result && resultSet && resultRemove then (true, sudokuRemove)
-//        else (false, sudoku)
-//
-//  /** Устанавливает заданное значение в ячейку. */
-//  def setValue(i: Int, j: Int, value: SuDokuCellValue): SuDokuState =
-//    setValues((i, j, value))
-//
-//  /** Устанавливает заданные значения в пачку ячеек. */
-//  def setValues(inputs: SuDokuInput*): SuDokuState =
-//    executeInnerOperation(inputs.toList, updateSuDoku)
-//
-//  /** Поиск значений, которые можно вычеркнуть:
-//    *
-//    *   - проходимся по каждой строчке и по каждому столбцу
-//    *   - в каждой ячейке ищем среди списка возможных такие значения, которые
-//    *     при вставке в заданное поле приводят к ошибке - это означает, что в
-//    *     данную ячейку такое значение вставлять нельзя и его можно вычеркнуть
-//    *   - вычеркиваем значение
-//    *   - пытаемся найти следующий кандидат на вычеркивание в той же ячейке
-//    *   - если в ячейке не осталось значений, которые можно вычеркнуть, то
-//    *     переходим к следующей ячейке
-//    */
+  type SuDokuInput =
+    (SuDokuRow, SuDokuColumn, SuDokuCellValue)
+
+  private val updateSuDoku: SuDokuInput => SuDokuOutput => SuDokuOutput =
+    (i, j, value) =>
+      (result, sudoku) =>
+        val inputSet: SuDokuInnerInput =
+          (SuDokuInnerOperation.SetToCell, i, j, value)
+        val (resultSet, sudokuSet) =
+          SuDokuInner.execute(inputSet).run(sudoku)
+
+        val inputsRemove: List[SuDokuComplexInnerInput] =
+          List(
+            (SuDokuInnerComplexOperation.RemoveFromRow, i, j, value),
+            (SuDokuInnerComplexOperation.RemoveFromColumn, i, j, value),
+            (SuDokuInnerComplexOperation.RemoveFromBlock, i, j, value)
+          )
+        val (resultRemove, sudokuRemove) =
+          SuDokuComplexInner.execute(inputsRemove).run(sudokuSet)
+
+        if result && resultSet && resultRemove then (true, sudokuRemove)
+        else (false, sudoku)
+
+  def setValue(
+      i: SuDokuRow,
+      j: SuDokuColumn,
+      value: SuDokuCellValue
+  ): SuDokuState =
+    setValues((i, j, value))
+
+  def setValues(inputs: SuDokuInput*): SuDokuState =
+    executeInnerOperation(inputs.toList, updateSuDoku)
+
+  /** Поиск значений, которые можно вычеркнуть:
+    *
+    *   - проходимся по каждой строчке и по каждому столбцу
+    *   - в каждой ячейке ищем среди списка возможных такие значения, которые
+    *     при вставке в заданное поле приводят к ошибке - это означает, что в
+    *     данную ячейку такое значение вставлять нельзя и его можно вычеркнуть
+    *   - вычеркиваем значение
+    *   - пытаемся найти следующий кандидат на вычеркивание в той же ячейке
+    *   - если в ячейке не осталось значений, которые можно вычеркнуть, то
+    *     переходим к следующей ячейке
+    */
 //  @tailrec
-//  private def crossOutLoop(sudoku: SuDoku, i: Int, j: Int): SuDokuOutput =
+//  private def crossOutLoop(sudoku: SuDoku, i: SuDokuRow, j: SuDokuColumn): SuDokuOutput =
 //    // Дошли до конца поля
 //    if i >= 9 then (true, sudoku)
 //    // Дошли до конца столбца, переходим к следующей строке
@@ -98,7 +101,7 @@ object SuDokuSolver:
 //            // Если не успешен, значит решения головоломки не существует
 //            else (false, sudoku)
 //      end if
-//
+
 //  /** Находим такое значение в ячейке, которое не встречается в других ячейках
 //    * блока, но при этом это значение не единственное в своей ячейке.
 //    *

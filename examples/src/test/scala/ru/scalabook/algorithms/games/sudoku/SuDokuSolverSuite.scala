@@ -1,82 +1,58 @@
-//package ru.scalabook.algorithms.games.sudoku
-//
-//import cats.syntax.show.*
-//import ru.scalabook.algorithms.games.sudoku.SuDoku.getBlock
-//import ru.scalabook.algorithms.games.sudoku.SuDokuSolver.{
-//  SuDokuInput,
-//  blockSingleValueLoop,
-//  getSingleValues
-//}
-//import ru.scalabook.algorithms.games.sudoku.SuDokuSuite.{
-//  expect,
-//  forEach,
-//  pureTest,
-//  test
-//}
-//import weaver.SimpleIOSuite
-//import weaver.scalacheck.Checkers
-//
-//object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
-//
-//  pureTest("SuDoku.setValue should correctly set a value in a cell - example"):
-//    val initialSudoku = SuDoku.initial
-//    val (result, sudoku) =
-//      SuDokuSolver.setValue(0, 2, SuDokuCellValue.Three).run(initialSudoku)
-//
-//    expect.all(
-//      result,
-//      sudoku.show ==
-//        "{[(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(3);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9)] " +
-//        "[(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
-//        "[(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
-//        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
-//        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
-//        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
-//        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
-//        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
-//        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)]}"
-//    )
-//
-//  test("SuDoku.setValue should correctly set a value in a cell"):
-//    forall: (row: FieldLength, col: FieldLength, value: SuDokuCellValue) =>
-//      val initialSudoku    = SuDoku.initial
-//      val i                = row.toInt
-//      val j                = col.toInt
-//      val state            = SuDokuSolver.setValue(i, j, value)
-//      val (result, sudoku) = state.run(initialSudoku)
-//
-//      val expectedValues = SuDokuCellValue.values.toSet - value
-//      val blockIdx       = getBlock(i, j)
-//
-//      expect.all(
-//        result,
-//        sudoku.cells(i)(j).maybeValue.contains(value)
-//      ).and(
-//        forEach((0 to 8).toList): c =>
-//          expect(
-//            c == j || sudoku.cells(i)(c).possibleValues == expectedValues
-//          )
-//      ).and(
-//        forEach((0 to 8).toList): r =>
-//          expect(
-//            r == i || sudoku.cells(r)(j).possibleValues == expectedValues
-//          )
-//      ).and(
-//        forEach(blockIdx.toList): (r, c) =>
-//          expect(
-//            (r == i && c == j) ||
-//              sudoku.cells(r)(c).possibleValues == expectedValues
-//          )
-//      )
-//        .and(
-//          forEach((0 to 8).toList): r =>
-//            forEach((0 to 8).toList): c =>
-//              expect(
-//                r == i || c == j || blockIdx.contains((r, c)) ||
-//                  sudoku.cells(r)(c).possibleValues == SuDokuCellValue.values.toSet
-//              )
-//        )
-//
+package ru.scalabook.algorithms.games.sudoku
+
+import cats.syntax.show.*
+import weaver.SimpleIOSuite
+import weaver.scalacheck.Checkers
+
+object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
+  private val initialValues = SuDokuCellValue.values.toSet
+
+  pureTest("SuDoku.setValue should correctly set a value in a cell - example"):
+    val initialSudoku = SuDoku.initial
+    val (result, sudoku) =
+      SuDokuSolver.setValue(
+        SuDokuRow.First,
+        SuDokuColumn.Third,
+        SuDokuCellValue.Three
+      ).run(initialSudoku)
+
+    expect.all(
+      result,
+      sudoku.show ==
+        "{[(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(3);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9)] " +
+        "[(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)] " +
+        "[(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9);(1,2,3,4,5,6,7,8,9)]}"
+    )
+
+  test("SuDoku.setValue should correctly set a value in a cell"):
+    forall: (row: SuDokuRow, col: SuDokuColumn, value: SuDokuCellValue) =>
+      val initialSudoku    = SuDoku.initial
+      val state            = SuDokuSolver.setValue(row, col, value)
+      val (result, sudoku) = state.run(initialSudoku)
+
+      val expectedValues = SuDokuCellValue.values.toSet - value
+      val block          = SuDokuBlock.getBlock(row, col)
+
+      expect(result).and(
+        forEach(sudoku.cells.toVector):
+          (index: SuDokuIndex, cell: SuDokuCell) =>
+            if index._1 == row && index._2 == col then
+              expect(cell.maybeValue.contains(value))
+            else if index._1 == row && index._2 != col ||
+              index._1 != row && index._2 == col ||
+              index._3 == block && (index._1 != row || index._2 != col)
+            then
+              expect(cell.possibleValues == initialValues - value)
+            else
+              expect(cell.possibleValues == initialValues)
+      )
+
 //  pureTest("SuDoku.setValue should false if one of the operators fails"):
 //    val initialSudoku = SuDoku.initial
 //    val inputs: Seq[SuDokuInput] = Seq(
@@ -168,6 +144,7 @@
 //      result,
 //      sudokuWithSolution.show == expectedSudoku
 //    )
+
 //
 //  pureTest("SuDoku.toSuDoku should convert a string to a SuDoku puzzle"):
 //    val (convertedResult, convertedSudoku) = SuDokuSolver.toSuDoku(
@@ -354,4 +331,4 @@
 //      solutionResult,
 //      sudokuWithSolution.show == expectedSudokuWithSolution
 //    )
-//end SuDokuSolverSuite
+end SuDokuSolverSuite

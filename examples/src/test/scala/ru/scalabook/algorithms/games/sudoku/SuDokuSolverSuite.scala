@@ -122,27 +122,43 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
         "517000000"
     )
 
-    val singleValues00 = getSingleValues(sudoku, SuDokuBlock.First)
-    val singleValues03 = getSingleValues(sudoku, SuDokuBlock.Second)
-    val singleValues06 = getSingleValues(sudoku, SuDokuBlock.Third)
-    val singleValues30 = getSingleValues(sudoku, SuDokuBlock.Fourth)
-    val singleValues33 = getSingleValues(sudoku, SuDokuBlock.Fifth)
-    val singleValues36 = getSingleValues(sudoku, SuDokuBlock.Sixth)
-    val singleValues60 = getSingleValues(sudoku, SuDokuBlock.Seventh)
-    val singleValues63 = getSingleValues(sudoku, SuDokuBlock.Eighth)
-    val singleValues66 = getSingleValues(sudoku, SuDokuBlock.Ninth)
+    val singleValuesFirstBlock   = getSingleValues(sudoku, SuDokuBlock.First)
+    val singleValuesSecondBlock  = getSingleValues(sudoku, SuDokuBlock.Second)
+    val singleValuesThirdBlock   = getSingleValues(sudoku, SuDokuBlock.Third)
+    val singleValuesFourthBlock  = getSingleValues(sudoku, SuDokuBlock.Fourth)
+    val singleValuesFifthBlock   = getSingleValues(sudoku, SuDokuBlock.Fifth)
+    val singleValuesSixthBlock   = getSingleValues(sudoku, SuDokuBlock.Sixth)
+    val singleValuesSeventhBlock = getSingleValues(sudoku, SuDokuBlock.Seventh)
+    val singleValuesEighthBlock  = getSingleValues(sudoku, SuDokuBlock.Eighth)
+    val singleValuesNinthBlock   = getSingleValues(sudoku, SuDokuBlock.Ninth)
 
     expect.all(
       result,
-      singleValues00.isEmpty,
-      singleValues03 == List((2, 4, SuDokuCellValue.Nine)),
-      singleValues06.isEmpty,
-      singleValues30 == List((4, 2, SuDokuCellValue.Nine)),
-      singleValues33.isEmpty,
-      singleValues36.isEmpty,
-      singleValues60.isEmpty,
-      singleValues63 == List((6, 4, SuDokuCellValue.Seven)),
-      singleValues66 == List((8, 7, SuDokuCellValue.Nine))
+      singleValuesFirstBlock.isEmpty,
+      singleValuesSecondBlock == List((
+        SuDokuRow.Third,
+        SuDokuColumn.Fifth,
+        SuDokuCellValue.Nine
+      )),
+      singleValuesThirdBlock.isEmpty,
+      singleValuesFourthBlock == List((
+        SuDokuRow.Fifth,
+        SuDokuColumn.Third,
+        SuDokuCellValue.Nine
+      )),
+      singleValuesFifthBlock.isEmpty,
+      singleValuesSixthBlock.isEmpty,
+      singleValuesSeventhBlock.isEmpty,
+      singleValuesEighthBlock == List((
+        SuDokuRow.Seventh,
+        SuDokuColumn.Fifth,
+        SuDokuCellValue.Seven
+      )),
+      singleValuesNinthBlock == List((
+        SuDokuRow.Ninth,
+        SuDokuColumn.Eighth,
+        SuDokuCellValue.Nine
+      ))
     )
 
   pureTest(
@@ -164,15 +180,15 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
       blockSingleValueLoop(initialSudoku, SuDokuBlock.values.toList)
 
     val expectedSudoku =
-      "{[(2,4,6);(4,6,8);(1,2,5,8);(3,6,8);(1,3,6,8);(1,3,6);(9);(3,5);(7)] " +
-        "[(6,7);(6,7,9);(5);(4);(2);(3,6);(1);(8);(3,5)] " +
-        "[(3);(8);(1,8);(7);(9);(5);(4);(2);(6)] " +
-        "[(1);(6,7,8);(2,3,8);(9);(3,6,8);(4);(2,3,5,6,7,8);(3,5,6,7);(2,3,5,8)] " +
-        "[(2,6,7);(5);(9);(2,3,6,8);(1,3,6,8);(1,2,3,6);(2,3,6,7,8);(4);(1,2,3,8)] " +
-        "[(2,4,6);(4,6,8);(2,3,8);(5);(1,3,6,8);(7);(2,3,6,8);(1,3,6);(9)] " +
-        "[(9);(2);(6);(1);(7);(8);(3,5);(3,5);(3,4,5)] " +
-        "[(8);(3);(4);(2,6);(5);(9);(2,6,7);(1,6,7);(1,2)] " +
-        "[(5);(1);(7);(2,3,6);(3,4,6);(2,3,6);(2,3,6,8);(9);(2,3,4,8)]}"
+      "|(2,4,6)      |(4,6,8)      |(1,2,5,8)    |(3,6,8)      |(1,3,6,8)    |(1,3,6)      |(9)          |(3,5)        |(7)          |\n" +
+        "|(6,7)        |(6,7,9)      |(5)          |(4)          |(2)          |(3,6)        |(1)          |(8)          |(3,5)        |\n" +
+        "|(3)          |(8)          |(1,8)        |(7)          |(9)          |(5)          |(4)          |(2)          |(6)          |\n" +
+        "|(1)          |(6,7,8)      |(2,3,8)      |(9)          |(3,6,8)      |(4)          |(2,3,5,6,7,8)|(3,5,6,7)    |(2,3,5,8)    |\n" +
+        "|(2,6,7)      |(5)          |(9)          |(2,3,6,8)    |(1,3,6,8)    |(1,2,3,6)    |(2,3,6,7,8)  |(4)          |(1,2,3,8)    |\n" +
+        "|(2,4,6)      |(4,6,8)      |(2,3,8)      |(5)          |(1,3,6,8)    |(7)          |(2,3,6,8)    |(1,3,6)      |(9)          |\n" +
+        "|(9)          |(2)          |(6)          |(1)          |(7)          |(8)          |(3,5)        |(3,5)        |(3,4,5)      |\n" +
+        "|(8)          |(3)          |(4)          |(2,6)        |(5)          |(9)          |(2,6,7)      |(1,6,7)      |(1,2)        |\n" +
+        "|(5)          |(1)          |(7)          |(2,3,6)      |(3,4,6)      |(2,3,6)      |(2,3,6,8)    |(9)          |(2,3,4,8)    |"
 
     expect.all(
       initialResult,
@@ -224,6 +240,8 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
 //
 //    val (result, sudokuWithSolution) = SuDokuSolver.solutionState.run(sudoku)
 //
+//    println(sudokuWithSolution.show)
+//
 //    val expectedSudoku =
 //      "{[(4);(8);(3);(9);(2);(1);(6);(5);(7)] " +
 //        "[(9);(6);(7);(3);(4);(5);(8);(2);(1)] " +
@@ -239,7 +257,6 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
 //      result,
 //      sudokuWithSolution.show == expectedSudoku
 //    )
-
 //
 //  pureTest("SuDoku.toSuDoku should convert a string to a SuDoku puzzle"):
 //    val (convertedResult, convertedSudoku) = SuDokuSolver.toSuDoku(
@@ -278,13 +295,16 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
 //        "[(8);(1);(4);(2);(5);(3);(7);(6);(9)] " +
 //        "[(6);(9);(5);(4);(1);(7);(3);(8);(2)]}"
 //
+//    println(convertedSudoku.show)
+//    println(sudokuWithSolution.show)
+//
 //    expect.all(
 //      convertedResult,
 //      convertedSudoku.show == expectedConvertedSudoku,
 //      solutionResult,
 //      sudokuWithSolution.show == expectedSudokuWithSolution
 //    )
-
+//
 //  pureTest("SuDoku.toSuDoku should convert a string to a SuDoku puzzle"):
 //    val (convertedResult, convertedSudoku) = SuDokuSolver.toSuDoku(
 //      "000000907\n" +
@@ -299,6 +319,8 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
 //    )
 //    val (solutionResult, sudokuWithSolution) =
 //      SuDokuSolver.solutionState.run(convertedSudoku)
+//
+//    println(sudokuWithSolution.show)
 //
 //    val expectedSudokuWithSolution =
 //      "{[(4);(6);(2);(8);(3);(1);(9);(5);(7)] " +

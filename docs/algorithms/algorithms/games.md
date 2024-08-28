@@ -1144,8 +1144,8 @@ def getSingleValues(
     sudoku: SuDoku,
     block: SuDokuBlock
 ): List[(SuDokuRow, SuDokuColumn, SuDokuCellValue)] =
-  val blockCells = sudoku.cells.filter { case ((_, _, blk), _) =>
-    blk == block
+  val blockCells = sudoku.cells.filter { case ((_, _, blk), cell) =>
+    blk == block && cell.maybeValue.isEmpty
   }
   def notInOtherCells(index: SuDokuIndex, value: SuDokuCellValue): Boolean =
     blockCells.forall { (otherIndex, otherCell) =>

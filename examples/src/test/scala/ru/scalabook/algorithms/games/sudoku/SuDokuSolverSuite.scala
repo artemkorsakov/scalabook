@@ -20,15 +20,15 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
     expect.all(
       result,
       sudoku.show ==
-        "|(1,2,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(3)                 |(1,2,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |\n" +
-        "|(1,2,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |\n" +
-        "|(1,2,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |\n" +
-        "|(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,4,5,6,7,8,9)   |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |\n" +
-        "|(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,4,5,6,7,8,9)   |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |\n" +
-        "|(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,4,5,6,7,8,9)   |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |\n" +
-        "|(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,4,5,6,7,8,9)   |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |\n" +
-        "|(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,4,5,6,7,8,9)   |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |\n" +
-        "|(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,4,5,6,7,8,9)   |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |(1,2,3,4,5,6,7,8,9) |"
+        "|(1,2,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(3)                |(1,2,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |\n" +
+        "|(1,2,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|\n" +
+        "|(1,2,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|\n" +
+        "|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,4,5,6,7,8,9)  |(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|\n" +
+        "|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,4,5,6,7,8,9)  |(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|\n" +
+        "|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,4,5,6,7,8,9)  |(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|\n" +
+        "|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,4,5,6,7,8,9)  |(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|\n" +
+        "|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,4,5,6,7,8,9)  |(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|\n" +
+        "|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,4,5,6,7,8,9)  |(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|(1,2,3,4,5,6,7,8,9)|"
     )
 
   test("SuDoku.setValue should correctly set a value in a cell"):
@@ -71,18 +71,112 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
       SuDokuSolver.setValues(inputs*).run(initialSudoku)
 
     val expectedSudoku =
-      "|(1)                 |(2)                 |(3)                 |(4)                 |(5)                 |(6)                 |(7)                 |(8)                 |(9)                 |\n" +
-        "|(4,5,6,7,8,9)       |(4,5,6,7,8,9)       |(4,5,6,7,8,9)       |(1,2,3,7,8,9)       |(1,2,3,7,8,9)       |(1,2,3,7,8,9)       |(1,2,3,4,5,6,9)     |(1,2,3,4,5,6,9)     |(1,2,3,4,5,6,9)     |\n" +
-        "|(4,5,6,7,8,9)       |(4,5,6,7,8,9)       |(4,5,6,7,8,9)       |(1,2,3,7,8,9)       |(1,2,3,7,8,9)       |(1,2,3,7,8,9)       |(1,2,3,4,5,6,9)     |(1,2,3,4,5,6,9)     |(1,2,3,4,5,6,9)     |\n" +
-        "|(2,3,4,5,6,7,8,9)   |(1,3,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,3,5,6,7,8,9)   |(1,2,3,4,6,7,8,9)   |(1,2,3,4,5,7,8,9)   |(1,2,3,4,5,6,8,9)   |(1,2,3,4,5,6,7,9)   |(1,2,3,4,5,6,7,8,9) |\n" +
-        "|(2,3,4,5,6,7,8,9)   |(1,3,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,3,5,6,7,8,9)   |(1,2,3,4,6,7,8,9)   |(1,2,3,4,5,7,8,9)   |(1,2,3,4,5,6,8,9)   |(1,2,3,4,5,6,7,9)   |(1,2,3,4,5,6,7,8,9) |\n" +
-        "|(2,3,4,5,6,7,8,9)   |(1,3,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,3,5,6,7,8,9)   |(1,2,3,4,6,7,8,9)   |(1,2,3,4,5,7,8,9)   |(1,2,3,4,5,6,8,9)   |(1,2,3,4,5,6,7,9)   |(1,2,3,4,5,6,7,8,9) |\n" +
-        "|(2,3,4,5,6,7,8,9)   |(1,3,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,3,5,6,7,8,9)   |(1,2,3,4,6,7,8,9)   |(1,2,3,4,5,7,8,9)   |(1,2,3,4,5,6,8,9)   |(1,2,3,4,5,6,7,9)   |(1,2,3,4,5,6,7,8,9) |\n" +
-        "|(2,3,4,5,6,7,8,9)   |(1,3,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,3,5,6,7,8,9)   |(1,2,3,4,6,7,8,9)   |(1,2,3,4,5,7,8,9)   |(1,2,3,4,5,6,8,9)   |(1,2,3,4,5,6,7,9)   |(1,2,3,4,5,6,7,8,9) |\n" +
-        "|(2,3,4,5,6,7,8,9)   |(1,3,4,5,6,7,8,9)   |(1,2,4,5,6,7,8,9)   |(1,2,3,5,6,7,8,9)   |(1,2,3,4,6,7,8,9)   |(1,2,3,4,5,7,8,9)   |(1,2,3,4,5,6,8,9)   |(1,2,3,4,5,6,7,9)   |(1,2,3,4,5,6,7,8,9) |"
+      "|(1)                |(2)                |(3)                |(4)                |(5)                |(6)                |(7)                |(8)                |(9)                |\n" +
+        "|(4,5,6,7,8,9)      |(4,5,6,7,8,9)      |(4,5,6,7,8,9)      |(1,2,3,7,8,9)      |(1,2,3,7,8,9)      |(1,2,3,7,8,9)      |(1,2,3,4,5,6,9)    |(1,2,3,4,5,6,9)    |(1,2,3,4,5,6,9)    |\n" +
+        "|(4,5,6,7,8,9)      |(4,5,6,7,8,9)      |(4,5,6,7,8,9)      |(1,2,3,7,8,9)      |(1,2,3,7,8,9)      |(1,2,3,7,8,9)      |(1,2,3,4,5,6,9)    |(1,2,3,4,5,6,9)    |(1,2,3,4,5,6,9)    |\n" +
+        "|(2,3,4,5,6,7,8,9)  |(1,3,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,3,5,6,7,8,9)  |(1,2,3,4,6,7,8,9)  |(1,2,3,4,5,7,8,9)  |(1,2,3,4,5,6,8,9)  |(1,2,3,4,5,6,7,9)  |(1,2,3,4,5,6,7,8,9)|\n" +
+        "|(2,3,4,5,6,7,8,9)  |(1,3,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,3,5,6,7,8,9)  |(1,2,3,4,6,7,8,9)  |(1,2,3,4,5,7,8,9)  |(1,2,3,4,5,6,8,9)  |(1,2,3,4,5,6,7,9)  |(1,2,3,4,5,6,7,8,9)|\n" +
+        "|(2,3,4,5,6,7,8,9)  |(1,3,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,3,5,6,7,8,9)  |(1,2,3,4,6,7,8,9)  |(1,2,3,4,5,7,8,9)  |(1,2,3,4,5,6,8,9)  |(1,2,3,4,5,6,7,9)  |(1,2,3,4,5,6,7,8,9)|\n" +
+        "|(2,3,4,5,6,7,8,9)  |(1,3,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,3,5,6,7,8,9)  |(1,2,3,4,6,7,8,9)  |(1,2,3,4,5,7,8,9)  |(1,2,3,4,5,6,8,9)  |(1,2,3,4,5,6,7,9)  |(1,2,3,4,5,6,7,8,9)|\n" +
+        "|(2,3,4,5,6,7,8,9)  |(1,3,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,3,5,6,7,8,9)  |(1,2,3,4,6,7,8,9)  |(1,2,3,4,5,7,8,9)  |(1,2,3,4,5,6,8,9)  |(1,2,3,4,5,6,7,9)  |(1,2,3,4,5,6,7,8,9)|\n" +
+        "|(2,3,4,5,6,7,8,9)  |(1,3,4,5,6,7,8,9)  |(1,2,4,5,6,7,8,9)  |(1,2,3,5,6,7,8,9)  |(1,2,3,4,6,7,8,9)  |(1,2,3,4,5,7,8,9)  |(1,2,3,4,5,6,8,9)  |(1,2,3,4,5,6,7,9)  |(1,2,3,4,5,6,7,8,9)|"
 
     expect.all(
       !result,
+      sudoku.show == expectedSudoku
+    )
+
+  pureTest(
+    "SuDoku.hasSolution should return true if a SuDoku puzzle has a solution"
+  ):
+    val (convertedResult, convertedSudoku) = SuDokuSolver.toSuDoku(
+      "483921657\n" +
+        "967345821\n" +
+        "251876493\n" +
+        "548132976\n" +
+        "729564138\n" +
+        "136798245\n" +
+        "372689514\n" +
+        "814253769\n" +
+        "695417382"
+    )
+
+    expect.all(
+      convertedResult,
+      convertedSudoku.isCorrect,
+      convertedSudoku.hasSolution
+    )
+
+  pureTest(
+    "SuDoku.getSingleValues should return a list of the single values in a SuDoku puzzle"
+  ):
+    val (result, sudoku) = SuDokuSolver.toSuDoku(
+      "000000907\n" +
+        "000420180\n" +
+        "300705426\n" +
+        "100904000\n" +
+        "050000040\n" +
+        "000507009\n" +
+        "926108000\n" +
+        "834059000\n" +
+        "517000000"
+    )
+
+    val singleValues00 = getSingleValues(sudoku, SuDokuBlock.First)
+    val singleValues03 = getSingleValues(sudoku, SuDokuBlock.Second)
+    val singleValues06 = getSingleValues(sudoku, SuDokuBlock.Third)
+    val singleValues30 = getSingleValues(sudoku, SuDokuBlock.Fourth)
+    val singleValues33 = getSingleValues(sudoku, SuDokuBlock.Fifth)
+    val singleValues36 = getSingleValues(sudoku, SuDokuBlock.Sixth)
+    val singleValues60 = getSingleValues(sudoku, SuDokuBlock.Seventh)
+    val singleValues63 = getSingleValues(sudoku, SuDokuBlock.Eighth)
+    val singleValues66 = getSingleValues(sudoku, SuDokuBlock.Ninth)
+
+    expect.all(
+      result,
+      singleValues00.isEmpty,
+      singleValues03 == List((2, 4, SuDokuCellValue.Nine)),
+      singleValues06.isEmpty,
+      singleValues30 == List((4, 2, SuDokuCellValue.Nine)),
+      singleValues33.isEmpty,
+      singleValues36.isEmpty,
+      singleValues60.isEmpty,
+      singleValues63 == List((6, 4, SuDokuCellValue.Seven)),
+      singleValues66 == List((8, 7, SuDokuCellValue.Nine))
+    )
+
+  pureTest(
+    "SuDoku.blockSingleValueLoop should set all single values in a SuDoku puzzle"
+  ):
+    val (initialResult, initialSudoku) = SuDokuSolver.toSuDoku(
+      "000000907\n" +
+        "000420180\n" +
+        "300705426\n" +
+        "100904000\n" +
+        "050000040\n" +
+        "000507009\n" +
+        "926108000\n" +
+        "834059000\n" +
+        "517000000"
+    )
+
+    val (result, sudoku) =
+      blockSingleValueLoop(initialSudoku, SuDokuBlock.values.toList)
+
+    val expectedSudoku =
+      "{[(2,4,6);(4,6,8);(1,2,5,8);(3,6,8);(1,3,6,8);(1,3,6);(9);(3,5);(7)] " +
+        "[(6,7);(6,7,9);(5);(4);(2);(3,6);(1);(8);(3,5)] " +
+        "[(3);(8);(1,8);(7);(9);(5);(4);(2);(6)] " +
+        "[(1);(6,7,8);(2,3,8);(9);(3,6,8);(4);(2,3,5,6,7,8);(3,5,6,7);(2,3,5,8)] " +
+        "[(2,6,7);(5);(9);(2,3,6,8);(1,3,6,8);(1,2,3,6);(2,3,6,7,8);(4);(1,2,3,8)] " +
+        "[(2,4,6);(4,6,8);(2,3,8);(5);(1,3,6,8);(7);(2,3,6,8);(1,3,6);(9)] " +
+        "[(9);(2);(6);(1);(7);(8);(3,5);(3,5);(3,4,5)] " +
+        "[(8);(3);(4);(2,6);(5);(9);(2,6,7);(1,6,7);(1,2)] " +
+        "[(5);(1);(7);(2,3,6);(3,4,6);(2,3,6);(2,3,6,8);(9);(2,3,4,8)]}"
+
+    expect.all(
+      initialResult,
+      result,
       sudoku.show == expectedSudoku
     )
 
@@ -91,38 +185,38 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
 //  ):
 //    val initialSudoku = SuDoku.initial
 //    val inputs: Seq[SuDokuInput] = Seq(
-//      (0, 2, SuDokuCellValue.Three),
-//      (0, 4, SuDokuCellValue.Two),
-//      (0, 6, SuDokuCellValue.Six),
-//      (1, 0, SuDokuCellValue.Nine),
-//      (1, 3, SuDokuCellValue.Three),
-//      (1, 5, SuDokuCellValue.Five),
-//      (1, 8, SuDokuCellValue.One),
-//      (2, 2, SuDokuCellValue.One),
-//      (2, 3, SuDokuCellValue.Eight),
-//      (2, 5, SuDokuCellValue.Six),
-//      (2, 6, SuDokuCellValue.Four),
-//      (3, 2, SuDokuCellValue.Eight),
-//      (3, 3, SuDokuCellValue.One),
-//      (3, 5, SuDokuCellValue.Two),
-//      (3, 6, SuDokuCellValue.Nine),
-//      (4, 0, SuDokuCellValue.Seven),
-//      (4, 8, SuDokuCellValue.Eight),
-//      (5, 2, SuDokuCellValue.Six),
-//      (5, 3, SuDokuCellValue.Seven),
-//      (5, 5, SuDokuCellValue.Eight),
-//      (5, 6, SuDokuCellValue.Two),
-//      (6, 2, SuDokuCellValue.Two),
-//      (6, 3, SuDokuCellValue.Six),
-//      (6, 5, SuDokuCellValue.Nine),
-//      (6, 6, SuDokuCellValue.Five),
-//      (7, 0, SuDokuCellValue.Eight),
-//      (7, 3, SuDokuCellValue.Two),
-//      (7, 5, SuDokuCellValue.Three),
-//      (7, 8, SuDokuCellValue.Nine),
-//      (8, 2, SuDokuCellValue.Five),
-//      (8, 4, SuDokuCellValue.One),
-//      (8, 5, SuDokuCellValue.Three)
+//      (SuDokuRow.First, SuDokuColumn.Third, SuDokuCellValue.Three),
+//      (SuDokuRow.First, SuDokuColumn.Fifth, SuDokuCellValue.Two),
+//      (SuDokuRow.First, SuDokuColumn.Seventh, SuDokuCellValue.Six),
+//      (SuDokuRow.Second, SuDokuColumn.First, SuDokuCellValue.Nine),
+//      (SuDokuRow.Second, SuDokuColumn.Fourth, SuDokuCellValue.Three),
+//      (SuDokuRow.Second, SuDokuColumn.Sixth, SuDokuCellValue.Five),
+//      (SuDokuRow.Second, SuDokuColumn.Ninth, SuDokuCellValue.One),
+//      (SuDokuRow.Third, SuDokuColumn.Third, SuDokuCellValue.One),
+//      (SuDokuRow.Third, SuDokuColumn.Fourth, SuDokuCellValue.Eight),
+//      (SuDokuRow.Third, SuDokuColumn.Sixth, SuDokuCellValue.Six),
+//      (SuDokuRow.Third, SuDokuColumn.Seventh, SuDokuCellValue.Four),
+//      (SuDokuRow.Fourth, SuDokuColumn.Third, SuDokuCellValue.Eight),
+//      (SuDokuRow.Fourth, SuDokuColumn.Fourth, SuDokuCellValue.One),
+//      (SuDokuRow.Fourth, SuDokuColumn.Sixth, SuDokuCellValue.Two),
+//      (SuDokuRow.Fourth, SuDokuColumn.Seventh, SuDokuCellValue.Nine),
+//      (SuDokuRow.Fifth, SuDokuColumn.First, SuDokuCellValue.Seven),
+//      (SuDokuRow.Fifth, SuDokuColumn.Ninth, SuDokuCellValue.Eight),
+//      (SuDokuRow.Sixth, SuDokuColumn.Third, SuDokuCellValue.Six),
+//      (SuDokuRow.Sixth, SuDokuColumn.Fourth, SuDokuCellValue.Seven),
+//      (SuDokuRow.Sixth, SuDokuColumn.Sixth, SuDokuCellValue.Eight),
+//      (SuDokuRow.Sixth, SuDokuColumn.Seventh, SuDokuCellValue.Two),
+//      (SuDokuRow.Seventh, SuDokuColumn.Third, SuDokuCellValue.Two),
+//      (SuDokuRow.Seventh, SuDokuColumn.Fourth, SuDokuCellValue.Six),
+//      (SuDokuRow.Seventh, SuDokuColumn.Sixth, SuDokuCellValue.Nine),
+//      (SuDokuRow.Seventh, SuDokuColumn.Seventh, SuDokuCellValue.Five),
+//      (SuDokuRow.Eighth, SuDokuColumn.First, SuDokuCellValue.Eight),
+//      (SuDokuRow.Eighth, SuDokuColumn.Fourth, SuDokuCellValue.Two),
+//      (SuDokuRow.Eighth, SuDokuColumn.Sixth, SuDokuCellValue.Three),
+//      (SuDokuRow.Eighth, SuDokuColumn.Ninth, SuDokuCellValue.Nine),
+//      (SuDokuRow.Ninth, SuDokuColumn.Third, SuDokuCellValue.Five),
+//      (SuDokuRow.Ninth, SuDokuColumn.Fifth, SuDokuCellValue.One),
+//      (SuDokuRow.Ninth, SuDokuColumn.Sixth, SuDokuCellValue.Three)
 //    )
 //
 //    val (_, sudoku) =
@@ -190,117 +284,7 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
 //      solutionResult,
 //      sudokuWithSolution.show == expectedSudokuWithSolution
 //    )
-//
-//  pureTest(
-//    "SuDoku.hasSolution should return true if a SuDoku puzzle has a solution"
-//  ):
-//    val (convertedResult, convertedSudoku) = SuDokuSolver.toSuDoku(
-//      "483921657\n" +
-//        "967345821\n" +
-//        "251876493\n" +
-//        "548132976\n" +
-//        "729564138\n" +
-//        "136798245\n" +
-//        "372689514\n" +
-//        "814253769\n" +
-//        "695417382"
-//    )
-//
-//    expect.all(
-//      convertedResult,
-//      convertedSudoku.isCorrect,
-//      convertedSudoku.hasSolution
-//    )
-//
-//  pureTest(
-//    "SuDoku.getSingleValues should return a list of the single values in a SuDoku puzzle"
-//  ):
-//    val (result, sudoku) = SuDokuSolver.toSuDoku(
-//      "000000907\n" +
-//        "000420180\n" +
-//        "300705426\n" +
-//        "100904000\n" +
-//        "050000040\n" +
-//        "000507009\n" +
-//        "926108000\n" +
-//        "834059000\n" +
-//        "517000000"
-//    )
-//
-//    val block00        = getBlock(0, 0)
-//    val singleValues00 = getSingleValues(sudoku, block00)
-//
-//    val block03        = getBlock(0, 3)
-//    val singleValues03 = getSingleValues(sudoku, block03)
-//
-//    val block06        = getBlock(0, 6)
-//    val singleValues06 = getSingleValues(sudoku, block06)
-//
-//    val block30        = getBlock(3, 0)
-//    val singleValues30 = getSingleValues(sudoku, block30)
-//
-//    val block33        = getBlock(3, 3)
-//    val singleValues33 = getSingleValues(sudoku, block33)
-//
-//    val block36        = getBlock(3, 6)
-//    val singleValues36 = getSingleValues(sudoku, block36)
-//
-//    val block60        = getBlock(6, 0)
-//    val singleValues60 = getSingleValues(sudoku, block60)
-//
-//    val block63        = getBlock(6, 3)
-//    val singleValues63 = getSingleValues(sudoku, block63)
-//
-//    val block66        = getBlock(6, 6)
-//    val singleValues66 = getSingleValues(sudoku, block66)
-//
-//    expect.all(
-//      result,
-//      singleValues00.isEmpty,
-//      singleValues03 == List((2, 4, SuDokuCellValue.Nine)),
-//      singleValues06.isEmpty,
-//      singleValues30 == List((4, 2, SuDokuCellValue.Nine)),
-//      singleValues33.isEmpty,
-//      singleValues36.isEmpty,
-//      singleValues60.isEmpty,
-//      singleValues63 == List((6, 4, SuDokuCellValue.Seven)),
-//      singleValues66 == List((8, 7, SuDokuCellValue.Nine))
-//    )
-//
-//  pureTest(
-//    "SuDoku.blockSingleValueLoop should set all single values in a SuDoku puzzle"
-//  ):
-//    val (initialResult, initialSudoku) = SuDokuSolver.toSuDoku(
-//      "000000907\n" +
-//        "000420180\n" +
-//        "300705426\n" +
-//        "100904000\n" +
-//        "050000040\n" +
-//        "000507009\n" +
-//        "926108000\n" +
-//        "834059000\n" +
-//        "517000000"
-//    )
-//
-//    val (result, sudoku) = blockSingleValueLoop(initialSudoku, 0, 0)
-//
-//    val expectedSudoku =
-//      "{[(2,4,6);(4,6,8);(1,2,5,8);(3,6,8);(1,3,6,8);(1,3,6);(9);(3,5);(7)] " +
-//        "[(6,7);(6,7,9);(5);(4);(2);(3,6);(1);(8);(3,5)] " +
-//        "[(3);(8);(1,8);(7);(9);(5);(4);(2);(6)] " +
-//        "[(1);(6,7,8);(2,3,8);(9);(3,6,8);(4);(2,3,5,6,7,8);(3,5,6,7);(2,3,5,8)] " +
-//        "[(2,6,7);(5);(9);(2,3,6,8);(1,3,6,8);(1,2,3,6);(2,3,6,7,8);(4);(1,2,3,8)] " +
-//        "[(2,4,6);(4,6,8);(2,3,8);(5);(1,3,6,8);(7);(2,3,6,8);(1,3,6);(9)] " +
-//        "[(9);(2);(6);(1);(7);(8);(3,5);(3,5);(3,4,5)] " +
-//        "[(8);(3);(4);(2,6);(5);(9);(2,6,7);(1,6,7);(1,2)] " +
-//        "[(5);(1);(7);(2,3,6);(3,4,6);(2,3,6);(2,3,6,8);(9);(2,3,4,8)]}"
-//
-//    expect.all(
-//      initialResult,
-//      result,
-//      sudoku.show == expectedSudoku
-//    )
-//
+
 //  pureTest("SuDoku.toSuDoku should convert a string to a SuDoku puzzle"):
 //    val (convertedResult, convertedSudoku) = SuDokuSolver.toSuDoku(
 //      "000000907\n" +

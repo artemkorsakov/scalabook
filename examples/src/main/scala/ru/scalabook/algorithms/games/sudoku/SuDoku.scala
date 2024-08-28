@@ -20,9 +20,11 @@ final case class SuDoku(cells: Map[SuDokuIndex, SuDokuCell]):
 
 object SuDoku:
   given Show[SuDoku] = Show.show[SuDoku]: (sudoku: SuDoku) =>
+    val max =
+      sudoku.cells.view.mapValues(_.show.length).values.maxOption.getOrElse(0)
     SuDokuRow.values.map: row =>
       SuDokuColumn.values.map: col =>
-        sudoku.getCell(row, col).map(_.show).getOrElse("()").padTo(20, ' ')
+        sudoku.getCell(row, col).map(_.show).getOrElse("()").padTo(max, ' ')
       .mkString("|", "|", "|")
     .mkString("", "\n", "")
 

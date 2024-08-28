@@ -1032,7 +1032,8 @@ sudoku.getCell(SuDokuRow.Second, SuDokuColumn.Second)
 Найдем такие значения, которые можно вычеркнуть из ячейки, т.к. установка значений в поле приводит к ошибке.
 
 В следующем примере в ячейке {1,2} нельзя установить значение 9, т.к. в противном случае это приведет к ошибке,
-при попытке вычеркнуть значение 9 из ячейки {3,3}
+при попытке вычеркнуть значение 9 из ячейки {3,3}. 
+А это значит, что значение 9 можно вычеркнуть из списка возможных для ячейки {1,2}.
 
 |       | 1     | 2       | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
 |-------|-------|---------|---|---|---|---|---|---|---|
@@ -1091,8 +1092,8 @@ object SuDokuSolver:
         (false, sudoku)
       case (Some(row), Some(col), Some(sudokuCell)) =>
         val currentValues = sudokuCell.possibleValues
-        // Точное значение определено, переходим к следующей ячейке
         if currentValues.size == 1 then
+          // Точное значение определено, переходим к следующей ячейке
           crossOutLoop(sudoku, maybeRow, SuDokuColumn.next(col))
         else // Ищем значение в ячейке, которое можно вычеркнуть
           val maybeInvalidValue = currentValues.find: value =>
@@ -1116,7 +1117,70 @@ object SuDokuSolver:
 
 ##### Единственно возможное место для значения в блоке
 
+Находим такое значение в ячейке, которое не встречается в других ячейках блока,
+но при этом это значение не единственное возможное в своей ячейке. 
+Т.к. такое значение не встречается в других ячейках, то оно может находиться только в заданной ячейке.
+Такие значения можно установить единственными в своих ячейках, 
+тем самым уменьшив возможные варианты для других значений.
 
+> В каждой ячейке возможно максимум одно такое значение, иначе Су Доку составлено некорректно.
+
+Например, в ячейке {1,1} можно установить единственным значением 2, т.к. это число не встречается в других ячейках.
+
+|       | 1       | 2       | 3       | 4 | 5 | 6 | 7 | 8 | 9 |
+|-------|---------|---------|---------|---|---|---|---|---|---|
+| **1** | (1,2)   | (1,3,9) | 4       |   |   |   |   |   |   |
+| **2** | (1,3,9) | 5       | 6       |   |   |   |   |   |   |
+| **3** | 7       | 8       | (1,3,9) |   |   |   |   |   |   |
+| **4** |         |         |         |   |   |   |   |   |   |
+| **5** |         |         |         |   |   |   |   |   |   |
+| **6** |         |         |         |   |   |   |   |   |   |
+| **7** |         |         |         |   |   |   |   |   |   |
+| **8** |         |         |         |   |   |   |   |   |   |
+| **9** |         |         |         |   |   |   |   |   |   |
+
+```dotty
+def getSingleValues(
+    sudoku: SuDoku,
+    block: SuDokuBlock
+): List[(SuDokuRow, SuDokuColumn, SuDokuCellValue)] =
+  val blockCells = sudoku.cells.filter { case ((_, _, blk), _) =>
+    blk == block
+  }
+  def notInOtherCells(index: SuDokuIndex, value: SuDokuCellValue): Boolean =
+    blockCells.forall { (otherIndex, otherCell) =>
+      otherIndex == index || !otherCell.possibleValues.contains(value)
+    }
+  blockCells.foldLeft(List.empty[SuDokuInput]) { case (acc, (index, cell)) =>
+    cell
+      .possibleValues
+      .collectFirst {
+        case value if notInOtherCells(index, value) =>
+          (index._1, index._2, value) :: acc
+      }
+      .getOrElse(acc)
+  }
+end getSingleValues
+  
+@tailrec
+def blockSingleValueLoop(
+    sudoku: SuDoku,
+    blocks: List[SuDokuBlock]
+): SuDokuOutput =
+  blocks match
+    case Nil => (true, sudoku) // Обошли все блоки
+    case head :: tail =>
+      val singleValues = getSingleValues(sudoku, head)
+      if singleValues.isEmpty then
+        // Если значений-одиночек нет, переходим к следующим блокам
+        blockSingleValueLoop(sudoku, tail)
+      else
+        // Если есть, устанавливаем такие значения
+        val (result, sudoku2) = setValues(singleValues*).run(sudoku)
+        // Если установка закончилась успешно, переходим к следующему блоку
+        if result then blockSingleValueLoop(sudoku2, tail)
+        else (false, sudoku)
+```
 
 ##### Удаления значения из строки или столбца других блоков
 

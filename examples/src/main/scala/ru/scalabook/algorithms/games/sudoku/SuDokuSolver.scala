@@ -6,6 +6,7 @@ import ru.scalabook.algorithms.games.sudoku.SuDokuInner.*
 import ru.scalabook.fp.state.State
 
 import scala.annotation.tailrec
+import scala.util.Try
 
 object SuDokuSolver:
   type SuDokuState  = State[SuDoku, Boolean]
@@ -93,8 +94,8 @@ object SuDokuSolver:
         (false, sudoku)
       case (Some(row), Some(col), Some(sudokuCell)) =>
         val currentValues = sudokuCell.possibleValues
-        // Точное значение определено, переходим к следующей ячейке
         if currentValues.size == 1 then
+          // Точное значение определено, переходим к следующей ячейке
           crossOutLoop(sudoku, maybeRow, SuDokuColumn.next(col))
         else // Ищем значение в ячейке, которое можно вычеркнуть
           val maybeInvalidValue = currentValues.find: value =>
@@ -115,99 +116,104 @@ object SuDokuSolver:
     end match
   end crossOutLoop
 
-//  /** Находим такое значение в ячейке, которое не встречается в других ячейках
-//    * блока, но при этом это значение не единственное в своей ячейке.
-//    *
-//    * Такие значения можно установить единственными в своих ячейках, тем самым
-//    * уменьшив возможные варианты для других значений.
-//    *
-//    * В каждой ячейке возможно максимум одно такое значение, иначе Су Доку
-//    * составлено некорректно.
-//    */
-//  def getSingleValues(
-//      sudoku: SuDoku,
-//      block: IndexedSeq[(Row, Column)]
-//  ): List[(Row, Column, SuDokuCellValue)] =
-//    block.foldLeft(List.empty[SuDokuInput]) {
-//      case (acc, (i, j)) =>
-//        val cell = sudoku.cells(i)(j)
-//        if cell.maybeValue.isDefined then acc
-//        else
-//          val values = cell.possibleValues
-//          values
-//            .find: value =>
-//              block.forall: (k, l) =>
-//                (k == i && l == j) ||
-//                  !sudoku.cells(k)(l).possibleValues.contains(value)
-//            .map: value =>
-//              (i, j, value) :: acc
-//            .getOrElse(acc)
-//    }
-//
-//  /** Устанавливает значения-одичночки. */
-//  @tailrec
-//  def blockSingleValueLoop(
-//      sudoku: SuDoku,
-//      i: Int,
-//      j: Int
-//  ): SuDokuOutput =
-//    // Дошли до конца поля
-//    if i >= 9 then (true, sudoku)
-//    // Дошли до конца столбца, переходим к следующему блоку
-//    else if j >= 9 then blockSingleValueLoop(sudoku, i + 3, 0)
-//    else
-//      val block        = getBlock(i, j)
-//      val singleValues = getSingleValues(sudoku, block)
-//      if singleValues.isEmpty then
-//        // Если значений-одиночек нет, переходим к следующему блоку
-//        blockSingleValueLoop(sudoku, i, j + 3)
-//      else
-//        // Если есть устанавливаем такие значения
-//        val (result, sudoku2) = setValues(singleValues*).run(sudoku)
-//        // Если установка закончилась успешно, переходим к следующему блоку
-//        if result then blockSingleValueLoop(sudoku2, i, j + 3)
-//        else (false, sudoku)
-//
-//  private val crossOutState = State[SuDoku, Boolean](crossOutLoop(_, 0, 0))
-//  private val blockSingleValueState =
-//    State[SuDoku, Boolean](blockSingleValueLoop(_, 0, 0))
-//  private val loopState =
-//    crossOutState.map2(blockSingleValueState)(_ && _)
-//
-//  @tailrec
-//  private def solutionLoop(sudoku: SuDoku): SuDokuOutput =
-//    val (result, newSudoku) = loopState.run(sudoku)
-//    if !result then (false, sudoku)
-//    else if sudoku != newSudoku then solutionLoop(newSudoku)
-//    else (result, sudoku)
-//
-//  /** Головоломка решается до тех пор, пока:
-//    *
-//    *   - не найдено решение
-//    *   - если есть значения, которые можно вычеркнуть
-//    *   - если есть значения, которые можно вставить только в одну ячейку
-//    */
-//  val solutionState: SuDokuState = State[SuDoku, Boolean](solutionLoop)
-//
-//  def toSuDoku(source: String): SuDokuOutput =
-//    val rows = source.trim.split("\n")
-//
-//    def getValue(i: Int, j: Int): Option[SuDokuCellValue] =
-//      if 0 <= i && i < rows.length && 0 <= j && j < rows(i).length then
-//        val value = rows(i).charAt(j).getNumericValue
-//        if 1 <= value && value <= 9 then
-//          Try(SuDokuCellValue.fromOrdinal(value - 1)).toOption
-//        else None
-//      else None
-//
-//    val inputs: IndexedSeq[SuDokuInput] =
-//      for
-//        i     <- 0 to 8
-//        j     <- 0 to 8
-//        value <- getValue(i, j)
-//      yield (i, j, value)
-//
-//    setValues(inputs*).run(SuDoku.initial)
-//
-//  end toSuDoku
+  /** Находим такое значение в ячейке, которое не встречается в других ячейках
+    * блока, но при этом это значение не единственное в своей ячейке.
+    *
+    * Такие значения можно установить единственными в своих ячейках, тем самым
+    * уменьшив возможные варианты для других значений.
+    *
+    * В каждой ячейке возможно максимум одно такое значение, иначе Су Доку
+    * составлено некорректно.
+    */
+  def getSingleValues(
+      sudoku: SuDoku,
+      block: SuDokuBlock
+  ): List[(SuDokuRow, SuDokuColumn, SuDokuCellValue)] =
+    val blockCells = sudoku.cells.filter { case ((_, _, blk), _) =>
+      blk == block
+    }
+    def notInOtherCells(index: SuDokuIndex, value: SuDokuCellValue): Boolean =
+      blockCells.forall { (otherIndex, otherCell) =>
+        otherIndex == index || !otherCell.possibleValues.contains(value)
+      }
+    blockCells.foldLeft(List.empty[SuDokuInput]) { case (acc, (index, cell)) =>
+      cell
+        .possibleValues
+        .collectFirst {
+          case value if notInOtherCells(index, value) =>
+            (index._1, index._2, value) :: acc
+        }
+        .getOrElse(acc)
+    }
+  end getSingleValues
+
+  /** Устанавливает значения-одичночки. */
+  @tailrec
+  def blockSingleValueLoop(
+      sudoku: SuDoku,
+      blocks: List[SuDokuBlock]
+  ): SuDokuOutput =
+    blocks match
+      case Nil => (true, sudoku) // Обошли все блоки
+      case head :: tail =>
+        val singleValues = getSingleValues(sudoku, head)
+        if singleValues.isEmpty then
+          // Если значений-одиночек нет, переходим к следующим блокам
+          blockSingleValueLoop(sudoku, tail)
+        else
+          // Если есть, устанавливаем такие значения
+          val (result, sudoku2) = setValues(singleValues*).run(sudoku)
+          // Если установка закончилась успешно, переходим к следующему блоку
+          if result then blockSingleValueLoop(sudoku2, tail)
+          else (false, sudoku)
+
+  private val crossOutState = State[SuDoku, Boolean](
+    crossOutLoop(_, Some(SuDokuRow.First), Some(SuDokuColumn.First))
+  )
+  private val blockSingleValueState = State[SuDoku, Boolean](
+    blockSingleValueLoop(_, SuDokuBlock.values.toList)
+  )
+  private val loopState =
+    crossOutState.map2(blockSingleValueState)(_ && _)
+
+  @tailrec
+  private def solutionLoop(sudoku: SuDoku): SuDokuOutput =
+    val (result, newSudoku) = loopState.run(sudoku)
+    if !result then (false, sudoku)
+    else if sudoku != newSudoku then solutionLoop(newSudoku)
+    else (result, sudoku)
+
+  /** Головоломка решается до тех пор, пока:
+    *
+    *   - не найдено решение
+    *   - если есть значения, которые можно вычеркнуть
+    *   - если есть значения, которые можно вставить только в одну ячейку
+    *   - если есть значения, которые можно вычеркнуть из строки или столбца
+    *     других блоков
+    */
+  val solutionState: SuDokuState = State[SuDoku, Boolean](solutionLoop)
+
+  def toSuDoku(source: String): SuDokuOutput =
+    val rows = source.trim.split("\n")
+
+    def getValue(row: SuDokuRow, col: SuDokuColumn): Option[SuDokuCellValue] =
+      val i = row.ordinal
+      val j = col.ordinal
+      if 0 <= i && i < rows.length && 0 <= j && j < rows(i).length then
+        val value = rows(i).charAt(j).getNumericValue
+        if 1 <= value && value <= 9 then
+          Try(SuDokuCellValue.fromOrdinal(value - 1)).toOption
+        else None
+      else None
+
+    val inputs: Vector[SuDokuInput] =
+      for
+        row   <- SuDokuRow.values.toVector
+        col   <- SuDokuColumn.values.toVector
+        value <- getValue(row, col)
+      yield (row, col, value)
+
+    setValues(inputs*).run(SuDoku.initial)
+
+  end toSuDoku
 end SuDokuSolver

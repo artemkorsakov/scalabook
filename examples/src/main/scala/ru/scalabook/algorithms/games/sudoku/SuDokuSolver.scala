@@ -74,7 +74,7 @@ object SuDokuSolver:
     *     переходим к следующей ячейке
     */
   @tailrec
-  private def crossOutLoop(
+  def crossOutLoop(
       sudoku: SuDoku,
       maybeRow: Option[SuDokuRow],
       maybeColumn: Option[SuDokuColumn]
@@ -96,23 +96,27 @@ object SuDokuSolver:
         val currentValues = sudokuCell.possibleValues
         if currentValues.size == 1 then
           // Точное значение определено, переходим к следующей ячейке
-          crossOutLoop(sudoku, maybeRow, SuDokuColumn.next(col))
-        else // Ищем значение в ячейке, которое можно вычеркнуть
-          val maybeInvalidValue = currentValues.find: value =>
+          crossOutLoop(sudoku, Some(row), SuDokuColumn.next(col))
+        else
+          // Ищем значение в ячейке, которое можно вычеркнуть
+          val invalidValues = currentValues.filter: value =>
             !setValue(row, col, value).run(sudoku)._1
-          maybeInvalidValue match
-            // Такого значения нет, переходим к следующей ячейке
-            case None => crossOutLoop(sudoku, maybeRow, SuDokuColumn.next(col))
-            case Some(invalidValue) =>
-              val input: SuDokuInnerInput =
+          if invalidValues.isEmpty then
+            // Таких значений нет, переходим к следующей ячейке
+            crossOutLoop(sudoku, Some(row), SuDokuColumn.next(col))
+          else
+            val input: Seq[SuDokuInnerInput] =
+              invalidValues.map: invalidValue =>
                 (SuDokuInnerOperation.RemoveFromCell, row, col, invalidValue)
-              val (result, newSudoku) =
-                SuDokuInner.execute(input).run(sudoku)
-              // Если результат вычеркивания успешен,
-              // то ищем в заданной ячейке следующий кандидат на вычеркивание
-              if result then crossOutLoop(sudoku, maybeRow, maybeColumn)
-              // Если не успешен, значит решения головоломки не существует
-              else (false, sudoku)
+              .toSeq
+            val (result, newSudoku) = SuDokuInner.execute(input*).run(sudoku)
+            // Если результат вычеркивания успешен,
+            // то ищем в заданной ячейке следующий кандидат на вычеркивание
+            if result then
+              crossOutLoop(newSudoku, Some(row), SuDokuColumn.next(col))
+            // Если не успешен, значит решения головоломки не существует
+            else (false, sudoku)
+        end if
     end match
   end crossOutLoop
 
@@ -167,14 +171,18 @@ object SuDokuSolver:
           if result then blockSingleValueLoop(sudoku2, tail)
           else (false, sudoku)
 
-  private val crossOutState = State[SuDoku, Boolean](
-    crossOutLoop(_, Some(SuDokuRow.First), Some(SuDokuColumn.First))
-  )
   private val blockSingleValueState = State[SuDoku, Boolean](
     blockSingleValueLoop(_, SuDokuBlock.values.toList)
   )
-  private val loopState =
-    crossOutState.map2(blockSingleValueState)(_ && _)
+  private val crossOutState = State[SuDoku, Boolean](
+    crossOutLoop(_, Some(SuDokuRow.First), Some(SuDokuColumn.First))
+  )
+  private val loopState: State[SuDoku, Boolean] =
+    State[SuDoku, Boolean] { sudoku =>
+      val (res, newSudoku) = blockSingleValueState.run(sudoku)
+      if res then crossOutState.run(newSudoku)
+      else (false, sudoku)
+    }
 
   @tailrec
   private def solutionLoop(sudoku: SuDoku): SuDokuOutput =

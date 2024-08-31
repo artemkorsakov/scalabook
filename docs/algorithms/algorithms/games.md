@@ -897,84 +897,13 @@ sudoku.getCell(SuDokuRow.First, SuDokuColumn.Second)
 // Some(SuDokuCell(HashSet(Two, Five, Four, One, Seven, Three, Nine, Eight)))
 ```
 
-Также возможны ситуации, когда какое-то число может быть только в определенной строке или
-определенном столбце блока, даже если неизвестно, в какой именно ячейке может находиться такое число.
-
-Например, у нас имеется блок:
-
-|       | 1     | 2     | 3 |
-|-------|-------|-------|---|
-| **1** | (1,2) | (1,3) | 4 |
-| **2** | (2,3) | 5     | 6 |
-| **3** | 7     | 8     | 9 |
-
-Вне зависимости от того, где будет в итоге расположено число 1 - в ячейке {1,1} или ячейке {1,2} 
-точно известно, что оно будет расположено в 1 строке.
-
-Аналогично известно, что число 2 будет точно расположено в 1 столбце.
-
-Это означает, что 1 можно вычеркнуть из первой строки других блоков, а 2 - из первого столбца других блоков.
-
-Например:
-
-|       | 1     | 2     | 3 | 4     | 5     | 6     | 7     | 8     | 9     |
-|-------|-------|-------|---|-------|-------|-------|-------|-------|-------|
-| **1** | (1,2) | (1,3) | 4 | ~~1~~ | ~~1~~ | ~~1~~ | ~~1~~ | ~~1~~ | ~~1~~ |
-| **2** | (2,3) | 5     | 6 |       |       |       |       |       |       |
-| **3** | 7     | 8     | 9 |       |       |       |       |       |       |
-| **4** | ~~2~~ |       |   |       |       |       |       |       |       |
-| **5** | ~~2~~ |       |   |       |       |       |       |       |       |
-| **6** | ~~2~~ |       |   |       |       |       |       |       |       |
-| **7** | ~~2~~ |       |   |       |       |       |       |       |       |
-| **8** | ~~2~~ |       |   |       |       |       |       |       |       |
-| **9** | ~~2~~ |       |   |       |       |       |       |       |       |
-
-Добавим эти две операции:
-
-```dotty
-enum SuDokuInnerComplexOperation:
-  case ..., RemoveFromRowExceptBlock, RemoveFromColumnExceptBlock
-  
-private val updateSuDoku
-    : SuDokuComplexInnerInput => SuDokuOutput => SuDokuOutput =
-  (operation, i, j, value) =>
-    (result, sudoku) =>
-      (operation, result) match
-        ...
-        case (RemoveFromRowExceptBlock, true) =>
-          val block = SuDokuBlock.getBlock(i, j)
-          val inputs: List[SuDokuInnerInput] =
-            sudoku
-              .cells
-              .keys
-              .withFilter: (r, _, b) =>
-                r == i && b != block
-              .map: (r, c, _) =>
-                (SuDokuInnerOperation.RemoveFromCell, r, c, value)
-              .toList
-          SuDokuInner.execute(inputs*).run(sudoku)
-        case (RemoveFromColumnExceptBlock, true) =>
-          val block = SuDokuBlock.getBlock(i, j)
-          val inputs: List[SuDokuInnerInput] =
-            sudoku
-              .cells
-              .keys
-              .withFilter: (_, c, b) =>
-                c == j && b != block
-              .map: (r, c, _) =>
-                (SuDokuInnerOperation.RemoveFromCell, r, c, value)
-              .toList
-          SuDokuInner.execute(inputs*).run(sudoku)
-        case _ => (false, sudoku)  
-```
-
 #### Основные операции
 
 После того как подготовлены все побочные операции, перейдем к основным.
 
 ##### Установка единственного возможного значения в ячейку
 
-Напомню, что при установке конкретного значения в заданную ячейку необходимо не только задать значение в эту ячейку, 
+При установке конкретного значения в заданную ячейку необходимо не только задать значение в эту ячейку, 
 а также и удалить значение из списка возможных значений во всех ячейках той же строки, того же столбца и того же блока.
 При этом, если в выполняемой пачке операций возникла ситуация, когда одна из операций не выполнилась,
 то необходимо вернуться в исходное состояние, бывшее до выполнения всей цепочки операций.
@@ -1002,16 +931,76 @@ private val updateSuDoku: SuDokuInput => SuDokuOutput => SuDokuOutput =
 
       if result && resultSet && resultRemove then (true, sudokuRemove)
       else (false, sudoku)
+```
 
-def setValue(
-    i: SuDokuRow,
-    j: SuDokuColumn,
-    value: SuDokuCellValue
-): SuDokuState =
-  setValues((i, j, value))
+При выполнении пачки операций по установке значений может возникнуть ситуация, 
+когда в одной из ячеек, из которой вычеркнули значение, среди возможных значений остался только один вариант:
 
-def setValues(inputs: SuDokuInput*): SuDokuState =
-  executeInnerOperation(inputs.toList, updateSuDoku)
+|       | 1 | 2 | 3          |
+|-------|---|---|------------|
+| **1** | 7 |   |            |
+| **2** |   |   |            |
+| **3** |   |   | (1, ~~7~~) |
+
+Например, после установки значения `7` в ячейку {1,1} в ячейке {3,3} среди возможных вариантов осталась только `1`.
+Это означает, что для ячейки {3,3} также можно прогнать операцию по установке значений 
+(само значение `1` уже установлено, но необходимо ещё вычеркнуть `1` из строки, столбца и блока).
+
+- определяем список индексов, где уже есть единственное значение
+- составляем список индексов, где планируется установить единственное значение
+- выполняем операцию установки значений
+- определяем список индексов, где уже есть единственное значение, для нового состояния поля Су Доку
+- для всех индексов, не встречающихся в первых двух пунктах, прогоняем операцию установки значений заново
+
+```dotty
+final case class SuDoku(cells: Map[SuDokuIndex, SuDokuCell]):
+  ...
+
+  val singletonIndexes: Vector[SuDokuIndex] =
+    cells.collect {
+      case (index, cell) if cell.maybeValue.isDefined =>
+        index
+    }.toVector
+  
+object SuDokuSolver:    
+  def setValue(
+      i: SuDokuRow,
+      j: SuDokuColumn,
+      value: SuDokuCellValue
+  ): SuDokuState =
+    setValues((i, j, value))
+
+  def setValues(inputs: SuDokuInput*): SuDokuState =
+    State[SuDoku, Boolean] { sudoku =>
+      // Список индексов, где значение уже известно
+      val initialIndexes: Vector[SuDokuIndex] =
+        sudoku.singletonIndexes
+      // Список индексов, где значение будет установлено по inputs
+      val indexesAfterRun: Vector[SuDokuIndex] =
+        inputs.map((r, c, _) => (r, c, SuDokuBlock.getBlock(r, c)))
+          .toVector
+
+      // Выполнение операции установки значений
+      val (newResult, newSudoku) =
+        executeInnerOperation(inputs.toList, updateSuDoku).run(sudoku)
+
+      // Новые индексы, появившиеся после выполнения операций
+      val newIndexes =
+        newSudoku.singletonIndexes.diff(initialIndexes ++ indexesAfterRun)
+
+      if newIndexes.isEmpty then (newResult, newSudoku)
+      else
+        // Если появились новые значения, единственные в своих ячейках,
+        // то необходимо и их вычеркнуть из строк, столбцов и блоков
+        val newInputs: Vector[SuDokuInput] =
+          for
+            (r, c, _) <- newIndexes
+            cell      <- newSudoku.getCell(r, c)
+            value     <- cell.maybeValue
+          yield (r, c, value)
+        val (extraResult, extraSudoku) = setValues(newInputs*).run(newSudoku)
+        (newResult && extraResult, extraSudoku)
+    }
   
 val initialSudoku = SuDoku.initial
 val (result, sudoku) =
@@ -1031,9 +1020,9 @@ sudoku.getCell(SuDokuRow.Second, SuDokuColumn.Second)
 
 Найдем такие значения, которые можно вычеркнуть из ячейки, т.к. установка значений в поле приводит к ошибке.
 
-В следующем примере в ячейке {1,2} нельзя установить значение 9, т.к. в противном случае это приведет к ошибке,
-при попытке вычеркнуть значение 9 из ячейки {3,3}. 
-А это значит, что значение 9 можно вычеркнуть из списка возможных для ячейки {1,2}.
+В следующем примере в ячейке {1,2} нельзя установить значение `9`, т.к. в противном случае это приведет к ошибке,
+при попытке вычеркнуть значение `9` из ячейки {3,3}. 
+А это значит, что значение `9` можно вычеркнуть из списка возможных для ячейки {1,2}.
 
 |       | 1     | 2       | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
 |-------|-------|---------|---|---|---|---|---|---|---|
@@ -1127,7 +1116,7 @@ object SuDokuSolver:
 тем самым уменьшив возможные варианты для других значений. 
 В каждой ячейке возможно максимум одно такое значение, иначе Су Доку составлено некорректно.
 
-Например, в ячейке {1,1} можно установить единственным значением 2, т.к. это число не встречается в других ячейках.
+Например, в ячейке {1,1} можно установить единственным значением `2`, т.к. это число не встречается в других ячейках.
 
 |       | 1       | 2       | 3       | 4 | 5 | 6 | 7 | 8 | 9 |
 |-------|---------|---------|---------|---|---|---|---|---|---|
@@ -1162,7 +1151,8 @@ def getSingleValues(
         .possibleValues
         .collectFirst:
           case value if notInOtherCells(index, value) =>
-            (index._1, index._2, value) :: acc
+            val input: SuDokuInput = (index._1, index._2, value)
+            input :: acc
         .getOrElse(acc)
   }
 end getSingleValues
@@ -1187,80 +1177,6 @@ def blockSingleValueLoop(
         else (false, sudoku)
 ```
 
-##### Удаления значения из строки или столбца других блоков
-
-Вернемся к ситуации, когда какое-то число может быть только в определенной строке или определенном столбце блока.
-
-Например, у нас имеется блок:
-
-|       | 1     | 2     | 3 |
-|-------|-------|-------|---|
-| **1** | (1,2) | (1,3) | 4 |
-| **2** | (2,3) | 5     | 6 |
-| **3** | 7     | 8     | 9 |
-
-Вне зависимости от того, где будет в итоге расположено число 1 - в ячейке {1,1} или ячейке {1,2}
-точно известно, что оно будет расположено в 1 строке.
-Аналогично известно, что число 2 будет точно расположено в 1 столбце.
-
-Это означает, что 1 можно вычеркнуть из первой строки других блоков, а 2 - из первого столбца других блоков.
-
-```dotty
-def getRowColValues(
-    sudoku: SuDoku,
-    block: SuDokuBlock
-): List[SuDokuComplexInnerInput] =
-  val blockCells = sudoku.cells.filter { case ((_, _, blk), cell) =>
-    blk == block
-  }
-
-  SuDokuCellValue.values.foldLeft(List.empty[SuDokuComplexInnerInput]) {
-    case (inputs, value) =>
-      val cells =
-        blockCells.filter(_._2.possibleValues.contains(value)).keySet
-      val rows = cells.map(_._1)
-      val cols = cells.map(_._2)
-
-      if rows.size == 1 && cols.size > 1 then
-        // Данное значение встречается только в одной строке
-        (
-          SuDokuInnerComplexOperation.RemoveFromRowExceptBlock,
-          rows.head,
-          cols.head,
-          value
-        ) :: inputs
-      else if cols.size == 1 && rows.size > 1 then
-        // Данное значение встречается только в одном столбце
-        (
-          SuDokuInnerComplexOperation.RemoveFromColumnExceptBlock,
-          rows.head,
-          cols.head,
-          value
-        ) :: inputs
-      else inputs
-  }
-end getRowColValues
-
-@tailrec
-def blockRowColValuesLoop(
-    sudoku: SuDoku,
-    blocks: List[SuDokuBlock]
-): SuDokuOutput =
-  blocks match
-    case Nil => (true, sudoku) // Обошли все блоки
-    case head :: tail =>
-      val inputs = getRowColValues(sudoku, head)
-      if inputs.isEmpty then
-        // Если удалять нечего, переходим к следующим блокам
-        blockRowColValuesLoop(sudoku, tail)
-      else
-        // Если есть, выполняем операции
-        val (result, sudoku2) = SuDokuComplexInner.execute(inputs).run(sudoku)
-        // Если успех, переходим к следующему блоку
-        if result then blockSingleValueLoop(sudoku2, tail)
-        else (false, sudoku)
-```
-
 #### Поиск решения головоломки
 
 Головоломка решается до тех пор, пока:
@@ -1268,7 +1184,6 @@ def blockRowColValuesLoop(
 - не найдено решение
 - если есть значения, которые можно вычеркнуть
 - если есть значения, которые в заданном блоке могут находиться только в определенных ячейках
-- если есть значения, которые могут находиться только в определенной строке или столбце блока
 
 Определим изменения состояния Су Доку на основе всех перечисленных операций:
 
@@ -1279,12 +1194,8 @@ private val blockSingleValueState = State[SuDoku, Boolean](
 private val crossOutState = State[SuDoku, Boolean](
   crossOutLoop(_, Some(SuDokuRow.First), Some(SuDokuColumn.First))
 )
-private val blockRowColValuesState = State[SuDoku, Boolean](
-  blockRowColValuesLoop(_, SuDokuBlock.values.toList)
-)
 private val loopState: State[SuDoku, Boolean] =
   blockSingleValueState.map2(crossOutState)(_ && _)
-    .map2(blockRowColValuesState)(_ && _)
 ```
 
 Рекурсивно запускаем решение головоломки до тех пор, пока не найдено решение и происходит изменение поля Су Доку.

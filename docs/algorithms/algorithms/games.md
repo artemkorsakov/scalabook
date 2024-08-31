@@ -1268,7 +1268,7 @@ def blockRowColValuesLoop(
 - не найдено решение
 - если есть значения, которые можно вычеркнуть
 - если есть значения, которые в заданном блоке могут находиться только в определенных ячейках
-- Если есть значения, которые могут находиться только в определенной строке или столбце блока
+- если есть значения, которые могут находиться только в определенной строке или столбце блока
 
 Определим изменения состояния Су Доку на основе всех перечисленных операций:
 
@@ -1287,21 +1287,23 @@ private val loopState: State[SuDoku, Boolean] =
     .map2(blockRowColValuesState)(_ && _)
 ```
 
-Рекурсивно запускаем решение головоломки до тех пор, пока происходит изменение поля Су Доку.
-Как только ни одна из операций не смогла внести новые изменения в поле, возвращаем результат.
+Рекурсивно запускаем решение головоломки до тех пор, пока не найдено решение и происходит изменение поля Су Доку.
+Как только ни одна из операций не смогла внести новые изменения в поле Су Доку, возвращаем результат.
 
 ```dotty
 @tailrec
 private def solutionLoop(sudoku: SuDoku): SuDokuOutput =
-  val (result, newSudoku) = loopState.run(sudoku)
-  if !result then (false, sudoku)
-  else if sudoku != newSudoku then solutionLoop(newSudoku)
-  else (result, sudoku)
+  if sudoku.hasSolution then (true, sudoku)
+  else
+    val (result, newSudoku) = loopState.run(sudoku)
+    if !result then (false, sudoku)
+    else if sudoku != newSudoku then solutionLoop(newSudoku)
+    else (result, sudoku)
 
 val solutionState: SuDokuState = State[SuDoku, Boolean](solutionLoop)
 ```
 
-В результате получим:
+Итого:
 
 ![](https://projecteuler.net/project/images/p096_1.png)
 ![](https://projecteuler.net/project/images/p096_2.png)

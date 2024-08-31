@@ -245,10 +245,12 @@ object SuDokuSolver:
 
   @tailrec
   private def solutionLoop(sudoku: SuDoku): SuDokuOutput =
-    val (result, newSudoku) = loopState.run(sudoku)
-    if !result then (false, sudoku)
-    else if sudoku != newSudoku then solutionLoop(newSudoku)
-    else (result, sudoku)
+    if sudoku.hasSolution then (true, sudoku)
+    else
+      val (result, newSudoku) = loopState.run(sudoku)
+      if !result then (false, sudoku)
+      else if sudoku != newSudoku then solutionLoop(newSudoku)
+      else (result, sudoku)
 
   /** Головоломка решается до тех пор, пока:
     *

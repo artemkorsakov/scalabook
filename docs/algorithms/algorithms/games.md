@@ -1072,7 +1072,7 @@ object SuDokuColumn:
 
 object SuDokuSolver:
   @tailrec
-  private def crossOutLoop(
+  def crossOutLoop(
       sudoku: SuDoku,
       maybeRow: Option[SuDokuRow],
       maybeColumn: Option[SuDokuColumn]
@@ -1094,25 +1094,29 @@ object SuDokuSolver:
         val currentValues = sudokuCell.possibleValues
         if currentValues.size == 1 then
           // Точное значение определено, переходим к следующей ячейке
-          crossOutLoop(sudoku, maybeRow, SuDokuColumn.next(col))
-        else // Ищем значение в ячейке, которое можно вычеркнуть
-          val maybeInvalidValue = currentValues.find: value =>
+          crossOutLoop(sudoku, Some(row), SuDokuColumn.next(col))
+        else
+          // Ищем значение в ячейке, которое можно вычеркнуть
+          val invalidValues = currentValues.filter: value =>
             !setValue(row, col, value).run(sudoku)._1
-          maybeInvalidValue match
-            // Такого значения нет, переходим к следующей ячейке
-            case None => crossOutLoop(sudoku, maybeRow, SuDokuColumn.next(col))
-            case Some(invalidValue) =>
-              val input: SuDokuInnerInput =
+          if invalidValues.isEmpty then
+            // Таких значений нет, переходим к следующей ячейке
+            crossOutLoop(sudoku, Some(row), SuDokuColumn.next(col))
+          else
+            val input: Seq[SuDokuInnerInput] =
+              invalidValues.map: invalidValue =>
                 (SuDokuInnerOperation.RemoveFromCell, row, col, invalidValue)
-              val (result, newSudoku) =
-                SuDokuInner.execute(input).run(sudoku)
-              // Если результат вычеркивания успешен,
-              // то ищем в заданной ячейке следующий кандидат на вычеркивание
-              if result then crossOutLoop(sudoku, maybeRow, maybeColumn)
-              // Если не успешен, значит решения головоломки не существует
-              else (false, sudoku)
+              .toSeq
+            val (result, newSudoku) = SuDokuInner.execute(input*).run(sudoku)
+            // Если результат вычеркивания успешен,
+            // то ищем в заданной ячейке следующий кандидат на вычеркивание
+            if result then
+              crossOutLoop(newSudoku, Some(row), SuDokuColumn.next(col))
+            // Если не успешен, значит решения головоломки не существует
+            else (false, sudoku)
+        end if
     end match
-  end crossOutLoop
+  end crossOutLoop  
 ```
 
 ##### Единственно возможное место для значения в блоке
@@ -1121,9 +1125,8 @@ object SuDokuSolver:
 но при этом это значение не единственное возможное в своей ячейке. 
 Т.к. такое значение не встречается в других ячейках, то оно может находиться только в заданной ячейке.
 Такие значения можно установить единственными в своих ячейках, 
-тем самым уменьшив возможные варианты для других значений.
-
-> В каждой ячейке возможно максимум одно такое значение, иначе Су Доку составлено некорректно.
+тем самым уменьшив возможные варианты для других значений. 
+В каждой ячейке возможно максимум одно такое значение, иначе Су Доку составлено некорректно.
 
 Например, в ячейке {1,1} можно установить единственным значением 2, т.к. это число не встречается в других ячейках.
 
@@ -1145,23 +1148,24 @@ def getSingleValues(
     block: SuDokuBlock
 ): List[(SuDokuRow, SuDokuColumn, SuDokuCellValue)] =
   val blockCells = sudoku.cells.filter { case ((_, _, blk), cell) =>
-    blk == block && cell.maybeValue.isEmpty
+    blk == block
   }
   def notInOtherCells(index: SuDokuIndex, value: SuDokuCellValue): Boolean =
     blockCells.forall { (otherIndex, otherCell) =>
       otherIndex == index || !otherCell.possibleValues.contains(value)
     }
   blockCells.foldLeft(List.empty[SuDokuInput]) { case (acc, (index, cell)) =>
-    cell
-      .possibleValues
-      .collectFirst {
-        case value if notInOtherCells(index, value) =>
-          (index._1, index._2, value) :: acc
-      }
-      .getOrElse(acc)
+    if cell.maybeValue.isDefined then acc
+    else
+      cell
+        .possibleValues
+        .collectFirst:
+          case value if notInOtherCells(index, value) =>
+            (index._1, index._2, value) :: acc
+        .getOrElse(acc)
   }
 end getSingleValues
-  
+
 @tailrec
 def blockSingleValueLoop(
     sudoku: SuDoku,

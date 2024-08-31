@@ -134,20 +134,21 @@ object SuDokuSolver:
       block: SuDokuBlock
   ): List[(SuDokuRow, SuDokuColumn, SuDokuCellValue)] =
     val blockCells = sudoku.cells.filter { case ((_, _, blk), cell) =>
-      blk == block && cell.maybeValue.isEmpty
+      blk == block
     }
     def notInOtherCells(index: SuDokuIndex, value: SuDokuCellValue): Boolean =
       blockCells.forall { (otherIndex, otherCell) =>
         otherIndex == index || !otherCell.possibleValues.contains(value)
       }
     blockCells.foldLeft(List.empty[SuDokuInput]) { case (acc, (index, cell)) =>
-      cell
-        .possibleValues
-        .collectFirst {
-          case value if notInOtherCells(index, value) =>
-            (index._1, index._2, value) :: acc
-        }
-        .getOrElse(acc)
+      if cell.maybeValue.isDefined then acc
+      else
+        cell
+          .possibleValues
+          .collectFirst:
+            case value if notInOtherCells(index, value) =>
+              (index._1, index._2, value) :: acc
+          .getOrElse(acc)
     }
   end getSingleValues
 

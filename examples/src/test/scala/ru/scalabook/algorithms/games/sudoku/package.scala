@@ -22,4 +22,16 @@ package object sudoku:
       column <- suDokuColumnGen
     yield (row, column, SuDokuBlock.getBlock(row, column))
   given Arbitrary[SuDokuIndex] = Arbitrary(suDokuIndexGen)
+
+  given Ordering[(SuDokuRow, SuDokuColumn, SuDokuCellValue)] =
+    (
+        a: (SuDokuRow, SuDokuColumn, SuDokuCellValue),
+        b: (SuDokuRow, SuDokuColumn, SuDokuCellValue)
+    ) =>
+      val ac = a._1.ordinal.compareTo(b._1.ordinal)
+      val bc = a._2.ordinal.compareTo(b._2.ordinal)
+      val cc = ac.compareTo(bc)
+      if ac != 0 then ac
+      else if bc != 0 then bc
+      else cc
 end sudoku

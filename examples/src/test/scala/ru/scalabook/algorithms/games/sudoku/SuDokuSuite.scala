@@ -13,7 +13,8 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
 
     expect.all(
       sudoku.isCorrect,
-      !sudoku.hasSolution
+      !sudoku.hasSolution,
+      sudoku.singletonIndexes.isEmpty
     )
 
   test("SuDoku should not be correct if there is not a row"):
@@ -82,5 +83,54 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
 
     forEach(sudoku.cells.values.toVector): cell =>
       expect.same(initialCell, cell)
+
+  pureTest(
+    "SuDoku.singletonIndexes should return the indexes of all cells with only one possible value"
+  ):
+    val initialCell = SuDokuCell.initial
+    val sudoku =
+      SuDoku(
+        Map(
+          (
+            SuDokuRow.First,
+            SuDokuColumn.First,
+            SuDokuBlock.First
+          ) -> initialCell,
+          (
+            SuDokuRow.First,
+            SuDokuColumn.Second,
+            SuDokuBlock.First
+          ) -> initialCell,
+          (
+            SuDokuRow.First,
+            SuDokuColumn.Third,
+            SuDokuBlock.First
+          ) -> SuDokuCell(Set(SuDokuCellValue.Six)),
+          (
+            SuDokuRow.First,
+            SuDokuColumn.Fourth,
+            SuDokuBlock.Second
+          ) -> SuDokuCell(Set(SuDokuCellValue.One)),
+          (
+            SuDokuRow.First,
+            SuDokuColumn.Fifth,
+            SuDokuBlock.Second
+          ) -> initialCell,
+          (
+            SuDokuRow.First,
+            SuDokuColumn.Sixth,
+            SuDokuBlock.Second
+          ) -> SuDokuCell(Set(SuDokuCellValue.Two))
+        )
+      )
+
+    expect.same(
+      Vector(
+        (SuDokuRow.First, SuDokuColumn.Third, SuDokuBlock.First),
+        (SuDokuRow.First, SuDokuColumn.Fourth, SuDokuBlock.Second),
+        (SuDokuRow.First, SuDokuColumn.Sixth, SuDokuBlock.Second)
+      ).sorted,
+      sudoku.singletonIndexes.sorted
+    )
 
 end SuDokuSuite

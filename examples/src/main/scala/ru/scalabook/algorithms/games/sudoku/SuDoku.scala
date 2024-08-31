@@ -4,6 +4,8 @@ import cats.Show
 import cats.syntax.show.*
 import ru.scalabook.algorithms.games.sudoku.SuDoku.*
 
+import scala.collection.immutable
+
 final case class SuDoku(cells: Map[SuDokuIndex, SuDokuCell]):
   def getCell(row: SuDokuRow, column: SuDokuColumn): Option[SuDokuCell] =
     getCell(SuDokuIndex(row, column))
@@ -17,6 +19,12 @@ final case class SuDoku(cells: Map[SuDokuIndex, SuDokuCell]):
 
   val hasSolution: Boolean =
     isCorrect && cells.forall(_._2.maybeValue.isDefined)
+
+  val singletonIndexes: Vector[SuDokuIndex] =
+    cells.collect {
+      case (index, cell) if cell.maybeValue.isDefined =>
+        index
+    }.toVector
 
 object SuDoku:
   given Show[SuDoku] = Show.show[SuDoku]: (sudoku: SuDoku) =>

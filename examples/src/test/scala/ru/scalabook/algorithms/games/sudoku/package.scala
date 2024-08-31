@@ -34,4 +34,16 @@ package object sudoku:
       if ac != 0 then ac
       else if bc != 0 then bc
       else cc
+
+  given Ordering[(SuDokuRow, SuDokuColumn, SuDokuBlock)] =
+    (
+        a: (SuDokuRow, SuDokuColumn, SuDokuBlock),
+        b: (SuDokuRow, SuDokuColumn, SuDokuBlock)
+    ) =>
+      val ac = a._1.ordinal.compareTo(b._1.ordinal)
+      val bc = a._2.ordinal.compareTo(b._2.ordinal)
+      val cc = ac.compareTo(bc)
+      if ac != 0 then ac
+      else if bc != 0 then bc
+      else cc
 end sudoku

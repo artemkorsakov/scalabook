@@ -60,7 +60,35 @@ object SuDokuSolver:
     setValues((i, j, value))
 
   def setValues(inputs: SuDokuInput*): SuDokuState =
-    executeInnerOperation(inputs.toList, updateSuDoku)
+    State[SuDoku, Boolean] { sudoku =>
+      // Список индексов, где значение уже известно
+      val initialIndexes: Vector[SuDokuIndex] =
+        sudoku.singletonIndexes
+      // Список индексов, где значение будет установлено по inputs
+      val indexesAfterRun: Vector[SuDokuIndex] =
+        inputs.map((r, c, _) => (r, c, SuDokuBlock.getBlock(r, c)))
+          .toVector
+
+      val (newResult, newSudoku) =
+        executeInnerOperation(inputs.toList, updateSuDoku).run(sudoku)
+
+      // Новые индексы, появившиеся после выполнения операций
+      val newIndexes =
+        newSudoku.singletonIndexes.diff(initialIndexes ++ indexesAfterRun)
+
+      if newIndexes.isEmpty then (newResult, newSudoku)
+      else
+        // Если появились новые значения, единственные в своих ячейках,
+        // то необходимо и их вычеркнуть из строк, столбцов и блоков
+        val newInputs: Vector[SuDokuInput] =
+          for
+            (r, c, _) <- newIndexes
+            cell      <- newSudoku.getCell(r, c)
+            value     <- cell.maybeValue
+          yield (r, c, value)
+        val (extraResult, extraSudoku) = setValues(newInputs*).run(newSudoku)
+        (newResult && extraResult, extraSudoku)
+    }
 
   /** Поиск значений, которые можно вычеркнуть:
     *
@@ -212,7 +240,7 @@ object SuDokuSolver:
   end getRowColValues
 
   @tailrec
-  def blockRowColValuesLoop(
+  private def blockRowColValuesLoop(
       sudoku: SuDoku,
       blocks: List[SuDokuBlock]
   ): SuDokuOutput =

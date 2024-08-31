@@ -1096,7 +1096,7 @@ object SuDokuSolver:
           // Точное значение определено, переходим к следующей ячейке
           crossOutLoop(sudoku, Some(row), SuDokuColumn.next(col))
         else
-          // Ищем значение в ячейке, которое можно вычеркнуть
+          // Ищем значения в ячейке, которые можно вычеркнуть
           val invalidValues = currentValues.filter: value =>
             !setValue(row, col, value).run(sudoku)._1
           if invalidValues.isEmpty then
@@ -1108,11 +1108,10 @@ object SuDokuSolver:
                 (SuDokuInnerOperation.RemoveFromCell, row, col, invalidValue)
               .toSeq
             val (result, newSudoku) = SuDokuInner.execute(input*).run(sudoku)
-            // Если результат вычеркивания успешен,
-            // то ищем в заданной ячейке следующий кандидат на вычеркивание
+            // Если успех, то переходим к следующей ячейке
             if result then
               crossOutLoop(newSudoku, Some(row), SuDokuColumn.next(col))
-            // Если не успешен, значит решения головоломки не существует
+            // Если нет, значит решения головоломки не существует
             else (false, sudoku)
         end if
     end match
@@ -1155,8 +1154,10 @@ def getSingleValues(
       otherIndex == index || !otherCell.possibleValues.contains(value)
     }
   blockCells.foldLeft(List.empty[SuDokuInput]) { case (acc, (index, cell)) =>
+    // Если значение в ячейке уже определено, то переходим к следующей
     if cell.maybeValue.isDefined then acc
     else
+      // Если нет - ищем первое значение, которое не встречается в других
       cell
         .possibleValues
         .collectFirst:
@@ -1188,6 +1189,77 @@ def blockSingleValueLoop(
 
 ##### Удаления значения из строки или столбца других блоков
 
+Вернемся к ситуации, когда какое-то число может быть только в определенной строке или определенном столбце блока.
+
+Например, у нас имеется блок:
+
+|       | 1     | 2     | 3 |
+|-------|-------|-------|---|
+| **1** | (1,2) | (1,3) | 4 |
+| **2** | (2,3) | 5     | 6 |
+| **3** | 7     | 8     | 9 |
+
+Вне зависимости от того, где будет в итоге расположено число 1 - в ячейке {1,1} или ячейке {1,2}
+точно известно, что оно будет расположено в 1 строке.
+Аналогично известно, что число 2 будет точно расположено в 1 столбце.
+
+Это означает, что 1 можно вычеркнуть из первой строки других блоков, а 2 - из первого столбца других блоков.
+
+```dotty
+def getRowColValues(
+    sudoku: SuDoku,
+    block: SuDokuBlock
+): List[SuDokuComplexInnerInput] =
+  val blockCells = sudoku.cells.filter { case ((_, _, blk), cell) =>
+    blk == block
+  }
+
+  SuDokuCellValue.values.foldLeft(List.empty[SuDokuComplexInnerInput]) {
+    case (inputs, value) =>
+      val cells =
+        blockCells.filter(_._2.possibleValues.contains(value)).keySet
+      val rows = cells.map(_._1)
+      val cols = cells.map(_._2)
+
+      if rows.size == 1 && cols.size > 1 then
+        // Данное значение встречается только в одной строке
+        (
+          SuDokuInnerComplexOperation.RemoveFromRowExceptBlock,
+          rows.head,
+          cols.head,
+          value
+        ) :: inputs
+      else if cols.size == 1 && rows.size > 1 then
+        // Данное значение встречается только в одном столбце
+        (
+          SuDokuInnerComplexOperation.RemoveFromColumnExceptBlock,
+          rows.head,
+          cols.head,
+          value
+        ) :: inputs
+      else inputs
+  }
+end getRowColValues
+
+@tailrec
+def blockRowColValuesLoop(
+    sudoku: SuDoku,
+    blocks: List[SuDokuBlock]
+): SuDokuOutput =
+  blocks match
+    case Nil => (true, sudoku) // Обошли все блоки
+    case head :: tail =>
+      val inputs = getRowColValues(sudoku, head)
+      if inputs.isEmpty then
+        // Если удалять нечего, переходим к следующим блокам
+        blockRowColValuesLoop(sudoku, tail)
+      else
+        // Если есть, выполняем операции
+        val (result, sudoku2) = SuDokuComplexInner.execute(inputs).run(sudoku)
+        // Если успех, переходим к следующему блоку
+        if result then blockSingleValueLoop(sudoku2, tail)
+        else (false, sudoku)
+```
 
 #### Поиск решения головоломки
 
@@ -1195,27 +1267,38 @@ def blockSingleValueLoop(
 
 - не найдено решение
 - если есть значения, которые можно вычеркнуть
+- если есть значения, которые в заданном блоке могут находиться только в определенных ячейках
+- Если есть значения, которые могут находиться только в определенной строке или столбце блока
 
-
+Определим изменения состояния Су Доку на основе всех перечисленных операций:
 
 ```dotty
-def getSolution: SuDokuState =
-  State[SuDoku, Boolean] {
-    (sudoku: SuDoku) =>
+private val blockSingleValueState = State[SuDoku, Boolean](
+  blockSingleValueLoop(_, SuDokuBlock.values.toList)
+)
+private val crossOutState = State[SuDoku, Boolean](
+  crossOutLoop(_, Some(SuDokuRow.First), Some(SuDokuColumn.First))
+)
+private val blockRowColValuesState = State[SuDoku, Boolean](
+  blockRowColValuesLoop(_, SuDokuBlock.values.toList)
+)
+private val loopState: State[SuDoku, Boolean] =
+  blockSingleValueState.map2(crossOutState)(_ && _)
+    .map2(blockRowColValuesState)(_ && _)
+```
 
-      @tailrec
-      def loop(sudoku: SuDoku): SuDokuOutput =
-        val (result, newSudoku)   = crossOutLoop(sudoku, 0, 0)
-        val (result2, newSudoku2) = blockSingleValueLoop(newSudoku, 0, 0)
-        if result && result2 && sudoku == newSudoku2 then
-          // Ничего не изменилось, не можем найти решение
-          (result, sudoku)
-        else if result && result2 then
-          loop(newSudoku)
-        else (false, sudoku)
+Рекурсивно запускаем решение головоломки до тех пор, пока происходит изменение поля Су Доку.
+Как только ни одна из операций не смогла внести новые изменения в поле, возвращаем результат.
 
-      loop(sudoku)
-  }
+```dotty
+@tailrec
+private def solutionLoop(sudoku: SuDoku): SuDokuOutput =
+  val (result, newSudoku) = loopState.run(sudoku)
+  if !result then (false, sudoku)
+  else if sudoku != newSudoku then solutionLoop(newSudoku)
+  else (result, sudoku)
+
+val solutionState: SuDokuState = State[SuDoku, Boolean](solutionLoop)
 ```
 
 В результате получим:
@@ -1224,33 +1307,28 @@ def getSolution: SuDokuState =
 ![](https://projecteuler.net/project/images/p096_2.png)
 
 ```dotty
-val initialSudoku = SuDoku.initial
-val inputs: Seq[SuDokuInput] = Seq(
-  (0, 2, SuDokuCellValue.Three), (0, 4, SuDokuCellValue.Two), (0, 6, SuDokuCellValue.Six),
-  (1, 0, SuDokuCellValue.Nine), (1, 3, SuDokuCellValue.Three), (1, 5, SuDokuCellValue.Five), (1, 8, SuDokuCellValue.One),
-  (2, 2, SuDokuCellValue.One), (2, 3, SuDokuCellValue.Eight), (2, 5, SuDokuCellValue.Six), (2, 6, SuDokuCellValue.Four),
-  (3, 2, SuDokuCellValue.Eight), (3, 3, SuDokuCellValue.One), (3, 5, SuDokuCellValue.Two), (3, 6, SuDokuCellValue.Nine),
-  (4, 0, SuDokuCellValue.Seven), (4, 8, SuDokuCellValue.Eight),
-  (5, 2, SuDokuCellValue.Six), (5, 3, SuDokuCellValue.Seven), (5, 5, SuDokuCellValue.Eight), (5, 6, SuDokuCellValue.Two),
-  (6, 2, SuDokuCellValue.Two), (6, 3, SuDokuCellValue.Six), (6, 5, SuDokuCellValue.Nine), (6, 6, SuDokuCellValue.Five),
-  (7, 0, SuDokuCellValue.Eight), (7, 3, SuDokuCellValue.Two), (7, 5, SuDokuCellValue.Three), (7, 8, SuDokuCellValue.Nine),
-  (8, 2, SuDokuCellValue.Five), (8, 4, SuDokuCellValue.One), (8, 5, SuDokuCellValue.Three)
-)
+val (_, convertedSudoku) = SuDokuSolver.toSuDoku(
+    "003020600\n" +
+      "900305001\n" +
+      "001806400\n" +
+      "008102900\n" +
+      "700000008\n" +
+      "006708200\n" +
+      "002609500\n" +
+      "800203009\n" +
+      "005010300"
+  )
+val (_, sudokuWithSolution) =   SuDokuSolver.solutionState.run(convertedSudoku)
 
-val (_, sudoku) = SuDoku.setValues(inputs*).run(initialSudoku)
-
-val (result, sudokuWithSolution) = SuDoku.getSolution.run(sudoku)
-// true
-
-// 4;8;3;9;2;1;6;5;7
-// 9;6;7;3;4;5;8;2;1
-// 2;5;1;8;7;6;4;9;3
-// 5;4;8;1;3;2;9;7;6
-// 7;2;9;5;6;4;1;3;8
-// 1;3;6;7;9;8;2;4;5
-// 3;7;2;6;8;9;5;1;4
-// 8;1;4;2;5;3;7;6;9
-// 6;9;5;4;1;7;3;8;2
+// |(4)|(8)|(3)|(9)|(2)|(1)|(6)|(5)|(7)|
+// |(9)|(6)|(7)|(3)|(4)|(5)|(8)|(2)|(1)|
+// |(2)|(5)|(1)|(8)|(7)|(6)|(4)|(9)|(3)|
+// |(5)|(4)|(8)|(1)|(3)|(2)|(9)|(7)|(6)|
+// |(7)|(2)|(9)|(5)|(6)|(4)|(1)|(3)|(8)|
+// |(1)|(3)|(6)|(7)|(9)|(8)|(2)|(4)|(5)|
+// |(3)|(7)|(2)|(6)|(8)|(9)|(5)|(1)|(4)|
+// |(8)|(1)|(4)|(2)|(5)|(3)|(7)|(6)|(9)|
+// |(6)|(9)|(5)|(4)|(1)|(7)|(3)|(8)|(2)|
 ```
 
 ---

@@ -2,6 +2,7 @@ package ru.scalabook.algorithms.games.sudoku
 
 import cats.syntax.show.*
 import ru.scalabook.algorithms.games.sudoku.SuDokuCellValue.*
+import ru.scalabook.algorithms.games.sudoku.SuDokuComplexInner.SuDokuInnerComplexOperation
 import ru.scalabook.algorithms.games.sudoku.SuDokuSolver.*
 import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
@@ -399,380 +400,60 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
     )
 
   pureTest(
-    "SuDoku.getSingleValues should return a list of the single values in a big SuDoku puzzle"
+    "SuDoku.getSingleValues should return a correct list of the single values"
   ):
     val initialSudoku = SuDoku(
       Map(
-        (SuDokuRow.First, SuDokuColumn.First, SuDokuBlock.First) -> SuDokuCell(
-          Set(Four, Five)
-        ),
-        (SuDokuRow.First, SuDokuColumn.Second, SuDokuBlock.First) -> SuDokuCell(
-          Set(Four, Eight, Seven, Five)
-        ),
-        (SuDokuRow.First, SuDokuColumn.Third, SuDokuBlock.First) -> SuDokuCell(
-          Set(Three)
-        ),
-        (
-          SuDokuRow.First,
-          SuDokuColumn.Fourth,
-          SuDokuBlock.Second
-        ) -> SuDokuCell(Set(Nine)),
-        (SuDokuRow.First, SuDokuColumn.Fifth, SuDokuBlock.Second) -> SuDokuCell(
-          Set(Two)
-        ),
-        (SuDokuRow.First, SuDokuColumn.Sixth, SuDokuBlock.Second) -> SuDokuCell(
-          Set(One)
-        ),
-        (
-          SuDokuRow.First,
-          SuDokuColumn.Seventh,
-          SuDokuBlock.Third
-        ) -> SuDokuCell(Set(Six)),
-        (SuDokuRow.First, SuDokuColumn.Eighth, SuDokuBlock.Third) -> SuDokuCell(
-          Set(Seven, Five)
-        ),
-        (SuDokuRow.First, SuDokuColumn.Ninth, SuDokuBlock.Third) -> SuDokuCell(
-          Set(Seven, Five)
-        ),
-        (SuDokuRow.Second, SuDokuColumn.First, SuDokuBlock.First) -> SuDokuCell(
-          Set(Nine)
-        ),
-        (
-          SuDokuRow.Second,
-          SuDokuColumn.Second,
-          SuDokuBlock.First
-        ) -> SuDokuCell(Set(Six)),
-        (SuDokuRow.Second, SuDokuColumn.Third, SuDokuBlock.First) -> SuDokuCell(
-          Set(Four, Seven)
-        ),
-        (
-          SuDokuRow.Second,
-          SuDokuColumn.Fourth,
-          SuDokuBlock.Second
-        ) -> SuDokuCell(Set(Three)),
-        (
-          SuDokuRow.Second,
-          SuDokuColumn.Fifth,
-          SuDokuBlock.Second
-        ) -> SuDokuCell(Set(Four)),
-        (
-          SuDokuRow.Second,
-          SuDokuColumn.Sixth,
-          SuDokuBlock.Second
-        ) -> SuDokuCell(Set(Five)),
-        (
-          SuDokuRow.Second,
-          SuDokuColumn.Seventh,
-          SuDokuBlock.Third
-        ) -> SuDokuCell(Set(Eight)),
-        (
-          SuDokuRow.Second,
-          SuDokuColumn.Eighth,
-          SuDokuBlock.Third
-        ) -> SuDokuCell(Set(Two)),
-        (SuDokuRow.Second, SuDokuColumn.Ninth, SuDokuBlock.Third) -> SuDokuCell(
-          Set(One)
-        ),
-        (SuDokuRow.Third, SuDokuColumn.First, SuDokuBlock.First) -> SuDokuCell(
-          Set(Two, Five)
-        ),
-        (SuDokuRow.Third, SuDokuColumn.Second, SuDokuBlock.First) -> SuDokuCell(
-          Set(Five)
-        ),
-        (SuDokuRow.Third, SuDokuColumn.Third, SuDokuBlock.First) -> SuDokuCell(
-          Set(One)
-        ),
-        (
-          SuDokuRow.Third,
-          SuDokuColumn.Fourth,
-          SuDokuBlock.Second
-        ) -> SuDokuCell(Set(Eight)),
-        (SuDokuRow.Third, SuDokuColumn.Fifth, SuDokuBlock.Second) -> SuDokuCell(
-          Set(Seven)
-        ),
-        (SuDokuRow.Third, SuDokuColumn.Sixth, SuDokuBlock.Second) -> SuDokuCell(
-          Set(Six)
-        ),
-        (
-          SuDokuRow.Third,
-          SuDokuColumn.Seventh,
-          SuDokuBlock.Third
-        ) -> SuDokuCell(Set(Four)),
-        (SuDokuRow.Third, SuDokuColumn.Eighth, SuDokuBlock.Third) -> SuDokuCell(
-          Set(Nine, Three)
-        ),
-        (SuDokuRow.Third, SuDokuColumn.Ninth, SuDokuBlock.Third) -> SuDokuCell(
-          Set(Three)
-        ),
-        (
-          SuDokuRow.Fourth,
-          SuDokuColumn.First,
-          SuDokuBlock.Fourth
-        ) -> SuDokuCell(Set(Three, Five)),
-        (
-          SuDokuRow.Fourth,
-          SuDokuColumn.Second,
-          SuDokuBlock.Fourth
-        ) -> SuDokuCell(Set(Four, Three)),
-        (
-          SuDokuRow.Fourth,
-          SuDokuColumn.Third,
-          SuDokuBlock.Fourth
-        ) -> SuDokuCell(Set(Eight)),
-        (
-          SuDokuRow.Fourth,
-          SuDokuColumn.Fourth,
-          SuDokuBlock.Fifth
-        ) -> SuDokuCell(Set(One)),
-        (SuDokuRow.Fourth, SuDokuColumn.Fifth, SuDokuBlock.Fifth) -> SuDokuCell(
-          Set(Six, Three)
-        ),
-        (SuDokuRow.Fourth, SuDokuColumn.Sixth, SuDokuBlock.Fifth) -> SuDokuCell(
-          Set(Two)
-        ),
         (
           SuDokuRow.Fourth,
           SuDokuColumn.Seventh,
           SuDokuBlock.Sixth
-        ) -> SuDokuCell(Set(Nine)),
+        ) -> SuDokuCell(Set(One, Two)),
         (
           SuDokuRow.Fourth,
           SuDokuColumn.Eighth,
           SuDokuBlock.Sixth
-        ) -> SuDokuCell(Set(Four, Seven, Three, Five)),
+        ) -> SuDokuCell(Set(One, Three)),
         (SuDokuRow.Fourth, SuDokuColumn.Ninth, SuDokuBlock.Sixth) -> SuDokuCell(
-          Set(Four, Six, Seven, Five)
-        ),
-        (SuDokuRow.Fifth, SuDokuColumn.First, SuDokuBlock.Fourth) -> SuDokuCell(
-          Set(Seven)
-        ),
-        (
-          SuDokuRow.Fifth,
-          SuDokuColumn.Second,
-          SuDokuBlock.Fourth
-        ) -> SuDokuCell(Set(Two)),
-        (SuDokuRow.Fifth, SuDokuColumn.Third, SuDokuBlock.Fourth) -> SuDokuCell(
-          Set(Nine)
-        ),
-        (SuDokuRow.Fifth, SuDokuColumn.Fourth, SuDokuBlock.Fifth) -> SuDokuCell(
-          Set(Five)
-        ),
-        (SuDokuRow.Fifth, SuDokuColumn.Fifth, SuDokuBlock.Fifth) -> SuDokuCell(
-          Set(Six, Three)
-        ),
-        (SuDokuRow.Fifth, SuDokuColumn.Sixth, SuDokuBlock.Fifth) -> SuDokuCell(
           Set(Four)
         ),
         (
           SuDokuRow.Fifth,
           SuDokuColumn.Seventh,
           SuDokuBlock.Sixth
-        ) -> SuDokuCell(Set(One)),
+        ) -> SuDokuCell(Set(Two, Three)),
         (SuDokuRow.Fifth, SuDokuColumn.Eighth, SuDokuBlock.Sixth) -> SuDokuCell(
-          Set(Three)
+          Set(Five)
         ),
         (SuDokuRow.Fifth, SuDokuColumn.Ninth, SuDokuBlock.Sixth) -> SuDokuCell(
-          Set(Eight)
-        ),
-        (SuDokuRow.Sixth, SuDokuColumn.First, SuDokuBlock.Fourth) -> SuDokuCell(
-          Set(One, Three, Five)
-        ),
-        (
-          SuDokuRow.Sixth,
-          SuDokuColumn.Second,
-          SuDokuBlock.Fourth
-        ) -> SuDokuCell(Set(Four, One, Three)),
-        (SuDokuRow.Sixth, SuDokuColumn.Third, SuDokuBlock.Fourth) -> SuDokuCell(
           Set(Six)
-        ),
-        (SuDokuRow.Sixth, SuDokuColumn.Fourth, SuDokuBlock.Fifth) -> SuDokuCell(
-          Set(Seven)
-        ),
-        (SuDokuRow.Sixth, SuDokuColumn.Fifth, SuDokuBlock.Fifth) -> SuDokuCell(
-          Set(Nine)
-        ),
-        (SuDokuRow.Sixth, SuDokuColumn.Sixth, SuDokuBlock.Fifth) -> SuDokuCell(
-          Set(Eight)
         ),
         (
           SuDokuRow.Sixth,
           SuDokuColumn.Seventh,
           SuDokuBlock.Sixth
-        ) -> SuDokuCell(Set(Two)),
-        (SuDokuRow.Sixth, SuDokuColumn.Eighth, SuDokuBlock.Sixth) -> SuDokuCell(
-          Set(Four, Five)
-        ),
-        (SuDokuRow.Sixth, SuDokuColumn.Ninth, SuDokuBlock.Sixth) -> SuDokuCell(
-          Set(Four, Five)
-        ),
-        (
-          SuDokuRow.Seventh,
-          SuDokuColumn.First,
-          SuDokuBlock.Seventh
-        ) -> SuDokuCell(Set(One, Three)),
-        (
-          SuDokuRow.Seventh,
-          SuDokuColumn.Second,
-          SuDokuBlock.Seventh
-        ) -> SuDokuCell(Set(Four, One, Seven, Three)),
-        (
-          SuDokuRow.Seventh,
-          SuDokuColumn.Third,
-          SuDokuBlock.Seventh
-        ) -> SuDokuCell(Set(Two)),
-        (
-          SuDokuRow.Seventh,
-          SuDokuColumn.Fourth,
-          SuDokuBlock.Eighth
-        ) -> SuDokuCell(Set(Six)),
-        (
-          SuDokuRow.Seventh,
-          SuDokuColumn.Fifth,
-          SuDokuBlock.Eighth
-        ) -> SuDokuCell(Set(Eight)),
-        (
-          SuDokuRow.Seventh,
-          SuDokuColumn.Sixth,
-          SuDokuBlock.Eighth
-        ) -> SuDokuCell(Set(Nine)),
-        (
-          SuDokuRow.Seventh,
-          SuDokuColumn.Seventh,
-          SuDokuBlock.Ninth
-        ) -> SuDokuCell(Set(Five)),
-        (
-          SuDokuRow.Seventh,
-          SuDokuColumn.Eighth,
-          SuDokuBlock.Ninth
-        ) -> SuDokuCell(Set(Four, One, Seven)),
-        (
-          SuDokuRow.Seventh,
-          SuDokuColumn.Ninth,
-          SuDokuBlock.Ninth
-        ) -> SuDokuCell(Set(Four, Seven)),
-        (
-          SuDokuRow.Eighth,
-          SuDokuColumn.First,
-          SuDokuBlock.Seventh
-        ) -> SuDokuCell(Set(Eight)),
-        (
-          SuDokuRow.Eighth,
-          SuDokuColumn.Second,
-          SuDokuBlock.Seventh
-        ) -> SuDokuCell(Set(Four, One)),
-        (
-          SuDokuRow.Eighth,
-          SuDokuColumn.Third,
-          SuDokuBlock.Seventh
-        ) -> SuDokuCell(Set(Four)),
-        (
-          SuDokuRow.Eighth,
-          SuDokuColumn.Fourth,
-          SuDokuBlock.Eighth
-        ) -> SuDokuCell(Set(Two)),
-        (
-          SuDokuRow.Eighth,
-          SuDokuColumn.Fifth,
-          SuDokuBlock.Eighth
-        ) -> SuDokuCell(Set(Five)),
-        (
-          SuDokuRow.Eighth,
-          SuDokuColumn.Sixth,
-          SuDokuBlock.Eighth
-        ) -> SuDokuCell(Set(Three)),
-        (
-          SuDokuRow.Eighth,
-          SuDokuColumn.Seventh,
-          SuDokuBlock.Ninth
         ) -> SuDokuCell(Set(Seven)),
-        (
-          SuDokuRow.Eighth,
-          SuDokuColumn.Eighth,
-          SuDokuBlock.Ninth
-        ) -> SuDokuCell(Set(Six)),
-        (SuDokuRow.Eighth, SuDokuColumn.Ninth, SuDokuBlock.Ninth) -> SuDokuCell(
-          Set(Nine)
-        ),
-        (
-          SuDokuRow.Ninth,
-          SuDokuColumn.First,
-          SuDokuBlock.Seventh
-        ) -> SuDokuCell(Set(Six)),
-        (
-          SuDokuRow.Ninth,
-          SuDokuColumn.Second,
-          SuDokuBlock.Seventh
-        ) -> SuDokuCell(Set(Nine)),
-        (
-          SuDokuRow.Ninth,
-          SuDokuColumn.Third,
-          SuDokuBlock.Seventh
-        ) -> SuDokuCell(Set(Five)),
-        (
-          SuDokuRow.Ninth,
-          SuDokuColumn.Fourth,
-          SuDokuBlock.Eighth
-        ) -> SuDokuCell(Set(Four)),
-        (SuDokuRow.Ninth, SuDokuColumn.Fifth, SuDokuBlock.Eighth) -> SuDokuCell(
-          Set(One)
-        ),
-        (SuDokuRow.Ninth, SuDokuColumn.Sixth, SuDokuBlock.Eighth) -> SuDokuCell(
-          Set(Seven)
-        ),
-        (
-          SuDokuRow.Ninth,
-          SuDokuColumn.Seventh,
-          SuDokuBlock.Ninth
-        ) -> SuDokuCell(Set(Three)),
-        (SuDokuRow.Ninth, SuDokuColumn.Eighth, SuDokuBlock.Ninth) -> SuDokuCell(
+        (SuDokuRow.Sixth, SuDokuColumn.Eighth, SuDokuBlock.Sixth) -> SuDokuCell(
           Set(Eight)
         ),
-        (SuDokuRow.Ninth, SuDokuColumn.Ninth, SuDokuBlock.Ninth) -> SuDokuCell(
-          Set(Two)
+        (SuDokuRow.Sixth, SuDokuColumn.Ninth, SuDokuBlock.Sixth) -> SuDokuCell(
+          Set(Nine)
         )
       )
     )
 
-    val singleValuesFirstBlock =
-      getSingleValues(initialSudoku, SuDokuBlock.First)
-    val singleValuesSecondBlock =
-      getSingleValues(initialSudoku, SuDokuBlock.Second)
-    val singleValuesThirdBlock =
-      getSingleValues(initialSudoku, SuDokuBlock.Third)
-    val singleValuesFourthBlock =
-      getSingleValues(initialSudoku, SuDokuBlock.Fourth)
-    val singleValuesFifthBlock =
-      getSingleValues(initialSudoku, SuDokuBlock.Fifth)
-    val singleValuesSixthBlock =
-      getSingleValues(initialSudoku, SuDokuBlock.Sixth)
-    val singleValuesSeventhBlock =
-      getSingleValues(initialSudoku, SuDokuBlock.Seventh)
-    val singleValuesEighthBlock =
-      getSingleValues(initialSudoku, SuDokuBlock.Eighth)
-    val singleValuesNinthBlock =
-      getSingleValues(initialSudoku, SuDokuBlock.Ninth)
+    val inputs = getRowColValues(initialSudoku, SuDokuBlock.Sixth)
 
     expect.all(
-      singleValuesFirstBlock.sorted == List(
-        (SuDokuRow.First, SuDokuColumn.Second, Eight),
-        (SuDokuRow.Third, SuDokuColumn.First, Two)
-      ).sorted,
-      singleValuesSecondBlock.isEmpty,
-      singleValuesThirdBlock == List(
-        (SuDokuRow.Third, SuDokuColumn.Eighth, Nine)
-      ),
-      singleValuesFourthBlock.isEmpty,
-      singleValuesFifthBlock.isEmpty,
-      singleValuesSixthBlock.sorted == List(
-        (SuDokuRow.Fourth, SuDokuColumn.Ninth, Six)
-      ).sorted,
-      singleValuesSeventhBlock == List(
-        (SuDokuRow.Seventh, SuDokuColumn.Second, Seven)
-      ),
-      singleValuesEighthBlock.isEmpty,
-      singleValuesNinthBlock == List(
-        (SuDokuRow.Seventh, SuDokuColumn.Eighth, One)
-      )
+      inputs.length == 2,
+      inputs.exists: input =>
+        input._1 == SuDokuInnerComplexOperation.RemoveFromRowExceptBlock &&
+          input._2 == SuDokuRow.Fourth &&
+          input._4 == One,
+      inputs.exists: input =>
+        input._1 == SuDokuInnerComplexOperation.RemoveFromColumnExceptBlock &&
+          input._3 == SuDokuColumn.Seventh &&
+          input._4 == Two
     )
 
   pureTest(

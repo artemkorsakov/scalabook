@@ -176,7 +176,8 @@ object SuDokuSolver:
           .possibleValues
           .collectFirst:
             case value if notInOtherCells(index, value) =>
-              (index._1, index._2, value) :: acc
+              val input: SuDokuInput = (index._1, index._2, value)
+              input :: acc
           .getOrElse(acc)
     }
   end getSingleValues
@@ -201,75 +202,14 @@ object SuDokuSolver:
           if result then blockSingleValueLoop(sudoku2, tail)
           else (false, sudoku)
 
-  /** Ищем такие значения, которые встречаются в заданном блоке только в
-    * определенной строке или столбце.
-    */
-  def getRowColValues(
-      sudoku: SuDoku,
-      block: SuDokuBlock
-  ): List[SuDokuComplexInnerInput] =
-    val blockCells = sudoku.cells.filter { case ((_, _, blk), cell) =>
-      blk == block
-    }
-
-    SuDokuCellValue.values.foldLeft(List.empty[SuDokuComplexInnerInput]) {
-      case (inputs, value) =>
-        val cells =
-          blockCells.filter(_._2.possibleValues.contains(value)).keySet
-        val rows = cells.map(_._1)
-        val cols = cells.map(_._2)
-
-        if rows.size == 1 && cols.size > 1 then
-          // Данное значение встречается только в одной строке
-          (
-            SuDokuInnerComplexOperation.RemoveFromRowExceptBlock,
-            rows.head,
-            cols.head,
-            value
-          ) :: inputs
-        else if cols.size == 1 && rows.size > 1 then
-          // Данное значение встречается только в одном столбце
-          (
-            SuDokuInnerComplexOperation.RemoveFromColumnExceptBlock,
-            rows.head,
-            cols.head,
-            value
-          ) :: inputs
-        else inputs
-    }
-  end getRowColValues
-
-  @tailrec
-  private def blockRowColValuesLoop(
-      sudoku: SuDoku,
-      blocks: List[SuDokuBlock]
-  ): SuDokuOutput =
-    blocks match
-      case Nil => (true, sudoku) // Обошли все блоки
-      case head :: tail =>
-        val inputs = getRowColValues(sudoku, head)
-        if inputs.isEmpty then
-          // Если удалять нечего, переходим к следующим блокам
-          blockRowColValuesLoop(sudoku, tail)
-        else
-          // Если есть, выполняем операции
-          val (result, sudoku2) = SuDokuComplexInner.execute(inputs).run(sudoku)
-          // Если успех, переходим к следующему блоку
-          if result then blockSingleValueLoop(sudoku2, tail)
-          else (false, sudoku)
-
   private val blockSingleValueState = State[SuDoku, Boolean](
     blockSingleValueLoop(_, SuDokuBlock.values.toList)
   )
   private val crossOutState = State[SuDoku, Boolean](
     crossOutLoop(_, Some(SuDokuRow.First), Some(SuDokuColumn.First))
   )
-  private val blockRowColValuesState = State[SuDoku, Boolean](
-    blockRowColValuesLoop(_, SuDokuBlock.values.toList)
-  )
   private val loopState: State[SuDoku, Boolean] =
     blockSingleValueState.map2(crossOutState)(_ && _)
-      .map2(blockRowColValuesState)(_ && _)
 
   @tailrec
   private def solutionLoop(sudoku: SuDoku): SuDokuOutput =

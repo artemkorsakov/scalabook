@@ -2,7 +2,6 @@ package ru.scalabook.algorithms.games.sudoku
 
 import cats.syntax.show.*
 import ru.scalabook.algorithms.games.sudoku.SuDokuCellValue.*
-import ru.scalabook.algorithms.games.sudoku.SuDokuComplexInner.SuDokuInnerComplexOperation
 import ru.scalabook.algorithms.games.sudoku.SuDokuSolver.*
 import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
@@ -397,63 +396,6 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
       singleValues.sorted == List(
         (SuDokuRow.Fourth, SuDokuColumn.Ninth, Six)
       ).sorted
-    )
-
-  pureTest(
-    "SuDoku.getSingleValues should return a correct list of the single values"
-  ):
-    val initialSudoku = SuDoku(
-      Map(
-        (
-          SuDokuRow.Fourth,
-          SuDokuColumn.Seventh,
-          SuDokuBlock.Sixth
-        ) -> SuDokuCell(Set(One, Two)),
-        (
-          SuDokuRow.Fourth,
-          SuDokuColumn.Eighth,
-          SuDokuBlock.Sixth
-        ) -> SuDokuCell(Set(One, Three)),
-        (SuDokuRow.Fourth, SuDokuColumn.Ninth, SuDokuBlock.Sixth) -> SuDokuCell(
-          Set(Four)
-        ),
-        (
-          SuDokuRow.Fifth,
-          SuDokuColumn.Seventh,
-          SuDokuBlock.Sixth
-        ) -> SuDokuCell(Set(Two, Three)),
-        (SuDokuRow.Fifth, SuDokuColumn.Eighth, SuDokuBlock.Sixth) -> SuDokuCell(
-          Set(Five)
-        ),
-        (SuDokuRow.Fifth, SuDokuColumn.Ninth, SuDokuBlock.Sixth) -> SuDokuCell(
-          Set(Six)
-        ),
-        (
-          SuDokuRow.Sixth,
-          SuDokuColumn.Seventh,
-          SuDokuBlock.Sixth
-        ) -> SuDokuCell(Set(Seven)),
-        (SuDokuRow.Sixth, SuDokuColumn.Eighth, SuDokuBlock.Sixth) -> SuDokuCell(
-          Set(Eight)
-        ),
-        (SuDokuRow.Sixth, SuDokuColumn.Ninth, SuDokuBlock.Sixth) -> SuDokuCell(
-          Set(Nine)
-        )
-      )
-    )
-
-    val inputs = getRowColValues(initialSudoku, SuDokuBlock.Sixth)
-
-    expect.all(
-      inputs.length == 2,
-      inputs.exists: input =>
-        input._1 == SuDokuInnerComplexOperation.RemoveFromRowExceptBlock &&
-          input._2 == SuDokuRow.Fourth &&
-          input._4 == One,
-      inputs.exists: input =>
-        input._1 == SuDokuInnerComplexOperation.RemoveFromColumnExceptBlock &&
-          input._3 == SuDokuColumn.Seventh &&
-          input._4 == Two
     )
 
   pureTest(

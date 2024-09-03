@@ -1,7 +1,5 @@
 package ru.scalabook.algorithms.games.sudoku
 
-import cats.syntax.show.*
-import ru.scalabook.algorithms.games.sudoku.SuDokuBlock.*
 import weaver.SimpleIOSuite
 
 object SuDokuBlockSuite extends SimpleIOSuite:

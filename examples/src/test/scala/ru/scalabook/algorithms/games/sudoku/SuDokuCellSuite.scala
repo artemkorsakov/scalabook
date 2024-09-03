@@ -1,10 +1,6 @@
 package ru.scalabook.algorithms.games.sudoku
 
-import ru.scalabook.algorithms.games.sudoku.SuDokuCell.{
-  SuDokuCellOperation,
-  execute
-}
-import ru.scalabook.algorithms.games.sudoku.SuDokuCellValue.*
+import ru.scalabook.algorithms.games.sudoku.SuDokuCell.SuDokuCellOperation
 import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
 

@@ -1,19 +1,16 @@
 package ru.scalabook.algorithms.geometry
 
-import ru.scalabook.algorithms.geometry.PointOnTriangleType.*
-import ru.scalabook.algorithms.geometry.Triangle
-import ru.scalabook.algorithms.geometry.Triangle.*
 import weaver.FunSuite
 
 object TriangleSuite extends FunSuite:
   test("getPointOnTriangleType"):
     expect.all(
       Triangle((-340, 495), (-153, -910), (835, -947))
-        .getPointOnTriangleType((0, 0)) == Inside,
+        .getPointOnTriangleType((0, 0)) == PointOnTriangleType.Inside,
       Triangle((-175, 41), (-421, -714), (574, -645))
-        .getPointOnTriangleType((0, 0)) == Outside,
+        .getPointOnTriangleType((0, 0)) == PointOnTriangleType.Outside,
       Triangle((-175, 41), (-421, -714), (574, -645))
-        .getPointOnTriangleType((-175, 41)) == OnTheSide
+        .getPointOnTriangleType((-175, 41)) == PointOnTriangleType.OnTheSide
     )
 
   test("isZeroPointInside"):

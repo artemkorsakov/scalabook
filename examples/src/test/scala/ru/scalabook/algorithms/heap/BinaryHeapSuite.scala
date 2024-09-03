@@ -1,6 +1,5 @@
 package ru.scalabook.algorithms.heap
 
-import ru.scalabook.algorithms.heap.BinaryHeap.*
 import weaver.FunSuite
 
 object BinaryHeapSuite extends FunSuite:

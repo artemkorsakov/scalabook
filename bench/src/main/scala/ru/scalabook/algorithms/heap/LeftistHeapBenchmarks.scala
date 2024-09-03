@@ -1,7 +1,5 @@
 package ru.scalabook.algorithms.heap
 
-import ru.scalabook.algorithms.heap.LeftistHeap.*
-
 private val emptyLeftistHeap: LeftistHeap[Int] = LeftistHeap.empty
 private val nonEmptyLeftistHeap: LeftistHeap[Int] =
   LeftistHeap.empty.insert(1).insert(2)

@@ -1,6 +1,5 @@
 package ru.scalabook.algorithms.structures
 
-import ru.scalabook.algorithms.structures.Queue.*
 import weaver.FunSuite
 
 object QueueSuite extends FunSuite:

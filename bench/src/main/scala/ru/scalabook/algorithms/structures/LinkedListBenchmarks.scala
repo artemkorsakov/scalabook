@@ -1,7 +1,5 @@
 package ru.scalabook.algorithms.structures
 
-import ru.scalabook.algorithms.structures.LinkedList.*
-
 private val emptyList: LinkedList[Int] = LinkedList.Nil
 private val nonEmptyList: LinkedList[Int] =
   LinkedList.Cons(2, LinkedList.Cons(1, LinkedList.Nil))

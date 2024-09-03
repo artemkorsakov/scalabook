@@ -1,7 +1,5 @@
 package ru.scalabook.algorithms.games.sudoku
 
-import ru.scalabook.algorithms.games.sudoku.SuDoku.*
-import ru.scalabook.algorithms.games.sudoku.SuDokuComplexInner.*
 import ru.scalabook.algorithms.games.sudoku.SuDokuComplexInner
   .SuDokuInnerComplexOperation.*
 import ru.scalabook.algorithms.games.sudoku.SuDokuInner.{

@@ -1,7 +1,5 @@
 package ru.scalabook.algorithms.games.sudoku
 
-import cats.syntax.show.*
-import ru.scalabook.algorithms.games.sudoku.SuDoku.*
 import weaver.SimpleIOSuite
 import weaver.scalacheck.Checkers
 

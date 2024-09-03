@@ -1,7 +1,5 @@
 package ru.scalabook.algorithms.structures
 
-import ru.scalabook.algorithms.structures.Queue.*
-
 private val emptyQueue: Queue[Int]    = Queue.empty[Int]
 private val nonEmptyQueue: Queue[Int] = emptyQueue.enqueue(1).enqueue(2)
 

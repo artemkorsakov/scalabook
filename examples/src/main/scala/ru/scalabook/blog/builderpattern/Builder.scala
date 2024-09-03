@@ -1,7 +1,6 @@
 package ru.scalabook.blog.builderpattern
 
 import cats.data.*
-import ru.scalabook.blog.builderpattern.ConnectionConfig.*
 
 object Builder:
   @main def run(): Unit =

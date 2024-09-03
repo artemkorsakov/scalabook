@@ -1,6 +1,5 @@
 package ru.scalabook.algorithms.equations
 
-import ru.scalabook.algorithms.equations.QuadraticEquation.*
 import spire.math.Complex
 
 @main def solutionsInIntegersBench(): Array[Long] =

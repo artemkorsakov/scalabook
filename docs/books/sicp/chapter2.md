@@ -1228,13 +1228,187 @@ subset(List(1, 2, 3))
 
 ### 2.2.3. Последовательности как стандартные интерфейсы
 
+В этом разделе представлен еще один мощный принцип проектирования для работы со структурами данных — 
+использование _стандартных интерфейсов_ (_conventional interfaces_).
 
+#### Операции над последовательностями
+
+Просеивание последовательности, выбирающее только те элементы, 
+которые удовлетворяют данному предикату, осуществляется при помощи:
+
+```dotty
+def filter[A](predicate: A => Boolean, sequence: List[A]): List[A] =
+  if sequence.isEmpty then Nil
+  else if predicate(sequence.head) then
+    sequence.head :: filter(predicate, sequence.tail)
+  else filter(predicate, sequence.tail)
+
+filter[Int](_ % 2 == 0, List(1, 2, 3, 4, 5))
+// List(2, 4)  
+```
+
+Накопление осуществляется посредством:
+
+```dotty
+def accumulate[A, B](op: (A, B) => B, initial: B, sequence: List[A]): B =
+  sequence match
+    case Nil          => initial
+    case head :: tail => op(head, accumulate(op, initial, tail))
+
+accumulate[Int, Int](_ * _, 1, List(1, 2, 3, 4, 5))
+// 120
+accumulate[String, String](_ + _, "", List("a", "b", "c", "d", "e"))
+// "abcde"
+```
+
+#### Упражнение 2.33
+
+> Заполните пропущенные выражения, так, чтобы получились определения некоторых базовых операций по работе со списками в виде накопления:
+>
+> ```
+> (define (map p sequence)
+>   (accumulate (lambda (x y) <??>) nil sequence))
+> 
+> (define (append seq1 seq2)
+>   (accumulate cons <??> <??>))
+> 
+> (define (length sequence)
+>   (accumulate <??> 0 sequence))
+> ```
+
+```dotty
+def map[A, B](f: A => B, sequence: List[A]): List[B] =
+  accumulate[A, List[B]]((a, listB) => f(a) :: listB, List.empty[B], sequence)
+
+def append[A](seq1: List[A], seq2: List[A]): List[A] =
+  accumulate[A, List[A]]((a, listA) => a :: listA, seq1, seq2)
+
+def length[A](list: List[A]): Int =
+  accumulate[A, Int]((_, acc) => acc + 1, 0, list)
+
+map[Int, Int](_ * 2, List(1, 2, 3, 4, 5))
+// List(2, 4, 6, 8, 10)
+append[Int](List(1, 2, 3), List(4, 5, 6))
+// List(4, 5, 6, 1, 2, 3)
+length[Int](List(1, 2, 3, 4, 5))
+// 5 
+```
+
+#### Упражнение 2.34
+
+> Вычисление многочлена с переменной x при данном значении x можно сформулировать в виде накопления. 
+> Мы вычисляем многочлен \\(a\_{n}x^{n} + a\_{n−1}x^{n−1} + ... + a\_{1}x + a\_{0}\\) по известному алгоритму, 
+> называемому _схема Горнера_ (_Horner’s rule_), которое переписывает формулу в виде
+> \\((... (a\_{n}x + a\_{n−1})x + ... + a\_{1})x + a\_{0})\\)
+> 
+> Другими словами, мы начинаем с \\(a\_{n}\\), умножаем его на x, и так далее, пока не достигнем \\(a\_{0}\\).
+> Заполните пропуски в следующей заготовке так, чтобы получить процедуру, которая вычисляет многочлены по схеме Горнера. 
+> Предполагается, что коэффициенты многочлена представлены в виде последовательности, от \\(a\_{0}\\) до \\(a\_{n}\\).
+>
+> ```
+> (define (horner-eval x coefficient-sequence)
+>   (accumulate (lambda (this-coeff higher-terms) <??>)
+>               0
+>               coefficient-sequence))
+> ```
+>
+> Например, чтобы вычислить \\(1 + 3x + 5x^{3} + x^{5}\\) в точке x = 2, нужно ввести (horner-eval 2 (list 1 3 0 5 0 1))
+
+```dotty
+def hornerEval(x: Int, coeff: List[Int]): Int =
+  accumulate[Int, Int]((c, acc) => c + acc * x, 0, coeff)
+
+hornerEval(2, List(1, 3, 0, 5, 0, 1)) 
+// 79
+```
+
+#### Упражнение 2.35
+
+> Переопределите count-leaves из раздела 2.2.2 в виде накопления:
+> 
+> ```
+> (define (count-leaves t)
+>   (accumulate <??> <??> (map <??> <??>)))
+> ```
+
+```dotty
+enum Tree[+A]:
+  self =>
+
+  case Leaf(value: A)
+  case Branch(left: Tree[A], right: Tree[A])
+
+  def map[B](f: A => B): Tree[B] =
+    self match
+      case Leaf(value) => Leaf(f(value))
+      case Branch(left, right) =>
+        Branch(left.map(f), right.map(f))
+
+def accumulate[A, B](op: (A, B) => B, initial: B, tree: Tree[A]): B =
+  tree match
+    case Tree.Leaf(value) => op(value, initial)
+    case Tree.Branch(left, right) =>
+      accumulate(op, accumulate(op, initial, left), right)
+
+def countLeaves[A](tree: Tree[A]): Int =
+  accumulate[Int, Int](_ + _, 0, tree.map(_ => 1))
+
+countLeaves(Tree.Branch(Tree.Leaf(1), Tree.Branch(Tree.Leaf(2), Tree.Leaf(3))))
+// 3
+```
+
+#### Упражнение 2.36
+
+> Процедура accumulate-n подобна accumulate, только свой третий аргумент она воспринимает как последовательность последовательностей, 
+> причем предполагается, что все они содержат одинаковое количество элементов. 
+> Она применяет указанную процедуру накопления ко всем первым элементам последовательностей, 
+> вторым элементам последовательностей и так далее, и возвращает последовательность результатов. 
+> Например, если s есть последовательность, состоящая из четырех последовательностей, ((1 2 3) (4 5 6) (7 8 9) (10 11 12)), 
+> то значением (accumulate-n + 0 s) будет последовательность (22 26 30). 
+> Заполните пробелы в следующем определении accumulate-n:
+>
+> ```
+> (define (accumulate-n op init seqs)
+>   (if (null? (car seqs))
+>       nil
+>       (cons (accumulate op init <??>)
+>             (accumulate-n op init <??>))))
+> ```
+
+```dotty
+def accumulateN[A, B](
+    op: (A, B) => B,
+    initial: B,
+    seqs: List[List[A]]
+): List[B] =
+  seqs match
+    case head :: tail if head.nonEmpty =>
+      accumulate(op, initial, seqs.map(_.head)) ::
+        accumulateN(op, initial, seqs.map(_.tail))
+    case _ => Nil
+
+accumulateN[Int, Int]((x, y) => x + y, 0, List(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9), List(10,11,12)))
+// List(22, 26, 30) 
+```
+
+#### Упражнение 2.37
+
+> Предположим, что мы представляем векторы \\(v = (v\_{i})\\) как последовательности чисел, 
+> а матрицы \\(m = (m\_{ij})\\) как последовательности векторов (рядов матрицы). 
+> Например, матрица
+> 
+> \\(\begin{bmatrix} 1 & 2 & 3 & 4 \\\\ 4 & 5 & 6 & 6 \\\\ 6 & 7 & 8 & 9 \end{bmatrix}\\)
+>
+> представляется в виде последовательности ((1 2 3 4) (4 5 6 6) (6 7 8 9)). 
+> Имея такое представление, мы можем использовать операции над последовательностями, 
+> чтобы кратко выразить основные действия над матрицами и векторами. 
+> Эти операции (описанные в любой книге по матричной алгебре) следующие:
 
 ---
 
 **Ссылки:**
 
 - [Abelson Harold, Sussman Gerald Jay, Sussman Julie - Structure and Interpretation of Computer Programs][SICP]
-- [Eli Bendersky&#39;s solution](https://eli.thegreenplace.net/tag/sicp)
+- [Eli Bendersky's solution](https://eli.thegreenplace.net/tag/sicp)
 
 [SICP]: https://web.mit.edu/6.001/6.037/sicp.pdf

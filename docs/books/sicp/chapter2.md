@@ -1403,6 +1403,166 @@ accumulateN[Int, Int]((x, y) => x + y, 0, List(List(1, 2, 3), List(4, 5, 6), Lis
 > Имея такое представление, мы можем использовать операции над последовательностями, 
 > чтобы кратко выразить основные действия над матрицами и векторами. 
 > Эти операции (описанные в любой книге по матричной алгебре) следующие:
+>
+> **Скалярное произведение** (dot-product v w) - возвращает сумму \\(\sum\_{i}^{}v\_{i}w\_{i}\\);
+> 
+> **Произведение матрицы и вектора** (matrix-*-vector m v) возвращает вектор t, \\(t\_{i} = \sum\_{i}^{}m\_{ij}v\_{i}\\);
+> 
+> **Произведение матриц** (matrix-*-matrix m n) возвращает матрицу p, где \\(p\_{ij} = \sum\_{k}^{}m\_{ik}n\_{kj}\\)
+> 
+> **Транспозиция** (transpose m) возвращает матрицу n, где \\(n\_{ij} = m\_{ji}\\)
+> 
+> Скалярное произведение мы можем определить так:
+>
+> ```
+> (define (dot-product v w)
+>   (accumulate + 0 (map * v w)))
+> ```
+>
+> Заполните пропуски в следующих процедурах для вычисления остальных матричных операций.
+>
+> ```
+> (define (matrix-*-vector m v)
+>   (map <??> m))
+>
+> (define (transpose mat)
+>   (accumulate-n <??> <??> mat))
+>
+> (define (matrix-*-matrix m n)
+>   (let ((cols (transpose n)))
+>     (map <??> m)))
+> ```
+
+Определим операцию `map2`, которая принимает два списка и возвращает список, в котором каждый элемент - 
+результат применения заданной функции к соответствующей паре элементов заданных двух списков.
+`dotProduct` определяется через `map2`:
+
+```dotty
+def map2[A, B, C](seq1: List[A], seq2: List[B], f: (A, B) => C): List[C] =
+  seq1.lazyZip(seq2).map{ case (a, b) => f(a, b) }
+
+def dotProduct(v: List[Int], w: List[Int]): Int =
+  accumulate[Int, Int](_ + _, 0, map2(v, w, _ * _))
+
+dotProduct(List(1, 2, 3), List(4, 5, 6))
+// 32
+```
+
+Остальные операции определяются через `dotProduct`:
+
+```dotty
+def matrixVectorMultiply(m: List[List[Int]], v: List[Int]): List[Int] =
+  map(row => dotProduct(row, v), m)
+
+matrixVectorMultiply(
+  List(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9)),
+  List(1, 2, 3)
+)
+// List(14, 32, 50)
+
+def transpose[A](m: List[List[A]]): List[List[A]] =
+  accumulateN[A, List[A]]((a, acc) => a :: acc, List.empty, m)
+
+transpose(List(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9)))
+// List(List(1, 4, 7), List(2, 5, 8), List(3, 6, 9))
+
+def matrixMatrixMultiply(m: List[List[Int]],  n: List[List[Int]]): List[List[Int]] =
+  val cols = transpose(n)
+  val matrix =  map((col: List[Int]) => matrixVectorMultiply(m, col), cols)
+  transpose(matrix)
+
+matrixMatrixMultiply(
+  List(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9)),
+  List(List(1, 4, 7), List(2, 5, 8), List(3, 6, 9))
+)
+// List(List(14, 32, 50), List(32, 77, 122), List(50, 122, 194))
+```
+
+#### Упражнение 2.38
+
+> Процедура accumulate известна также как fold-right (правая свертка), 
+> поскольку она комбинирует первый элемент последовательности с результатом комбинирования всех элементов справа от него. 
+> Существует также процедура fold-left (левая свертка), которая подобна fold-right, 
+> но комбинирует элементы в противоположном направлении:
+>
+> ```
+> (define (fold-left op initial sequence)
+>   (define (iter result rest)
+>     (if (null? rest)
+>         result
+>         (iter (op result (car rest))
+>               (cdr rest))))
+>   (iter initial sequence))
+> ```
+>
+> Каковы значения следующих выражений?
+> 
+> ```
+> (fold-right / 1 (list 1 2 3))
+> (fold-left / 1 (list 1 2 3))
+> (fold-right list nil (list 1 2 3))
+> (fold-left list nil (list 1 2 3))
+> ```
+>
+> Укажите свойство, которому должна удовлетворять op, 
+> чтобы для любой последовательности fold-right и fold-left давали одинаковые результаты.
+
+Процедура `foldLeft` на Scala:
+
+```dotty
+def foldLeft[A, B](op: (B, A) => B, initial: B, sequence: List[A]): B =
+  def iter(result: B, rest: List[A]): B =
+    rest match
+      case Nil => result
+      case head :: next =>
+        iter(op(result, head), next)
+
+  iter(initial, sequence)
+```
+
+Результат выполнения операций:
+
+```dotty
+foldRight[Double, Double](_ / _, 1.0, List(1.0, 2.0, 3.0))
+// 1.5
+foldLeft[Double, Double](_ / _, 1.0, List(1.0, 2.0, 3.0))
+// 0.16666666666666666
+
+foldRight[Int, List[Int]](_ :: _, Nil, List(1, 2, 3))
+// List(1, 2, 3)
+foldLeft[Int, List[Int]]((b, a) => a :: b, Nil, List(1, 2, 3))
+// List(3, 2, 1)
+```
+
+Если операция `op` ассоциативна, то результаты `foldLeft` и `foldRight` будут одинаковыми. 
+Ассоциативность операции означает, что для любых трех аргументов `a`, `b` и `c` выполняется следующее условие 
+`op(a, op(b, c)) = op(op(a, b), c)`.
+
+#### Упражнение 2.39
+
+> Закончите следующие определения reverse (упражнение 2.18) в терминах процедур fold-right и fold-left из упражнения 2.38.
+>
+> ```
+> (define (reverse sequence)
+>   (fold-right (lambda (x y) <??>) nil sequence))
+> (define (reverse sequence)
+>   (fold-left (lambda (x y) <??>) nil sequence))
+> ```
+
+```dotty
+def reverseViaFoldRight[A](sequence: List[A]): List[A] =
+  foldRight((a: A, b: List[A]) => b :+ a, Nil, sequence)
+
+def reverseViaFoldLeft[A](sequence: List[A]): List[A] =
+  foldLeft((b: List[A], a: A) => a :: b, Nil, sequence)
+
+reverseViaFoldRight(List(1, 2, 3))
+// List(3, 2, 1)
+reverseViaFoldLeft(List(1, 2, 3))
+// List(3, 2, 1)
+```
+
+#### Вложенные отображения
 
 ---
 

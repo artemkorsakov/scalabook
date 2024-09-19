@@ -1,28 +1,63 @@
-def foldRight[A, B](op: (A, B) => B, initial: B, sequence: List[A]): B =
+def accumulate[A, B](op: (A, B) => B, initial: B, sequence: List[A]): B =
   sequence match
     case Nil          => initial
-    case head :: tail => op(head, foldRight(op, initial, tail))
+    case head :: tail => op(head, accumulate(op, initial, tail))
 
-def foldLeft[A, B](op: (B, A) => B, initial: B, sequence: List[A]): B =
-  def iter(result: B, rest: List[A]): B =
-    rest match
-      case Nil => result
-      case head :: next =>
-        iter(op(result, head), next)
+def map[A, B](f: A => B, sequence: List[A]): List[B] =
+  accumulate[A, List[B]]((a, listB) => f(a) :: listB, List.empty[B], sequence)
 
-  iter(initial, sequence)
+def append[A](seq1: List[A], seq2: List[A]): List[A] =
+  accumulate[A, List[A]]((a, listA) => a :: listA, seq1, seq2)
 
-println(foldRight[Double, Double](_ / _, 1.0, List(1.0, 2.0, 3.0)))
-println(foldLeft[Double, Double](_ / _, 1.0, List(1.0, 2.0, 3.0)))
+def flatMap[A, B](proc: A => List[B], sequence: List[A]): List[B] =
+  accumulate(
+    (a: A, listB: List[B]) => append(proc(a), listB),
+    Nil: List[B],
+    sequence
+  )
 
-println(foldRight[Int, List[Int]](_ :: _, Nil, List(1, 2, 3)))
-println(foldLeft[Int, List[Int]]((b, a) => a :: b, Nil, List(1, 2, 3)))
+def filter[A](p: A => Boolean, list: List[A]): List[A] =
+  flatMap(
+    (a: A) => if p(a) then List(a) else Nil,
+    list
+  )
 
-def reverseViaFoldRight[A](sequence: List[A]): List[A] =
-  foldRight((a: A, b: List[A]) => b :+ a, Nil, sequence)
+def queens(boardSize: Int): List[List[(Int, Int)]] =
+  val emptyBoard: List[(Int, Int)] = List.empty
 
-def reverseViaFoldLeft[A](sequence: List[A]): List[A] =
-  foldLeft((b: List[A], a: A) => a :: b, Nil, sequence)
+  def adjoinPosition(
+      newRow: Int,
+      k: Int,
+      restOfQueens: List[(Int, Int)]
+  ): List[(Int, Int)] = (newRow, k) :: restOfQueens
 
-println(reverseViaFoldRight(List(1, 2, 3)))
-println(reverseViaFoldLeft(List(1, 2, 3)))
+  def isSafe(positions: List[(Int, Int)]): Boolean =
+    positions match
+      case Nil => true
+      case head :: tail =>
+        val (row, col) = head
+        tail.forall(_._1 != row) && // same row
+        tail.forall(_._2 != col) && // same column
+        tail.forall: (r, c) =>
+          math.abs(r - row) != math.abs(c - col) // same diagonal
+
+  def queenCols(k: Int): List[List[(Int, Int)]] =
+    if k == 0 then List(emptyBoard)
+    else
+      filter(
+        (positions: List[(Int, Int)]) => isSafe(positions),
+        flatMap(
+          (restOfQueens: List[(Int, Int)]) =>
+            map(
+              (newRow: Int) => adjoinPosition(newRow, k, restOfQueens),
+              (1 to boardSize).toList
+            ),
+          queenCols(k - 1)
+        )
+      )
+
+  queenCols(boardSize)
+end queens
+
+println(queens(8).head)
+println(queens(8))

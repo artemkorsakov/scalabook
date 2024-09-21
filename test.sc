@@ -1,63 +1,138 @@
-def accumulate[A, B](op: (A, B) => B, initial: B, sequence: List[A]): B =
-  sequence match
-    case Nil          => initial
-    case head :: tail => op(head, accumulate(op, initial, tail))
+object Derivative:
+  enum Operation:
+    case Add, Mul
 
-def map[A, B](f: A => B, sequence: List[A]): List[B] =
-  accumulate[A, List[B]]((a, listB) => f(a) :: listB, List.empty[B], sequence)
+  enum Expression:
+    self =>
 
-def append[A](seq1: List[A], seq2: List[A]): List[A] =
-  accumulate[A, List[A]]((a, listA) => a :: listA, seq1, seq2)
+    case Number(value: Int)
+    case Variable(name: String)
+    case Complex(oper: Operation, left: Expression, right: Expression)
 
-def flatMap[A, B](proc: A => List[B], sequence: List[A]): List[B] =
-  accumulate(
-    (a: A, listB: List[B]) => append(proc(a), listB),
-    Nil: List[B],
-    sequence
-  )
+    def show: String =
+      self match
+        case Number(value)  => value.toString
+        case Variable(name) => name
+        case Complex(Operation.Add, left, right) =>
+          s"(${left.show} + ${right.show})"
+        case Complex(Operation.Mul, left, right) =>
+          s"(${left.show}*${right.show})"
 
-def filter[A](p: A => Boolean, list: List[A]): List[A] =
-  flatMap(
-    (a: A) => if p(a) then List(a) else Nil,
-    list
-  )
+  import Expression.*
+  import Operation.*
 
-def queens(boardSize: Int): List[List[(Int, Int)]] =
-  val emptyBoard: List[(Int, Int)] = List.empty
+  // Является ли `e` числом?
+  def isNumber(e: String): Boolean =
+    e.nonEmpty && e.forall(_.isDigit)
 
-  def adjoinPosition(
-      newRow: Int,
-      k: Int,
-      restOfQueens: List[(Int, Int)]
-  ): List[(Int, Int)] = (newRow, k) :: restOfQueens
+  // Является ли `e` переменной?
+  def isVariable(e: String): Boolean =
+    e.length == 1 && e.headOption.exists(_.isLetter)
 
-  def isSafe(positions: List[(Int, Int)]): Boolean =
-    positions match
-      case Nil => true
-      case head :: tail =>
-        val (row, col) = head
-        tail.forall(_._1 != row) && // same row
-        tail.forall(_._2 != col) && // same column
-        tail.forall: (r, c) =>
-          math.abs(r - row) != math.abs(c - col) // same diagonal
+  // Является ли `e` суммой?
+  def isSum(e: String): Boolean = e.contains('+')
 
-  def queenCols(k: Int): List[List[(Int, Int)]] =
-    if k == 0 then List(emptyBoard)
-    else
-      filter(
-        (positions: List[(Int, Int)]) => isSafe(positions),
-        flatMap(
-          (restOfQueens: List[(Int, Int)]) =>
-            map(
-              (newRow: Int) => adjoinPosition(newRow, k, restOfQueens),
-              (1 to boardSize).toList
-            ),
-          queenCols(k - 1)
+  // Первое слагаемое суммы `e`.
+  def addend(e: String): String =
+    e match
+      case s"${f}+${s}" => f.trim
+      case _            => ""
+
+  // Второе слагаемое суммы `e`.
+  def augend(e: String): String =
+    e match
+      case s"${f}+${s}" => s.trim
+      case _            => ""
+
+  // Является ли `e` произведением?
+  def isProduct(e: String): Boolean = e.contains('*')
+
+  // Первый множитель произведения `e`.
+  def multiplier(e: String): String =
+    e match
+      case s"${f}*${s}" => f.trim
+      case _            => ""
+
+  // Второй множитель произведения `e`.
+  def multiplicand(e: String): String =
+    e match
+      case s"${f}*${s}" => s.trim
+      case _            => ""
+
+  def makeSum(exp1: Expression, exp2: Expression): Expression =
+    (exp1, exp2) match
+      case (Number(0), exp2)        => exp2
+      case (exp1, Number(0))        => exp1
+      case (Number(n1), Number(n2)) => Number(n1 + n2)
+      case _                        => Complex(Add, exp1, exp2)
+
+  def makeProduct(exp1: Expression, exp2: Expression): Expression =
+    (exp1, exp2) match
+      case (Number(0), _)           => Number(0)
+      case (_, Number(0))           => Number(0)
+      case (Number(1), exp2)        => exp2
+      case (exp1, Number(1))        => exp1
+      case (Number(n1), Number(n2)) => Number(n1 * n2)
+      case _                        => Complex(Mul, exp1, exp2)
+
+  def parseExpression(exp: String): Either[String, Expression] =
+    if isNumber(exp) then Right(Expression.Number(exp.toInt))
+    else if isVariable(exp) then Right(Expression.Variable(exp))
+    else if isSum(exp) then
+      for
+        a1 <- parseExpression(addend(exp))
+        a2 <- parseExpression(augend(exp))
+      yield makeSum(a1, a2)
+    else if isProduct(exp) then
+      for
+        m1 <- parseExpression(multiplier(exp))
+        m2 <- parseExpression(multiplicand(exp))
+      yield makeProduct(m1, m2)
+    else Left(s"неизвестный тип выражения -- DERIV: $exp")
+
+  // Являются ли `v1` и `v2` одной и той же переменной?
+  def isSameVariable(
+      v1: Expression.Variable,
+      v2: Expression.Variable
+  ): Boolean =
+    v1.name == v2.name
+
+  def deriv(exp: Expression, variabe: Expression.Variable): Expression =
+    exp match
+      case _: Expression.Number => Expression.Number(0)
+      case v: Expression.Variable if isSameVariable(v, variabe) =>
+        Expression.Number(1)
+      case _: Expression.Variable => Expression.Number(0)
+      case Expression.Complex(Operation.Add, left, right) =>
+        makeSum(deriv(left, variabe), deriv(right, variabe))
+      case Expression.Complex(Operation.Mul, left, right) =>
+        makeSum(
+          makeProduct(deriv(left, variabe), right),
+          makeProduct(left, deriv(right, variabe))
         )
-      )
 
-  queenCols(boardSize)
-end queens
+end Derivative
 
-println(queens(8).head)
-println(queens(8))
+import Derivative.*
+import Derivative.Expression.*
+
+val x: Variable = Variable("x")
+
+println(
+  s"Производная от 5 равна ${deriv(parseExpression("5").getOrElse(Number(0)), x).show}"
+)
+println(
+  s"Производная от x равна ${deriv(parseExpression("x").getOrElse(Number(0)), x).show}"
+)
+println(
+  s"Производная от 2*x равна ${deriv(parseExpression("2*x").getOrElse(Number(0)), x).show}"
+)
+println(
+  s"Производная от x+x равна ${deriv(parseExpression("x+x").getOrElse(Number(0)), x).show}"
+)
+println(
+  s"Производная от x*y равна ${deriv(parseExpression("x*y").getOrElse(Number(0)), x).show}"
+)
+println(
+  s"Производная от x*x*x равна ${deriv(parseExpression("x*x*x").getOrElse(Number(0)), x).show}"
+)

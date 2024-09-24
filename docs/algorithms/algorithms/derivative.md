@@ -282,10 +282,94 @@ println(
 // Производная от x*x*x равна ((x*x) + (x*(x + x)))
 ```
 
-Хотя это заметное улучшение, последний пример показывает (простейший пример - \\(3x^{2}\\)), что нужно многое еще сделать, 
-прежде чем получится программа, приводящую выражения к форме, которую можно считать «простейшей». 
+Хотя это заметное улучшение, последний пример показывает, что нужно многое еще сделать, 
+прежде чем получится программа, приводящую выражения к форме, которую можно считать «простейшей»  (в данном случае - \\(3x^{2}\\)). 
 Задача алгебраического упрощения сложна, среди прочего, еще и потому, что форма, 
 которая является простейшей для одних целей, может таковой не являться для других.
+
+## Возведение в степень
+
+Используя правило дифференцирования для степеней: \\(\frac{\partial u^{n}}{\partial x} = nu^{n - 1}\frac{\partial u}{\partial x}\\),
+добавим ещё одну операцию - `Pow` (возведение в степень):
+
+```dotty
+enum Operation:
+  case ..., Pow
+```
+
+Степень - строка, содержащая знак степени '^':
+
+```dotty
+def isPower(e: String): Boolean = e.contains('^')
+```
+
+Основание степени и значение степени:
+
+```dotty
+def base(e: String): String =
+  e match
+    case s"${f}^${s}" => f.trim
+    case _            => ""
+
+def exponent(e: String): String =
+  e match
+    case s"${f}^${s}" => s.trim
+    case _            => "" 
+```
+
+Формирование операции возведение в степень:
+
+- Если степень равна `0`, метод возвращает `Right(Number(1))` - любое число, возведенное в степень `0`, равно `1`.
+- Если степень равна `1`, метод возвращает основание степени - любое число, возведенное в степень `1`, равно самому себе.
+- Если оба, основние и степень, являются числами, метод возвращает `Right(Number(math.pow(b, n).toInt))`, который вычисляет возведение в степень.
+- Если основание является любым выражением, а степень является числом, метод возвращает `Right(Complex(Pow, b, n))`, 
+  который создает новое выражение `Complex` с оператором `Pow` и двумя входными выражениями в качестве операндов.
+- Если ни один из вышеупомянутых случаев не совпадает, метод возвращает `Left` с описанием ошибки.
+
+```dotty
+def makeExponentiation(
+    exp1: Expression,
+    exp2: Expression
+): Either[String, Expression] =
+  (exp1, exp2) match
+    case (_, Number(0))         => Right(Number(1))
+    case (b, Number(1))         => Right(b)
+    case (Number(b), Number(n)) => Right(Number(math.pow(b, n).toInt))
+    case (b, n: Number)         => Right(Complex(Pow, b, n))
+    case _ => Left(s"В качестве степени допустимо только число: $exp2")
+```
+
+Парсинг операции возведения в степень аналогичен парсингу других операций:
+
+```dotty
+def parseExpression(exp: String): Either[String, Expression] =
+  ...
+  else if isPower(exp) then
+    for
+      b              <- parseExpression(base(exp))
+      e              <- parseExpression(exponent(exp))
+      exponentiation <- makeExponentiation(b, e)
+    yield exponentiation
+  ...
+```
+
+Взятие производной: 
+
+```dotty
+def deriv(
+    exp: Expression,
+    variabe: Expression.Variable
+): Either[String, Expression] =
+  exp match
+    ...
+    case Complex(Pow, exp, Number(p)) =>
+      for
+        d <- deriv(exp, variabe)
+        e <- makeExponentiation(exp, Number(p - 1))
+      yield makeProduct(makeProduct(Number(p), e), d)
+    case _ =>
+      Left(s"Неизвестная производная: $exp")
+```
 
 ---
 

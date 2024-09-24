@@ -130,6 +130,45 @@ object DerivativeSuite extends FunSuite:
       Derivative.multiplicand("") == ""
     )
 
+  test("Derivative.isPower корректно идентифицирует степени"):
+    expect.all(
+      Derivative.isPower("x^2"),
+      Derivative.isPower("2^3"),
+      Derivative.isPower("x^y"),
+      !Derivative.isPower("2+2"),
+      !Derivative.isPower("x+2"),
+      !Derivative.isPower("x*y"),
+      !Derivative.isPower("2"),
+      !Derivative.isPower("x"),
+      !Derivative.isPower("")
+    )
+
+  test("Derivative.base корректно выделяет основание"):
+    expect.all(
+      Derivative.base("x^2") == "x",
+      Derivative.base("2^3") == "2",
+      Derivative.base("x^y") == "x",
+      Derivative.base("2+2") == "",
+      Derivative.base("x+2") == "",
+      Derivative.base("x*y") == "",
+      Derivative.base("2") == "",
+      Derivative.base("x") == "",
+      Derivative.base("") == ""
+    )
+
+  test("Derivative.exponent корректно выделяет показатель"):
+    expect.all(
+      Derivative.exponent("x^2") == "2",
+      Derivative.exponent("2^3") == "3",
+      Derivative.exponent("x^y") == "y",
+      Derivative.exponent("2+2") == "",
+      Derivative.exponent("x+2") == "",
+      Derivative.exponent("x*y") == "",
+      Derivative.exponent("2") == "",
+      Derivative.exponent("x") == "",
+      Derivative.exponent("") == ""
+    )
+
   test("Derivative.makeSum корректно создает сумму"):
     expect.all(
       Derivative.makeSum(Number(0), x) == x,
@@ -151,6 +190,30 @@ object DerivativeSuite extends FunSuite:
       Derivative.makeProduct(x, Number(2)) == Complex(Mul, x, Number(2)),
       Derivative.makeProduct(x, y) == Complex(Mul, x, y)
     )
+
+  test("Derivative.makeExponentiation корректно создает степень"):
+    whenSuccess(Derivative.makeExponentiation(Number(2), Number(0))): expon =>
+      expect.same(Number(1), expon)
+    .and:
+      whenSuccess(Derivative.makeExponentiation(x, Number(0))): expon =>
+        expect.same(Number(1), expon)
+    .and:
+      whenSuccess(Derivative.makeExponentiation(Number(2), Number(1))): expon =>
+        expect.same(Number(2), expon)
+    .and:
+      whenSuccess(Derivative.makeExponentiation(x, Number(1))): expon =>
+        expect.same(x, expon)
+    .and:
+      whenSuccess(Derivative.makeExponentiation(Number(2), Number(3))): expon =>
+        expect.same(Number(8), expon)
+    .and:
+      whenSuccess(Derivative.makeExponentiation(x, Number(2))): expon =>
+        expect.same(Complex(Pow, x, Number(2)), expon)
+    .and:
+      expect.all(
+        Derivative.makeExponentiation(Number(2), x).isLeft,
+        Derivative.makeExponentiation(x, y).isLeft
+      )
 
   test("Derivative.parseExpression корректно парсит выражения"):
     expect.all(
@@ -223,6 +286,17 @@ object DerivativeSuite extends FunSuite:
       ))
     )
 
+  test("Derivative.parseExpression корректно парсит взятие степени"):
+    expect.all(
+      Derivative.parseExpression("x^2") == Right(Complex(Pow, x, Number(2))),
+      Derivative.parseExpression("2^3") == Right(Number(8)),
+      Derivative.parseExpression("x^y").isLeft,
+      Derivative.parseExpression("2^2^3") == Right(Number(256)),
+      Derivative.parseExpression("x^2^y").isLeft,
+      Derivative.parseExpression("x^y^2").isLeft,
+      Derivative.parseExpression("x^y^z").isLeft
+    )
+
   test("Derivative.isSameVariable корректно идентифицирует переменные"):
     expect.all(
       Derivative.isSameVariable(x, x),
@@ -232,37 +306,68 @@ object DerivativeSuite extends FunSuite:
     )
 
   test("Derivative.deriv корректно вычисляет производную"):
-    expect.all(
-      Derivative.deriv(Number(2), x) == Number(0),
-      Derivative.deriv(x, x) == Number(1),
-      Derivative.deriv(y, x) == Number(0),
-      Derivative.deriv(Complex(Add, Number(2), x), x) == Number(1),
-      Derivative.deriv(Complex(Add, x, Number(2)), x) == Number(1),
-      Derivative.deriv(Complex(Add, x, y), x) == Number(1),
-      Derivative.deriv(Complex(Mul, Number(2), x), x) == Number(2),
-      Derivative.deriv(Complex(Mul, x, Number(2)), x) == Number(2),
-      Derivative.deriv(Complex(Mul, x, y), x) == y
-    )
+    whenSuccess(Derivative.deriv(Number(2), x)): d =>
+      expect.same(Number(0), d)
+    .and:
+      whenSuccess(Derivative.deriv(x, x)): d =>
+        expect.same(Number(1), d)
+    .and:
+      whenSuccess(Derivative.deriv(y, x)): d =>
+        expect.same(Number(0), d)
+    .and:
+      whenSuccess(Derivative.deriv(Complex(Add, Number(2), x), x)): d =>
+        expect.same(Number(1), d)
+    .and:
+      whenSuccess(Derivative.deriv(Complex(Add, x, Number(2)), x)): d =>
+        expect.same(Number(1), d)
+    .and:
+      whenSuccess(Derivative.deriv(Complex(Add, x, y), x)): d =>
+        expect.same(Number(1), d)
+    .and:
+      whenSuccess(Derivative.deriv(Complex(Mul, Number(2), x), x)): d =>
+        expect.same(Number(2), d)
+    .and:
+      whenSuccess(Derivative.deriv(Complex(Mul, x, Number(2)), x)): d =>
+        expect.same(Number(2), d)
+    .and:
+      whenSuccess(Derivative.deriv(Complex(Mul, x, y), x)): d =>
+        expect.same(y, d)
+    .and:
+      whenSuccess(Derivative.deriv(Complex(Pow, x, Number(2)), x)): d =>
+        expect(Complex(Mul, Number(2), x) == d)
+    .and:
+      whenSuccess(Derivative.deriv(Complex(Pow, x, Number(200)), x)): d =>
+        expect(Complex(Mul, Number(200), Complex(Pow, x, Number(199))) == d)
 
   test(
     "Derivative.deriv корректно вычисляет производную в более сложных случах"
   ):
-    expect.all(
-      Derivative.deriv(
-        Derivative.parseExpression("5").getOrElse(Number(0)),
-        x
-      ).show == "0",
-      Derivative.deriv(
-        Derivative.parseExpression("3*x").getOrElse(Number(0)),
-        x
-      ).show == "3",
-      Derivative.deriv(
-        Derivative.parseExpression("x*x + 3*x").getOrElse(Number(0)),
-        x
-      ).show == "((x + x) + 3)",
-      Derivative.deriv(
-        Derivative.parseExpression("x*x*x").getOrElse(Number(0)),
-        x
-      ).show == "((x*x) + (x*(x + x)))"
-    )
+    whenSuccess(Derivative.parseExpression("5")): exp =>
+      whenSuccess(Derivative.deriv(exp, x)): d =>
+        expect.same("0", d.show)
+    .and:
+      whenSuccess(Derivative.parseExpression("3*x")): exp =>
+        whenSuccess(Derivative.deriv(exp, x)): d =>
+          expect.same("3", d.show)
+    .and:
+      whenSuccess(Derivative.parseExpression("x*x + 3*x")): exp =>
+        whenSuccess(Derivative.deriv(exp, x)): d =>
+          expect.same("((x + x) + 3)", d.show)
+    .and:
+      whenSuccess(Derivative.parseExpression("x*x*x")): exp =>
+        whenSuccess(Derivative.deriv(exp, x)): d =>
+          expect.same("((x*x) + (x*(x + x)))", d.show)
+
+  test("Derivative.deriv корректно вычисляет производную от степени"):
+    whenSuccess(Derivative.parseExpression("x^2")): exp =>
+      whenSuccess(Derivative.deriv(exp, x)): d =>
+        expect.same("(2*x)", d.show)
+    .and:
+      whenSuccess(Derivative.parseExpression("x^3")): exp =>
+        whenSuccess(Derivative.deriv(exp, x)): d =>
+          expect.same("(3*(x^{2}))", d.show)
+    .and:
+      whenSuccess(Derivative.parseExpression("x^4")): exp =>
+        whenSuccess(Derivative.deriv(exp, x)): d =>
+          expect.same("(4*(x^{3}))", d.show)
 end DerivativeSuite

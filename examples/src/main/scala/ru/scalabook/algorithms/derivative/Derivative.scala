@@ -80,10 +80,11 @@ object Derivative:
 
   def makeSum(exp1: Expression, exp2: Expression): Expression =
     (exp1, exp2) match
-      case (Number(0), exp2)        => exp2
-      case (exp1, Number(0))        => exp1
-      case (Number(n1), Number(n2)) => Number(n1 + n2)
-      case _                        => Complex(Add, exp1, exp2)
+      case (Number(0), exp2)            => exp2
+      case (exp1, Number(0))            => exp1
+      case (Number(n1), Number(n2))     => Number(n1 + n2)
+      case (exp1, exp2) if exp1 == exp2 => makeProduct(Number(2), exp1)
+      case _                            => Complex(Add, exp1, exp2)
 
   def makeProduct(exp1: Expression, exp2: Expression): Expression =
     (exp1, exp2) match
@@ -92,7 +93,15 @@ object Derivative:
       case (Number(1), exp2)        => exp2
       case (exp1, Number(1))        => exp1
       case (Number(n1), Number(n2)) => Number(n1 * n2)
-      case _                        => Complex(Mul, exp1, exp2)
+      case (Number(n1), Complex(Mul, Number(n2), exp)) =>
+        makeProduct(Number(n1 * n2), exp)
+      case (exp1, Complex(Mul, Number(n), exp2)) =>
+        makeProduct(Number(n), makeProduct(exp1, exp2))
+      case (x: Variable, y: Variable) if x == y =>
+        Complex(Pow, x, Number(2))
+      case (x: Variable, Complex(Pow, y: Variable, Number(n))) if x == y =>
+        Complex(Pow, x, Number(n + 1))
+      case _ => Complex(Mul, exp1, exp2)
 
   def makeExponentiation(
       exp1: Expression,

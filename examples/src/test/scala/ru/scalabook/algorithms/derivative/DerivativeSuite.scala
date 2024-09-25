@@ -176,6 +176,7 @@ object DerivativeSuite extends FunSuite:
       Derivative.makeSum(Number(2), Number(3)) == Number(5),
       Derivative.makeSum(Number(2), x) == Complex(Add, Number(2), x),
       Derivative.makeSum(x, Number(2)) == Complex(Add, x, Number(2)),
+      Derivative.makeSum(x, x) == Complex(Mul, Number(2), x),
       Derivative.makeSum(x, y) == Complex(Add, x, y)
     )
 
@@ -188,6 +189,13 @@ object DerivativeSuite extends FunSuite:
       Derivative.makeProduct(x, Number(1)) == x,
       Derivative.makeProduct(Number(2), x) == Complex(Mul, Number(2), x),
       Derivative.makeProduct(x, Number(2)) == Complex(Mul, x, Number(2)),
+      Derivative.makeProduct(Number(2), Complex(Mul, Number(3), x)) ==
+        Complex(Mul, Number(6), x),
+      Derivative.makeProduct(y, Complex(Mul, Number(3), x)) ==
+        Complex(Mul, Number(3), Complex(Mul, y, x)),
+      Derivative.makeProduct(x, x) == Complex(Pow, x, Number(2)),
+      Derivative.makeProduct(x, Complex(Pow, x, Number(5))) ==
+        Complex(Pow, x, Number(6)),
       Derivative.makeProduct(x, y) == Complex(Mul, x, y)
     )
 
@@ -276,8 +284,8 @@ object DerivativeSuite extends FunSuite:
       )),
       Derivative.parseExpression("x*2*y") == Right(Complex(
         Mul,
-        x,
-        Complex(Mul, Number(2), y)
+        Number(2),
+        Complex(Mul, x, y)
       )),
       Derivative.parseExpression("x*y*z") == Right(Complex(
         Mul,
@@ -352,11 +360,11 @@ object DerivativeSuite extends FunSuite:
     .and:
       whenSuccess(Derivative.parseExpression("x*x + 3*x")): exp =>
         whenSuccess(Derivative.deriv(exp, x)): d =>
-          expect.same("((x + x) + 3)", d.show)
+          expect.same("((2*x) + 3)", d.show)
     .and:
       whenSuccess(Derivative.parseExpression("x*x*x")): exp =>
         whenSuccess(Derivative.deriv(exp, x)): d =>
-          expect.same("((x*x) + (x*(x + x)))", d.show)
+          expect.same("(3*(x^{2}))", d.show)
 
   test("Derivative.deriv корректно вычисляет производную от степени"):
     whenSuccess(Derivative.parseExpression("x^2")): exp =>

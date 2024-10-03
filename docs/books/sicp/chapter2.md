@@ -2090,6 +2090,221 @@ unionSet(List(1, 2, 3, 4, 5), List(1, 2, 3, 4, 5))
 
 #### Множества как бинарные деревья
 
+Можно добиться еще лучших результатов, чем при представлении в виде упорядоченных списков, 
+если расположить элементы множества в виде дерева. 
+Каждая вершина дерева содержит один элемент множества, называемый «входом» этой вершины, 
+и указатели (возможно, пустые) на две другие вершины. 
+«Левый» указатель указывает на элементы, меньшие, чем тот, который содержится в вершине, 
+а «правый» на элементы, большие, чем тот, который содержится в вершине.
+
+Мы можем описать дерево с помощью case class-а:
+
+```dotty
+sealed trait Tree
+case object Empty extends Tree
+case class Node(entry: Int, leftBranch: Tree, rightBranch: Tree) extends Tree
+
+object Tree:
+  def makeTree(entry: Int, leftBranch: Tree, rightBranch: Tree): Tree =
+    Node(entry, leftBranch, rightBranch)
+```
+
+Преимущество древовидного представления следующее. 
+Предположим, мы хотим проверить, содержится ли в множестве число x. 
+Начнем с того, что сравним x со входом начальной вершины. 
+Если x меньше его, то мы уже знаем, что достаточно просмотреть только левое поддерево; 
+если x больше, достаточно просмотреть правое поддерево. 
+Если дерево «сбалансировано», то каждое из поддеревьев будет 
+по размеру примерно вполовину меньше. 
+Таким образом, за один шаг мы свели задачу поиска в дереве размера n
+к задаче поиска в дереве размера n/2. 
+Поскольку размер дерева уменьшается вдвое на каждом шаге, следует ожидать, 
+что число шагов, требуемых для поиска в дереве размера n, растет как \\(\Theta(log (n))\\).
+
+Теперь можно написать процедуру `elementOfSet` с использованием вышеописанной стратегии:
+
+```dotty
+def elementOfSet(tree: Tree, element: Int): Boolean =
+  tree match
+    case Empty                                 => false
+    case Node(entry, _, _) if entry == element => true
+    case Node(entry, leftBranch, _) if element < entry =>
+      elementOfSet(leftBranch, element)
+    case Node(entry, _, rightBranch) =>
+      elementOfSet(rightBranch, element)
+
+elementOfSet(Node(5, Node(3, Empty, Empty), Node(7, Empty, Empty)), 3)
+// true
+```
+
+Добавление элемента к множеству реализуется похожим образом и также требует \\(\Theta(log (n))\\) шагов. 
+Чтобы добавить объект x, мы сравниваем его с входом вершины и определяем, должны ли мы добавить x к левой или правой ветви, 
+а добавив x к соответствующей ветви, мы соединяем результат с изначальным входом и второй ветвью.
+Если x равен входу, мы просто возвращаем вершину. 
+Если нам требуется добавить x к пустому дереву, мы порождаем дерево, 
+которое содержит x на входе и пустые левое и правое поддеревья. 
+Вот процедура:
+
+```dotty
+def adjoinSet(tree: Tree, element: Int): Tree =
+  tree match
+    case Empty                                 => Node(element, Empty, Empty)
+    case Node(entry, _, _) if entry == element => tree
+    case Node(entry, leftBranch, rightBranch) if element < entry =>
+      Node(entry, adjoinSet(leftBranch, element), rightBranch)
+    case Node(entry, leftBranch, rightBranch) =>
+      Node(entry, leftBranch, adjoinSet(rightBranch, element))
+
+adjoinSet(Node(5, Node(3, Empty, Empty), Node(7, Empty, Empty)), 1)
+// Node(5,Node(3,Node(1,Empty,Empty),Empty),Node(7,Empty,Empty))
+```
+
+Утверждение, что поиск в дереве можно осуществить за логарифмическое число шагов, 
+основывается на предположении, что дерево «сбалансировано», 
+то есть что левое и правое его поддеревья содержат приблизительно одинаковое число элементов, 
+так что каждое поддерево содержит приблизительно половину элементов своего родителя. 
+Но как нам добиться того, чтобы те деревья, которые мы строим, были сбалансированы? 
+Даже если мы начинаем со сбалансированного дерева, 
+добавление элементов при помощи adjoin-set может дать несбалансированный результат.
+Одним из способов решения этой проблемы было бы определение операции, 
+которая переводит произвольное дерево в сбалансированное с теми же элементами.
+
+#### Упражнение 2.63
+
+> Каждая из следующих двух процедур преобразует дерево в список.
+>
+> ```dotty
+> def treeToList1(tree: Tree): List[Int] =
+>   tree match
+>     case Empty => Nil
+>     case Node(entry, leftBranch, rightBranch) =>
+>       treeToList1(leftBranch) ++ (entry :: treeToList1(rightBranch))
+> 
+> def treeToList2(tree: Tree): List[Int] =
+>   def copyToList(tree: Tree, resultList: List[Int]): List[Int] =
+>     tree match
+>       case Empty => resultList
+>       case Node(entry, leftBranch, rightBranch) =>
+>         copyToList(leftBranch, entry :: copyToList(rightBranch, resultList))
+> 
+>   copyToList(tree, Nil)
+> ```
+>
+> а. Для всякого ли дерева эти процедуры дают одинаковый результат? 
+> Если нет, то как их результаты различаются? 
+> Какой результат дают эти две процедуры для деревьев с рисунка 2.16?
+> 
+> б. Одинаков ли порядок роста этих процедур по отношению к числу шагов, 
+> требуемых для преобразования сбалансированного с n элементами в список? 
+> Если нет, которая из них растет медленнее?
+
+а. Обе процедуры дают одинаковый результат для всех деревьев — упорядоченный обход.
+
+```dotty
+treeToList1(Node(5, Node(3, Node(1, Empty, Empty), Empty), Node(9, Node(7, Empty, Empty), Node(11, Empty, Empty))))
+// List(1, 3, 5, 7, 9, 11)
+treeToList2(Node(5, Node(3, Node(1, Empty, Empty), Empty), Node(9, Node(7, Empty, Empty), Node(11, Empty, Empty))))
+// List(1, 3, 5, 7, 9, 11) 
+```
+
+б. Оба требуют \\(\Theta(n)\\) шагов.
+
+#### Упражнение 2.64
+
+> Следующая процедура list->tree преобразует упорядоченный список в сбалансированное бинарное дерево. 
+> Вспомогательная процедура partial-tree принимает в качестве аргументов целое число n 
+> и список по крайней мере из n элементов, и строит сбалансированное дерево из первых n элементов дерева. 
+> Результат, который возвращает partial-tree, — это пара (построенная через cons), 
+> car которой есть построенное дерево, а cdr — список элементов, не включенных в дерево.
+>
+> ```dotty
+> def listToTree(elements: List[Int]): Tree =
+>   partialTree(elements, elements.length)._1
+> 
+> def partialTree(elements: List[Int], n: Int): (Tree, List[Int]) = 
+>   if n == 0 then (Empty, elements)
+>   else 
+>     val leftSize = (n - 1) / 2
+>     val (leftTree, nonLeftElements) = partialTree(elements, leftSize)
+>     val thisEntry = nonLeftElements.head
+>     val rightSize = n - (leftSize + 1)
+>     val (rightTree, remainingElements) = partialTree(nonLeftElements.tail, rightSize)
+>     (Node(thisEntry, leftTree, rightTree), remainingElements)
+> ```
+>
+> а. Дайте краткое описание, как можно более ясно объясняющее работу partialtree. 
+> Нарисуйте дерево, которое partial-tree строит из списка (1 3 5 7 9 11)
+> 
+> б. Каков порядок роста по отношению к числу шагов, которые требуются процедуре list->tree для преобразования дерева из n элементов?
+
+Алгоритм работы метода `partialTree`:
+
+- Если количество элементов равно `0`, то возвращаем пустое дерево и исходный список элементов.
+- В противном случае вычисляем размер левого поддерева, который равен целой части от деления `n-1` на `2`.
+- Рекурсивно вызываем `partialTree` для левого поддерева.
+- Извлекаем корневой элемент из списка, который остался после обработки левого поддерева.
+- Вычисляем размер правого поддерева, который равен `n - (leftSize + 1)`.
+- Рекурсивно вызываем `partialTree` для правого поддерева.
+- Возвращаем корневой узел дерева, левое и правое поддеревья которого были построены на предыдущих шагах, 
+  и список элементов, которые остались после обработки правого поддерева.
+
+```dotty
+listToTree(List(1, 3, 5, 7, 9, 11))
+// Node(5,Node(1,Empty,Node(3,Empty,Empty)),Node(9,Node(7,Empty,Empty),Node(11,Empty,Empty)))
+```
+
+Дерево из списка (1 3 5 7 9 11) имеет следующую структуру:
+
+```mermaid
+flowchart TB
+    5-->1
+    1-->3
+    5-->9
+    9-->7
+    9-->11
+```
+
+б. Порядок роста \\(\Theta(n)\\).
+
+#### Упражнение 2.65
+
+> Используя результаты упражнений 2.63 и 2.64, постройте реализации union-set и intersection-set 
+> порядка \\(\Theta(n)\\) для множеств, реализованных как (сбалансированные) бинарные деревья.
+
+Реализация `unionSet`:
+
+```dotty
+def unionSet[A: Ordering](set1: List[A], set2: List[A]): List[A] =
+  ... // Определено выше
+
+def unionSet(tree1: Tree, tree2: Tree): Tree =
+  listToTree(unionSet[Int](treeToList1(tree1), treeToList1(tree2)))
+
+unionSet(
+  Node(5, Node(3, Empty, Empty), Node(7, Empty, Empty)),
+  Node(5, Node(3, Empty, Empty), Node(9, Empty, Empty))
+)
+// Node(5,Node(3,Empty,Empty),Node(7,Empty,Node(9,Empty,Empty)))
+```
+
+Реализация `intersectionSet`:
+
+```dotty
+def intersectionSet[A: Ordering](set1: List[A], set2: List[A]): List[A] =
+  ... // Определено выше
+
+def intersectionSet(tree1: Tree, tree2: Tree): Tree =
+  listToTree(intersectionSet[Int](treeToList1(tree1), treeToList1(tree2)))
+
+intersectionSet(
+  Node(5, Node(3, Empty, Empty), Node(7, Empty, Empty)),
+  Node(5, Node(3, Empty, Empty), Node(9, Empty, Empty))
+)
+// Node(3,Empty,Node(5,Empty,Empty))
+```
+
+#### Множества и поиск информации
+
 ---
 
 **Ссылки:**

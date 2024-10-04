@@ -23,6 +23,13 @@ object Dependencies {
     val scalacheck      = "io.github.iltotore" %% "iron-scalacheck" % version
   }
 
+  // https://github.com/erikvanoosten/metrics-scala/blob/master/docs/Manual.md
+  object metrics {
+    private val version = "4.3.2"
+    val scala    = "nl.grons" %% "metrics4-scala"     % version
+    val scalaHdr = "nl.grons" %% "metrics4-scala-hdr" % version
+  }
+
   object laika {
     private val version = "1.2.0"
     val core            = "org.typelevel" %% "laika-core"    % version
@@ -109,6 +116,8 @@ object Dependencies {
 
   val benchLibs: Seq[ModuleID] =
     Seq(
+      metrics.scala,
+      metrics.scalaHdr,
       typelevel.catsCore,
       typelevel.spire
     )

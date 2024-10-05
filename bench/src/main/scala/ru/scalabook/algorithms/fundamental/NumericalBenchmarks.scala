@@ -1,86 +1,181 @@
+/*
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.gcdByEuclideanAlgorithmBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.gcdBasedOnParityOfNumbersBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.generalizedEuclideanAlgorithmBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.gcdInverseBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.lcmBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.powerBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.sqrtBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.cubeRootOfBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.isPowerOfTwoBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.isSnoobBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.sumOfDivisorsBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.countOfDivisorsBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.sumToGivenBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.sumOfSquaresToBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.sumOfCubesToBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.decToBinConvBench
+ */
+
+//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep org.typelevel::spire:0.18.0
+//> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/fundamental/Numerical.scala
+//> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/fundamental/Primes.scala
+//> using file ../../MetricInstrumented.scala
+//> using file ../../Period.scala
+
 package ru.scalabook.algorithms.fundamental
 
 import ru.scalabook.algorithms.fundamental.Numerical.*
+import ru.scalabook.MetricInstrumented
+import ru.scalabook.Period
+import NumericalBenchmarks.*
 
 @main def gcdByEuclideanAlgorithmBench(): Unit =
-  val limit = 10_000
-  val start = 1_000_000
-  val end   = start + limit
-  (start until end).foreach: i =>
-    (i + 1 to end).foreach: j =>
-      gcdByEuclideanAlgorithm(j, i)
+  loadgcdByEuclideanAlgorithm
+  prettyPrint(Period.MicroSecond)
 
 @main def gcdBasedOnParityOfNumbersBench(): Unit =
-  val limit = 10_000
-  val start = 1_000_000
-  val end   = start + limit
-  (start until end).foreach: i =>
-    (i + 1 to end).foreach: j =>
-      gcdBasedOnParityOfNumbers(j, i)
+  loadgcdBasedOnParityOfNumbersBench
+  prettyPrint(Period.MicroSecond)
 
 @main def generalizedEuclideanAlgorithmBench(): Unit =
-  val limit = 10_000
-  (2 until limit).foreach: i =>
-    (i + 1 to limit).foreach: j =>
-      generalizedEuclideanAlgorithm(j, i)
+  loadgeneralizedEuclideanAlgorithmBench
+  prettyPrint(Period.MicroSecond)
 
 @main def gcdInverseBench(): Unit =
-  val limit = 10_000
-  (2 until limit).foreach: i =>
-    (i + 1 to limit).foreach: j =>
-      gcdInverse(j, i)
+  loadgcdInverseBench
+  prettyPrint(Period.MicroSecond)
 
 @main def lcmBench(): Unit =
-  val limit = 10_000
-  val start = 1_000_000
-  val end   = start + limit
-  (start until end).foreach: i =>
-    (i + 1 to end).foreach: j =>
-      lcm(j, i)
+  loadlcmBench
+  prettyPrint(Period.MicroSecond)
 
 @main def powerBench(): Unit =
-  (1 to 100).foreach: i =>
-    (1 to 10).foreach: j =>
-      power(j, i)
+  loadpowerBench
+  prettyPrint(Period.MicroSecond)
 
 @main def sqrtBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    sqrt(i)
+  loadsqrtBench
+  prettyPrint(Period.MicroSecond)
 
 @main def cubeRootOfBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    cubeRootOf(i)
+  loadcubeRootOfBench
+  prettyPrint(Period.MicroSecond)
 
 @main def isPowerOfTwoBench(): Unit =
-  (1 to 1_000_000_000).foreach: i =>
-    isPowerOfTwo(i)
+  loadisPowerOfTwoBench
+  prettyPrint(Period.MicroSecond)
 
 @main def isSnoobBench(): Unit =
-  val limit = 10_000
-  (1 until limit).foreach: i =>
-    (i + 1 to limit).foreach: j =>
-      isSnoob(j, i)
+  loadisSnoobBench
+  prettyPrint(Period.MicroSecond)
 
 @main def sumOfDivisorsBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    sumOfDivisors(i)
+  loadsumOfDivisorsBench
+  prettyPrint(Period.MicroSecond)
 
 @main def countOfDivisorsBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    countOfDivisors(i)
+  loadcountOfDivisorsBench
+  prettyPrint(Period.MicroSecond)
 
 @main def sumToGivenBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    sumToGiven(i)
+  loadsumToGivenBench
+  prettyPrint(Period.MicroSecond)
 
 @main def sumOfSquaresToBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    sumOfSquaresTo(i)
+  loadsumOfSquaresToBench
+  prettyPrint(Period.MicroSecond)
 
 @main def sumOfCubesToBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    sumOfCubesTo(i)
+  loadsumOfCubesToBench
+  prettyPrint(Period.MicroSecond)
 
 @main def decToBinConvBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    decToBinConv(i)
+  loaddecToBinConvBench
+  prettyPrint(Period.MicroSecond)
+
+object NumericalBenchmarks extends MetricInstrumented:
+  def loadgcdByEuclideanAlgorithm: Unit = loading.time:
+    val limit = 10_000
+    val start = 1_000_000
+    val end   = start + limit
+    (start until end).foreach: i =>
+      (i + 1 to end).foreach: j =>
+        gcdByEuclideanAlgorithm(j, i)
+
+  def loadgcdBasedOnParityOfNumbersBench: Unit = loading.time:
+    val limit = 10_000
+    val start = 1_000_000
+    val end   = start + limit
+    (start until end).foreach: i =>
+      (i + 1 to end).foreach: j =>
+        gcdBasedOnParityOfNumbers(j, i)
+
+  def loadgeneralizedEuclideanAlgorithmBench: Unit = loading.time:
+    val limit = 10_000
+    (2 until limit).foreach: i =>
+      (i + 1 to limit).foreach: j =>
+        generalizedEuclideanAlgorithm(j, i)
+
+  def loadgcdInverseBench: Unit = loading.time:
+    val limit = 10_000
+    (2 until limit).foreach: i =>
+      (i + 1 to limit).foreach: j =>
+        gcdInverse(j, i)
+
+  def loadlcmBench: Unit = loading.time:
+    val limit = 10_000
+    val start = 1_000_000
+    val end   = start + limit
+    (start until end).foreach: i =>
+      (i + 1 to end).foreach: j =>
+        lcm(j, i)
+
+  def loadpowerBench: Unit = loading.time:
+    (1 to 100).foreach: i =>
+      (1 to 10).foreach: j =>
+        power(j, i)
+
+  def loadsqrtBench: Unit = loading.time:
+    (1 to 1_000_000).foreach: i =>
+      sqrt(i)
+
+  def loadcubeRootOfBench: Unit = loading.time:
+    (1 to 1_000_000).foreach: i =>
+      cubeRootOf(i)
+
+  def loadisPowerOfTwoBench: Unit = loading.time:
+    (1 to 1_000_000_000).foreach: i =>
+      isPowerOfTwo(i)
+
+  def loadisSnoobBench: Unit = loading.time:
+    val limit = 10_000
+    (1 until limit).foreach: i =>
+      (i + 1 to limit).foreach: j =>
+        isSnoob(j, i)
+
+  def loadsumOfDivisorsBench: Unit = loading.time:
+    (1 to 1_000_000).foreach: i =>
+      sumOfDivisors(i)
+
+  def loadcountOfDivisorsBench: Unit = loading.time:
+    (1 to 1_000_000).foreach: i =>
+      countOfDivisors(i)
+
+  def loadsumToGivenBench: Unit = loading.time:
+    (1 to 1_000_000).foreach: i =>
+      sumToGiven(i)
+
+  def loadsumOfSquaresToBench: Unit = loading.time:
+    (1 to 1_000_000).foreach: i =>
+      sumOfSquaresTo(i)
+
+  def loadsumOfCubesToBench: Unit = loading.time:
+    (1 to 1_000_000).foreach: i =>
+      sumOfCubesTo(i)
+
+  def loaddecToBinConvBench: Unit = loading.time:
+    (1 to 1_000_000).foreach: i =>
+      decToBinConv(i)
+end NumericalBenchmarks

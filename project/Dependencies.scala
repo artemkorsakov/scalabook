@@ -25,9 +25,8 @@ object Dependencies {
 
   // https://github.com/erikvanoosten/metrics-scala/blob/master/docs/Manual.md
   object metrics {
-    private val version = "4.3.2"
-    val scala    = "nl.grons" %% "metrics4-scala"     % version
-    val scalaHdr = "nl.grons" %% "metrics4-scala-hdr" % version
+    val dropwizardCore = "io.dropwizard.metrics" % "metrics-core"    % "4.2.27"
+    val metrics4Scala  = "nl.grons"              %% "metrics4-scala" % "4.3.2"
   }
 
   object laika {
@@ -116,8 +115,8 @@ object Dependencies {
 
   val benchLibs: Seq[ModuleID] =
     Seq(
-      metrics.scala,
-      metrics.scalaHdr,
+      metrics.dropwizardCore,
+      metrics.metrics4Scala,
       typelevel.catsCore,
       typelevel.spire
     )

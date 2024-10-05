@@ -1,19 +1,57 @@
+/*
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/combinatorics/FactorialBenchmarks.scala --main-class ru.scalabook.algorithms.combinatorics.factorialBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/combinatorics/FactorialBenchmarks.scala --main-class ru.scalabook.algorithms.combinatorics.approximateFactorialBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/combinatorics/FactorialBenchmarks.scala --main-class ru.scalabook.algorithms.combinatorics.approximateFactorial2Bench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/combinatorics/FactorialBenchmarks.scala --main-class ru.scalabook.algorithms.combinatorics.primeFactorBench
+ */
+
+//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep org.typelevel::spire:0.18.0
+//> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/combinatorics/Factorial.scala
+//> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/fundamental/Primes.scala
+//> using file ../../MetricInstrumented.scala
+//> using file ../../Period.scala
+
 package ru.scalabook.algorithms.combinatorics
 
 import ru.scalabook.algorithms.combinatorics.Factorial.*
 import ru.scalabook.algorithms.fundamental.Primes.primes
 import spire.math.SafeLong
+import ru.scalabook.MetricInstrumented
+import ru.scalabook.Period
+import FactorialBenchmarks.*
 
-@main def factorialBench(): SafeLong =
-  factorial(100000)
+@main def factorialBench(): Unit =
+  val _ = loadFactorial
 
-@main def approximateFactorialBench(): BigInt =
-  approximateFactorial(100000)
+  prettyPrint(Period.MicroSecond)
 
-@main def approximateFactorial2Bench(): BigInt =
-  approximateFactorial2(100000)
+@main def approximateFactorialBench(): Unit =
+  val _ = loadApproximateFactorial
+
+  prettyPrint(Period.MicroSecond)
+
+@main def approximateFactorial2Bench(): Unit =
+  val _ = loadApproximateFactorial2
+
+  prettyPrint(Period.MicroSecond)
 
 @main def primeFactorBench(): Unit =
-  val limit = 100_000
-  primes.take(limit).toList.foreach: p =>
-    primeFactor(limit, p)
+  loadPrimeFactorBench
+
+  prettyPrint(Period.MicroSecond)
+
+object FactorialBenchmarks extends MetricInstrumented:
+  def loadFactorial: SafeLong = loading.time:
+    factorial(100000)
+
+  def loadApproximateFactorial: BigInt = loading.time:
+    approximateFactorial(100000)
+
+  def loadApproximateFactorial2: BigInt = loading.time:
+    approximateFactorial2(100000)
+
+  def loadPrimeFactorBench: Unit = loading.time:
+    val limit = 100_000
+    primes.take(limit).toList.foreach: p =>
+      primeFactor(limit, p)

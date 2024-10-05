@@ -1,22 +1,66 @@
+/*
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/OtherNumbersBenchmarks.scala --main-class ru.scalabook.algorithms.numbers.bernoulliBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/OtherNumbersBenchmarks.scala --main-class ru.scalabook.algorithms.numbers.padovanBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/OtherNumbersBenchmarks.scala --main-class ru.scalabook.algorithms.numbers.jacobsthalBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/OtherNumbersBenchmarks.scala --main-class ru.scalabook.algorithms.numbers.pellBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/OtherNumbersBenchmarks.scala --main-class ru.scalabook.algorithms.numbers.tribonacciBench
+scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/OtherNumbersBenchmarks.scala --main-class ru.scalabook.algorithms.numbers.tetranacciBench
+ */
+
+//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep org.scalaz::scalaz-core:7.3.8
+//> using dep org.typelevel::spire:0.18.0
+//> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/numbers/OtherNumbers.scala
+//> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/combinatorics/BinomialCoefficient.scala
+//> using file ../../MetricInstrumented.scala
+//> using file ../../Period.scala
+
 package ru.scalabook.algorithms.numbers
 
 import ru.scalabook.algorithms.numbers.OtherNumbers.*
-import spire.math.SafeLong
+import ru.scalabook.MetricInstrumented
+import ru.scalabook.Period
+import OtherNumbersBenchmarks.*
 
 @main def bernoulliBench(): Unit =
-  println(bernoulli(500))
+  loadbernoulliBench()
+  prettyPrint(Period.MicroSecond)
 
-@main def padovanBench(): SafeLong =
-  padovan(1_000_000)
+@main def padovanBench(): Unit =
+  loadpadovanBench()
+  prettyPrint(Period.MicroSecond)
 
-@main def jacobsthalBench(): SafeLong =
-  jacobsthal(1_000_000)
+@main def jacobsthalBench(): Unit =
+  loadjacobsthalBench()
+  prettyPrint(Period.MicroSecond)
 
-@main def pellBench(): SafeLong =
-  pell(1_000_000)
+@main def pellBench(): Unit =
+  loadpellBench()
+  prettyPrint(Period.MicroSecond)
 
-@main def tribonacciBench(): SafeLong =
-  tribonacci(1_000_000)
+@main def tribonacciBench(): Unit =
+  loadtribonacciBench()
+  prettyPrint(Period.MicroSecond)
 
-@main def tetranacciBench(): SafeLong =
-  tetranacci(1_000_000)
+@main def tetranacciBench(): Unit =
+  loadtetranacciBench()
+  prettyPrint(Period.MicroSecond)
+
+object OtherNumbersBenchmarks extends MetricInstrumented:
+  def loadbernoulliBench(): Unit = loading.time:
+    println(bernoulli(500))
+
+  def loadpadovanBench(): Unit = loading.time:
+    println(padovan(1_000_000))
+
+  def loadjacobsthalBench(): Unit = loading.time:
+    println(jacobsthal(1_000_000))
+
+  def loadpellBench(): Unit = loading.time:
+    println(pell(1_000_000))
+
+  def loadtribonacciBench(): Unit = loading.time:
+    println(tribonacci(1_000_000))
+
+  def loadtetranacciBench(): Unit = loading.time:
+    println(tetranacci(1_000_000))

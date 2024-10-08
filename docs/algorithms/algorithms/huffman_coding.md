@@ -116,6 +116,86 @@ flowchart TD
 
 ## Представление деревьев Хаффмана
 
+Листья дерева представляются в виде структуры, состоящей из символа, содержащегося в листе, и веса.
+Дерево в общем случае будет списком из левой ветви, правой ветви, множества символов и веса.
+Вот как можно представить дерево Хаффмана:
+
+```dotty
+sealed trait HuffmanTree:
+  def symbols: Vector[Char]
+  def weight: Int
+
+case class HuffmanLeaf(symbol: Char, weight: Int) extends HuffmanTree:
+  val symbols = Vector(symbol)
+case class HuffmanBranch(
+    symbols: Vector[Char],
+    weight: Int,
+    left: HuffmanTree,
+    right: HuffmanTree
+) extends HuffmanTree
+```
+
+Когда мы порождаем дерево слиянием двух вершин, то получаем вес дерева как сумму весов этих вершин, 
+а множество символов как объединение множеств их символов. 
+
+```dotty
+object HuffmanTree:
+  def makeCodeTree(left: HuffmanTree, right: HuffmanTree) =
+    HuffmanBranch(
+      symbols = left.symbols ++ right.symbols,
+      weight = left.weight + right.weight,
+      left = left,
+      right = right
+    )
+```
+
+## Процедура декодирования
+
+Следующая процедура реализует алгоритм декодирования. 
+В качестве аргументов она принимает список из единиц и нулей, а также дерево Хаффмана.
+
+```dotty
+object HuffmanTree:
+  enum Bit:
+    case Zero, One
+
+  def decode(bits: List[Bit], tree: HuffmanBranch): Vector[Char] =
+    def decodeLoop(
+        bits: List[Bit],
+        currentBranch: HuffmanTree,
+        message: Vector[Char]
+    ): Vector[Char] =
+      (bits, currentBranch) match
+        case (_, HuffmanLeaf(symbol, _)) =>
+          decodeLoop(bits, tree, message :+ symbol)
+        case (Nil, _) => message
+        case (Bit.Zero :: tail, HuffmanBranch(_, _, left, _)) =>
+          decodeLoop(tail, left, message)
+        case (Bit.One :: tail, HuffmanBranch(_, _, _, right)) =>
+          decodeLoop(tail, right, message)
+
+    decodeLoop(bits, tree, Vector.empty)
+  end decode
+```
+
+Процедура `decodeLoop` принимает два аргумента: список остающихся битов и текущую позицию в дереве. 
+Она двигается «вниз» по дереву, выбирая левую или правую ветвь в зависимости от того, 
+ноль или единица следующий бит в списке. 
+Когда процедура достигает листа, то возвращает символ из него как очередной символ сообщения, 
+присоединяя его к результату декодирования остатка сообщения, начиная от корня дерева. 
+
+## Множества взвешенных элементов
+
+В нашем представлении деревьев каждая нетерминальная вершина содержит множество символов. 
+Однако алгоритм порождения дерева, который обсуждался выше, требует, 
+чтобы мы работали еще и с множествами листьев и деревьев, последовательно сливая два наименьших элемента.
+Поскольку нам нужно будет раз за разом находить наименьший элемент множества,
+удобно для такого множества использовать упорядоченное представление.
+Мы представим множество листьев и деревьев как список элементов, 
+упорядоченный по весу в возрастающем порядке. 
+В следующей процедуре `adjoinSet` для построения множеств элементы сравниваются по своим весам, 
+и никогда не бывает так, что добавляемый элемент уже содержится в множестве.
+
 
 ---
 

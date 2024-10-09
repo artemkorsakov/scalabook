@@ -184,6 +184,37 @@ object HuffmanTree:
 Когда процедура достигает листа, то возвращает символ из него как очередной символ сообщения, 
 присоединяя его к результату декодирования остатка сообщения, начиная от корня дерева. 
 
+Пример использования процедуры:
+
+```dotty
+val tree =
+  HuffmanTree.makeCodeTree(
+    HuffmanLeaf('A', 4),
+    HuffmanTree.makeCodeTree(
+      HuffmanLeaf('B', 2),
+      HuffmanTree.makeCodeTree(HuffmanLeaf('D', 1), HuffmanLeaf('C', 1))
+    )
+  )
+val bits = List(
+  Bit.Zero,
+  Bit.One,
+  Bit.One,
+  Bit.Zero,
+  Bit.Zero,
+  Bit.One,
+  Bit.Zero,
+  Bit.One,
+  Bit.Zero,
+  Bit.One,
+  Bit.One,
+  Bit.One,
+  Bit.Zero
+)
+
+val decoded = HuffmanTree.decode(bits, tree)
+// Vector('A', 'D', 'A', 'B', 'B', 'C', 'A')
+```
+
 ## Множества взвешенных элементов
 
 В нашем представлении деревьев каждая нетерминальная вершина содержит множество символов. 
@@ -191,11 +222,128 @@ object HuffmanTree:
 чтобы мы работали еще и с множествами листьев и деревьев, последовательно сливая два наименьших элемента.
 Поскольку нам нужно будет раз за разом находить наименьший элемент множества,
 удобно для такого множества использовать упорядоченное представление.
+
 Мы представим множество листьев и деревьев как список элементов, 
 упорядоченный по весу в возрастающем порядке. 
-В следующей процедуре `adjoinSet` для построения множеств элементы сравниваются по своим весам, 
-и никогда не бывает так, что добавляемый элемент уже содержится в множестве.
+В следующей процедуре `adjoinSet` для построения множеств элементы сравниваются по своим весам. 
+При этом предполагается, что добавляемый элемент не содержится в множестве.
 
+```dotty
+def adjoinSet(
+    tree: HuffmanTree,
+    trees: List[HuffmanTree]
+): List[HuffmanTree] =
+  trees match
+    case Nil =>
+      List(tree)
+    case head :: tail if tree.weight < head.weight =>
+      tree :: head :: tail
+    case head :: tail =>
+      head :: adjoinSet(tree, tail)
+```
+
+Следующая процедура принимает список пар вида символ–частота, например `((A 4) (B 2) (C 1) (D 1))`, 
+и порождает исходное упорядоченное множество листьев, готовое к слиянию по алгоритму Хаффмана:
+
+```dotty
+def makeLeafSet(pairs: List[(Char, Int)]): List[HuffmanTree] =
+  pairs match
+    case Nil => List.empty
+    case (symbol, weigth) :: tail =>
+      val leaf = HuffmanLeaf(symbol, weigth)
+      adjoinSet(leaf, makeLeafSet(tail))
+```
+
+## Кодирование сообщения
+
+Процедура `encode` получает в качестве аргументов сообщение и дерево, 
+и порождает список битов, который представляет закодированное сообщение.
+`encodeSymbol` — процедура, возвращающая список битов, который кодирует данный символ в соответствии с заданным деревом. 
+Она сообщает об ошибке, если символ не содержится в дереве.
+
+Алгоритм работы метода `encode`:
+
+1. Если сообщение пустое, то возвращается пустой список битов.
+2. Если сообщение не пустое, то для первого символа сообщения и дерева вызывается метод `encodeSymbol`.
+3. Результат вызова `encodeSymbol` добавляется к результату вызова `encode` для остальной части сообщения.
+4. Если `encodeSymbol` возвращает список битов, то метод `encode` возвращает список битов, полученный в результате объединения списков битов из `encodeSymbol` и `encode` для остальной части сообщения.
+5. Иначе возвращается ошибка.
+
+Алгоритм работы метода `encodeSymbol`:
+
+1. Если дерево является листом и символ в нем совпадает с искомым символом, то возвращается пустой список битов.
+2. Если дерево является ветвью и искомый символ находится в левой части дерева, то метод `encodeSymbol` вызывается рекурсивно для левой части дерева, а к результату добавляется бит `0`.
+3. Если дерево является ветвью и искомый символ находится в правой части дерева, то метод `encodeSymbol` вызывается рекурсивно для правой части дерева, а к результату добавляется бит `1`.
+4. Если искомый символ не найден в дереве, то метод возвращает ошибку.
+
+```dotty
+def encode(
+    message: List[Char],
+    tree: HuffmanTree
+): Either[String, List[Bit]] =
+  message match
+    case Nil => Right(List.empty)
+    case head :: tail =>
+      for
+        encodedHead <- encodeSymbol(head, tree)
+        encodedTail <- encode(tail, tree)
+      yield encodedHead ++ encodedTail
+
+def encodeSymbol(symbol: Char, tree: HuffmanTree): Either[String, List[Bit]] =
+  tree match
+    case leaf: HuffmanLeaf if leaf.symbol == symbol => Right(List.empty)
+    case HuffmanBranch(_, _, left, _) if left.symbols.contains(symbol) =>
+      encodeSymbol(symbol, left).map: bits =>
+        Bit.Zero :: bits
+    case HuffmanBranch(_, _, _, right) if right.symbols.contains(symbol) =>
+      encodeSymbol(symbol, right).map: bits =>
+        Bit.One :: bits
+    case _ => Left(s"Symbol $symbol not found in tree")
+```
+
+Пример закодированного сообщения:
+
+```dotty
+val tree =
+  HuffmanTree.makeCodeTree(
+    HuffmanLeaf('A', 4),
+    HuffmanTree.makeCodeTree(
+      HuffmanLeaf('B', 2),
+      HuffmanTree.makeCodeTree(HuffmanLeaf('D', 1), HuffmanLeaf('C', 1))
+    )
+  )
+val message = List('A', 'D', 'A', 'B', 'B', 'C', 'A')
+val encoded = HuffmanTree.encode(message, tree)
+// Right(List(Bit.Zero, Bit.One, Bit.One, Bit.Zero, Bit.Zero, Bit.One, Bit.Zero, 
+//   Bit.One, Bit.Zero, Bit.One, Bit.One, Bit.One, Bit.Zero))
+```
+
+## Построение дерева кодирования по Хаффману
+
+Следующая процедура берет в качестве аргумента список пар вида символ-частота 
+(где ни один символ не встречается более, чем в одной паре) и порождает дерево кодирования по Хаффману 
+в соответствии с алгоритмом Хаффмана.
+
+Алгоритм работы метода `successiveMerge`:
+
+1. Сортируем список деревьев по весу в порядке возрастания.
+2. Если список деревьев пуст, возвращаем `None`.
+3. Если в списке деревьев только одно дерево, возвращаем его.
+4. Если в списке деревьев более одного дерева, извлекаем два дерева с наименьшим весом, 
+   объединяем их в новое дерево и добавляем его в список деревьев.
+5. Повторяем шаги 1-4, пока в списке деревьев не останется только одно дерево.
+
+```dotty
+def generateHuffmanTree(pairs: List[(Char, Int)]): Option[HuffmanTree] =
+  successiveMerge(makeLeafSet(pairs))
+
+def successiveMerge(trees: List[HuffmanTree]): Option[HuffmanTree] =
+  trees.sortBy(_.weight) match
+    case Nil         => None
+    case head :: Nil => Some(head)
+    case first :: second :: tail =>
+      successiveMerge(makeCodeTree(first, second) :: tail)
+```
 
 ---
 

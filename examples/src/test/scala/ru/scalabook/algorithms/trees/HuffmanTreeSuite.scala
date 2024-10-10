@@ -262,19 +262,39 @@ object HuffmanTreeSuite extends FunSuite:
     val set    = List(leaf1, leaf2, leaf3)
     val result = HuffmanTree.successiveMerge(set)
     expect(result.contains(HuffmanTree.makeCodeTree(
-      HuffmanTree.makeCodeTree(leaf1, leaf2),
-      leaf3
+      leaf3,
+      HuffmanTree.makeCodeTree(leaf1, leaf2)
     )))
 
-  test("successiveMerge with multiple elements set and different weights"):
-    val leaf1  = HuffmanLeaf('A', 1)
-    val leaf2  = HuffmanLeaf('B', 3)
-    val leaf3  = HuffmanLeaf('C', 2)
-    val set    = List(leaf1, leaf2, leaf3)
-    val result = HuffmanTree.successiveMerge(set)
-    expect(result.contains(HuffmanTree.makeCodeTree(
-      HuffmanTree.makeCodeTree(leaf1, leaf3),
-      leaf2
+  test("generateHuffmanTree with one symbol"):
+    val symbols = List(('A', 1))
+    val tree    = HuffmanTree.generateHuffmanTree(symbols)
+    expect(tree.contains(HuffmanLeaf('A', 1)))
+
+  test("generateHuffmanTree with multiple symbols"):
+    val symbols = List(('B', 2), ('A', 1), ('C', 3))
+    val tree    = HuffmanTree.generateHuffmanTree(symbols)
+    expect(tree.contains(HuffmanTree.makeCodeTree(
+      HuffmanLeaf('C', 3),
+      HuffmanTree.makeCodeTree(HuffmanLeaf('A', 1), HuffmanLeaf('B', 2))
+    )))
+
+  test("generateHuffmanTree with empty list"):
+    val symbols = List()
+    val tree    = HuffmanTree.generateHuffmanTree(symbols)
+    expect(tree.isEmpty)
+
+  test("generateHuffmanTree with single symbol and weight"):
+    val symbols = List(('A', 5))
+    val tree    = HuffmanTree.generateHuffmanTree(symbols)
+    expect(tree.contains(HuffmanLeaf('A', 5)))
+
+  test("generateHuffmanTree with multiple symbols and weights"):
+    val symbols = List(('B', 2), ('A', 1), ('C', 3))
+    val tree    = HuffmanTree.generateHuffmanTree(symbols)
+    expect(tree.contains(HuffmanTree.makeCodeTree(
+      HuffmanLeaf('C', 3),
+      HuffmanTree.makeCodeTree(HuffmanLeaf('A', 1), HuffmanLeaf('B', 2))
     )))
 
 end HuffmanTreeSuite

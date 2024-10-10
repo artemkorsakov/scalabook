@@ -338,11 +338,11 @@ def generateHuffmanTree(pairs: List[(Char, Int)]): Option[HuffmanTree] =
   successiveMerge(makeLeafSet(pairs))
 
 def successiveMerge(trees: List[HuffmanTree]): Option[HuffmanTree] =
-  trees.sortBy(_.weight) match
+  trees match
     case Nil         => None
     case head :: Nil => Some(head)
     case first :: second :: tail =>
-      successiveMerge(makeCodeTree(first, second) :: tail)
+      successiveMerge(adjoinSet(makeCodeTree(first, second), tail))
 ```
 
 ---

@@ -2305,9 +2305,152 @@ intersectionSet(
 
 #### Множества и поиск информации
 
-#### 2.3.4. Пример: деревья кодирования по Хаффману
+### 2.3.4. Пример: деревья кодирования по Хаффману
 
 [Пример разобран в разделе Алгоритмы](../../algorithms/algorithms/huffman_coding.md)
+
+## 2.4. Множественные представления для абстрактных данных
+
+В этом разделе описана работа с данными, которые могут быть представлены в разных частях программы различными способами. 
+Это требует построения _обобщенных процедур_ (_generic procedures_) — процедур, работающих с данными, 
+которые могут быть представлены более чем одним способом. 
+Основной метод построения обобщенных процедур будет состоять в том, 
+чтобы работать в терминах объектов, обладающих _метками типа_ (_type tags_), 
+то есть объектов, явно включающих информацию о том, как их надо обрабатывать. 
+Кроме того, обсудим _программирование, управляемое данными_ (_data-directed programming_) — 
+мощную и удобную стратегию реализации, предназначенную для аддитивной сборки систем с обобщенными операциями.
+
+### 2.4.1. Представления комплексных чисел
+
+Возможно два представления комплексного числа в виде упорядоченной пары: 
+декартова форма (действительная и мнимая части) и полярная форма (модуль и аргумент).
+
+Множество комплексных чисел можно представлять себе как двумерное пространство с двумя перпендикулярными осями: 
+«действительной» и «мнимой». С этой точки зрения комплексное число z = x + iy (где \\(i^2 = −1\\)) 
+можно представить как точку на плоскости, действительная координата которой равна x, а мнимая - y. 
+В этом представлении сложение комплексных чисел сводится к сложению координат:
+
+- Действительная-часть(z1 + z2) = Действительная-часть(z1) + Действительная-часть(z2)
+- Мнимая-часть(z1 + z2) = Мнимая-часть(z1) + Мнимая-часть(z2)
+
+При умножении комплексных чисел естественней думать об их представлении в полярной форме, в виде модуля и аргумента. 
+Произведение двух комплексных чисел есть вектор, получаемый путем растягивания одного комплексного числа 
+на модуль другого и поворота на его же аргумент:
+
+- Модуль(z1 \* z2) = Модуль(z1) \* Модуль(z2)
+- Аргумент(z1 \* z2) = Аргумент(z1) + Аргумент(z2)
+
+Таким образом, есть два различных представления для комплексных чисел, и каждое из них удобнее для какого-то набора операций.
+
+Предположим, что операции над комплексными числами реализованы в терминах четырех селекторов: 
+`realPart`, `imagPart`, `magnitude` и `angle`.  
+Предположим еще, что у нас есть две процедуры для построения комплексных чисел: 
+`makeFromRealImag` возвращает комплексное число с указанными действительной и мнимой частями, 
+а `makeFromMagAng` возвращает комплексное число с указанными модулем и аргументом. 
+Эти процедуры обладают такими свойствами, что для любого комплексного числа `z`
+`makeFromRealImag(z.realPart, z.imagPart)` и `makeFromMagAng(z.magnitude, z.angle)`
+порождают комплексные числа, равные `z`.
+
+```dotty
+sealed trait ComplexNumber:
+  def realPart: Double
+  def imagPart: Double
+  def magnitude: Double
+  def angle: Double
+  def makeFromRealImag(realPart: Double, imagPart: Double): ComplexNumber
+  def makeFromMagAng(magnitude: Double, angle: Double): ComplexNumber
+```
+
+Используя такие конструкторы и селекторы, мы можем реализовать арифметику комплексных чисел через «абстрактные данные», 
+определяемые этими конструкторами и селекторами.
+Как показывают вышеуказанные формулы, можно складывать и вычитать комплексные числа 
+в терминах действительной и мнимой части, а умножать и делить в терминах модуля и аргумента:
+
+```dotty
+sealed trait ComplexNumber:
+  self =>
+
+  ...
+
+  def addComplex(z: ComplexNumber): ComplexNumber =
+    makeFromRealImag(
+      realPart = self.realPart + z.realPart,
+      imagPart = self.imagPart + z.imagPart
+    )
+
+  def subComplex(z: ComplexNumber): ComplexNumber =
+    makeFromRealImag(
+      realPart = self.realPart - z.realPart,
+      imagPart = self.imagPart - z.imagPart
+    )
+
+  def mulComplex(z: ComplexNumber): ComplexNumber =
+    makeFromMagAng(
+      magnitude = self.magnitude * z.magnitude,
+      angle = self.angle + z.angle
+    )
+
+  def divComplex(z: ComplexNumber): ComplexNumber =
+    makeFromMagAng(
+      magnitude = self.magnitude / z.magnitude,
+      angle = self.angle - z.angle
+    )
+end ComplexNumber
+```
+
+Связь между декартовым и полярным представлением комплексных чисел можно определить с помощью отношений:
+
+- \\(x = r \times cos(A); y = r \times sin(A)\\)
+- \\(r = \sqrt{x^2 + y^2}; A = arctg(y, x)\\)
+
+Таким образом, реализация в декартовом представлении определяется следующими селекторами и конструкторами:
+
+```dotty
+final case class CartesianComplexNumber(
+    realPart: Double,
+    imagPart: Double
+) extends ComplexNumber:
+  val magnitude: Double = math.sqrt(realPart * realPart + imagPart * imagPart)
+  val angle: Double     = math.atan2(imagPart, realPart)
+
+  def makeFromRealImag(
+      realPart: Double,
+      imagPart: Double
+  ): CartesianComplexNumber =
+    CartesianComplexNumber(realPart = realPart, imagPart = imagPart)
+
+  def makeFromMagAng(magnitude: Double, angle: Double): CartesianComplexNumber =
+    CartesianComplexNumber(
+      realPart = magnitude * math.cos(angle),
+      imagPart = magnitude * math.sin(angle)
+    )
+```
+
+Реализация в полярном представлении определяется следующими селекторами и конструкторами:
+
+```dotty
+final case class PolarComplexNumber(
+    magnitude: Double,
+    angle: Double
+) extends ComplexNumber:
+  val realPart: Double = magnitude * math.cos(angle)
+  val imagPart: Double = magnitude * math.sin(angle)
+
+  def makeFromRealImag(realPart: Double, imagPart: Double): PolarComplexNumber =
+    PolarComplexNumber(
+      magnitude = math.sqrt(realPart * realPart + imagPart * imagPart),
+      angle = math.atan2(imagPart, realPart)
+    )
+
+  def makeFromMagAng(magnitude: Double, angle: Double): PolarComplexNumber =
+    PolarComplexNumber(magnitude = magnitude, angle = angle)
+```
+
+## 2.5. Системы с обобщенными операциями
+
+### 2.5.1. Обобщенные арифметические операции
+
+
 
 ---
 

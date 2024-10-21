@@ -2446,12 +2446,6 @@ final case class PolarComplexNumber(
     PolarComplexNumber(magnitude = magnitude, angle = angle)
 ```
 
-## 2.5. Системы с обобщенными операциями
-
-### 2.5.1. Обобщенные арифметические операции
-
-
-
 ---
 
 **Ссылки:**

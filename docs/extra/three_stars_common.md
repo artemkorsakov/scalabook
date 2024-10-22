@@ -4,13 +4,14 @@
 
 ## Книги и документация
 
-| Название                                                                                                                                                                                                                                                                                                     | Язык | Дата | Комментарий      |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----:|------|------------------|
-| [Вирт Никлаус - Алгоритмы + Структуры данных = Программы](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs)                                                                                                                                                                         |  Ру  | 1976 | Алгоритмы        |
-| [Милевский Бартош - Дао функционального программирования](https://henrychern.wordpress.com/2022/09/23/milewski-%d0%b4%d0%b0%d0%be-%d1%84%d1%83%d0%bd%d0%ba%d1%86%d0%b8%d0%be%d0%bd%d0%b0%d0%bb%d1%8c%d0%bd%d0%be%d0%b3%d0%be-%d0%bf%d1%80%d0%be%d0%b3%d1%80%d0%b0%d0%bc%d0%bc%d0%b8%d1%80%d0%be%d0%b2%d0%b0) |  Ру  | 2023 | Теория категорий |
-| [Милевский Бартош - Теория категорий для программистов](https://henrychern.wordpress.com/2022/09/15/%d1%82%d0%b5%d0%be%d1%80%d0%b8%d1%8f-%d0%ba%d0%b0%d1%82%d0%b5%d0%b3%d0%be%d1%80%d0%b8%d0%b9-%d0%b4%d0%bb%d1%8f-%d0%bf%d1%80%d0%be%d0%b3%d1%80%d0%b0%d0%bc%d0%bc%d0%b8%d1%81%d1%82%d0%be%d0%b2)           |  Ру  | 2022 | Теория категорий |
-| [Milewski Bartosz - Category Theory for Programmers](https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface)                                                                                                                                                                     |  En  | 2014 | Теория категорий |
-| [Milewski Bartosz - The Dao of Functional Programming](https://github.com/BartoszMilewski/Publications/blob/master/TheDaoOfFP/DaoFP.pdf)                                                                                                                                                                     |  En  | 2023 | Теория категорий |
+| Название                                                                                                                                                                                                                                                                                                                                           | Язык | Дата | Комментарий          |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------: | -------- | ------------------------------- |
+| [Вирт Никлаус - Алгоритмы + Структуры данных = Программы](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs)                                                                                                                                                                              |   Ру   | 1976     | Алгоритмы              |
+| [Милевский Бартош - Дао функционального программирования](https://henrychern.wordpress.com/2022/09/23/milewski-%d0%b4%d0%b0%d0%be-%d1%84%d1%83%d0%bd%d0%ba%d1%86%d0%b8%d0%be%d0%bd%d0%b0%d0%bb%d1%8c%d0%bd%d0%be%d0%b3%d0%be-%d0%bf%d1%80%d0%be%d0%b3%d1%80%d0%b0%d0%bc%d0%bc%d0%b8%d1%80%d0%be%d0%b2%d0%b0) |   Ру   | 2023     | Теория категорий |
+| [Милевский Бартош - Теория категорий для программистов](https://henrychern.wordpress.com/2022/09/15/%d1%82%d0%b5%d0%be%d1%80%d0%b8%d1%8f-%d0%ba%d0%b0%d1%82%d0%b5%d0%b3%d0%be%d1%80%d0%b8%d0%b9-%d0%b4%d0%bb%d1%8f-%d0%bf%d1%80%d0%be%d0%b3%d1%80%d0%b0%d0%bc%d0%bc%d0%b8%d1%81%d1%82%d0%be%d0%b2)              |   Ру   | 2022     | Теория категорий |
+| [Abelson, Sussman - Structure and Interpretation of Computer Programs](https://web.mit.edu/6.001/6.037/sicp.pdf)                                                                                                                                                                                                                                              |    En    | 1996     |                                 |
+| [Milewski Bartosz - Category Theory for Programmers](https://bartoszmilewski.com/2014/10/28/category-theory-for-programmers-the-preface)                                                                                                                                                                                                                      |    En    | 2014     | Теория категорий |
+| [Milewski Bartosz - The Dao of Functional Programming](https://github.com/BartoszMilewski/Publications/blob/master/TheDaoOfFP/DaoFP.pdf)                                                                                                                                                                                                                      |    En    | 2023     | Теория категорий |
 
 ## Курсы
 
@@ -18,14 +19,12 @@
 
 ## Статьи
 
-| Название                                                                                    | Язык | Дата | Комментарий |
-|---------------------------------------------------------------------------------------------|:----:|------|-------------|
-| [Parse, don’t validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate) |  En  | 2019 | Refined     |
+| Название                                                                          | Язык | Дата | Комментарий |
+| ----------------------------------------------------------------------------------------- | :------: | -------- | ---------------------- |
+| [Parse, don’t validate](https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate) |    En    | 2019     | Refined                |
 
 ## Видео
 
-| Название                                                                                                                        | Язык | Дата | Комментарий |
-|---------------------------------------------------------------------------------------------------------------------------------|:----:|------|-------------|
-| [Functional Programming Group](https://www.youtube.com/watch?app=desktop&v=s2ay9nEW3ak&list=PLNo5uJesLLQjRmM9lASwVeL0fFtJuKU0U) |  Ру  | 2018 |             |
-
-
+| Название                                                                                                             | Язык | Дата | Комментарий |
+| ---------------------------------------------------------------------------------------------------------------------------- | :------: | -------- | ---------------------- |
+| [Functional Programming Group](https://www.youtube.com/watch?app=desktop&v=s2ay9nEW3ak&list=PLNo5uJesLLQjRmM9lASwVeL0fFtJuKU0U) |   Ру   | 2018     |                        |

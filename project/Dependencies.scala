@@ -5,11 +5,11 @@ object Dependencies {
   val Scala = "3.6.1"
 
   object fs2 {
-    val core = "co.fs2" %% "fs2-core" % "3.10.2"
+    val core = "co.fs2" %% "fs2-core" % "3.11.0"
   }
 
   object http4s {
-    private val version = "0.23.27"
+    private val version = "0.23.29"
     val blaze           = "org.http4s" %% "http4s-blaze-server" % "0.23.16"
     val core            = "org.http4s" %% "http4s-core"         % version
     val dsl             = "org.http4s" %% "http4s-dsl"          % version
@@ -25,7 +25,7 @@ object Dependencies {
 
   // https://github.com/erikvanoosten/metrics-scala/blob/master/docs/Manual.md
   object metrics {
-    val dropwizardCore = "io.dropwizard.metrics" % "metrics-core"    % "4.2.27"
+    val dropwizardCore = "io.dropwizard.metrics" % "metrics-core"    % "4.2.28"
     val metrics4Scala  = "nl.grons"              %% "metrics4-scala" % "4.3.2"
   }
 
@@ -77,7 +77,7 @@ object Dependencies {
   }
 
   object zio {
-    private val version = "2.1.7"
+    private val version = "2.1.11"
     val core        = "dev.zio" %% "zio"             % version
     val stacktracer = "dev.zio" %% "zio-stacktracer" % version
   }

@@ -2,7 +2,7 @@ import sbt.*
 
 // @formatter:off
 object Dependencies {
-  val Scala = "3.5.0"
+  val Scala = "3.6.1"
 
   object fs2 {
     val core = "co.fs2" %% "fs2-core" % "3.10.2"

@@ -148,6 +148,24 @@ def compose[A, B, C](f: B => C, g: A => B): A => C =
   a => f(g(a))
 ```
 
+## Композиция функций
+
+Композиция двух функций `f` и `g` — это функция `h` такая, что `h(x) = f(g(x))`. 
+
+```dotty
+type A
+type B
+type C
+
+def f: A => B = ???
+def g: B => C = ???
+def h: A => C = f andThen g
+```
+
+Функциональная композиция берет функцию типа `A => B`, функцию типа `B => C` и возвращает функцию типа `A => C`.
+Функциональная композиция является ассоциативной операцией. 
+Имеем: `((f andThen g) andThen h) = f andThen (g andThen h)` для всех функций `f`, `g` и `h`. 
+Соответственно, нет необходимости ставить скобки при записи последовательностей композиций.
 
 ---
 
@@ -160,6 +178,7 @@ def compose[A, B, C](f: B => C, g: A => B): A => C =
 - [Functional Programming by Alexander Alvin](https://alvinalexander.com/photos/functional-programming-simplied-free-pdf-preview/)
 - [Functional Programming For The Rest of Us](https://www.defmacro.org/2006/06/19/fp.html)
 - [Functional Programming in Scala, Second Edition, Chapter 1-2](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
+- [Introduction to Functional Programming - Bird, Wadler, 2.1 Numbers](https://www.amazon.com/Introduction-functional-programming-Prentice-international/dp/0134841891)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fp-what-is-fp.html)
 - [Unleashing the Power: The Advantages of Functional Programming in the Digital Age](https://scalac.io/blog/unleashing-the-power-the-advantages-of-functional-programming-in-the-digital-age)
 - [What's Functional Programming All About?](https://www.lihaoyi.com/post/WhatsFunctionalProgrammingAllAbout.html)

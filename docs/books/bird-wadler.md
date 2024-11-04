@@ -517,6 +517,10 @@ def sign(x: Int): Int =
 
 ## Глава 2. Базовые типы данных
 
+### 2.1 Numbers
+
+#### 
+
 ---
 
 **Ссылки:**
@@ -524,4 +528,4 @@ def sign(x: Int): Int =
 - [Bird, Wadler - Introduction to Functional Programming][Book]
 
   
-[Book]: https://books.google.ru/books/about/Introduction_to_Functional_Programming.html?id=Op5QAAAAMAAJ&redir_esc=y
+[Book]: https://www.amazon.com/Introduction-functional-programming-Prentice-international/dp/0134841891

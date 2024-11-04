@@ -1,10 +1,7 @@
-def square(x: Int): Int = x * x
+type A
+type B
+type C
 
-def id[A]: A => A = x => x
-
-println(id(1))
-println(id(square))
-println(id(id))
-
-def min(x: Int)(y: Int): Int = if x < y then x else y
-def min2(x: Int, y: Int): Int = if x < y then x else y
+def f: A => B = ???
+def g: B => C = ???
+def h: A => C = f andThen g

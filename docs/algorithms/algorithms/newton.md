@@ -84,5 +84,6 @@ private val g: Double => Double = x => math.cos(x) - x * x * x
 
 - [Метод Ньютона - wiki](https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D1%82%D0%BE%D0%B4_%D0%9D%D1%8C%D1%8E%D1%82%D0%BE%D0%BD%D0%B0)
 - [SICP: Абельсон Х., Сассман Д. - Структура и интерпретация компьютерных программ][sicp]
+- [Bird, Wadler - Introduction to Functional Programming, 2.1 Numbers](https://www.amazon.com/Introduction-functional-programming-Prentice-international/dp/0134841891)
 
 [sicp]: https://web.mit.edu/6.001/6.037/sicp.pdf

@@ -18,6 +18,12 @@ _Связанные списки_ реализованы в Scala в виде к
 - _Остаток списка без начального элемента_ (`tailOption`)
     - **Время** - O(1)
     - **Память** - O(1)
+- _Последний элемент_ (`lastOption`) 
+    - **Время** - O(n)
+    - **Память** - O(n)
+- _Остаток списка без последнего элемента_ (`initOption`)
+    - **Время** - O(n)
+    - **Память** - O(n)
 - _Проверка списка на пустоту_ (`isEmpty`)
     - **Время** - O(1)
     - **Память** - O(1)
@@ -48,6 +54,18 @@ _Связанные списки_ реализованы в Scala в виде к
 - _Объединение элементов списка_ (`fold`)
     - **Время** - O(n)
     - **Память** - O(n)
+- _Список из первых n элементов_ (`take`)
+    - **Время** - O(n)
+    - **Память** - O(n)
+- _Список за исключением первых n элементов_ (`drop`)
+    - **Время** - O(n)
+    - **Память** - O(n)
+- _Список из первых элементов, удовлетворяющих предикату_ (`takeWhile`)
+    - **Время** - O(n)
+    - **Память** - O(n)
+- _Список за исключением первых элементов, удовлетворяющих предикату_ (`dropWhile`)
+    - **Время** - O(n)
+    - **Память** - O(n)
 
 **Код:**
 
@@ -63,6 +81,16 @@ enum LinkedList[+A]:
   lazy val tailOption: Option[LinkedList[A]] = this match
     case Nil           => None
     case Cons(_, tail) => Some(tail)
+
+  lazy val lastOption: Option[A] = this match
+    case Nil          => None
+    case Cons(h, Nil) => Some(h)
+    case Cons(h, t)   => t.lastOption
+
+  lazy val initOption: Option[LinkedList[A]] = this match
+    case Nil          => None
+    case Cons(h, Nil) => Some(Nil)
+    case Cons(h, t)   => t.initOption.map(Cons(h, _))
 
   lazy val isEmpty: Boolean = this match
     case Nil => true
@@ -103,7 +131,23 @@ enum LinkedList[+A]:
 
   def fold[B](init: B)(op: (B, A) => B): B = this match
     case Nil              => init
-    case Cons(head, tail) => tail.fold(op(init, head))(op)    
+    case Cons(head, tail) => tail.fold(op(init, head))(op) 
+
+  def take(n: Int): LinkedList[A] = this match
+    case Cons(head, tail) if n > 0 => Cons(head, tail.take(n - 1))
+    case _ => Nil
+
+  def drop(n: Int): LinkedList[A] = this match
+    case Cons(head, tail) if n > 0 => tail.drop(n - 1)
+    case _ => Nil
+
+  def takeWhile(p: A => Boolean): LinkedList[A] = this match
+    case Cons(head, tail) if p(head) => Cons(head, tail.takeWhile(p))
+    case _ => Nil
+
+  def dropWhile(p: A => Boolean): LinkedList[A] = this match
+    case Cons(head, tail) if p(head) => tail.dropWhile(p)
+    case _ => this       
 end LinkedList
 ```
 
@@ -118,6 +162,12 @@ nonEmptyList.headOption // Some(2)
 
 emptyList.tailOption    // None
 nonEmptyList.tailOption // Some(Cons(1,Nil))
+
+emptyList.lastOption    // None
+nonEmptyList.lastOption // Some(1)
+
+emptyList.initOption    // None
+nonEmptyList.initOption // Some(Cons(2,Nil))
 
 emptyList.isEmpty       // true
 nonEmptyList.isEmpty    // false
@@ -157,4 +207,5 @@ nonEmptyList.fold(100)(_ + _)   // 103
 - [Род Стивенс - Алгоритмы. Теория и практическое применение. Глава 3. Связанные списки](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854)
 - [Связанный список - Wikipedia](https://ru.wikipedia.org/wiki/%D0%A1%D0%B2%D1%8F%D0%B7%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
+- [Introduction to Functional Programming - Bird, Wadler, Chapter 3](https://www.amazon.com/Introduction-functional-programming-Prentice-international/dp/0134841891)
 - [Scalacaster - List](https://github.com/vkostyukov/scalacaster/blob/master/src/collection/List.scala)

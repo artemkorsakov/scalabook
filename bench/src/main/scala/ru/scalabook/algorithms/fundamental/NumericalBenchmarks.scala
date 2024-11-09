@@ -17,7 +17,7 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/Numerical
 scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/NumericalBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.decToBinConvBench
  */
 
-//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep nl.grons::metrics4-scala:4.3.3
 //> using dep org.typelevel::spire:0.18.0
 //> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/fundamental/Numerical.scala
 //> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/fundamental/Primes.scala
@@ -32,12 +32,14 @@ import ru.scalabook.Period
 import NumericalBenchmarks.*
 
 @main def gcdByEuclideanAlgorithmBench(): Unit =
-  loadgcdByEuclideanAlgorithm
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadgcdByEuclideanAlgorithm
+  prettyPrint(Period.Second)
 
 @main def gcdBasedOnParityOfNumbersBench(): Unit =
-  loadgcdBasedOnParityOfNumbersBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 5).foreach: _ =>
+    loadgcdBasedOnParityOfNumbersBench
+  prettyPrint(Period.Second)
 
 @main def generalizedEuclideanAlgorithmBench(): Unit =
   loadgeneralizedEuclideanAlgorithmBench

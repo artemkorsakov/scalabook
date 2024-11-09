@@ -317,8 +317,8 @@ if (= 0 0)
 ### 1.1.7 Пример: вычисление квадратного корня методом Ньютона
 
 - [Описание метода Ньютона](../algorithms/algorithms/newton.md)
-- [Описание метода нахождения квадратного корня](../algorithms/algorithms/numerical.md)
-- [Описание метода нахождения кубического корня](../algorithms/algorithms/numerical.md)
+- [Описание метода нахождения квадратного корня](../algorithms/algorithms/number_theory/numerical.md)
+- [Описание метода нахождения кубического корня](../algorithms/algorithms/number_theory/numerical.md)
 
 #### Упражнение 1.6
 

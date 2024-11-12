@@ -56,16 +56,19 @@ import NumericalBenchmarks.*
   prettyPrint(Period.MicroSecond)
 
 @main def powerBench(): Unit =
-  loadpowerBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadpowerBench
+  prettyPrint(Period.MilliSecond)
 
 @main def sqrtBench(): Unit =
-  loadsqrtBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadsqrtBench
+  prettyPrint(Period.MilliSecond)
 
 @main def cubeRootOfBench(): Unit =
-  loadcubeRootOfBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadcubeRootOfBench
+  prettyPrint(Period.MilliSecond)
 
 @main def isPowerOfTwoBench(): Unit =
   loadisPowerOfTwoBench

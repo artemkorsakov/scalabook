@@ -261,8 +261,6 @@ val limit = 10_000
 
 ## Китайская теорема об остатках
 
-**Алгоритм:**
-
 [Китайская теорема об остатках](https://ru.wikipedia.org/wiki/%D0%9A%D0%B8%D1%82%D0%B0%D0%B9%D1%81%D0%BA%D0%B0%D1%8F_%D1%82%D0%B5%D0%BE%D1%80%D0%B5%D0%BC%D0%B0_%D0%BE%D0%B1_%D0%BE%D1%81%D1%82%D0%B0%D1%82%D0%BA%D0%B0%D1%85):
 
 Если натуральные числа \\(a\_1, a\_2, \dots, a\_n\\) попарно взаимно просты, то для любых целых \\(r\_1, r\_2, \dots, r\_n\\) таких, 
@@ -270,6 +268,8 @@ val limit = 10_000
 которое при делении на \\(a\_i\\) даёт остаток \\(r\_i\\) при всех \\(i \in \{1, 2, \dots, n\}\\). 
 Более того, если найдутся два таких числа \\(N\_{1}\\) и \\(N_{2}\\) (соответствующих утверждению выше), 
 то \\(N\_1 \equiv N\_2\\) (mod \\(a\_{1} \cdot a\_{2} \cdot \ldots \cdot a\_{n}\\)).
+
+**Алгоритм:**
 
 **Код:**
 
@@ -316,30 +316,12 @@ ChineseRemainderTheorem.solution(
 
 **Оценка:**
 
-- **Время** - O(log n)
-- **Память** - O(log n)
+Оценка аналогична оценке вычислению НОД.
 
 **Код:**
 
 ```dotty
 def lcm(x: Long, y: Long): Long = math.abs(x * y) / gcd(x, y)
-```
-
-**Метрики:**
-
-Вычисление НОК всех пар первых 10000 чисел, начиная с миллиона, занимает примерно 3,5 секунды.
-
-```dotty
-@main def lcmBench(): Unit =
-  val limit = 10_000
-  val start = 1_000_000
-  val end   = start + limit
-  (start until end).foreach: i =>
-    (i + 1 to end).foreach: j =>
-      lcm(j, i)
-      
-// CPU Time: 3535 ms
-// Allocation memory size: 2,01 GB      
 ```
 
 ## Возведение числа в степень
@@ -356,17 +338,21 @@ def lcm(x: Long, y: Long): Long = math.abs(x * y) / gcd(x, y)
 
 **Оценка:**
 
+Временная сложность составляет O(log n). 
+Это связано с тем, что каждое возведение в степень уменьшает степень в два раза, 
+что приводит к логарифмическому количеству шагов.
+
 - **Время** - O(log n)
-- **Память** - O(log n)
+- **Память** - O(1)
 
 **Код:**
 
 Реализация алгоритма (_Exercise 1.16_ из [SICP][sicp]):
 
 ```dotty
-def power(a: SafeLong, n: SafeLong): SafeLong =
-  @tailrec
-  def loop(base: SafeLong, power: SafeLong, acc: SafeLong): SafeLong =
+def power(a: Long, n: Long): Long =
+  @annotation.tailrec
+  def loop(base: Long, power: Long, acc: Long): Long =
     if power == 0 then acc
     else if power % 2 == 0 then loop(base * base, power / 2, acc)
     else loop(base, power - 1, base * acc)
@@ -375,16 +361,15 @@ def power(a: SafeLong, n: SafeLong): SafeLong =
 
 **Метрики:**
 
-Поочередное возведение первых 100 чисел в степени от 1 до 10 занимает меньше секунды.
+Поочередное возведение первых 100 чисел в степени от 1 до 10 занимает несколько миллисекунд.
 
 ```dotty
-@main def powerBench(): Unit =
-  (1 to 100).foreach: i =>
-    (1 to 10).foreach: j =>
-      power(j, i)
+(1 to 100).foreach: i =>
+  (1 to 10).foreach: j =>
+    power(j, i)
 
-// CPU Time: 678 ms
-// Allocation memory size: 13,72 MB      
+// Число тестовых запусков = 10
+// Среднее время = 7,605 миллисекунд
 ```
 
 ## Нахождение корня
@@ -425,12 +410,11 @@ def sqrt(x: Double): Double       =
 Вычисление квадратного корня первых миллиона чисел занимает меньше секунды.
 
 ```dotty
-@main def sqrtBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    sqrt(i)
+(1 to 1_000_000).foreach: i =>
+  sqrt(i)
 
-// CPU Time: 380 ms
-// Allocation memory size: 48,41 MB      
+// Число тестовых запусков = 10
+// Среднее время = 68,382 миллисекунд
 ```
 
 ## Нахождение кубического корня
@@ -471,12 +455,11 @@ def cubeRootOf(x: Double): Double =
 Результаты аналогичны метрикам вычисления квадратного корня, т.к. алгоритмы похожие.
 
 ```dotty
-@main def cubeRootOfBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    cubeRootOf(i)
+(1 to 1_000_000).foreach: i =>
+  cubeRootOf(i)
 
-// CPU Time: 476 ms
-// Allocation memory size: 48,3 MB      
+// Число тестовых запусков = 10
+// Среднее время = 194,439 миллисекунд  
 ```
 
 ## Степень двойки

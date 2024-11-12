@@ -51,13 +51,12 @@ gcd(4851, 3003)
 с помощью алгоритма Евклида занимает примерно 5,5 секунд. 
 
 ```dotty
-def loadgcdByEuclideanAlgorithm: Unit = loading.time:
-  val limit = 10_000
-  val start = 1_000_000
-  val end   = start + limit
-  (start until end).foreach: i =>
-    (i + 1 to end).foreach: j =>
-      gcdByEuclideanAlgorithm(j, i)
+val limit = 10_000
+val start = 1_000_000
+val end   = start + limit
+(start until end).foreach: i =>
+  (i + 1 to end).foreach: j =>
+    gcdByEuclideanAlgorithm(j, i)
 
 // Число тестовых запусков = 10
 // Среднее время = 5,485 секунд
@@ -129,13 +128,12 @@ gcdBasedOnParityOfNumbers(4851, 3003)
 с помощью алгоритма на основе четности чисел занимает примерно 13,5 секунды.
 
 ```dotty
-def loadgcdBasedOnParityOfNumbersBench: Unit = loading.time:
-  val limit = 10_000
-  val start = 1_000_000
-  val end   = start + limit
-  (start until end).foreach: i =>
-    (i + 1 to end).foreach: j =>
-      gcdBasedOnParityOfNumbers(j, i)
+val limit = 10_000
+val start = 1_000_000
+val end   = start + limit
+(start until end).foreach: i =>
+  (i + 1 to end).foreach: j =>
+    gcdBasedOnParityOfNumbers(j, i)
       
 // Число тестовых запусков = 5
 // Среднее время = 13,468 секунд  
@@ -148,34 +146,49 @@ def loadgcdBasedOnParityOfNumbersBench: Unit = loading.time:
 
 **Алгоритм:**
 
-- **E1** (Инициализация). Присвоить \\(\acute{a} \leftarrow b \leftarrow 1, a \leftarrow \acute{b} \leftarrow 0, c \leftarrow m, d \leftarrow n\\).
-- **E2** (Деление). Пусть \\(q\\) и \\(r\\) — это частное и остаток от деления \\(c\\) на \\(d\\) соответственно. 
+- **Шаг 1**: (Инициализация). Присвоить \\(\acute{a} \leftarrow b \leftarrow 1, a \leftarrow \acute{b} \leftarrow 0, c \leftarrow m, d \leftarrow n\\).
+- **Шаг 2**: (Деление). Пусть \\(q\\) и \\(r\\) — это частное и остаток от деления \\(c\\) на \\(d\\) соответственно. 
   (Тогда \\(c = qd + r\\), где \\(0 \leq r < d\\)).
-- **E3** (Остаток — нуль?). Если \\(r = 0\\), то выполнение алгоритма прекращается; 
+- **Шаг 3**: (Остаток — нуль?). Если \\(r = 0\\), то выполнение алгоритма прекращается; 
   в этом случае имеем \\(am + bn = d\\), как и требовалось.
-- **E4** (Повторение цикла). Присвоить \\(c \leftarrow d, d \leftarrow r, t \leftarrow \acute{a}, \acute{a} \leftarrow a, a \leftarrow t − qa, t \leftarrow \acute{b}, \acute{b} \leftarrow b, b \leftarrow t − qb\\) и вернуться к шагу **E2**.
+- **Шаг 4**: (Повторение цикла). Присвоить \\(c \leftarrow d, d \leftarrow r, t \leftarrow \acute{a}, \acute{a} \leftarrow a, a \leftarrow t − qa, t \leftarrow \acute{b}, \acute{b} \leftarrow b, b \leftarrow t − qb\\) и вернуться к шагу **Шаг 2**.
+
+**Пример:**
+
+Предположим, даны два числа `m = 1769` и `n = 551`.
+
+Рассмотрим итерации алгоритма:
+
+- \\(\acute{a} = 1, b = 1, a = 0, \acute{b} = 0, c = 1769, d = 551, q = 3, r = 116\\)
+- \\(\acute{a} = 0, b = -3, a = 1, \acute{b} = 1, c = 551, d = 116, q = 4, r = 87\\)
+- \\(\acute{a} = 1, b = 13, a = -4, \acute{b} = -3, c = 116, d = 87, q = 1, r = 29\\)
+- \\(\acute{a} = -4, b = -16, a = 5, \acute{b} = 13, c = 87, d = 29, q = 3, r = 0\\)
+
+Итоговый результат: \\(5 \times 1769 + (-16) \times 551 = 29\\)
+
+**Пояснение:** 
+
+- Алгоритм конечен, т.к. c и d постоянно уменьшаются (с логарифмической скоростью). 
+  А значит, наступит момент, когда остаток от деления c на d будет равен 0 (в крайнем случае, когда d уменьшится до 1).
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- **Время** - O(log n)
+- **Память** - O(1)
 
 **Код:**
 
 ```dotty
-def generalizedEuclideanAlgorithm(
-    m: SafeLong,
-    n: SafeLong
-): (SafeLong, SafeLong, SafeLong) =
-  @tailrec
+def generalizedEuclideanAlgorithm(m: Long,n: Long): (Long, Long, Long) =
+  @annotation.tailrec
   def loop(
-      aa: SafeLong,
-      b: SafeLong,
-      a: SafeLong,
-      bb: SafeLong,
-      c: SafeLong,
-      d: SafeLong
-  ): (SafeLong, SafeLong, SafeLong) =
+      aa: Long,
+      b: Long,
+      a: Long,
+      bb: Long,
+      c: Long,
+      d: Long
+  ): (Long, Long, Long) =
     val r = c % d
     if r == 0 then (d, a, b)
     else
@@ -192,17 +205,16 @@ generalizedEuclideanAlgorithm(1769, 551)
 **Метрики:**
 
 Вычисление обобщенного алгоритма Евклида всех пар первых 10000 чисел, начиная с 2, 
-занимает примерно 21 секунду.
+занимает примерно 17 секунд.
 
 ```dotty
-@main def generalizedEuclideanAlgorithmBench(): Unit =
-  val limit = 10_000
-  (2 until limit).foreach: i =>
-    (i + 1 to limit).foreach: j =>
-      generalizedEuclideanAlgorithm(j, i)
+val limit = 10_000
+(2 until limit).foreach: i =>
+  (i + 1 to limit).foreach: j =>
+    generalizedEuclideanAlgorithm(j, i)
       
-// CPU Time: 20321 ms
-// Allocation memory size: 58,71 GB      
+// Число тестовых запусков = 5
+// Среднее время = 16,874 секунд
 ```
 
 ## Обратное по модулю число
@@ -220,19 +232,17 @@ generalizedEuclideanAlgorithm(1769, 551)
 
 **Оценка:**
 
-Аналогична оценке Обобщенного алгоритма Евклида.
-
-- **Время** - ???
-- **Память** - ???
+- **Время** - O(log n)
+- **Память** - O(1)
 
 **Код:**
 
 ```dotty
-import spire.math.SafeLong
-
-def gcdInverse(m: SafeLong, n: SafeLong): Option[SafeLong] =
+def gcdInverse(m: Long, n: Long): Option[Long] =
   val (d, a, _) = generalizedEuclideanAlgorithm(m, n)
   if d == 1 then Some((a % n + n) % n) else None
+
+gcdInverse(7, 26) // Some(15)
 ```
 
 **Метрики:**
@@ -240,64 +250,62 @@ def gcdInverse(m: SafeLong, n: SafeLong): Option[SafeLong] =
 Метрики аналогичны метрикам Обобщенного алгоритма Евклида.
 
 ```dotty
-@main def gcdInverseBench(): Unit =
-  val limit = 10_000
-  (2 until limit).foreach: i =>
-    (i + 1 to limit).foreach: j =>
-      gcdInverse(j, i)
+val limit = 10_000
+(2 until limit).foreach: i =>
+  (i + 1 to limit).foreach: j =>
+    gcdInverse(j, i)
 
-// CPU Time: 29643 ms
-// Allocation memory size: 62,59 GB      
+// Число тестовых запусков = 5
+// Среднее время = 18,834 секунд
 ```
 
 ## Китайская теорема об остатках
 
 **Алгоритм:**
 
-[Китайская теорема об остатках](https://ru.wikipedia.org/wiki/%D0%9A%D0%B8%D1%82%D0%B0%D0%B9%D1%81%D0%BA%D0%B0%D1%8F_%D1%82%D0%B5%D0%BE%D1%80%D0%B5%D0%BC%D0%B0_%D0%BE%D0%B1_%D0%BE%D1%81%D1%82%D0%B0%D1%82%D0%BA%D0%B0%D1%85)
+[Китайская теорема об остатках](https://ru.wikipedia.org/wiki/%D0%9A%D0%B8%D1%82%D0%B0%D0%B9%D1%81%D0%BA%D0%B0%D1%8F_%D1%82%D0%B5%D0%BE%D1%80%D0%B5%D0%BC%D0%B0_%D0%BE%D0%B1_%D0%BE%D1%81%D1%82%D0%B0%D1%82%D0%BA%D0%B0%D1%85):
 
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
+Если натуральные числа \\(a\_1, a\_2, \dots, a\_n\\) попарно взаимно просты, то для любых целых \\(r\_1, r\_2, \dots, r\_n\\) таких, 
+что \\(0 \le r\_i < a\_i\\) при всех \\(i \in \{1, 2, \dots, n\}\\) найдётся число N, 
+которое при делении на \\(a\_i\\) даёт остаток \\(r\_i\\) при всех \\(i \in \{1, 2, \dots, n\}\\). 
+Более того, если найдутся два таких числа \\(N\_{1}\\) и \\(N_{2}\\) (соответствующих утверждению выше), 
+то \\(N\_1 \equiv N\_2\\) (mod \\(a\_{1} \cdot a\_{2} \cdot \ldots \cdot a\_{n}\\)).
 
 **Код:**
 
 ```dotty
 object ChineseRemainderTheorem:
-  def solution(
-      aArray: Array[SafeLong],
-      rArray: Array[SafeLong]
-  ): Option[SafeLong] =
-    val m      = aArray.product         // Step 1
-    val mArray = aArray.map(a => m / a) // Step 2
+  def solution(aArray: Array[Long],rArray: Array[Long]): Option[Long] =
+    val m      = aArray.product         // Шаг 1
+    val mArray = aArray.map(a => m / a) // Шаг 2
     val maybeMMinus1Array =
-      mArray.indices.toList.traverse: i => // Step 3
-        gcdInverse(mArray(i), aArray(i))
+      mArray.indices.foldLeft(Option(ListBuffer.empty[Long])): (acc, i) => // Шаг 3
+        (acc, gcdInverse(mArray(i), aArray(i))) match
+          case (Some(list), Some(mMinus)) => Some(list :+ mMinus)
+          case _ => None
     maybeMMinus1Array.map: mMinus1Array =>
-      mArray.indices.foldLeft(SafeLong(0)): (x, i) => // Step 4
+      mArray.indices.foldLeft(0L): (x, i) => // Шаг 4
         x + (((rArray(i) * mArray(i)) % m) * mMinus1Array(i)) % m
-        
-solution(Array(2, 3), Array(1, 2)))
+     
+solution(Array(2, 3), Array(1, 2))
 // 5, потому что 5 % 2 = 1, 5 % 3 = 2
 
-solution(Array(707, 527), Array(0, 5)))
+solution(Array(707, 527), Array(0, 5))
 // 258762, потому что 258762 % 707 = 0, 258762 % 527 = 5   
 ```
 
 **Метрики:**
 
-Решение задачи для достаточно больших чисел вычисляется меньше чем за секунду.
+Решение задачи для достаточно больших чисел вычисляется меньше 100 миллисекунд.
 
 ```dotty
-@main def solutionChineseRemainderTheoremBench(): Unit =
-  println(ChineseRemainderTheorem.solution(
-    Array(1504170715041707L, 4503599627370517L),
-    Array(0L, 8912517754604L)
-  ))
+ChineseRemainderTheorem.solution(
+  Array(1504170715041707L, 4503599627370517L),
+  Array(0L, 8912517754604L)
+)
 
-// CPU Time: 676 ms
-// Allocation memory size: 28,59 MB      
+// Число тестовых запусков = 5
+// Среднее время = 32,764 миллисекунд  
 ```
 
 ## Наименьшее общее кратное

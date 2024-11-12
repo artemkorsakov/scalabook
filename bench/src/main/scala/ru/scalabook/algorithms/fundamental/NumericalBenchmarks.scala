@@ -42,12 +42,14 @@ import NumericalBenchmarks.*
   prettyPrint(Period.Second)
 
 @main def generalizedEuclideanAlgorithmBench(): Unit =
-  loadgeneralizedEuclideanAlgorithmBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 5).foreach: _ =>
+    loadgeneralizedEuclideanAlgorithmBench
+  prettyPrint(Period.Second)
 
 @main def gcdInverseBench(): Unit =
-  loadgcdInverseBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 5).foreach: _ =>
+    loadgcdInverseBench
+  prettyPrint(Period.Second)
 
 @main def lcmBench(): Unit =
   loadlcmBench

@@ -19,8 +19,9 @@ import spire.math.SafeLong
 import ChineseRemainderTheoremBenchmarks.*
 
 @main def solutionChineseRemainderTheoremBench(): Unit =
-  println(loadStuff)
-  prettyPrint(Period.MicroSecond)
+  (1 to 5).foreach: _ =>
+    println(loadStuff)
+  prettyPrint(Period.MilliSecond)
 
 object ChineseRemainderTheoremBenchmarks extends MetricInstrumented:
   def loadStuff: Option[SafeLong] = loading.time:

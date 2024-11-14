@@ -71,12 +71,14 @@ import NumericalBenchmarks.*
   prettyPrint(Period.MilliSecond)
 
 @main def isPowerOfTwoBench(): Unit =
-  loadisPowerOfTwoBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadisPowerOfTwoBench
+  prettyPrint(Period.MilliSecond)
 
 @main def isSnoobBench(): Unit =
-  loadisSnoobBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 5).foreach: _ =>
+    loadisSnoobBench
+  prettyPrint(Period.Second)
 
 @main def sumOfDivisorsBench(): Unit =
   loadsumOfDivisorsBench

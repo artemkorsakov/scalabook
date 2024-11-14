@@ -1,9 +1,9 @@
-def power(a: Long, n: Long): Long =
-  @annotation.tailrec
-  def loop(base: Long, power: Long, acc: Long): Long =
-    if power == 0 then acc
-    else if power % 2 == 0 then loop(base * base, power / 2, acc)
-    else loop(base, power - 1, base * acc)
-  loop(a, n, 1)
+@annotation.tailrec
+def isSnoob(x: Int, y: Int): Boolean = 
+  if x == 0 && y == 0 then true
+  else if x == 0 || y == 0 then false
+  else if x % 2 == 1 && y % 2 == 0 then isSnoob(x, y >> 1)
+  else if x % 2 == 0 && y % 2 == 1 then isSnoob(x >> 1, y)
+  else isSnoob(x >> 1, y >> 1)
 
-println(power(2, 17))
+println(isSnoob(11, 13))

@@ -89,16 +89,19 @@ import NumericalBenchmarks.*
   prettyPrint(Period.MicroSecond)
 
 @main def sumToGivenBench(): Unit =
-  loadsumToGivenBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadsumToGivenBench
+  prettyPrint(Period.MilliSecond)
 
 @main def sumOfSquaresToBench(): Unit =
-  loadsumOfSquaresToBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadsumOfSquaresToBench
+  prettyPrint(Period.MilliSecond)
 
 @main def sumOfCubesToBench(): Unit =
-  loadsumOfCubesToBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadsumOfCubesToBench
+  prettyPrint(Period.MilliSecond)
 
 @main def decToBinConvBench(): Unit =
   (1 to 10).foreach: _ =>

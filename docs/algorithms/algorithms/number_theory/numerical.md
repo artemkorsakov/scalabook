@@ -284,7 +284,7 @@ def lcm(x: Long, y: Long): Long = math.abs(x * y) / gcd(x, y)
 
 ## Китайская теорема об остатках
 
-> [Китайская теорема об остатках](https://ru.wikipedia.org/wiki/> %D0%9A%D0%B8%D1%82%D0%B0%D0%B9%D1%81%D0%BA%D0%B0%D1%8F_%D1%82%D0%B5%D0%BE%D1%80%D0%B5%D0%BC%D0%B0_%D0%BE%D0%B1_%D0%BE%D1%81%D1%82%D0%B0%D1%82%D0%BA%D0%B0%D1%85):
+> [Китайская теорема об остатках][china]:
 > 
 > Если натуральные числа \\(a\_1, a\_2, \dots, a\_n\\) попарно взаимно просты, то для любых целых \\(r\_1, r\_2, \dots, r\_n\\) таких, 
 > что \\(0 \le r\_i < a\_i\\) при всех \\(i \in \{1, 2, \dots, n\}\\) найдётся число N, 
@@ -550,148 +550,32 @@ cubeRootOf(2)
 // Среднее время = 194,439 миллисекунд  
 ```
 
-## Делители числа
-
-**Алгоритм:**
-
-Согласно [функциям делителей][divisorfunc] сумму делителей числа, [разложенного на простые множители со степенями](primes.md):
-\\(n = \prod\_{i=1}^{r}\rho\_{i}^{\alpha\_{i}}\\) можно посчитать по формуле:
-
-\\(\sigma\_{1}(n) = \prod\_{i=1}^{r}\frac{\rho\_{i}^{\alpha\_{i} + 1} - 1}{\rho\_{i} - 1}\\)
-
-А количество делителей по формуле:
-
-\\(\sigma\_{0}(n) = \prod\_{i=1}^{r}(\alpha\_{i} + 1)\\)
-
-### Сумма делителей числа
-
-**Алгоритм:**
-
-\\(\sigma\_{1}(n) = \prod\_{i=1}^{r}\frac{\rho\_{i}^{\alpha\_{i} + 1} - 1}{\rho\_{i} - 1}\\)
-
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
-
-**Код:**
-
-```dotty
-def sumOfDivisors(number: Long): SafeLong =
-  val primeDivisors = primeFactorsWithPow(number)
-  primeDivisors.foldLeft(SafeLong(1)) { case (mul, (prime, power)) =>
-    val num = SafeLong(prime).pow(power + 1) - 1
-    val den = prime - 1
-    mul * (num / den)
-  }
-  
-sumOfDivisors(220) // 504  
-sumOfDivisors(284) // 504
-```
-
-**Метрики:**
-
-Вычисление суммы делителей первых миллиона чисел занимает 2 секунды.
-
-```dotty
-@main def sumOfDivisorsBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    sumOfDivisors(i)
-
-// CPU Time: 1867 ms
-// Allocation memory size: 1,18 GB      
-```
-
-### Количество делителей числа
-
-**Алгоритм:**
-
-\\(\sigma\_{0}(n) = \prod\_{i=1}^{r}(\alpha\_{i} + 1)\\)
-
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
-
-**Код:**
-
-```dotty
-def countOfDivisors(number: Long): SafeLong =
-  primeFactorsWithPow(number).values.foldLeft(SafeLong(1)): (mul, a) =>
-    mul * (a + 1)
-    
-countOfDivisors(100) // 9    
-```
-
-**Метрики:**
-
-Вычисление количества делителей первых миллиона чисел занимает примерно 1 секунду.
-
-```dotty
-@main def countOfDivisorsBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    countOfDivisors(i)  
-
-// CPU Time: 1216 ms
-// Allocation memory size: 435 MB      
-```
-
-### Совершенное число
-
-**Алгоритм:**
-
-[Совершенное число](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D0%B2%D0%B5%D1%80%D1%88%D0%B5%D0%BD%D0%BD%D0%BE%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%BE) — 
-это целое положительное число, равное сумме своих положительных делителей, исключая само число.
-
-[Недостаточное число](https://ru.wikipedia.org/wiki/%D0%9D%D0%B5%D0%B4%D0%BE%D1%81%D1%82%D0%B0%D1%82%D0%BE%D1%87%D0%BD%D1%8B%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%B0) — 
-это целое положительное число, которое меньше суммы своих положительных делителей, исключая само число.
-
-[Избыточное число](https://ru.wikipedia.org/wiki/%D0%98%D0%B7%D0%B1%D1%8B%D1%82%D0%BE%D1%87%D0%BD%D1%8B%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%B0) — 
-это целое положительное число, которое больше суммы своих положительных делителей, исключая само число.
-
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
-
-**Код:**
-
-```dotty
-enum PerfectNumbersType:
-  case Perfect, Deficient, Abundant
-  
-def perfectNumbersType(n: Long): PerfectNumbersType =
-  val sum = sumOfDivisors(n) - n
-  if sum == n then Perfect
-  else if sum < n then Deficient
-  else Abundant
-  
-perfectNumbersType(6)  // Perfect
-perfectNumbersType(7)  // Deficient
-perfectNumbersType(12) // Abundant
-```
-
-**Метрики:**
-
-Вычисление типа числа (совершенное/избыточное/недостаточное) первых миллиона чисел занимает 2 секунды.
-
-```dotty
-@main def perfectNumbersTypeBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    perfectNumbersType(i)
-
-// CPU Time: 2013 ms
-// Allocation memory size: 1,27 GB      
-```
-
 ## Сумма первых натуральных чисел
 
 ### Сумма первых натуральных чисел до заданного
+
+> Дано число n. Найти сумму чисел от 1 до n.
 
 **Алгоритм:**
 
 Сумму первых натуральных чисел можно посчитать по формуле:
 \\(\frac{n * (n + 1)}{2}\\)
+
+**Пример:**
+
+\\(1 + 2 + 3 + 4 + 5 = \frac{5 * 6}{2} = 15\\)
+
+**Пояснение:**
+
+Рассмотрим сумму первых n натуральных чисел: \\(S = 1 + 2 + 3 + \ldots + n\\)
+
+Теперь, если мы запишем эту сумму в обратном порядке, получится: \\(S = n + (n - 1) + (n - 2) + \ldots + 1\\)
+
+Теперь, если мы сложим оба выражения поэлементно, то получим: \\(2S = (1 + n) + (2 + (n - 1)) + (3 + (n - 2)) + \ldots + (n + 1)\\)
+
+Каждая пара в скобках равна (n + 1), и таких пар n штук. Таким образом, мы можем записать: \\(2S = n(n + 1)\\)
+
+Теперь, чтобы найти S, нужно разделить обе стороны на 2: \\(S = \frac{n(n + 1)}{2}\\)
 
 **Оценка:**
 
@@ -701,7 +585,7 @@ perfectNumbersType(12) // Abundant
 **Код:**
 
 ```dotty
-def sumToGiven(n: Long): SafeLong = SafeLong(n) * SafeLong(n + 1) / 2
+def sumToGiven(n: Long): Long = n * (n + 1) / 2
 
 sumToGiven(1000000) 
 // 500000500000L
@@ -713,20 +597,32 @@ sumToGiven(1000000)
 Результаты аналогичны тому, как если бы мы просто прошлись по коллекции в миллион элементов и ничего не делали.
 
 ```dotty
-@main def sumToGivenBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    sumToGiven(i)
+(1 to 1_000_000).foreach: i =>
+  sumToGiven(i)
 
-// CPU Time: 309 ms
-// Allocation memory size: 122,85 MB      
+// Число тестовых запусков = 10
+// Среднее время = 28,051 миллисекунд
 ```
 
 ### Сумма квадратов первых натуральных чисел до заданного
+
+> Дано число n. Найти сумму квадратов чисел от 1 до n.
 
 **Алгоритм:**
 
 Сумму квадратов первых натуральных чисел можно посчитать [по формуле](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%BB%D0%BD%D1%8B%D0%B9_%D0%BA%D0%B2%D0%B0%D0%B4%D1%80%D0%B0%D1%82): 
 \\(\frac{n * (n + 1) * (2 * n + 1)}{6}\\)
+
+**Пример:**
+
+\\(1^2 + 2^2 + 3^2 + 4^2 + 5^2 = \frac{5 * 6 * 11}{6} = 55\\)
+
+**Пояснение:**
+
+Доказательство по индекции:
+
+- Базовый случай: n = 1. \\(1^2 = \frac{1 * 2 * 3}{6}\\)
+- Переход на k + 1: \\(1^2 + 2^2 + ... + k^2 + (k + 1)^2 = \frac{k * (k + 1) * (2 * k + 1)}{6} + (k + 1)^2 = \frac{(k + 1) * (2k^2 + 7k + 6)}{6} = \frac{(k + 1) * (k + 2) * (2 (k + 1) + 1)}{6}\\)
 
 **Оценка:**
 
@@ -736,7 +632,7 @@ sumToGiven(1000000)
 **Код:**
 
 ```dotty
-def sumOfSquaresTo(n: Long): SafeLong = SafeLong(n) * SafeLong(n + 1) * SafeLong(2 * n + 1) / 6
+def sumOfSquaresTo(n: Long): Long = n * (n + 1) * (2 * n + 1) / 6
 
 sumOfSquaresTo(1000) 
 // 333833500L
@@ -748,20 +644,32 @@ sumOfSquaresTo(1000)
 Результаты аналогичны тому, как если бы мы просто прошлись по коллекции в миллион элементов и ничего не делали.
 
 ```dotty
-@main def sumOfSquaresToBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    sumOfSquaresTo(i)
+(1 to 1_000_000).foreach: i =>
+  sumOfSquaresTo(i)
 
-// CPU Time: 418 ms
-// Allocation memory size: 170,55 MB      
+// Число тестовых запусков = 10
+// Среднее время = 38,941 миллисекунд    
 ```
 
 ### Сумма кубов первых натуральных чисел до заданного
+
+> Дано число n. Найти сумму кубов чисел от 1 до n.
 
 **Алгоритм:**
 
 Сумму кубов первых натуральных чисел можно посчитать [по формуле](https://ru.wikipedia.org/wiki/%D0%9A%D1%83%D0%B1_(%D0%B0%D0%BB%D0%B3%D0%B5%D0%B1%D1%80%D0%B0)):
 \\(\left ( \frac{n * (n + 1)}{2} \right )^{2}\\)
+
+**Пример:**
+
+\\(1^3 + 2^3 + 3^3 + 4^3 + 5^3 = (\frac{5 * 6}{2})^2 = 225\\)
+
+**Пояснение:**
+
+Доказательство по индекции:
+
+- Базовый случай: n = 1. \\(1^3 = (\frac{1 * 2}{2})^2\\)
+- Переход на k + 1: \\(1^3 + 2^3 + ... + k^3 + (k + 1)^3 = (\frac{k * (k + 1)}{2})^2 + (k + 1)^3 = (k + 1)^2 \times \frac{k^2 + 4k + 4}{4} = (\frac{(k + 1) * (k + 2)}{2})^2\\)
 
 **Оценка:**
 
@@ -771,7 +679,7 @@ sumOfSquaresTo(1000)
 **Код:**
 
 ```dotty
-def sumOfCubesTo(n: Long): SafeLong =
+def sumOfCubesTo(n: Long): Long =
   val s = sumToGiven(n)
   s * s
   
@@ -785,12 +693,11 @@ sumOfCubesTo(1000)
 Результаты аналогичны тому, как если бы мы просто прошлись по коллекции в миллион элементов и ничего не делали.
 
 ```dotty
-@main def sumOfCubesToBench(): Unit =
-  (1 to 1_000_000).foreach: i =>
-    sumOfCubesTo(i)  
+(1 to 1_000_000).foreach: i =>
+  sumOfCubesTo(i)  
 
-// CPU Time: 1795 ms
-// Allocation memory size: 1,06 GB      
+// Число тестовых запусков = 10
+// Среднее время = 1179,137 миллисекунд
 ```
 
 ## Рандомизация данных - Линейный конгруэнтный генератор
@@ -804,11 +711,6 @@ sumOfCubesTo(1000)
 
 Величина \\(X_{0}\\) называется _начальным_ числом.
 
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
-
 **Код:**
 
 ```dotty
@@ -819,8 +721,6 @@ val generator = LazyList.iterate(0)(x => (A * x + B) % M)
 generator.take(11).toList
 // List(0, 5, 7, 10, 9, 2, 8, 6, 3, 4, 0)
 ```
-
-
 
 ---
 
@@ -834,5 +734,6 @@ generator.take(11).toList
 - [Scalacaster](https://github.com/vkostyukov/scalacaster)
 - [The Art of Computer Programming - Donald E. Knuth](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 
+[china]: https://ru.wikipedia.org/wiki/%D0%9A%D0%B8%D1%82%D0%B0%D0%B9%D1%81%D0%BA%D0%B0%D1%8F_%D1%82%D0%B5%D0%BE%D1%80%D0%B5%D0%BC%D0%B0_%D0%BE%D0%B1_%D0%BE%D1%81%D1%82%D0%B0%D1%82%D0%BA%D0%B0%D1%85
 [sicp]: https://web.mit.edu/6.001/6.037/sicp.pdf
 [divisorfunc]: https://ru.wikipedia.org/wiki/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F_%D0%B4%D0%B5%D0%BB%D0%B8%D1%82%D0%B5%D0%BB%D0%B5%D0%B9

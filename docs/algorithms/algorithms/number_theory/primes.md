@@ -564,6 +564,140 @@ isSquareFree(100) // false: 100 = 2^2 * 5^2
 ```
 
 
+## Делители числа
+
+**Алгоритм:**
+
+Согласно [функциям делителей][divisorfunc] сумму делителей числа, [разложенного на простые множители со степенями](primes.md):
+\\(n = \prod\_{i=1}^{r}\rho\_{i}^{\alpha\_{i}}\\) можно посчитать по формуле:
+
+\\(\sigma\_{1}(n) = \prod\_{i=1}^{r}\frac{\rho\_{i}^{\alpha\_{i} + 1} - 1}{\rho\_{i} - 1}\\)
+
+А количество делителей по формуле:
+
+\\(\sigma\_{0}(n) = \prod\_{i=1}^{r}(\alpha\_{i} + 1)\\)
+
+### Сумма делителей числа
+
+**Алгоритм:**
+
+\\(\sigma\_{1}(n) = \prod\_{i=1}^{r}\frac{\rho\_{i}^{\alpha\_{i} + 1} - 1}{\rho\_{i} - 1}\\)
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+def sumOfDivisors(number: Long): SafeLong =
+  val primeDivisors = primeFactorsWithPow(number)
+  primeDivisors.foldLeft(SafeLong(1)) { case (mul, (prime, power)) =>
+    val num = SafeLong(prime).pow(power + 1) - 1
+    val den = prime - 1
+    mul * (num / den)
+  }
+  
+sumOfDivisors(220) // 504  
+sumOfDivisors(284) // 504
+```
+
+**Метрики:**
+
+Вычисление суммы делителей первых миллиона чисел занимает 2 секунды.
+
+```dotty
+@main def sumOfDivisorsBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    sumOfDivisors(i)
+
+// CPU Time: 1867 ms
+// Allocation memory size: 1,18 GB      
+```
+
+### Количество делителей числа
+
+**Алгоритм:**
+
+\\(\sigma\_{0}(n) = \prod\_{i=1}^{r}(\alpha\_{i} + 1)\\)
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+def countOfDivisors(number: Long): SafeLong =
+  primeFactorsWithPow(number).values.foldLeft(SafeLong(1)): (mul, a) =>
+    mul * (a + 1)
+    
+countOfDivisors(100) // 9    
+```
+
+**Метрики:**
+
+Вычисление количества делителей первых миллиона чисел занимает примерно 1 секунду.
+
+```dotty
+@main def countOfDivisorsBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    countOfDivisors(i)  
+
+// CPU Time: 1216 ms
+// Allocation memory size: 435 MB      
+```
+
+### Совершенное число
+
+**Алгоритм:**
+
+[Совершенное число](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D0%B2%D0%B5%D1%80%D1%88%D0%B5%D0%BD%D0%BD%D0%BE%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%BE) — 
+это целое положительное число, равное сумме своих положительных делителей, исключая само число.
+
+[Недостаточное число](https://ru.wikipedia.org/wiki/%D0%9D%D0%B5%D0%B4%D0%BE%D1%81%D1%82%D0%B0%D1%82%D0%BE%D1%87%D0%BD%D1%8B%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%B0) — 
+это целое положительное число, которое меньше суммы своих положительных делителей, исключая само число.
+
+[Избыточное число](https://ru.wikipedia.org/wiki/%D0%98%D0%B7%D0%B1%D1%8B%D1%82%D0%BE%D1%87%D0%BD%D1%8B%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%B0) — 
+это целое положительное число, которое больше суммы своих положительных делителей, исключая само число.
+
+**Оценка:**
+
+- **Время** - ???
+- **Память** - ???
+
+**Код:**
+
+```dotty
+enum PerfectNumbersType:
+  case Perfect, Deficient, Abundant
+  
+def perfectNumbersType(n: Long): PerfectNumbersType =
+  val sum = sumOfDivisors(n) - n
+  if sum == n then Perfect
+  else if sum < n then Deficient
+  else Abundant
+  
+perfectNumbersType(6)  // Perfect
+perfectNumbersType(7)  // Deficient
+perfectNumbersType(12) // Abundant
+```
+
+**Метрики:**
+
+Вычисление типа числа (совершенное/избыточное/недостаточное) первых миллиона чисел занимает 2 секунды.
+
+```dotty
+@main def perfectNumbersTypeBench(): Unit =
+  (1 to 1_000_000).foreach: i =>
+    perfectNumbersType(i)
+
+// CPU Time: 2013 ms
+// Allocation memory size: 1,27 GB      
+```
+
 ---
 
 **Ссылки:**

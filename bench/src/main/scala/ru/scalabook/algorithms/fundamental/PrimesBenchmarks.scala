@@ -7,7 +7,7 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/PrimesBen
 scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/PrimesBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.nextPrimeBench
  */
 
-//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep nl.grons::metrics4-scala:4.3.3
 //> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/fundamental/Primes.scala
 //> using file ../../MetricInstrumented.scala
 //> using file ../../Period.scala
@@ -20,28 +20,34 @@ import ru.scalabook.Period
 import PrimesBenchmarks.*
 
 @main def primesBench(): Unit =
-  println(loadprimesBench)
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    println(loadprimesBench)
+  prettyPrint(Period.Second)
 
 @main def isPrimeBench(): Unit =
-  loadisPrimeBench()
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadisPrimeBench()
+  prettyPrint(Period.MilliSecond)
 
 @main def sieveOfEratosthenesBench(): Unit =
-  println(loadsieveOfEratosthenesBench)
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    println(loadsieveOfEratosthenesBench)
+  prettyPrint(Period.MilliSecond)
 
 @main def primeFactorsWithPowBench(): Unit =
-  loadprimeFactorsWithPowBench()
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadprimeFactorsWithPowBench()
+  prettyPrint(Period.MilliSecond)
 
 @main def primeFactorsBench(): Unit =
-  loadprimeFactorsBench()
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadprimeFactorsBench()
+  prettyPrint(Period.MilliSecond)
 
 @main def nextPrimeBench(): Unit =
-  loadnextPrimeBench()
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadnextPrimeBench()
+  prettyPrint(Period.MilliSecond)
 
 object PrimesBenchmarks extends MetricInstrumented:
   def loadprimesBench: Boolean = loading.time:

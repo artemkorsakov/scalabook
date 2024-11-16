@@ -4,7 +4,7 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/RadicalsB
 scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/RadicalsBenchmarks.scala --main-class ru.scalabook.algorithms.fundamental.isSquareFreeBench
  */
 
-//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep nl.grons::metrics4-scala:4.3.3
 //> using dep org.typelevel::cats-core:2.12.0
 //> using dep org.typelevel::spire:0.18.0
 //> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/fundamental/Radicals.scala
@@ -20,11 +20,13 @@ import ru.scalabook.Period
 import RadicalsBenchmarks.*
 
 @main def radBench(): Unit =
-  loadradBench()
+  (1 to 10).foreach: _ =>
+    loadradBench()
   prettyPrint(Period.MicroSecond)
 
 @main def allRadsBench(): Unit =
-  println(loadallRadsBench)
+  (1 to 10).foreach: _ =>
+    println(loadallRadsBench)
   prettyPrint(Period.MicroSecond)
 
 @main def isSquareFreeBench(): Unit =

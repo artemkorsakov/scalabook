@@ -1,38 +1,31 @@
 import scala.annotation.tailrec
 
-def primeFactorsWithPow(n: Long): Map[Long, Int] =
-  @tailrec
-  def reduceLoop(n: Long, i: Long, count: Int): (Long, Int) =
-    if n % i == 0 then reduceLoop(n / i, i, count + 1) else (n, count)
+def sieveOfEratosthenes(n: Int): Array[Boolean] =
+  val result = Array.fill(n + 1)(true)
+  result(0) = false
+  result(1) = false
+  (4 to n by 2).foreach(j => result(j) = false)
+  for
+    i <- 3 to math.sqrt(n).toInt by 2
+    if result(i)
+    j <- i to n / i
+  do result(j * i) = false
+  result
 
-  @tailrec
-  def loop(n: Long, i: Long, acc: Map[Long, Int]): Map[Long, Int] =
-    val limit = math.sqrt(n.toDouble)
-    if i > limit then
-      if n > 1 then acc + (n -> 1) else acc
-    else if n % i == 0 then
-      val (newN, newCount) = reduceLoop(n, i, 0)
-      loop(newN, i + 2, acc + (i -> newCount))
-    else loop(n, i + 2, acc)
+def primesNoMoreThanN(n: Int): Array[Int] =
+  sieveOfEratosthenes(n).zipWithIndex.collect { case (true, prime) => prime }
 
-  if n % 2 == 0 then
-    val (newN, newCount) = reduceLoop(n, 2, 0)
-    loop(newN, 3, Map(2L -> newCount))
-  else loop(n, 3, Map.empty)
-end primeFactorsWithPow
+def totientArray(limit: Int): Array[Long] =
+  val phiArray = new Array[Long](limit + 1)
+  phiArray(1) = 1
 
-def sumOfDivisors(number: Long): Long =
-  val primeDivisors = primeFactorsWithPow(number)
-  primeDivisors.foldLeft(1L) { case (mul, (prime, power)) =>
-    val num = math.pow(prime, power + 1).toLong - 1
-    val den = prime - 1
-    mul * (num / den)
-  }
+  primesNoMoreThanN(limit).foreach: p =>
+    (1 to limit / p).foreach: n =>
+      val k = if n % p == 0 then p else p - 1
+      phiArray(n * p) = phiArray(n) * k
 
-println(sumOfDivisors(84))
+  phiArray
 
-def countOfDivisors(number: Long): Long =
-  primeFactorsWithPow(number).values.foldLeft(1L): (mul, a) =>
-    mul * (a + 1)
-
-println(countOfDivisors(84))
+println(totientArray(20).mkString("(", ", ", ")"))
+// Array(0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8)
+//      (0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8)

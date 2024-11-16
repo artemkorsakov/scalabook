@@ -101,8 +101,9 @@ import NumericalBenchmarks.*
   prettyPrint(Period.MicroSecond)
 
 @main def decToBinConvBench(): Unit =
-  loaddecToBinConvBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loaddecToBinConvBench
+  prettyPrint(Period.Second)
 
 object NumericalBenchmarks extends MetricInstrumented:
   def loadgcdByEuclideanAlgorithm: Unit = loading.time:

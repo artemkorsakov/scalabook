@@ -2,7 +2,7 @@
 scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/PalindromeBenchmarks.scala
  */
 
-//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep nl.grons::metrics4-scala:4.3.3
 //> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/numbers/Palindrome.scala
 //> using file ../../MetricInstrumented.scala
 //> using file ../../Period.scala
@@ -15,8 +15,9 @@ import ru.scalabook.Period
 import PalindromeBenchmarks.*
 
 @main def isPalindromeBench(): Unit =
-  loadStuff()
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadStuff()
+  prettyPrint(Period.MilliSecond)
 
 object PalindromeBenchmarks extends MetricInstrumented:
   def loadStuff(): Unit = loading.time:

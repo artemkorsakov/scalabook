@@ -1,9 +1,30 @@
-@annotation.tailrec
-def isSnoob(x: Int, y: Int): Boolean = 
-  if x == 0 && y == 0 then true
-  else if x == 0 || y == 0 then false
-  else if x % 2 == 1 && y % 2 == 0 then isSnoob(x, y >> 1)
-  else if x % 2 == 0 && y % 2 == 1 then isSnoob(x >> 1, y)
-  else isSnoob(x >> 1, y >> 1)
+def isPalindrome(number: Long): Boolean = isPalindrome(number, 10)
 
-println(isSnoob(11, 13))
+// Является ли заданное число палиндромом в системе исчисления по заданному состоянию
+def isPalindrome(number: Long, base: Int): Boolean =
+  number == 0 || number > 0 && number % base != 0 && {
+    var revertedNumber = 0L
+    var k              = number
+    while k > revertedNumber
+    do
+      revertedNumber = revertedNumber * base + k % base
+      k /= base
+    k == revertedNumber || k == revertedNumber / base
+  }
+
+// Примеры использования
+val numbersToTest = List(121, 12321, 10, 11, 123, 1001, 10001)
+// Проверка на палиндром в десятичной системе
+println("Проверка на палиндром в десятичной системе:")
+numbersToTest.foreach: number =>
+  println(s"$number: ${isPalindrome(number)}")
+
+// Проверка на палиндром в двоичной системе
+println("\nПроверка на палиндром в двоичной системе:")
+numbersToTest.foreach: number =>
+  println(s"$number: ${isPalindrome(number, 2)}")
+
+// Проверка на палиндром в шестнадцатеричной системе
+println("\nПроверка на палиндром в шестнадцатеричной системе:")
+numbersToTest.foreach: number =>
+  println(s"$number: ${isPalindrome(number, 16)}")

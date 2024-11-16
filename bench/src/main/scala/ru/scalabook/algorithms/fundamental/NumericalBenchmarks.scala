@@ -81,12 +81,14 @@ import NumericalBenchmarks.*
   prettyPrint(Period.Second)
 
 @main def sumOfDivisorsBench(): Unit =
-  loadsumOfDivisorsBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadsumOfDivisorsBench
+  prettyPrint(Period.Second)
 
 @main def countOfDivisorsBench(): Unit =
-  loadcountOfDivisorsBench
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadcountOfDivisorsBench
+  prettyPrint(Period.Second)
 
 @main def sumToGivenBench(): Unit =
   (1 to 10).foreach: _ =>

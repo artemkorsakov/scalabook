@@ -53,60 +53,42 @@ object Primes:
     sieveOfEratosthenes(n).zipWithIndex.collect { case (true, prime) => prime }
 
   /** Нахождение простых множителей */
-  @SuppressWarnings(
-    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
-  )
   def primeFactorsWithPow(n: Long): Map[Long, Int] =
-    var number = n
+    @tailrec
+    def reduceLoop(n: Long, i: Long, count: Int): (Long, Int) =
+      if n % i == 0 then reduceLoop(n / i, i, count + 1) else (n, count)
 
-    // Проверяем делимость на 2
-    var powOfTwo = 0
-    while number % 2 == 0 do
-      powOfTwo += 1
-      number = number >> 1
-    var map =
-      if powOfTwo > 0 then Map(2L -> powOfTwo) else Map.empty[Long, Int]
+    @tailrec
+    def loop(n: Long, i: Long, acc: Map[Long, Int]): Map[Long, Int] =
+      val limit = math.sqrt(n.toDouble)
+      if i > limit then
+        if n > 1 then acc + (n -> 1) else acc
+      else if n % i == 0 then
+        val (newN, newCount) = reduceLoop(n, i, 0)
+        loop(newN, i + 2, acc + (i -> newCount))
+      else loop(n, i + 2, acc)
 
-    // Ищем нечетные множители
-    var i = 3L
-    while i <= math.sqrt(number.toDouble) do
-      var pow = 0
-      while number % i == 0 do
-        number /= i
-        pow += 1
-      if pow > 0 then map += i -> pow
-      i += 2
-
-    // Если от числа что-то осталось, то остаток тоже множитель
-    if number > 1 then map + (number -> 1) else map
+    if n % 2 == 0 then
+      val (newN, newCount) = reduceLoop(n, 2, 0)
+      loop(newN, 3, Map(2L -> newCount))
+    else loop(n, 3, Map.empty)
   end primeFactorsWithPow
 
-  @SuppressWarnings(
-    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
-  )
   def primeFactors(n: Long): List[Long] =
-    var result = List.empty[Long]
-    var number = n
+    @tailrec
+    def reduceLoop(n: Long, i: Long): Long =
+      if n % i == 0 then reduceLoop(n / i, i) else n
 
-    // Проверяем делимость на 2
-    var marker = false
-    while number % 2 == 0 do
-      marker = true
-      number = number >> 1
-    if marker then result = 2L :: result
+    @tailrec
+    def loop(n: Long, i: Long, acc: List[Long]): List[Long] =
+      val limit = math.sqrt(n.toDouble)
+      if i > limit then
+        if n > 1 then n :: acc else acc
+      else if n % i == 0 then loop(reduceLoop(n, i), i + 2, i :: acc)
+      else loop(n, i + 2, acc)
 
-    // Ищем нечетные множители
-    var i = 3L
-    while i <= math.sqrt(number.toDouble) do
-      marker = false
-      while number % i == 0 do
-        marker = true
-        number /= i
-      if marker then result = i :: result
-      i += 2
-
-    // Если от числа что-то осталось, то остаток тоже множитель
-    if number > 1 then number :: result else result
+    if n % 2 == 0 then loop(reduceLoop(n, 2), 3, 2 :: Nil)
+    else loop(n, 3, Nil)
   end primeFactors
 
   /** Возвращает следующее простое число за заданным простым числом. */

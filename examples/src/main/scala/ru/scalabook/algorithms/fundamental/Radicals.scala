@@ -5,6 +5,7 @@ import ru.scalabook.algorithms.fundamental.Primes.{
   primeFactors,
   primesNoMoreThanN
 }
+import scala.annotation.tailrec
 
 /** The radical of n, rad(n), is the product of distinct prime factors of n. For
   * example, 504 = 2<sup>3</sup> × 3<sup>2</sup> × 7, so rad(504) = 2 × 3 × 7 =
@@ -20,19 +21,19 @@ object Radicals:
     *   <a href="https://en.wikipedia.org/wiki/Square-free_integer">detailed
     *   description</a>
     */
-  @SuppressWarnings(
-    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
-  )
   def isSquareFree(n: Long): Boolean =
-    var p      = 2L
-    val s      = math.sqrt(n.toDouble).toLong
-    var isFree = true
-    while isFree && p <= s do
-      if n % (p * p) == 0 then isFree = false
-      nextPrime(p) match
-        case Some(nextP) => p = nextP
-        case _           => isFree = false
-    isFree
+    val s = math.sqrt(n.toDouble).toLong
+
+    @tailrec
+    def loop(p: Long): Boolean =
+      if p > s then true
+      else if n % (p * p) == 0 then false
+      else
+        nextPrime(p) match
+          case Some(nextP) => loop(nextP)
+          case _           => true
+
+    loop(2L)
 
   /** Return array of products of distinct prime factors of any n not more
     * limit.

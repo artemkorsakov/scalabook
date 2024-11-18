@@ -1,5 +1,33 @@
 import scala.annotation.tailrec
 
+def isPrime(n: Long): Boolean =
+  if n < 2 then false
+  else if n < 4 then true // 2 и 3 - простые
+  else if n % 2 == 0 then false
+  else if n < 9 then true // мы уже исключили 4,6 и 8
+  else if n % 3 == 0 then false
+  else
+    val limit = math.ceil(math.sqrt(n.toDouble)).toLong
+
+    @annotation.tailrec
+    def loop(f: Long): Boolean =
+      if f > limit then true
+      else if n % f == 0 || n % (f + 2) == 0 then false
+      else loop(f + 6)
+
+    loop(5)
+
+def nextPrime(n: Long): Option[Long] =
+  if !isPrime(n) then None
+  else if n == 2 then Some(3)
+  else if n == 3 then Some(5)
+  else
+    @tailrec
+    def loop(p: Long): Long =
+      val nextPrime = if p % 3 == 1 then p + 4 else p + 2
+      if isPrime(nextPrime) then nextPrime else loop(nextPrime)
+    Some(loop(n))
+
 def sieveOfEratosthenes(n: Int): Array[Boolean] =
   val result = Array.fill(n + 1)(true)
   result(0) = false
@@ -15,17 +43,28 @@ def sieveOfEratosthenes(n: Int): Array[Boolean] =
 def primesNoMoreThanN(n: Int): Array[Int] =
   sieveOfEratosthenes(n).zipWithIndex.collect { case (true, prime) => prime }
 
-def totientArray(limit: Int): Array[Long] =
-  val phiArray = new Array[Long](limit + 1)
-  phiArray(1) = 1
-
+def allRads(limit: Int): Array[Int] =
+  val rads = new Array[Int](limit + 1)
+  rads(1) = 1
   primesNoMoreThanN(limit).foreach: p =>
-    (1 to limit / p).foreach: n =>
-      val k = if n % p == 0 then p else p - 1
-      phiArray(n * p) = phiArray(n) * k
+    (1 to limit / p).foreach: i =>
+      rads(i * p) = if rads(i * p) == 0 then p else rads(i * p) * p
+  rads
 
-  phiArray
+def isSquareFree(n: Long): Boolean =
+  val s      = math.sqrt(n.toDouble).toLong
 
-println(totientArray(20).mkString("(", ", ", ")"))
-// Array(0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8)
-//      (0, 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4, 12, 6, 8, 8, 16, 6, 18, 8)
+  @tailrec
+  def loop(p: Long): Boolean = 
+    if p > s then true
+    else if n % (p * p) == 0 then false
+    else 
+      nextPrime(p) match
+        case Some(nextP) => loop(nextP)
+        case _           => true
+
+  loop(2L)      
+
+println(isSquareFree(10))  // true:  10 = 2 * 5
+println(isSquareFree(20))  // false: 20 = 2^2 * 5
+println(isSquareFree(100)) // false: 100 = 2^2 * 5^2

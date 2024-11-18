@@ -22,16 +22,17 @@ import RadicalsBenchmarks.*
 @main def radBench(): Unit =
   (1 to 10).foreach: _ =>
     loadradBench()
-  prettyPrint(Period.MicroSecond)
+  prettyPrint(Period.Second)
 
 @main def allRadsBench(): Unit =
   (1 to 10).foreach: _ =>
     println(loadallRadsBench)
-  prettyPrint(Period.MicroSecond)
+  prettyPrint(Period.Second)
 
 @main def isSquareFreeBench(): Unit =
-  loadisSquareFreeBench()
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadisSquareFreeBench()
+  prettyPrint(Period.Second)
 
 object RadicalsBenchmarks extends MetricInstrumented:
   def loadradBench(): Unit = loading.time:

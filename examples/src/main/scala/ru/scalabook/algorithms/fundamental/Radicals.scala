@@ -1,10 +1,6 @@
 package ru.scalabook.algorithms.fundamental
 
-import ru.scalabook.algorithms.fundamental.Primes.{
-  nextPrime,
-  primeFactors,
-  primesNoMoreThanN
-}
+import ru.scalabook.algorithms.fundamental.Primes.{nextPrime, primesNoMoreThanN}
 import scala.annotation.tailrec
 
 /** The radical of n, rad(n), is the product of distinct prime factors of n. For
@@ -14,7 +10,21 @@ import scala.annotation.tailrec
 object Radicals:
   /** Return the product of distinct prime factors of n.
     */
-  def rad(n: Long): Long = primeFactors(n).product
+  def rad(n: Long): Long =
+    @tailrec
+    def reduceLoop(n: Long, i: Long): Long =
+      if n % i == 0 then reduceLoop(n / i, i) else n
+
+    @tailrec
+    def loop(n: Long, i: Long, acc: Long): Long =
+      val limit = math.sqrt(n.toDouble)
+      if i > limit then
+        if n > 1 then n * acc else acc
+      else if n % i == 0 then loop(reduceLoop(n, i), i + 2, i * acc)
+      else loop(n, i + 2, acc)
+
+    if n % 2 == 0 then loop(reduceLoop(n, 2), 3, 2)
+    else loop(n, 3, 1)
 
   /** Is square-free integer?
     * @see

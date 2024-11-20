@@ -6,13 +6,10 @@ object PolynomialEquation:
 
   /** Solution of a polynomial equation with given coefficients for a given n.
     */
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def polynomialSolution(n: Int, aList: Array[Long]): Long =
-    var number = 1L
-    aList.reverse.foldLeft(0L): (sum, a) =>
-      val s = sum + a * number
-      number *= n
-      s
+    aList.reverse.foldLeft((0L, 1L)) { case ((sum, number), a) =>
+      (sum + a * number, number * n)
+    }._1
 
   /** Returns the coefficients of a polynomial equation.
     *

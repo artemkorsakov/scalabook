@@ -1087,7 +1087,7 @@ calculateDifferentOperations(4, 3, 1, 2)
 Для заданного набора чисел (a, b, c, d) определим максимальную длину последовательности натуральных чисел,
 входящих в результаты, полученные перестановкой этих чисел для различных комбинаций:
 
-> [Перестановку можно получить по стандартному алгоритму](../../algorithms/algorithms/permutation.md).
+> [Перестановку можно получить по стандартному алгоритму](../../algorithms/algorithms/combinatorics/permutation.md).
 
 ```dotty
 def getMaxLength(a: Int, b: Int, c: Int, d: Int): Int =

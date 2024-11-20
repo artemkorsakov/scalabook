@@ -111,7 +111,6 @@ case class Matrix[T](elements: Seq[Seq[T]])(using I: Integral[T]):
     Vector(*(other.columnToMatrix, module).elements.map(_.head))
 
   /** Matrix exponentiation. */
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def power(p: Long): Matrix[T] =
     require(p >= 1)
     if p == 1 then this
@@ -122,13 +121,10 @@ case class Matrix[T](elements: Seq[Seq[T]])(using I: Integral[T]):
       (1 until powers.length).foreach(i =>
         powersC(i) = powersC(i - 1) * powersC(i - 1)
       )
-      var result = powersC.last
-      (1 until powers.length).withFilter(powers(_) == '1').foreach { i =>
-        result = result * powersC(powersC.length - 1 - i)
-      }
-      result
+      (1 until powers.length).foldLeft(powersC.last): (result, i) =>
+        if powers(i) == '1' then result * powersC(powersC.length - 1 - i)
+        else result
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def power(p: Long, module: T): Matrix[T] =
     require(p >= 1)
     if p == 1 then Matrix(elements.map(_.map(posMod(_, module))))
@@ -139,11 +135,10 @@ case class Matrix[T](elements: Seq[Seq[T]])(using I: Integral[T]):
       (1 until powers.length).foreach(i =>
         powersC(i) = powersC(i - 1) * (powersC(i - 1), module)
       )
-      var result = powersC.last
-      (1 until powers.length).withFilter(powers(_) == '1').foreach { i =>
-        result = result * (powersC(powersC.length - 1 - i), module)
-      }
-      result
+      (1 until powers.length).foldLeft(powersC.last): (result, i) =>
+        if powers(i) == '1' then
+          result * (powersC(powersC.length - 1 - i), module)
+        else result
 
   // http://vmath.ru/vf5/algebra2#konkatenacija
   def concatenation(other: Matrix[T]): Matrix[T] =

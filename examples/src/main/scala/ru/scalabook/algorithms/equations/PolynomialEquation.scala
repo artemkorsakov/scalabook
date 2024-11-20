@@ -21,7 +21,6 @@ object PolynomialEquation:
     * @return
     *   a[1], a[2], ..., a[k]
     */
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def polynomialCoefficients(k: Int, solutions: Array[Long]): Array[Long] =
     val aList = new Array[Long](k)
 
@@ -29,19 +28,19 @@ object PolynomialEquation:
     for i <- k - 1 to 0 by -1 do
       val coefficients = coefficientsList(i)
       val index        = k - coefficients.length
-      var divisor      = 0L
-      for j <- coefficients.indices do
+      val divisor = coefficients.indices.foldLeft(0L): (divisor, j) =>
         aList(index) += coefficients(j) * solutions(coefficients.length - 1 - j)
         (0 until index).foreach: m =>
           aList(index) -= aList(m) * coefficients(j) * math
             .pow(coefficients.length.toDouble - j, k - 1.0 - m)
             .toLong
-        divisor += coefficients(j) * math
-          .pow(
-            coefficients.length.toDouble - j,
-            coefficients.length.toDouble - 1
-          )
-          .toLong
+        divisor +
+          coefficients(j) * math
+            .pow(
+              coefficients.length.toDouble - j,
+              coefficients.length.toDouble - 1
+            )
+            .toLong
       aList(index) = aList(index) / divisor
 
     aList

@@ -18,15 +18,18 @@ object HarshadNumber:
   /** Возвращает все сильные, усекаемые справа простые числа Харшада меньше
     * 10<sup>p</sup>.
     */
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def getStrongRightTruncatableHarshadPrimes(p: Int): Seq[Long] =
-    var harshadNumbers = Seq(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L)
-    (1 until p - 1).flatMap { _ =>
-      harshadNumbers = rightTruncatableHarshadNumbers(harshadNumbers)
-      harshadNumbers
-        .withFilter(isStrongHarshadNumber)
-        .flatMap(strongRightTruncatableHarshadPrimes)
-    }
+    (1 until p - 1).foldLeft((
+      Seq(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L),
+      Seq.empty[Long]
+    )) { case ((numbers, acc), _) =>
+      val next = rightTruncatableHarshadNumbers(numbers)
+      val newAcc = acc ++
+        next
+          .withFilter(isStrongHarshadNumber)
+          .flatMap(strongRightTruncatableHarshadPrimes)
+      (next, newAcc)
+    }._2
 
   /** Возьмем число 2011, которое является простым. Если отсечь из него
     * последнюю цифру, то получаем 201 - сильное число Харшада, которое также

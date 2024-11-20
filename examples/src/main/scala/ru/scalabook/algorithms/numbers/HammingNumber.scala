@@ -1,29 +1,31 @@
 package ru.scalabook.algorithms.numbers
 
 import ru.scalabook.algorithms.fundamental.Primes.primesNoMoreThanN
+import scala.annotation.tailrec
 
 /** A positive number is a generalized <a
   * href="https://en.wikipedia.org/wiki/Regular_number">Hamming number</a> of
   * type n, if it has no prime factor larger than n.
   */
 object HammingNumber:
-  @SuppressWarnings(
-    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
-  )
   def isHammingNumber(number: Long, n: Int): Boolean =
     if number < 2 || number <= n then true
     else if n < 2 then false
     else
-      var temp       = number
       val primesList = primesNoMoreThanN(n)
-      var isHamming  = false
-      var i          = 0
-      while i < primesList.length && !isHamming
-      do
-        val prime = primesList(i)
-        while temp % prime == 0
-        do temp /= prime
-        if temp == 1 then isHamming = true
-        i += 1
-      isHamming
+
+      @tailrec
+      def reduceLoop(n: Long, i: Long): Long =
+        if n % i == 0 then reduceLoop(n / i, i) else n
+
+      @tailrec
+      def loop(n: Long, i: Int): Boolean =
+        if i >= primesList.length then false
+        else
+          val newN = reduceLoop(n, primesList(i))
+          if newN == 1 then true
+          else loop(newN, i + 1)
+
+      loop(number, 0)
+
 end HammingNumber

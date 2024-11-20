@@ -1,6 +1,7 @@
 package ru.scalabook.algorithms.combinatorics
 
 import spire.math.SafeLong
+import scala.annotation.tailrec
 
 object Coins:
 
@@ -31,23 +32,20 @@ object Coins:
     if number >= 1 then array(1) = BigInt(1)
     if number >= 2 then array(2) = BigInt(2)
 
-    @SuppressWarnings(
-      Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
-    )
     def partitionPart(s: Int, n: Int, pS: BigInt): BigInt =
-      var k  = s
-      var op = k * (3 * k - 1) / 2
-      var p  = pS
-      while op <= n do
-        if (k + 1) % 2 == 0 then
-          p += array(n - op)
+      @tailrec
+      def loop(k: Int, p: BigInt): BigInt =
+        val op = k * (3 * k - 1) / 2
+        if op > n then p
         else
-          p -= array(n - op)
-        k += s
-        op = k * (3 * k - 1) / 2
-      p
+          val newP =
+            if (k + 1) % 2 == 0 then p + array(n - op)
+            else p - array(n - op)
+          loop(k + s, newP)
 
-    for n <- 3 to number do
+      loop(s, pS)
+
+    (3 to number).foreach: n =>
       val p = partitionPart(1, n, BigInt(0))
       array(n) = partitionPart(-1, n, p)
     array(number)

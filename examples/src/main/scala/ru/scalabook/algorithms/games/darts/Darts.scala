@@ -6,24 +6,31 @@ object Darts:
   private val triplePoints: Seq[Int] = 3 to 60 by 3
   private val points: Seq[Int] = singlePoints ++ doublePoints ++ triplePoints
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   val allDistinctWaysToCheckOut: Map[Int, Int] =
     // First step checkout
-    var integerMap = doublePoints.map(point => point -> 1).toMap
+    val firstStepMap = doublePoints.map(point => point -> 1).toMap
 
     // Second step checkout
-    points.foreach: value =>
-      doublePoints.foreach: doublePoint =>
-        val point = value + doublePoint
-        integerMap += (point -> (integerMap.getOrElse(point, 0) + 1))
+    val secondStepMap =
+      (
+        for
+          value       <- points
+          doublePoint <- doublePoints
+        yield value + doublePoint
+      ).foldLeft(firstStepMap) { case (acc, point) =>
+        acc + (point -> (acc.getOrElse(point, 0) + 1))
+      }
 
     // Third step checkout
-    points.indices.foreach: i =>
-      (i until points.length).foreach: j =>
-        doublePoints.foreach: doublePoint =>
-          val point = points(i) + points(j) + doublePoint
-          integerMap += (point -> (integerMap.getOrElse(point, 0) + 1))
+    (
+      for
+        i           <- points.indices
+        j           <- i until points.length
+        doublePoint <- doublePoints
+      yield points(i) + points(j) + doublePoint
+    ).foldLeft(secondStepMap) { case (acc, point) =>
+      acc + (point -> (acc.getOrElse(point, 0) + 1))
+    }
 
-    integerMap
   end allDistinctWaysToCheckOut
 end Darts

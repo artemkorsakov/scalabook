@@ -5,7 +5,7 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/combinatorics/Factori
 scala-cli run bench/src/main/scala/ru/scalabook/algorithms/combinatorics/FactorialBenchmarks.scala --main-class ru.scalabook.algorithms.combinatorics.primeFactorBench
  */
 
-//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep nl.grons::metrics4-scala:4.3.3
 //> using dep org.typelevel::spire:0.18.0
 //> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/combinatorics/Factorial.scala
 //> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/fundamental/Primes.scala
@@ -22,24 +22,28 @@ import ru.scalabook.Period
 import FactorialBenchmarks.*
 
 @main def factorialBench(): Unit =
-  val _ = loadFactorial
+  (1 to 5).foreach: _ =>
+    val _ = loadFactorial
 
-  prettyPrint(Period.MicroSecond)
+  prettyPrint(Period.Second)
 
 @main def approximateFactorialBench(): Unit =
-  val _ = loadApproximateFactorial
+  (1 to 10).foreach: _ =>
+    val _ = loadApproximateFactorial
 
-  prettyPrint(Period.MicroSecond)
+  prettyPrint(Period.Second)
 
 @main def approximateFactorial2Bench(): Unit =
-  val _ = loadApproximateFactorial2
+  (1 to 10).foreach: _ =>
+    val _ = loadApproximateFactorial2
 
-  prettyPrint(Period.MicroSecond)
+  prettyPrint(Period.Second)
 
 @main def primeFactorBench(): Unit =
-  loadPrimeFactorBench
+  (1 to 10).foreach: _ =>
+    loadPrimeFactorBench
 
-  prettyPrint(Period.MicroSecond)
+  prettyPrint(Period.Second)
 
 object FactorialBenchmarks extends MetricInstrumented:
   def loadFactorial: SafeLong = loading.time:

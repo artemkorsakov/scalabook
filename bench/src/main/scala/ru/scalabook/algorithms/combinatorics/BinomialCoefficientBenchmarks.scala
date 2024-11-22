@@ -1,6 +1,6 @@
 // scala-cli run bench/src/main/scala/ru/scalabook/algorithms/combinatorics/BinomialCoefficientBenchmarks.scala
 
-//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep nl.grons::metrics4-scala:4.3.3
 //> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/combinatorics/BinomialCoefficient.scala
 //> using file ../../MetricInstrumented.scala
 //> using file ../../Period.scala
@@ -13,7 +13,7 @@ import ru.scalabook.Period
 @main def binomialCoefficientBench(): Unit =
   import BinomialCoefficientBenchmarks.*
 
-  (0 to 4).foreach: _ =>
+  (0 until 10).foreach: _ =>
     loadStuff()
 
   prettyPrint(Period.Second)

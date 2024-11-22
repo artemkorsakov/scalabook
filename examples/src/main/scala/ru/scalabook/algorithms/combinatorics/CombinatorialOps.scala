@@ -27,7 +27,7 @@ package ru.scalabook.algorithms.combinatorics
   */
 object CombinatorialOps:
 
-  extension [A](l: List[A])
+  extension [A](list: List[A])
 
     /** Generates the combinations of this list with given length 'n'. The order
       * doesn't matter.
@@ -40,13 +40,15 @@ object CombinatorialOps:
       * Time - O(C_k,n) Space - O(C_k,n)
       */
     def xcombinations(n: Int): List[List[A]] =
-      if n > l.size then Nil
+      val l = list.length
+      if n > l then Nil
+      else if n == l then List(list)
       else
-        l match
-          case _ :: _ if n == 1 => l.map(List(_))
+        list match
+          case Nil         => Nil
+          case _ if n == 1 => list.map(List(_))
           case hd :: tl =>
             tl.xcombinations(n - 1).map(hd :: _) ::: tl.xcombinations(n)
-          case _ => Nil
 
     /** Generates all the subsets of this list. The order doesn't matter.
       *
@@ -55,9 +57,8 @@ object CombinatorialOps:
       * S_n = sum(i=1..n) {C_i,n} = 2 ** n Time - O(S_n) Space - O(S_n)
       */
     def xsubsets: List[List[A]] =
-      (2 to l.size).foldLeft(l.xcombinations(1))((a, i) =>
-        l.xcombinations(i) ::: a
-      )
+      (2 to list.length).foldLeft(list.xcombinations(1)): (a, i) =>
+        list.xcombinations(i) ::: a
 
     /** Generates the variations of this list with given length 'n'. The order
       * does matter.
@@ -69,26 +70,25 @@ object CombinatorialOps:
       * Time - O(V_k,n) Space - O(V_k,n)
       */
     def xvariations(n: Int): List[List[A]] =
-      def mixmany(x: A, ll: List[List[A]]): List[List[A]] =
-        ll match
-          case hd :: tl => foldone(x, hd) ::: mixmany(x, tl)
-          case _        => Nil
+      def mixmany(a: A, lists: List[List[A]]): List[List[A]] =
+        lists match
+          case Nil      => Nil
+          case hd :: tl => foldone(a, hd) ::: mixmany(a, tl)
 
-      def foldone(x: A, ll: List[A]): List[List[A]] =
-        (1 to ll.length).foldLeft(List(x :: ll))((a, i) =>
-          mixone(i, x, ll) :: a
-        )
+      def foldone(a: A, lists: List[A]): List[List[A]] =
+        (1 to lists.length).foldLeft(List(a :: lists)): (acc, i) =>
+          mixone(i, a, lists) :: acc
 
-      def mixone(i: Int, x: A, ll: List[A]): List[A] =
-        ll.slice(0, i) ::: (x :: ll.slice(i, ll.length))
+      def mixone(i: Int, a: A, lists: List[A]): List[A] =
+        lists.slice(0, i) ::: (a :: lists.slice(i, lists.length))
 
-      if n > l.size then Nil
+      if n > list.length then Nil
       else
-        l match
-          case _ :: _ if n == 1 => l.map(List(_))
+        list match
+          case Nil         => Nil
+          case _ if n == 1 => list.map(List(_))
           case hd :: tl =>
             mixmany(hd, tl.xvariations(n - 1)) ::: tl.xvariations(n)
-          case _ => Nil
     end xvariations
 
     /** Generates all permutations of this list. The order does matter.
@@ -99,6 +99,6 @@ object CombinatorialOps:
       *
       * Time - O(n!) Space - O(n!)
       */
-    def xpermutations: List[List[A]] = xvariations(l.size)
+    def xpermutations: List[List[A]] = xvariations(list.length)
   end extension
 end CombinatorialOps

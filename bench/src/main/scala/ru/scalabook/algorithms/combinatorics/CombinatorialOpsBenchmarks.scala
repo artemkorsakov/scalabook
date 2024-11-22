@@ -5,7 +5,7 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/combinatorics/Combina
 scala-cli run bench/src/main/scala/ru/scalabook/algorithms/combinatorics/CombinatorialOpsBenchmarks.scala --main-class ru.scalabook.algorithms.combinatorics.xPermutationsBench
  */
 
-//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep nl.grons::metrics4-scala:4.3.3
 //> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/combinatorics/CombinatorialOps.scala
 //> using file ../../MetricInstrumented.scala
 //> using file ../../Period.scala
@@ -17,25 +17,25 @@ import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
 import CombinatorialOpsBenchmarks.*
 
-@main def xCombinationsBench(): List[List[Int]] =
-  val res = loadxCombinations
-  prettyPrint(Period.MicroSecond)
-  res
+@main def xCombinationsBench(): Unit =
+  (0 until 10).foreach: _ =>
+    loadxCombinations
+  prettyPrint(Period.MilliSecond)
 
-@main def xSubsetsBench(): List[List[Int]] =
-  val res = loadxsubsets
-  prettyPrint(Period.MicroSecond)
-  res
+@main def xSubsetsBench(): Unit =
+  (0 until 10).foreach: _ =>
+    loadxsubsets
+  prettyPrint(Period.MilliSecond)
 
-@main def xVariationsBench(): List[List[Int]] =
-  val res = loadxvariations
-  prettyPrint(Period.MicroSecond)
-  res
+@main def xVariationsBench(): Unit =
+  (0 until 10).foreach: _ =>
+    loadxvariations
+  prettyPrint(Period.MilliSecond)
 
-@main def xPermutationsBench(): List[List[Int]] =
-  val res = loadxpermutations
-  prettyPrint(Period.MicroSecond)
-  res
+@main def xPermutationsBench(): Unit =
+  (0 until 10).foreach: _ =>
+    loadxpermutations
+  prettyPrint(Period.MilliSecond)
 
 object CombinatorialOpsBenchmarks extends MetricInstrumented:
   def loadxCombinations: List[List[Int]] = loading.time:

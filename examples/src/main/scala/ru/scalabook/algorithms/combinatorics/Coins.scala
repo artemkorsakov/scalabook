@@ -14,9 +14,10 @@ object Coins:
   def countWays(coins: Array[Int], sum: Int): SafeLong =
     val ways = Array.fill(sum + 1)(SafeLong(0))
     ways(0) = 1
-    coins.foreach: coin =>
-      (coin to sum).foreach: i =>
-        ways(i) += ways(i - coin)
+    for
+      coin <- coins
+      i    <- coin to sum
+    do ways(i) += ways(i - coin)
     ways(sum)
 
   /** A way of writing n as a sum of positive integers.

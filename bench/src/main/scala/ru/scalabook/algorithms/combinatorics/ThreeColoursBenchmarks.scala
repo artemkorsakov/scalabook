@@ -2,7 +2,7 @@
 scala-cli run bench/src/main/scala/ru/scalabook/algorithms/combinatorics/ThreeColoursBenchmarks.scala
  */
 
-//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep nl.grons::metrics4-scala:4.3.3
 //> using dep org.typelevel::spire:0.18.0
 //> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/combinatorics/ThreeColours.scala
 //> using file ../../MetricInstrumented.scala
@@ -17,9 +17,10 @@ import spire.math.SafeLong
 import ThreeColoursBenchmarks.*
 
 @main def countABCRowsBench(): Unit =
-  println(loadCountABCRows)
+  (1 to 10).foreach: _ =>
+    println(loadCountABCRows)
 
-  prettyPrint(Period.MicroSecond)
+  prettyPrint(Period.MilliSecond)
 
 object ThreeColoursBenchmarks extends MetricInstrumented:
   def loadCountABCRows: SafeLong = loading.time:

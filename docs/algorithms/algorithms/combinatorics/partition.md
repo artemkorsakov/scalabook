@@ -2,26 +2,71 @@
 
 ## Монеты
 
+> Количество способов получить заданную сумму с помощью заданного набора монет.
+> 
+> [31 задача из Project Euler](https://projecteuler.net/problem=31)
+
 **Алгоритм:**
 
-Количество способов получить заданную сумму с помощью заданного набора монет.
+- **Шаг 1** (Инициализация). 
+    - Создаем массив `ways` длиной `sum + 1`, инициализируем все элементы нулями.
+    - Устанавливаем `ways(0) = 1`, так как существует один способ получить сумму `0` (не используя ни одной монеты).
+- **Шаг 2** (Цикл по монетам). Для каждой монеты в массиве `coins` выполняем следующие шаги:
+    - Проходим по всем суммам от значения текущей монеты до `sum` (включительно).
+    - Для каждой суммы `i` обновляем количество способов её получить: `ways(i) += ways(i - coin)`, где `coin` — текущая монета. 
+      Это означает, что если мы можем получить сумму `i - coin`, то добавив текущую монету, получаем сумму `i`.
+      Поэтому количество способов получить сумму `i` увеличивается на количество способов получить сумму `i - coin` для каждого `i`.
+- Возврат результата: 
+  После завершения всех итераций возвращаем значение` ways(sum)`, которое будет содержать количество способов получить целевую сумму.
 
-[31 задача из Project Euler](https://projecteuler.net/problem=31)
+**Пример:**
+
+Рассмотрим пример вычисления количества способов получить сумму `4`, используя монеты `(1, 2, 3)`:
+
+- **Шаг 1**: `ways = [1, 0, 0, 0, 0]`, `coins = [1, 2, 3]`, `sum = 4`.
+- **Шаг 2**:
+    - Итерация 1 (монета = 1):
+        - Для `i = 1`: `ways(1) += ways(1 - 1) => ways(1) += ways(0) => ways(1) = 1`
+        - Для `i = 2`: `ways(2) += ways(2 - 1) => ways(2) += ways(1) => ways(2) = 1`
+        - Для `i = 3`: `ways(3) += ways(3 - 1) => ways(3) += ways(2) => ways(3) = 1`
+        - Для `i = 4`: `ways(4) += ways(4 - 1) => ways(4) += ways(3) => ways(4) = 1`
+    - Массив `ways` после первой итерации: `ways = [1, 1, 1, 1, 1]`
+    - Итерация 2 (монета = 2):
+        - Для `i = 2`: `ways(2) += ways(2 - 2) => ways(2) += ways(0) => ways(2) = 2`
+        - Для `i = 3`: `ways(3) += ways(3 - 2) => ways(3) += ways(1) => ways(3) = 2`
+        - Для `i = 4`: `ways(4) += ways(4 - 2) => ways(4) += ways(2) => ways(4) = 3`
+    - Массив `ways` после второй итерации: `ways = [1, 1, 2, 2, 3]`
+    - Итерация 3 (монета = 3):
+        - Для `i = 3`: `ways(3) += ways(3 - 3) => ways(3) += ways(0) => ways(3) = 3`
+        - Для `i = 4`: `ways(4) += ways(4 - 3) => ways(4) += ways(1) => ways(4) = 4`
+    - Массив `ways` после третьей итерации: `ways = [1, 1, 2, 3, 4]`
+- **Шаг 3**: Возврат результата: Возвращаем `ways(4)`, которое равно `4`.
+- **Итог**: Таким образом, существует 4 способа получить сумму 4, используя монеты 1, 2 и 3.
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- Сложность по времени:
+    - Внешний цикл проходит по всем монетам, что составляет O(n), где n — количество различных монет.
+    - Внутренний цикл проходит от значения текущей монеты до заданной суммы (sum). 
+      В худшем случае, если все монеты имеют минимальное значение (например, 1), этот цикл будет выполняться sum раз.
+    - Таким образом, общая сложность по времени будет O(n * sum).
+- Сложность по памяти:
+    - Алгоритм использует массив ways размером (sum + 1), чтобы хранить количество способов для каждой суммы от 0 до sum. Это требует O(sum) памяти.
+    - Других значительных структур данных в алгоритме не используется, поэтому общая сложность по памяти составляет O(sum).
+
+- **Время** - O(n * sum)
+- **Память** - O(sum)
 
 **Код:**
 
 ```dotty
-def countWays(coins: Array[Int], sum: Int): SafeLong =
-  val ways = Array.fill(sum + 1)(SafeLong(0))
+def countWays(coins: Array[Int], sum: Int): Long =
+  val ways = Array.fill(sum + 1)(0L)
   ways(0) = 1
-  coins.foreach: coin =>
-    (coin to sum).foreach: i =>
-      ways(i) += ways(i - coin)
+  for
+    coin <- coins
+    i    <- coin to sum
+  do ways(i) += ways(i - coin)
   ways(sum)
   
 countWays(Array(1, 2, 5, 10, 20, 50, 100, 200), 200) 
@@ -30,28 +75,20 @@ countWays(Array(1, 2, 5, 10, 20, 50, 100, 200), 200)
 
 **Метрики:**
 
-Вычисление "количества путей" для первых 10000 "сумм" занимает примерно 6 секунд.
+Вычисление "количества путей" для первых 10000 "сумм" занимает примерно 3 секунды.
 
 ```dotty
-@main def countWaysBench(): Unit =
-  (1 to 10_000).foreach: i =>
-    countWays(Array(1, 2, 5, 10, 20, 50, 100, 200), i)
+(1 to 10_000).foreach: i =>
+  countWays(Array(1, 2, 5, 10, 20, 50, 100, 200), i)
       
-// CPU Time: 5788 ms
-// Allocation memory size: 17,18 GB      
+// Число тестовых запусков = 10
+// Среднее время = 3,305 секунд     
 ```
 
 ## Партиции
 
-**Алгоритм:**
-
-[Количество способов](https://ru.wikipedia.org/wiki/%D0%A0%D0%B0%D0%B7%D0%B1%D0%B8%D0%B5%D0%BD%D0%B8%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%B0) 
-записи n в виде суммы натуральных чисел.
-
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
+> [Количество способов](https://ru.wikipedia.org/wiki/%D0%A0%D0%B0%D0%B7%D0%B1%D0%B8%D0%B5%D0%BD%D0%B8%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%B0) 
+> записи n в виде суммы натуральных чисел.
 
 **Код:**
 
@@ -63,19 +100,19 @@ def partition(number: Int): BigInt =
   if number >= 2 then array(2) = BigInt(2)
 
   def partitionPart(s: Int, n: Int, pS: BigInt): BigInt =
-    var k  = s
-    var op = k * (3 * k - 1) / 2
-    var p  = pS
-    while op <= n do
-      if (k + 1) % 2 == 0 then
-        p += array(n - op)
+    @tailrec
+    def loop(k: Int, p: BigInt): BigInt =
+      val op = k * (3 * k - 1) / 2
+      if op > n then p
       else
-        p -= array(n - op)
-      k += s
-      op = k * (3 * k - 1) / 2
-    p
+        val newP =
+          if (k + 1) % 2 == 0 then p + array(n - op)
+          else p - array(n - op)
+        loop(k + s, newP)
 
-  for n <- 3 to number do
+    loop(s, pS)
+
+  (3 to number).foreach: n =>
     val p = partitionPart(1, n, BigInt(0))
     array(n) = partitionPart(-1, n, p)
   array(number)
@@ -87,65 +124,14 @@ partition(1000)
 
 **Метрики:**
 
-Вычисление "количества партиций" для чисел от 1 до 1000 занимает примерно 1 секунду.
+Вычисление "количества партиций" для чисел от 1 до 1000 занимает меньше секунды.
 
 ```dotty
-@main def partitionBench(): Unit =
-  (1 to 1000).foreach: i =>
-    partition(i)
+(1 to 1000).foreach: i =>
+  partition(i)
       
-// CPU Time: 1179 ms
-// Allocation memory size: 820,09 MB      
-```
-
-## Цветные шары
-
-**Алгоритм:**
-
-У нас есть белые шары A, черные шары B и серые шары C. 
-Сколько существует различных вариантов расположить эти шарики в ряд?
-
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
-
-**Код:**
-
-```dotty
-private val cache: mutable.Map[(Int, Int, Int), SafeLong] =
-  mutable.Map.empty[(Int, Int, Int), SafeLong]
-
-def countABCRows(a: Int, b: Int, c: Int): SafeLong =
-  val array = Array(a, b, c)
-  val min   = array.min
-  if min < 0 then 0
-  else
-    val max = array.max
-    val mid = array.sum - min - max
-    cache.getOrElseUpdate((min, mid, max), count(min, mid, max))
-
-private def count(min: Int, mid: Int, max: Int): SafeLong =
-  if min == 0 && mid == 0 then 1
-  else
-    countABCRows(min - 1, mid, max) +
-      countABCRows(min, mid - 1, max) +
-      countABCRows(min, mid, max - 1)
-  
-countABCRows(2, 2, 2) 
-// 90  
-```
-
-**Метрики:**
-
-Вычисление количества вариантов расположить 100 белых, 100 черных и 100 серых шаров занимает примерно 1 секунду.
-
-```dotty
-@main def countABCRowsBench(): Unit =
-  println(countABCRows(100, 100, 100)) // 142-значное число
-
-// CPU Time: 1053 ms                
-// Allocation memory size: 166,35 MB     
+// Число тестовых запусков = 10
+// Среднее время = 0,294 секунд    
 ```
 
 ---
@@ -154,6 +140,3 @@ countABCRows(2, 2, 2)
 
 - [The Art of Computer Programming - Donald E. Knuth, section 1.2.5](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 - [The Art of Computer Programming - Donald E. Knuth, section 1.2.11.2](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
-- [Combinatorial Algorithms in Scala - kostyukov.net][kostyukov]
-
-[kostyukov]: https://kostyukov.net/posts/combinatorial-algorithms-in-scala/

@@ -59,4 +59,4 @@ object RadicalsBenchmarks extends MetricInstrumented:
     mergeSort(unsortedList)
 
   def loadquickSortBench(): Unit = loading.time:
-    quickSort((2500 to 1 by -1).toList)
+    quickSort(unsortedList)

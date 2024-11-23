@@ -26,57 +26,44 @@
 
 ### Точное значение
 
-#### По формуле: сумма двух предыдущих
+> Вычислить n-е число Фибоначчи.
 
 **Алгоритм:**
 
-Заданное число Фибоначчи можно получить с помощью меморизации из библиотеки [scalaz](https://github.com/scalaz/scalaz):
+- **Шаг 1** (Базовый случай). Если `n` равно `0`, то возвращаем `0` (первое число Фибоначчи).
+- **Шаг 2** (Определение переменных).
+    - `a`: Предыдущее число Фибоначчи \\(F\_{n-2}\\). Начальное значение: \\(F\_0 = 0\\).
+    - `b`: Текущее число Фибоначчи \\(F\_{n-1}\\). Начальное значение: \\(F\_1 = 1\\).
+    - `count`: Количество оставшихся итераций. Начальное значение: `n - 1`.
+- **Шаг 3** (Итерация). 
+    - Если `count` равно `0`, то возвращаем `b` (текущее число Фибоначчи).
+    - Иначе, возвращаемся на предыдущий шаг с новыми значениями:
+        - `a` присваиваем значение `b` (следующее число Фибоначчи становится предыдущим).
+        - `b` присваиваем значение `a + b` (вычисляем следующее число Фибоначчи).
+        - Уменьшаем `count` на `1`.
+
+**Пример:**
+
+Пример выполнения алгоритма для `n = 5`
+
+- **Инициализация:**: `n = 5`
+- **Первая итерация:**: `a = 0`, `b = 1`, `count = 4`
+- **Вторая итерация:**: `a = 1`, `b = 1`, `count = 3`
+- **Третья итерация:**: `a = 1`, `b = 2`, `count = 2`
+- **Четвертая итерация:**: `a = 2`, `b = 3`, `count = 1`
+- **Пятая итерация:**: `a = 3`, `b = 5`, `count = 0`
+- **Результат:**: 5-ое число Фибоначчи равно `5`.
 
 **Оценка:**
 
-- **Время** - O(n) (с запоминанием предыдущих вычислений)
-- **Память** - ???
-
-**Код:**
-
-```dotty
-import scalaz.*
-
-object Fibonacci:
-  val memoizedFib: Int => BigInt = Memo.mutableHashMapMemo {
-    case 0 => BigInt(0)
-    case 1 => BigInt(1)
-    case n => memoizedFib(n - 2) + memoizedFib(n - 1)
-  }
-
-memoizedFib(60)  // 1548008755920
-```
-
-**Метрики:**
-
-Вычисление 2000 числа Фибоначчи занимает меньше секунды.
-Но при этом уже примерно на 2500 числе начинает выдаваться ошибка `StackOverflowError`.
-
-```dotty
-@main def memoizedFibBench(): BigInt =
-  memoizedFib(2000)
-      
-// CPU Time: 238 ms
-// Allocation memory size: 10,03 MB      
-```
-
-#### Итеративно
-
-**Алгоритм:**
-
-Либо число Фибоначчи можно вычислять итеративно:
-
-**Оценка:**
+Алгоритм имеют линейную сложность.
 
 - **Время** - O(n)
 - **Память** - O(1)
 
 **Код:**
+
+> Алгоритм основан на хвостовой рекурсии, что позволяет избежать переполнения стека при больших значениях `n`.
 
 ```dotty
 def iterativeFib(n: Int): BigInt =
@@ -85,28 +72,30 @@ def iterativeFib(n: Int): BigInt =
     if count == 0 then b
     else loop(b, a + b, count - 1)
 
-  loop(BigInt(0), BigInt(1), n - 1)
+  if n == 0 then BigInt(0) else loop(BigInt(0), BigInt(1), n - 1)
+
+iterativeFib(100)
+// 354224848179261915075  
 ```
 
 **Метрики:**
 
-Вычисление миллионного числа Фибоначчи занимает 23 секунды.
+Вычисление миллионного числа Фибоначчи занимает 11 секунд.
 
 ```dotty
-@main def iterativeFibBench(): BigInt =
-  iterativeFib(1_000_000)
+iterativeFib(1_000_000)
       
-// CPU Time: 22898 ms
-// Allocation memory size: 44,56 MB      
+// Число тестовых запусков = 10
+// Среднее время = 11,298 секунд  
 ```
 
-> Вышеперечисленные алгоритмы имеют линейную сложность.
+### Числа Фибоначчи с логарифмической сложностью
 
-#### Числа Фибоначчи с логарифмической сложностью
+> Вычислить число Фибоначчи с логарифмической сложностью
 
 **Алгоритм:**
 
-Вычислить числа Фибоначчи с логарифмической сложностью можно так (**Exercise 1.19** из [SICP][sicp]):
+Алгоритм взят из **Exercise 1.19** из [SICP][sicp]:
 
 - Трансформация переменных состояния a и b: \\(\acute{a} ← a + b\\) и \\(\acute{b} ← a\\). 
 - Назовем эту трансформацию T и заметим, что n-кратное применение T, начиная с 1 и 0, 
@@ -119,10 +108,46 @@ def iterativeFib(n: Int): BigInt =
 - Это дает прямой способ возводить такие трансформации в квадрат, и таким образом, можно вычислить \\(T^{n}\\)
   с помощью последовательного возведения в квадрат
 
+**Пример:**
+
+Рассмотрим пример выполнения кода для вычисления 10-го числа Фибоначчи (`n = 10`).
+
+- **Шаг 1: Инициализация**
+    - `a = 1`, `b = 0`, `p = 0`, `q = 1`, `count = 10`
+- **Шаг 2: Итеративный процесс**
+    - **Итерация 1:**
+        - Проверка условия `count == 0`: `10 != 0` — продолжаем.
+        - Проверка условия `count % 2 == 0`: `10 % 2 == 0` — условие истинно.
+        - Вызов цикла с новыми значениями:
+        - `a = 1`, `b = 0`, `p = p * p + q * q = 0 * 0 + 1 * 1 = 1`, `q = 2 * p * q + q * q = 2 * 0 * 1 + 1 * 1 = 1`, `count = count / 2 = 10 / 2 = 5`
+    - **Итерация 2:**
+       - Проверка условия `count == 0`: `5 != 0` — продолжаем.
+       - Проверка условия `count % 2 == 0`: `5 % 2 != 0` — условие ложно.
+       - Вызов цикла с новыми значениями:
+        - `a = b * q + a * (p + q) = 0 * 1 + 1 * (1 + 1) = 2`, `b = b * p + a * q = 0 * 1 + 1 * 1 = 1`, `p = 1`, `q = 1`, `count = count - 1 = 5 - 1 = 4`
+    - **Итерация 3:**
+        - Проверка условия `count == 0`: `4 != 0` — продолжаем.
+        - Проверка условия `count % 2 == 0`: `4 % 2 == 0` — условие истинно.
+        - Вызов цикла с новыми значениями:
+        - `a = 2`, `b = 1`, `p = p * p + q * q = 1 * 1 + 1 * 1 = 2`, `q = 2 * p * q + q * q = 2 * 1 * 1 + 1 * 1 = 3`, `count = count / 2 = 4 / 2 = 2`
+    - **Итерация 4:**
+        - Проверка условия `count == 0`: `2 != 0` — продолжаем.
+        - Проверка условия `count % 2 == 0`: `2 % 2 == 0` — условие истинно.
+        - Вызов цикла с новыми значениями:
+        - `a = 2`, `b = 1`, `p = p * p + q * q = 2 * 2 + 3 * 3 = 13`, `q = 2 * p * q + q * q = 2 * 2 * 3 + 3 * 3 = 21`, `count = count / 2 = 2 / 2 = 1`
+    - **Итерация 5:**
+        - Проверка условия `count == 0`: `1 != 0` — продолжаем.
+        - Проверка условия `count % 2 == 0`: `1 % 2 != 0` — условие ложно.
+        - Вызов цикла с новыми значениями:
+        - `a = b * q + a * (p + q) = 1 * 21 + 2 * (13 + 21) = 109`, `b = b * p + a * q = 1 * 13 + 2 * 21 = 55`, `p = 13`, `q = 21`, `count = count - 1 = 1 - 1 = 0`
+    - **Итерация 6:**
+        -  Проверка условия `count == 0`: `0 == 0` — условие истинно.
+        -  Возврат значения `b = 55`.
+
 **Оценка:**
 
 - **Время** - O(log(n))
-- **Память** - ???
+- **Память** - O(1)
 
 **Код:**
 
@@ -136,6 +161,9 @@ def fastFib(n: Int): BigInt =
     else loop(b * q + a * (p + q), b * p + a * q, p, q, count - 1)
 
   loop(1, 0, 0, 1, n)
+
+fastFib(100)
+// 354224848179261915075  
 ```
 
 **Метрики:**
@@ -143,11 +171,10 @@ def fastFib(n: Int): BigInt =
 Вычисление миллионного числа Фибоначчи занимает меньше секунды.
 
 ```dotty
-@main def fastFibBench(): BigInt =
-  fastFib(1_000_000)
+fastFib(1_000_000)
       
-// CPU Time: 528 ms
-// Allocation memory size: 160,60 MB      
+// Число тестовых запусков = 10
+// Среднее время = 0,100 секунд     
 ```
 
 ### Приближенное значение
@@ -160,8 +187,8 @@ def fastFib(n: Int): BigInt =
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- **Время** - O(log n)
+- **Память** - O(1)
 
 **Код:**
 
@@ -179,42 +206,34 @@ def approximateFibonacci(n: Int): BigInt =
 Вычисление приближенного значения миллионного числа Фибоначчи занимает меньше секунды.
 
 ```dotty
-@main def approximateFibonacciBench(): BigInt =
-  approximateFibonacci(1_000_000)
+approximateFibonacci(1_000_000)
       
-// CPU Time: 341 ms
-// Allocation memory size: 32,74 MB      
+// Число тестовых запусков = 10
+// Среднее время = 0,044 секунд  
 ```
 
 ## Пифагорова тройка
 
-**Алгоритм:**
-
-[Пифагорова тройка](https://ru.wikipedia.org/wiki/%D0%9F%D0%B8%D1%84%D0%B0%D0%B3%D0%BE%D1%80%D0%BE%D0%B2%D0%B0_%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0) — 
-это набор трех натуральных чисел \\(a < b < c\\), 
-для которых \\(a^{2} + b^{2} = c^{2}\\).
-Представим \\(a = m^{2} - n^{2}, b = 2\*m\*n, c = m^{2} + n^{2}\\). Тогда \\((m,n)\\) – пифагорова двойка.
-
-[Дерево примитивных пифагоровых троек](https://ru.wikipedia.org/wiki/%D0%94%D0%B5%D1%80%D0%B5%D0%B2%D0%BE_%D0%BF%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D1%85_%D0%BF%D0%B8%D1%84%D0%B0%D0%B3%D0%BE%D1%80%D0%BE%D0%B2%D1%8B%D1%85_%D1%82%D1%80%D0%BE%D0%B5%D0%BA)
-можно построить используя как пифагорову двойку, так и пифагорову тройку.
-
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
+> [Пифагорова тройка](https://ru.wikipedia.org/wiki/%D0%9F%D0%B8%D1%84%D0%B0%D0%B3%D0%BE%D1%80%D0%BE%D0%B2%D0%B0_%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0) — 
+> это набор трех натуральных чисел \\(a < b < c\\), 
+> для которых \\(a^{2} + b^{2} = c^{2}\\).
+> Представим \\(a = m^{2} - n^{2}, b = 2\*m\*n, c = m^{2} + n^{2}\\). Тогда \\((m,n)\\) – пифагорова двойка.
+> 
+> [Дерево примитивных пифагоровых троек](https://ru.wikipedia.org/wiki/%D0%94%D0%B5%D1%80%D0%B5%D0%B2%D0%BE_%D0%BF%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D1%85_%D0%BF%D0%B8%D1%84%D0%B0%D0%B3%D0%BE%D1%80%D0%BE%D0%B2%D1%8B%D1%85_%D1%82%D1%80%D0%BE%D0%B5%D0%BA)
+> можно построить используя как пифагорову двойку, так и пифагорову тройку.
 
 **Код:**
 
 Пифагорова двойка:
 
 ```dotty
-final case class PythagoreanDeuce(m: SafeLong, n: SafeLong):
-  lazy val a: SafeLong                 = m * m - n * n
-  lazy val b: SafeLong                 = 2 * m * n
-  lazy val c: SafeLong                 = m * m + n * n
+final case class PythagoreanDeuce(m: Long, n: Long):
+  lazy val a: Long                     = m * m - n * n
+  lazy val b: Long                     = 2 * m * n
+  lazy val c: Long                     = m * m + n * n
   lazy val triplet: PythagoreanTriplet = PythagoreanTriplet(a, b, c)
-  lazy val nextPythagoreanDeuce: Array[PythagoreanDeuce] =
-    Array(
+  lazy val nextPythagoreanDeuce: List[PythagoreanDeuce] =
+    List(
       PythagoreanDeuce(2 * m - n, m),
       PythagoreanDeuce(2 * m + n, m),
       PythagoreanDeuce(m + 2 * n, n)
@@ -223,19 +242,21 @@ end PythagoreanDeuce
 
 object PythagoreanDeuce:
   val primitivePythagoreanDeuce: PythagoreanDeuce = PythagoreanDeuce(2, 1)
-    
-primitivePythagoreanDeuce.triplet 
-// PythagoreanTriplet(3, 4, 5)
+
+import PythagoreanDeuce.primitivePythagoreanDeuce
+
+primitivePythagoreanDeuce.triplet
+// PythagoreanTriplet(3,4,5)
 primitivePythagoreanDeuce.nextPythagoreanDeuce
-// Array(PythagoreanDeuce(3, 2), PythagoreanDeuce(5, 2), PythagoreanDeuce(4, 1))
+// List(PythagoreanDeuce(3,2), PythagoreanDeuce(5,2), PythagoreanDeuce(4,1))
 ```
 
 Пифагорова тройка:
 
 ```dotty
-final case class PythagoreanTriplet(a: SafeLong, b: SafeLong, c: SafeLong):
-  lazy val nextPythagoreanTriplet: Array[PythagoreanTriplet] =
-    Array(
+final case class PythagoreanTriplet(a: Long, b: Long, c: Long):
+  lazy val nextPythagoreanTriplet: List[PythagoreanTriplet] =
+    List(
       PythagoreanTriplet(
         a - 2 * b + 2 * c,
         2 * a - b + 2 * c,
@@ -257,9 +278,11 @@ end PythagoreanTriplet
 object PythagoreanTriplet:
   val primitivePythagoreanTriplet: PythagoreanTriplet =
     PythagoreanTriplet(3, 4, 5)
-    
+
+import PythagoreanTriplet.primitivePythagoreanTriplet
+
 primitivePythagoreanTriplet.nextPythagoreanTriplet
-// Array(PythagoreanTriplet(5,12,13), PythagoreanTriplet(21,20,29), PythagoreanTriplet(15,8,17))
+// List(PythagoreanTriplet(5,12,13), PythagoreanTriplet(21,20,29), PythagoreanTriplet(15,8,17))
 ```
 
 Нахождение [пифагоровых троек с заданной суммой](https://projecteuler.net/problem=9):
@@ -273,41 +296,47 @@ def pythagoreanTripletsWithGivenSum(sum: Long): Array[PythagoreanTriplet] =
     val sqrt        = math.sqrt(s2.toDouble).toLong
     val mLimit      = if sqrt * sqrt == s2 then sqrt - 1 else sqrt
 
+    @tailrec
+    def reduceLoop(n: Long, i: Long): Long =
+      if n % i == 0 then reduceLoop(n / i, i) else n
+
     for m <- 2L to mLimit do
       if s2 % m == 0 then
-        var sm = s2 / m
         // сократим пространство поиска, удалив все делители 2
-        while sm % 2 == 0 do sm /= 2
-        var k = if m % 2 == 1 then m + 2 else m + 1
-        while k < 2 * m && k <= sm
-        do
-          if sm % k == 0 && gcd(k, m) == 1 then
+        val sm = reduceLoop(s2 / m, 2)
+
+        @tailrec
+        def loop(k: Long): Unit =
+          if k >= 2 * m || k > sm then ()
+          else if sm % k == 0 && gcd(k, m) == 1 then
             val d = s2 / (k * m)
             val n = k - m
             val a = d * (m * m - n * n)
             val b = 2 * d * m * n
             val c = d * (m * m + n * n)
             arrayBuffer += PythagoreanTriplet(a, b, c)
-          k += 2
+            loop(k + 2)
+          else loop(k + 2)
+
+        loop(if m % 2 == 1 then m + 2 else m + 1)
 
     arrayBuffer.toArray
+
+Array(PythagoreanTriplet(375,200,425))    
 ```
 
 **Метрики:**
 
-Вычисление всех пифагоровых троек, сумма которых равна 1000 выполняется меньше секунды.
+Вычисление всех пифагоровых троек, сумма которых равна 1000 выполняется несколько миллисекунд.
 
 ```dotty
-@main def nextPythagoreanTripletBench(): Unit =
-  println(pythagoreanTripletsWithGivenSum(1000).mkString("Array(", ", ", ")"))
+pythagoreanTripletsWithGivenSum(1000).mkString("Array(", ", ", ")")
      
-// CPU Time: 640 ms
-// Allocation memory size: 15,68 MB      
+// Число тестовых запусков = 10
+// Среднее время = 7,096 миллисекунд   
 ```
 
 ## Циклические последовательности
-
-**Алгоритм:**
 
 Циклические последовательности:
 
@@ -318,47 +347,42 @@ def pythagoreanTripletsWithGivenSum(sum: Long): Array[PythagoreanTriplet] =
 - Семиугольные числа; \\(P\_{7,n} = \frac{n(5n−3)}{2}\\); 1, 7, 18, 34, 55, ...
 - Восьмиугольные числа; \\(P\_{8,n} = n(3n−2)\\); 1, 8, 21, 40, 65, ...
 
-**Оценка:**
-
-- **Время** - O(1)
-- **Память** - O(1)
-
 **Код:**
 
 ```dotty
 object CyclicNumbers:
-  def triangleNumber(n: SafeLong): SafeLong = n * (n + 1) / 2
+  def triangleNumber(n: Long): Long = n * (n + 1) / 2
 
   def isTriangle(n: Long): Boolean =
-    val sol = math.round(-1.0 / 2.0 + sqrt(2.0 * n + 1.0 / 4.0))
+    val sol = math.round(-1.0 / 2.0 + math.sqrt(2.0 * n + 1.0 / 4.0))
     triangleNumber(sol) == n
 
-  def squareNumber(n: SafeLong): SafeLong = n * n
+  def squareNumber(n: Long): Long = n * n
 
-  def isSquare(n: Long): Boolean = sqrt(n.toDouble).isWhole
+  def isSquare(n: Long): Boolean = math.sqrt(n.toDouble).isWhole
 
-  def pentagonalNumber(n: SafeLong): SafeLong = n * (3 * n - 1) / 2
+  def pentagonalNumber(n: Long): Long = n * (3 * n - 1) / 2
 
   def isPentagonal(n: Long): Boolean =
-    val sol = math.round(1.0 / 6.0 + sqrt(2.0 * n / 3.0 + 1.0 / 36.0))
+    val sol = math.round(1.0 / 6.0 + math.sqrt(2.0 * n / 3.0 + 1.0 / 36.0))
     pentagonalNumber(sol) == n
 
-  def hexagonalNumber(n: SafeLong): SafeLong = n * (2 * n - 1)
+  def hexagonalNumber(n: Long): Long = n * (2 * n - 1)
 
   def isHexagonal(n: Long): Boolean =
-    val sol = math.round(1.0 / 4.0 + sqrt(n / 2.0 + 1.0 / 16.0))
+    val sol = math.round(1.0 / 4.0 + math.sqrt(n / 2.0 + 1.0 / 16.0))
     hexagonalNumber(sol) == n
 
-  def heptagonalNumber(n: SafeLong): SafeLong = n * (5 * n - 3) / 2
+  def heptagonalNumber(n: Long): Long = n * (5 * n - 3) / 2
 
   def isHeptagonal(n: Long): Boolean =
-    val sol = math.round(3.0 / 10.0 + sqrt(2.0 * n / 5.0 + 9.0 / 100.0))
+    val sol = math.round(3.0 / 10.0 + math.sqrt(2.0 * n / 5.0 + 9.0 / 100.0))
     heptagonalNumber(sol) == n
 
-  def octagonalNumber(n: SafeLong): SafeLong = n * (3 * n - 2)
+  def octagonalNumber(n: Long): Long = n * (3 * n - 2)
 
   def isOctagonal(n: Long): Boolean =
-    val sol = math.round(1.0 / 3.0 + sqrt(n / 3.0 + 1.0 / 9.0))
+    val sol = math.round(1.0 / 3.0 + math.sqrt(n / 3.0 + 1.0 / 9.0))
     octagonalNumber(sol) == n
 end CyclicNumbers
 
@@ -372,69 +396,105 @@ octagonalNumber(1_000_000)   // 2999998000000
 
 ## Гипотеза Коллатца
 
-**Алгоритм:**
+> Берём любое натуральное число n. Если оно чётное, то делим его на 2, 
+> а если нечётное, то умножаем на 3 и прибавляем 1 (получаем 3n + 1). 
+> Над полученным числом выполняем те же самые действия, и так далее.
+>
+> [Гипотеза Коллатца](https://ru.wikipedia.org/wiki/%D0%93%D0%B8%D0%BF%D0%BE%D1%82%D0%B5%D0%B7%D0%B0_%D0%9A%D0%BE%D0%BB%D0%BB%D0%B0%D1%82%D1%86%D0%B0)
+> заключается в том, что какое бы начальное число n мы ни взяли, рано или поздно мы получим единицу.
 
-Берём любое натуральное число n. Если оно чётное, то делим его на 2, 
-а если нечётное, то умножаем на 3 и прибавляем 1 (получаем 3n + 1). 
-Над полученным числом выполняем те же самые действия, и так далее.
-[Гипотеза Коллатца](https://ru.wikipedia.org/wiki/%D0%93%D0%B8%D0%BF%D0%BE%D1%82%D0%B5%D0%B7%D0%B0_%D0%9A%D0%BE%D0%BB%D0%BB%D0%B0%D1%82%D1%86%D0%B0)
-заключается в том, что какое бы начальное число n мы ни взяли, рано или поздно мы получим единицу.
+**Алгоритм:**
 
 Подсчитать `collatz` - количество итераций до получения `1` от заданного `n`:
 
 - Если `n` - четное, то `collatz(n) = collatz(n / 2) + 1`
 - Если `n` - нечетное, то `3n + 1` - четное (и не равно `1`), то `collatz(n) = collatz((3 * n + 1) / 2) + 2`
 
+**Пример:**
+
+Рассмотрим, как работает этот алгоритм на примере числа `6`.
+
+- Начнем с `n = 6`.
+- Поскольку `6` четное, мы делим его на `2`: `n = 6 / 2 = 3`. Увеличиваем счетчик на `1` (`count = 1`).
+- Теперь у нас `n = 3`, которое нечетное. Применяем формулу `3n + 1: n = (3 * 3 + 1) / 2 = 5`. Увеличиваем счетчик на `2` (`count = 3`).
+- Теперь у нас `n = 5`, которое нечетное. Применяем формулу: `n = (3 * 5 + 1) / 2 = 8`. Увеличиваем счетчик на `2` (`count = 5`).
+- Теперь `n = 8`, четное. Делим на `2`: `n = 8 / 2 = 4`. Увеличиваем счетчик на `1` (`count = 6`).
+- `n = 4`, четное. Делим на `2`: `n = 4 / 2 = 2`. Увеличиваем счетчик на `1` (`count = 7`).
+- `n = 2`, четное. Делим на `2`: `n = 2 / 2 = 1`. Увеличиваем счетчик на `1` (`count = 8`).
+- Теперь мы достигли `n = 1`, и алгоритм завершает выполнение. 
+- Общее количество шагов (или итераций), необходимых для достижения `1`, составляет `8`.
+
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- Временная сложность:
+    - Худший случай: Последовательность Коллатца может расти экспоненциально до достижения 1. 
+      В худшем случае временная сложность алгоритма может быть экспоненциальной \\(O(2^{n})\\), но это зависит от конкретных значений n.
+    - Средний случай: В среднем, временная сложность алгоритма оценивается как O(log n), 
+      так как последовательность Коллатца обычно быстро сходится к 1.
+
+Итого:
+
+- **Время** - в среднем - O(log n), в худшем - \\(O(2^{n})\\)
+- **Память** - O(1)
 
 **Код:**
 
 ```dotty
-final case class CollatzNumber(cacheLimit: Int):
-  private val cache: Array[SafeLong] = new Array[SafeLong](cacheLimit)
-  cache(1) = SafeLong(1)
+@tailrec
+def nextCollatz(n: Long, count: Long = 0): Long =
+  if n == 1 then count
+  else if n % 2 == 0 then nextCollatz(n / 2, count + 1)
+  else nextCollatz((3 * n + 1) / 2, count + 2)
 
-  def collatz(n: Long): SafeLong =
-    if n >= cacheLimit then nextCollatz(n)
-    else
-      val m = n.toInt
-      if Option(cache(m)).isEmpty then cache(m) = nextCollatz(n)
-      cache(m)
-
-  private def nextCollatz(n: Long): SafeLong =
-    if n % 2 == 0 then collatz(n / 2) + 1
-    else collatz((3 * n + 1) / 2) + 2
-    
-collatzNumber.collatz(27) 
-// 112    
-```
-
-**Метрики:**
-
-```dotty
-private val collatzNumber = CollatzNumber(1_000_000)
-
-@main def collatzNumberBench(): Unit =
-  (1 to 10_000).foreach: i =>
-    collatzNumber.collatz(i)
-      
-// CPU Time: 288 ms
-// Allocation memory size: 16,59 MB      
+nextCollatz(27)
+// 111    
 ```
 
 ## Числа Хэмминга
 
+> Положительное число number является обобщенным числом Хэмминга типа n, 
+> если все его простые делители не превышают n.
+
 **Алгоритм:**
 
-Положительное число является обобщенным числом Хэмминга типа n, если все его простые делители не превышают n.
+- **Шаг 1** (Проверка начальных условий). 
+    - Если number меньше 2 или меньше или равно n, то это число Хэмминга, т.к. все простые делители числа меньше или равны n.
+    - Если n меньше 2, то number - не число Хэмминга, так как не существует простых чисел меньше 2.
+- **Шаг 2** (Получение списка простых чисел). 
+    - Сгенерировать список простых чисел до n с помощью ["решета Эратосфена"](number_theory/primes.md).
+- **Шаг 3** (Проверка простых делителей).
+    - Для каждого простого числа в списке:
+        - Если простое число больше n, то number не является числом Хэмминга.
+        - Если number делится на простое число, то сокращаем его. Присваиваем number значения после сокращения.
+        - Если number стал равен 1, то это число Хэмминга.
+        - Если number все ещё больше 1, то повторяем шаг 3 для следующего простого числа.
+
+**Пример:**
+
+Рассмотрим пример для числа 30 и n = 5:
+
+- **Шаг 1**: Проверка начальных условий: number = 30, n = 5
+    - 30 больше 2 и больше 5.
+- **Шаг 2**: Получение списка простых чисел
+    - Генерируем список простых чисел до 5. Это: 2, 3, 5.
+- **Шаг 3**: Проверка простых делителей
+    - Первое простое число: 2. 30 делится на 2: 30 / 2 = 15. Теперь number = 15.
+    - Второе простое число: 3. 15 делится на 3: 15 / 3 = 5. Теперь number = 5.
+    - Третье простое число: 5. 5 делится на 5: 5 / 5 = 1. Теперь number = 1.
+- **Заключение**: Поскольку number стал равен 1, мы можем заключить, что 30 является числом Хэмминга относительно n = 5.
 
 **Оценка:**
 
-- **Время** - ???
-- **Память** - ???
+- Ассимптотическая сложность
+- Генерация простых чисел: Если использовать решето Эратосфена, то это \\(O(n \log \log n)\\).
+- Цикл: В худшем случае для каждого простого числа мы можем выполнить деление, что в общем случае может занять \\(O(\log(\text{number}))\\) для каждого простого числа. 
+  Если k — количество простых чисел до n, то это будет \\(O(k \cdot \log(\text{number}))\\).
+- Таким образом, общая ассимптотическая сложность алгоритма будет \\(O(n \log \log n + k \cdot \log(\text{number}))\\), где k — количество простых чисел до n.
+
+Итого:
+
+- **Время** - \\(O(n \log \log n + k \cdot \log(\text{number}))\\), где k — количество простых чисел до n.
+- **Память** - \\(O(k)\\).
 
 **Код:**
 
@@ -443,18 +503,23 @@ def isHammingNumber(number: Long, n: Int): Boolean =
   if number < 2 || number <= n then true
   else if n < 2 then false
   else
-    var temp       = number
     val primesList = primesNoMoreThanN(n)
-    var isHamming  = false
-    var i          = 0
-    while i < primesList.length && !isHamming
-    do
-      val prime = primesList(i)
-      while temp % prime == 0
-      do temp /= prime
-      if temp == 1 then isHamming = true
-      i += 1
-    isHamming
+
+    @tailrec
+    def reduceLoop(n: Long, i: Long): Long =
+      if n % i == 0 then reduceLoop(n / i, i) else n
+
+    @tailrec
+    def loop(n: Long, i: Int): Boolean =
+      if i >= primesList.length then false
+      else
+        val newN = reduceLoop(n, primesList(i))
+        if newN == 1 then true
+        else loop(newN, i + 1)
+
+    loop(number, 0)
+
+private def primesNoMoreThanN(n: Int): Array[Int] = ... // Описано в главе "Факторизация"
     
 isHammingNumber(2125764000, 5)
 // true    

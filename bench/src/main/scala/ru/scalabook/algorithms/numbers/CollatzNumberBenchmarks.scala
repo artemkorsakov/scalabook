@@ -2,7 +2,7 @@
 scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/CollatzNumberBenchmarks.scala
  */
 
-//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep nl.grons::metrics4-scala:4.3.3
 //> using dep org.typelevel::spire:0.18.0
 //> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/numbers/CollatzNumber.scala
 //> using file ../../MetricInstrumented.scala
@@ -17,7 +17,8 @@ import CollatzNumberBenchmarks.*
 private val collatzNumber = CollatzNumber(1_000_000)
 
 @main def collatzNumberBench(): Unit =
-  loadStuff()
+  (1 to 10).foreach: _ =>
+    loadStuff()
   prettyPrint(Period.MicroSecond)
 
 object CollatzNumberBenchmarks extends MetricInstrumented:

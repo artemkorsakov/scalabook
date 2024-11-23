@@ -63,41 +63,41 @@ object Sorting:
     def merge(as: List[A], bs: List[A]): List[A] =
       @tailrec
       def loop(cs: List[A], ds: List[A], r: List[A]): List[A] = (cs, ds) match
-        case (Nil, Nil)      => r
-        case (ha :: ta, Nil) => loop(ta, Nil, ha :: r)
-        case (Nil, hb :: tb) => loop(Nil, tb, hb :: r)
+        case (Nil, Nil) => r.reverse
+        case (_, Nil)   => r.reverse ++ cs
+        case (Nil, _)   => r.reverse ++ ds
         case (ha :: ta, hb :: tb) =>
           if ha < hb then loop(ta, ds, ha :: r)
           else loop(cs, tb, hb :: r)
 
-      loop(as, bs, Nil).reverse
+      loop(as, bs, Nil)
 
     halveAndSort(list)
   end mergeSort
 
   def quickSort[A: Ordering](list: List[A]): List[A] =
-    def partitionAndSort(as: List[A]): List[A] =
-      as match
-        case Nil      => as
-        case h :: Nil => as
-        case _ =>
-          val (l, p, g) = partition(as)
+    def partitionAndSort(list: List[A]): List[A] =
+      list match
+        case Nil      => list
+        case h :: Nil => list
+        case h :: t =>
+          val (l, p, g) = partition(h, t)
           partitionAndSort(l) ::: (p :: partitionAndSort(g))
 
-    def partition(as: List[A]): (List[A], A, List[A]) =
+    def partition(p: A, rest: List[A]): (List[A], A, List[A]) =
       @tailrec
       def loop(
           p: A,
-          as: List[A],
-          l: List[A],
-          g: List[A]
+          rest: List[A],
+          less: List[A],
+          more: List[A]
       ): (List[A], A, List[A]) =
-        as match
-          case Nil             => (l, p, g)
-          case h :: t if h < p => loop(p, t, h :: l, g)
-          case h :: t          => loop(p, t, l, h :: g)
+        rest match
+          case Nil             => (less, p, more)
+          case h :: t if h < p => loop(p, t, h :: less, more)
+          case h :: t          => loop(p, t, less, h :: more)
 
-      loop(as.head, as.tail, Nil, Nil)
+      loop(p, rest, Nil, Nil)
 
     partitionAndSort(list)
   end quickSort

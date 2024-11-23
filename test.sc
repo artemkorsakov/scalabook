@@ -1,42 +1,31 @@
 import scala.annotation.tailrec
+import scala.math.Ordered.orderingToOrdered
 
-def pell(i: Int): BigInt =
-  @tailrec
-  def loop(a: BigInt, b: BigInt, i: Int): BigInt =
-    if i == 0 then b
-    else loop(b, 2 * b + a, i - 1)
+def quickSort[A: Ordering](list: List[A]): List[A] =
+  def partitionAndSort(list: List[A]): List[A] =
+    list match
+      case Nil      => list
+      case h :: Nil => list
+      case h :: t =>
+        val (l, p, g) = partition(h, t)
+        partitionAndSort(l) ::: (p :: partitionAndSort(g))
 
-  if i <= 1 then i
-  else loop(0, 1, i - 1)
+  def partition(p: A, rest: List[A]): (List[A], A, List[A]) =
+    @tailrec
+    def loop(
+        p: A,
+        rest: List[A],
+        less: List[A],
+        more: List[A]
+    ): (List[A], A, List[A]) =
+      rest match
+        case Nil             => (less, p, more)
+        case h :: t if h < p => loop(p, t, h :: less, more)
+        case h :: t          => loop(p, t, less, h :: more)
 
-println(pell(100))
+    loop(p, rest, Nil, Nil)
 
-def tribonacci(i: Int): BigInt =
-  @tailrec
-  def loop(a: BigInt, b: BigInt, c: BigInt, i: Int): BigInt =
-    if i == 0 then c
-    else loop(b, c, a + b + c, i - 1)
+  partitionAndSort(list)
+end quickSort
 
-  if i <= 1 then 0
-  else if i == 2 then 1
-  else loop(0, 0, 1, i - 2)
-
-println(tribonacci(100))
-
-def tetranacci(i: Int): BigInt =
-  @tailrec
-  def loop(
-      a: BigInt,
-      b: BigInt,
-      c: BigInt,
-      d: BigInt,
-      i: Int
-  ): BigInt =
-    if i == 0 then d
-    else loop(b, c, d, a + b + c + d, i - 1)
-
-  if i <= 2 then 0
-  else if i == 3 then 1
-  else loop(0, 0, 0, 1, i - 3)
-
-println(tetranacci(100))  
+println(quickSort(List(3, 1, 4, 2)))

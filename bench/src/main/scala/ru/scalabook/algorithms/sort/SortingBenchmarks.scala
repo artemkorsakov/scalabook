@@ -6,7 +6,7 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/sort/SortingBenchmark
 scala-cli run bench/src/main/scala/ru/scalabook/algorithms/sort/SortingBenchmarks.scala --main-class ru.scalabook.algorithms.sort.quickSortBench
  */
 
-//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep nl.grons::metrics4-scala:4.3.3
 //> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/sort/Sorting.scala
 //> using file ../../MetricInstrumented.scala
 //> using file ../../Period.scala
@@ -21,24 +21,29 @@ import RadicalsBenchmarks.*
 private val unsortedList: List[Int] = (10_000 to 1 by -1).toList
 
 @main def bubbleSortBench(): Unit =
-  loadbubbleSortBench()
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadbubbleSortBench()
+  prettyPrint(Period.MilliSecond)
 
 @main def selectionSortBench(): Unit =
-  loadselectionSortBench()
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadselectionSortBench()
+  prettyPrint(Period.MilliSecond)
 
 @main def insertionSortBench(): Unit =
-  loadinsertionSortBench()
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadinsertionSortBench()
+  prettyPrint(Period.MilliSecond)
 
 @main def mergeSortBench(): Unit =
-  loadmergeSortBench()
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadmergeSortBench()
+  prettyPrint(Period.MilliSecond)
 
 @main def quickSortBench(): Unit =
-  loadquickSortBench()
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadquickSortBench()
+  prettyPrint(Period.MilliSecond)
 
 object RadicalsBenchmarks extends MetricInstrumented:
   def loadbubbleSortBench(): Unit = loading.time:

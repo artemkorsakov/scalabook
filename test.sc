@@ -1,38 +1,42 @@
 import scala.annotation.tailrec
 
-def isHammingNumber(number: Long, n: Int): Boolean =
-  if number < 2 || number <= n then true
-  else if n < 2 then false
-  else
-    val primesList = primesNoMoreThanN(n)
+def pell(i: Int): BigInt =
+  @tailrec
+  def loop(a: BigInt, b: BigInt, i: Int): BigInt =
+    if i == 0 then b
+    else loop(b, 2 * b + a, i - 1)
 
-    @tailrec
-    def reduceLoop(n: Long, i: Long): Long =
-      if n % i == 0 then reduceLoop(n / i, i) else n
+  if i <= 1 then i
+  else loop(0, 1, i - 1)
 
-    @tailrec
-    def loop(n: Long, i: Int): Boolean =
-      if i >= primesList.length then false
-      else
-        val newN = reduceLoop(n, primesList(i))
-        if newN == 1 then true
-        else loop(newN, i + 1)
+println(pell(100))
 
-    loop(number, 0)
+def tribonacci(i: Int): BigInt =
+  @tailrec
+  def loop(a: BigInt, b: BigInt, c: BigInt, i: Int): BigInt =
+    if i == 0 then c
+    else loop(b, c, a + b + c, i - 1)
 
-private def primesNoMoreThanN(n: Int): Array[Int] =
-  sieveOfEratosthenes(n).zipWithIndex.collect { case (true, prime) => prime }
+  if i <= 1 then 0
+  else if i == 2 then 1
+  else loop(0, 0, 1, i - 2)
 
-private def sieveOfEratosthenes(n: Int): Array[Boolean] =
-  val result = Array.fill(n + 1)(true)
-  result(0) = false
-  result(1) = false
-  (4 to n by 2).foreach(j => result(j) = false)
-  for
-    i <- 3 to math.sqrt(n).toInt by 2
-    if result(i)
-    j <- i to n / i
-  do result(j * i) = false
-  result
+println(tribonacci(100))
 
-println(isHammingNumber(2125764000, 5))
+def tetranacci(i: Int): BigInt =
+  @tailrec
+  def loop(
+      a: BigInt,
+      b: BigInt,
+      c: BigInt,
+      d: BigInt,
+      i: Int
+  ): BigInt =
+    if i == 0 then d
+    else loop(b, c, d, a + b + c + d, i - 1)
+
+  if i <= 2 then 0
+  else if i == 3 then 1
+  else loop(0, 0, 0, 1, i - 3)
+
+println(tetranacci(100))  

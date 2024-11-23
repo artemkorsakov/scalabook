@@ -527,48 +527,58 @@ isHammingNumber(2125764000, 5)
 
 ## Числа харшад
 
-**Алгоритм:**
+> [_Числа харшад_](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D0%BB%D0%B0_%D1%85%D0%B0%D1%80%D1%88%D0%B0%D0%B4), 
+> или числа Нивена, — натуральные числа, делящиеся нацело на сумму своих цифр. 
+> Таким числом является, например, 1729, так как 1729 = (1 + 7 + 2 + 9) × 91.
 
-[_Числа харшад_](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D0%BB%D0%B0_%D1%85%D0%B0%D1%80%D1%88%D0%B0%D0%B4), 
-или числа Нивена, — натуральные числа, делящиеся нацело на сумму своих цифр. 
-Таким числом является, например, 1729, так как 1729 = (1 + 7 + 2 + 9) × 91.
+> _Сильное число Харшада_ — это число Харшада, которое при делении на сумму своих цифр дает простое число.
 
-_Сильное число Харшада_ — это число Харшада, которое при делении на сумму своих цифр дает простое число.
+> 201 — это число Харшада, поскольку оно делится на 3 (сумму своих цифр). 
+> Когда мы отсекаем последнюю цифру от 201, то получаем 20, что является числом Харшада. 
+> Когда мы отсекаем последнюю цифру от 20, то получаем 2, что также является числом Харшада. 
+> Назовем число Харшада, которое при рекурсивном отсечении последней цифры всегда приводит к числу Харшада, 
+> _отсекаемым вправо числом Харшада_.
 
-201 — это число Харшада, поскольку оно делится на 3 (сумму своих цифр). 
-Когда мы отсекаем последнюю цифру от 201, то получаем 20, что является числом Харшада. 
-Когда мы отсекаем последнюю цифру от 20, то получаем 2, что также является числом Харшада. 
-Назовем число Харшада, которое при рекурсивном отсечении последней цифры всегда приводит к числу Харшада, 
-_отсекаемым вправо числом Харшада_.
-
-Возьмем число 2011, которое является простым. 
-Если отсечь из него последнюю цифру, то получаем 201 - сильное число Харшада, которое также отсекается вправо. 
-Назовем такие простые числа _сильными, отсекаемыми справа простыми числами Харшада_.
-
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
+> Возьмем число 2011, которое является простым. 
+> Если отсечь из него последнюю цифру, то получаем 201 - сильное число Харшада, которое также отсекается вправо. 
+> Назовем такие простые числа _сильными, отсекаемыми справа простыми числами Харшада_.
 
 **Код:**
 
 ```dotty
 object HarshadNumber:
+  /** Число Харшада — это целое число, которое делится на сумму своих цифр.
+    */
   def isHarshadNumber(number: Long): Boolean = number % sumOfDigits(number) == 0
 
+  /** Сильное число Харшада — это число Харшада, которое при делении на сумму
+    * своих цифр дает простое число.
+    */
   def isStrongHarshadNumber(number: Long): Boolean =
     val sod = sumOfDigits(number)
     number % sod == 0 && isPrime(number / sod)
 
+  /** Возвращает все сильные, усекаемые справа простые числа Харшада меньше
+    * 10<sup>p</sup>.
+    */
   def getStrongRightTruncatableHarshadPrimes(p: Int): Seq[Long] =
-    var harshadNumbers = Seq(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L)
-    (1 until p - 1).flatMap { _ =>
-      harshadNumbers = rightTruncatableHarshadNumbers(harshadNumbers)
-      harshadNumbers
-        .withFilter(isStrongHarshadNumber)
-        .flatMap(strongRightTruncatableHarshadPrimes)
-    }
+    (1 until p - 1).foldLeft((
+      Seq(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L),
+      Seq.empty[Long]
+    )) { case ((numbers, acc), _) =>
+      val next = rightTruncatableHarshadNumbers(numbers)
+      val newAcc = acc ++
+        next
+          .withFilter(isStrongHarshadNumber)
+          .flatMap(strongRightTruncatableHarshadPrimes)
+      (next, newAcc)
+    }._2
 
+  /** Возьмем число 2011, которое является простым. Если отсечь из него
+    * последнюю цифру, то получаем 201 - сильное число Харшада, которое также
+    * отсекается вправо. Назовем такие простые числа сильными, отсекаемыми
+    * справа простыми числами Харшада.
+    */
   private def strongRightTruncatableHarshadPrimes(
       strongHarshadNumber: Long
   ): Seq[Long] =
@@ -576,6 +586,13 @@ object HarshadNumber:
       .withFilter(i => isPrime(strongHarshadNumber * 10 + i))
       .map(strongHarshadNumber * 10 + _)
 
+  /** 201 — это число Харшада, поскольку оно делится на 3 (сумму своих цифр).
+    * Когда мы отсекаем последнюю цифру от 201, то получаем 20, что является
+    * числом Харшада. Когда мы отсекаем последнюю цифру от 20, то получаем 2,
+    * что также является числом Харшада. Назовем число Харшада, которое при
+    * рекурсивном отсечении последней цифры всегда приводит к числу Харшада,
+    * отсекаемым вправо числом Харшада.
+    */
   private def rightTruncatableHarshadNumbers(
       harshadNumbers: Seq[Long]
   ): Seq[Long] =
@@ -590,32 +607,33 @@ object HarshadNumber:
 
   private def sumOfDigits(number: BigInt): Int =
     number.toString.foldLeft(0)((s, ch) => s + ch.asDigit)
+
+  private def isPrime(n: Long): Boolean = ... // Из раздела о простых числах
 end HarshadNumber
     
 getStrongRightTruncatableHarshadPrimes(3)
-// Vector(181, 211, 271, 277, 421, 457, 631)    
+// Vector(181, 211, 271, 277, 421, 457, 631) 
 ```
 
 **Метрики:**
 
 Вычисление всех сильных, усекаемых справа простых чисел Харшада меньше \\(10^{9}\\)
-занимает меньше секунды.
+занимает несколько миллисекунд.
 
 ```dotty
-@main def getStrongRightTruncatableHarshadPrimesBench(): Unit =
-  println(getStrongRightTruncatableHarshadPrimes(9))
+getStrongRightTruncatableHarshadPrimes(9)
       
-// Vector(181, 211, 271, 277, 421, 457, 631, 2011, 2017, 2099, 2473, 2477, 4021, 4027, 4073, 4079, 4231, 4813, 4817, 
-// 6037, 8011, 8017, 8039, 8461, 8467, 20071, 20431, 40867, 48091, 84061, 84067, 400237, 400277, 4008271, 4860013, 
-// 40000021, 80402071, 200400073, 200400077, 240840013, 400002073, 480006031)
+// 181, 211, 271, 277, 421, 457, 631, 2011, 2017, 2099, 
+// 2473, 2477, 4021, 4027, 4073, 4079, 4231, 4813, 4817, 
+// 6037, 8011, 8017, 8039, 8461, 8467, 20071, 20431, 40867, 
+// 48091, 84061, 84067, 400237, 400277, 4008271, 4860013, 
+// 40000021, 80402071, 200400073, 200400077, 240840013, 400002073, 480006031
       
-// CPU Time: 564 ms
-// Allocation memory size: 13,65 MB      
+// Число тестовых запусков = 10
+// Среднее время = 8,749 миллисекунд     
 ```
 
 ## Числа Бернулли
-
-**Алгоритм:**
 
 [Числа Бернулли](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D0%BB%D0%B0_%D0%91%D0%B5%D1%80%D0%BD%D1%83%D0%BB%D0%BB%D0%B8)
 
@@ -630,17 +648,15 @@ getStrongRightTruncatableHarshadPrimes(3)
 Поэтому формулу вычисления \\(B\_{n}\\) для четных \\(n \geq 2\\) можно упростить:
 \\(B\_{n} = \frac{1}{2} + {\frac{-1}{n+1}}\sum\_{k=2,4,...}^{n}{\binom {n+1}{k+1}}B\_{n-k}, \quad n \in \mathbb {N} \\)
 
-[Генератор чисел Бернулли](https://ru.numberempire.com/bernoullinumbers.php)
-
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
-
 **Код:**
+
+[Генератор чисел Бернулли](https://ru.numberempire.com/bernoullinumbers.php), 
+использующий библиотеку [spire](../../libs/spire.md)
 
 ```dotty
 import scalaz.Memo
+import spire.compat.fractional
+import spire.math.Rational
   
 val bernoulli: Int => Rational =
   Memo.mutableHashMapMemo {
@@ -662,14 +678,13 @@ bernoulli(50)
 
 **Метрики:**
 
-500 число Бернулли рассчитывается за 1,5 секунды.
+500 число Бернулли рассчитывается меньше секунды.
 
 ```dotty
-@main def bernoulliBench(): Unit =
-  println(bernoulli(500))
+bernoulli(500)
      
-// CPU Time: 1500 ms
-// Allocation memory size: 1,37 MB      
+// Число тестовых запусков = 10
+// Среднее время = 88,305 миллисекунд     
 ```
 
 ## Числа Падована
@@ -689,11 +704,11 @@ bernoulli(50)
 **Код:**
 
 ```dotty
-def padovan(n: Int): SafeLong =
+def padovan(n: Int): BigInt =
   @tailrec
-  def loop(a: SafeLong, b: SafeLong, c: SafeLong, i: Int): SafeLong =
-    if i == 0 then c
-    else loop(b, c, a + b, i - 1)
+  def loop(a: BigInt, b: BigInt, c: BigInt, i: Int): BigInt =
+    if i == 0 then c else loop(b, c, a + b, i - 1)
+
   if n == 0 then 1
   else if n <= 2 then 0
   else loop(1, 0, 0, n - 2)
@@ -704,14 +719,13 @@ padovan(100)
 
 **Метрики:**
 
-Миллионное число Падована вычисляется за 12,5 секунд.
+Миллионное число Падована вычисляется за 8 секунд.
 
 ```dotty
-@main def padovanBench(): SafeLong =
-  padovan(1_000_000)
+padovan(1_000_000)
      
-// CPU Time: 12576 ms
-// Allocation memory size: 26,2 GB      
+// Число тестовых запусков = 10
+// Среднее время = 7,927 секунд    
 ```
 
 ## Числа Якобсталя
@@ -730,28 +744,27 @@ padovan(100)
 **Код:**
 
 ```dotty
-def jacobsthal(i: Int): SafeLong =
+def jacobsthal(i: Int): BigInt =
   @tailrec
-  def loop(a: SafeLong, b: SafeLong, i: Int): SafeLong =
+  def loop(a: BigInt, b: BigInt, i: Int): BigInt =
     if i == 0 then b
     else loop(b, b + 2 * a, i - 1)
+
   if i <= 1 then i
   else loop(0, 1, i - 1)
-    
+
 jacobsthal(100)
 // 422550200076076467165567735125
 ```
 
 **Метрики:**
 
-Миллионное число Якобсталя вычисляется за 55 секунд.
+Миллионное число Якобсталя вычисляется за 42 секунды.
 
 ```dotty
-@main def jacobsthalBench(): SafeLong =
-  jacobsthal(1_000_000)
+jacobsthal(1_000_000)
      
-// CPU Time: 55346 ms
-// Allocation memory size: 127,42 GB      
+// Среднее время = 41,235 секунд     
 ```
 
 ## Числа Пелля
@@ -769,11 +782,12 @@ jacobsthal(100)
 **Код:**
 
 ```dotty
-def pell(i: Int): SafeLong =
+def pell(i: Int): BigInt =
   @tailrec
-  def loop(a: SafeLong, b: SafeLong, i: Int): SafeLong =
+  def loop(a: BigInt, b: BigInt, i: Int): BigInt =
     if i == 0 then b
     else loop(b, 2 * b + a, i - 1)
+
   if i <= 1 then i
   else loop(0, 1, i - 1)
     
@@ -783,14 +797,12 @@ pell(100)
 
 **Метрики:**
 
-Миллионное число Пелля вычисляется за 72 секунды.
+Миллионное число Пелля вычисляется за 52 секунды.
 
 ```dotty
-@main def pellBench(): SafeLong =
-  pell(1_000_000)
+pell(1_000_000)
      
-// CPU Time: 71481 ms
-// Allocation memory size: 160,09 GB      
+// Среднее время = 51,233 секунд     
 ```
 
 ## Числа Трибоначчи
@@ -808,9 +820,9 @@ pell(100)
 **Код:**
 
 ```dotty
-def tribonacci(i: Int): SafeLong =
+def tribonacci(i: Int): BigInt =
   @tailrec
-  def loop(a: SafeLong, b: SafeLong, c: SafeLong, i: Int): SafeLong =
+  def loop(a: BigInt, b: BigInt, c: BigInt, i: Int): BigInt =
     if i == 0 then c
     else loop(b, c, a + b + c, i - 1)
 
@@ -824,14 +836,12 @@ tribonacci(100)
 
 **Метрики:**
 
-Миллионное число Трибоначчи вычисляется за 55 секунд.
+Миллионное число Трибоначчи вычисляется за 30 секунд.
 
 ```dotty
-@main def tribonacciBench(): SafeLong =
-  tribonacci(1_000_000)
+tribonacci(1_000_000)
      
-// CPU Time: 54891 ms
-// Allocation memory size: 112,9 GB      
+// Среднее время = 29,880 секунд     
 ```
 
 ## Числа Тетраначчи
@@ -850,15 +860,15 @@ tribonacci(100)
 **Код:**
 
 ```dotty
-def tetranacci(i: Int): SafeLong =
+def tetranacci(i: Int): BigInt =
   @tailrec
   def loop(
-      a: SafeLong,
-      b: SafeLong,
-      c: SafeLong,
-      d: SafeLong,
+      a: BigInt,
+      b: BigInt,
+      c: BigInt,
+      d: BigInt,
       i: Int
-  ): SafeLong =
+  ): BigInt =
     if i == 0 then d
     else loop(b, c, d, a + b + c + d, i - 1)
 
@@ -872,14 +882,12 @@ tetranacci(100)
 
 **Метрики:**
 
-Миллионное число Тетраначчи вычисляется за 80 секунд.
+Миллионное число Тетраначчи вычисляется за 44 секунды.
 
 ```dotty
-@main def tetranacciBench(): SafeLong =
-  tetranacci(1_000_000)
+tetranacci(1_000_000)
      
-// CPU Time: 79549 ms
-// Allocation memory size: 182,55 GB      
+// Среднее время = 44,209 секунд     
 ```
 
 ---

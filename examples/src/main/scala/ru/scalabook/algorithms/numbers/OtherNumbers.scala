@@ -3,7 +3,7 @@ package ru.scalabook.algorithms.numbers
 import ru.scalabook.algorithms.combinatorics.BinomialCoefficient.*
 import scalaz.Memo
 import spire.compat.fractional
-import spire.math.{Rational, SafeLong}
+import spire.math.Rational
 
 import scala.annotation.tailrec
 
@@ -29,11 +29,11 @@ object OtherNumbers:
     * numbers)</a> : a<sub>n</sub> = a<sub>n-2</sub> + a<sub>n-3</sub> with
     * a<sub>0</sub> = 1, a<sub>1</sub> = a<sub>2</sub> = 0.
     */
-  def padovan(n: Int): SafeLong =
+  def padovan(n: Int): BigInt =
     @tailrec
-    def loop(a: SafeLong, b: SafeLong, c: SafeLong, i: Int): SafeLong =
-      if i == 0 then c
-      else loop(b, c, a + b, i - 1)
+    def loop(a: BigInt, b: BigInt, c: BigInt, i: Int): BigInt =
+      if i == 0 then c else loop(b, c, a + b, i - 1)
+
     if n == 0 then 1
     else if n <= 2 then 0
     else loop(1, 0, 0, n - 2)
@@ -44,22 +44,24 @@ object OtherNumbers:
     *
     * Also a<sub>n</sub> = nearest integer to 2<sup>n</sup>/3.
     */
-  def jacobsthal(i: Int): SafeLong =
+  def jacobsthal(i: Int): BigInt =
     @tailrec
-    def loop(a: SafeLong, b: SafeLong, i: Int): SafeLong =
+    def loop(a: BigInt, b: BigInt, i: Int): BigInt =
       if i == 0 then b
       else loop(b, b + 2 * a, i - 1)
+
     if i <= 1 then i
     else loop(0, 1, i - 1)
 
   /** <a href="https://oeis.org/A000129">Pell numbers</a> : a<sub>n</sub> =
     * 2*a<sub>n-1</sub> + a<sub>n-2</sub>, a<sub>0</sub> = 0, a<sub>1</sub> = 1.
     */
-  def pell(i: Int): SafeLong =
+  def pell(i: Int): BigInt =
     @tailrec
-    def loop(a: SafeLong, b: SafeLong, i: Int): SafeLong =
+    def loop(a: BigInt, b: BigInt, i: Int): BigInt =
       if i == 0 then b
       else loop(b, 2 * b + a, i - 1)
+
     if i <= 1 then i
     else loop(0, 1, i - 1)
 
@@ -67,9 +69,9 @@ object OtherNumbers:
     * \= a<sub>n-1</sub> + a<sub>n-2</sub> + a<sub>n-3</sub> with a<sub>0</sub>
     * \= a<sub>1</sub> = 0, a<sub>2</sub> = 1.
     */
-  def tribonacci(i: Int): SafeLong =
+  def tribonacci(i: Int): BigInt =
     @tailrec
-    def loop(a: SafeLong, b: SafeLong, c: SafeLong, i: Int): SafeLong =
+    def loop(a: BigInt, b: BigInt, c: BigInt, i: Int): BigInt =
       if i == 0 then c
       else loop(b, c, a + b + c, i - 1)
 
@@ -81,15 +83,15 @@ object OtherNumbers:
     * \= a<sub>n-1</sub> + a<sub>n-2</sub> + a<sub>n-3</sub> + a<sub>n-4</sub>
     * with a<sub>0</sub> = a<sub>1</sub> = a<sub>2</sub> = 0, a<sub>3</sub> = 1.
     */
-  def tetranacci(i: Int): SafeLong =
+  def tetranacci(i: Int): BigInt =
     @tailrec
     def loop(
-        a: SafeLong,
-        b: SafeLong,
-        c: SafeLong,
-        d: SafeLong,
+        a: BigInt,
+        b: BigInt,
+        c: BigInt,
+        d: BigInt,
         i: Int
-    ): SafeLong =
+    ): BigInt =
       if i == 0 then d
       else loop(b, c, d, a + b + c + d, i - 1)
 

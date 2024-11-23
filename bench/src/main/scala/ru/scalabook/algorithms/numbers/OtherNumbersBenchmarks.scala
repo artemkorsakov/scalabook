@@ -7,7 +7,7 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/OtherNumbersB
 scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/OtherNumbersBenchmarks.scala --main-class ru.scalabook.algorithms.numbers.tetranacciBench
  */
 
-//> using dep nl.grons::metrics4-scala:4.3.2
+//> using dep nl.grons::metrics4-scala:4.3.3
 //> using dep org.scalaz::scalaz-core:7.3.8
 //> using dep org.typelevel::spire:0.18.0
 //> using file ../../../../../../../../examples/src/main/scala/ru/scalabook/algorithms/numbers/OtherNumbers.scala
@@ -23,28 +23,30 @@ import ru.scalabook.Period
 import OtherNumbersBenchmarks.*
 
 @main def bernoulliBench(): Unit =
-  loadbernoulliBench()
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadbernoulliBench()
+  prettyPrint(Period.MilliSecond)
 
 @main def padovanBench(): Unit =
-  loadpadovanBench()
-  prettyPrint(Period.MicroSecond)
+  (1 to 10).foreach: _ =>
+    loadpadovanBench()
+  prettyPrint(Period.Second)
 
 @main def jacobsthalBench(): Unit =
   loadjacobsthalBench()
-  prettyPrint(Period.MicroSecond)
+  prettyPrint(Period.Second)
 
 @main def pellBench(): Unit =
   loadpellBench()
-  prettyPrint(Period.MicroSecond)
+  prettyPrint(Period.Second)
 
 @main def tribonacciBench(): Unit =
   loadtribonacciBench()
-  prettyPrint(Period.MicroSecond)
+  prettyPrint(Period.Second)
 
 @main def tetranacciBench(): Unit =
   loadtetranacciBench()
-  prettyPrint(Period.MicroSecond)
+  prettyPrint(Period.Second)
 
 object OtherNumbersBenchmarks extends MetricInstrumented:
   def loadbernoulliBench(): Unit = loading.time:

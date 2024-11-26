@@ -12,23 +12,25 @@ object Search:
       case _ :: tail                => linearSearch(tail, key)
 
   def binarySearch[A: Ordering](list: List[A], key: A): Option[A] =
-    def search(l: List[A], r: List[A]): Option[A] =
-      if l == r then None
-      else test(l, r, middle(l, r))
+    @tailrec
+    def search(lst: List[A], sub: List[A]): Option[A] =
+      if lst == sub then None
+      else
+        middle(lst, sub) match
+          case Nil => None
+          case head :: next =>
+            if key < head then search(lst, head :: next)
+            else if key > head then search(next, sub)
+            else Some(head)
 
-    def test(l: List[A], r: List[A], m: List[A]): Option[A] =
-      if key < m.head then search(l, m)
-      else if key > m.head then search(m.tail, r)
-      else Some(m.head)
-
-    def middle(l: List[A], r: List[A]): List[A] =
+    def middle(lst: List[A], sub: List[A]): List[A] =
       @tailrec
-      def race(t: List[A], h: List[A]): List[A] =
-        if h != r && h.tail != r then
-          race(t.tail, h.tail.tail)
-        else t
+      def race(oneStep: List[A], twoSteps: List[A]): List[A] =
+        if twoSteps.nonEmpty && twoSteps != sub && twoSteps.tail != sub then
+          race(oneStep.drop(1), twoSteps.drop(2))
+        else oneStep
 
-      race(l, l.tail)
+      race(lst, lst)
 
     search(list, Nil)
   end binarySearch

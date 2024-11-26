@@ -1,29 +1,34 @@
 import scala.annotation.tailrec
 import scala.math.Ordered.orderingToOrdered
 
-def binarySearch[A: Ordering](list: List[A], key: A): Option[A] =
+def selectionSearch[A: Ordering](list: List[A], n: Int): Option[A] =
   @tailrec
-  def search(lst: List[A], sub: List[A]): Option[A] =
-    if lst == sub then None
-    else
-      middle(lst, sub) match
-        case Nil => None
-        case head :: next =>
-          if key < head then search(lst, head :: next)
-          else if key > head then search(next, sub)
-          else Some(head)
+  def partitionAndSearch(as: List[A], m: Int): Option[A] = as match
+    case Nil => None
+    case h :: t =>
+      val (l, p, g) = partition(h, t)
+      val len       = l.length
+      if len == m - 1 then Some(p)
+      else if len >= m then partitionAndSearch(l, m)
+      else partitionAndSearch(g, m - len - 1)
 
-  def middle(lst: List[A], sub: List[A]): List[A] =
+  def partition(head: A, tail: List[A]): (List[A], A, List[A]) =
     @tailrec
-    def race(oneStep: List[A], twoSteps: List[A]): List[A] =
-      if twoSteps.nonEmpty && twoSteps != sub && twoSteps.tail != sub then
-        race(oneStep.drop(1), twoSteps.drop(2))
-      else oneStep
+    def loop(
+        rest: List[A],
+        less: List[A],
+        p: A,
+        more: List[A]
+    ): (List[A], A, List[A]) =
+      rest match
+        case Nil             => (less, p, more)
+        case h :: t if h < p => loop(t, h :: less, p, more)
+        case h :: t          => loop(t, less, p, h :: more)
 
-    race(lst, lst)
+    loop(tail, Nil, head, Nil)
 
-  search(list, Nil)
-end binarySearch
+  if n <= 0 then None
+  else partitionAndSearch(list, n)
+end selectionSearch
 
-println(binarySearch(List(1, 3, 5, 7, 9), 3))
-println(binarySearch((1 to 100).toList, 45))
+println(selectionSearch((1 to 100).toList, 45))

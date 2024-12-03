@@ -2,16 +2,34 @@
 
 ## Дартс
 
+> [Игра Дартс](https://projecteuler.net/problem=109).
+>
+> Подсчитать количество способов выбить заданное количество очков.
+
 **Алгоритм:**
 
-[Игра Дартс](https://projecteuler.net/problem=109).
-
-Подсчитать количество способов выбить заданное количество очков.
-
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
+- **Определение значений очков**:
+    - Создаются три последовательности очков:
+    - `singlePoints`: очки от 1 до 20 и 25 (одинарные очки).
+    - `doublePoints`: четные очки от 2 до 40 и 50 (удвоенные очки).
+    - `triplePoints`: кратные 3 от 3 до 60 (утроенные очки).
+    - Все эти очки объединяются в одну последовательность `points`.
+- **Первый шаг** - завершение с одним броском:
+    - Создается ассоциативный массив `firstStepMap`, в котором для каждого удвоенного очка (из `doublePoints`) 
+      устанавливается количество способов завершения в 1 бросок (т.е. одно удвоенное очко).
+- **Второй шаг** - завершение с двумя бросками:
+    - Создается ассоциативный массив `secondStepMap`, который включает все возможные 
+      суммы первого броска (из `points`) и удвоенного броска (из `doublePoints`).
+    - Для каждой суммы проверяется, существует ли она уже в `firstStepMap`. 
+      Если да, то увеличивается количество способов завершения на `1`, иначе добавляется новая запись.
+- **Третий шаг** - завершение с тремя бросками:
+    - Создается финальный ассоциативный массив, который включает все возможные суммы двух бросков (из `points`) 
+      и удвоенного броска (из `doublePoints`).
+    - Для каждой полученной суммы проверяется, существует ли она уже в `secondStepMap`. 
+      Если да, то увеличивается количество способов завершения на `1`, иначе добавляется новая запись.
+- **Возврат результата**:
+    - Метод возвращает ассоциативный массив, в которой ключи - это значения набранных очков, 
+      а значения - количество различных способов завершить игру с использованием этих очков.
 
 **Код:**
 
@@ -24,39 +42,35 @@ object Darts:
 
   val allDistinctWaysToCheckOut: Map[Int, Int] =
     // First step checkout
-    var integerMap = doublePoints.map(point => point -> 1).toMap
+    val firstStepMap = doublePoints.map(point => point -> 1).toMap
 
     // Second step checkout
-    points.foreach: value =>
-      doublePoints.foreach: doublePoint =>
-        val point = value + doublePoint
-        integerMap += (point -> (integerMap.getOrElse(point, 0) + 1))
-    
-    // Third step checkout
-    points.indices.foreach: i =>
-      (i until points.length).foreach: j =>
-        doublePoints.foreach: doublePoint =>
-          val point = points(i) + points(j) + doublePoint
-          integerMap += (point -> (integerMap.getOrElse(point, 0) + 1))
+    val secondStepMap =
+      (
+        for
+          value       <- points
+          doublePoint <- doublePoints
+        yield value + doublePoint
+      ).foldLeft(firstStepMap) { case (acc, point) =>
+        acc + (point -> (acc.getOrElse(point, 0) + 1))
+      }
 
-    integerMap
+    // Third step checkout
+    (
+      for
+        i           <- points.indices
+        j           <- i until points.length
+        doublePoint <- doublePoints
+      yield points(i) + points(j) + doublePoint
+    ).foldLeft(secondStepMap) { case (acc, point) =>
+      acc + (point -> (acc.getOrElse(point, 0) + 1))
+    }
+
   end allDistinctWaysToCheckOut
 end Darts
 
-result.values.sum 
+Darts.allDistinctWaysToCheckOut.values.sum
 // 42336
-```
-
-**Метрики:**
-
-Составление карты количества способов выбить заданное количество очков занимает меньше минуты.
-
-```dotty
-@main def dartsBench(): Map[Int, Int] =
-  Darts.allDistinctWaysToCheckOut
-
-// CPU Time: 377 ms
-// Allocation memory size: 27,83 MB      
 ```
 
 ## Кубики
@@ -66,14 +80,13 @@ result.values.sum
 Подсчитать массив вероятностей выпадения очков при заданном количестве бросков
 кубика с заданным числом граней.
 
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
-
 **Код:**
 
 ```dotty
+import scala.collection.mutable
+
+final case class Rational(num: Int, den: Int)
+
 final case class Dice(maxCube: Int):
   private val cache: mutable.Map[(Int, Int), Int] =
     mutable.Map.empty[(Int, Int), Int]
@@ -94,20 +107,8 @@ final case class Dice(maxCube: Int):
       )
 end Dice
 
-Dice(6).probabilities(1)
+Dice(6).probabilities(1).mkString(", ")
 // Array(1/6, 1/6, 1/6, 1/6, 1/6, 1/6)
-```
-
-**Метрики:**
-
-Вычисление карты вероятностей для стандартного кубика в 6 граней при 100 бросках занимает 1 секунду.
-
-```dotty
-@main def diceBench(): Array[Rational] =
-  Dice(6).probabilities(100)
-
-// CPU Time: 1026 ms
-// Allocation memory size: 88,05 MB      
 ```
 
 ## Nim
@@ -115,11 +116,6 @@ Dice(6).probabilities(1)
 **Алгоритм:**
 
 [Ним (игра)](https://ru.wikipedia.org/wiki/%D0%9D%D0%B8%D0%BC_(%D0%B8%D0%B3%D1%80%D0%B0)).
-
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
 
 **Код:**
 
@@ -132,20 +128,11 @@ Nim.getX(1, 2, 3)
 // 0L
 ```
 
-**Метрики:**
-
-???
-
 ## Покер
 
 **Алгоритм:**
 
 Покер.
-
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
 
 ##### Игровая карта
 
@@ -451,10 +438,6 @@ object PokerHand:
     PokerHand(PokerHandsType.HIGH_CARD, sortedRanks.toList)
 end PokerHand
 ```
-
-**Метрики:**
-
-???
 
 ## Судоку
 

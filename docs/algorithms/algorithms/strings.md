@@ -449,16 +449,20 @@ toMinimalRomanNumeral("VIIIIIIIIIII")
 
 ```dotty
 def toArabic(roman: String): Option[Long] =
-  toMinimalRomanNumeral(roman).map: min =>
+  toMinimalRomanNumeral(roman).flatMap: min =>
     val temp = min + "  "
-    var i    = 0
-    var sum  = 0L
-    while i < min.length do
-      toRomanNumeralSymbol(temp.substring(i, i + 2)).foreach: symbol =>
-        sum += symbol.id
-        i += symbol.toString.length
-    sum
-    
+
+    @annotation.tailrec
+    def loop(i: Int, sum: Long): Option[Long] =
+      if i >= min.length then Some(sum)
+      else
+        toRomanNumeralSymbol(temp.substring(i, i + 2)) match
+          case None => None
+          case Some(symbol) =>
+            loop(i + symbol.toString.length, sum + symbol.id)
+
+    loop(0, 0L)
+
 def toRoman(number: Long): Option[String] =
   if number < 0 then None
   else if number == 0 then Some("")

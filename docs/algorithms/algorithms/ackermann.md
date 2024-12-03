@@ -20,11 +20,6 @@
 
 Функция Аккермана известна тем, что она расчет очень быстро.
 
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
-
 **Код:**
 
 ```dotty
@@ -33,18 +28,9 @@ def functionAckermann(x: Int, y: Int): Int =
   else if x == 0 then 2 * y
   else if y == 1 then 2
   else functionAckermann(x - 1, functionAckermann(x, y - 1))
-```
 
-**Метрики:**
-
-Вычисление функции Аккермана `f(3, 3)` выполняется за 0,3 секунды.
-
-```dotty
-@main def functionAckermannBench(): Unit =
-  println(functionAckermann(3, 3))
-
-// CPU Time: 326 ms
-// Allocation memory size: 9,99 MB      
+functionAckermann(3, 3)
+// 65536
 ```
 
 ---

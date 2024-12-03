@@ -23,11 +23,11 @@
 sealed trait Point
 
 final case class CartesianPoint(x: Double, y: Double) extends Point:
-  def toPolarPoint: PolarPoint =
+  lazy val toPolarPoint: PolarPoint =
     PolarPoint(math.sqrt(x * x + y * y), math.atan2(y, x))
 
 final case class PolarPoint(r: Double, theta: Double) extends Point:
-  def toCartesian: CartesianPoint =
+  lazy val toCartesian: CartesianPoint =
     CartesianPoint(r * math.cos(theta), r * math.sin(theta))
 
 object Point:
@@ -54,7 +54,7 @@ end Point
 
 val p1 = CartesianPoint(1, 1)
 val p2 = CartesianPoint(4, 5)
-Point.distance(p1, p2)        // 5
+Point.distance(p1, p2)        // 5.0
 ```
 
 ## Определение позиции точки по отношению к треугольнику
@@ -81,11 +81,14 @@ final case class Triangle(
 
   def getPointOnTriangleType(point: (Int, Int)): PointOnTriangleType =
     val first =
-      (point1._1 - point._1) * (point2._2 - point1._2) - (point2._1 - point1._1) * (point1._2 - point._2)
+      (point1._1 - point._1) * (point2._2 - point1._2) -
+        (point2._1 - point1._1) * (point1._2 - point._2)
     val second =
-      (point2._1 - point._1) * (point3._2 - point2._2) - (point3._1 - point2._1) * (point2._2 - point._2)
+      (point2._1 - point._1) * (point3._2 - point2._2) -
+        (point3._1 - point2._1) * (point2._2 - point._2)
     val third =
-      (point3._1 - point._1) * (point1._2 - point3._2) - (point1._1 - point3._1) * (point3._2 - point._2)
+      (point3._1 - point._1) * (point1._2 - point3._2) -
+        (point1._1 - point3._1) * (point3._2 - point._2)
     if first == 0 || second == 0 || third == 0 then OnTheSide
     else if first < 0 && second < 0 && third < 0 || first > 0 && second > 0 && third > 0
     then Inside

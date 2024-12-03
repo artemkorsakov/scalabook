@@ -1,34 +1,69 @@
-import scala.annotation.tailrec
-import scala.math.Ordered.orderingToOrdered
+enum RomanNumeralSymbol(val id: Int):
+  case I  extends RomanNumeralSymbol(1)
+  case IV extends RomanNumeralSymbol(4)
+  case V  extends RomanNumeralSymbol(5)
+  case IX extends RomanNumeralSymbol(9)
+  case X  extends RomanNumeralSymbol(10)
+  case XL extends RomanNumeralSymbol(40)
+  case L  extends RomanNumeralSymbol(50)
+  case XC extends RomanNumeralSymbol(90)
+  case C  extends RomanNumeralSymbol(100)
+  case CD extends RomanNumeralSymbol(400)
+  case D  extends RomanNumeralSymbol(500)
+  case CM extends RomanNumeralSymbol(900)
+  case M  extends RomanNumeralSymbol(1000)
 
-def selectionSearch[A: Ordering](list: List[A], n: Int): Option[A] =
-  @tailrec
-  def partitionAndSearch(as: List[A], m: Int): Option[A] = as match
-    case Nil => None
-    case h :: t =>
-      val (l, p, g) = partition(h, t)
-      val len       = l.length
-      if len == m - 1 then Some(p)
-      else if len >= m then partitionAndSearch(l, m)
-      else partitionAndSearch(g, m - len - 1)
+object RomanNumeralSymbol:
+  def toRomanNumeralSymbol(twoChars: String): Option[RomanNumeralSymbol] =
+    RomanNumeralSymbol.values.find(_.toString.equals(twoChars)).orElse:
+      RomanNumeralSymbol.values.find(_.toString.equals(twoChars.take(1)))
 
-  def partition(head: A, tail: List[A]): (List[A], A, List[A]) =
-    @tailrec
-    def loop(
-        rest: List[A],
-        less: List[A],
-        p: A,
-        more: List[A]
-    ): (List[A], A, List[A]) =
-      rest match
-        case Nil             => (less, p, more)
-        case h :: t if h < p => loop(t, h :: less, p, more)
-        case h :: t          => loop(t, less, p, h :: more)
+import RomanNumeralSymbol.*
 
-    loop(tail, Nil, head, Nil)
+def toMinimalRomanNumeral(roman: String): Option[String] =
+  if roman.exists(ch => toRomanNumeralSymbol(ch.toString).isEmpty) then None
+  else
+    Some(
+      roman.toUpperCase
+        .replaceAll("IIIII", "V")
+        .replaceAll("VV", "X")
+        .replaceAll("XXXXX", "L")
+        .replaceAll("LL", "C")
+        .replaceAll("CCCCC", "D")
+        .replaceAll("DD", "M")
+        .replaceAll("VIIII", "IX")
+        .replaceAll("IIII", "IV")
+        .replaceAll("LXXXX", "XC")
+        .replaceAll("XXXX", "XL")
+        .replaceAll("DCCCC", "CM")
+        .replaceAll("CCCC", "CD")
+    )
 
-  if n <= 0 then None
-  else partitionAndSearch(list, n)
-end selectionSearch
+def toArabic(roman: String): Option[Long] =
+  toMinimalRomanNumeral(roman).flatMap: min =>
+    val temp = min + "  "
 
-println(selectionSearch((1 to 100).toList, 45))
+    @annotation.tailrec
+    def loop(i: Int, sum: Long): Option[Long] =
+      if i >= min.length then Some(sum)
+      else
+        toRomanNumeralSymbol(temp.substring(i, i + 2)) match
+          case None => None
+          case Some(symbol) =>
+            loop(i + symbol.toString.length, sum + symbol.id)
+
+    loop(0, 0L)
+
+def toRoman(number: Long): Option[String] =
+  if number < 0 then None
+  else if number == 0 then Some("")
+  else
+    val maybeMax =
+      RomanNumeralSymbol.values.filter(v => v.id <= number).maxByOption(_.id)
+    for
+      max  <- maybeMax
+      rest <- toRoman(number - max.id)
+    yield s"$max$rest"
+
+println(toArabic("MCMLXXXIV"))  // 1984
+println(toRoman(1984))          // "MCMLXXXIV"      

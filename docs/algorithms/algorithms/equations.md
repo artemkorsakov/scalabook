@@ -10,6 +10,9 @@
 Решение квадратного уравнения можно получить по формуле:
 
 - \\(x = \frac{-b \pm \sqrt{b^{2} - 4ac}}{2a}\\), если \\(D = b^{2} - 4ac \geq 0\\)
+
+Решение в комплексных числах:
+
 - \\(x = \frac{-b \pm \textit{i} \sqrt{4ac - b^{2}}}{2a}\\), если \\(D < 0\\)
 
 **Оценка:**
@@ -20,76 +23,52 @@
 **Код:**
 
 ```dotty
+final case class Complex(real: Double, imag: Double)
+
 final case class QuadraticEquation(a: Double, b: Double, c: Double):
   private val d = b * b - 4 * a * c
-  
-  def solutionsInIntegers: Array[Long] =
-    if d < 0 || !d.isWhole || !math.sqrt(d).isWhole then Array.empty[Long]
+
+  def solutionsInIntegers: List[Long] =
+    if d < 0 || !d.isWhole || !math.sqrt(d).isWhole then Nil
     else
       val sqrt = math.round(math.sqrt(d))
       val den  = 2 * a
       if sqrt == 0 then
-        if b % den == 0 then Array((-b / den).toLong) else Array.empty[Long]
+        if b % den == 0 then List((-b / den).toLong) else Nil
       else
         val x1 = -b + sqrt
         val x2 = -b - sqrt
         (x1 % den == 0, x2 % den == 0) match
-          case (true, true)   => Array((x1 / den).toLong, (x2 / den).toLong)
-          case (true, false)  => Array((x1 / den).toLong)
-          case (false, true)  => Array((x2 / den).toLong)
-          case (false, false) => Array.empty[Long]
+          case (true, true)   => List((x1 / den).toLong, (x2 / den).toLong)
+          case (true, false)  => List((x1 / den).toLong)
+          case (false, true)  => List((x2 / den).toLong)
+          case (false, false) => Nil
 
-  def solutions: Array[Double] =
-    if d < 0 then Array.empty[Double]
+  def solutions: List[Double] =
+    if d < 0 then Nil
     else
       val sqrt = math.sqrt(d)
       val den  = 2 * a
-      if sqrt == 0 then Array(-b / den)
-      else Array((-b + sqrt) / den, (-b - sqrt) / den)
+      if sqrt == 0 then List(-b / den)
+      else List((-b + sqrt) / den, (-b - sqrt) / den)
 
-  def solutionsInComplexNumbers: Array[Complex[Double]] =
+  def solutionsInComplexNumbers: List[Complex] =
     if d >= 0 then solutions.map(Complex(_, 0.0))
     else
       val sqrt = math.sqrt(-d)
       val den  = 2 * a
-      Array(
+      List(
         Complex(-b / den, sqrt / den),
         Complex(-b / den, -sqrt / den)
       )
 end QuadraticEquation
 
-QuadraticEquation(1, -5, 6).solutionsInIntegers 
-// Array(3, 2)
-QuadraticEquation(3, -4, 1).solutions 
-// Array(1.0, 0.3333333333333333)
-QuadraticEquation(1, -2, 2).solutionsInComplexNumbers 
-// Array((1.0 + 1.0i), (1.0 + -1.0i))
-```
-
-**Метрики:**
-
-```dotty
-@main def solutionsInIntegersBench(): Array[Long] =
-  QuadraticEquation(1, -5, 6).solutionsInIntegers
-
-// CPU Time: 216 ms
-// Allocation memory size: 9,61 MB      
-```
-
-```dotty
-@main def solutionsBench(): Array[Double] =
-  QuadraticEquation(3, -4, 1).solutions
-
-// CPU Time: 36 ms
-// Allocation memory size: 1,73 MB      
-```
-
-```dotty
-@main def solutionsInComplexNumbersBench(): Array[Complex[Double]] =
-  QuadraticEquation(1, -2, 2).solutionsInComplexNumbers
-
-// CPU Time: 48 ms
-// Allocation memory size: 3,29 MB      
+println(QuadraticEquation(1, -5, 6).solutionsInIntegers)
+// List(3, 2)
+println(QuadraticEquation(3, -4, 1).solutions)
+// List(1.0, 0.3333333333333333)
+println(QuadraticEquation(1, -2, 2).solutionsInComplexNumbers)
+// List(Complex(1.0,1.0), Complex(1.0,-1.0))
 ```
 
 ## Уравнение Пелля
@@ -121,7 +100,7 @@ final case class Iteration(a: BigInt, b: BigInt, k: BigInt, d: Int):
         .filter(isMCorrect)
         .minByOption(i => (i * i - d).abs)
 
-    @tailrec
+    @annotation.tailrec
     def loop(m: BigInt): BigInt =
       if isMCorrect(m) then m else loop(m + 1)
 
@@ -164,7 +143,7 @@ final case class DiophantineEquation(d: Int):
       val a = BigInt(math.round(sd))
       val k = a.pow(2) - d
 
-      @tailrec
+      @annotation.tailrec
       def loop(iteration: Iteration): Option[(BigInt, BigInt)] =
         if iteration.isSuccess then Some((iteration.a, iteration.b))
         else loop(iteration.getNext)
@@ -175,27 +154,12 @@ DiophantineEquation(67).minimalEquation
 // Some((48842,5967))
 ```
 
-**Метрики:**
-
-```dotty
-@main def minimalDiophantineEquationBench(): Unit =
-  println(DiophantineEquation(67).minimalEquation)
-
-// CPU Time: 287 ms
-// Allocation memory size: 11,00 MB      
-```
-
 ## Многочлен
 
 **Алгоритм:**
 
 Определение коэффициентов многочлена (k-1)-й степени (\\(a\_{1}x^{k-1} + ... + a\_{i}x^{k-i} + ... + a\_{k}\\)) 
 при заданных k решениях (\\(s\_{1}, ... , s\_{k}\\)) для x равного \\(1, 2, ..., k\\).
-
-**Оценка:**
-
-- **Время** - ???
-- **Память** - ???
 
 **Код:**
 
@@ -237,21 +201,11 @@ private def coefficientsForSolutionSearching(
       -last.last
     coefficients :+ current
 
-polynomialCoefficients(3, Array(1, 683, 44287)
+polynomialCoefficients(3, Array(1, 683, 44287))
 // Array(21461, -63701, 42241)
 // 21461 * 1 * 1 - 63701 * 1 + 42241 = 1
 // 21461 * 2 * 2 - 63701 * 2 + 42241 = 683
 // 21461 * 3 * 3 - 63701 * 3 + 42241 = 44287
-```
-
-**Метрики:**
-
-```dotty
-@main def polynomialCoefficientsBench(): Array[Long] =
-  polynomialCoefficients(3, Array(1, 683, 44287))
-
-// CPU Time: 312 ms
-// Allocation memory size: 11,66 MB      
 ```
 
 ---

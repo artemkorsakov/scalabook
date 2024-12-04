@@ -1,26 +1,31 @@
-enum DoublyList[+A]:
-  case Nil
-  case DoublyListCons(left: DoublyList[A], value: A, right: DoublyList[A])
+final case class Queue[+A](in: List[A], out: List[A]):
+  def frontOption: Option[A] = dequeue.map(_._1)
 
-  lazy val length: Int = this match
-    case Nil                            => 0
-    case DoublyListCons(left, _, right) => left.length + 1 + right.length
+  def rearOption: Option[Queue[A]] = dequeue.map(_._2)
 
-object DoublyList:
-  def prepend[A](list: DoublyList[A], a: A): DoublyList[A] = list match
-    case Nil => DoublyListCons(Nil, a, Nil)
-    case DoublyListCons(left, value, right) =>
-      DoublyListCons(prepend(left, a), value, right)
+  lazy val isEmpty: Boolean = in.isEmpty && out.isEmpty
 
-  def append[A](list: DoublyList[A], a: A): DoublyList[A] = list match
-    case Nil => DoublyListCons(Nil, a, Nil)
-    case DoublyListCons(left, value, right) =>
-      DoublyListCons(left, value, append(right, a))
+  def enqueue[B >: A](x: B): Queue[B] = Queue(x :: in, out)
 
-import DoublyList.*
+  def dequeue: Option[(A, Queue[A])] = out match
+    case hd :: tl => Some((hd, Queue(in, tl)))
+    case Nil => in.reverse match
+        case hd :: tl => Some((hd, Queue(Nil, tl)))
+        case Nil      => None
 
-val list =
-  DoublyListCons(DoublyListCons(Nil, 3, Nil), 2, DoublyListCons(Nil, 1, Nil))
-println(list.length)                 // 3
-println(DoublyList.prepend(list, 0)) // 4
-println(DoublyList.append(list, 4))  // 4
+object Queue:
+  def empty[A]: Queue[A] = Queue(Nil, Nil)
+
+val emptyQueue: Queue[Int]    = Queue.empty[Int]
+val nonEmptyQueue: Queue[Int] = emptyQueue.enqueue(1).enqueue(2)
+
+println("frontOption emptyQueue: " + emptyQueue.frontOption)
+println("frontOption nonEmptyQueue: " + nonEmptyQueue.frontOption)
+println("rearOption emptyQueue: " + emptyQueue.rearOption)
+println("rearOption nonEmptyQueue: " + nonEmptyQueue.rearOption)
+println("isEmpty emptyQueue: " + emptyQueue.isEmpty)
+println("isEmpty nonEmptyQueue: " + nonEmptyQueue.isEmpty)
+println("enqueue emptyQueue: " + emptyQueue.enqueue(5))
+println("enqueue nonEmptyQueue: " + nonEmptyQueue.enqueue(5))
+println("dequeue emptyQueue: " + emptyQueue.dequeue)
+println("dequeue nonEmptyQueue: " + nonEmptyQueue.dequeue) 

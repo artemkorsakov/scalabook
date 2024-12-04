@@ -161,8 +161,8 @@ end BinaryHeap
 val emptyBinaryHeap: BinaryHeap[Int]    = BinaryHeap.empty
 val nonEmptyBinaryHeap: BinaryHeap[Int] = BinaryHeap.empty.insert(1).insert(2)
  
-emptyBinaryHeap.isEmpty)       // true
-nonEmptyBinaryHeap.isEmpty)    // false
+emptyBinaryHeap.isEmpty        // true
+nonEmptyBinaryHeap.isEmpty     // false
 
 emptyBinaryHeap.size           // 0
 nonEmptyBinaryHeap.size        // 2
@@ -191,7 +191,7 @@ nonEmptyBinaryHeap.remove
 - Свойство, упорядоченное по куче: `value(node) <= value(node.left)`, а также `value(node) <= value(node.right)`
 - Свойство левосторонности: `rank(node.left) >= rank(node.right)`
 
-, где `rank` — это самый правая сущность (крайний правый путь от корня до пустого узла) кучи. 
+, где `rank` — это самый правый элемент кучи (крайний правый путь от корня до пустого узла). 
 Объединив эти свойства вместе, можно гарантировать время выполнения не более O(log n) 
 для операций вставки/удаления в левосторонней куче.
 

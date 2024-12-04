@@ -1,5 +1,26 @@
-object Nim:
-  def getX(head: Long, params: Long*): Long =
-    params.indices.foldLeft(head)((res, i) => res ^ params(i))
+enum DoublyList[+A]:
+  case Nil
+  case DoublyListCons(left: DoublyList[A], value: A, right: DoublyList[A])
 
-println(Nim.getX(1, 2, 3))
+  lazy val length: Int = this match
+    case Nil                            => 0
+    case DoublyListCons(left, _, right) => left.length + 1 + right.length
+
+object DoublyList:
+  def prepend[A](list: DoublyList[A], a: A): DoublyList[A] = list match
+    case Nil => DoublyListCons(Nil, a, Nil)
+    case DoublyListCons(left, value, right) =>
+      DoublyListCons(prepend(left, a), value, right)
+
+  def append[A](list: DoublyList[A], a: A): DoublyList[A] = list match
+    case Nil => DoublyListCons(Nil, a, Nil)
+    case DoublyListCons(left, value, right) =>
+      DoublyListCons(left, value, append(right, a))
+
+import DoublyList.*
+
+val list =
+  DoublyListCons(DoublyListCons(Nil, 3, Nil), 2, DoublyListCons(Nil, 1, Nil))
+println(list.length)                 // 3
+println(DoublyList.prepend(list, 0)) // 4
+println(DoublyList.append(list, 4))  // 4

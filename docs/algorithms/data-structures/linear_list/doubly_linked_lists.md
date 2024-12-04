@@ -26,6 +26,15 @@ object DoublyList:
     case Nil => DoublyListCons(Nil, a, Nil)
     case DoublyListCons(left, value, right) =>
       DoublyListCons(left, value, append(right, a))
+
+val list = DoublyListCons(DoublyListCons(Nil, 3, Nil), 2, DoublyListCons(Nil, 1, Nil))
+
+list.length                 
+// 3
+DoublyList.prepend(list, 0)
+// DoublyListCons(DoublyListCons(DoublyListCons(Nil,0,Nil),3,Nil),2,DoublyListCons(Nil,1,Nil))
+DoublyList.append(list, 4)  
+// DoublyListCons(DoublyListCons(Nil,3,Nil),2,DoublyListCons(Nil,1,DoublyListCons(Nil,4,Nil)))
 ```
 
 ---

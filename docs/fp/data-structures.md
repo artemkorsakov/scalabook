@@ -156,7 +156,49 @@ enum Tree[+A]:
   case Branch(left: Tree[A], right: Tree[A])
 ```
 
-![Tree](https://drek4537l1klr.cloudfront.net/pilquist/v-5/Figures/figure-3-4.png)
+```mermaid
+---
+title: Branch(Branch(Leaf("a"), Leaf("b")), Branch(Leaf("c"), Leaf("d")))
+---
+flowchart TB
+  subgraph branch1 ["Branch"]
+    right1["Left"]
+    left1["Right"]
+  end  
+
+  subgraph branch2 ["Branch"]
+    right2["Left"]
+    left2["Right"]
+  end 
+
+  subgraph branch3 ["Branch"]
+  right3["Left"]
+  left3["Right"]
+  end 
+
+  subgraph leaf1 ["Leaf"]
+    value1["d"]
+  end 
+
+  subgraph leaf2 ["Leaf"]
+    value2["c"]
+  end 
+
+  subgraph leaf3 ["Leaf"]
+    value3["b"]
+  end 
+
+  subgraph leaf4 ["Leaf"]
+    value4["a"]
+  end 
+
+  right1--->branch3
+  left1--->branch2
+  right2---->value2
+  left2---->value1
+  right3---->value4
+  left3---->value3
+```
 
 ---
 

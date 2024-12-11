@@ -13,27 +13,29 @@
 def square(x: Double): Double = x * x
 ```
 
-При вызове `square(41.0 + 1.0)`, функция `square` получит оценочное значение `42.0`, потому что она строгая.
+При вызове `square(41.0 + 1.0)`, функция `square` получит вычисленное значение `42.0`, потому что она строгая.
 Напротив, сокращающие логические функции `&&` и `||`, 
 встречающиеся во многих языках программирования, включая Scala, не являются строгими.
 Функция `&&` принимает два логических аргумента, но оценивает второй аргумент только в том случае, если первый истинен:
 
 ```dotty
 false && { println("!!"); true }
-// res0: Boolean = false
+// false
 ```
 
 Аналогично `||` оценивает свой второй аргумент, только если первый `false`:
 
 ```dotty
 true || { println("!!"); false }
-// res1: Boolean = true
+// true
 ```
 
 Еще одним примером нестрогости является управляющая конструкция `if` в Scala:
 
 ```dotty
+val input  = List(1)
 val result = if input.isEmpty then sys.error("empty input") else input
+// List(1)
 ```
 
 Нестрогие вычисления не кэшируются и вычисляются каждый раз при вызове:
@@ -43,7 +45,7 @@ def maybeTwice(b: Boolean, i: => Int) = if b then i + i else 0
 val x = maybeTwice(true, { println("hi"); 1 + 41 })
 // hi
 // hi
-// x: Int = 84
+// 84
 ```
 
 ## Lazy List
@@ -61,16 +63,9 @@ enum LazyList[+A]:
 import LazyList.*
 
 object LazyList:
-  def cons[A](hd: => A, tl: => LazyList[A]): LazyList[A] =
-    lazy val head = hd
-    lazy val tail = tl
-    Cons(() => head, () => tail)
-
-  def empty[A]: LazyList[A] = Empty
-
   def apply[A](as: A*): LazyList[A] =
-    if as.isEmpty then empty
-    else cons(as.head, apply(as.tail*))
+    if as.isEmpty then Empty
+    else Cons(() => as.head, () => apply(as.tail*))
 ```
 
 С помощью `LazyList` можно построить вычисление, которое производит последовательность элементов, 
@@ -84,12 +79,12 @@ object LazyList:
 ```dotty
 def exists(p: A => Boolean): Boolean = this match
   case Cons(h, t) => p(h()) || t().exists(p)
-  case _ => false
+  case _          => false
 ```
 
 `||` не является строгим по второму аргументу, а значит если `p(h())` возвращает `true`, 
 то `exists` завершает обход досрочно и также возвращает `true`. 
-Заметим, что конец `LazyList` — это lazy val. 
+Заметим, что остаток `LazyList` (`t`) — это функция. 
 Таким образом, обход не только раньше завершается, но и остаток `LazyList` вообще никогда не оценивается! 
 Таким образом, любой код, который сгенерировал бы остаток, на самом деле никогда не выполняется.
 
@@ -113,9 +108,9 @@ def exists(p: A => Boolean): Boolean = this match
 ```dotty
 val ones: LazyList[Int] = LazyList.cons(1, ones)
 ones.take(5).toList
-// res2: List[Int] = List(1, 1, 1, 1, 1)
+// List(1, 1, 1, 1, 1)
 ones.exists(_ % 2 != 0)
-// res3: Boolean = true
+// true
 ```
 
 ## Корекурсия

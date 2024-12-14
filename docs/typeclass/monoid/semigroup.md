@@ -74,77 +74,52 @@ trait Semigroup[A]:
 
 - замыкание следует из определения функции `combine` - тип результата тот же, что и тип переменных.
   При условии использования при реализации только [чистых функций без побочных эффектов](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D1%82%D0%BE%D1%82%D0%B0_%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B8).
-- ассоциативность формулируется так: `m.combine(x, m.combine(y, z)) == m.combine(m.combine(x, y), z)`
+- ассоциативность формулируется так: `s.combine(x, s.combine(y, z)) == s.combine(s.combine(x, y), z)`
 
 ```dotty
-import cats.data.*
-import cats.syntax.either.*
+trait Semigroup[A]:
+  def combine(x: A, y: A): A
 
-trait Laws:
-  protected def check(
-      law: Boolean,
-      message: => String
-  ): ValidatedNel[String, Unit] =
-    Either
-      .cond[String, Unit](law, (), message)
-      .toValidatedNel
+object Semigroup:
+  // Натуральные числа N образуют полугруппу относительно сложения
+  given additionSemigroup: Semigroup[Int] = (x: Int, y: Int) => x + y
 
-trait SemigroupLaw extends Laws:
-  def checkSemigroupLaw[A: Semigroup](
-      x: A,
-      y: A,
-      z: A
-  ): ValidatedNel[String, Unit] =
-    check(
-      Semigroup[A].combine(Semigroup[A].combine(x, y), z) ==
-        Semigroup[A].combine(x, Semigroup[A].combine(y, z)),
-      "associative: (x + y) + z == x + (y + z)"
+  // Натуральные числа N образуют полугруппу относительно умножения
+  given multiplicationSemigroup: Semigroup[Int] = (x: Int, y: Int) => x * y
+
+  // Строки образуют полугруппу относительно конкатенации
+  given concatenationSemigroup: Semigroup[String] =
+    (x: String, y: String) => x + y
+
+  // Последовательность образует полугруппу относительно операции объединения
+  given listSemigroup[T]: Semigroup[List[T]] =
+    (x: List[T], y: List[T]) => x ++ y
+
+object SemigroupLaws:
+  def checkAssociativity[A](x: A, y: A, z: A)(using
+      s: Semigroup[A]
+  ): Either[String, Unit] =
+    Either.cond[String, Unit](
+      s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
+      (),
+      s"Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
     )
-```
 
-## Примеры
+import Semigroup.given
+import SemigroupLaws.checkAssociativity
 
-### Непустой список
-
-```dotty
-case class NonEmptyList[+A](head: A, tail: List[A]):
-  def toList: List[A] = head :: tail
-
-given [A]: Semigroup[NonEmptyList[A]] with
-  def combine(x: NonEmptyList[A], y: NonEmptyList[A]) =
-    NonEmptyList(x.head, x.tail ++ y.toList)
-```
-
-### Натуральные числа N образуют полугруппу относительно сложения
-
-```dotty
-given sumSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x + y
-```
-
-### Натуральные числа N образуют полугруппу относительно умножения
-
-```dotty
-given productSemigroupInstance: Semigroup[Int] = (x: Int, y: Int) => x * y
-```
-
-### Строки образуют полугруппу относительно конкатенации
-
-```dotty
-given stringSemigroupInstance: Semigroup[String] = (x: String, y: String) => x + y
-```
-
-### Последовательность образует полугруппу относительно операции объединения
-
-```dotty
-given listSemigroupInstance[T]: Semigroup[List[T]] =
-  (x: List[T], y: List[T]) => x ++ y
-```
-
-### Кортеж от двух и более полугрупп также является полугруппой
-
-```dotty
-given nestedSemigroupInstance[A, B](using aSemigroup: Semigroup[A], bSemigroup: Semigroup[B]): Semigroup[(A, B)] =
-  (x: (A, B), y: (A, B)) => (aSemigroup.combine(x._1, y._1), bSemigroup.combine(x._2, y._2))
+checkAssociativity(1, 2, 3)(using additionSemigroup)
+// (1 + 2) + 3 = 1 + (2 + 3) = 6
+checkAssociativity(1, 2, 3)(using multiplicationSemigroup)
+// (1 * 2) * 3 = 1 * (2 * 3) = 6
+checkAssociativity("first", "second", "third")(using concatenationSemigroup)
+// ("first" + "second") + "third" = "first" + ("second" + "third") = "firstsecondthird"
+checkAssociativity(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9))(using
+  listSemigroup
+)
+// (List(1, 2, 3) ++ List(4, 5, 6)) ++ List(7, 8, 9) =
+// List(1, 2, 3, 4, 5, 6, 7, 8, 9) = 
+// List(1, 2, 3) ++ (List(4, 5, 6) ++ List(7, 8, 9))
 ```
 
 ## Дополнительные операции
@@ -154,23 +129,6 @@ given nestedSemigroupInstance[A, B](using aSemigroup: Semigroup[A], bSemigroup: 
 \\(a^{n} = \overset{n}{a + ... + a}\\)
 
 Для степени элемента справедливы соотношения \\(a^{n + m} = a^{m}+a^{n}, (a^{m})^{n} = a^{mn}, \forall n,m \in \mathbb{N}\\).
-
-```dotty
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
-
-  def combineN(x: A, n: Int :| Greater[0]): A =
-    @tailrec def loop(b: A, k: Int, acc: A): A =
-      if k == 1 then combine(b, acc)
-      else
-        val x = if (k & 1) == 1 then combine(b, acc) else acc
-        loop(combine(b, b), k >>> 1, x)
-
-    if n == 1 then x else loop(x, n - 1, x)
-```
-
-> О том, что такое `Int :| Greater[0]` рассказывается в [статье об уточняющих типах](../../libs/refined.md).
-
 
 ## Реализация в библиотеках
 
@@ -203,7 +161,6 @@ import spire.syntax.semigroup.*
 
 1 |+| 2                           // 3
 ("hello", 123) |+| ("world", 321) // ("helloworld",444)
-
 Semigroup.combineN(3, 5)          // 15
 ```
 

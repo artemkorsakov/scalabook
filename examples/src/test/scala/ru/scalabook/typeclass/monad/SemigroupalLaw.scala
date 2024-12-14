@@ -1,9 +1,9 @@
 package ru.scalabook.typeclass.monad
 
 import cats.data.ValidatedNel
-import ru.scalabook.typeclass.common.{Laws, Runner1}
+import ru.scalabook.typeclass.common.{OldLaws, Runner1}
 
-trait SemigroupalLaw extends Laws:
+trait SemigroupalLaw extends OldLaws:
   def checkSemigroupalLaw[F[_]: Semigroupal: Runner1, A, B, C](
       fa: F[A],
       fb: F[B],

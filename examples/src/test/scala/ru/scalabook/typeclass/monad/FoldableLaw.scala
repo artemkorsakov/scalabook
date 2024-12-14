@@ -1,10 +1,10 @@
 package ru.scalabook.typeclass.monad
 
 import cats.data.ValidatedNel
-import ru.scalabook.typeclass.common.Laws
+import ru.scalabook.typeclass.common.OldLaws
 import ru.scalabook.typeclass.monoid.Monoid
 
-trait FoldableLaw extends Laws:
+trait FoldableLaw extends OldLaws:
   def checkFoldableLaw[F[_]: Foldable, A](fa: F[A])(using
       Monoid[Vector[A]]
   ): ValidatedNel[String, Unit] =

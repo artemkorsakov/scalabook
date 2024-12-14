@@ -1,19 +1,30 @@
 package ru.scalabook.typeclass.monoid
 
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.cats.given
-import io.github.iltotore.iron.constraint.all.Greater
-import io.github.iltotore.iron.scalacheck.numeric.given
+import ru.scalabook.typeclass.common.Laws.*
 import ru.scalabook.typeclass.monoid.Semigroup.given
 import weaver.*
 import weaver.scalacheck.*
 
-object SemigroupSuite extends SimpleIOSuite, Checkers, SemigroupLaw:
-  test("Natural numbers is a semigroup with addiction"):
+object SemigroupSuite extends SimpleIOSuite, Checkers:
+  test("Натуральные числа образуют полугруппу по сложению"):
     forall: (x: Int, y: Int, z: Int) =>
-      whenSuccess(checkSemigroupLaw(x, y, z)): _ =>
-        success
+      expect(checkSemigroupLaw(x, y, z)(using additionSemigroup).isValid)
 
-  test("combineN should combine n times"):
-    forall: (x: Int, n: Int :| Greater[0]) =>
-      expect.eql(x * n, Semigroup[Int].combineN(x, n))
+  test("Натуральные числа N образуют полугруппу относительно умножения"):
+    forall: (x: Int, y: Int, z: Int) =>
+      expect(checkSemigroupLaw(x, y, z)(using multiplicationSemigroup).isValid)
+
+  test("Строки образуют полугруппу относительно конкатенации"):
+    forall: (x: String, y: String, z: String) =>
+      expect(checkSemigroupLaw(x, y, z).isValid)
+
+  test(
+    "Последовательность образует полугруппу относительно операции объединения"
+  ):
+    forall: (x: List[Int], y: List[Int], z: List[Int]) =>
+      expect(checkSemigroupLaw(x, y, z).isValid)
+
+  pureTest("Натуральные числа не образуют полугруппу по вычитанию"):
+    given Semigroup[Int] = (x, y) => x - y
+    expect(checkSemigroupLaw(1, 2, 3).isInvalid)
+end SemigroupSuite

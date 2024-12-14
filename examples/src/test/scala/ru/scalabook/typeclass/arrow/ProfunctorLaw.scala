@@ -1,9 +1,9 @@
 package ru.scalabook.typeclass.arrow
 
 import cats.data.ValidatedNel
-import ru.scalabook.typeclass.common.{Laws, Runner2}
+import ru.scalabook.typeclass.common.{OldLaws, Runner2}
 
-trait ProfunctorLaw extends Laws:
+trait ProfunctorLaw extends OldLaws:
   def checkProfunctorLaw[=>:[_, _]: Profunctor: Runner2, A, B, C, D, E, F](
       gad: A =>: D
   )(a: A, c: C)(using

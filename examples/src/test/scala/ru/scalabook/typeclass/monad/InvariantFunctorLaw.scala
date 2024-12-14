@@ -1,9 +1,9 @@
 package ru.scalabook.typeclass.monad
 
 import cats.data.*
-import ru.scalabook.typeclass.common.Laws
+import ru.scalabook.typeclass.common.OldLaws
 
-trait InvariantFunctorLaw extends Laws:
+trait InvariantFunctorLaw extends OldLaws:
   def checkInvariantFunctorLaw[F[_]: InvariantFunctor, A, B, C](
       fa: F[A]
   )(using

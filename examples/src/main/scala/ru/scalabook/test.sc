@@ -1,8 +1,6 @@
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
+import spire.algebra.Semigroup
+import spire.syntax.semigroup.*
 
-object Semigroup:
-  def apply[A: Semigroup]: Semigroup[A] = summon[Semigroup[A]]
-
-  given Semigroup[Int] = (x: Int, y: Int) => x + y
-
+1 |+| 2                           // 3
+("hello", 123) |+| ("world", 321) // ("helloworld",444)
+Semigroup.combineN(3, 5)          // 15

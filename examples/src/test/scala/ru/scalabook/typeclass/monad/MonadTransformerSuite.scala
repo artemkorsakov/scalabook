@@ -1,10 +1,10 @@
 package ru.scalabook.typeclass.monad
 
-import ru.scalabook.typeclass.common.{IO, Laws, OptionT}
+import ru.scalabook.typeclass.common.{IO, OldLaws, OptionT}
 import weaver.*
 import weaver.scalacheck.*
 
-object MonadTransformerSuite extends SimpleIOSuite, Checkers, Laws:
+object MonadTransformerSuite extends SimpleIOSuite, Checkers, OldLaws:
   test("optionTMonadTransformer should cast Option inside the monad"):
     forall: (x: Int) =>
       val monadA = IO(() => x)

@@ -1,9 +1,9 @@
 package ru.scalabook.typeclass.arrow
 
 import cats.data.ValidatedNel
-import ru.scalabook.typeclass.common.{Laws, Runner2}
+import ru.scalabook.typeclass.common.{OldLaws, Runner2}
 
-trait ComposeLaw extends Laws:
+trait ComposeLaw extends OldLaws:
   def checkComposeLaw[=>:[_, _]: Compose: Runner2, A, B, C, D](
       ab: A =>: B,
       bc: B =>: C,

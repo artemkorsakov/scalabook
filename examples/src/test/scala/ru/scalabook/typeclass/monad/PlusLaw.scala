@@ -1,9 +1,9 @@
 package ru.scalabook.typeclass.monad
 
 import cats.data.ValidatedNel
-import ru.scalabook.typeclass.monoid.SemigroupLaw
+import ru.scalabook.typeclass.common.OldLaws
 
-trait PlusLaw extends SemigroupLaw:
+trait PlusLaw extends OldLaws:
   def checkPlusLaw[F[_]: Plus, A](
       f1: F[A],
       f2: F[A],

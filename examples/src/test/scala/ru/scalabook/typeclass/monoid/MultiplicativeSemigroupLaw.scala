@@ -1,9 +1,9 @@
 package ru.scalabook.typeclass.monoid
 
 import cats.data.*
-import ru.scalabook.typeclass.common.Laws
+import ru.scalabook.typeclass.common.OldLaws
 
-trait MultiplicativeSemigroupLaw extends Laws:
+trait MultiplicativeSemigroupLaw extends OldLaws:
   def checkMultiplicativeSemigroupLaw[A: MultiplicativeSemigroup](
       x: A,
       y: A,

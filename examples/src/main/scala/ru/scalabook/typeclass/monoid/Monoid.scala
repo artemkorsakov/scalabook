@@ -1,17 +1,7 @@
 package ru.scalabook.typeclass.monoid
 
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.constraint.all.{Greater, GreaterEqual}
-import io.github.iltotore.iron.constraint.numeric.*
-
 trait Monoid[A] extends Semigroup[A]:
   def empty: A
-
-  def combineNonNegN(x: A, n: Int :| GreaterEqual[0]): A =
-    if n == 0 then empty
-    else
-      val pos: Int :| Greater[0] = n.refineUnsafe
-      combineN(x, pos)
 
 object Monoid:
   def apply[A: Monoid]: Monoid[A] = summon[Monoid[A]]

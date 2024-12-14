@@ -1,8 +1,9 @@
 package ru.scalabook.typeclass.monoid
 
 import cats.data.*
+import ru.scalabook.typeclass.common.OldLaws
 
-trait CSemigroupLaw extends SemigroupLaw:
+trait CSemigroupLaw extends OldLaws:
   def checkCSemigroupLaw[A: CSemigroup](
       x: A,
       y: A,

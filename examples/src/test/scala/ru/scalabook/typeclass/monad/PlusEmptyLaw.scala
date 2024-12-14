@@ -1,9 +1,9 @@
 package ru.scalabook.typeclass.monad
 
 import cats.data.ValidatedNel
-import ru.scalabook.typeclass.monoid.MonoidLaw
+import ru.scalabook.typeclass.common.OldLaws
 
-trait PlusEmptyLaw extends PlusLaw, MonoidLaw:
+trait PlusEmptyLaw extends PlusLaw, OldLaws:
   def checkPlusEmptyLaw[F[_]: PlusEmpty, A](
       f1: F[A],
       f2: F[A],

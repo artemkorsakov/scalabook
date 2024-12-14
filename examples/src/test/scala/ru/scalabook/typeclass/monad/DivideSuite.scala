@@ -2,6 +2,7 @@ package ru.scalabook.typeclass.monad
 
 import weaver.*
 import weaver.scalacheck.*
+import ru.scalabook.typeclass.monoid.Monoid.additionMonoid
 
 object DivideSuite extends SimpleIOSuite, Checkers, DivideLaw:
   test("The unary function must satisfy the laws of Divide"):

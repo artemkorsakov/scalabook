@@ -2,6 +2,7 @@ package ru.scalabook.typeclass.monad
 
 import weaver.*
 import weaver.scalacheck.*
+import ru.scalabook.typeclass.monoid.Monoid.additionMonoid
 
 object DivisibleSuite extends SimpleIOSuite, Checkers, DivisibleLaw:
   test("The unary function must satisfy the laws of Divisible"):

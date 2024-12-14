@@ -1,8 +1,9 @@
 package ru.scalabook.typeclass.monoid
 
 import cats.data.*
+import ru.scalabook.typeclass.common.OldLaws
 
-trait CMonoidLaw extends MonoidLaw, CSemigroupLaw:
+trait CMonoidLaw extends OldLaws, CSemigroupLaw:
   def checkCMonoidLaw[A: CMonoid](
       x: A,
       y: A,

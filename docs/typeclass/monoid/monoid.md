@@ -1,5 +1,42 @@
 # Моноид
 
+Моноиды — это фундаментальная концепция в функциональном программировании, 
+которая позволяет абстрагироваться от конкретных типов данных и работать с общими операциями, 
+такими как объединение, сложение или конкатенация. 
+Эта абстракция не только делает код более универсальным и повторно используемым, 
+но и помогает лучше понять принципы композиции данных и функций.
+
+**Что такое моноид?**
+
+Моноид — это математическая структура, которая состоит из:
+
+- **Множества элементов** (например, числа, строки, списки).
+- **Бинарной операции** (например, сложение, конкатенация), которая объединяет два элемента множества в один.
+- **Нейтрального элемента** (например, 0 для сложения или пустая строка для конкатенации), который не изменяет результат операции.
+
+При этом должны выполняться два ключевых свойства:
+
+- **Ассоциативность**: Результат операции не зависит от порядка вычислений. Например, `(a + b) + c` равно `a + (b + c)`.
+- **Нейтральный элемент**: Операция с нейтральным элементом не изменяет значение. Например, `a + 0` равно `a`.
+
+**Зачем нужны моноиды?**
+
+Моноиды играют важную роль в функциональном программировании, так как они позволяют:
+
+- **Абстрагироваться от конкретных типов данных**: Вы можете определить общие операции 
+  (например, объединение списков или сложение чисел) независимо от конкретного типа данных.
+- **Создавать композируемые функции**: Моноиды позволяют объединять данные в более крупные структуры, 
+  что полезно при работе с коллекциями, агрегации данных или параллельной обработке.
+- **Упрощать код**: Использование моноидов делает код более декларативным и уменьшает количество шаблонного кода.
+- **Работать с параллелизмом**: Ассоциативность моноидов позволяет эффективно разбивать задачи на подзадачи и выполнять их параллельно.
+
+**Примеры моноидов**
+
+- **Числа с операцией сложения**: Множество — числа, операция — сложение, нейтральный элемент — 0.
+- **Строки с операцией конкатенации**: Множество — строки, операция — конкатенация, нейтральный элемент — пустая строка.
+- **Списки с операцией объединения**: Множество — списки, операция — объединение, нейтральный элемент — пустой список.
+- **Булевы значения с операцией "И"**: Множество — булевы значения, операция — логическое "И", нейтральный элемент — `true`.
+
 ## Формальное определение
 
 Моноид (_monoid_) — это [полугруппа](semigroup.md) с единичным (нейтральным) элементом.
@@ -16,11 +53,6 @@
 
 Также говорится, что _M — моноид относительно +_.
 
-В любом моноиде имеется ровно один нейтральный элемент.
-
-Используя определение натуральной степени элемента полугруппы ("сложить n раз") как:
-\\(a^{n} = \overset{n}{a + ... + a}\\), можно расширить определение до 0 степени: \\(a^{0} = e\\).
-
 #### Определение из моноидальной категории
 
 Моноид в моноидальной категории — это объект \\(m\\), снабженный двумя морфизмами:
@@ -33,49 +65,16 @@
 - \\(id\_{m} \bigotimes m = m \bigotimes id\_{m} = m\\)
 - \\((m \bigotimes m) \bigotimes m = m \bigotimes (m \bigotimes m)\\)
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Monoid[A] extends Semigroup[A]:
   def empty: A
-
-  def combineNonNegN(x: A, n: Int :| GreaterEqual[0]): A =
-    if n == 0 then empty
-    else
-      val pos: Int :| Greater[0] = n.refine
-      combineN(x, pos)
 ```
 
-> О том, что такое `Int :| GreaterEqual[0]` рассказывается в [статье об уточняющих типах](../../libs/refined.md).
-
-Для операции сложения встречаются наименования, перечисленные в [Полугруппе](semigroup.md).
+Для операции сложения встречаются наименования, перечисленные в [Полугруппе](semigroup.md):
+`combine`, `append`, `mappend` (Haskell), `op`, `plus`, `times`.
 Для единичного элемента встречаются следующие наименования: `empty`, `mempty` (Haskell), `id`.
-
-## Законы в виде кода на Scala
-
-Законы моноида принимают следующий вид:
-
-- замыкание следует из определения функции `combine` - тип результата тот же, что и тип переменных
-- ассоциативность формулируется так: `m.combine(x, m.combine(y, z)) == m.combine(m.combine(x, y), z)`
-- тождественность формулируется так: `(m.combine(x, m.empty) == x) && (m.combine(m.empty, x) == x)`
-
-```dotty
-trait MonoidLaw extends SemigroupLaw:
-  def checkMonoidLaw[A: Monoid](x: A, y: A, z: A): ValidatedNel[String, Unit] =
-    checkSemigroupLaw(x, y, z) combine
-      check(
-        Monoid[A].combine(x, Monoid[A].empty) == x,
-        "right identity: x + e = x"
-      ) combine
-      check(
-        Monoid[A].combine(Monoid[A].empty, x) == x,
-        "left identity: e + x = x"
-      )
-```
-
-Законы полугруппы (ассоциативность) определяются в родительском [SemigroupLaw](semigroup.md).
-
-## Примеры
 
 ### Числа относительно сложения с 0
 
@@ -85,8 +84,8 @@ trait MonoidLaw extends SemigroupLaw:
 - `0` - это единичный элемент относительно сложения: `0 + a = a + 0 = a`
 
 ```dotty
-given sumMonoidInstance: Monoid[Int] with
-  val empty = 0
+given additionMonoid: Monoid[Int] with
+  val empty                        = 0
   def combine(x: Int, y: Int): Int = x + y
 ```
 
@@ -98,7 +97,7 @@ given sumMonoidInstance: Monoid[Int] with
 - `1` - это единичный элемент относительно сложения: `1*a = a*1 = a`
 
 ```dotty
-given productMonoidInstance: Monoid[Int] with
+given multiplicationMonoid: Monoid[Int] with
   val empty = 1
   def combine(x: Int, y: Int): Int = x * y
 ```
@@ -112,25 +111,31 @@ given productMonoidInstance: Monoid[Int] with
 - `""` - это единичный элемент относительно конкатенации: `"" + a = a + "" = a`
 
 ```dotty
-given stringMonoidInstance: Monoid[String] with
-  val empty = ""
+given concatenationMonoid: Monoid[String] with
+  val empty                                 = ""
   def combine(x: String, y: String): String = x + y
 ```
 
 ### Последовательность
 
+Последовательность относительно операции объединения с пустой последовательностью в качестве единичного элемента.
+
 ```dotty
-given listMonoidInstance[T]: Monoid[List[T]] with
-  val empty = List.empty[T]
+given listMonoid[T]: Monoid[List[T]] with
+  val empty                                    = List.empty[T]
   def combine(x: List[T], y: List[T]): List[T] = x ++ y
 ```
 
 ### Кортеж от двух и более моноидов
 
 ```dotty
-given nestedMonoidInstance[A, B](using aMonoid: Monoid[A], bMonoid: Monoid[B]): Monoid[(A, B)] with
-  lazy val empty: (A, B) = (aMonoid.empty, bMonoid.empty)
-  def combine(x: (A, B), y: (A, B)): (A, B) = (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
+given nestedMonoid[A, B](using
+    aMonoid: Monoid[A],
+    bMonoid: Monoid[B]
+): Monoid[(A, B)] with
+  val empty: (A, B) = (aMonoid.empty, bMonoid.empty)
+  def combine(x: (A, B), y: (A, B)): (A, B) =
+    (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
 ```
 
 ### Option
@@ -153,19 +158,66 @@ given optionMonoidInstance[A: Semigroup]: Monoid[Option[A]] with
 
 ```dotty
 given booleanAnd: Monoid[Boolean] with
-  def combine(a1: Boolean, a2: Boolean): Boolean = a1 && a2
-  val empty: Boolean = true  
+  val empty: Boolean                             = true
+  def combine(a1: Boolean, a2: Boolean): Boolean = a1 && a2 
 ```
 
 ### Множество - `Boolean`, операция - логическое Или (`||`), пустой элемент - `false`
 
 ```dotty
 given booleanOr: Monoid[Boolean] with
+  val empty: Boolean                             = false
   def combine(a1: Boolean, a2: Boolean): Boolean = a1 || a2
-  val empty: Boolean = false
 ```
 
-## Использование моноидов
+### Законы моноида
+
+Законы моноида принимают следующий вид:
+
+- замыкание следует из определения функции `combine` - тип результата тот же, что и тип переменных
+- ассоциативность формулируется так: `m.combine(x, m.combine(y, z)) == m.combine(m.combine(x, y), z)`
+- тождественность формулируется так: `(m.combine(x, m.empty) == x) && (m.combine(m.empty, x) == x)`
+
+```dotty
+object MonoidLaws:
+  def checkAssociativity[A](x: A, y: A, z: A)(using
+      s: Semigroup[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
+      (),
+      "Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
+    ).toValidatedNel
+
+  def checkRightIdentity[A](x: A)(using
+      m: Monoid[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      m.combine(x, m.empty) == x,
+      (),
+      "Не соблюдается тождественность справа: x + e = x"
+    ).toValidatedNel
+
+  def checkLeftIdentity[A](x: A)(using
+      m: Monoid[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      m.combine(m.empty, x) == x,
+      (),
+      "Не соблюдается тождественность слева: e + x = x"
+    ).toValidatedNel
+end MonoidLaws
+```
+
+## Дополнительные свойства
+
+В любом моноиде имеется ровно один нейтральный элемент. 
+Это следует из свойств нейтрального элемента: \\(e\_1 = e\_1 + e\_2 = e\_2 \to e\_1 = e\_2\\).
+
+Используя определение натуральной степени элемента полугруппы ("сложить n раз") как:
+\\(a^{n} = \overset{n}{a + ... + a}\\), можно расширить определение до 0 степени: \\(a^{0} = e\\).
+
+## Использование
 
 Моноиды тесно связаны со списками.
 Например, вот как можно свернуть список, используя моноид:
@@ -174,7 +226,7 @@ given booleanOr: Monoid[Boolean] with
 def combineAll[A](as: List[A], m: Monoid[A]): A =
   as.foldLeft(m.empty)(m.combine)
 combineAll(List(1, 2, 3, 4), intMultiplication)
-// res4: Int = 24
+// 24
 ```
 
 Тот факт, что операция `combine` моноида является ассоциативной, означает, что можно выбирать,
@@ -223,7 +275,6 @@ List().foldLeft("loremipsumdolorsit")(_ + _)
 что называется сбалансированным сворачиванием (_balanced fold_) —
 сначала строятся `"loremipsum"` и `"dolorsit"`, а затем они складываются вместе.
 
-
 ## Операции с моноидами
 
 Моноиды можно объединять:
@@ -269,7 +320,7 @@ val mean = p(0) / p(1).toDouble
 // mean: Double = 0.4
 ```
 
-## Реализация
+## Реализация в библиотеках
 
 ### Реализация в Cats
 

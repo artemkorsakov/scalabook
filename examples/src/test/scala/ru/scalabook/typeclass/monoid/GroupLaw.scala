@@ -1,8 +1,9 @@
 package ru.scalabook.typeclass.monoid
 
 import cats.data.*
+import ru.scalabook.typeclass.common.OldLaws
 
-trait GroupLaw extends MonoidLaw:
+trait GroupLaw extends OldLaws:
   def checkGroupLaw[A: Group](x: A, y: A, z: A): ValidatedNel[String, Unit] =
     checkMonoidLaw(x, y, z) combine
       check(

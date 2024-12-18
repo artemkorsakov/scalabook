@@ -37,4 +37,15 @@ trait OldLaws:
         Monoid[A].combine(Monoid[A].empty, x) == x,
         "left identity: e + x = x"
       )
+
+  def checkGroupLaw[A: Group](x: A, y: A, z: A): ValidatedNel[String, Unit] =
+    checkMonoidLaw(x, y, z) combine
+      check(
+        Group[A].combine(x, Group[A].inverse(x)) == Group[A].empty,
+        "inverse law 1: x + (-x) = 0"
+      ) combine
+      check(
+        Group[A].combine(Group[A].inverse(x), x) == Group[A].empty,
+        "inverse law 2: (-x) + x = 0"
+      )
 end OldLaws

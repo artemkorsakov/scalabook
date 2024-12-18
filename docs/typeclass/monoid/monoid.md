@@ -320,6 +320,19 @@ val mean = p(0) / p(1).toDouble
 // mean: Double = 0.4
 ```
 
+## Схема
+
+```mermaid
+classDiagram
+    class Semigroup~A~{
+        +combine(x: A, y: A) A
+    }  
+    class Monoid~A~{
+        +empty() A
+    }
+    Semigroup <|-- Monoid
+```
+
 ## Реализация в библиотеках
 
 ### Реализация в Cats

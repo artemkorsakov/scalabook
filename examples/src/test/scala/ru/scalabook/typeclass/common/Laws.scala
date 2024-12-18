@@ -33,6 +33,16 @@ object Laws:
       "Не соблюдается тождественность слева: e + x = x"
     ).toValidatedNel
 
+  def checkInverse[A](x: A)(using
+      g: Group[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      g.combine(x.inverse, x) == g.empty &&
+        g.combine(x, x.inverse) == g.empty,
+      (),
+      "Не соблюдается обратимость: x + (-x) = (-x) + x = e"
+    ).toValidatedNel
+
   // Законы типовых классов
   def checkSemigroupLaw[A: Semigroup](
       x: A,
@@ -49,4 +59,14 @@ object Laws:
     checkAssociativity[A](x, y, z)
       .combine(checkRightIdentity(x))
       .combine(checkLeftIdentity(x))
+
+  def checkGroupLaw[A: Group](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkAssociativity[A](x, y, z)
+      .combine(checkRightIdentity(x))
+      .combine(checkLeftIdentity(x))
+      .combine(checkInverse(x))
 end Laws

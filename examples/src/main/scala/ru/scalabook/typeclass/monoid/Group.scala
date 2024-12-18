@@ -7,6 +7,6 @@ object Group:
   def apply[A: Group]: Group[A] = summon[Group[A]]
 
   given Group[Int] with
-    val empty                           = 0
+    val empty: Int                      = 0
     def combine(x: Int, y: Int): Int    = x + y
     extension (a: Int) def inverse: Int = -a

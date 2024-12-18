@@ -2,7 +2,7 @@ package ru.scalabook.typeclass.monoid
 
 import cats.data.*
 
-trait AbGroupLaw extends GroupLaw, CMonoidLaw:
+trait AbGroupLaw extends CMonoidLaw:
   def checkAbGroupLaw[A: AbGroup](
       x: A,
       y: A,

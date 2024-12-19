@@ -55,7 +55,38 @@ given [A]: ISemiring[Set[A]] with
   def times(x: Set[A], y: Set[A]): Set[A]   = x.intersect(y)
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class Semigroup~A~{
+        +combine(x: A, y: A) A
+    }
+    class IdempotentSemigroup~A~
+    Semigroup <|-- IdempotentSemigroup    
+    class Monoid~A~{
+        +empty() A
+    }
+    Semigroup <|-- Monoid
+    class CommutativeSemigroup~A~
+    Semigroup <|-- CommutativeSemigroup  
+    class IdempotentMonoid~A~
+    IdempotentSemigroup <|-- IdempotentMonoid
+    Monoid <|-- IdempotentMonoid
+    class CommutativeMonoid~A~
+    Monoid <|-- CommutativeMonoid
+    CommutativeSemigroup <|-- CommutativeMonoid
+    class Semiring~A~
+    CommutativeMonoid <|-- Semiring
+    class MultiplicativeSemigroup~A~
+    MultiplicativeSemigroup <|-- Semiring
+    Semigroup .. MultiplicativeSemigroup
+    class IdempotentSemiring~A~
+    IdempotentMonoid <|-- IdempotentSemiring
+    Semiring <|-- IdempotentSemiring
+```
+
+## Реализация в библиотеках
 
 ---
 

@@ -3,7 +3,7 @@ package ru.scalabook.typeclass.monoid
 import cats.data.*
 import ru.scalabook.typeclass.common.OldLaws
 
-trait IdempotentMonoidLaw extends OldLaws, BandLaw:
+trait IdempotentMonoidLaw extends OldLaws:
   def checkIdempotentMonoidLaw[A: IdempotentMonoid](
       x: A,
       y: A,

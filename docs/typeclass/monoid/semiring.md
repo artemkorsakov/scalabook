@@ -106,7 +106,30 @@ given Semiring[Int] with
   def times(x: Int, y: Int): Int   = x * y
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class Semigroup~A~{
+        +combine(x: A, y: A) A
+    }
+    class Monoid~A~{
+        +empty() A
+    }
+    Semigroup <|-- Monoid
+    class CommutativeSemigroup~A~
+    Semigroup <|-- CommutativeSemigroup  
+    class CommutativeMonoid~A~
+    Monoid <|-- CommutativeMonoid
+    CommutativeSemigroup <|-- CommutativeMonoid
+    class Semiring~A~
+    CommutativeMonoid <|-- Semiring
+    class MultiplicativeSemigroup~A~
+    MultiplicativeSemigroup <|-- Semiring
+    Semigroup .. MultiplicativeSemigroup
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Spire
 

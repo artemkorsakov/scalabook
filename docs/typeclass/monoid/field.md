@@ -80,7 +80,70 @@ given Field[Rational] with
 end given
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class Semigroup~A~{
+        +combine(x: A, y: A) A
+    }  
+    class Monoid~A~{
+        +empty() A
+    }
+    Semigroup <|-- Monoid
+    class CommutativeSemigroup~A~
+    Semigroup <|-- CommutativeSemigroup  
+    class Group~A~{
+      +inverse(x: A) A
+    }  
+    Monoid <|-- Group 
+    class CommutativeMonoid~A~
+    Monoid <|-- CommutativeMonoid
+    CommutativeSemigroup <|-- CommutativeMonoid
+    class AbelianGroup~A~
+    Group <|-- AbelianGroup
+    CommutativeMonoid <|-- AbelianGroup
+    class Semiring~A~
+    CommutativeMonoid <|-- Semiring
+    class MultiplicativeSemigroup~A~
+    MultiplicativeSemigroup <|-- Semiring
+    Semigroup .. MultiplicativeSemigroup
+    class Ring~A~
+    AbelianGroup <|-- Ring
+    Semiring <|-- Ring
+    class CommutativeSemiring~A~
+    Semiring <|-- CommutativeSemiring
+    class SemiringWithUnity~A~{
+        +one() A
+    }
+    Semiring <|-- SemiringWithUnity
+    class CommutativeRing~A~
+    Ring <|-- CommutativeRing
+    CommutativeSemiring <|-- CommutativeRing
+    class RingWithUnity~A~
+    Ring <|-- RingWithUnity
+    SemiringWithUnity <|-- RingWithUnity
+    class CommutativeRingWithUnity~A~
+    CommutativeRing <|-- CommutativeRingWithUnity
+    RingWithUnity <|-- CommutativeRingWithUnity
+    class GCDRing~A~{
+        +gcd(x: A, y: A) A
+        +lcm(x: A, y: A) A
+    }
+    CommutativeRingWithUnity <|-- GCDRing
+    class EuclideanRing~A~{
+        +quot(x: A, y: A) A
+        +mod(x: A, y: A) A
+    }
+    GCDRing <|-- EuclideanRing
+    class Field~A~{
+        +reciprocal(x: A) A
+        +div(x: A, y: A) A
+    }
+    EuclideanRing <|-- Field
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Spire
 

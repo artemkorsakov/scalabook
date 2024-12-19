@@ -43,6 +43,13 @@ object Laws:
       "Не соблюдается обратимость: x + (-x) = (-x) + x = e"
     ).toValidatedNel
 
+  def checkIdempotency[A](x: A)(using s: Band[A]): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      s.combine(x, x) == x,
+      (),
+      "Не соблюдается идемпотентность: x + x должно быть равно x"
+    ).toValidatedNel
+
   // Законы типовых классов
   def checkSemigroupLaw[A: Semigroup](
       x: A,
@@ -69,4 +76,12 @@ object Laws:
       .combine(checkRightIdentity(x))
       .combine(checkLeftIdentity(x))
       .combine(checkInverse(x))
+
+  def checkBandLaw[A: Band](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkAssociativity[A](x, y, z)
+      .combine(checkIdempotency(x))
 end Laws

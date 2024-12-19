@@ -100,44 +100,42 @@ given Group[Rational] with
 - обратимость формулируется так: `g.combine(x.inverse, x) == g.empty && g.combine(x, x.inverse) == g.empty`
 
 ```dotty
-object GroupLaws:
-  def checkAssociativity[A](x: A, y: A, z: A)(using
-      s: Semigroup[A]
-  ): ValidatedNel[String, Unit] =
-    Either.cond[String, Unit](
-      s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
-      (),
-      "Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
-    ).toValidatedNel
+def checkAssociativity[A](x: A, y: A, z: A)(using
+    s: Semigroup[A]
+): ValidatedNel[String, Unit] =
+  Either.cond[String, Unit](
+    s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
+    (),
+    "Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
+  ).toValidatedNel
 
-  def checkRightIdentity[A](x: A)(using
-      m: Monoid[A]
-  ): ValidatedNel[String, Unit] =
-    Either.cond[String, Unit](
-      m.combine(x, m.empty) == x,
-      (),
-      "Не соблюдается тождественность справа: x + e = x"
-    ).toValidatedNel
+def checkRightIdentity[A](x: A)(using
+    m: Monoid[A]
+): ValidatedNel[String, Unit] =
+  Either.cond[String, Unit](
+    m.combine(x, m.empty) == x,
+    (),
+    "Не соблюдается тождественность справа: x + e = x"
+  ).toValidatedNel
 
-  def checkLeftIdentity[A](x: A)(using
-      m: Monoid[A]
-  ): ValidatedNel[String, Unit] =
-    Either.cond[String, Unit](
-      m.combine(m.empty, x) == x,
-      (),
-      "Не соблюдается тождественность слева: e + x = x"
-    ).toValidatedNel
+def checkLeftIdentity[A](x: A)(using
+    m: Monoid[A]
+): ValidatedNel[String, Unit] =
+  Either.cond[String, Unit](
+    m.combine(m.empty, x) == x,
+    (),
+    "Не соблюдается тождественность слева: e + x = x"
+  ).toValidatedNel
 
-  def checkInverse[A](x: A)(using
-      g: Group[A]
-  ): ValidatedNel[String, Unit] =
-    Either.cond[String, Unit](
-      g.combine(x.inverse, x) == g.empty &&
-        g.combine(x, x.inverse) == g.empty,
-      (),
-      "Не соблюдается обратимость: x + (-x) = (-x) + x = e"
-    ).toValidatedNel
-end GroupLaws
+def checkInverse[A](x: A)(using
+    g: Group[A]
+): ValidatedNel[String, Unit] =
+  Either.cond[String, Unit](
+    g.combine(x.inverse, x) == g.empty &&
+      g.combine(x, x.inverse) == g.empty,
+    (),
+    "Не соблюдается обратимость: x + (-x) = (-x) + x = e"
+  ).toValidatedNel
 ```
 
 ## Схема
@@ -162,11 +160,11 @@ classDiagram
 ### Реализация в Cats
 
 ```dotty
-import cats.*, cats.syntax.all.*
+import cats.*
+import cats.syntax.all.*
 
-1.inverse() // -1
-
-assert((1 |+| 1.inverse()) === Monoid[Int].empty)
+1.inverse()       // -1
+1 |+| 1.inverse() // 0
 ```
 
 ### Реализация в Spire

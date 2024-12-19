@@ -45,6 +45,26 @@ given [A]: IdempotentMonoid[Set[A]] with
   override def combine(x: Set[A], y: Set[A]): Set[A] = x ++ y
 ```
 
+## Схема
+
+```mermaid
+classDiagram
+    class Semigroup~A~{
+        +combine(x: A, y: A) A
+    }
+    class IdempotentSemigroup~A~
+    Semigroup <|-- IdempotentSemigroup    
+    class Monoid~A~{
+        +empty() A
+    }
+    Semigroup <|-- Monoid
+    class IdempotentMonoid~A~
+    IdempotentSemigroup <|-- IdempotentMonoid
+    Monoid <|-- IdempotentMonoid
+```
+
+## Реализация в библиотеках
+
 ---
 
 **Ссылки:**

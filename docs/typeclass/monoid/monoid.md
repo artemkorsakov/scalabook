@@ -170,7 +170,7 @@ given booleanOr: Monoid[Boolean] with
   def combine(a1: Boolean, a2: Boolean): Boolean = a1 || a2
 ```
 
-### Законы моноида
+### Законы
 
 Законы моноида принимают следующий вид:
 
@@ -179,34 +179,32 @@ given booleanOr: Monoid[Boolean] with
 - тождественность формулируется так: `(m.combine(x, m.empty) == x) && (m.combine(m.empty, x) == x)`
 
 ```dotty
-object MonoidLaws:
-  def checkAssociativity[A](x: A, y: A, z: A)(using
-      s: Semigroup[A]
-  ): ValidatedNel[String, Unit] =
-    Either.cond[String, Unit](
-      s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
-      (),
-      "Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
-    ).toValidatedNel
+def checkAssociativity[A](x: A, y: A, z: A)(using
+    s: Semigroup[A]
+): ValidatedNel[String, Unit] =
+  Either.cond[String, Unit](
+    s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
+    (),
+    "Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
+  ).toValidatedNel
 
-  def checkRightIdentity[A](x: A)(using
-      m: Monoid[A]
-  ): ValidatedNel[String, Unit] =
-    Either.cond[String, Unit](
-      m.combine(x, m.empty) == x,
-      (),
-      "Не соблюдается тождественность справа: x + e = x"
-    ).toValidatedNel
+def checkRightIdentity[A](x: A)(using
+    m: Monoid[A]
+): ValidatedNel[String, Unit] =
+  Either.cond[String, Unit](
+    m.combine(x, m.empty) == x,
+    (),
+    "Не соблюдается тождественность справа: x + e = x"
+  ).toValidatedNel
 
-  def checkLeftIdentity[A](x: A)(using
-      m: Monoid[A]
-  ): ValidatedNel[String, Unit] =
-    Either.cond[String, Unit](
-      m.combine(m.empty, x) == x,
-      (),
-      "Не соблюдается тождественность слева: e + x = x"
-    ).toValidatedNel
-end MonoidLaws
+def checkLeftIdentity[A](x: A)(using
+    m: Monoid[A]
+): ValidatedNel[String, Unit] =
+  Either.cond[String, Unit](
+    m.combine(m.empty, x) == x,
+    (),
+    "Не соблюдается тождественность слева: e + x = x"
+  ).toValidatedNel
 ```
 
 ## Дополнительные свойства

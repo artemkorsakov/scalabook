@@ -54,7 +54,45 @@ given CRing[Int] with
   extension (a: Int) override def inverse: Int = -a
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class Semigroup~A~{
+        +combine(x: A, y: A) A
+    }  
+    class Monoid~A~{
+        +empty() A
+    }
+    Semigroup <|-- Monoid
+    class CommutativeSemigroup~A~
+    Semigroup <|-- CommutativeSemigroup  
+    class Group~A~{
+      +inverse(x: A) A
+    }  
+    Monoid <|-- Group 
+    class CommutativeMonoid~A~
+    Monoid <|-- CommutativeMonoid
+    CommutativeSemigroup <|-- CommutativeMonoid
+    class AbelianGroup~A~
+    Group <|-- AbelianGroup
+    CommutativeMonoid <|-- AbelianGroup
+    class Semiring~A~
+    CommutativeMonoid <|-- Semiring
+    class MultiplicativeSemigroup~A~
+    MultiplicativeSemigroup <|-- Semiring
+    Semigroup .. MultiplicativeSemigroup
+    class Ring~A~
+    AbelianGroup <|-- Ring
+    Semiring <|-- Ring
+    class CommutativeSemiring~A~
+    Semiring <|-- CommutativeSemiring
+    class CommutativeRing~A~
+    Ring <|-- CommutativeRing
+    CommutativeSemiring <|-- CommutativeRing
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Spire
 

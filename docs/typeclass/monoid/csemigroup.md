@@ -43,7 +43,18 @@ trait CSemigroupLaw extends SemigroupLaw:
 given CSemigroup[Int] = (x: Int, y: Int) => x + y
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class Semigroup~A~{
+        +combine(x: A, y: A) A
+    }
+    class CommutativeSemigroup~A~
+    Semigroup <|-- CommutativeSemigroup  
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Spire
 

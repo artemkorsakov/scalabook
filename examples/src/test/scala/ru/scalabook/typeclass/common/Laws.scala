@@ -84,4 +84,14 @@ object Laws:
   ): ValidatedNel[String, Unit] =
     checkAssociativity[A](x, y, z)
       .combine(checkIdempotency(x))
+
+  def checkIdempotentMonoid[A: IdempotentMonoid](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkAssociativity[A](x, y, z)
+      .combine(checkRightIdentity(x))
+      .combine(checkLeftIdentity(x))
+      .combine(checkIdempotency(x))
 end Laws

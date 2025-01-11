@@ -50,6 +50,15 @@ object Laws:
       "Не соблюдается идемпотентность: x + x должно быть равно x"
     ).toValidatedNel
 
+  def checkCommutativity[A](x: A, y: A)(using
+      cs: CSemigroup[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      cs.combine(x, y) == cs.combine(y, x),
+      (),
+      "Не соблюдается коммутативность: x + y должно быть равно y + x"
+    ).toValidatedNel
+
   // Законы типовых классов
   def checkSemigroupLaw[A: Semigroup](
       x: A,
@@ -94,4 +103,22 @@ object Laws:
       .combine(checkRightIdentity(x))
       .combine(checkLeftIdentity(x))
       .combine(checkIdempotency(x))
+
+  def checkCSemigroup[A: CSemigroup](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkAssociativity[A](x, y, z)
+      .combine(checkCommutativity(x, y))
+
+  def checkCMonoid[A: CMonoid](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkAssociativity[A](x, y, z)
+      .combine(checkRightIdentity(x))
+      .combine(checkLeftIdentity(x))
+      .combine(checkCommutativity(x, y))
 end Laws

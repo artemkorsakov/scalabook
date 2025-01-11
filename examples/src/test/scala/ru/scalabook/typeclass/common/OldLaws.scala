@@ -59,4 +59,22 @@ trait OldLaws:
       z: A
   ): ValidatedNel[String, Unit] =
     checkMonoidLaw(x, y, z) combine checkBandLaw(x, y, z)
+
+  def checkCSemigroupLaw[A: CSemigroup](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkSemigroupLaw(x, y, z) combine
+      check(
+        CSemigroup[A].combine(x, y) == CSemigroup[A].combine(y, x),
+        "commutative: x + y = y + x"
+      )
+
+  def checkCMonoidLaw[A: CMonoid](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkMonoidLaw(x, y, z) combine checkCSemigroupLaw(x, y, z)
 end OldLaws

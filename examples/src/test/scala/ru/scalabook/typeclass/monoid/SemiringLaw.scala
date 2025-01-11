@@ -1,8 +1,9 @@
 package ru.scalabook.typeclass.monoid
 
 import cats.data.*
+import ru.scalabook.typeclass.common.OldLaws
 
-trait SemiringLaw extends CMonoidLaw, MultiplicativeSemigroupLaw:
+trait SemiringLaw extends OldLaws, MultiplicativeSemigroupLaw:
   def checkSemiringLaw[A: Semiring](
       x: A,
       y: A,

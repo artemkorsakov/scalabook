@@ -1,10 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
+import ru.scalabook.typeclass.common.Laws.*
 import weaver.*
 import weaver.scalacheck.*
 
-object CMonoidSuite extends SimpleIOSuite, Checkers, CMonoidLaw:
+object CMonoidSuite extends SimpleIOSuite, Checkers:
   test("Int is a commutative monoid with addition"):
     forall: (x: Int, y: Int, z: Int) =>
-      whenSuccess(checkCMonoidLaw(x, y, z)): _ =>
-        success
+      expect(checkCMonoid(x, y, z).isValid)

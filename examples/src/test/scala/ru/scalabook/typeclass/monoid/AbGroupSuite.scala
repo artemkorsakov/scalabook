@@ -1,10 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
+import ru.scalabook.typeclass.common.Laws.*
 import weaver.*
 import weaver.scalacheck.*
 
-object AbGroupSuite extends SimpleIOSuite, Checkers, AbGroupLaw:
+object AbGroupSuite extends SimpleIOSuite, Checkers:
   test("Int is a Abelian group with addition"):
     forall: (x: Int, y: Int, z: Int) =>
-      whenSuccess(checkAbGroupLaw(x, y, z)): _ =>
-        success
+      expect(checkAbGroup(x, y, z).isValid)

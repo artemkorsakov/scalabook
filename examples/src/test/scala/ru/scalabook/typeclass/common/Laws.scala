@@ -15,6 +15,15 @@ object Laws:
       "Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
     ).toValidatedNel
 
+  def checkMultiplicativeAssociativity[A](x: A, y: A, z: A)(using
+      ms: MultiplicativeSemigroup[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      ms.times(ms.times(x, y), z) == ms.times(x, ms.times(y, z)),
+      (),
+      "Не соблюдается ассоциативность по умножению: (x * y) * z должно быть равно x * (y * z)"
+    ).toValidatedNel
+
   def checkRightIdentity[A](x: A)(using
       m: Monoid[A]
   ): ValidatedNel[String, Unit] =
@@ -32,6 +41,31 @@ object Laws:
       (),
       "Не соблюдается тождественность слева: e + x = x"
     ).toValidatedNel
+
+  def checkIdentity[A: Monoid](x: A): ValidatedNel[String, Unit] =
+    checkRightIdentity(x).combine(checkLeftIdentity(x))
+
+  def checkRightTimesIdentity[A](x: A)(using
+      su: SemiringWithUnity[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      su.times(x, su.one) == x,
+      (),
+      "Не соблюдается существование единичного элемента справа: x * 1 = x"
+    ).toValidatedNel
+
+  def checkLeftTimesIdentity[A](x: A)(using
+      su: SemiringWithUnity[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      su.times(su.one, x) == x,
+      (),
+      "Не соблюдается существование единичного элемента слева: 1 * x = x"
+    ).toValidatedNel
+
+  def checkTimesIdentity[A: SemiringWithUnity](x: A)
+      : ValidatedNel[String, Unit] =
+    checkRightTimesIdentity(x).combine(checkLeftTimesIdentity(x))
 
   def checkInverse[A](x: A)(using
       g: Group[A]
@@ -59,31 +93,92 @@ object Laws:
       "Не соблюдается коммутативность: x + y должно быть равно y + x"
     ).toValidatedNel
 
+  def checkTimesCommutativity[A](x: A, y: A)(using
+      cs: CSemiring[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      cs.times(x, y) == cs.times(y, x),
+      (),
+      "Не соблюдается коммутативность по умножению: x * y = y * x"
+    ).toValidatedNel
+
+  def checkRightDistributivity[A](x: A, y: A, z: A)(using
+      sr: Semiring[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      sr.times(sr.combine(x, y), z) == sr.combine(
+        sr.times(x, z),
+        sr.times(y, z)
+      ),
+      (),
+      "Не соблюдается дистрибутивность справа: (x + y) * z = x * z + y * z"
+    ).toValidatedNel
+
+  def checkLeftDistributivity[A](x: A, y: A, z: A)(using
+      sr: Semiring[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      sr.times(x, sr.combine(y, z)) == sr.combine(
+        sr.times(x, y),
+        sr.times(x, z)
+      ),
+      (),
+      "Не соблюдается дистрибутивность слева: x * (y + z) = x * y + x * z"
+    ).toValidatedNel
+
+  def checkDistributivity[A: Semiring](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkRightDistributivity(x, y, z)
+      .combine(checkLeftDistributivity(x, y, z))
+
+  def checkRightMultiplicativePropertyOfZero[A](x: A)(using
+      sr: Semiring[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      sr.times(sr.empty, x) == sr.empty,
+      (),
+      "Не соблюдается мультипликативное свойство нуля справа: 0 * a = 0"
+    ).toValidatedNel
+
+  def checkLeftMultiplicativePropertyOfZero[A](x: A)(using
+      sr: Semiring[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      sr.times(x, sr.empty) == sr.empty,
+      (),
+      "Не соблюдается мультипликативное свойство нуля слева: a * 0 = 0"
+    ).toValidatedNel
+
+  def checkMultiplicativePropertyOfZero[A: Semiring](x: A)
+      : ValidatedNel[String, Unit] =
+    checkRightMultiplicativePropertyOfZero(x)
+      .combine(checkLeftMultiplicativePropertyOfZero(x))
+
   // Законы типовых классов
   def checkSemigroupLaw[A: Semigroup](
       x: A,
       y: A,
       z: A
   ): ValidatedNel[String, Unit] =
-    checkAssociativity[A](x, y, z)
+    checkAssociativity(x, y, z)
 
   def checkMonoidLaw[A: Monoid](
       x: A,
       y: A,
       z: A
   ): ValidatedNel[String, Unit] =
-    checkAssociativity[A](x, y, z)
-      .combine(checkRightIdentity(x))
-      .combine(checkLeftIdentity(x))
+    checkSemigroupLaw(x, y, z)
+      .combine(checkIdentity(x))
 
   def checkGroupLaw[A: Group](
       x: A,
       y: A,
       z: A
   ): ValidatedNel[String, Unit] =
-    checkAssociativity[A](x, y, z)
-      .combine(checkRightIdentity(x))
-      .combine(checkLeftIdentity(x))
+    checkMonoidLaw(x, y, z)
       .combine(checkInverse(x))
 
   def checkBandLaw[A: Band](
@@ -91,7 +186,7 @@ object Laws:
       y: A,
       z: A
   ): ValidatedNel[String, Unit] =
-    checkAssociativity[A](x, y, z)
+    checkSemigroupLaw(x, y, z)
       .combine(checkIdempotency(x))
 
   def checkIdempotentMonoid[A: IdempotentMonoid](
@@ -99,9 +194,7 @@ object Laws:
       y: A,
       z: A
   ): ValidatedNel[String, Unit] =
-    checkAssociativity[A](x, y, z)
-      .combine(checkRightIdentity(x))
-      .combine(checkLeftIdentity(x))
+    checkMonoidLaw(x, y, z)
       .combine(checkIdempotency(x))
 
   def checkCSemigroup[A: CSemigroup](
@@ -109,7 +202,7 @@ object Laws:
       y: A,
       z: A
   ): ValidatedNel[String, Unit] =
-    checkAssociativity[A](x, y, z)
+    checkSemigroupLaw(x, y, z)
       .combine(checkCommutativity(x, y))
 
   def checkCMonoid[A: CMonoid](
@@ -117,8 +210,48 @@ object Laws:
       y: A,
       z: A
   ): ValidatedNel[String, Unit] =
-    checkAssociativity[A](x, y, z)
-      .combine(checkRightIdentity(x))
-      .combine(checkLeftIdentity(x))
+    checkMonoidLaw(x, y, z)
       .combine(checkCommutativity(x, y))
+
+  def checkAbGroup[A: AbGroup](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkGroupLaw(x, y, z)
+      .combine(checkCommutativity(x, y))
+
+  def checkSemiring[A: Semiring](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkCMonoid(x, y, z)
+      .combine(checkMultiplicativeAssociativity(x, y, z))
+      .combine(checkDistributivity(x, y, z))
+      .combine(checkMultiplicativePropertyOfZero(x))
+
+  def checkSemiringWithUnity[A: SemiringWithUnity](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkSemiring(x, y, z)
+      .combine(checkTimesIdentity(x))
+
+  def checkCSemiring[A: CSemiring](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkSemiring(x, y, z)
+      .combine(checkTimesCommutativity(x, y))
+
+  def checkISemiring[A: ISemiring](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkSemiring(x, y, z)
+      .combine(checkIdempotency(x))
 end Laws

@@ -2,7 +2,7 @@ package ru.scalabook.typeclass.monoid
 
 import cats.data.ValidatedNel
 
-trait RingWithUnityLaw extends RingLaw, SemiringWithUnityLaw:
+trait RingWithUnityLaw extends RingLaw:
   def checkRingWithUnityLaw[A: RingWithUnity](
       x: A,
       y: A,

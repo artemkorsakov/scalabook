@@ -1,13 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
+import ru.scalabook.typeclass.common.Laws.*
 import weaver.*
 import weaver.scalacheck.*
 
-object SemiringWithUnitySuite
-    extends SimpleIOSuite,
-      Checkers,
-      SemiringWithUnityLaw:
+object SemiringWithUnitySuite extends SimpleIOSuite, Checkers:
   test("Int is a semiring with unity with addition, 0 and multiplication"):
     forall: (x: Int, y: Int, z: Int) =>
-      whenSuccess(checkSemiringWithUnityLaw(x, y, z)): _ =>
-        success
+      expect(checkSemiringWithUnity(x, y, z).isValid)

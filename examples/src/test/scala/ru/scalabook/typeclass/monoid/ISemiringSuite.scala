@@ -1,10 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
+import ru.scalabook.typeclass.common.Laws.*
 import weaver.*
 import weaver.scalacheck.*
 
-object ISemiringSuite extends SimpleIOSuite, Checkers, ISemiringLaw:
+object ISemiringSuite extends SimpleIOSuite, Checkers:
   test("Set is an idempotent semiring"):
     forall: (x: Set[Int], y: Set[Int], z: Set[Int]) =>
-      whenSuccess(checkISemiringLaw(x, y, z)): _ =>
-        success
+      expect(checkISemiring(x, y, z).isValid)

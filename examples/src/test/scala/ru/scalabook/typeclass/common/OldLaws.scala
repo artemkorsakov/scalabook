@@ -77,4 +77,76 @@ trait OldLaws:
       z: A
   ): ValidatedNel[String, Unit] =
     checkMonoidLaw(x, y, z) combine checkCSemigroupLaw(x, y, z)
+
+  def checkAbGroupLaw[A: AbGroup](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkGroupLaw(x, y, z) combine checkCMonoidLaw(x, y, z)
+
+  def checkMultiplicativeSemigroupLaw[A: MultiplicativeSemigroup](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    check(
+      MultiplicativeSemigroup[A]
+        .times(MultiplicativeSemigroup[A].times(x, y), z) ==
+        MultiplicativeSemigroup[A]
+          .times(x, MultiplicativeSemigroup[A].times(y, z)),
+      "associative: (x * y) * z == x * (y * z)"
+    )
+
+  def checkSemiringLaw[A: Semiring](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkCMonoidLaw(x, y, z) combine
+      checkMultiplicativeSemigroupLaw(x, y, z) combine
+      check(
+        Semiring[A].times(x, Semiring[A].combine(y, z)) ==
+          Semiring[A].combine(Semiring[A].times(x, y), Semiring[A].times(x, z)),
+        "left distributivus: x * (y + z) = x * y + x * z"
+      ) combine
+      check(
+        Semiring[A].times(Semiring[A].combine(x, y), z) ==
+          Semiring[A].combine(Semiring[A].times(x, z), Semiring[A].times(y, z)),
+        "right distributivus: (x + y) * z = x * z + y * z"
+      ) combine
+      check(
+        Semiring[A].times(x, Semiring[A].empty) == Semiring[A].empty,
+        "left zero multiplicative: a * 0 = 0"
+      ) combine
+      check(
+        Semiring[A].times(Semiring[A].empty, x) == Semiring[A].empty,
+        "right zero multiplicative: 0 * a = 0"
+      )
+
+  def checkSemiringWithUnityLaw[A: SemiringWithUnity](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkSemiringLaw(x, y, z) combine
+      check(
+        SemiringWithUnity[A].times(x, SemiringWithUnity[A].one) == x,
+        "times right identity: x * 1 = x"
+      ) combine
+      check(
+        SemiringWithUnity[A].times(SemiringWithUnity[A].one, x) == x,
+        "times left identity: 1 * x = x"
+      )
+
+  def checkCSemiringLaw[A: CSemiring](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkSemiringLaw(x, y, z) combine
+      check(
+        CSemiring[A].times(x, y) == CSemiring[A].times(y, x),
+        "commutative: x * y = y * x"
+      )
 end OldLaws

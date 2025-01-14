@@ -4,17 +4,14 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.numeric.*
 import io.github.iltotore.iron.scalacheck.numeric.given
+import ru.scalabook.typeclass.common.Laws.checkMultiplicativeAssociativity
 import weaver.*
 import weaver.scalacheck.*
 
-object MultiplicativeSemigroupSuite
-    extends SimpleIOSuite,
-      Checkers,
-      MultiplicativeSemigroupLaw:
+object MultiplicativeSemigroupSuite extends SimpleIOSuite, Checkers:
   test("Natural numbers is a semigroup with multiplication"):
     forall: (x: Int, y: Int, z: Int) =>
-      whenSuccess(checkMultiplicativeSemigroupLaw(x, y, z)): _ =>
-        success
+      expect(checkMultiplicativeAssociativity(x, y, z).isValid)
 
   test("pow should multiply n times"):
     forall: (x: Int :| Interval.Open[1, 5], n: Int :| Interval.Open[1, 5]) =>

@@ -1,10 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
+import ru.scalabook.typeclass.common.Laws.*
 import weaver.*
 import weaver.scalacheck.*
 
-object RingSuite extends SimpleIOSuite, Checkers, RingLaw:
+object RingSuite extends SimpleIOSuite, Checkers:
   test("Int is a ring with addition and multiplication"):
     forall: (x: Int, y: Int, z: Int) =>
-      whenSuccess(checkRingLaw(x, y, z)): _ =>
-        success
+      expect(checkRing(x, y, z).isValid)

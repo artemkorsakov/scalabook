@@ -157,6 +157,67 @@ object Laws:
     checkRightMultiplicativePropertyOfZero(x)
       .combine(checkLeftMultiplicativePropertyOfZero(x))
 
+  def checkGCDLCMMultiplication[A](x: A, y: A)(using
+      gr: GCDRing[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      gr.times(gr.gcd(x, y), gr.lcm(x, y)) == gr.times(y, x),
+      (),
+      "Произведение НОД и НОК должно равняться произведению чисел: gcd(x, y) * lcm(x, y) = x * y"
+    ).toValidatedNel
+
+  def checkGCDAssociativity[A](x: A, y: A, z: A)(using
+      gr: GCDRing[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      gr.gcd(gr.gcd(x, y), z) == gr.gcd(x, gr.gcd(y, z)),
+      (),
+      "Не соблюдается ассоциативность НОД: gcd(gcd(x, y), z) = gcd(x, gcd(y, z))"
+    ).toValidatedNel
+
+  def checkLCMAssociativity[A](x: A, y: A, z: A)(using
+      gr: GCDRing[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      gr.lcm(gr.lcm(x, y), z) == gr.lcm(x, gr.lcm(y, z)),
+      (),
+      "Не соблюдается ассоциативность НОК: lcm(lcm(x, y), z) = lcm(x, lcm(y, z))"
+    ).toValidatedNel
+
+  def checkGCDCommutativity[A](x: A, y: A)(using
+      gr: GCDRing[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      gr.gcd(x, y) == gr.gcd(y, x),
+      (),
+      "Не соблюдается коммутативность НОД: gcd(x, y) = gcd(y, x)"
+    ).toValidatedNel
+
+  def checkLCMCommutativity[A](x: A, y: A)(using
+      gr: GCDRing[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      gr.lcm(x, y) == gr.lcm(y, x),
+      (),
+      "Не соблюдается коммутативность НОК: lcm(x, y) = lcm(y, x)"
+    ).toValidatedNel
+
+  def checkQuotModMultiplication[A](x: A, y: A)(using
+      er: EuclideanRing[A]
+  ): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      er.combine(er.times(y, er.quot(x, y)), er.mod(x, y)) == x,
+      (),
+      "Для частного и остатка должен соблюдаться закон: b * (a /~ b) + (a % b) = a"
+    ).toValidatedNel
+
+  def checkReciprocal[A](x: A)(using fi: Field[A]): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](
+      x == fi.empty || fi.times(x, x.reciprocal) == fi.one,
+      (),
+      "Не соблюдается закон существования обратного по умножению числа: x * x^{-1} = 1"
+    ).toValidatedNel
+
   // Законы типовых классов
   def checkSemigroupLaw[A: Semigroup](
       x: A,
@@ -254,4 +315,67 @@ object Laws:
   ): ValidatedNel[String, Unit] =
     checkSemiring(x, y, z)
       .combine(checkIdempotency(x))
+
+  def checkRing[A: Ring](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkAbGroup(x, y, z)
+      .combine(checkMultiplicativeAssociativity(x, y, z))
+      .combine(checkDistributivity(x, y, z))
+      .combine(checkMultiplicativePropertyOfZero(x))
+
+  def checkRingWithUnity[A: RingWithUnity](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkRing(x, y, z)
+      .combine(checkTimesIdentity(x))
+
+  def checkCRing[A: CRing](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkRing(x, y, z)
+      .combine(checkTimesCommutativity(x, y))
+
+  def checkCRingWithUnity[A: CRingWithUnity](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkCRing(x, y, z)
+      .combine(checkTimesIdentity(x))
+
+  def checkGCDRing[A: GCDRing](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkCRingWithUnity(x, y, z)
+      .combine(checkGCDLCMMultiplication(x, y))
+      .combine(checkGCDAssociativity(x, y, z))
+      .combine(checkLCMAssociativity(x, y, z))
+      .combine(checkGCDCommutativity(x, y))
+      .combine(checkLCMCommutativity(x, y))
+
+  def checkEuclideanRing[A: EuclideanRing](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkGCDRing(x, y, z)
+      .combine(checkQuotModMultiplication(x, y))
+
+  def checkField[A: Field](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkEuclideanRing(x, y, z)
+      .combine(checkReciprocal(x))
+
 end Laws

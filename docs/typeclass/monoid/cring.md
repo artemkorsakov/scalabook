@@ -101,7 +101,7 @@
 ## Код
 
 ```dotty
-trait CRing[A] extends Ring[A]
+trait CRing[A] extends Ring[A], CSemiring[A]
 ```
 
 ### Числа относительно сложения с 0 и умножения

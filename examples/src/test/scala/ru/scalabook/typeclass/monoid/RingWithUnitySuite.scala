@@ -1,10 +1,10 @@
 package ru.scalabook.typeclass.monoid
 
+import ru.scalabook.typeclass.common.Laws.*
 import weaver.*
 import weaver.scalacheck.*
 
-object RingWithUnitySuite extends SimpleIOSuite, Checkers, RingWithUnityLaw:
+object RingWithUnitySuite extends SimpleIOSuite, Checkers:
   test("Int is a ring with unity with addition, 0, multiplication and 1"):
     forall: (x: Int, y: Int, z: Int) =>
-      whenSuccess(checkRingWithUnityLaw(x, y, z)): _ =>
-        success
+      expect(checkRingWithUnity(x, y, z).isValid)

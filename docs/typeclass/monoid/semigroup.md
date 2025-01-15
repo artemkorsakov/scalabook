@@ -70,43 +70,60 @@ trait Semigroup[A]:
 Для операции "сложения" встречаются следующие наименования:
 `combine`, `append`, `mappend` (Haskell), `op`, `plus`, `times`.
 
-Законы полугруппы принимают следующий вид:
+### Натуральные числа N образуют полугруппу относительно сложения
 
-- замыкание следует из определения функции `combine` - тип результата тот же, что и тип переменных.
-  При условии использования при реализации только [чистых функций без побочных эффектов](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D1%82%D0%BE%D1%82%D0%B0_%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B8).
-- ассоциативность формулируется так: `s.combine(x, s.combine(y, z)) == s.combine(s.combine(x, y), z)`
+- сложение ассоциативно: `(a + b) + c = a + (b + c)`
 
 ```dotty
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
+given additionSemigroup: Semigroup[Int] = (x: Int, y: Int) => x + y
+```
 
-object Semigroup:
-  // Натуральные числа N образуют полугруппу относительно сложения
-  given additionSemigroup: Semigroup[Int] = (x: Int, y: Int) => x + y
+### Натуральные числа N образуют полугруппу относительно умножения
 
-  // Натуральные числа N образуют полугруппу относительно умножения
-  given multiplicationSemigroup: Semigroup[Int] = (x: Int, y: Int) => x * y
+- умножение ассоциативно: `(a * b) * c = a * (b * c)`
 
-  // Строки образуют полугруппу относительно конкатенации
-  given concatenationSemigroup: Semigroup[String] =
-    (x: String, y: String) => x + y
+```dotty
+given multiplicationSemigroup: Semigroup[Int] = (x: Int, y: Int) => x * y
+```
 
-  // Последовательность образует полугруппу относительно операции объединения
-  given listSemigroup[T]: Semigroup[List[T]] =
-    (x: List[T], y: List[T]) => x ++ y
+### Строки
 
-object SemigroupLaws:
-  def checkAssociativity[A](x: A, y: A, z: A)(using
-      s: Semigroup[A]
-  ): Either[String, Unit] =
-    Either.cond[String, Unit](
-      s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
-      (),
-      s"Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
-    )
+Строки образуют полугруппу относительно конкатенации строк
 
-import Semigroup.given
-import SemigroupLaws.checkAssociativity
+```dotty
+given concatenationSemigroup: Semigroup[String] =
+  (x: String, y: String) => x + y
+```
+
+### Последовательность
+
+Последовательность образует полугруппу относительно операции объединения
+
+```dotty
+given listSemigroup[T]: Semigroup[List[T]] =
+  (x: List[T], y: List[T]) => x ++ y
+```
+
+### Законы
+
+Законы полугруппы принимают следующий вид:
+
+- Замыкание следует из определения функции `combine`: тип результата этой функции совпадает с типом переменных,
+  которые она принимает.
+  При условии использования при реализации только [чистых функций без побочных эффектов](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D1%82%D0%BE%D1%82%D0%B0_%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B8).
+- Ассоциативность выражается следующим образом:
+  `s.combine(x, s.combine(y, z))` должно быть равно `s.combine(s.combine(x, y), z)`.  
+  Это означает, что порядок объединения элементов не влияет на итоговый результат.
+
+```dotty
+def checkAssociativity[A](x: A, y: A, z: A)(using
+    s: Semigroup[A]
+): Either[String, Unit] =
+  Either.cond[String, Unit](
+    s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
+    (),
+    s"Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
+  )
 
 checkAssociativity(1, 2, 3)(using additionSemigroup)
 // (1 + 2) + 3 = 1 + (2 + 3) = 6

@@ -92,40 +92,24 @@ given Group[Rational] with
 
 ### Законы групп
 
-Законы групп принимают следующий вид:
-
-- замыкание следует из определения функции `combine` - тип результата тот же, что и тип переменных
-- ассоциативность формулируется так: `g.combine(x, g.combine(y, z)) == g.combine(g.combine(x, y), z)`
-- тождественность формулируется так: `(g.combine(x, g.empty) == x) && (g.combine(g.empty, x) == x)`
-- обратимость формулируется так: `g.combine(x.inverse, x) == g.empty && g.combine(x, x.inverse) == g.empty`
+- Замыкание следует из определения функции `combine`: тип результата этой функции совпадает с типом переменных,
+  которые она принимает.
+- Ассоциативность выражается следующим образом:
+  `g.combine(x, g.combine(y, z))` должно быть равно `g.combine(g.combine(x, y), z)`.  
+  Это означает, что порядок объединения элементов не влияет на итоговый результат.
+- Тождественность означает, что если вы объединяете любой элемент `x` с нейтральным элементом (`g.empty`),
+  то результат всегда будет равен `x`. Другими словами, нейтральный элемент не меняет значение `x` при объединении.
+  Это можно записать так:
+    - `g.combine(x, g.empty) == x`
+    - `g.combine(g.empty, x) == x`
+- Обратимость означает, что для каждого элемента `x` существует обратный элемент `x.inverse`, 
+  при объединении с которым результат будет равен нейтральному элементу `g.empty`. 
+  Это можно записать так:
+    - `g.combine(x.inverse, x) == g.empty`
+    - `g.combine(x, x.inverse) == g.empty`
 
 ```dotty
-def checkAssociativity[A](x: A, y: A, z: A)(using
-    s: Semigroup[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
-    (),
-    "Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
-  ).toValidatedNel
-
-def checkRightIdentity[A](x: A)(using
-    m: Monoid[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    m.combine(x, m.empty) == x,
-    (),
-    "Не соблюдается тождественность справа: x + e = x"
-  ).toValidatedNel
-
-def checkLeftIdentity[A](x: A)(using
-    m: Monoid[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    m.combine(m.empty, x) == x,
-    (),
-    "Не соблюдается тождественность слева: e + x = x"
-  ).toValidatedNel
+... // Законы моноида
 
 def checkInverse[A](x: A)(using
     g: Group[A]

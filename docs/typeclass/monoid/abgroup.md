@@ -50,9 +50,9 @@
     - Коммутативность: \\(a \times b = b \times a\\).
 - **Множество векторов на плоскости с операцией сложения векторов**:
     - Операция: \\(+\\).
-    - Нейтральный элемент: нулевой вектор \\(\vec{0}\\).
-    - Обратный элемент для \\(\vec{a}\\): \\(-\vec{a}\\).
-    - Коммутативность: \\(\vec{a} + \vec{b} = \vec{b} + \vec{a}\\).
+    - Нейтральный элемент: нулевой вектор \\(\overrightarrow{0}\\).
+    - Обратный элемент для \\(\overrightarrow{a}\\): \\(-\overrightarrow{a}\\).
+    - Коммутативность: \\(\overrightarrow{a} + \overrightarrow{b} = \overrightarrow{b} + \overrightarrow{a}\\).
 
 **Зачем нужны абелевы группы?**
 
@@ -92,24 +92,36 @@ trait AbGroup[A] extends Group[A], CMonoid[A]
 ### Целые числа **Z** являются абелевой группой по сложению
 
 ```dotty
-  given AbGroup[Int] with
-    val empty                        = 0
-    def combine(x: Int, y: Int): Int = x + y
-    extension (a: Int)
-      def inverse: Int = -a
+given AbGroup[Int] with
+  val empty                        = 0
+  def combine(x: Int, y: Int): Int = x + y
+  extension (a: Int)
+    def inverse: Int = -a
 ```
 
 ### Законы
 
-```dotty
-trait AbGroupLaw extends GroupLaw, CMonoidLaw:
-  def checkAbGroupLaw[A: AbGroup](
-      x: A,
-      y: A,
-      z: A
-  ): ValidatedNel[String, Unit] =
-    checkGroupLaw(x, y, z) combine checkCMonoidLaw(x, y, z)
-```
+Законы наследуются от [группы](group.md) и [коммутативного моноида](cmonoid.md).
+
+- Замыкание следует из определения функции `combine`: тип результата этой функции совпадает с типом переменных,
+  которые она принимает.
+- Ассоциативность выражается следующим образом:
+  `g.combine(x, g.combine(y, z))` должно быть равно `g.combine(g.combine(x, y), z)`.  
+  Это означает, что порядок объединения элементов не влияет на итоговый результат.
+- Тождественность означает, что если вы объединяете любой элемент `x` с нейтральным элементом (`g.empty`),
+  то результат всегда будет равен `x`. Другими словами, нейтральный элемент не меняет значение `x` при объединении.
+  Это можно записать так:
+    - `g.combine(x, g.empty) == x`
+    - `g.combine(g.empty, x) == x`
+- Обратимость означает, что для каждого элемента `x` существует обратный элемент `x.inverse`,
+  при объединении с которым результат будет равен нейтральному элементу `g.empty`.
+  Это можно записать так:
+    - `g.combine(x.inverse, x) == g.empty`
+    - `g.combine(x, x.inverse) == g.empty`
+- Коммутативность означает, что порядок элементов при объединении не важен.
+  Другими словами, результат операции `combine` будет одинаковым, независимо от того,
+  в каком порядке вы передаёте элементы `x` и `y`.
+  Это можно записать так: `g.combine(x, y) == g.combine(y, x)`
 
 ## Схема
 

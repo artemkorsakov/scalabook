@@ -77,6 +77,10 @@ given [A]: IdempotentMonoid[Set[A]] with
   def combine(x: Set[A], y: Set[A]): Set[A] = x ++ y
 ```
 
+### Законы
+
+Законы наследуются от [моноида](monoid.md) и [идемпотентной полугруппы](band.md).
+
 ## Схема
 
 ```mermaid

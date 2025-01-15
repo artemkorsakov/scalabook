@@ -88,43 +88,7 @@ given CMonoid[Int] with
 
 ### Законы
 
-```dotty
-def checkAssociativity[A](x: A, y: A, z: A)(using
-    s: Semigroup[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
-    (),
-    "Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
-  ).toValidatedNel
-  
-def checkRightIdentity[A](x: A)(using
-    m: Monoid[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    m.combine(x, m.empty) == x,
-    (),
-    "Не соблюдается тождественность справа: x + e = x"
-  ).toValidatedNel
-
-def checkLeftIdentity[A](x: A)(using
-    m: Monoid[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    m.combine(m.empty, x) == x,
-    (),
-    "Не соблюдается тождественность слева: e + x = x"
-  ).toValidatedNel
-    
-def checkCommutativity[A](x: A, y: A)(using
-    cs: CSemigroup[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    cs.combine(x, y) == cs.combine(y, x),
-    (),
-    "Не соблюдается коммутативность: x + y должно быть равно y + x"
-  ).toValidatedNel  
-```
+Законы наследуются от [моноида](monoid.md) и [коммутативной полугруппы](csemigroup.md).
 
 ## Схема
 

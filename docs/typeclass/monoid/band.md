@@ -78,19 +78,17 @@ summon[Band[Set[Int]]].combine(Set(1, 2), Set(1, 2))
 
 ### Законы
 
-- замыкание следует из определения функции `combine` - тип результата тот же, что и тип переменных.
-- ассоциативность формулируется так: `s.combine(x, s.combine(y, z)) == s.combine(s.combine(x, y), z)`
-- идемпотентность формулируется так: `s.combine(x, x) == x`
+- Замыкание следует из определения функции `combine`: тип результата этой функции совпадает с типом переменных, 
+  которые она принимает.
+- Ассоциативность выражается следующим образом:
+  `s.combine(x, s.combine(y, z))` должно быть равно `s.combine(s.combine(x, y), z)`.  
+  Это означает, что порядок объединения элементов не влияет на итоговый результат.
+- Идемпотентность формулируется так:  
+  `s.combine(x, x)` должно быть равно `x`.  
+  Это означает, что объединение элемента с самим собой не изменяет его.
 
 ```dotty
-def checkAssociativity[A](x: A, y: A, z: A)(using
-    s: Semigroup[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
-    (),
-    "Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
-  ).toValidatedNel
+... // Законы полугруппы
 
 def checkIdempotency[A](x: A)(using s: Band[A]): ValidatedNel[String, Unit] =
   Either.cond[String, Unit](

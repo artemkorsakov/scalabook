@@ -77,15 +77,13 @@ given CSemigroup[Int] = (x: Int, y: Int) => x + y
 
 ### Законы
 
+Коммутативность означает, что порядок элементов при объединении не важен. 
+Другими словами, результат операции `combine` будет одинаковым, независимо от того, 
+в каком порядке вы передаёте элементы `x` и `y`. 
+Это можно записать так: `cs.combine(x, y) == cs.combine(y, x)`
+
 ```dotty
-def checkAssociativity[A](x: A, y: A, z: A)(using
-    s: Semigroup[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
-    (),
-    "Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
-  ).toValidatedNel
+... // Законы полугруппы
   
 def checkCommutativity[A](x: A, y: A)(using
     cs: CSemigroup[A]

@@ -145,7 +145,9 @@ classDiagram
     CommutativeSemigroup <|-- CommutativeMonoid
     class Semiring~A~
     CommutativeMonoid <|-- Semiring
-    class MultiplicativeSemigroup~A~
+    class MultiplicativeSemigroup~A~{
+        +times(x: A, y: A) A
+    }
     MultiplicativeSemigroup <|-- Semiring
     Semigroup .. MultiplicativeSemigroup
     class IdempotentSemiring~A~

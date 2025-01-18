@@ -21,7 +21,7 @@
 
 > Стоит отметить, что здесь и далее речь идет только о [чистых функциях](../../scala/fp/pure-functions.md) `identity`, `f` и `g`.
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Functor[F[_]] extends InvariantFunctor[F]:
@@ -42,8 +42,6 @@ trait Functor[F[_]] extends InvariantFunctor[F]:
 - "поднимает" функцию `A => B` до функции преобразования функторов `F[A] => F[B]`
 - применяет функтор от функции преобразования из `A` в `B` (`F[A => B]`) к элементу типа `A` и получает функтор от `B`
 - по функтору от `A` и функции преобразования из `A` в `B` позволяет получать функтор от кортежа `(A, B)` 
-
-## Примеры
 
 ### "Обертка" является функтором
 
@@ -180,7 +178,20 @@ Nested(Some(List(1, 2))).map(_ + 10)
 - сохраняет композицию: `fa.map(f).map(g) == fa.map(g(f(_)))`
     - `fga.map(ga => ga.map(f)).map(ga => ga.map(g)) == fga.map(ga => ga.map(f).map(g)) == fga.map(ga => ga.map(g(f(_))))`
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    }
+    class Functor~A~{
+        +map[B](fa: F[A], f: A => B) F[B]
+    }
+    InvariantFunctor <|-- Functor 
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Cats
 

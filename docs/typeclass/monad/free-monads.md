@@ -8,7 +8,7 @@
 - API для написания интерпретаторов, которые придают значение этому AST
 
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 sealed trait Free[F[_], A]
@@ -25,7 +25,6 @@ given freeMonad[F[_]]: Monad[[X] =>> Free[F, X]] with
 
   extension [A](fa: Free[F, A]) override def flatMap[B](f: A => Free[F, B]): Free[F, B] = FlatMap(fa, f)
 ```
-
 
 ---
 

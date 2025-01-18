@@ -29,7 +29,7 @@
   что применить композицию к `u`, затем `v`, а затем применить составную функцию к `w`.) 
 
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Applicative[F[_]] extends Apply[F], InvariantApplicative[F]:
@@ -105,8 +105,6 @@ def product[A, B](fa: F[A], fb: F[B]): F[(A,B)] =
   fa.map2(fb)((a, b) => (a, b))
 ```
 
-## Примеры
-
 ### Tuple applicative
 
 Как и монады, аппликативные функторы замкнуты относительно произведений;
@@ -142,7 +140,6 @@ given compositeApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X
 Произведение и композиция позволяют комбинировать идиоматические (аппликативные) вычисления двумя разными способами; 
 Обычно они называются параллельной и последовательной композицией соответственно. 
 Тот факт, что можно составлять аппликативы, и они остаются аппликативными, очень полезен.
-
 
 ### "Обертка"
 
@@ -260,7 +257,37 @@ given ioApplicative: Applicative[IO] with
   override def apply[A, B](fab: IO[A => B])(fa: IO[A]): IO[B] = IO(() => fab.run()(fa.run()))
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    }
+    class Semigroupal~A~{
+        +product[A, B](fa: F[A], fb: F[B]) F[Tuple2[A, B]]
+    }
+    class Functor~A~{
+        +map[B](fa: F[A], f: A => B) F[B]
+    }
+    InvariantFunctor <|-- Functor    
+    class InvariantApplicative~A~{
+        +xunit0[A](a: => A) F[A]
+    }
+    InvariantFunctor <|-- InvariantApplicative   
+    class Apply~A~{
+        +apply[A, B](fab: F[A => B])(fa: F[A]) F[B]
+    }
+    Functor <|-- Apply
+    Semigroupal <|-- Apply
+    class Applicative~A~{
+        +unit[A](a: => A) F[A]
+    }
+    Apply <|-- Applicative
+    InvariantApplicative <|-- Applicative
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Cats
 

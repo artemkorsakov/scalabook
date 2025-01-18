@@ -8,7 +8,7 @@
 
 Используется для получения класса типов продуктов и типов значений.
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait InvariantFunctor[F[_]]:
@@ -22,6 +22,18 @@ trait InvariantApplicative[F[_]] extends InvariantFunctor[F]:
       fa.xmap(f, g)
 ```
 
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    }  
+    class InvariantApplicative~A~{
+        +xunit0[A](a: => A) F[A]
+    }
+    InvariantFunctor <|-- InvariantApplicative   
+```
 
 ---
 

@@ -17,7 +17,7 @@
 - Composition (композиция): Если определены два метода `f: A => B` и `g: B => C`, тогда `cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))`.
 
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait ContravariantFunctor[F[_]] extends InvariantFunctor[F]:
@@ -49,8 +49,6 @@ trait ContravariantFunctor[F[_]] extends InvariantFunctor[F]:
         (self.contramap(fa._1)(f), g.contramap(fa._2)(f))
 ```
 
-## Примеры
-
 ### Унарная функция
 
 ```dotty
@@ -71,7 +69,20 @@ given ContravariantFunctor[Predicate] with
     a => b(f(a))
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    } 
+    class ContravariantFunctor~A~{
+        +contramap[A, B](b: F[B])(f: A => B) F[A]
+    }
+    InvariantFunctor <|-- ContravariantFunctor
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Cats
 

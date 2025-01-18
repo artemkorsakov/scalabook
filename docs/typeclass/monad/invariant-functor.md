@@ -19,15 +19,13 @@
 
 Также известен как экспоненциальный функтор.
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait InvariantFunctor[F[_]]:
   extension [A](fa: F[A]) 
     def xmap[B](f: A => B, g: B => A): F[B]
 ```
-
-## Примеры
 
 ### "Обертка"
 
@@ -86,7 +84,16 @@ given InvariantFunctor[Codec] with
         def encode(value: C): String = fa.encode(g1 compose g2) = fa.encode(g1(g2(value)))
         def decode(value: String): C = (f2 compose f1)(fa.decode(value)) = f2(f1(fa.decode(value)))
         ```
-  
+
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    }
+```
+
 ---
 
 **Ссылки:**

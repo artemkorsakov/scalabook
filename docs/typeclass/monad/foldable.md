@@ -25,8 +25,7 @@ _Fold_ может использоваться для реализации `redu
 - `foldLeft` соответствует `foldMap`: `fa.foldMap(Vector(_)) == fa.foldLeft(Vector.empty[A])(_ :+ _)`
 - `foldRight` соответствует `foldMap`: `fa.foldMap(Vector(_)) == fa.foldRight(Vector.empty[A])(_ +: _)`
 
-
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Monoid[A]:
@@ -61,8 +60,6 @@ trait Foldable[F[_]]:
     def toList: List[A] =
       fa.foldRight(List.empty[A])(_ :: _)  
 ```
-
-## Примеры
 
 ### "Обертка"
 
@@ -134,7 +131,17 @@ given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
         case Left(_)  => init
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram   
+    class Foldable~A~{
+        +foldRight[B](fa: F[A])(acc: B)(f: (A, B) => B) B 
+        +foldLeft[B](fa: F[A])(acc: B)(f: (B, A) => B) B
+    }
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Cats
 

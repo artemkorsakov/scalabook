@@ -7,7 +7,7 @@
 
 `MonadPlus` должен удовлетворять законам монад и моноидов.
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait MonadPlus[F[_]] extends Monad[F], ApplicativePlus[F]:
@@ -23,8 +23,6 @@ trait MonadPlus[F[_]] extends Monad[F], ApplicativePlus[F]:
 А также операцию `unite`, позволяющую "схлопывать" `F[T[A]]` при наличии `Foldable[T]`.
 Например, список `List(Some(785727510), Some(0), Some(1), None, None, Some(1))` "схлопывается" до
 `List(785727510, 0, 1, 1)`.
-
-## Примеры
 
 ### Связанный список
 
@@ -42,7 +40,57 @@ given MonadPlus[List] with
   extension [A](fa: List[A]) override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    }
+    class Semigroupal~A~{
+        +product[A, B](fa: F[A], fb: F[B]) F[Tuple2[A, B]]
+    }
+    class Functor~A~{
+        +map[B](fa: F[A], f: A => B) F[B]
+    }
+    InvariantFunctor <|-- Functor    
+    class InvariantApplicative~A~{
+        +xunit0[A](a: => A) F[A]
+    }
+    InvariantFunctor <|-- InvariantApplicative   
+    class Apply~A~{
+        +apply[A, B](fab: F[A => B])(fa: F[A]) F[B]
+    }
+    Functor <|-- Apply
+    Semigroupal <|-- Apply
+    class Applicative~A~{
+        +unit[A](a: => A) F[A]
+    }
+    Apply <|-- Applicative
+    InvariantApplicative <|-- Applicative
+    class Bind~A~{
+        +flatMap[B](fa: F[A], f: A => F[B]) F[B]
+    }
+    Apply <|-- Bind
+    class Monad~A~
+    Applicative <|-- Monad
+    Bind <|-- Monad
+    class Plus~A~{
+        +plus[A](fa1: F[A], fa2: => F[A]) F[A]
+    }
+    class PlusEmpty~A~{
+        +empty[A]: F[A]
+    }
+    Plus <|-- PlusEmpty
+    class ApplicativePlus~A~
+    Applicative <|-- ApplicativePlus
+    PlusEmpty <|-- ApplicativePlus
+    class MonadPlus~A~
+    Monad <|-- MonadPlus
+    ApplicativePlus <|-- MonadPlus
+```
+
+## Реализация в библиотеках
 
 ### Реализация в ScalaZ
 

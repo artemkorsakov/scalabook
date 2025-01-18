@@ -21,7 +21,7 @@
   монадических функций с `flatMap`, не должно иметь значения, как они вложены: `fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) }`
 
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Monad[F[_]] extends Applicative[F], Bind[F]:
@@ -117,8 +117,6 @@ def replicateM[A](n: Int, fa: F[A]): F[List[A]] =
 def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
   a => f(a).flatMap(g)  
 ```
-
-## Примеры
 
 ### "Обертка"
 
@@ -218,7 +216,44 @@ given ioMonad: Monad[IO] with
   extension [A](fa: IO[A]) override def flatMap[B](f: A => IO[B]): IO[B] = f(fa.run())
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    }
+    class Semigroupal~A~{
+        +product[A, B](fa: F[A], fb: F[B]) F[Tuple2[A, B]]
+    }
+    class Functor~A~{
+        +map[B](fa: F[A], f: A => B) F[B]
+    }
+    InvariantFunctor <|-- Functor    
+    class InvariantApplicative~A~{
+        +xunit0[A](a: => A) F[A]
+    }
+    InvariantFunctor <|-- InvariantApplicative   
+    class Apply~A~{
+        +apply[A, B](fab: F[A => B])(fa: F[A]) F[B]
+    }
+    Functor <|-- Apply
+    Semigroupal <|-- Apply
+    class Applicative~A~{
+        +unit[A](a: => A) F[A]
+    }
+    Apply <|-- Applicative
+    InvariantApplicative <|-- Applicative
+    class Bind~A~{
+        +flatMap[B](fa: F[A], f: A => F[B]) F[B]
+    }
+    Apply <|-- Bind
+    class Monad~A~
+    Applicative <|-- Monad
+    Bind <|-- Monad
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Cats
 

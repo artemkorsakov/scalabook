@@ -4,8 +4,7 @@
 
 Комонада реализует противоположные для [монады](monad.md) операции и расширяет [`CoBind`](co-bind.md).
 
-
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait CoMonad[F[_]] extends CoBind[F]:
@@ -16,8 +15,6 @@ trait CoMonad[F[_]] extends CoBind[F]:
 
   final def coPure[A](p: F[A]): A = coUnit(p)
 ```
-
-## Примеры
 
 ### "Обертка"
 
@@ -51,6 +48,26 @@ given envCoMonad[R]: CoMonad[[X] =>> Env[X, R]] with
       Env(f(as), r)
 ```
 
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    }
+    class Functor~A~{
+        +map[B](fa: F[A], f: A => B) F[B]
+    }
+    InvariantFunctor <|-- Functor    
+    class CoBind~A~{
+        +cobind[B](fa: F[A], f: F[A] => B) F[B]
+    }
+    Functor <|-- CoBind
+    class CoMonad~A~{
+        +coUnit[A](fa: F[A]) A
+    }
+    CoBind <|-- CoMonad
+```
 
 ---
 

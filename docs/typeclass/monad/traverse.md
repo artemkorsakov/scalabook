@@ -40,8 +40,7 @@
   t1 == t2
   ```
 
-
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Traverse[F[_]] extends Functor[F], Foldable[F]:
@@ -58,8 +57,6 @@ trait Traverse[F[_]] extends Functor[F], Foldable[F]:
   def sequence[G[_]: Applicative, A](fga: F[G[A]]): G[F[A]] =
     fga.traverse(ga => ga)
 ```
-
-## Примеры
 
 ### "Обертка"
 
@@ -139,7 +136,30 @@ given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
       }
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    }
+    class Functor~A~{
+        +map[B](fa: F[A], f: A => B) F[B]
+    }
+    InvariantFunctor <|-- Functor    
+    class Foldable~A~{
+        +foldRight[B](fa: F[A])(acc: B)(f: (A, B) => B) B 
+        +foldLeft[B](fa: F[A])(acc: B)(f: (B, A) => B) B
+    }
+    class Traverse~A~{
+        +traverse[G[_]: Applicative, B](fa: F[A])(f: A => G[B]) G[F[B]]
+        +sequence[G[_]: Applicative, A](fga: F[G[A]]) G[F[A]]
+    }
+    Functor <|-- Traverse
+    Foldable <|-- Traverse
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Cats
 

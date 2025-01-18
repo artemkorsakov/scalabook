@@ -10,14 +10,12 @@
 
 - ассоциативность: `product(a, product(b, c)) == product(product(a, b), c)`
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Semigroupal[F[_]]:
   def product[A, B](fa: F[A], fb: F[B]): F[(A, B)]
 ```
-
-## Примеры
 
 ### "Обертка"
 
@@ -38,7 +36,16 @@ given Semigroupal[Option] with
       case _                  => None
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class Semigroupal~A~{
+        +product[A, B](fa: F[A], fb: F[B]) F[Tuple2[A, B]]
+    }
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Cats
 
@@ -49,7 +56,6 @@ import cats.instances.option.*
 Semigroupal[Option].product(Some(123), Some("abc")) // Some((123,abc))
 Semigroupal.tuple3(Option(1), Option(2), Option(3)) // Some((1,2,3))
 ```
-
 
 ---
 

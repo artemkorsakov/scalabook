@@ -4,8 +4,7 @@
 
 `CoBind` реализует противоположные для [`Bind`](bind.md) операции.
 
-
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait CoBind[F[_]] extends Functor[F]:
@@ -20,8 +19,6 @@ trait CoBind[F[_]] extends Functor[F]:
     /** Также известно как `duplicate` */
     final def cojoin: F[F[A]] = fa.cobind(fa => fa)
 ```
-
-## Примеры
 
 ### "Обертка"
 
@@ -51,6 +48,22 @@ given envCoBind[R]: CoBind[[X] =>> Env[X, R]] with
       Env(f(as), r)
 ```
 
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    }
+    class Functor~A~{
+        +map[B](fa: F[A], f: A => B) F[B]
+    }
+    InvariantFunctor <|-- Functor    
+    class CoBind~A~{
+        +cobind[B](fa: F[A], f: F[A] => B) F[B]
+    }
+    Functor <|-- CoBind
+```
 
 ---
 

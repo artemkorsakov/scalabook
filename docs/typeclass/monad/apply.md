@@ -16,7 +16,7 @@
 
 - Composition (композиция) - `apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)`
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Apply[F[_]] extends Functor[F], Semigroupal[F]:
@@ -39,8 +39,6 @@ trait Apply[F[_]] extends Functor[F], Semigroupal[F]:
 - `lift2`, "поднимающую" функцию `(A, B) => C` до функции преобразования `Apply`: `(F[A], F[B]) => F[C]`
 
 Очевидно, эти операции можно дальше расширять на более длинные кортежи: `apply3`, `apply4` и т.д.
-
-## Примеры
 
 ### "Обертка"
 
@@ -69,7 +67,28 @@ given Apply[Option] with
         case None    => None
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    }
+    class Semigroupal~A~{
+        +product[A, B](fa: F[A], fb: F[B]) F[Tuple2[A, B]]
+    }
+    class Functor~A~{
+        +map[B](fa: F[A], f: A => B) F[B]
+    }
+    InvariantFunctor <|-- Functor    
+    class Apply~A~{
+        +apply[A, B](fab: F[A => B])(fa: F[A]) F[B]
+    }
+    Functor <|-- Apply
+    Semigroupal <|-- Apply
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Cats
 

@@ -10,13 +10,11 @@
 Имейте в виду, что бимонада имеет свои собственные дополнительные законы, 
 поэтому то, что является одновременно монадическим и комонадным, необязательно может быть законной бимонадой.
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Bimonad[F[_]] extends Monad[F], CoMonad[F]
 ```
-
-## Примеры
 
 ### Непустой список
 
@@ -37,8 +35,55 @@ given Bimonad[NonEmptyList] with
       NonEmptyList(f(fa), Nil)
 ```
 
+## Схема
 
-## Реализация
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    }
+    class Semigroupal~A~{
+        +product[A, B](fa: F[A], fb: F[B]) F[Tuple2[A, B]]
+    }
+    class Functor~A~{
+        +map[B](fa: F[A], f: A => B) F[B]
+    }
+    InvariantFunctor <|-- Functor    
+    class InvariantApplicative~A~{
+        +xunit0[A](a: => A) F[A]
+    }
+    InvariantFunctor <|-- InvariantApplicative   
+    class Apply~A~{
+        +apply[A, B](fab: F[A => B])(fa: F[A]) F[B]
+    }
+    Functor <|-- Apply
+    Semigroupal <|-- Apply
+    class Applicative~A~{
+        +unit[A](a: => A) F[A]
+    }
+    Apply <|-- Applicative
+    InvariantApplicative <|-- Applicative
+    class Bind~A~{
+        +flatMap[B](fa: F[A], f: A => F[B]) F[B]
+    }
+    Apply <|-- Bind
+    class Monad~A~
+    Applicative <|-- Monad
+    Bind <|-- Monad
+    class CoBind~A~{
+        +cobind[B](fa: F[A], f: F[A] => B) F[B]
+    }
+    Functor <|-- CoBind
+    class CoMonad~A~{
+        +coUnit[A](fa: F[A]) A
+    }
+    CoBind <|-- CoMonad
+    class Bimonad~A~
+    Monad <|-- Bimonad
+    CoMonad <|-- Bimonad
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Cats
 

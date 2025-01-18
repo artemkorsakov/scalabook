@@ -20,3 +20,5 @@ def checkAssociativity[A](x: A, y: A, z: A)(using
 
 summon[CSemigroup[Int]].combine(1, 2)
 summon[CSemigroup[Int]].combine(2, 1)
+
+Tuple2

@@ -12,14 +12,12 @@
   `isEmpty(f1) && isEmpty(f2) == isEmpty(plus(f1, f2))`
 
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait IsEmpty[F[_]] extends PlusEmpty[F]:
   def isEmpty[A](fa: F[A]): Boolean
 ```
-
-## Примеры
 
 ### Связанный список
 
@@ -30,7 +28,24 @@ given IsEmpty[List] with
   override def empty[A]: List[A] = List.empty[A]
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class Plus~A~{
+        +plus[A](fa1: F[A], fa2: => F[A]) F[A]
+    }
+    class PlusEmpty~A~{
+        +empty[A]: F[A]
+    }
+    Plus <|-- PlusEmpty
+    class IsEmpty~A~{
+        +isEmpty[A](fa: F[A]) Boolean
+    }
+    PlusEmpty <|-- IsEmpty
+```
+
+## Реализация в библиотеках
 
 ### Реализация в ScalaZ
 

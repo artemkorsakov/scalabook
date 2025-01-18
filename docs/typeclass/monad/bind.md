@@ -18,7 +18,7 @@
 Синоним `join` - это `flatten`.
 
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Bind[F[_]] extends Apply[F]:
@@ -35,8 +35,6 @@ trait Bind[F[_]] extends Apply[F]:
   override def apply2[A, B, C](fa: => F[A], fb: => F[B])(f: (A, B) => C): F[C] =
     flatMap(fa)(a => fb.map(b => f(a, b)))
 ```
-
-## Примеры
 
 ### "Обертка"
 
@@ -68,7 +66,32 @@ given Bind[Option] with
         case None    => None
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    }
+    class Semigroupal~A~{
+        +product[A, B](fa: F[A], fb: F[B]) F[Tuple2[A, B]]
+    }
+    class Functor~A~{
+        +map[B](fa: F[A], f: A => B) F[B]
+    }
+    InvariantFunctor <|-- Functor    
+    class Apply~A~{
+        +apply[A, B](fab: F[A => B])(fa: F[A]) F[B]
+    }
+    Functor <|-- Apply
+    Semigroupal <|-- Apply
+    class Bind~A~{
+        +flatMap[B](fa: F[A], f: A => F[B]) F[B]
+    }
+    Apply <|-- Bind
+```
+
+## Реализация в библиотеках
 
 ### Реализация в ScalaZ
 

@@ -9,7 +9,7 @@
 - Associativity (ассоциативность): `(x + y) + z = x + (y + z)`
 
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Plus[F[_]]:
@@ -18,8 +18,6 @@ trait Plus[F[_]]:
   def semigroup[A]: Semigroup[F[A]] = (f1: F[A], f2: F[A]) => plus(f1, f2)
 ```
 
-## Примеры
-
 ### Связанный список
 
 ```dotty
@@ -27,7 +25,16 @@ given Plus[List] with
   def plus[A](fa1: List[A], fa2: => List[A]): List[A] = fa1 ++ fa2
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class Plus~A~{
+        +plus[A](fa1: F[A], fa2: => F[A]) F[A]
+    }
+```
+
+## Реализация в библиотеках
 
 ### Реализация в ScalaZ
 

@@ -12,7 +12,7 @@
   где `delta: A => (A, A) = a => (a, a)`
 
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Divide[F[_]] extends ContravariantFunctor[F]:
@@ -20,8 +20,6 @@ trait Divide[F[_]] extends ContravariantFunctor[F]:
 
   def tuple2[A, B](fa: => F[A], fb: => F[B]): F[(A, B)] = divide(fa, fb)(identity)
 ```
-
-## Примеры
 
 ### Унарная функция
 
@@ -37,6 +35,22 @@ given functionDivide[R: Monoid]: Divide[[X] =>> Function1[X, R]] with
     }
 ```
 
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    } 
+    class ContravariantFunctor~A~{
+        +contramap[A, B](b: F[B])(f: A => B) F[A]
+    }
+    InvariantFunctor <|-- ContravariantFunctor
+    class Divide~A~{
+        +divide[A, B, C](fa: => F[A], fb: => F[B])(f: C => (A, B)) F[C]
+    }
+    ContravariantFunctor <|-- Divide
+```
 
 ---
 

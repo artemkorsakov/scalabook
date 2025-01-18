@@ -10,8 +10,7 @@
 - right identity: `divide(fa, conquer)(delta) == fa`, где `delta: A => (A, A) = a => (a, a)`
 - left identity: `divide(conquer, fa)(delta) == fa`
 
-
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Divisible[F[_]] extends Divide[F], InvariantApplicative[F]:
@@ -22,8 +21,6 @@ trait Divisible[F[_]] extends Divide[F], InvariantApplicative[F]:
   override def cmap[A, B](fb: F[B])(f: A => B): F[A] =
     divide(conquer[Unit], fb)(c => ((), f(c)))
 ```
-
-## Примеры
 
 ### Унарная функция
 
@@ -38,6 +35,31 @@ given functionDivisible[R: Monoid]: Divisible[[X] =>> Function1[X, R]] with
   override def conquer[A]: A => R = _ => summon[Monoid[R]].empty
 ```
 
+## Схема
+
+```mermaid
+classDiagram
+    class InvariantFunctor~A~{
+        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+    } 
+    class InvariantApplicative~A~{
+        +xunit0[A](a: => A) F[A]
+    }
+    InvariantFunctor <|-- InvariantApplicative   
+    class ContravariantFunctor~A~{
+        +contramap[A, B](b: F[B])(f: A => B) F[A]
+    }
+    InvariantFunctor <|-- ContravariantFunctor
+    class Divide~A~{
+        +divide[A, B, C](fa: => F[A], fb: => F[B])(f: C => (A, B)) F[C]
+    }
+    ContravariantFunctor <|-- Divide
+    class Divisible~A~{
+        +conquer[A]: F[A]
+    }
+    Divide <|-- Divisible
+    InvariantApplicative <|-- Divisible
+```
 
 ---
 

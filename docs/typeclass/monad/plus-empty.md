@@ -10,7 +10,7 @@
 - Identity (тождественность): существует `e ∈ M` такое, что `e + x = x + e = x`
 
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait PlusEmpty[F[_]] extends Plus[F]:
@@ -24,8 +24,6 @@ trait PlusEmpty[F[_]] extends Plus[F]:
       override def empty: F[A] = self.empty[A]
 ```
 
-## Примеры
-
 ### Связанный список
 
 ```dotty
@@ -34,7 +32,20 @@ given PlusEmpty[List] with
   def empty[A]: List[A] = List.empty[A]
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class Plus~A~{
+        +plus[A](fa1: F[A], fa2: => F[A]) F[A]
+    }
+    class PlusEmpty~A~{
+        +empty[A]: F[A]
+    }
+    Plus <|-- PlusEmpty
+```
+
+## Реализация в библиотеках
 
 ### Реализация в ScalaZ
 

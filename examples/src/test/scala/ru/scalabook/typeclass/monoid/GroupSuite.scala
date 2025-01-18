@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.monoid
 
-import ru.scalabook.typeclass.common.Laws.checkGroupLaw
+import ru.scalabook.typeclass.common.TypeLaws.*
 import ru.scalabook.typeclass.monoid.MonoidSuite.{expect, test}
 import weaver.*
 import weaver.scalacheck.*

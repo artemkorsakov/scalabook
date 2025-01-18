@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.monoid
 
-import ru.scalabook.typeclass.common.Laws.checkIdempotentMonoid
+import ru.scalabook.typeclass.common.TypeLaws.*
 import weaver.*
 import weaver.scalacheck.*
 

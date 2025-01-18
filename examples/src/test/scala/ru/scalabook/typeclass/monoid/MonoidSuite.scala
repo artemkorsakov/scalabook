@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.monoid
 
-import ru.scalabook.typeclass.common.Laws.checkMonoidLaw
+import ru.scalabook.typeclass.common.TypeLaws.*
 import weaver.*
 import weaver.scalacheck.*
 import ru.scalabook.typeclass.monoid.Monoid.given

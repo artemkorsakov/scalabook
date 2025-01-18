@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.monoid
 
-import ru.scalabook.typeclass.common.Laws.*
+import ru.scalabook.typeclass.common.TypeLaws.*
 import spire.math.Rational
 import ru.scalabook.typeclass.common.Generators.given
 import weaver.*

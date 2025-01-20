@@ -1,24 +1,28 @@
-import cats.data.ValidatedNel
-import cats.syntax.all.*
+trait InvariantFunctor[F[_]]:
+  extension [A](fa: F[A])
+    def xmap[B](f: A => B, g: B => A): F[B]
 
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
+case class ParserPrinter[A](
+    parse: String => Either[String, A],
+    print: A => String
+)
 
-trait CSemigroup[A] extends Semigroup[A]
+given InvariantFunctor[ParserPrinter] with
+  extension [A](pp: ParserPrinter[A])
+    def xmap[B](f: A => B, g: B => A): ParserPrinter[B] =
+      ParserPrinter(
+        parse = (s: String) => pp.parse(s).map(f),
+        print = (b: B) => pp.print(g(b))
+      )
 
-object CSemigroup:
-  given CSemigroup[Int] = (x: Int, y: Int) => x + y
+// Пример использования
+val intParserPrinter: ParserPrinter[Int] = ParserPrinter(
+  parse = s => Right(s.toInt),
+  print = i => i.toString
+)
 
-def checkAssociativity[A](x: A, y: A, z: A)(using
-    s: Semigroup[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
-    (),
-    "Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
-  ).toValidatedNel
+val stringParserPrinter: ParserPrinter[String] =
+  summon[InvariantFunctor[ParserPrinter]].xmap(intParserPrinter)(_.toString, _.toInt)
 
-summon[CSemigroup[Int]].combine(1, 2)
-summon[CSemigroup[Int]].combine(2, 1)
-
-Tuple2
+println(stringParserPrinter.parse("123")) // Right("123")
+println(stringParserPrinter.print("456")) // "456"

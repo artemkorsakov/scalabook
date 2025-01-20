@@ -3,7 +3,7 @@ package ru.scalabook.typeclass.common
 import cats.data.ValidatedNel
 import ru.scalabook.typeclass.monoid.*
 
-object TypeLaws extends BasicLaws:
+object MonoidLaws extends BasicLaws:
   def checkSemigroupLaw[A: Semigroup](
       x: A,
       y: A,
@@ -162,4 +162,4 @@ object TypeLaws extends BasicLaws:
   ): ValidatedNel[String, Unit] =
     checkEuclideanRing(x, y, z)
       .combine(checkReciprocal(x))
-end TypeLaws
+end MonoidLaws

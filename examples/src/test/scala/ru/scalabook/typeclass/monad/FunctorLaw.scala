@@ -1,8 +1,9 @@
 package ru.scalabook.typeclass.monad
 
 import cats.data.ValidatedNel
+import ru.scalabook.typeclass.common.OldLaws
 
-trait FunctorLaw extends InvariantFunctorLaw:
+trait FunctorLaw extends OldLaws:
   def checkFunctorLaw[F[_]: Functor, A, B, C](
       fa: F[A]
   )(using

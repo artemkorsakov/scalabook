@@ -1,9 +1,9 @@
 package ru.scalabook.typeclass.monad
 
 import cats.data.ValidatedNel
-import ru.scalabook.typeclass.common.Runner1
+import ru.scalabook.typeclass.common.{OldLaws, Runner1}
 
-trait ContravariantFunctorLaw extends InvariantFunctorLaw:
+trait ContravariantFunctorLaw extends OldLaws:
   def checkContravariantFunctorLaw[F[
       _
   ]: ContravariantFunctor: Runner1, A, B, C](

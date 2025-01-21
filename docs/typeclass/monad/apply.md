@@ -43,7 +43,9 @@ trait Apply[F[_]] extends Functor[F], Semigroupal[F]:
 ### "Обертка"
 
 ```dotty
-import cats.Id
+type Id[A] = A
+object Id:
+  def apply[A](a: A): Id[A] = a
 
 given Apply[Id] with
   override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab(fa))

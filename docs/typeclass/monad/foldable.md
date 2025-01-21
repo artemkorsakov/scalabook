@@ -64,7 +64,9 @@ trait Foldable[F[_]]:
 ### "Обертка"
 
 ```dotty
-import cats.Id
+type Id[A] = A
+object Id:
+  def apply[A](a: A): Id[A] = a
 
 given Foldable[Id] with
   extension [A](fa: Id[A])

@@ -151,11 +151,14 @@ given InvariantFunctor[ParserPrinter] with
 
 ### Законы
 
-- Тождественность выражается следующим образом: `inf.xmap(fa)(identity, identity) == fa`
-- Композиция выражается следующим образом: `inf.xmap(inf.xmap(fa)(f, fReverse))(g, gReverse) == inf.xmap(fa)(g compose f, fReverse compose gReverse)`
+- Закон тождественности утверждает, что применение тождественного преобразования к значению инвариантного функтора 
+  не изменяет это значение. Формально это выражается так: `inf.xmap(fa)(identity, identity) == fa`
+- Закон композиции утверждает, что последовательное применение двух инвариантных отображений эквивалентно одному отображению, 
+  которое является композицией этих двух отображений. Формально это выражается так:
+  `inf.xmap(inf.xmap(fa)(f, fReverse))(g, gReverse) == inf.xmap(fa)(g compose f, fReverse compose gReverse)`
 
 ```dotty
-def checkXMapIdentityLaw[F[_], A, B, C](fa: F[A])(using
+def checkXMapIdentityLaw[F[_], A](fa: F[A])(using
     inf: InvariantFunctor[F]
 ): ValidatedNel[String, Unit] =
   Either.cond[String, Unit](

@@ -1,8 +1,9 @@
 package ru.scalabook.typeclass.monad
 
 import cats.data.ValidatedNel
+import ru.scalabook.typeclass.common.OldLaws
 
-trait CoBindLaw extends FunctorLaw:
+trait CoBindLaw extends OldLaws:
   def checkCoBindLaw[F[_]: CoBind, A, B, C](
       fa: F[A],
       fab: F[A] => B,

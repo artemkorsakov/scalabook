@@ -1,8 +1,9 @@
 package ru.scalabook.typeclass.monad
 
 import cats.data.ValidatedNel
+import ru.scalabook.typeclass.common.OldLaws
 
-trait ApplyLaw extends FunctorLaw, SemigroupalLaw:
+trait ApplyLaw extends OldLaws:
   def checkApplyLaw[F[_]: Apply, A, B, C](
       fa: F[A],
       fab: F[A => B],

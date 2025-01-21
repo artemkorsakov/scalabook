@@ -2,9 +2,10 @@ package ru.scalabook.typeclass.monad
 
 import cats.Id
 import cats.data.ValidatedNel
+import ru.scalabook.typeclass.common.OldLaws
 import ru.scalabook.typeclass.monad.Applicative.given
 
-trait TraverseLaw extends FunctorLaw:
+trait TraverseLaw extends OldLaws:
   def checkTraverseLaw[F[_]: Traverse, G[_]: Applicative, H[
       _
   ]: Applicative, A, B, C](

@@ -1,9 +1,9 @@
 package ru.scalabook.typeclass.bifunctor
 
 import cats.data.ValidatedNel
-import ru.scalabook.typeclass.monad.FunctorLaw
+import ru.scalabook.typeclass.common.OldLaws
 
-trait BifunctorLaw extends FunctorLaw:
+trait BifunctorLaw extends OldLaws:
   def checkBifunctorLaw[F[_, _], L, R, A, B, C](
       far: F[A, R],
       fla: F[L, A],

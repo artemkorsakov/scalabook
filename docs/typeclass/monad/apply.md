@@ -1,5 +1,35 @@
 # Apply
 
+**Apply** — это абстракция в функциональном программировании, которая расширяет возможности [`Semigroupal`](semigroupal.md), 
+добавляя возможность применять функцию, находящуюся в контексте, к значению, также находящемуся в контексте. 
+`Apply` является менее строгой версией [`Applicative`](applicative.md), 
+так как не требует наличия операции `pure` (которая помещает значение в контекст).
+
+**Основная идея Apply**
+
+`Apply` — это тип, который реализует две основные операции:
+
+- `product` (или `tuple2`, `tuple3` и т.д.) — комбинирует два значения в контексте в пару (или кортеж) в том же контексте.
+- `ap` (или `apply`) — применяет функцию в контексте к значению в контексте.
+
+**Зачем нужен Apply?**
+
+`Apply` полезен, когда вам нужно:
+
+- Применять функции, находящиеся в контексте, к значениям, также находящимся в контексте.
+- Комбинировать несколько значений в контексте (например, результаты нескольких асинхронных вычислений или несколько опциональных значений).
+- Работать с эффектами (например, асинхронность, опциональность, ошибки) в композируемом стиле, 
+  но без необходимости использовать более строгую абстракцию `Applicative`.
+
+**Примеры Apply**
+
+- `Option` как `Apply`. `Option` — это контейнер, который может содержать значение (`Some`) или быть пустым (`None`). 
+  `Apply` позволяет применять функцию к нескольким опциональным значениям.
+- `List` как `Apply`. `List` — это контейнер, содержащий множество значений. 
+  `Apply` позволяет применять функцию ко всем возможным комбинациям элементов из нескольких списков.
+- `Future` как `Apply`. `Future` — это контейнер, представляющий асинхронное вычисление. 
+  `Apply` позволяет комбинировать несколько асинхронных вычислений.
+
 ## Формальное определение
 
 `Apply` реализует операцию `apply`
@@ -14,7 +44,7 @@
 
 `Apply` должен удовлетворять следующим законам:
 
-- Composition (композиция) - `apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)`
+- Композиция (composition) - `apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)`
 
 ## Код
 
@@ -53,6 +83,16 @@ given Apply[Id] with
   extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as))
 ```
 
+Докажем, что обертка удовлетворяет закону `Apply`: 
+`apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map(bc => ab => bc compose ab))(fab))(fa)`
+
+- `apply(fbc)(apply(fab)(fa)) = apply(fbc)(fab(fa)) = fbc(fab(fa)) = (bc compose ab)(fa)`
+- ```dotty
+  apply(apply(fbc.map(bc => ab => bc compose ab))(fab))(fa) = 
+  fbc.map(bc => ab => bc compose ab)(fab)(fa) = 
+  f(ab => bc compose ab)(fab)(fa) = (bc compose ab)(fa)
+  ```
+
 ### Option
 
 ```dotty
@@ -67,6 +107,31 @@ given Apply[Option] with
       as match
         case Some(a) => Some(f(a))
         case None    => None
+```
+
+### Законы
+
+- Закон `Apply` гласит, что композиция функций внутри аппликативного функтора должна быть согласована 
+  с применением функций по отдельности. Формально это можно выразить так:
+  `apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)`
+
+```dotty
+... // Законы Функтора и Semigroupal
+
+def checkApplyComposition[F[_], A, B, C](
+    fa: F[A],
+    fab: F[A => B],
+    fbc: F[B => C]
+)(using ap: Apply[F]): ValidatedNel[String, Unit] =
+  import ap.apply
+  Either.cond[String, Unit](
+    apply(fbc)(apply(fab)(fa)) ==
+      apply(
+        apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab)
+      )(fa),
+    (),
+    "Не соблюдается композиция: apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)"
+  ).toValidatedNel
 ```
 
 ## Схема

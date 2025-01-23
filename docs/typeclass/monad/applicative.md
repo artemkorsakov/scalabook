@@ -1,5 +1,99 @@
 # Applicative
 
+**Applicative** — это концепция из функционального программирования, расширяющая возможности [функтора](functor.md) 
+и добавляющая возможность [применения функции](apply.md), находящейся внутри контекста, к значению, 
+которое также находится внутри контекста. 
+Это позволяет работать с эффектами (например, вычислениями, которые могут завершиться ошибкой, 
+или асинхронными вычислениями) в более удобной и композируемой манере.
+
+**Основные идеи Applicative:**
+
+- **Функтор** позволяет применять функцию к значению внутри контекста (например, `Option`, `List`, `Future`).
+- **Applicative** добавляет возможность применять функцию, которая сама находится внутри контекста, к значению, 
+  также находящемуся внутри контекста.
+
+**Зачем нужен Applicative?**
+
+`Applicative` полезен, когда у вас есть функция, которая принимает несколько аргументов, 
+и каждый из этих аргументов находится внутри контекста (например, `Option`, `Either`, `Future`). 
+Вместо того чтобы вручную извлекать значения из контекста и применять функцию, 
+`Applicative` позволяет сделать это более элегантно.
+
+**Преимущества Applicative:**
+
+- **Композируемость**: `Applicative` позволяет комбинировать вычисления, которые находятся внутри контекста, 
+  без необходимости вручную извлекать значения.
+- **Чистота кода**: Код становится более декларативным и легче читаемым.
+- **Поддержка эффектов**: `Applicative` работает с различными эффектами, такими как `Option`, `Either`, `Future`, `IO` и другими.
+
+**Applicative vs Monad**
+
+- **Applicative** позволяет применять функцию к значениям внутри контекста, 
+  но не позволяет использовать результат одного вычисления для определения следующего.
+- [**Monad**](monad.md) (например, `flatMap`) позволяет использовать результат одного вычисления для определения следующего, 
+  что делает его более мощным, но и более сложным.
+
+## Примеры
+
+Вот несколько примеров использования **Applicative** с описанием:
+
+### Пример 1: Валидация формы
+
+Представьте, что у вас есть форма с несколькими полями (например, имя, email, пароль). 
+Каждое поле нужно проверить на корректность (например, email должен содержать "@", пароль должен быть не короче 8 символов). 
+Если все поля корректны, вы хотите создать объект пользователя. 
+Если есть ошибки, вы хотите собрать их все, а не останавливаться на первой.
+
+- **Контекст**: `Validated` (из библиотеки Cats), который позволяет накапливать ошибки.
+- **Применение**: Вы проверяете каждое поле и комбинируете результаты с помощью `Applicative`. 
+  Если все поля корректны, создается объект пользователя. Если есть ошибки, возвращается список всех ошибок.
+
+### Пример 2: Параллельные HTTP-запросы
+
+У вас есть несколько независимых HTTP-запросов, которые нужно выполнить параллельно 
+(например, получить данные о пользователе, его заказах и истории платежей). 
+После выполнения всех запросов вы хотите объединить результаты в один объект.
+
+- **Контекст**: `Future` (асинхронные вычисления).
+- **Применение**: Вы запускаете все запросы параллельно и комбинируете их результаты с помощью `Applicative`. 
+  Если все запросы успешны, вы объединяете данные. 
+  Если хотя бы один запрос завершился ошибкой, весь процесс завершается с ошибкой.
+
+### Пример 3: Работа с конфигурацией
+
+У вас есть конфигурация приложения, которая состоит из нескольких параметров 
+(например, URL базы данных, порт сервера, режим отладки). Каждый параметр может быть задан или отсутствовать. 
+Вы хотите прочитать все параметры и создать объект конфигурации, только если все параметры присутствуют.
+
+- **Контекст**: `Option` (значение может быть задано или отсутствовать).
+- **Применение**: Вы читаете каждый параметр и комбинируете их с помощью `Applicative`. 
+  Если все параметры заданы, создается объект конфигурации. Если хотя бы один параметр отсутствует, результат будет `None`.
+
+### Пример 4: Комбинирование списков
+
+У вас есть два списка: один содержит имена, другой — фамилии. Вы хотите создать все возможные комбинации имен и фамилий.
+
+- **Контекст**: `List` (список значений).
+- **Применение**: Вы комбинируете два списка с помощью `Applicative`, создавая все возможные пары имен и фамилий.
+
+### Пример 5: Работа с деревьями
+
+У вас есть два дерева, и вы хотите объединить их в одно, применяя функцию к соответствующим узлам.
+
+- **Контекст**: Пользовательский тип данных `Tree`, который представляет собой дерево.
+- **Применение**: Вы комбинируете два дерева с помощью `Applicative`, создавая новое дерево, 
+  где каждый узел является результатом применения функции к соответствующим узлам исходных деревьев.
+
+### Пример 6: Агрегация данных из нескольких источников
+
+У вас есть несколько источников данных (например, база данных, кэш, внешний API). 
+Вы хотите получить данные из всех источников и объединить их в один объект.
+
+- **Контекст**: `IO` (из библиотеки Cats Effect), который представляет собой отложенное вычисление с эффектами.
+- **Применение**: Вы получаете данные из каждого источника и комбинируете их с помощью `Applicative`. 
+  Если все источники вернули данные, вы объединяете их. 
+  Если хотя бы один источник вернул ошибку, весь процесс завершается с ошибкой.
+
 ## Формальное определение
 
 `Applicative` расширяет [`Apply`](apply.md) (и [`InvariantApplicative`](invariant-applicative.md)) 
@@ -9,25 +103,27 @@
 
 Для `Applicative` должны соблюдаться следующие законы (помимо законов родительских классов типов):
 
-- Identity: `apply(unit(identity))(fa) == fa` (`unit` функции идентичности - это идентичность для `apply`)
-- `unit(x).map(f) == unit(f(x))`
+> Ниже подразумеваются следующие сигнатуры: `a: A, f: A => B, fa: F[A], fb: F[B], fc: F[C], fab: F[A => B], fbc: F[B => C]`
+
+- Тождественность (identity): `apply(unit(identity))(fa) == fa` (`unit` тождественной функции - это тождественность для `apply`)
+- `unit(a).map(f) == unit(f(a))`
 - `fa.map(f) == apply(unit(f))(fa)`
-- Homomorphism: `apply(unit(f))(unit(x)) == unit(f(x))` 
+- Гомоморфизм (Homomorphism): `apply(unit(f))(unit(a)) == unit(f(a))` 
   (Другими словами, применение идиоматической функции к `unit` такое же, как и к `unit` обычного применения функции. 
   Точнее, `unit` — это гомоморфизм из `A` в `F[A]` в отношении применения функции.)
-- Interchange: `apply(f)(unit(a)) == apply(unit((f: A => B) => f(a)))(f)`
+- Обмен (interchange): `apply(fab)(unit(a)) == apply(unit((f: A => B) => f(a)))(fab)`
   (Этот закон, по сути, говорит о том, что `unit` не разрешено воздействовать на любую реализацию аппликативного функтора. 
   Если один аргумент, который нужно применить, является `unit`, то другой может появиться в любой позиции. 
   Другими словами, не должно иметь значения, когда мы выполняем `unit`.)
-- Left Identity: `unit(()).map2(fa)((_, a) => a) == fa`
-- Right Identity: `fa.map2(unit(()))((a, _) => a) == fa`
-- Associativity: `fa.product(fb).product(fc) == fa.product(fb.product(fc)).map(assoc)`, где
+- Тождественность слева (left identity): `unit(()).map2(fa)((_, a) => a) == fa`
+- Тождественность справа (right identity): `fa.map2(unit(()))((a, _) => a) == fa`
+- Ассоциативность (associativity): `fa.product(fb).product(fc) == fa.product(fb.product(fc)).map(assoc)`, где
   `def assoc[A, B, C](p: (A, (B, C))): ((A, B), C) = p match { case (a, (b, c)) => ((a, b), c) }`
-- Naturality: `fa.map2(fb)((a, b) => (f(a), g(b))) == fa.map(f).product(fb.map(g))`
-- Composition: `apply(u, apply(v, w)) == apply(apply(apply(unit(f => g => f compose g), u), v), w)`
-  (Применить `v` к `w`, а затем применить `u` к этому — то же самое, 
-  что применить композицию к `u`, затем `v`, а затем применить составную функцию к `w`.) 
-
+- Естественность (naturality): `fa.map2(fb)((a, b) => (f(a), g(b))) == fa.map(f).product(fb.map(g))`
+- Композиция (composition): 
+  `apply(fbc)(apply(fab)(fa)) == apply(apply(apply(unit((g: B => C) => (f: A => B) => g compose f))(fbc))(fab))(fa)`
+  (Применить `fab` к `fa`, а затем применить `fbc` к этому — то же самое, 
+  что применить композицию к `fbc`, затем `fab`, а затем применить составную функцию к `fa`.) 
 
 ## Код
 
@@ -144,11 +240,13 @@ given compositeApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X
 ### "Обертка"
 
 ```dotty
-case class Id[A](value: A)
+type Id[A] = A
+object Id:
+  def apply[A](a: A): Id[A] = a
 
 given idApplicative: Applicative[Id] with
-  override def unit[A](a: => A): Id[A]                        = Id(a)
-  override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab(fa))
+  def unit[A](a: => A): Id[A]                        = a
+  def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = fab(fa)
 ```
 
 ### Option
@@ -255,6 +353,136 @@ final case class IO[R](run: () => R)
 given ioApplicative: Applicative[IO] with
   override def unit[A](a: => A): IO[A] = IO(() => a)
   override def apply[A, B](fab: IO[A => B])(fa: IO[A]): IO[B] = IO(() => fab.run()(fa.run()))
+```
+
+### Законы
+
+- Тождественность: `apply[A, A](unit(identity))(fa) == fa`
+- `unit(x).map(f) == unit(f(x))`
+- `fa.map(f) == apply(unit(f))(fa)`
+- Гомоморфизм: `apply(unit(f))(unit(x)) == unit(f(x))`
+- Обмен (interchange): `apply(fab)(unit(a)) == apply(unit((f: A => B) => f(a)))(fab)`
+- Тождественность слева (left identity): `unit(()).map2(fa)((_, a) => a) == fa`
+- Тождественность справа (right identity): `fa.map2(unit(()))((a, _) => a) == fa`
+- Ассоциативность (associativity): `fa.product(fb).product(fc) == fa.product(fb.product(fc)).map(assoc)`, где
+  `def assoc[A, B, C](p: (A, (B, C))): ((A, B), C) = p match { case (a, (b, c)) => ((a, b), c) }`
+- Естественность (naturality): `fa.map2(fb)((a, b) => (f(a), g(b))) == fa.map(f).product(fb.map(g))`
+- Композиция (composition): 
+  `apply(fbc)(apply(fab)(fa)) == apply(apply(apply(unit((g: B => C) => (f: A => B) => g compose f))(fbc))(fab))(fa)`
+
+
+```dotty
+def checkApplyIdentity[F[_], A](fa: F[A])(using
+    ap: Applicative[F]
+): ValidatedNel[String, Unit] =
+  import ap.*
+  Either.cond[String, Unit](
+    apply[A, A](unit(identity))(fa) == fa,
+    (),
+    "Не соблюдается тождественность: apply(unit(identity))(fa) == fa"
+  ).toValidatedNel
+  
+def checkUnitMap[F[_], A, B](a: A, f: A => B)(using
+    ap: Applicative[F]
+): ValidatedNel[String, Unit] =
+  import ap.*
+  Either.cond[String, Unit](
+    unit(a).map(f) == unit(f(a)),
+    (),
+    "Не соблюдается закон: unit(x).map(f) == unit(f(x))"
+  ).toValidatedNel  
+  
+def checkApplyUnit[F[_], A, B](fa: F[A], f: A => B)(using
+    ap: Applicative[F]
+): ValidatedNel[String, Unit] =
+  import ap.*
+  Either.cond[String, Unit](
+    fa.map(f) == apply(unit(f))(fa),
+    (),
+    "Не соблюдается закон: fa.map(f) == apply(unit(f))(fa)"
+  ).toValidatedNel  
+  
+def checkHomomorphism[F[_], A, B](a: A, f: A => B)(using
+    ap: Applicative[F]
+): ValidatedNel[String, Unit] =
+  import ap.*
+  Either.cond[String, Unit](
+    apply(unit(f))(unit(a)) == unit(f(a)),
+    (),
+    "Не соблюдается гомоморфизм: apply(unit(f))(unit(x)) == unit(f(x))"
+  ).toValidatedNel
+
+def checkInterchange[F[_], A, B](a: A, fab: F[A => B])(using
+    ap: Applicative[F]
+): ValidatedNel[String, Unit] =
+  import ap.*
+  Either.cond[String, Unit](
+    apply(fab)(unit(a)) == apply(unit((f: A => B) => f(a)))(fab),
+    (),
+    "Не соблюдается обмен: apply(fab)(unit(a)) == apply(unit((f: A => B) => f(a)))(fab)"
+  ).toValidatedNel
+
+def checkLeftIdentity[F[_], A](fa: F[A])(using
+    ap: Applicative[F]
+): ValidatedNel[String, Unit] =
+  import ap.*
+  Either.cond[String, Unit](
+    unit(()).map2(fa)((_, a) => a) == fa,
+    (),
+    "Не соблюдается тождественность слева: unit(()).map2(fa)((_, a) => a) == fa"
+  ).toValidatedNel
+
+def checkRightIdentity[F[_], A](fa: F[A])(using
+    ap: Applicative[F]
+): ValidatedNel[String, Unit] =
+  import ap.*
+  Either.cond[String, Unit](
+    fa.map2(unit(()))((a, _) => a) == fa,
+    (),
+    "Не соблюдается тождественность справа: fa.map2(unit(()))((a, _) => a) == fa"
+  ).toValidatedNel  
+
+def checkAssociativity[F[_], A, B, C](
+    fa: F[A],
+    fb: F[B],
+    fc: F[C]
+)(using ap: Applicative[F]): ValidatedNel[String, Unit] =
+  import ap.*
+  def assoc(p: (A, (B, C))): ((A, B), C) = p match
+    case (a, (b, c)) => ((a, b), c)
+  Either.cond[String, Unit](
+    product(product(fa, fb), fc) == product(fa, product(fb, fc)).map(assoc),
+    (),
+    "Не соблюдается ассоциативность: product(product(fa, fb), fc) == product(fa, product(fb, fc)).map(assoc)"
+  ).toValidatedNel  
+  
+def checkNaturality[F[_], A, B, C](
+    fa: F[A],
+    fb: F[B],
+    f: A => B,
+    g: B => C
+)(using ap: Applicative[F]): ValidatedNel[String, Unit] =
+  import ap.*
+  Either.cond[String, Unit](
+    fa.map2(fb)((a, b) => (f(a), g(b))) == product(fa.map(f), fb.map(g)),
+    (),
+    "Не соблюдается естественность: fa.map2(fb)((a, b) => (f(a), g(b))) == fa.map(f).product(fb.map(g))"
+  ).toValidatedNel 
+  
+def checkApplicativeComposition[F[_], A, B, C](
+    fa: F[A],
+    fab: F[A => B],
+    fbc: F[B => C]
+)(using ap: Applicative[F]): ValidatedNel[String, Unit] =
+  import ap.*
+  Either.cond[String, Unit](
+    apply(fbc)(apply(fab)(fa)) ==
+      apply(apply(
+        apply(unit((g: B => C) => (f: A => B) => g compose f))(fbc)
+      )(fab))(fa),
+    (),
+    "Не соблюдается композиция: apply(fbc)(apply(fab)(fa)) == apply(apply(apply(unit((g: B => C) => (f: A => B) => g compose f))(fbc))(fab))(fa)"
+  ).toValidatedNel   
 ```
 
 ## Схема

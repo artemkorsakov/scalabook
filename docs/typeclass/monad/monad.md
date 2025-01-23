@@ -1,5 +1,7 @@
 # Монада
 
+???
+
 ## Формальное определение
 
 Монада (_monad_) - это [`Applicative`](applicative.md), 
@@ -14,7 +16,7 @@
 
 - leftIdentity - первый закон монад гласит, что если мы берем значение, 
   помещаем его в контекст по умолчанию с помощью `unit` и затем передаем его функции с помощью `flatMap`, 
-  это то же самое, что просто взять значение и применить к нему функцию: `unit(x).flatMap(f) == f(x)`
+  это то же самое, что просто взять значение и применить к нему функцию: `unit(a).flatMap(afb) == afb(a)`
 - rightIdentity - второй закон гласит, что если у нас есть монадическое значение, и мы используем `flatMap`, 
   чтобы передать его для `unit`, результатом будет исходное монадическое значение: `fa.flatMap(unit _) == fa`
 - ассоциативность (наследуется от `Bind`): последний закон монад гласит, что когда у нас есть цепочка приложений 
@@ -214,6 +216,33 @@ given ioMonad: Monad[IO] with
   override def unit[A](a: => A): IO[A] = IO(() => a)
 
   extension [A](fa: IO[A]) override def flatMap[B](f: A => IO[B]): IO[B] = f(fa.run())
+```
+
+### Законы
+
+- Тождественность слева: `unit(a).flatMap(afb) == afb(a)`
+- Тождественность справа: `fa.flatMap(a => unit(a)) == fa`
+
+```dotty
+def checkFlatmapLeftIdentity[F[_], A, B](a: A, afb: A => F[B])(using
+    monad: Monad[F]
+): ValidatedNel[String, Unit] =
+  import monad.*
+  Either.cond[String, Unit](
+    unit(a).flatMap(afb) == afb(a),
+    (),
+    "Не соблюдается тождественность слева: unit(a).flatMap(afb) == afb(a)"
+  ).toValidatedNel
+
+def checkFlatmapRightIdentity[F[_], A](fa: F[A])(using
+    monad: Monad[F]
+): ValidatedNel[String, Unit] =
+  import monad.*
+  Either.cond[String, Unit](
+    fa.flatMap(a => unit(a)) == fa,
+    (),
+    "Не соблюдается тождественность справа: fa.flatMap(a => unit(a)) == fa"
+  ).toValidatedNel
 ```
 
 ## Схема

@@ -2,7 +2,7 @@ package ru.scalabook.typeclass.monad
 
 import cats.data.ValidatedNel
 
-trait MonadPlusLaw extends MonadLaw, ApplicativePlusLaw:
+trait MonadPlusLaw extends ApplicativePlusLaw:
   def checkMonadPlusLaw[F[_]: MonadPlus, A, B, C](
       x: A,
       f1: F[A],

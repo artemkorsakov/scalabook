@@ -20,8 +20,8 @@ object Applicative:
   def apply[F[_]: Applicative]: Applicative[F] = summon[Applicative[F]]
 
   given idApplicative: Applicative[Id] with
-    override def unit[A](a: => A): Id[A]                        = Id(a)
-    override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab(fa))
+    def unit[A](a: => A): Id[A]                        = a
+    def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = fab(fa)
 
   given optionApplicative: Applicative[Option] with
     override def unit[A](a: => A): Option[A] = Some(a)

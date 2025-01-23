@@ -1,5 +1,7 @@
 # Bind
 
+???
+
 ## Формальное определение
 
 `Bind` - это [`Apply`](apply.md) функтор, 
@@ -10,7 +12,7 @@
 
 - соответствие `apply` и `flatMap`:
     - `apply(fab)(fa) == fab.flatMap(a2b => fa.map(a2b))`
-- associativity на `flatMap` (как и в случае с полугруппами, монадические эффекты изменяются только при изменении их порядка,
+- ассоциативность на `flatMap` (как и в случае с полугруппами, монадические эффекты изменяются только при изменении их порядка,
   а не при изменении порядка их объединения):
     - `fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) }`
 
@@ -66,6 +68,35 @@ given Bind[Option] with
       fa match
         case Some(a) => f(a)
         case None    => None
+```
+
+### Законы
+
+- соответствие `apply` и `flatMap`: `apply(fab)(fa) == fab.flatMap(a2b => fa.map(a2b))`
+- ассоциативность на `flatMap`: `fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) }`
+
+```dotty
+def checkApplyFlatmap[F[_], A, B](fa: F[A], fab: F[A => B])(using
+    bind: Bind[F]
+): ValidatedNel[String, Unit] =
+  import bind.*
+  Either.cond[String, Unit](
+    apply(fab)(fa) == fab.flatMap(a2b => fa.map(a2b)),
+    (),
+    "Не соблюдается соответствие apply и flatMap: apply(fab)(fa) == fab.flatMap(a2b => fa.map(a2b))"
+  ).toValidatedNel
+
+def checkFlatmapAssociativity[F[_], A, B, C](
+    fa: F[A],
+    f: A => F[B],
+    g: B => F[C]
+)(using bind: Bind[F]): ValidatedNel[String, Unit] =
+  import bind.*
+  Either.cond[String, Unit](
+    fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) },
+    (),
+    "Не соблюдается ассоциативность на flatMap: fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) }"
+  ).toValidatedNel
 ```
 
 ## Схема

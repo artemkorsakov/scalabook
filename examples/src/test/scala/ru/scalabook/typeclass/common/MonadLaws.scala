@@ -5,6 +5,86 @@ import ru.scalabook.typeclass.monad.*
 import cats.syntax.either.*
 
 object MonadLaws:
+  def checkMonadLaw[F[_]: Runner1, A, B, C](a: A, b: B, c: C)(using
+      monad: Monad[F],
+      f: A => B,
+      fReverse: B => A,
+      g: B => C,
+      gReverse: C => B
+  ): ValidatedNel[String, Unit] =
+    import monad.*
+    val fa: F[A]       = unit(a)
+    val fab: F[A => B] = unit(f)
+    val afb: A => F[B] = a => unit(f(a))
+    val bfc: B => F[C] = b => unit(g(b))
+    checkApplicativeLaw[F, A, B, C](a, b, c) combine
+      checkApplyFlatmap[F, A, B](fa, fab) combine
+      checkFlatmapAssociativity[F, A, B, C](fa, afb, bfc) combine
+      checkFlatmapLeftIdentity[F, A, B](a, afb) combine
+      checkFlatmapRightIdentity[F, A](fa)
+
+  def checkBindLaw[F[_]: Bind: Runner1, A, B, C](
+      fa: F[A],
+      fb: F[B],
+      fc: F[C],
+      fab: F[A => B],
+      fbc: F[B => C],
+      afb: A => F[B],
+      bfc: B => F[C]
+  )(using
+      f: A => B,
+      fReverse: B => A,
+      g: B => C,
+      gReverse: C => B
+  ): ValidatedNel[String, Unit] =
+    checkApplyLaw[F, A, B, C](fa, fb, fc, fab, fbc) combine
+      checkApplyFlatmap[F, A, B](fa, fab) combine
+      checkFlatmapAssociativity[F, A, B, C](fa, afb, bfc)
+
+  def checkApplicativeLaw[F[_]: Runner1, A, B, C](a: A, b: B, c: C)(using
+      appl: Applicative[F],
+      f: A => B,
+      fReverse: B => A,
+      g: B => C,
+      gReverse: C => B
+  ): ValidatedNel[String, Unit] =
+    import appl.*
+    val fa: F[A]       = unit(a)
+    val fb: F[B]       = unit(b)
+    val fc: F[C]       = unit(c)
+    val fab: F[A => B] = unit(f)
+    val fbc: F[B => C] = unit(g)
+    checkApplyLaw[F, A, B, C](fa, fb, fc, fab, fbc) combine
+      checkApplyIdentity[F, A](fa) combine
+      checkUnitMap[F, A, B](a, f) combine
+      checkApplyUnit[F, A, B](fa, f) combine
+      checkHomomorphism[F, A, B](a, f) combine
+      checkInterchange[F, A, B](a, unit(f)) combine
+      checkLeftIdentity[F, A](fa) combine
+      checkRightIdentity[F, A](fa) combine
+      checkAssociativity[F, A, B, C](fa, fb, fc) combine
+      checkNaturality[F, A, B, C](fa, fb, f, g) combine
+      checkApplicativeComposition[F, A, B, C](fa, fab, fbc)
+  end checkApplicativeLaw
+
+  def checkApplyLaw[F[_]: Runner1, A, B, C](
+      fa: F[A],
+      fb: F[B],
+      fc: F[C],
+      fab: F[A => B],
+      fbc: F[B => C]
+  )(using
+      ap: Apply[F],
+      f: A => B,
+      fReverse: B => A,
+      g: B => C,
+      gReverse: C => B
+  ): ValidatedNel[String, Unit] =
+    checkFunctorLaw[F, A, B, C](fa) combine
+      checkSemigroupalLaw[F, A, B, C](fa, fb, fc) combine
+      checkApplyComposition[F, A, B, C](fa, fab, fbc)
+  end checkApplyLaw
+
   def checkSemigroupalLaw[F[_]: Runner1, A, B, C](
       fa: F[A],
       fb: F[B],
@@ -51,6 +131,175 @@ object MonadLaws:
   ): ValidatedNel[String, Unit] =
     checkXMapIdentityLaw[F, A](fa) combine
       checkXMapCompositionLaw[F, A, B, C](fa)
+
+  private def checkFlatmapLeftIdentity[F[_], A, B](a: A, afb: A => F[B])(using
+      monad: Monad[F]
+  ): ValidatedNel[String, Unit] =
+    import monad.*
+    Either.cond[String, Unit](
+      unit(a).flatMap(afb) == afb(a),
+      (),
+      "Не соблюдается тождественность слева: unit(a).flatMap(afb) == afb(a)"
+    ).toValidatedNel
+
+  private def checkFlatmapRightIdentity[F[_], A](fa: F[A])(using
+      monad: Monad[F]
+  ): ValidatedNel[String, Unit] =
+    import monad.*
+    Either.cond[String, Unit](
+      fa.flatMap(a => unit(a)) == fa,
+      (),
+      "Не соблюдается тождественность справа: fa.flatMap(a => unit(a)) == fa"
+    ).toValidatedNel
+
+  private def checkApplyFlatmap[F[_], A, B](fa: F[A], fab: F[A => B])(using
+      bind: Bind[F]
+  ): ValidatedNel[String, Unit] =
+    import bind.*
+    Either.cond[String, Unit](
+      apply(fab)(fa) == fab.flatMap(a2b => fa.map(a2b)),
+      (),
+      "Не соблюдается соответствие apply и flatMap: apply(fab)(fa) == fab.flatMap(a2b => fa.map(a2b))"
+    ).toValidatedNel
+
+  private def checkFlatmapAssociativity[F[_], A, B, C](
+      fa: F[A],
+      f: A => F[B],
+      g: B => F[C]
+  )(using bind: Bind[F]): ValidatedNel[String, Unit] =
+    import bind.*
+    Either.cond[String, Unit](
+      fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) },
+      (),
+      "Не соблюдается ассоциативность на flatMap: fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) }"
+    ).toValidatedNel
+
+  private def checkApplyIdentity[F[_], A](fa: F[A])(using
+      ap: Applicative[F]
+  ): ValidatedNel[String, Unit] =
+    import ap.*
+    Either.cond[String, Unit](
+      apply[A, A](unit(identity))(fa) == fa,
+      (),
+      "Не соблюдается тождественность: apply(unit(identity))(fa) == fa"
+    ).toValidatedNel
+
+  private def checkUnitMap[F[_], A, B](a: A, f: A => B)(using
+      ap: Applicative[F]
+  ): ValidatedNel[String, Unit] =
+    import ap.*
+    Either.cond[String, Unit](
+      unit(a).map(f) == unit(f(a)),
+      (),
+      "Не соблюдается закон: unit(x).map(f) == unit(f(x))"
+    ).toValidatedNel
+
+  private def checkApplyUnit[F[_], A, B](fa: F[A], f: A => B)(using
+      ap: Applicative[F]
+  ): ValidatedNel[String, Unit] =
+    import ap.*
+    Either.cond[String, Unit](
+      fa.map(f) == apply(unit(f))(fa),
+      (),
+      "Не соблюдается закон: fa.map(f) == apply(unit(f))(fa)"
+    ).toValidatedNel
+
+  private def checkHomomorphism[F[_], A, B](a: A, f: A => B)(using
+      ap: Applicative[F]
+  ): ValidatedNel[String, Unit] =
+    import ap.*
+    Either.cond[String, Unit](
+      apply(unit(f))(unit(a)) == unit(f(a)),
+      (),
+      "Не соблюдается гомоморфизм: apply(unit(f))(unit(x)) == unit(f(x))"
+    ).toValidatedNel
+
+  private def checkInterchange[F[_], A, B](a: A, fab: F[A => B])(using
+      ap: Applicative[F]
+  ): ValidatedNel[String, Unit] =
+    import ap.*
+    Either.cond[String, Unit](
+      apply(fab)(unit(a)) == apply(unit((f: A => B) => f(a)))(fab),
+      (),
+      "Не соблюдается обмен: apply(fab)(unit(a)) == apply(unit((f: A => B) => f(a)))(fab)"
+    ).toValidatedNel
+
+  private def checkLeftIdentity[F[_], A](fa: F[A])(using
+      ap: Applicative[F]
+  ): ValidatedNel[String, Unit] =
+    import ap.*
+    Either.cond[String, Unit](
+      unit(()).map2(fa)((_, a) => a) == fa,
+      (),
+      "Не соблюдается тождественность слева: unit(()).map2(fa)((_, a) => a) == fa"
+    ).toValidatedNel
+
+  private def checkRightIdentity[F[_], A](fa: F[A])(using
+      ap: Applicative[F]
+  ): ValidatedNel[String, Unit] =
+    import ap.*
+    Either.cond[String, Unit](
+      fa.map2(unit(()))((a, _) => a) == fa,
+      (),
+      "Не соблюдается тождественность справа: fa.map2(unit(()))((a, _) => a) == fa"
+    ).toValidatedNel
+
+  private def checkAssociativity[F[_], A, B, C](
+      fa: F[A],
+      fb: F[B],
+      fc: F[C]
+  )(using ap: Applicative[F]): ValidatedNel[String, Unit] =
+    import ap.*
+    def assoc(p: (A, (B, C))): ((A, B), C) = p match
+      case (a, (b, c)) => ((a, b), c)
+    Either.cond[String, Unit](
+      product(product(fa, fb), fc) == product(fa, product(fb, fc)).map(assoc),
+      (),
+      "Не соблюдается ассоциативность: product(product(fa, fb), fc) == product(fa, product(fb, fc)).map(assoc)"
+    ).toValidatedNel
+
+  private def checkNaturality[F[_], A, B, C](
+      fa: F[A],
+      fb: F[B],
+      f: A => B,
+      g: B => C
+  )(using ap: Applicative[F]): ValidatedNel[String, Unit] =
+    import ap.*
+    Either.cond[String, Unit](
+      fa.map2(fb)((a, b) => (f(a), g(b))) == product(fa.map(f), fb.map(g)),
+      (),
+      "Не соблюдается естественность: fa.map2(fb)((a, b) => (f(a), g(b))) == fa.map(f).product(fb.map(g))"
+    ).toValidatedNel
+
+  private def checkApplicativeComposition[F[_], A, B, C](
+      fa: F[A],
+      fab: F[A => B],
+      fbc: F[B => C]
+  )(using ap: Applicative[F]): ValidatedNel[String, Unit] =
+    import ap.*
+    Either.cond[String, Unit](
+      apply(fbc)(apply(fab)(fa)) ==
+        apply(apply(
+          apply(unit((g: B => C) => (f: A => B) => g compose f))(fbc)
+        )(fab))(fa),
+      (),
+      "Не соблюдается композиция: apply(fbc)(apply(fab)(fa)) == apply(apply(apply(unit((g: B => C) => (f: A => B) => g compose f))(fbc))(fab))(fa)"
+    ).toValidatedNel
+
+  private def checkApplyComposition[F[_], A, B, C](
+      fa: F[A],
+      fab: F[A => B],
+      fbc: F[B => C]
+  )(using ap: Apply[F]): ValidatedNel[String, Unit] =
+    import ap.apply
+    Either.cond[String, Unit](
+      apply(fbc)(apply(fab)(fa)) ==
+        apply(
+          apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab)
+        )(fa),
+      (),
+      "Не соблюдается композиция: apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)"
+    ).toValidatedNel
 
   private def checkMapIdentityLaw[F[_], A](fa: F[A])(using
       fu: Functor[F]

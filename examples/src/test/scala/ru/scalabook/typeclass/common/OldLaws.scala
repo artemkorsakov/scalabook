@@ -213,4 +213,92 @@ trait OldLaws:
       ) combine
       check(Monad[F].unit(x).flatMap(afb) == afb(x), "left identity") combine
       check(fa.flatMap(x => Monad[F].unit(x)) == fa, "right identity")
+
+  def checkPlusLaw[F[_]: Plus, A](
+      f1: F[A],
+      f2: F[A],
+      f3: F[A]
+  ): ValidatedNel[String, Unit] =
+    check(
+      Plus[F].plus(Plus[F].plus(f1, f2), f3) ==
+        Plus[F].plus(f1, Plus[F].plus(f2, f3)),
+      "Associativity"
+    ) combine
+      checkSemigroupLaw(f1, f2, f3)(using Plus[F].semigroup)
+
+  def checkPlusEmptyLaw[F[_]: PlusEmpty, A](
+      f1: F[A],
+      f2: F[A],
+      f3: F[A]
+  ): ValidatedNel[String, Unit] =
+    checkPlusLaw(f1, f2, f3) combine
+      check(
+        PlusEmpty[F].plus(f1, PlusEmpty[F].empty) ==
+          f1,
+        "right identity"
+      ) combine
+      check(
+        PlusEmpty[F].plus(PlusEmpty[F].empty, f1) == f1,
+        "left identity"
+      ) combine
+      checkMonoidLaw(f1, f2, f3)(using PlusEmpty[F].monoid)
+
+  def checkApplicativePlusLaw[F[_]: ApplicativePlus, A, B, C](
+      x: A,
+      f1: F[A],
+      f2: F[A],
+      f3: F[A]
+  )(using
+      f: A => B,
+      fReverse: B => A,
+      g: B => C,
+      gReverse: C => B
+  ): ValidatedNel[String, Unit] =
+    checkApplicativeLaw[F, A, B, C](x) combine
+      checkPlusEmptyLaw[F, A](f1, f2, f3)
+
+  def checkMonadPlusLaw[F[_]: MonadPlus, A, B, C](
+      x: A,
+      f1: F[A],
+      f2: F[A],
+      f3: F[A]
+  )(using
+      f: A => B,
+      fReverse: B => A,
+      g: B => C,
+      gReverse: C => B
+  ): ValidatedNel[String, Unit] =
+    checkMonadLaw[F, A, B, C](x) combine
+      checkApplicativePlusLaw[F, A, B, C](x, f1, f2, f3) combine
+      check(
+        MonadPlus[F].empty[A].map(_ => x) ==
+          MonadPlus[F].empty[A],
+        "`empty[A]` is a polymorphic value over `A`"
+      ) combine
+      check(
+        MonadPlus[F].empty[A].flatMap(_ => f1) ==
+          MonadPlus[F].empty[A],
+        "`empty` short-circuits its right"
+      ) combine
+      check(
+        f1.flatMap(_ => MonadPlus[F].empty[A]) ==
+          MonadPlus[F].empty[A],
+        "`empty` short-circuits throughout its `join` tree"
+      )
+
+  def checkIsEmptyLawLaw[F[_]: IsEmpty, A](
+      f1: F[A],
+      f2: F[A],
+      f3: F[A]
+  ): ValidatedNel[String, Unit] =
+    checkPlusEmptyLaw(f1, f2, f3) combine
+      check(
+        IsEmpty[F].isEmpty(IsEmpty[F].empty[A]),
+        "isEmpty(empty) - true"
+      ) combine
+      check(
+        (IsEmpty[F].isEmpty(f1) && IsEmpty[F].isEmpty(f2)) ==
+          IsEmpty[F].isEmpty(IsEmpty[F].plus(f1, f2)),
+        "isEmpty(f1) && isEmpty(f2) = isEmpty(f1 + f2)"
+      )
 end OldLaws

@@ -1,10 +1,10 @@
 package ru.scalabook.typeclass.monad
 
+import ru.scalabook.typeclass.common.MonadLaws.*
 import weaver.*
 import weaver.scalacheck.*
 
-object PlusSuite extends SimpleIOSuite, Checkers, PlusLaw:
+object PlusSuite extends SimpleIOSuite, Checkers:
   test("listPlusInstance must satisfy the Plus laws"):
     forall: (x: List[Int], y: List[Int], z: List[Int]) =>
-      whenSuccess(checkPlusLaw(x, y, z)): _ =>
-        success
+      expect(checkPlusLaw(x, y, z).isValid)

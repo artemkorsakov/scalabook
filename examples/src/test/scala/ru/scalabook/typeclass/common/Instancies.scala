@@ -14,3 +14,6 @@ object Instancies:
 
   given Runner1[Id] with
     override def run[A]: Id[A] => A = identity
+
+  given Runner1[List] with
+    override def run[A]: List[A] => A = _.head

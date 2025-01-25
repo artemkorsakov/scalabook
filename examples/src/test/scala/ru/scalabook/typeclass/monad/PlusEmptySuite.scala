@@ -1,10 +1,10 @@
 package ru.scalabook.typeclass.monad
 
+import ru.scalabook.typeclass.common.MonadLaws.*
 import weaver.*
 import weaver.scalacheck.*
 
-object PlusEmptySuite extends SimpleIOSuite, Checkers, PlusEmptyLaw:
+object PlusEmptySuite extends SimpleIOSuite, Checkers:
   test("listPlusEmptyInstance must satisfy the PlusEmpty laws"):
     forall: (x: List[Int], y: List[Int], z: List[Int]) =>
-      whenSuccess(checkPlusEmptyLaw(x, y, z)): _ =>
-        success
+      expect(checkPlusEmptyLaw(x, y, z).isValid)

@@ -3,8 +3,68 @@ package ru.scalabook.typeclass.common
 import cats.data.ValidatedNel
 import ru.scalabook.typeclass.monad.*
 import cats.syntax.either.*
+import ru.scalabook.typeclass.common.MonoidLaws.*
 
-object MonadLaws:
+object MonadLaws extends BasicLaws:
+  def checkIsEmptyLawLaw[F[_]: IsEmpty, A](
+      f1: F[A],
+      f2: F[A],
+      f3: F[A]
+  ): ValidatedNel[String, Unit] =
+    checkPlusEmptyLaw(f1, f2, f3) combine
+      checkIsEmptyEmpty combine
+      checkIsEmptyPair(f1, f2)
+
+  def checkMonadPlusLaw[F[_]: Runner1, A, B, C](
+      a: A,
+      b: B,
+      c: C,
+      f1: F[A],
+      f2: F[A],
+      f3: F[A]
+  )(using
+      mp: MonadPlus[F],
+      f: A => B,
+      fReverse: B => A,
+      g: B => C,
+      gReverse: C => B
+  ): ValidatedNel[String, Unit] =
+    checkMonadLaw[F, A, B, C](a, b, c) combine
+      checkApplicativePlusLaw[F, A, B, C](a, b, c, f1, f2, f3) combine
+      checkEmptyIsAPolymorphicValue[F, A](f1) combine
+      checkShortCircuitsRight[F, A](f1) combine
+      checkShortCircuitsThroughout[F, A](f1)
+  end checkMonadPlusLaw
+
+  def checkApplicativePlusLaw[F[_]: ApplicativePlus: Runner1, A, B, C](
+      a: A,
+      b: B,
+      c: C,
+      f1: F[A],
+      f2: F[A],
+      f3: F[A]
+  )(using
+      f: A => B,
+      fReverse: B => A,
+      g: B => C,
+      gReverse: C => B
+  ): ValidatedNel[String, Unit] =
+    checkApplicativeLaw[F, A, B, C](a, b, c) combine
+      checkPlusEmptyLaw[F, A](f1, f2, f3)
+
+  def checkPlusEmptyLaw[F[_], A](f1: F[A], f2: F[A], f3: F[A])(using
+      pl: PlusEmpty[F]
+  ): ValidatedNel[String, Unit] =
+    checkPlusLaw(f1, f2, f3) combine
+      checkPlusEmptyIdentity(f1) combine
+      checkMonoidLaw(f1, f2, f3)(using pl.monoid)
+
+  def checkPlusLaw[F[_], A](f1: F[A], f2: F[A], f3: F[A])(using
+      pl: Plus[F]
+  ): ValidatedNel[String, Unit] =
+    checkPlusAssociativity(f1, f2, f3) combine
+      super.checkAssociativity(f1, f2, f3)(using pl.semigroup)
+
   def checkMonadLaw[F[_]: Runner1, A, B, C](a: A, b: B, c: C)(using
       monad: Monad[F],
       f: A => B,
@@ -131,6 +191,57 @@ object MonadLaws:
   ): ValidatedNel[String, Unit] =
     checkXMapIdentityLaw[F, A](fa) combine
       checkXMapCompositionLaw[F, A, B, C](fa)
+
+  private def checkIsEmptyEmpty[F[_], A](using
+      is: IsEmpty[F]
+  ): ValidatedNel[String, Unit] =
+    import is.*
+    Either.cond[String, Unit](
+      isEmpty(empty[A]),
+      (),
+      "\"Пустое\" значение всегда должно быть распознано как \"пустое\": isEmpty(empty[A])"
+    ).toValidatedNel
+
+  private def checkIsEmptyPair[F[_], A](fa1: F[A], fa2: F[A])(using
+      is: IsEmpty[F]
+  ): ValidatedNel[String, Unit] =
+    import is.*
+    Either.cond[String, Unit](
+      (isEmpty(fa1) && isEmpty(fa2)) == isEmpty(plus(fa1, fa2)),
+      (),
+      "Результат комбинирования двух значений является \"пустым\" только тогда, когда оба значения \"пусты\": " +
+        s"(isEmpty(fa1) && isEmpty(fa2)) == isEmpty(plus(fa1, fa2))"
+    ).toValidatedNel
+
+  private def checkEmptyIsAPolymorphicValue[F[_], A](fa: F[A])(using
+      mp: MonadPlus[F]
+  ): ValidatedNel[String, Unit] =
+    import mp.*
+    Either.cond[String, Unit](
+      empty[A].map(_ => fa) == empty[A],
+      (),
+      "Не соблюдается Закон сохранения нейтрального элемента при `map`: empty[A].map(_ => fa) == empty[A]"
+    ).toValidatedNel
+
+  private def checkShortCircuitsRight[F[_], A](fa: F[A])(using
+      mp: MonadPlus[F]
+  ): ValidatedNel[String, Unit] =
+    import mp.*
+    Either.cond[String, Unit](
+      empty[A].flatMap(_ => fa) == empty[A],
+      (),
+      "Не соблюдается Закон сохранения нейтрального элемента при `flatMap`: empty[A].flatMap(_ => fa) == empty[A]"
+    ).toValidatedNel
+
+  private def checkShortCircuitsThroughout[F[_], A](fa: F[A])(using
+      mp: MonadPlus[F]
+  ): ValidatedNel[String, Unit] =
+    import mp.*
+    Either.cond[String, Unit](
+      fa.flatMap(_ => empty[A]) == empty[A],
+      (),
+      "Не соблюдается Закон замыкания нейтрального элемента: fa.flatMap(_ => empty[A]) == empty[A]"
+    ).toValidatedNel
 
   private def checkFlatmapLeftIdentity[F[_], A, B](a: A, afb: A => F[B])(using
       monad: Monad[F]

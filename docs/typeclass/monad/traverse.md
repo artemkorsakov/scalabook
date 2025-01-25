@@ -61,12 +61,14 @@ trait Traverse[F[_]] extends Functor[F], Foldable[F]:
 ### "Обертка"
 
 ```dotty
-case class Id[A](value: A)
+type Id[A] = A
+object Id:
+  def apply[A](a: A): Id[A] = a
 
 given Traverse[Id] with
   extension [A](fa: Id[A])
     override def traverse[G[_]: Applicative, B](f: A => G[B]): G[Id[B]] =
-      f(fa.value).map(b => Id(b))
+      f(fa).map(b => Id(b))
 ```
 
 ### Кортеж от двух и более элементов

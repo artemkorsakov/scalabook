@@ -23,11 +23,13 @@ trait CoBind[F[_]] extends Functor[F]:
 ### "Обертка"
 
 ```dotty
-case class Id[A](value: A)
+type Id[A] = A
+object Id:
+  def apply[A](a: A): Id[A] = a
 
 given CoBind[Id] with
   extension [A](as: Id[A])
-    override def map[B](f: A => B): Id[B] = Id(f(as.value))
+    override def map[B](f: A => B): Id[B] = Id(f(as))
 
     override def cobind[B](f: Id[A] => B): Id[B] = Id(f(as))
 ```

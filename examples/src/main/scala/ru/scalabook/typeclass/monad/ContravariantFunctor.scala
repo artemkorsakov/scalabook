@@ -10,7 +10,7 @@ trait ContravariantFunctor[F[_]] extends InvariantFunctor[F]:
   extension [A](fa: F[A])
     override def xmap[B](f: A => B, g: B => A): F[B] = cmap(fa)(g)
 
-  /** Композиция двух контравариантных функторов ковариантна */
+  /** Композиция ковариантного и контравариантного функторов ковариантна */
   def compose[G[_]: ContravariantFunctor]: Functor[[X] =>> F[G[X]]] =
     new Functor[[X] =>> F[G[X]]]:
       extension [A](as: F[G[A]])
@@ -36,14 +36,16 @@ object ContravariantFunctor:
     summon[ContravariantFunctor[F]]
 
   opaque type Predicate = [X] =>> X => Boolean
-  opaque type Show      = [X] =>> X => String
+  opaque type ShowX     = [X] =>> X => String
+  object ShowX:
+    def apply[X](f: X => String): ShowX[X] = f
 
   given predicateContravariantFunctor: ContravariantFunctor[Predicate] with
     def cmap[A, B](predicate: Predicate[B])(f: A => B): Predicate[A] =
       a => predicate(f(a))
 
-  given showContravariantFunctor: ContravariantFunctor[Show] with
-    def cmap[A, B](show: Show[B])(f: A => B): Show[A] =
+  given showContravariantFunctor: ContravariantFunctor[ShowX] with
+    def cmap[A, B](show: ShowX[B])(f: A => B): ShowX[A] =
       a => show(f(a))
 
   given functionContravariantFunctor[R]

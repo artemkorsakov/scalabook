@@ -1,10 +1,10 @@
 package ru.scalabook.typeclass.bifunctor
 
 import cats.data.ValidatedNel
-import ru.scalabook.typeclass.monad.{Applicative, Traverse, TraverseLaw}
+import ru.scalabook.typeclass.monad.{Applicative, Traverse}
 import ru.scalabook.typeclass.monoid.Monoid
 
-trait BitraverseLaw extends TraverseLaw, BifoldableLaw, BifunctorLaw:
+trait BitraverseLaw extends BifoldableLaw, BifunctorLaw:
   def checkBitraverseLaw[F[_, _], G[_]: Applicative, H[
       _
   ]: Applicative, L, R, A, B, C](

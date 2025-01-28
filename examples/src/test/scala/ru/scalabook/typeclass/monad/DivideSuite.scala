@@ -1,34 +1,37 @@
 package ru.scalabook.typeclass.monad
 
+import ru.scalabook.typeclass.common.Applicator
+import ru.scalabook.typeclass.common.MonadLaws.*
+import ru.scalabook.typeclass.monad.Divide.given
+import ru.scalabook.typeclass.monoid.Monoid
+import ru.scalabook.typeclass.monoid.Monoid.booleanAnd
 import weaver.*
 import weaver.scalacheck.*
-import ru.scalabook.typeclass.monoid.Monoid.additionMonoid
 
-object DivideSuite extends SimpleIOSuite, Checkers, DivideLaw:
+object DivideSuite extends SimpleIOSuite, Checkers:
+  def delta[A]: A => (A, A) = a => (a, a)
+
   test("The unary function must satisfy the laws of Divide"):
-    forall: (x: Int) =>
-      val fa1: Int => Int = _ + 1
-      val fa2: Int => Int = _ - 1
-      val fa3: Int => Int = _ * 2
+    forall: (x: List[Char]) =>
+      type F = [X] =>> X => Boolean
+      val fa1: F[List[Char]] = _.length % 2 == 0
+      val fa2: F[List[Char]] = _.contains('a')
+      val fa3: F[List[Char]] = _.nonEmpty
+      val fc: F[Int]         = _ % 2 == 0
 
-      whenSuccess(
-        check(
-          (Divide[[X] =>> X => Int]
-            .divide[Int, Int, Int](
-              Divide[[X] =>> X => Int].divide[Int, Int, Int](fa1, fa2)(delta),
-              fa3
-            )(delta))(
-            x
-          ) ==
-            (Divide[[X] =>> X => Int]
-              .divide[Int, Int, Int](
-                fa1,
-                Divide[[X] =>> X => Int].divide[Int, Int, Int](fa2, fa3)(delta)
-              )(delta))(
-              x
-            ),
-          "composition"
-        )
-      ): _ =>
-        success
+      val f: List[Char] => String = _.mkString
+      val g: String => Int        = _.length
+
+      given givenApplicatorF: Applicator[F] with
+        override def run[A](a: A): F[A] => Boolean = _.apply(a)
+
+      expect(
+        checkDivideLaw[F, List[Char], String, Int](fa1, fa2, fa3, fc, x)(
+          using
+          functionDivide[Boolean],
+          givenApplicatorF,
+          f,
+          g
+        ).isValid
+      )
 end DivideSuite

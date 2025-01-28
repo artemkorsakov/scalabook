@@ -1,10 +1,10 @@
 package ru.scalabook.typeclass.bifunctor
 
 import cats.data.ValidatedNel
-import ru.scalabook.typeclass.monad.FoldableLaw
+import ru.scalabook.typeclass.common.OldLaws
 import ru.scalabook.typeclass.monoid.Monoid
 
-trait BifoldableLaw extends FoldableLaw:
+trait BifoldableLaw extends OldLaws:
   def checkBifoldableLaw[F[_, _], L, R, A](
       far: F[A, R],
       fla: F[L, A],

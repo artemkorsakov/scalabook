@@ -1,5 +1,7 @@
 # Divisible
 
+???
+
 ## Формальное определение
 
 `Divisible` - контравариантный аналог [`Applicative`](applicative.md). 
@@ -7,8 +9,14 @@
 
 Законы `Divisible`:
 
-- right identity: `divide(fa, conquer)(delta) == fa`, где `delta: A => (A, A) = a => (a, a)`
-- left identity: `divide(conquer, fa)(delta) == fa`
+- Тождественность (identity): Если определен метод идентификации `id` такой, что: `id(a) == a`,
+  тогда `cmap(fa)(id) == fa`.
+- Композиция (composition): Если определены два метода `f: A => B` и `g: B => C`,
+  тогда `cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))`.
+- Композиция (composition): `divide(divide(fa1, fa2)(delta), fa3)(delta) == divide(fa1, divide(fa2, fa3)(delta))(delta)`,
+  где `delta: A => (A, A) = a => (a, a)`.
+- Тождественность справа (right identity): `divide(fa, conquer)(delta) == fa`.
+- Тождественность слева (left identity): `divide(conquer, fa)(delta) == fa`.
 
 ## Код
 
@@ -33,6 +41,39 @@ given functionDivisible[R: Monoid]: Divisible[[X] =>> Function1[X, R]] with
     }
 
   override def conquer[A]: A => R = _ => summon[Monoid[R]].empty
+```
+
+### Законы
+
+Тождественность справа: `divide(fa, conquer)(delta) == fa`.
+Тождественность слева: `divide(conquer, fa)(delta) == fa`.
+
+```dotty
+... // Законы Divide
+
+def checkDivisibleRightIdentity[F[_], A](fa: F[A], a: A)(using
+    div: Divisible[F]
+): ValidatedNel[String, Unit] =
+  import div.*
+  def delta: A => (A, A) = a => (a, a)
+
+  Either.cond[String, Unit](
+    divide(fa, conquer)(delta) == fa,
+    (),
+    "Не соблюдается Тождественность справа: divide(fa, conquer)(delta) == fa, где delta: A => (A, A) = a => (a, a)"
+  ).toValidatedNel
+
+def checkDivisibleLeftIdentity[F[_], A](fa: F[A], a: A)(using
+    div: Divisible[F]
+): ValidatedNel[String, Unit] =
+  import div.*
+  def delta: A => (A, A) = a => (a, a)
+
+  Either.cond[String, Unit](
+    divide(conquer, fa)(delta) == fa,
+    (),
+    "Не соблюдается Тождественность слева: divide(conquer, fa)(delta) == fa, где delta: A => (A, A) = a => (a, a)"
+  ).toValidatedNel
 ```
 
 ## Схема

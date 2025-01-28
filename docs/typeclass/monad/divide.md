@@ -1,16 +1,23 @@
 # Divide
 
+???
+
 ## Формальное определение
 
 `Divide` - контравариантный аналог [`Apply`](apply.md). 
-Он расширяет ковариантный функтор и дополнительно реализует
-операцию `divide`: `def divide[A, B, C](fa: => F[A], fb: => F[B])(f: C => (A, B)): F[C]`
+Он расширяет [контравариантный функтор](contravariant-functor.md) и дополнительно реализует
+операцию `divide`: 
+
+`def divide[A, B, C](fa: => F[A], fb: => F[B])(f: C => (A, B)): F[C]`
 
 Законы `Divide`:
 
-- Composition (композиция): `divide(divide(fa1, fa2)(delta), fa3)(delta) == divide(fa1, divide(fa2, fa3)(delta))(delta)`,
-  где `delta: A => (A, A) = a => (a, a)`
-
+- Тождественность (identity): Если определен метод идентификации `id` такой, что: `id(a) == a`,
+  тогда `cmap(fa)(id) == fa`.
+- Композиция (composition): Если определены два метода `f: A => B` и `g: B => C`,
+  тогда `cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))`.
+- Композиция (composition): `divide(divide(fa1, fa2)(delta), fa3)(delta) == divide(fa1, divide(fa2, fa3)(delta))(delta)`,
+  где `delta: A => (A, A) = a => (a, a)`.
 
 ## Код
 
@@ -33,6 +40,33 @@ given functionDivide[R: Monoid]: Divide[[X] =>> Function1[X, R]] with
       val (a, b) = f(c)
       summon[Monoid[R]].combine(fa(a), fb(b))
     }
+```
+
+### Законы
+
+Композиция (composition):
+
+`divide(divide(fa1, fa2)(delta), fa3)(delta) == divide(fa1, divide(fa2, fa3)(delta))(delta), где delta: A => (A, A) = a => (a, a)`
+
+```dotty
+... // Законы контравариантного функтора
+
+def checkDivideComposition[F[_], A](
+    fa1: F[A],
+    fa2: F[A],
+    fa3: F[A],
+    a: A
+)(using div: Divide[F]): ValidatedNel[String, Unit] =
+  import div.*
+  def delta: A => (A, A) = a => (a, a)
+
+  Either.cond[String, Unit](
+    divide(divide(fa1, fa2)(delta), fa3)(delta) ==
+      divide(fa1, divide(fa2, fa3)(delta))(delta),
+    (),
+    "Не соблюдается Композиция Divide: divide(divide(fa1, fa2)(delta), fa3)(delta) == divide(fa1, divide(fa2, fa3)(delta))(delta), где delta: A => (A, A) = a => (a, a)"
+  ).toValidatedNel
+end checkDivideComposition
 ```
 
 ## Схема

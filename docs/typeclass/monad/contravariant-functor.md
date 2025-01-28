@@ -1,5 +1,7 @@
 # Контравариантный функтор
 
+???
+
 ## Формальное определение
 
 Контравариантный функтор (`F`) похож на [функтор](functor.md), 
@@ -12,10 +14,10 @@
 
 Законы контравариантного функтора:
 
-- Identity (тождественность): Если определен метод идентификации `id` такой, что: `id(a) == a`,
+- Тождественность (identity): Если определен метод идентификации `id` такой, что: `id(a) == a`,
   тогда `cmap(fa)(id) == fa`.
-- Composition (композиция): Если определены два метода `f: A => B` и `g: B => C`, тогда `cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))`.
-
+- Композиция (composition): Если определены два метода `f: A => B` и `g: B => C`, 
+  тогда `cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))`.
 
 ## Код
 
@@ -29,7 +31,7 @@ trait ContravariantFunctor[F[_]] extends InvariantFunctor[F]:
 
   extension [A](fa: F[A]) override def xmap[B](f: A => B, g: B => A): F[B] = cmap(fa)(g)
 
-  /** Композиция двух контравариантных функторов ковариантна */
+  /** Композиция ковариантного и контравариантного функторов ковариантна */
   def compose[G[_]: ContravariantFunctor]: Functor[[X] =>> F[G[X]]] =
     new Functor[[X] =>> F[G[X]]]:
       private val g = summon[ContravariantFunctor[G]]
@@ -69,6 +71,36 @@ given ContravariantFunctor[Predicate] with
     a => b(f(a))
 ```
 
+### Законы
+
+- Тождественность (identity): `cmap(fa)(id) == fa`.
+- Композиция (composition): `cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))`.
+
+```dotty
+def checkContravariantFunctorIdentity[F[_], A](fa: F[A])(using
+    cf: ContravariantFunctor[F]
+): ValidatedNel[String, Unit] =
+  import cf.*
+  Either.cond[String, Unit](
+    cmap[A, A](fa)(identity) == fa,
+    (),
+    "Не соблюдается Тождественность контравариантного функтора: cmap(fa)(id) == fa"
+  ).toValidatedNel
+
+def checkContravariantFunctorComposition[F[_], A, B, C](fc: F[C])(
+    using
+    cf: ContravariantFunctor[F],
+    f: A => B,
+    g: B => C
+): ValidatedNel[String, Unit] =
+  import cf.*
+  Either.cond[String, Unit](
+    cmap(cmap(fc)(g))(f) == cmap(fc)(g compose f),
+    (),
+    "Не соблюдается Композиция контравариантного функтора: cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))"
+  ).toValidatedNel
+```
+
 ## Схема
 
 ```mermaid
@@ -96,7 +128,6 @@ showString
   .show(Symbol("dave"))
 // val res0: String = 'dave
 ```
-
 
 ---
 

@@ -1,34 +1,33 @@
 package ru.scalabook.typeclass.monad
 
 import cats.Id
+import ru.scalabook.typeclass.arrow.ArrowSuite.checkCoMonadLaw
 import ru.scalabook.typeclass.common.Env
 import ru.scalabook.typeclass.common.Functions.given
 import weaver.*
 import weaver.scalacheck.*
 
-object CoMonadSuite extends SimpleIOSuite, Checkers, CoMonadLaw:
+object CoMonadSuite extends SimpleIOSuite, Checkers:
   private val f: Int => String     = given_Conversion_Int_String.apply
   private val g: String => Boolean = given_Conversion_String_Boolean.apply
 
   test("idCoMonad must satisfy the laws of CoMonad"):
     forall: (x: Int) =>
-      whenSuccess(
+      expect(
         checkCoMonadLaw[Id, Int, String, Boolean](
           Id(x),
           idInt => f(idInt),
           idStr => g(idStr)
-        )
-      ): _ =>
-        success
+        ).isValid
+      )
 
   test("envCoMonad must satisfy the laws of  CoMonad"):
     forall: (x: Int, y: String) =>
-      whenSuccess(
+      expect(
         checkCoMonadLaw[[X] =>> Env[X, String], Int, String, Boolean](
           Env[Int, String](x, y),
           fa => f(fa.a),
           fb => g(fb.a)
-        )
-      ): _ =>
-        success
+        ).isValid
+      )
 end CoMonadSuite

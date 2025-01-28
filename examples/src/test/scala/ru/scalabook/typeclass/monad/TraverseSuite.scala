@@ -1,20 +1,14 @@
 package ru.scalabook.typeclass.monad
 
+import ru.scalabook.typeclass.common.Instancies.given
+import ru.scalabook.typeclass.common.MonadLaws.*
 import ru.scalabook.typeclass.common.Functions.given
 import weaver.*
 import weaver.scalacheck.*
 
-object TraverseSuite extends SimpleIOSuite, Checkers, TraverseLaw:
-  test("Traverse[List].sequence check"):
-    forall: (x: Option[Int]) =>
-      whenSuccess(
-        check(Traverse[List].sequence[Option, Int](List(x)) == x.map(List(_)))
-      ): _ =>
-        success
-
+object TraverseSuite extends SimpleIOSuite, Checkers:
   test("optionTraverse must satisfy the laws of Traverse"):
-    forall: (x: Option[Int]) =>
-      whenSuccess(
-        checkTraverseLaw[Option, List, List, Int, String, Boolean](x)
-      ): _ =>
-        success
+    forall: (fa: Option[Int], fga: Option[List[Int]]) =>
+      expect(
+        checkTraverseLaw[Option, List, List, Int, String, Boolean](fa, fga).isValid
+      )

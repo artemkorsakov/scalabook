@@ -6,6 +6,9 @@ import ru.scalabook.typeclass.monad.{Plus, PlusEmpty}
 import ru.scalabook.typeclass.monoid.*
 
 trait BasicLaws:
+  def check(condition: Boolean, message: String): ValidatedNel[String, Unit] =
+    Either.cond[String, Unit](condition, (), message).toValidatedNel
+
   def checkAssociativity[A](x: A, y: A, z: A)(using
       s: Semigroup[A]
   ): ValidatedNel[String, Unit] =

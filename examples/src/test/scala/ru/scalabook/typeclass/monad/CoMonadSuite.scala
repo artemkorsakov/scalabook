@@ -1,7 +1,7 @@
 package ru.scalabook.typeclass.monad
 
 import cats.Id
-import ru.scalabook.typeclass.arrow.ArrowSuite.checkCoMonadLaw
+import ru.scalabook.typeclass.common.MonadLaws.*
 import ru.scalabook.typeclass.common.Env
 import ru.scalabook.typeclass.common.Functions.given
 import weaver.*

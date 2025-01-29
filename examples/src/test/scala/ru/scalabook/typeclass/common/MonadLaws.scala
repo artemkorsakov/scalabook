@@ -8,6 +8,33 @@ import ru.scalabook.typeclass.common.MonoidLaws.*
 import ru.scalabook.typeclass.monoid.Monoid
 
 object MonadLaws extends BasicLaws:
+  def checkCoMonadLaw[F[_]: CoMonad, A, B, C](
+      fa: F[A],
+      fab: F[A] => B,
+      fbc: F[B] => C
+  )(using
+      f: A => B,
+      fReverse: B => A,
+      g: B => C,
+      gReverse: C => B
+  ): ValidatedNel[String, Unit] =
+    checkCoBindLaw(fa, fab, fbc) combine
+      checkCoMonadLeftIdentity[F, A](fa) combine
+      checkCoMonadRightIdentity[F, A, B](fa, fab)
+
+  def checkCoBindLaw[F[_]: CoBind, A, B, C](
+      fa: F[A],
+      fab: F[A] => B,
+      fbc: F[B] => C
+  )(using
+      f: A => B,
+      fReverse: B => A,
+      g: B => C,
+      gReverse: C => B
+  ): ValidatedNel[String, Unit] =
+    checkFunctorLaw[F, A, B, C](fa) combine
+      checkCobindAssociativity[F, A, B, C](fa, fab, fbc)
+
   def checkDivisibleLaw[F[_]: Divisible: Applicator, A, B, C](
       fa1: F[A],
       fa2: F[A],
@@ -251,6 +278,42 @@ object MonadLaws extends BasicLaws:
   ): ValidatedNel[String, Unit] =
     checkXMapIdentityLaw[F, A](fa) combine
       checkXMapCompositionLaw[F, A, B, C](fa)
+
+  private def checkCoMonadLeftIdentity[F[_], A](fa: F[A])(using
+      com: CoMonad[F]
+  ): ValidatedNel[String, Unit] =
+    import com.*
+
+    Either.cond[String, Unit](
+      coFlatMap(fa)(coUnit) == fa,
+      (),
+      "Не соблюдается тождественность слева CoMonad: coFlatMap(fa)(coUnit) == fa"
+    ).toValidatedNel
+
+  private def checkCoMonadRightIdentity[F[_], A, B](
+      fa: F[A],
+      fab: F[A] => B
+  )(using com: CoMonad[F]): ValidatedNel[String, Unit] =
+    import com.*
+
+    Either.cond[String, Unit](
+      coUnit(coFlatMap(fa)(fab)) == fab(fa),
+      (),
+      "Не соблюдается тождественность справа CoMonad: coUnit(coFlatMap(fa)(fab)) == fab(fa)"
+    ).toValidatedNel
+
+  private def checkCobindAssociativity[F[_], A, B, C](
+      fa: F[A],
+      fab: F[A] => B,
+      fbc: F[B] => C
+  )(using cob: CoBind[F]): ValidatedNel[String, Unit] =
+    import cob.*
+
+    Either.cond[String, Unit](
+      cobind(cobind(fa)(fab))(fbc) == cobind(cobind(fa)(fab))(fbc), // ToDo: ???
+      (),
+      "Не соблюдается ассоциативность CoBind: divide(fa, conquer)(delta) == fa, где delta: A => (A, A) = a => (a, a)"
+    ).toValidatedNel
 
   private def checkDivisibleRightIdentity[F[_], A](fa: F[A], a: A)(using
       div: Divisible[F],

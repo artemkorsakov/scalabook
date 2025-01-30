@@ -10,4 +10,10 @@ object MonadTransformerSuite extends SimpleIOSuite, Checkers, OldLaws:
       val monadA = IO(() => x)
       val monadIdA: IO[Option[Int]] =
         MonadTransformer[OptionT, IO].lift[Int](monadA).run
-      expect(check(monadIdA.run().contains(x)).isValid)
+      expect(
+        Either.cond[String, Unit](
+          monadIdA.run().contains(x),
+          (),
+          "Не соблюдается трансформация"
+        ).isRight
+      )

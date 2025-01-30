@@ -8,6 +8,22 @@ import ru.scalabook.typeclass.common.MonoidLaws.*
 import ru.scalabook.typeclass.monoid.Monoid
 
 object MonadLaws extends BasicLaws:
+  def checkBimonadLaw[F[_]: Bimonad: Runner1, A, B, C](
+      a: A,
+      b: B,
+      c: C,
+      fa: F[A],
+      fab: F[A] => B,
+      fbc: F[B] => C
+  )(using
+      f: A => B,
+      fReverse: B => A,
+      g: B => C,
+      gReverse: C => B
+  ): ValidatedNel[String, Unit] =
+    checkCoMonadLaw[F, A, B, C](fa, fab, fbc) combine
+      checkMonadLaw[F, A, B, C](a, b, c)
+
   def checkCoMonadLaw[F[_]: CoMonad, A, B, C](
       fa: F[A],
       fab: F[A] => B,
@@ -310,9 +326,9 @@ object MonadLaws extends BasicLaws:
     import cob.*
 
     Either.cond[String, Unit](
-      cobind(cobind(fa)(fab))(fbc) == cobind(cobind(fa)(fab))(fbc), // ToDo: ???
+      fa.cobind(fab).cobind(fbc) == fa.cobind(x => fbc(x.cobind(fab))),
       (),
-      "Не соблюдается ассоциативность CoBind: divide(fa, conquer)(delta) == fa, где delta: A => (A, A) = a => (a, a)"
+      "Не соблюдается ассоциативность CoBind: fa.cobind(fab).cobind(fbc) == fa.cobind(x => fbc(x.cobind(fab)))"
     ).toValidatedNel
 
   private def checkDivisibleRightIdentity[F[_], A](fa: F[A], a: A)(using

@@ -11,6 +11,10 @@ trait CoMonad[F[_]] extends CoBind[F]:
 
   final def coPure[A](p: F[A]): A = coUnit(p)
 
+  extension [A](fa: F[A])
+    override def map[B](f: A => B): F[B] =
+      fa.cobind(x => f(coUnit(x)))
+
 object CoMonad:
   def apply[F[_]: CoMonad]: CoMonad[F] = summon[CoMonad[F]]
 

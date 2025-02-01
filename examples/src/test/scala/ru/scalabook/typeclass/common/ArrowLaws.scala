@@ -6,21 +6,28 @@ import ru.scalabook.typeclass.arrow.*
 
 object ArrowLaws extends BasicLaws:
   def checkArrowLaw[=>:[_, _]: Arrow: Runner2, A, B, C, D, E, F](
-      gad: A =>: D,
-      gab: A =>: B,
+      ad: A =>: D,
+      ab: A =>: B,
+      aa: A =>: A,
       bc: B =>: C,
+      be: B =>: E,
       cd: C =>: D,
-      f1: A =>: A
-  )(a: A, c: C, d: D)(using
+      df: D =>: F,
+      ef: E =>: F
+  )(a: A, c: C, d: D, e: E)(using
       fcb: C => B,
       fcd: C => D,
       fba: B => A,
       fde: D => E,
       fef: E => F
   ): ValidatedNel[String, Unit] =
-    checkStrongLaw[=>:, A, B, C, D, E, F](gad, gab)(a, c, d) combine
-      checkSplitLaw[=>:, A, B, C, D](gab, bc, cd)(a) combine
-      checkCategoryLaw[=>:, A, B, C, D](gab, bc, cd, f1)(a)
+    checkStrongLaw[=>:, A, B, C, D, E, F](ad, ab)(a, c, d) combine
+      checkSplitLaw[=>:, A, B, C, D, E, F](ab, bc, cd, ef, be, df)(
+        a,
+        c,
+        e
+      ) combine
+      checkCategoryLaw[=>:, A, B, C, D](ab, bc, cd, aa)(a)
 
   def checkStrongLaw[=>:[_, _]: Strong: Runner2, A, B, C, D, E, F](
       gad: A =>: D,
@@ -149,12 +156,31 @@ object ArrowLaws extends BasicLaws:
         "composite"
       )
 
-  def checkSplitLaw[=>:[_, _]: Split: Runner2, A, B, C, D](
+  def checkSplitLaw[=>:[_, _], A, B, C, D, E, F](
       ab: A =>: B,
       bc: B =>: C,
-      cd: C =>: D
-  )(a: A): ValidatedNel[String, Unit] =
-    checkComposeLaw[=>:, A, B, C, D](ab, bc, cd)(a)
+      cd: C =>: D,
+      ef: E =>: F,
+      be: B =>: E,
+      df: D =>: F
+  )(a: A, c: C, e: E)(using
+      spl: Split[=>:],
+      cat: Category[=>:],
+      rnn: Runner2[=>:]
+  ): ValidatedNel[String, Unit] =
+    checkComposeLaw[=>:, A, B, C, D](ab, bc, cd)(a)(using spl, rnn) combine
+      checkSplitAssociativityLaw[=>:, A, B, C, D, E, F](ab, cd, ef)(
+        a,
+        c,
+        e
+      ) combine
+      checkSplitIdentityLaw[=>:, A, C](a, c) combine
+      checkSplitCompatibilityWithCompositionLaw[=>:, A, B, C, D, E, F](
+        ab,
+        cd,
+        be,
+        df
+      )(a, c)
 
   def checkCategoryLaw[=>:[_, _]: Category: Runner2, A, B, C, D](
       ab: A =>: B,
@@ -177,6 +203,53 @@ object ArrowLaws extends BasicLaws:
         run(a)(compose(compose(cd, bc), ab)),
       (),
       "Не соблюдается ассоциативность: compose(cd, compose(bc, ab)) должно быть равно compose(compose(cd, bc), ab)"
+    ).toValidatedNel
+
+  private def checkSplitAssociativityLaw[=>:[_, _], A, B, C, D, E, F](
+      ab: A =>: B,
+      cd: C =>: D,
+      ef: E =>: F
+  )(a: A, c: C, e: E)(using
+      s: Split[=>:],
+      r: Runner2[=>:]
+  ): ValidatedNel[String, Unit] =
+    import r.*, s.*
+    val first: ((A, C), E) =>: ((B, D), F)  = split(split(ab, cd), ef)
+    val second: (A, (C, E)) =>: (B, (D, F)) = split(ab, split(cd, ef))
+    val ((b1, d1), f1): ((B, D), F)         = run(((a, c), e))(first)
+    val (b2, (d2, f2)): (B, (D, F))         = run((a, (c, e)))(second)
+    Either.cond[String, Unit](
+      b1 == b2 && d1 == d2 && f1 == f2,
+      (),
+      "Не соблюдается ассоциативность произведения: (f split g) split h == f split (g split h)"
+    ).toValidatedNel
+
+  private def checkSplitIdentityLaw[=>:[_, _], A, B](a: A, b: B)(using
+      s: Split[=>:],
+      c: Category[=>:],
+      r: Runner2[=>:]
+  ): ValidatedNel[String, Unit] =
+    import r.*, s.*, c.*
+    Either.cond[String, Unit](
+      run((a, b))(split(id[A], id[B])) == (a, b),
+      (),
+      "Не соблюдается тождественность произведения: id_a split id_b = id_ab"
+    ).toValidatedNel
+
+  private def checkSplitCompatibilityWithCompositionLaw[=>:[
+      _,
+      _
+  ], A, B, C, D, E, F](ab: A =>: B, cd: C =>: D, be: B =>: E, df: D =>: F)(
+      a: A,
+      c: C
+  )(using s: Split[=>:], r: Runner2[=>:]): ValidatedNel[String, Unit] =
+    import r.*, s.*
+    val first: (A, C) =>: (E, F)  = compose(split(be, df), split(ab, cd))
+    val second: (A, C) =>: (E, F) = split(compose(be, ab), compose(df, cd))
+    Either.cond[String, Unit](
+      run((a, c))(first) == run((a, c))(second),
+      (),
+      "Не соблюдается совместимость с композицией: (f1 split g1) compose (f2 split g2) == (f1 compose f2) split (g1 compose g2)"
     ).toValidatedNel
 
   private def checkRightIdentityLaw[=>:[_, _], A](f1: A =>: A)(a: A)(using

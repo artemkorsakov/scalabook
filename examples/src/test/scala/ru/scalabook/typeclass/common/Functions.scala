@@ -14,6 +14,9 @@ object Functions:
   given Conversion[String, Boolean] with
     def apply(s: String): Boolean = s.startsWith("1")
 
+  given Conversion[String, Char] with
+    def apply(s: String): Char = s.headOption.getOrElse('-')
+
   given Conversion[Boolean, String] with
     def apply(b: Boolean): String = b.toString
 

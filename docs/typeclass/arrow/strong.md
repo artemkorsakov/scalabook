@@ -28,8 +28,6 @@ trait Strong[=>:[_, _]] extends Profunctor[=>:]:
     dimap[(A, C), (B, C), (C, A), (C, B)](first(fa))(_.swap)(_.swap)
 ```
 
-## Примеры
-
 ### Функция от одной переменной
 
 ```dotty

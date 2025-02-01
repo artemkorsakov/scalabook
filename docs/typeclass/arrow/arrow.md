@@ -4,13 +4,9 @@
 
 `Arrow` ("стрелка") — это термин, используемый в теории категорий как абстрактное понятие вещи, 
 которая ведет себя как функция. "Стрелки", могут быть полезны, если нужно добавить некоторый контекст к функциям и парам.
-Каждая "стрелка" образует [`Contravariant`](../monad/contravariant-functor.md) 
-в одном параметре типа и [`Applicative`](../monad/applicative.md)
-в другом, как и в случае с обычными функциями.
 `Arrow` расширяет [`Split`](split.md), [`Strong`](strong.md) и [`Category`](category.md).
 
 `Arrow` должен удовлетворять законам расширяемых трейтов.
-
 
 ## Определение в виде кода на Scala
 
@@ -52,19 +48,10 @@ trait Arrow[=>:[_, _]] extends Split[=>:], Strong[=>:], Category[=>:]:
   override def mapsnd[A, B, C](fab: A =>: B)(f: B => C): A =>: C =
     <<<[A, B, C](arr(f), fab)
 
-  override def covariantInstance[C]: Applicative[[X] =>> =>:[C, X]] =
-    new Applicative[[X] =>> =>:[C, X]]:
-      override def unit[A](a: => A): C =>: A = arr(_ => a)
-
-      override def apply[A, B](fab: C =>: (A => B))(fa: C =>: A): C =>: B =
-        <<<(arr((y: (A => B, A)) => y._1(y._2)), combine(fab, fa))
-
   /** Запустить два `fab` рядом друг с другом */
   def product[A, B](fab: A =>: B): (A, A) =>: (B, B) =
     split(fab, fab)
 ```
-
-## Примеры
 
 ### Функция от одной переменной
 
@@ -74,6 +61,24 @@ given Arrow[Function1] with
   override def id[A]: A => A = a => a
   override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f
   override def first[A, B, C](fa: A => B): ((A, C)) => (B, C) = (a, c) => (fa(a), c)
+```
+
+### Связь с другими типовыми классами
+
+Каждая "стрелка" образует [`Contravariant`](../monad/contravariant-functor.md)
+в одном параметре типа и [`Applicative`](../monad/applicative.md)
+в другом, как и в случае с обычными функциями.
+
+```dotty
+trait Arrow[=>:[_, _]] extends Split[=>:], Strong[=>:], Category[=>:]:
+  ...
+
+  override def covariantInstance[C]: Applicative[[X] =>> =>:[C, X]] =
+    new Applicative[[X] =>> =>:[C, X]]:
+      override def unit[A](a: => A): C =>: A = arr(_ => a)
+
+      override def apply[A, B](fab: C =>: (A => B))(fa: C =>: A): C =>: B =
+        <<<(arr((y: (A => B, A)) => y._1(y._2)), combine(fab, fa))
 ```
 
 ## Схема

@@ -29,7 +29,7 @@ object ArrowLaws extends BasicLaws:
       ) combine
       checkCategoryLaw[=>:, A, B, C, D](ab, bc, cd, aa)(a)
 
-  def checkStrongLaw[=>:[_, _]: Strong: Runner2, A, B, C, D, E, F](
+  def checkStrongLaw[=>:[_, _], A, B, C, D, E, F](
       gad: A =>: D,
       gab: A =>: B
   )(a: A, c: C, d: D)(using
@@ -38,90 +38,65 @@ object ArrowLaws extends BasicLaws:
       fba: B => A,
       fde: D => E,
       fef: E => F
-  )(using PF: Strong[Function1]): ValidatedNel[String, Unit] =
+  )(using
+      PF: Strong[Function1],
+      str: Strong[=>:],
+      rip: Runner2[=>:]
+  ): ValidatedNel[String, Unit] =
+    import str.*, rip.*
     checkProfunctorLaw[=>:, A, B, C, D, E, F](gad)(a, c) combine
       check(
-        Runner2[=>:].run((a, c))(
-          Strong[=>:]
-            .dimap(Strong[=>:].second(gad))(swapTuple[A, C])(swapTuple[C, D])
-        ) ==
-          Runner2[=>:].run((a, c))(Strong[=>:].first(gad)),
+        run((a, c))(dimap(second(gad))(swapTuple[A, C])(swapTuple[C, D])) ==
+          run((a, c))(first(gad)),
         "first' == dimap swap swap . second'"
       ) combine
       check(
-        Runner2[=>:].run((c, a))(
-          Strong[=>:]
-            .dimap(Strong[=>:].first(gad))(swapTuple[C, A])(swapTuple[D, C])
-        ) ==
-          Runner2[=>:].run((c, a))(Strong[=>:].second(gad)),
+        run((c, a))(dimap(first(gad))(swapTuple[C, A])(swapTuple[D, C])) ==
+          run((c, a))(second(gad)),
         "second' == dimap swap swap . first'"
       ) combine
       check(
-        Runner2[=>:].run((a, c))(Strong[=>:].mapfst[A, D, (A, C)](gad)(_._1)) ==
-          Runner2[=>:].run((a, c))(
-            Strong[=>:].mapsnd(Strong[=>:].first[A, D, C](gad))(_._1)
-          ),
+        run((a, c))(mapfst[A, D, (A, C)](gad)(_._1)) ==
+          run((a, c))(mapsnd(first[A, D, C](gad))(_._1)),
         "lmap fst == rmap fst . first'"
       ) combine
       check(
-        Runner2[=>:].run((c, a))(Strong[=>:].mapfst[A, D, (C, A)](gad)(_._2)) ==
-          Runner2[=>:].run((c, a))(
-            Strong[=>:].mapsnd(Strong[=>:].second[A, D, C](gad))(_._2)
-          ),
+        run((c, a))(mapfst[A, D, (C, A)](gad)(_._2)) ==
+          run((c, a))(mapsnd(second[A, D, C](gad))(_._2)),
         "lmap snd == rmap snd . second'"
       ) combine
       check(
-        Runner2[=>:].run((a, c))(
-          Strong[=>:]
-            .mapsnd(Strong[=>:].first[A, B, C](gab))(PF.second[C, D, B](fcd))
-        ) ==
-          Runner2[=>:].run((a, c))(
-            Strong[=>:]
-              .mapfst(Strong[=>:].first[A, B, D](gab))(PF.second[C, D, A](fcd))
-          ),
+        run((a, c))(mapsnd(first[A, B, C](gab))(PF.second[C, D, B](fcd))) ==
+          run((a, c))(mapfst(first[A, B, D](gab))(PF.second[C, D, A](fcd))),
         "lmap (second f) . first == rmap (second f) . first"
       ) combine
       check(
-        Runner2[=>:].run((c, a))(
-          Strong[=>:]
-            .mapsnd(Strong[=>:].second[A, B, C](gab))(PF.first[C, D, B](fcd))
-        ) ==
-          Runner2[=>:].run((c, a))(
-            Strong[=>:]
-              .mapfst(Strong[=>:].second[A, B, D](gab))(PF.first[C, D, A](fcd))
-          ),
+        run((c, a))(mapsnd(second[A, B, C](gab))(PF.first[C, D, B](fcd))) ==
+          run((c, a))(mapfst(second[A, B, D](gab))(PF.first[C, D, A](fcd))),
         "lmap (first f) . second == rmap (first f) . second"
       ) combine
       check(
-        Runner2[=>:].run(((a, c), d))(
-          Strong[=>:].first[(A, C), (B, C), D](Strong[=>:].first[A, B, C](gab))
-        ) ==
-          Runner2[=>:].run(((a, c), d))(
-            Strong[=>:]
-              .dimap[(A, (C, D)), (B, (C, D)), ((A, C), D), ((B, C), D)](
-                Strong[=>:].first[A, B, (C, D)](gab)
-              )(
-                assoc
-              )(unassoc)
-          ),
+        run(((a, c), d))(first[(A, C), (B, C), D](first[A, B, C](gab))) ==
+          run(((a, c), d))(dimap[
+            (A, (C, D)),
+            (B, (C, D)),
+            ((A, C), D),
+            ((B, C), D)
+          ](first[A, B, (C, D)](gab))(assoc)(unassoc)),
         "first' . first' == dimap assoc unassoc . first'"
       ) combine
       check(
-        Runner2[=>:].run((d, (c, a)))(
-          Strong[=>:].second[(C, A), (C, B), D](
-            Strong[=>:].second[A, B, C](gab)
-          )
-        ) ==
-          Runner2[=>:].run((d, (c, a)))(
-            Strong[=>:]
-              .dimap[((D, C), A), ((D, C), B), (D, (C, A)), (D, (C, B))](
-                Strong[=>:].second[A, B, (D, C)](gab)
-              )(
-                unassoc
-              )(assoc)
+        run((d, (c, a)))(second[(C, A), (C, B), D](second[A, B, C](gab))) ==
+          run((d, (c, a)))(
+            dimap[((D, C), A), ((D, C), B), (D, (C, A)), (D, (C, B))](second[
+              A,
+              B,
+              (D, C)
+            ](gab))(unassoc)(assoc)
           ),
         "second' . second' == dimap unassoc assoc . second'"
       )
+  end checkStrongLaw
 
   private def swapTuple[X, Y]: ((X, Y)) => (Y, X) = _.swap
 
@@ -131,28 +106,22 @@ object ArrowLaws extends BasicLaws:
   private def unassoc[A, B, C]: ((A, (B, C))) => ((A, B), C) =
     case (a, (b, c)) => ((a, b), c)
 
-  def checkProfunctorLaw[=>:[_, _]: Profunctor: Runner2, A, B, C, D, E, F](
+  def checkProfunctorLaw[=>:[_, _], A, B, C, D, E, F](
       gad: A =>: D
   )(a: A, c: C)(using
       fcb: C => B,
       fba: B => A,
       fde: D => E,
       fef: E => F
-  ): ValidatedNel[String, Unit] =
+  )(using pro: Profunctor[=>:], rip: Runner2[=>:]): ValidatedNel[String, Unit] =
+    import pro.*, rip.*
     check(
-      Runner2[=>:].run(a)(
-        Profunctor[=>:].dimap(gad)((a: A) => a)((d: D) => d)
-      ) ==
-        Runner2[=>:].run(a)(gad),
+      run(a)(dimap(gad)((a: A) => a)((d: D) => d)) == run(a)(gad),
       "identity"
     ) combine
       check(
-        Runner2[=>:].run(c)(
-          Profunctor[=>:].dimap(Profunctor[=>:].dimap(gad)(fba)(fde))(fcb)(fef)
-        ) ==
-          Runner2[=>:].run(c)(
-            Profunctor[=>:].dimap(gad)(fba compose fcb)(fef compose fde)
-          ),
+        run(c)(dimap(Profunctor[=>:].dimap(gad)(fba)(fde))(fcb)(fef)) ==
+          run(c)(dimap(gad)(fba compose fcb)(fef compose fde)),
         "composite"
       )
 

@@ -43,7 +43,23 @@ given Strong[Function1] with
   override def second[A, B, C](fa: A => B): ((C, A)) => (C, B) = (c, a) => (c, fa(a))
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class Profunctor~ =>: ~{
+        +mapfst[A, B, C](fab: A =>: B)(f: C => A) C =>: B
+        +mapsnd[A, B, C](fab: A =>: B)(f: B => C) A =>: C
+        +dimap[A, B, C, D](fab: A =>: B)(f: C => A)(g: B => D) C =>: D
+    }
+    class Strong~ =>: ~{
+        +first[A, B, C](fa: A =>: B) (A, C) =>: (B, C)
+        +second[A, B, C](fa: A =>: B) (C, A) =>: (C, B)
+    }
+    Profunctor <|-- Strong 
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Cats
 

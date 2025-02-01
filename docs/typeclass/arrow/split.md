@@ -27,7 +27,20 @@ object Split:
       (a, c) => (f(a), g(c))
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+    class Compose~ =>: ~{
+        +compose[A, B, C](f: B =>: C, g: A =>: B) A =>: C
+    }
+    class Split~ =>: ~{
+        +split[A, B, C, D](f: A =>: B, g: C =>: D) (A, C) =>: (B, D)   
+    }
+    Compose <|-- Split 
+```
+
+## Реализация в библиотеках
 
 ### Реализация в Cats
 

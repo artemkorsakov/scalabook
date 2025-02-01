@@ -1,8 +1,6 @@
 package ru.scalabook.typeclass.common
 
 trait Runner2[=>:[_, _]]:
-  self =>
-
   def run[X, R](x: X): X =>: R => R
 
 object Runner2:

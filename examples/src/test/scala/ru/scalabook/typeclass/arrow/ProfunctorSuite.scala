@@ -1,15 +1,16 @@
 package ru.scalabook.typeclass.arrow
 
+import ru.scalabook.typeclass.common.ArrowLaws.*
 import ru.scalabook.typeclass.common.Functions.given
 import weaver.*
 import weaver.scalacheck.*
 
-object ProfunctorSuite extends SimpleIOSuite, Checkers, ProfunctorLaw:
+object ProfunctorSuite extends SimpleIOSuite, Checkers:
   private val gad: Boolean => String = given_Conversion_Boolean_String
 
   test("Profunctor[Function1] must satisfy the laws of Profunctor"):
     forall: (a: Boolean, c: Int) =>
-      whenSuccess(
+      expect(
         checkProfunctorLaw[
           Function1,
           Boolean,
@@ -18,6 +19,5 @@ object ProfunctorSuite extends SimpleIOSuite, Checkers, ProfunctorLaw:
           String,
           Boolean,
           Char
-        ](gad)(a, c)
-      ): _ =>
-        success
+        ](gad)(a, c).isValid
+      )

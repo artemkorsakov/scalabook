@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.monad
 
-import ru.scalabook.typeclass.common.MonadLaws.*
+import MonadLaws.*
 import weaver.*
 import weaver.scalacheck.*
 

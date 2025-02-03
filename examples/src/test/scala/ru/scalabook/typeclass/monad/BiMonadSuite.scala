@@ -3,7 +3,7 @@ package ru.scalabook.typeclass.monad
 import cats.Id
 import ru.scalabook.typeclass.common.Functions.given
 import ru.scalabook.typeclass.common.Instancies.given
-import ru.scalabook.typeclass.common.MonadLaws.*
+import MonadLaws.*
 import weaver.*
 import weaver.scalacheck.*
 

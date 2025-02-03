@@ -1,11 +1,11 @@
-package ru.scalabook.typeclass.common
+package ru.scalabook.typeclass.monad
 
 import cats.Id
 import cats.data.ValidatedNel
-import ru.scalabook.typeclass.monad.*
 import cats.syntax.either.*
-import ru.scalabook.typeclass.common.MonoidLaws.*
+import ru.scalabook.typeclass.common.{Applicator, BasicLaws, Runner1}
 import ru.scalabook.typeclass.monoid.Monoid
+import ru.scalabook.typeclass.monoid.MonoidLaws.*
 
 object MonadLaws extends BasicLaws:
   def checkBimonadLaw[F[_]: Bimonad: Runner1, A, B, C](
@@ -335,8 +335,8 @@ object MonadLaws extends BasicLaws:
       div: Divisible[F],
       app: Applicator[F]
   ): ValidatedNel[String, Unit] =
-    import div.*
     import app.*
+    import div.*
     def delta: A => (A, A) = a => (a, a)
 
     Either.cond[String, Unit](
@@ -349,8 +349,8 @@ object MonadLaws extends BasicLaws:
       div: Divisible[F],
       app: Applicator[F]
   ): ValidatedNel[String, Unit] =
-    import div.*
     import app.*
+    import div.*
     def delta: A => (A, A) = a => (a, a)
 
     Either.cond[String, Unit](
@@ -365,8 +365,8 @@ object MonadLaws extends BasicLaws:
       fa3: F[A],
       a: A
   )(using div: Divide[F], app: Applicator[F]): ValidatedNel[String, Unit] =
-    import div.*
     import app.*
+    import div.*
     def delta: A => (A, A) = a => (a, a)
 
     Either.cond[String, Unit](
@@ -381,8 +381,8 @@ object MonadLaws extends BasicLaws:
       cf: ContravariantFunctor[F],
       ap: Applicator[F]
   ): ValidatedNel[String, Unit] =
-    import cf.*
     import ap.*
+    import cf.*
     Either.cond[String, Unit](
       run(a)(cmap[A, A](fa)(identity)) == run(a)(fa),
       (),
@@ -399,8 +399,8 @@ object MonadLaws extends BasicLaws:
       f: A => B,
       g: B => C
   ): ValidatedNel[String, Unit] =
-    import cf.*
     import ap.*
+    import cf.*
     Either.cond[String, Unit](
       run(a)(cmap(cmap(fc)(g))(f)) == run(a)(cmap(fc)(g compose f)),
       (),

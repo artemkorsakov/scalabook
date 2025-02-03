@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.arrow
 
-import ru.scalabook.typeclass.common.ArrowLaws.*
+import ArrowLaws.*
 import ru.scalabook.typeclass.common.Functions.{*, given}
 import weaver.*
 import weaver.scalacheck.*

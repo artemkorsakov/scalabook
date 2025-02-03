@@ -4,7 +4,7 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.numeric.*
 import io.github.iltotore.iron.scalacheck.numeric.given
-import ru.scalabook.typeclass.common.MonoidLaws.*
+import ru.scalabook.typeclass.monoid.MonoidLaws.*
 import weaver.*
 import weaver.scalacheck.*
 

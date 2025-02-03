@@ -5,7 +5,7 @@ import cats.data.ValidatedNel
 import cats.syntax.either.*
 import ru.scalabook.typeclass.common.Functions.given
 import ru.scalabook.typeclass.common.Instancies.given
-import ru.scalabook.typeclass.common.MonadLaws.*
+import MonadLaws.*
 import weaver.*
 import weaver.scalacheck.*
 

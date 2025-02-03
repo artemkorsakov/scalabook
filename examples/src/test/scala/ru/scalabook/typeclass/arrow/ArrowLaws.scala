@@ -1,8 +1,8 @@
-package ru.scalabook.typeclass.common
+package ru.scalabook.typeclass.arrow
 
-import cats.syntax.either.*
 import cats.data.ValidatedNel
-import ru.scalabook.typeclass.arrow.*
+import cats.syntax.either.*
+import ru.scalabook.typeclass.common.{BasicLaws, Runner2}
 
 object ArrowLaws extends BasicLaws:
   def checkArrowLaw[=>:[_, _]: Arrow: Runner2, A, B, C, D, E, F](
@@ -43,7 +43,8 @@ object ArrowLaws extends BasicLaws:
       str: Strong[=>:],
       rip: Runner2[=>:]
   ): ValidatedNel[String, Unit] =
-    import str.*, rip.*
+    import rip.*
+    import str.*
     checkProfunctorLaw[=>:, A, B, C, D, E, F](gad)(a, c) combine
       check(
         run((a, c))(dimap(second(gad))(swapTuple[A, C])(swapTuple[C, D])) ==
@@ -114,7 +115,8 @@ object ArrowLaws extends BasicLaws:
       fde: D => E,
       fef: E => F
   )(using pro: Profunctor[=>:], rip: Runner2[=>:]): ValidatedNel[String, Unit] =
-    import pro.*, rip.*
+    import pro.*
+    import rip.*
     check(
       run(a)(dimap(gad)((a: A) => a)((d: D) => d)) == run(a)(gad),
       "identity"
@@ -166,7 +168,8 @@ object ArrowLaws extends BasicLaws:
       bc: B =>: C,
       cd: C =>: D
   )(a: A)(using c: Compose[=>:], r: Runner2[=>:]): ValidatedNel[String, Unit] =
-    import r.*, c.*
+    import c.*
+    import r.*
     Either.cond[String, Unit](
       run(a)(compose(cd, compose(bc, ab))) ==
         run(a)(compose(compose(cd, bc), ab)),
@@ -182,7 +185,8 @@ object ArrowLaws extends BasicLaws:
       s: Split[=>:],
       r: Runner2[=>:]
   ): ValidatedNel[String, Unit] =
-    import r.*, s.*
+    import r.*
+    import s.*
     val first: ((A, C), E) =>: ((B, D), F)  = split(split(ab, cd), ef)
     val second: (A, (C, E)) =>: (B, (D, F)) = split(ab, split(cd, ef))
     val ((b1, d1), f1): ((B, D), F)         = run(((a, c), e))(first)
@@ -198,7 +202,9 @@ object ArrowLaws extends BasicLaws:
       c: Category[=>:],
       r: Runner2[=>:]
   ): ValidatedNel[String, Unit] =
-    import r.*, s.*, c.*
+    import c.*
+    import r.*
+    import s.*
     Either.cond[String, Unit](
       run((a, b))(split(id[A], id[B])) == (a, b),
       (),
@@ -212,7 +218,8 @@ object ArrowLaws extends BasicLaws:
       a: A,
       c: C
   )(using s: Split[=>:], r: Runner2[=>:]): ValidatedNel[String, Unit] =
-    import r.*, s.*
+    import r.*
+    import s.*
     val first: (A, C) =>: (E, F)  = compose(split(be, df), split(ab, cd))
     val second: (A, C) =>: (E, F) = split(compose(be, ab), compose(df, cd))
     Either.cond[String, Unit](
@@ -225,7 +232,8 @@ object ArrowLaws extends BasicLaws:
       c: Category[=>:],
       r: Runner2[=>:]
   ): ValidatedNel[String, Unit] =
-    import r.*, c.*
+    import c.*
+    import r.*
     Either.cond[String, Unit](
       run(a)(compose(f1, id[A])) == run(a)(f1),
       (),
@@ -236,7 +244,8 @@ object ArrowLaws extends BasicLaws:
       c: Category[=>:],
       r: Runner2[=>:]
   ): ValidatedNel[String, Unit] =
-    import r.*, c.*
+    import c.*
+    import r.*
     Either.cond[String, Unit](
       run(a)(compose(id[A], f1)) == run(a)(f1),
       (),

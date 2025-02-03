@@ -1,7 +1,7 @@
 package ru.scalabook.typeclass.monad
 
 import ru.scalabook.typeclass.common.Applicator
-import ru.scalabook.typeclass.common.MonadLaws.*
+import MonadLaws.*
 import ru.scalabook.typeclass.monad.ContravariantFunctor.given
 import weaver.*
 import weaver.scalacheck.*

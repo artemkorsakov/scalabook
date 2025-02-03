@@ -1,6 +1,6 @@
 package ru.scalabook.typeclass.monad
 
-import ru.scalabook.typeclass.common.MonadLaws.*
+import MonadLaws.*
 import cats.Id
 import cats.syntax.either.*
 import ru.scalabook.typeclass.common.Instancies.given

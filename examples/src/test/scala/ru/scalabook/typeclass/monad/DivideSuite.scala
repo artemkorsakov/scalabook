@@ -1,7 +1,7 @@
 package ru.scalabook.typeclass.monad
 
 import ru.scalabook.typeclass.common.Applicator
-import ru.scalabook.typeclass.common.MonadLaws.*
+import MonadLaws.*
 import ru.scalabook.typeclass.monad.Divide.given
 import ru.scalabook.typeclass.monoid.Monoid
 import ru.scalabook.typeclass.monoid.Monoid.booleanAnd

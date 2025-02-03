@@ -12,7 +12,6 @@ trait Read[F]:
   def read(s: String): F
 ```
 
-
 ---
 
 **Ссылки:**

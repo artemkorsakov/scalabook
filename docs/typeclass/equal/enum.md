@@ -46,7 +46,7 @@ trait Enum[A] extends Order[A], Bothable[A]:
   def max: Option[A]
 ```
 
-## Реализация
+## Реализация в библиотеках
 
 ### Реализация в ScalaZ
 

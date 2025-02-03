@@ -31,7 +31,6 @@ trait Bounded[F] extends Order[F]:
   def max: F
 ```
 
-
 ---
 
 **Ссылки:**

@@ -43,7 +43,7 @@ trait Signed[A] extends Order[A]:
   def isSignNonNegative(x: A): Boolean = sign(x) != Sign.Negative
 ```
 
-## Реализация
+## Реализация в библиотеках
 
 ### Реализация в Spire
 

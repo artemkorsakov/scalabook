@@ -36,8 +36,6 @@ trait Bifunctor[F[_, _]]:
     bimap(faa)(f, f)
 ```
 
-## Примеры
-
 ### Either
 
 ```dotty
@@ -61,7 +59,18 @@ given Bifunctor[Writer] with
     }
 ```
 
-## Реализация
+## Схема
+
+```mermaid
+classDiagram
+        class Bifunctor~F[_, _]~{
+            +def bimap[A, B, C, D](fab: F[A, B])(f: A => C, g: B => D) F[C, D]
+            +def leftMap[A, B, C](fab: F[A, B])(f: A => C) F[C, B]
+            +def rightMap[A, B, D](fab: F[A, B])(g: B => D) F[A, D] 
+        }
+```
+
+## Реализация в библиотеках
 
 ### Реализация в ScalaZ
 
@@ -139,7 +148,6 @@ Bifunctor[Tuple2].uFunctor.map((2,3))(_ * 3)
 Bifunctor[Tuple2].umap((2,3))(_ * 3)                                                     
 // (6 -> 9)
 ```
-
 
 ---
 

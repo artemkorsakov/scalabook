@@ -20,8 +20,6 @@ trait Successible[A]:
 trait Bothable[A] extends Predecessible[A], Successible[A]
 ```
 
-## Примеры
-
 ### Числа
 
 ```dotty

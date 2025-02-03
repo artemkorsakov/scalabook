@@ -60,7 +60,7 @@ trait Order[F] extends Equal[F]:
     override def reverseOrder = self
 ```
 
-## Реализация
+## Реализация в библиотеках
 
 ### Реализация в Cats
 

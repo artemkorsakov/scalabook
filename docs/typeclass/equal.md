@@ -6,7 +6,6 @@
 
 ![monoid](images/equal.png)
 
-
 ---
 
 **Ссылки:**

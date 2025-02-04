@@ -1,10 +1,11 @@
 package ru.scalabook.typeclass.bifunctor
 
+import ru.scalabook.typeclass.bifunctor.BifunctorLaws.*
 import ru.scalabook.typeclass.common.Instancies.given
 import weaver.*
 import weaver.scalacheck.*
 
-object BifoldableSuite extends SimpleIOSuite, Checkers, BifoldableLaw:
+object BifoldableSuite extends SimpleIOSuite, Checkers:
   private val f: Int => String  = _.toString
   private val g: Char => String = _.toString
 

@@ -3,6 +3,7 @@ package ru.scalabook.typeclass.common
 import cats.Id
 import cats.data.ValidatedNel
 import cats.syntax.either.*
+import ru.scalabook.typeclass.bifunctor.*
 import ru.scalabook.typeclass.monad.*
 import ru.scalabook.typeclass.monoid.Monoid
 
@@ -109,4 +110,74 @@ trait OldLaws:
           "Два независимых эффекта могут быть объединены в один эффект, их произведение"
         )
     }
+
+  def checkBifunctorLaw[F[_, _], L, R, A, B, C](
+      far: F[A, R],
+      fla: F[L, A],
+      faa: F[A, A]
+  )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B)(using
+      bi: Bifunctor[F]
+  ): ValidatedNel[String, Unit] =
+    checkFunctorLaw[[X] =>> F[X, R], A, B, C](far)(using
+      bi.leftFunctor[R],
+      f,
+      fReverse,
+      g,
+      gReverse
+    ) combine
+      checkFunctorLaw[[X] =>> F[L, X], A, B, C](fla)(using
+        bi.rightFunctor[L],
+        f,
+        fReverse,
+        g,
+        gReverse
+      ) combine
+      checkFunctorLaw[[X] =>> F[X, X], A, B, C](faa)(using
+        bi.uFunctor,
+        f,
+        fReverse,
+        g,
+        gReverse
+      )
+
+  def checkBifoldableLaw[F[_, _], L, R, A](
+      far: F[A, R],
+      fla: F[L, A],
+      faa: F[A, A]
+  )(using bi: Bifoldable[F])(using
+      mv: Monoid[Vector[A]]
+  ): ValidatedNel[String, Unit] =
+    checkFoldableLaw[[X] =>> F[X, R], A](far)(using
+      bi.leftFoldable[R],
+      mv
+    ) combine
+      checkFoldableLaw[[X] =>> F[L, X], A](fla)(using
+        bi.rightFoldable[L],
+        mv
+      ) combine
+      checkFoldableLaw[[X] =>> F[X, X], A](faa)(using bi.uFoldable, mv)
+
+  def checkBitraverseLaw[F[_, _], G[_]: Applicative, H[
+      _
+  ]: Applicative, L, R, A, B, C](
+      far: F[A, R],
+      fla: F[L, A],
+      faa: F[A, A]
+  )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B)(using
+      m: Monoid[Vector[A]]
+  )(using
+      bi: Bitraverse[F]
+  ): ValidatedNel[String, Unit] =
+    given t1: Traverse[[X] =>> F[X, R]] = bi.leftTraverse
+
+    given t2: Traverse[[X] =>> F[L, X]] = bi.rightTraverse
+
+    given t3: Traverse[[X] =>> F[X, X]] = bi.uTraverse
+
+    checkBifoldableLaw[F, L, R, A](far, fla, faa) combine
+      checkBifunctorLaw[F, L, R, A, B, C](far, fla, faa) combine
+      checkTraverseLaw[[X] =>> F[X, R], G, H, A, B, C](far) combine
+      checkTraverseLaw[[X] =>> F[L, X], G, H, A, B, C](fla) combine
+      checkTraverseLaw[[X] =>> F[X, X], G, H, A, B, C](faa)
+  end checkBitraverseLaw
 end OldLaws

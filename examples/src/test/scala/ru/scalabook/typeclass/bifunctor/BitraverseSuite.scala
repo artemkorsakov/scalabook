@@ -1,12 +1,13 @@
 package ru.scalabook.typeclass.bifunctor
 
+import ru.scalabook.typeclass.bifunctor.BifunctorLaws.*
 import cats.Id
 import ru.scalabook.typeclass.common.Functions.given
 import ru.scalabook.typeclass.common.Instancies.given
 import weaver.*
 import weaver.scalacheck.*
 
-object BitraverseSuite extends SimpleIOSuite, Checkers, BitraverseLaw:
+object BitraverseSuite extends SimpleIOSuite, Checkers:
   test("Bitraverse[Either] must satisfy the laws of Bitraverse"):
     forall:
       (

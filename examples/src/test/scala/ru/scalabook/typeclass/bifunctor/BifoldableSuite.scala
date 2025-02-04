@@ -6,9 +6,6 @@ import weaver.*
 import weaver.scalacheck.*
 
 object BifoldableSuite extends SimpleIOSuite, Checkers:
-  private val f: Int => String  = _.toString
-  private val g: Char => String = _.toString
-
   test("Bifoldable[Either] must satisfy the laws of Bifoldable"):
     forall:
       (
@@ -16,14 +13,7 @@ object BifoldableSuite extends SimpleIOSuite, Checkers:
           fla: Either[String, Int],
           faa: Either[Int, Int]
       ) =>
-        whenSuccess(
-          checkBifoldableLaw[Either, String, Char, Int](far, fla, faa) combine {
-            val expected: String =
-              far match
-                case Right(value) => value.toString
-                case Left(value)  => value.toString
-            check(Bifoldable[Either].bifoldMap(far)(f)(g) == expected)
-          }
-        ): _ =>
-          success
+        expect(
+          checkBifoldableLaw[Either, String, Char, Int](far, fla, faa).isValid
+        )
 end BifoldableSuite

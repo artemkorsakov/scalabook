@@ -11,11 +11,12 @@ object BitraverseSuite extends SimpleIOSuite, Checkers:
   test("Bitraverse[Either] must satisfy the laws of Bitraverse"):
     forall:
       (
+          fab: Either[Int, String],
           far: Either[Int, Char],
           fla: Either[String, Int],
           faa: Either[Int, Int]
       ) =>
-        whenSuccess(
+        expect(
           checkBitraverseLaw[
             Either,
             Id,
@@ -25,7 +26,6 @@ object BitraverseSuite extends SimpleIOSuite, Checkers:
             Int,
             String,
             Boolean
-          ](far, fla, faa)
-        ): _ =>
-          success
+          ](fab, far, fla, faa).isValid
+        )
 end BitraverseSuite

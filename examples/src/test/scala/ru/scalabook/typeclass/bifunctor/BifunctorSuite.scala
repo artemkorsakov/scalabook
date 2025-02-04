@@ -7,7 +7,13 @@ import weaver.scalacheck.*
 
 object BifunctorSuite extends SimpleIOSuite, Checkers:
   test("Bifunctor[Either] must satisfy the laws of Bifunctor"):
-    forall: (fab: Either[Int, String], far: Either[Int, Char], fla: Either[String, Int], faa: Either[Int, Int]) =>
+    forall:
+      (
+          fab: Either[Int, String],
+          far: Either[Int, Char],
+          fla: Either[String, Int],
+          faa: Either[Int, Int]
+      ) =>
         expect(
           checkBifunctorLaw[Either, String, Char, Int, String, Boolean](
             fab,

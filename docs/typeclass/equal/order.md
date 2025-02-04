@@ -60,6 +60,26 @@ trait Order[F] extends Equal[F]:
     override def reverseOrder = self
 ```
 
+## Схема
+
+```mermaid
+classDiagram
+    class Equal~A~{
+        +equal(x: A, y: A) Boolean
+    }
+    class Ordering{ 
+        <<enumeration>> 
+        LT 
+        EQ 
+		GT
+    }   
+    class Order~A~{
+        +order(x: A, y: A) Ordering
+    }
+    Ordering .. Order 
+    Equal <|-- Order  
+```
+
 ## Реализация в библиотеках
 
 ### Реализация в Cats

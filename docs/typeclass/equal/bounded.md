@@ -31,6 +31,31 @@ trait Bounded[F] extends Order[F]:
   def max: F
 ```
 
+## Схема
+
+```mermaid
+classDiagram
+    class Equal~A~{
+        +equal(x: A, y: A) Boolean
+    }
+    class Ordering{ 
+        <<enumeration>> 
+        LT 
+        EQ 
+		GT
+    }   
+    class Order~A~{
+        +order(x: A, y: A) Ordering
+    }
+    Ordering .. Order 
+    Equal <|-- Order
+    class Bounded~A~{
+        +min: A
+        +max: A
+    }
+    Order <|-- Bounded 
+```
+
 ---
 
 **Ссылки:**

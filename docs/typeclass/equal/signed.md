@@ -43,6 +43,37 @@ trait Signed[A] extends Order[A]:
   def isSignNonNegative(x: A): Boolean = sign(x) != Sign.Negative
 ```
 
+## Схема
+
+```mermaid
+classDiagram
+    class Equal~A~{
+        +equal(x: A, y: A) Boolean
+    }
+    class Ordering{ 
+        <<enumeration>> 
+        LT 
+        EQ 
+		GT
+    }   
+    class Order~A~{
+        +order(x: A, y: A) Ordering
+    }
+    Ordering .. Order 
+    Equal <|-- Order
+    class Sign{ 
+        <<enumeration>> 
+        Positive 
+        Zero 
+		Negative
+    }   
+    class Signed~A~{
+        +sign(x: A) Sign
+    }
+    Sign .. Signed
+    Order <|-- Signed 
+```
+
 ## Реализация в библиотеках
 
 ### Реализация в Spire

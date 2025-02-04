@@ -28,6 +28,21 @@ given Bothable[Int] with
   override def next(a: Int): Int = a + 1
 ```
 
+## Схема
+
+```mermaid
+classDiagram
+    class Predecessible~A~{
+        +pred(x: A) A
+    }
+    class Successible~A~{
+        +succ(x: A) A
+    }
+    class Bothable~A~
+    Predecessible <|-- Bothable 
+    Successible <|-- Bothable     
+```
+
 ---
 
 **Ссылки:**

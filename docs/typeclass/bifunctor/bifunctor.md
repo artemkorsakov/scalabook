@@ -64,9 +64,9 @@ given Bifunctor[Writer] with
 ```mermaid
 classDiagram
         class Bifunctor~F[_, _]~{
-            +def bimap[A, B, C, D](fab: F[A, B])(f: A => C, g: B => D) F[C, D]
-            +def leftMap[A, B, C](fab: F[A, B])(f: A => C) F[C, B]
-            +def rightMap[A, B, D](fab: F[A, B])(g: B => D) F[A, D] 
+            +bimap[A, B, C, D](fab: F[A, B])(f: A => C, g: B => D) F[C, D]
+            +leftMap[A, B, C](fab: F[A, B])(f: A => C) F[C, B]
+            +rightMap[A, B, D](fab: F[A, B])(g: B => D) F[A, D] 
         }
 ```
 

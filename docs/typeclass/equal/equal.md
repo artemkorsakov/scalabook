@@ -35,6 +35,15 @@ trait Equal[F]:
     (a1: G, a2: G) => self.equal(f(a1), f(a2))
 ```
 
+## Схема
+
+```mermaid
+classDiagram
+    class Equal~A~{
+        +equal(x: A, y: A) Boolean
+    }
+```
+
 ## Реализация в библиотеках
 
 ### Реализация в Cats

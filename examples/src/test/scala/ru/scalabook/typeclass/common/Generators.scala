@@ -4,7 +4,6 @@ import org.scalacheck.{Arbitrary, Gen}
 import spire.math.Rational
 
 object Generators:
-  val smallInt: Gen[Int] = Gen.choose(1, 5)
   val smallNumbersGen: Gen[(Int, Int, Int)] =
     for
       x <- Gen.choose(1, 1000)

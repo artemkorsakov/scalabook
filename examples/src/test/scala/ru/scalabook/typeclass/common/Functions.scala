@@ -1,10 +1,6 @@
 package ru.scalabook.typeclass.common
 
 object Functions:
-  val intToInt1: Int => Int = _ * 2
-  val intToInt2: Int => Int = _ + 1
-  val intToInt3: Int => Int = i => -i
-
   given Conversion[Int, String] with
     def apply(i: Int): String = i.toString
 

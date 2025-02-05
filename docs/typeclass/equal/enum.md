@@ -34,10 +34,10 @@ trait Order[A] extends Equal[A]:
   def order(x: A, y: A): Ordering
 
 trait Predecessible[A]:
-  def pred(a: A): A
+  def pred(a: A): Option[A]
 
 trait Successible[A]:
-  def succ(a: A): A
+  def succ(a: A): Option[A]
 
 trait Bothable[A] extends Predecessible[A], Successible[A]
 

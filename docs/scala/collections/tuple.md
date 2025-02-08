@@ -59,3 +59,4 @@ val (num, str, person) = t
 - [Scala, Mutable collections](https://docs.scala-lang.org/ru/overviews/collections-2.13/concrete-mutable-collection-classes.html)
 - [SKB – Scala Tuple](https://leobenkel.com/2020/08/skb-scala-tuple/)
 - [Scala Tuples – Syntax, Declaration, Use case, Examples](https://leobenkel.com/2019/10/scala-tuples/)
+- [Tuple Improvements in Scala 3](https://yadukrishnan.live/tuple-improvements-in-scala-3)

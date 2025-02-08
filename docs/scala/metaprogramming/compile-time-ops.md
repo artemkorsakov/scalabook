@@ -343,3 +343,4 @@ val addition: 1 + 1 = 2
 
 - [Scala 3 Reference](https://docs.scala-lang.org/scala3/reference/metaprogramming/compiletime-ops.html)
 - [Scala 3 Guide](https://docs.scala-lang.org/scala3/guides/macros/compiletime.html)
+- [Compile Time Error Generation using inline in Scala 3](https://yadukrishnan.live/compile-time-error-generation-using-inline-in-scala-3)

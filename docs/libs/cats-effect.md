@@ -18,6 +18,15 @@ Cats-Effect предоставляет абстракции, такие как `
 
 **Ссылки:**
 
+- [Cats Effect 3 for Beginners - Part-1](https://yadukrishnan.live/cats-effect-3-for-beginners-part-1)
+- [Cats Effect 3 for Beginners - Part-2: Common APIs](https://yadukrishnan.live/common-apis-cats-effect-io-part-2)
+- [Cats Effect 3 for Beginners - Part-3: Traversing Cats Effect IOs](https://yadukrishnan.live/traversing-cats-effect-ios-part-3)
+- [Cats Effect 3 for Beginners - Part-4: Concurrent Execution in Cats Effect using Fibers](https://yadukrishnan.live/concurrent-execution-in-cats-effect-using-fibers)
+- [Cats Effect 3 for Beginners - Part-5: Resource Handling in Cats Effect 3](https://yadukrishnan.live/resource-handling-in-cats-effect-3-part-5)
+- [Cats Effect 3 for Beginners - Part-6: Cancellation of IO/Fiber in Cats Effect 3](https://yadukrishnan.live/cancellation-of-iofiber-in-cats-effect-3-part-6)
+- [Cats Effect 3 for Beginners - Part-7: Synchronisation and Concurrent Access in Cats Effect 3](https://yadukrishnan.live/synchronisation-and-concurrent-access-in-cats-effect-3-part-7)
+- [Cats Effect 3 for Beginners - Part-8: Common Operators in Cats Effect 3](https://yadukrishnan.live/common-operators-in-cats-effect-3-part-8)
+- [Cats Effect 3 for Beginners - Part-9: Error Handling in Cats Effect](https://yadukrishnan.live/error-handling-in-cats-effect-part-9)
 - [Cats effect documentation](https://typelevel.org/cats-effect/docs/getting-started)
 - [Cats Effect vs ZIO](https://softwaremill.com/cats-effect-vs-zio/)
 - [A practical guide to error handling in Scala Cats and Cats Effect](https://softwaremill.com/practical-guide-to-error-handling-in-scala-cats-and-cats-effect/)

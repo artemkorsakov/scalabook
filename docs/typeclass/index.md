@@ -63,6 +63,7 @@
 - [Классы типов в Algebird][algebird]
 - [Классы типов в Cats][cats]
 - [Классы типов в Spire][spire]
+- [Scala Type-class Hierarchy - Tony Morris](https://blog.tmorris.net/posts/scala-type-class-hierarchy/index.html)
 
 [algebird]: https://twitter.github.io/algebird/typeclasses.html
 [cats]: https://github.com/tpolecat/cats-infographic

@@ -82,8 +82,8 @@
 | [Corecursive](https://corecursive.com)                                                                                                                                                                                                  |  En  | с 01-01-2018 по н.в.       | 98+      |
 | [DevZen](https://devzen.ru)                                                                                                                                                                                                             |  Ру  | с 26-07-2014 по н.в.       | 470+     |
 | [Flatmappers](https://flatmappers.com)                                                                                                                                                                                                  |  Ру  | с 07-05-2023 по н.в.       | 25+      |
-| [Scala Love](https://scala.love)                                                                                                                                                                                                        |  En  | с 27-01-2019 по 09-10-2020 | 24       |
-| [Scalalaz - Русскоязычный подкаст о Scala](https://scalalaz.ru)                                                                                                                                                                         |  Ру  | с 07-08-2016 по 15-10-2022 | 110      |
+| [Scala Love](https://podcasts.apple.com/ru/podcast/scala-love/id1450749198)                                                                                                                                                             |  En  | с 27-01-2019 по 09-10-2020 | 24       |
+| [Scalalaz - Русскоязычный подкаст о Scala](https://russiancast.club/scalalaz)                                                                                                                                                           |  Ру  | с 07-08-2016 по 15-10-2022 | 110      |
 
 ## Конференции
 

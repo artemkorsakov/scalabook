@@ -206,6 +206,8 @@ Trait-ы [scala.Product](https://scala-lang.org/api/3.x/scala/Product.html),
 
 **Ссылки:**
 
+- [Everything You Ever Wanted to Know About Sealed Traits in Scala](https://noelwelsh.com/posts/everything-about-sealed)
+- [More on Sealed Traits in Scala](https://noelwelsh.com/posts/more-on-sealed)
 - [Scala3 book, domain modeling tools](https://docs.scala-lang.org/scala3/book/domain-modeling-tools.html)
 - [Scala3 book, taste modeling](https://docs.scala-lang.org/scala3/book/taste-modeling.html)
 - [Scala3 book, taste objects](https://docs.scala-lang.org/scala3/book/taste-objects.html)

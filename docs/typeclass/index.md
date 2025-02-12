@@ -64,6 +64,7 @@
 - [Классы типов в Cats][cats]
 - [Классы типов в Spire][spire]
 - [Scala Type-class Hierarchy - Tony Morris](https://blog.tmorris.net/posts/scala-type-class-hierarchy/index.html)
+- [Type Classes vs Records of Functions](https://www.inner-product.com/posts/type-classes-vs-records-of-functions/)
 
 [algebird]: https://twitter.github.io/algebird/typeclasses.html
 [cats]: https://github.com/tpolecat/cats-infographic

@@ -2,14 +2,14 @@ import sbt.*
 
 // @formatter:off
 object Dependencies {
-  val Scala = "3.6.1"
+  val Scala = "3.6.3"
 
   object fs2 {
     val core = "co.fs2" %% "fs2-core" % "3.11.0"
   }
 
   object http4s {
-    private val version = "0.23.29"
+    private val version = "0.23.30"
     val blaze           = "org.http4s" %% "http4s-blaze-server" % "0.23.17"
     val core            = "org.http4s" %% "http4s-core"         % version
     val dsl             = "org.http4s" %% "http4s-dsl"          % version
@@ -25,12 +25,12 @@ object Dependencies {
 
   // https://github.com/erikvanoosten/metrics-scala/blob/master/docs/Manual.md
   object metrics {
-    val dropwizardCore = "io.dropwizard.metrics" % "metrics-core"    % "4.2.28"
+    val dropwizardCore = "io.dropwizard.metrics" % "metrics-core"    % "4.2.30"
     val metrics4Scala  = "nl.grons"              %% "metrics4-scala" % "4.3.3"
   }
 
   object laika {
-    private val version = "1.2.1"
+    private val version = "1.3.1"
     val core            = "org.typelevel" %% "laika-core"    % version
     val io              = "org.typelevel" %% "laika-io"      % version
     val pdf             = "org.typelevel" %% "laika-pdf"     % version
@@ -55,8 +55,14 @@ object Dependencies {
     val scalacheck      = "org.scalaz" %% "scalaz-scalacheck-binding" % version
   }
 
+  object toolkit {
+    private val version = "0.7.0"
+    val core            = "org.scala-lang" %% "toolkit" % version
+    val test            = "org.scala-lang" %% "toolkit-test" % version
+  }
+
   object typelevel {
-    private val catsVersion       = "2.12.0"
+    private val catsVersion       = "2.13.0"
     private val catsEffectVersion = "3.6-623178c"
 
     val algebra          = "org.typelevel" %% "algebra"            % catsVersion
@@ -77,7 +83,7 @@ object Dependencies {
   }
 
   object zio {
-    private val version = "2.1.12"
+    private val version = "2.1.16"
     val core        = "dev.zio" %% "zio"             % version
     val stacktracer = "dev.zio" %% "zio-stacktracer" % version
   }
@@ -92,6 +98,7 @@ object Dependencies {
       iron.iron,
       iron.cats,
       scalaz.core,
+      toolkit.core,
       typelevel.algebra,
       typelevel.catsCore,
       typelevel.catsEffect,
@@ -107,6 +114,7 @@ object Dependencies {
     Seq(
       iron.scalacheck,
       scalaz.scalacheck,
+      toolkit.test,
       typelevel.catsEffectKernel,
       typelevel.catsTestkit,
       weaver.cats,

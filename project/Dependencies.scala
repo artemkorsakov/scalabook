@@ -4,6 +4,10 @@ import sbt.*
 object Dependencies {
   val Scala = "3.6.3"
 
+  object cask {
+    val core = "com.lihaoyi" %% "cask" % "0.10.2"
+  }
+
   object fs2 {
     val core = "co.fs2" %% "fs2-core" % "3.11.0"
   }
@@ -90,6 +94,7 @@ object Dependencies {
 
   val exampleLibs: Seq[ModuleID] =
     Seq(
+      cask.core,
       fs2.core,
       http4s.blaze,
       http4s.core,

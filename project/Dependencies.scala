@@ -4,10 +4,6 @@ import sbt.*
 object Dependencies {
   val Scala = "3.6.3"
 
-  object cask {
-    val core = "com.lihaoyi" %% "cask" % "0.10.2"
-  }
-
   object fs2 {
     val core = "co.fs2" %% "fs2-core" % "3.11.0"
   }
@@ -59,12 +55,6 @@ object Dependencies {
     val scalacheck      = "org.scalaz" %% "scalaz-scalacheck-binding" % version
   }
 
-  object toolkit {
-    private val version = "0.7.0"
-    val core            = "org.scala-lang" %% "toolkit" % version
-    val test            = "org.scala-lang" %% "toolkit-test" % version
-  }
-
   object typelevel {
     private val catsVersion       = "2.13.0"
     private val catsEffectVersion = "3.6-623178c"
@@ -94,7 +84,6 @@ object Dependencies {
 
   val exampleLibs: Seq[ModuleID] =
     Seq(
-      cask.core,
       fs2.core,
       http4s.blaze,
       http4s.core,
@@ -103,7 +92,6 @@ object Dependencies {
       iron.iron,
       iron.cats,
       scalaz.core,
-      toolkit.core,
       typelevel.algebra,
       typelevel.catsCore,
       typelevel.catsEffect,
@@ -119,7 +107,6 @@ object Dependencies {
     Seq(
       iron.scalacheck,
       scalaz.scalacheck,
-      toolkit.test,
       typelevel.catsEffectKernel,
       typelevel.catsTestkit,
       weaver.cats,

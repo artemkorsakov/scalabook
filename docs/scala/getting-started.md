@@ -139,5 +139,5 @@ sbt также создаст директорию `target`, которую по
 
 **Ссылки:**
 
-- [Scala, Getting started](https://docs.scala-lang.org/scala3/getting-started.html)
+- [Scala, Getting started](https://docs.scala-lang.org/ru/getting-started/install-scala.html)
 - [SKB – Scala Values](https://leobenkel.com/2020/07/skb-scala-values/)

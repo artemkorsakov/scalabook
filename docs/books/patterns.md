@@ -168,7 +168,6 @@ trait VistaWidgets:
 Отделение построения сложного объекта от его представления,
 чтобы один и тот же процесс построения мог создавать разные представления.
 
-[Более детализированное рассмотрение шаблона][Builder]
 
 #### Диаграмма
 
@@ -1293,7 +1292,6 @@ print(eval(e1))
 - [Scala & Design Patterns by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf)
 - [Design Patterns by Gamma, Helm, Johnson, and Vlissides][Design Patterns]
 - [Wikipedia, Порождающие шаблоны проектирования][Wikipedia Creational]
-- [Более детализированное рассмотрение шаблона Builder][Builder]
 - [Wikipedia, Structural pattern][Wikipedia Structural]
 - [Wikipedia, Behavioral pattern][Wikipedia Behavioral]
 
@@ -1301,4 +1299,3 @@ print(eval(e1))
 [Wikipedia Creational]: https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D1%80%D0%BE%D0%B6%D0%B4%D0%B0%D1%8E%D1%89%D0%B8%D0%B5_%D1%88%D0%B0%D0%B1%D0%BB%D0%BE%D0%BD%D1%8B_%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F
 [Wikipedia Structural]: https://en.wikipedia.org/wiki/Structural_pattern
 [Wikipedia Behavioral]: https://en.wikipedia.org/wiki/Behavioral_pattern
-[Builder]: ../blog/builder-pattern.md

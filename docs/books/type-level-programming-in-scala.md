@@ -1830,7 +1830,7 @@ val b: List[Boolean] = toList(Some(true))
 assert(List(true) == b)
 ```
 
-Но в Scala 3 есть [полиморфные типы функций](../scala/type-system/polymorphic-function-types.md)
+Но в Scala 3 есть [полиморфные типы функций](https://docs.scala-lang.org/scala3/reference/new-types/polymorphic-function-types.html)
 позволяющие определить функцию:
 
 ```dotty
@@ -2253,6 +2253,6 @@ ZipWith.zipped(a :^: b :^: c :^: KNil) foreach { case n :: s :: b :: HNil =>
 [part 8b]: https://apocalisp.wordpress.com/2010/11/03/type-level-programming-in-scala-part-8b-klist%C2%A0basics/
 [part 8c]: https://apocalisp.wordpress.com/2010/11/15/type-level-programming-in-scala-part-8c-klist%C2%A0zipwith/
 [wiki]: https://wiki.haskell.org/Peano_numbers
-[match types]: ../scala/type-system/match-types.md
+[match types]: https://docs.scala-lang.org/scala3/reference/new-types/match-types.html
 [Project Euler]: https://projecteuler.net/about
 [Project Euler, p4]: https://projecteuler.net/index.php?section=problems&id=4

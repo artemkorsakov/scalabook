@@ -136,12 +136,70 @@ getMinThreeWaysSum(matrix) // 994
 > Найдите сумму наименьшего пути, взяв матрицу 80 на 80 из текстового файла matrix.txt размером 31KБ, 
 > передвигаясь шагами в любых направлениях (вверх, вниз, вправо, влево) из верхнего левого угла в нижний правый.
 
+Для нахождения **минимального пути** в числовой матрице из левого верхнего угла в правый нижний угол 
+с возможностью движения **во все стороны** (вверх, вниз, влево, вправо) 
+можно использовать алгоритм **Dijkstra** или **A*** (A-star), 
+так как задача сводится к поиску кратчайшего пути в графе, где:
+
+- **Вершины** — ячейки матрицы.
+- **Рёбра** — переходы между соседними ячейками (вес ребра = значение ячейки-назначения).
+
 **Алгоритм:**
+
+- **Инициализация**:
+    - Создаем матрицу `dist` размера `n×m`, где `dist[i][j]` — минимальная сумма до ячейки `(i, j)`. 
+      Изначально все значения `dist` — `Long.MaxValue`, кроме `dist[0][0] = matrix[0][0]`.
+    - Используем **приоритетную очередь** (мин-кучу), куда помещаем стартовую ячейку `(0, 0)` с приоритетом `matrix[0][0]`.
+- **Обход матрицы**
+    - Пока очередь не пуста:
+    - Извлекаем ячейку `(i, j)` с **наименьшим текущим расстоянием**.
+    - Для каждого её соседа `(ni, nj)` (вверх, вниз, влево, вправо):
+        - Если `ni` и `nj` в пределах матрицы:
+            - Новая возможная сумма: `new_dist = dist[i][j] + matrix[ni][nj]`.
+            - Если `new_dist < dist[ni][nj]`:
+                - Обновляем `dist[ni][nj] = new_dist`.
+                - Добавляем `(ni, nj)` в очередь с приоритетом `new_dist`.
+- **Результат**
+    - `dist[n-1][m-1]` будет содержать минимальную сумму пути.
 
 **Код:**
 
 ```dotty
+val matrix: Array[Array[Long]] =
+  Array(
+    Array(131L, 673L, 234L, 103L, 18L),
+    Array(201L, 96L, 342L, 965L, 150L),
+    Array(630L, 803L, 746L, 422L, 111L),
+    Array(537L, 699L, 497L, 121L, 956L),
+    Array(805L, 732L, 524L, 37L, 331L)
+  )
 
+val n = matrix.length
+val m = matrix.head.length
+
+val dist = Array.fill(n, m)(Long.MaxValue)
+dist(0)(0) = matrix(0)(0)
+
+val pq = mutable.PriorityQueue.empty[(Int, Int, Long)](Ordering.by(_._3))
+pq.addOne((0, 0, matrix(0)(0)))
+
+@tailrec
+def loop(): Long =
+  if pq.isEmpty then dist(n - 1)(m - 1) // Результат
+  else
+    val (i, j, _) = pq.dequeue
+    for
+      (ni, nj) <- Vector((i + 1, j), (i, j + 1), (i - 1, j), (i, j - 1))
+      if ni >= 0 && ni < n && nj >= 0 && nj < m
+      new_dist = dist(i)(j) + matrix(ni)(nj)
+      if new_dist < dist(ni)(nj)
+    do
+      dist(ni)(nj) = new_dist
+      pq.addOne((ni, nj, new_dist))
+
+    loop()
+
+loop()
 ```
 
 ## Задача №84
@@ -756,10 +814,78 @@ getCountOfPossibleSum(500) // 53
 
 **Алгоритм:**
 
+**Постановка задачи:**
+
+Для каждого целого числа \\(k\\) (в диапазоне от 2 до 12000) нужно найти наименьшее число \\(N\\), такое что:
+
+- \\(N\\) можно представить в виде произведения \\(k\\) чисел (не обязательно различных),
+- а сумма этих чисел равна \\(N\\).
+
+**Идея решения:**
+
+- **Базовый случай:**  
+  Для любого \\(k\\) подходит число \\(N = 2k\\), так как:  
+  \\(2k = k + 2 + 1 + 1 + \dots + 1 \quad \text{(k слагаемых)} \quad \text{и} \quad 2k = k \times 2 \times 1 \times 1 \times \dots \times 1\\)
+  (2k умножается на \\((k - 2)\\) единицу).
+- **Оптимизация:**  
+   Можно попытаться найти \\(N < 2k\\), используя комбинации чисел больше 1.
+- **Рекурсивный перебор:**
+    - **Состояние:** Текущий набор чисел \\(m\_1, m\_2, \dots, m\_c\\) характеризуется:
+        - `prod` — произведение этих чисел,
+        - `sum` — их сумма,
+        - `count` — количество чисел в наборе.
+    - **Переход:** Если добавить новое число \\(n\\), то:
+        - Новое произведение: \\(\text{prod} \times n\\),
+        - Новая сумма: \\(\text{sum} + n\\),
+        - Новое количество чисел: \\(\text{count} + 1\\).
+    - **Вычисление \\(k\\):**  
+      После добавления \\(n\\) оставшиеся слагаемые можно заполнить единицами. Тогда:
+      \\(k = (\text{prod} \times n) - (\text{sum} + n) + (\text{count} + 1)\\)
+      (поскольку \\(\text{prod} \times n \times 1^{k - \text{count} - 1} = \text{sum} + n + (k - \text{count} - 1)\\)).
+- **Алгоритм:**
+    - Инициализируем массив `min_N`, где `min_N[k] = 2k` (базовый случай).
+    - Запускаем рекурсивный перебор, начиная с `n = 12000`, `prod = 1`, `sum = 0`, `count = 0`.
+    - Для каждого \\(n\\):
+        - Вычисляем \\(k\\) по формуле выше.
+        - Если \\(k\\) в диапазоне \\(2 \leq k \leq 12000\\), обновляем `min_N[k]` (если текущее \\(\text{prod} \times n\\) меньше).
+        - Рекурсивно проверяем:
+            - Добавление \\(n\\) (переход к \\(\text{prod} \times n\\), \\(\text{sum} + n\\), \\(\text{count} + 1\\)).
+            - Уменьшение \\(n\\) (проверяем \\(n - 1\\) с теми же `prod`, `sum`, `count`).
+    - В итоге получаем массив `min_N` с минимальными \\(N\\) для каждого \\(k\\).
+
 **Код:**
 
 ```dotty
+case class State(n: Int, prod: Int, sum: Int, count: Int)
 
+@tailrec
+def minProdSum(mins: Array[Int], states: List[State]): Unit =
+  states match
+    case Nil                                => ()
+    case State(n, prod, sum, count) :: tail =>
+      val newProd  = prod * n
+      val newSum   = sum + n
+      val newCount = count + 1
+      val k        = newProd - newSum + newCount
+      if k < mins.length then mins(k) = math.min(newProd, mins(k))
+
+      def addStateWithNewValues(states: List[State]): List[State] =
+        if k < mins.length then State(n, newProd, newSum, newCount) :: states
+        else states
+
+      def addStateForNMoreThen2(states: List[State]): List[State] =
+        if n > 2 then State(n - 1, prod, sum, count) :: states else states
+
+      val addStates: List[State] => List[State] =
+        addStateWithNewValues.compose(addStateForNMoreThen2)
+
+      minProdSum(mins, addStates(tail))
+
+lazy val result: Int = loading.time:
+  val mins = Array.tabulate(12001)(2 * _)
+  val initialState = State(12000, 1, 0, 0)
+  minProdSum(mins, (initialState :: Nil))
+  mins.drop(2).distinct.sum
 ```
 
 ## Задача №89
@@ -856,10 +982,50 @@ val count =
 
 **Алгоритм:**
 
+**Цель**: Найти количество уникальных пар шестигранных кубиков с цифрами от 0 до 9, 
+которые могут отображать все квадраты чисел от `01` до `81` (т.е. `01, 04, 09, 16, 25, 36, 49, 64, 81`).
+
+- **Генерация всех возможных кубиков**
+    - Создаем все комбинации из 6 уникальных цифр (от `0` до `9`), учитывая, что порядок не важен.
+    - Для каждой комбинации применяем обработку `6`/`9`: если на кубике есть `6` или `9`, 
+      добавляем обе цифры, так как кубик можно перевернуть.
+- **Проверка пар кубиков**
+    - Для каждой пары кубиков проверяем, можно ли из них составить все квадраты чисел (`01`–`81`).
+    - Для каждого квадрата (`n = d1d2`):
+        - Проверяем, есть ли на одном кубике цифра `d1`, а на другом — `d2` (или наоборот).
+- **Подсчет уникальных пар**
+    - Считаем все подходящие пары и делим результат на 2, 
+      чтобы исключить дублирование (`(кубик1, кубик2)` и `(кубик2, кубик1)` считаются одной парой).
+
 **Код:**
 
 ```dotty
+def add69(cube: Set[Int]): Set[Int] =
+  if cube(6) || cube(9) then cube + 6 + 9
+  else cube
 
+val cubes: IndexedSeq[Set[Int]] =
+  for
+    a <- 0 to 4
+    b <- a + 1 to 5
+    c <- b + 1 to 6
+    d <- c + 1 to 7
+    e <- d + 1 to 8
+    f <- e + 1 to 9
+  yield add69(Set(a, b, c, d, e, f))
+
+def isValid(cubes1: Set[Int], cubes2: Set[Int]): Boolean =
+  (1 to 9).map(n => n * n).forall: n =>
+    val f = n / 10
+    val s = n % 10
+    cubes1(f) && cubes2(s) ||
+    cubes1(s) && cubes2(f)
+
+def answer =
+  cubes
+    .map(c1 => cubes.count(c2 => isValid(c1, c2)))
+    .sum
+    / 2
 ```
 
 ## Задача №91

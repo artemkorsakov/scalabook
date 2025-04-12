@@ -1,21 +1,19 @@
 # Scalabook
 
-[![GitVerse](https://img.shields.io/badge/GitVerse-Repo-blue?logo=git)][home]
-
-Это живая документация по функциональному программированию на Scala, организованная как open-source knowledge base.
+Документация по функциональному программированию на Scala, организованная как open-source knowledge base.
 
 ## О проекте
 
-Это не просто блог, а:
+Это не блог, а:
 
 - Рабочая тетрадь с постоянно обновляемыми конспектами
 - Коллекция концепций FP
 - Практические материалы для углубленного изучения Scala
-- Open-source knowledge base с возможностью совместного редактирования
+- Open-source knowledge base
 
 ## Философия
 
-1. **Learning in public** - все материалы открыты для обсуждения
+1. **Learning in public** - материалы открыты для обсуждения
 2. **Practical theory** - упор на применимость концепций
 3. **Community-driven** - приветствуются правки и дополнения
 
@@ -38,7 +36,9 @@
 
 ## Контакты
 
-- [Исходный код][home]
-- [Профиль](https://gitverse.ru/artemkorsakov)
+[![GitHub Code](https://img.shields.io/badge/Source_Code-%23121011?style=for-the-badge&logo=github&logoColor=white)](https://gitverse.ru/artemkorsakov/scalabook)
+[![GitVerse](https://img.shields.io/badge/GitVerse_Profile-%23121011?style=for-the-badge&logo=git&logoColor=white)](https://gitverse.ru/artemkorsakov)
+[![GitHub](https://img.shields.io/badge/GitHub_Profile-%23121011?style=for-the-badge&logo=github&logoColor=white)](https://github.com/artemkorsakov)
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=mail.ru&logoColor=white)](mailto:artemkorsakov@mail.ru)
 
 [home]: https://gitverse.ru/artemkorsakov/scalabook

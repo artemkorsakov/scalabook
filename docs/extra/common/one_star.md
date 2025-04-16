@@ -47,8 +47,8 @@ _(раздел пока пуст)_
 ## 🎥 Видео
 
 | Название                                                                                                                                     | 🌐 Язык | 📅 Год | 💬 Комментарий                    |
-| -------------------------------------------------------------------------------------------------------------------------------------------- | :-----: | ------ |-----------------------------------|
+|----------------------------------------------------------------------------------------------------------------------------------------------| :-----: | ------ |-----------------------------------|
 | [**"Clean" Code, Horrible Performance**](https://www.youtube.com/watch?v=tD5NrevFtbU)                                                        |  🇬🇧 EN  | 2023   | 🧹 Рефакторинг кода               |
 | [**Business benefits of FP**](https://www.youtube.com/watch?v=EcGZdzECmIk)                                                                   |  🇬🇧 EN  | 2020   | λ Функциональное программирование |
 | [**Null References: The Billion Dollar Mistake**](https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare) |  🇬🇧 EN  | 2009   | λ Функциональное программирование |
-| [**History of Functional Programming**](https://www.youtube.com/watch?v=QVwm9jlBTik)                                                         |  🇬🇧 EN  | 2017   | 🕰️ История ФП                    |
+| [**Some History of Functional Programming Languages**](https://www.youtube.com/watch?v=QVwm9jlBTik)                                          |  🇬🇧 EN  | 2017   | 🕰️ История ФП                    |

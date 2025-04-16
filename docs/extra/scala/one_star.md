@@ -49,7 +49,7 @@
 ## 📝 Статьи
 
 | Название                                                                                                                                                   | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий                            |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------: | :-----: | ------ |-------------------------------------------|
+|------------------------------------------------------------------------------------------------------------------------------------------------------------| :-------: | :-----: | ------ |-------------------------------------------|
 | [**A Comprehensive Guide to Choosing the Best Scala Course**](https://blog.rockthejvm.com/best-scala-courses)                                              |  Scala 3  |  🇬🇧 EN  | 2023   | Руководство по выбору курсов Scala        |
 | [**Beginner's guide to derivations in Scala**](https://blog.michalp.net/posts/scala/scala-derivations)                                                     |  Scala 3  |  🇬🇧 EN  | 2023   | Введение в деривации                      |
 | [**Build your vocabulary with Scala affixes**](https://rossabaker.com/blog/scala-affixes)                                                                  |  Scala 3  |  🇬🇧 EN  | 2023   | Префиксы и суффиксы в Scala               |
@@ -62,8 +62,8 @@
 | [**Exploring Scala CLI**](https://medium.com/virtuslab/exploring-scala-cli-the-new-scala-runner-4b958245c2e0)                                              |  Scala 3  |  🇬🇧 EN  | 2023   | О новом Scala CLI                         |
 | [**From First Principles: Why Scala?**](https://www.lihaoyi.com/post/FromFirstPrinciplesWhyScala.html)                                                     |   Scala   |  🇬🇧 EN  | 2021   | Почему стоит выбрать Scala                |
 | [**Immutable Collections should be Your Default**](https://alexn.org/blog/2022/10/27/immutable-collections-your-default)                                   |  Scala 3  |  🇬🇧 EN  | 2022   | О неизменяемых коллекциях                 |
-| [**Infix operator notation**](https://medium.com/scala-3/scala-3-infix-operator-notation-26bd7c13d0a3)                                                     |  Scala 3  |  🇬🇧 EN  | 2023   | Об инфиксной нотации                      |
 | [**In Scala 3, use 4 Spaces for Indentation**](https://alexn.org/blog/2023/11/08/in-scala-3-use-4-spaces-for-indentation)                                  |  Scala 3  |  🇬🇧 EN  | 2023   | О форматировании кода                     |
+| [**Infix operator notation**](https://medium.com/scala-3/scala-3-infix-operator-notation-26bd7c13d0a3)                                                     |  Scala 3  |  🇬🇧 EN  | 2023   | Об инфиксной нотации                      |
 | [**Learning Scala: Function Literals**](https://jamesward.com/2011/10/17/learning-scala-function-literals)                                                 |   Scala   |  🇬🇧 EN  | 2011   | О функциональных литералах                |
 | [**Let's Talk About Scala 3 Indentation**](https://blog.rockthejvm.com/scala-3-indentation/)                                                               |  Scala 3  |  🇬🇧 EN  | 2020   | Об отступах в Scala 3                     |
 | [**Principles of developing applications in Scala**](https://softwaremill.com/principles-of-developing-applications-in-scala/)                             |  Scala 3  |  🇬🇧 EN  | 2023   | Принципы разработки                       |
@@ -93,12 +93,12 @@
 | [**Tail Recursive Functions in Scala**](https://alexn.org/blog/2021/01/26/tail-recursive-functions-in-scala)                                               |  Scala 2  |  🇬🇧 EN  | 2021   | О хвостовой рекурсии                      |
 | [**The Power of Type-classes with Scala implicit defs**](https://blog.tmorris.net/posts/the-power-of-type-classes-with-scala-implicit-defs/index.html)     |  Scala 2  |  🇬🇧 EN  | 2007   | О возможностях тайпклассов                |
 | [**Traits are better than Legos!**](https://danielasfregola.com/2014/12/24/traits-are-better-than-legos)                                                   |  Scala 2  |  🇬🇧 EN  | 2014   | О трейтах                                 |
-| [**What is F\[\_\] in Scala?**](https://xebia.com/blog/what-is-F-with-hole-in-scala/)                                                                      |  Scala 2  |  🇬🇧 EN  | 2021   | О высших типах                            |
+| [**What is F with a hole in Scala?**](https://xebia.com/blog/what-is-F-with-hole-in-scala/)                                                                |  Scala 2  |  🇬🇧 EN  | 2021   | О высших типах                            |
 
 ## 🎥 Видео
 
 | Название                                                                                                                   | 📺 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий               |
-| -------------------------------------------------------------------------------------------------------------------------- | :-------: | :-----: | ------ |------------------------------|
+|----------------------------------------------------------------------------------------------------------------------------| :-------: | :-----: | ------ |------------------------------|
 | [**Scala: Война Эффектов (ZIO vs Cats Effect)**](https://www.youtube.com/watch?v=jRVvj_2yWkE)                              |  Scala 3  |  🇷🇺 RU  | 2021   | Олег Нижников                |
 | [**10+ Scala Concepts You Need to Know**](https://www.youtube.com/watch?v=nI57LUpjGrk)                                     |  Scala 3  |  🇬🇧 EN  | 2023   | DevInsideYou                 |
 | [**A Tour of Scala 3**](https://www.youtube.com/watch?v=_Rnrx2lo9cw)                                                       |  Scala 3  |  🇬🇧 EN  | 2023   | Martin Odersky               |
@@ -108,19 +108,19 @@
 | [**Scala Beyond 3.0**](https://www.youtube.com/watch?v=NXTjnowBx-c)                                                        |  Scala 3  |  🇬🇧 EN  | 2021   | Martin Odersky               |
 | [**Scala Tips**](https://www.youtube.com/playlist?list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)                                 |  Scala 3  |  🇬🇧 EN  | 2023   | Rock the JVM (плейлист)      |
 | [**Scala's Role in PL Ecosystem**](https://www.youtube.com/watch?v=7mTNZeiIK7E)                                            |  Scala 3  |  🇬🇧 EN  | 2023   | Martin Odersky               |
-| [**Best Scala Libraries**](https://www.youtube.com/watch?v=ZymD5NuOwdA)                                                    |  Scala 3  |  🇬🇧 EN  | 2023   | DevInsideYou                 |
+| [**The Best Scala Libraries I Use in Every Project**](https://www.youtube.com/watch?v=ZymD5NuOwdA)                         |  Scala 3  |  🇬🇧 EN  | 2023   | DevInsideYou                 |
 | [**Typeclasses in Scala 3**](https://www.youtube.com/watch?app=desktop&v=co4LSvVoX-s)                                      |  Scala 3  |  🇬🇧 EN  | 2022   | Colombia Meetup              |
 | [**Basics of Object-Orientation**](https://www.youtube.com/watch?v=ILk_WBYsqec&list=PLF6CAC63C615DB881)                    |  Scala 2  |  🇬🇧 EN  | 2013   | Mark Lewis (плейлист)        |
 | [**Data Juggling**](https://www.youtube.com/watch?v=ezz0BpEHEQY&list=PLJGDHERh23x9Wzcbc7j9ZDl03tKQF5QDN&index=1)           |  Scala 2  |  🇬🇧 EN  | 2020   | DevInsideYou (плейлист)      |
 | [**Functional Scala**](https://www.youtube.com/playlist?list=PLjtl9Y7VJMWtZz3g0LjMhO54_KBL8Tfwl)                           |  Scala 2  |  🇬🇧 EN  | 2020   | Scala in the City (плейлист) |
 | [**Intro to Programming with Scala**](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) |  Scala 2  |  🇬🇧 EN  | 2015   | (плейлист)                   |
 | [**Language-Agnostic Tips**](https://www.youtube.com/watch?v=0wmcCdoExbM&list=PLmtsMNDRU0ByxKWa4h2LMn9oXyeDEJbnC)          |  Scala 2  |  🇬🇧 EN  | 2021   | Rock the JVM (плейлист)      |
-| [**Scala: Your First PL**](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                       |  Scala 2  |  🇬🇧 EN  | 2022   | DevInsideYou (плейлист)      |
 | [**Scala at Light Speed**](https://www.youtube.com/playlist?list=PLmtsMNDRU0BxryRX4wiwrTZ661xcp6VPM)                       |  Scala 2  |  🇬🇧 EN  | 2020   | Rock the JVM (плейлист)      |
 | [**Scala Collections**](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE)                          |  Scala 2  |  🇬🇧 EN  | 2020   | DevInsideYou (плейлист)      |
 | [**Scala Variables**](https://www.youtube.com/watch?v=dhe1T_ttPTI&list=PLmtsMNDRU0By6XxGZIcynXYi5RaZtaZC1)                 |  Scala 2  |  🇬🇧 EN  | 2020   | Rock the JVM (плейлист)      |
+| [**Scala: Your First PL**](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                       |  Scala 2  |  🇬🇧 EN  | 2022   | DevInsideYou (плейлист)      |
 | [**The Typeclass Pattern**](https://www.youtube.com/watch?v=yYo0gANYViE)                                                   |  Scala 2  |  🇬🇧 EN  | 2012   |                              |
-| [**Typeclasses in Scala**](https://www.youtube.com/watch?v=sVMES4RZF-8)                                                    |  Scala 2  |  🇬🇧 EN  | 2012   | Dan Rosen                    |
 | [**Type-Level Programming**](https://www.youtube.com/watch?v=qwUYqv6lKtQ&list=PLmtsMNDRU0ByOQoz6lnihh6CtMrErNax7)          |  Scala 2  |  🇬🇧 EN  | 2021   | Rock the JVM (плейлист)      |
+| [**Typeclasses in Scala**](https://www.youtube.com/watch?v=sVMES4RZF-8)                                                    |  Scala 2  |  🇬🇧 EN  | 2012   | Dan Rosen                    |
 | [**Vivisecting the Veil of Variance**](https://www.youtube.com/watch?v=dPbbqrhm-WY)                                        |  Scala 2  |  🇬🇧 EN  | 2023   |                              |
 | [**Why Type Classes are Useful**](https://www.youtube.com/watch?v=bupBZKJT0EA)                                             |  Scala 2  |  🇬🇧 EN  | 2020   | Rock the JVM                 |

@@ -67,7 +67,7 @@ object HeliumThemes:
           ButtonLink.internal(Root / "algorithms/index.md", "Алгоритмы"),
           ButtonLink.internal(Root / "libs/index.md", "Библиотеки"),
           ButtonLink.internal(Root / "books/index.md", "Упражнения"),
-          ButtonLink.internal(Root / "extra/index.md", "Ресурсы"),
+          ButtonLink.internal(Root / "extra/index.md", "Ресурсы")
         )
       )
 

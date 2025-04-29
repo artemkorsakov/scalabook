@@ -6,8 +6,6 @@ import laika.helium.Helium
 import laika.helium.config.*
 import laika.theme.config.*
 
-import scala.annotation.unused
-
 object HeliumThemes:
   lazy val mainTheme: Helium =
     addAll(Helium.defaults)
@@ -90,17 +88,6 @@ object HeliumThemes:
         ),
         sourceLinkText = "Редактировать страницу",
         keepOnSmallScreens = false
-      )
-
-  @unused("Есть ошибка при генерации PDF, которую надо поправить")
-  private def addDownloadPage(theme: Helium): Helium =
-    theme.site
-      .downloadPage(
-        title = "Книга в EPUB",
-        description = Some(
-          "На этой странице находятся ссылки для скачивания рабочей тетради в формате PDF и EPUB."
-        ),
-        includePDF = false
       )
 
   private def addFooter(theme: Helium): Helium =

@@ -33,7 +33,6 @@ object Dependencies {
     private val version = "1.3.2"
     val core            = "org.typelevel" %% "laika-core"    % version
     val io              = "org.typelevel" %% "laika-io"      % version
-    val pdf             = "org.typelevel" %% "laika-pdf"     % version
     val preview         = "org.typelevel" %% "laika-preview" % version
   }
 

@@ -1,7 +1,6 @@
 package ru.scalabook.algorithms.games.poker
 
 import cats.syntax.apply.*
-import ru.scalabook.algorithms.games.poker.PokerRank.*
 
 final case class PokerCard(pokerRank: PokerRank, pokerSuit: PokerSuit)
 

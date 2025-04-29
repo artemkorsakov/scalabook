@@ -15,15 +15,16 @@ final case class ConnectionConfig private (
 )
 
 object ConnectionConfig:
-  opaque type HostRule = MinLength[4] DescribedAs "Invalid host"
+  opaque type HostRule = DescribedAs[MinLength[4], "Invalid host"]
   opaque type Host     = String :| HostRule
-  opaque type PortRule = GreaterEqual[1024] & LessEqual[65535] DescribedAs
-    "Invalid port"
-  opaque type Port     = Int :| PortRule
-  opaque type UserRule = Alphanumeric & MinLength[1] DescribedAs "Invalid user"
-  opaque type User     = String :| UserRule
+  opaque type PortRule =
+    DescribedAs[GreaterEqual[1024] & LessEqual[65535], "Invalid port"]
+  opaque type Port = Int :| PortRule
+  opaque type UserRule =
+    DescribedAs[Alphanumeric & MinLength[1], "Invalid user"]
+  opaque type User = String :| UserRule
   opaque type PasswordRule =
-    Alphanumeric & MinLength[8] & MaxLength[16] DescribedAs "Invalid password"
+    DescribedAs[Alphanumeric & MinLength[8] & MaxLength[16], "Invalid password"]
   opaque type Password = String :| PasswordRule
 
   def builder(): ConnectionConfigBuilder = ConnectionConfigBuilder()

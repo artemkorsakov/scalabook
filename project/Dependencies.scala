@@ -2,10 +2,10 @@ import sbt.*
 
 // @formatter:off
 object Dependencies {
-  val Scala = "3.6.3"
+  val Scala = "3.6.4"
 
   object fs2 {
-    val core = "co.fs2" %% "fs2-core" % "3.11.0"
+    val core = "co.fs2" %% "fs2-core" % "3.12.0"
   }
 
   object http4s {
@@ -17,7 +17,7 @@ object Dependencies {
   }
 
   object iron {
-    private val version = "2.6.0"
+    private val version = "3.0.0"
     val iron            = "io.github.iltotore" %% "iron"      % version
     val cats            = "io.github.iltotore" %% "iron-cats" % version
     val scalacheck      = "io.github.iltotore" %% "iron-scalacheck" % version
@@ -30,7 +30,7 @@ object Dependencies {
   }
 
   object laika {
-    private val version = "1.3.1"
+    private val version = "1.3.2"
     val core            = "org.typelevel" %% "laika-core"    % version
     val io              = "org.typelevel" %% "laika-io"      % version
     val pdf             = "org.typelevel" %% "laika-pdf"     % version
@@ -57,7 +57,7 @@ object Dependencies {
 
   object typelevel {
     private val catsVersion       = "2.13.0"
-    private val catsEffectVersion = "3.6-623178c"
+    private val catsEffectVersion = "3.7-4972921"
 
     val algebra          = "org.typelevel" %% "algebra"            % catsVersion
     val catsCore         = "org.typelevel" %% "cats-core"          % catsVersion
@@ -77,7 +77,7 @@ object Dependencies {
   }
 
   object zio {
-    private val version = "2.1.16"
+    private val version = "2.1.17"
     val core        = "dev.zio" %% "zio"             % version
     val stacktracer = "dev.zio" %% "zio-stacktracer" % version
   }

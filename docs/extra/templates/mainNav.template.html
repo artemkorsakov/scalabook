@@ -1,11 +1,5 @@
 <nav id="sidebar">
 
-    <div class="row">
-        @:for(helium.site.topNavigation.phoneLinks)
-        ${_}
-        @:@
-    </div>
-
     @:navigationTree {
     entries = ${helium.site.mainNavigation.prependLinks} [
     { target = "/extra", excludeRoot = true, excludeSections = ${helium.site.mainNavigation.excludeSections}, depth = ${helium.site.mainNavigation.depth} }

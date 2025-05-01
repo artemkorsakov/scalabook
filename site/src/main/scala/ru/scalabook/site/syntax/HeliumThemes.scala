@@ -55,6 +55,8 @@ object HeliumThemes:
       .site
       .internalCSS(Root / "css" / "page-nav.css")
       .site
+      .internalCSS(Root / "css" / "notes.css")
+      .site
       .internalJS(Root / "js" / "tex-mml-chtml.js")
 
   private def addTopNavigation(theme: Helium): Helium =

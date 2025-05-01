@@ -8,7 +8,7 @@ import laika.format.Markdown.GitHubFlavor
 import laika.io.api.TreeTransformer
 import laika.io.model.*
 import laika.io.syntax.*
-import ru.scalabook.site.syntax.{HeliumThemes, SbtSyntax}
+import ru.scalabook.site.syntax.{HeliumThemes, MyDirectives, SbtSyntax}
 
 object GenerateSite extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =
@@ -26,7 +26,11 @@ object GenerateSite extends IOApp:
     Transformer
       .from(Markdown)
       .to(HTML)
-      .using(GitHubFlavor, SyntaxHighlighting.withSyntax(SbtSyntax))
+      .using(
+        GitHubFlavor,
+        SyntaxHighlighting.withSyntax(SbtSyntax),
+        MyDirectives
+      )
       .parallel[F]
       .withTheme(HeliumThemes.mainTheme.build)
       .build

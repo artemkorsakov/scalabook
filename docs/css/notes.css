@@ -5,15 +5,21 @@
 
 .tooltip-text {
   visibility: hidden;
-  background: #333;
-  color: #fff;
-  padding: 5px;
+  background: #2A8D9C;  /* secondary цвет из палитры Laika */
+  color: #ebf6f7;       /* primaryLight для текста - мягкий контраст */
+  padding: 12px;
   border-radius: 4px;
-  position: absolute;
-  bottom: 100%;
+  position: fixed; /* fixed или absolute, если нужно относительно родителя */
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
+  transform: translate(-50%, -50%);
+  max-width: 50vw; /* не больше 50% ширины окна */
+  max-height: 50vh; /* не больше 50% высоты окна */
+  width: auto;
+  overflow-y: auto; /* если контент слишком большой */
+  white-space: normal; /* разрешаем перенос текста */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
 }
 
 .tooltip:hover .tooltip-text {

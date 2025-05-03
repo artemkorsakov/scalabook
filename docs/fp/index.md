@@ -1,3 +1,8 @@
+{%
+showNext = true
+nextPage = data-structures.html
+%}
+
 # Функциональное программирование
 
 ## Введение

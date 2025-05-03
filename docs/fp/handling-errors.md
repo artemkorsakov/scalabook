@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = data-structures.html
+showNext = true
+nextPage = laziness.html
+%}
+
 # Обработка ошибок
 
 ## Основные принципы функционального возникновения и обработки ошибок

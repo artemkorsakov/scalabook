@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = handling-errors.html
+showNext = true
+nextPage = state.html
+%}
+
 # Ленивые вычисления
 
 Нестрогость (или ленивое вычисление) — это свойство функции. 

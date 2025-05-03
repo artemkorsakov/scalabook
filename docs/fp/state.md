@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = laziness.html
+showNext = true
+nextPage = writer.html
+%}
+
 # Функциональное состояние
 
 ## Описание 

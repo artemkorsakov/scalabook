@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = writer.html
+showNext = true
+nextPage = trampolining.html
+%}
+
 # Параллелизм
 
 ## Параллелизм с помощью чистых функций

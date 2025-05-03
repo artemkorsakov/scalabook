@@ -1,0 +1,19 @@
+.prev-next-nav {
+    display: flex;
+    justify-content: space-between;
+    margin: 2rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.prev-next-nav a {
+    text-decoration: none;
+    color: #666;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.prev-next-nav a:hover {
+    color: #2A8D9C;
+}

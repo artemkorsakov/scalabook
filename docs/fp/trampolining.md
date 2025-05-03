@@ -1,3 +1,8 @@
+{%
+showPrev = true
+prevPage = parallelism.html
+%}
+
 # Stackless Scala
 
 Перевод статьи Runar Oli Bjarnason ["Stackless Scala With Free Monads"][Trampolines] с небольшими отступлениями.

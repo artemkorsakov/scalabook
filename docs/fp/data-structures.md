@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = index.html
+showNext = true
+nextPage = handling-errors.html
+%}
+
 # Функциональная структура данных
 
 Функциональная структура данных — это тип данных, который:

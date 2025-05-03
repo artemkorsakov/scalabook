@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = eq.html
+showNext = true
+nextPage = rings.html
+%}
+
 # Semigroup, Monoid и Group
 
 Самые основные классы алгебраических типов, поддерживаемые Spire,

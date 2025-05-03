@@ -1,3 +1,8 @@
+{%
+showPrev = true
+prevPage = ../zio.html
+%}
+
 # Введение в программирование с функциональными ZIO эффектами
 
 [Перевод статьи "Introduction to Programming with ZIO Functional Effects", автор Jorge Vasquez][Article]

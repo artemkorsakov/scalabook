@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = project_euler/project_euler_81_100.html
+showNext = true
+nextPage = puzzlers.html
+%}
+
 # Программирование на уровне типов в Scala
 
 В этом разделе приведен перевод статей ["Type-Level Programming in Scala"][blog] с адаптацией под версию Scala 3.

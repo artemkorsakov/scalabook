@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = ../cats-effect.html
+showNext = true
+nextPage = producer-consumer-problem.html
+%}
+
 # Копирование файлов 
 
 ## Основные понятия, обработка ресурсов и отмена

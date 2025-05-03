@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = spire/generators.html
+showNext = true
+nextPage = cats-effect/copy-files.html
+%}
+
 # Cats effect
 
 Современные приложения часто сталкиваются с задачами, требующими работы с асинхронными операциями, параллелизмом и управлением ресурсами. 

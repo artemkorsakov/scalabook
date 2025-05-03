@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = puzzlers.html
+showNext = true
+nextPage = sicp.html
+%}
+
 # Pure functional HTTP APIs in Scala
 
 В этом разделе приведен пример реализации на Scala 3 чистой имплементации http-сервиса 

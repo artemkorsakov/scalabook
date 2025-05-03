@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = index.html
+showNext = true
+nextPage = scala/one_star.html
+%}
+
 # Ресурсы по Scala
 
 Структурированная подборка материалов для изучения и работы со Scala. Все ресурсы организованы по категориям и упорядочены для удобного поиска.

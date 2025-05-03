@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = trig.html
+showNext = true
+nextPage = generators.html
+%}
+
 # Сортировка, выбор и поиск
 
 ## Сортировка

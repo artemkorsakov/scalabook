@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = four_stars.html
+showNext = true
+nextPage = ../common.html
+%}
+
 # ✯✯✯✯✯
 
 [Пояснение к разделу](../scala.md)

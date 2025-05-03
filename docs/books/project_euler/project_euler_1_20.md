@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = ../project_euler.html
+showNext = true
+nextPage = project_euler_21_40.html
+%}
+
 # Задачи №1-№20
 
 ## Задача №1

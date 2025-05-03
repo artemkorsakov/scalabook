@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = three_stars.html
+showNext = true
+nextPage = five_stars.html
+%}
+
 # ✯✯✯✯
 
 [Пояснение к разделу](../common.md)

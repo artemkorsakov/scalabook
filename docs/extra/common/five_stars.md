@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = four_stars.html
+showNext = true
+nextPage = ../blogs.html
+%}
+
 # ✯✯✯✯✯
 
 [Пояснение к разделу](../common.md)

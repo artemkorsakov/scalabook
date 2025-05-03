@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = sorting.html
+showNext = true
+nextPage = ../cats-effect.html
+%}
+
 # Генераторы псевдослучайных чисел
 
 Пакет `spire.random` содержит генераторы случайных чисел, подходящие для множества различных задач,

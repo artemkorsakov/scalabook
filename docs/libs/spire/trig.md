@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = bool.html
+showNext = true
+nextPage = sorting.html
+%}
+
 # Тригонометрия
 
 `Trig` предоставляет абстракцию для любого типа, определяющего тригонометрические функции.

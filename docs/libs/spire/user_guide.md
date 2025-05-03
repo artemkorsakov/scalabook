@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = ../spire.html
+showNext = true
+nextPage = eq.html
+%}
+
 # Руководство пользователя
 
 В этом руководстве описываются архитектура, макет и использование Spire. 

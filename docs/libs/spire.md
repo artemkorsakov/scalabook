@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = refined.html
+showNext = true
+nextPage = spire/user_guide.html
+%}
+
 # Spire
 
 Spire — это числовая библиотека для Scala, которая должна быть универсальной, быстрой и точной.

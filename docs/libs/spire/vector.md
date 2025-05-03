@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = rings.html
+showNext = true
+nextPage = bool.html
+%}
+
 # Vector и компания
 
 Семейство классов типов векторного пространства предоставляет базовые векторные операции. 

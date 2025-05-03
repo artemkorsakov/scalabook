@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = index.html
+showNext = true
+nextPage = project_euler/project_euler_1_20.html
+%}
+
 # Project Euler
 
 ## О Project Euler

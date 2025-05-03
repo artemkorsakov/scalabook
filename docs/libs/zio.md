@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = cats-effect/cats-concurrency-basics-with-ref-and-deferred.html
+showNext = true
+nextPage = zio/introduction-to-programming-with-zio-functional-effects.html
+%}
+
 # ZIO
 
 Типобезопасная компонуемая библиотека для асинхронного и параллельного программирования на Scala.

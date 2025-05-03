@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = index.html
+showNext = true
+nextPage = spire.html
+%}
+
 # Уточняющие типы в Scala
 
 Статья вышла [в блоге компании "Криптонит" на хабре](https://habr.com/ru/company/kryptonite/blog/719488/).

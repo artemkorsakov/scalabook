@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = copy-files.html
+showNext = true
+nextPage = concurrency-with-cats-effect.html
+%}
+
 # Проблема производитель-потребитель — параллелизм и волокна
 
 Модель производитель-потребитель часто встречается в параллельных запусках. 

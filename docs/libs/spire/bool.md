@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = vector.html
+showNext = true
+nextPage = trig.html
+%}
+
 # Алгебра Гейтинга и Bool
 
 ## Алгебра Гейтинга

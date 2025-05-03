@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = semigroup.html
+showNext = true
+nextPage = vector.html
+%}
+
 # Кольца и поля
 
 Семейство классов типов `Ring` представляет собой совокупность двух двоичных операций (аддитивной и мультипликативной). 

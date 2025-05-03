@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = user_guide.html
+showNext = true
+nextPage = semigroup.html
+%}
+
 # Eq, Order и PartialOrder
 
 Эти классы типов предоставляют типобезопасные функции эквивалентности и сравнения.

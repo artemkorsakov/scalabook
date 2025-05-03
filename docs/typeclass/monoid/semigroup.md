@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = ../monoid.html
+showNext = true
+nextPage = monoid.html
+%}
+
 # Полугруппа
 
 **Полугруппа** – это важная математическая структура, 

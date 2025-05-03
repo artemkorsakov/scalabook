@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = contravariant-functor.html
+showNext = true
+nextPage = divisible.html
+%}
+
 # Divide
 
 **`Divide`** — это типовой класс, который представляет собой обобщение операции, 

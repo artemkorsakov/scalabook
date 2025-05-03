@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = foldable.html
+showNext = true
+nextPage = contravariant-functor.html
+%}
+
 # Traverse
 
 `Traverse` — это концепция из функционального программирования, 

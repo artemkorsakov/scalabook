@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = applicative.html
+showNext = true
+nextPage = monad.html
+%}
+
 # Bind
 
 В функциональном программировании, в частности в Scala, `bind` (или `flatMap`) — это операция, 

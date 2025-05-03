@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = csemigroup.html
+showNext = true
+nextPage = abgroup.html
+%}
+
 # Коммутативный моноид
 
 **Коммутативный моноид** — это алгебраическая структура, которая объединяет свойства [моноида](monoid.md) и [коммутативности](csemigroup.md). 

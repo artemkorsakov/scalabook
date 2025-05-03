@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = monad/free-monads.html
+showNext = true
+nextPage = conferences.html
+%}
+
 # Группа Arrow
 
 ## Введение

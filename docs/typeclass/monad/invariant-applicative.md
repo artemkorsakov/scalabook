@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = functor.html
+showNext = true
+nextPage = semigroupal.html
+%}
+
 # Invariant Applicative
 
 ## Формальное определение

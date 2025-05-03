@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = band.html
+showNext = true
+nextPage = csemigroup.html
+%}
+
 #  Идемпотентный моноид
 
 **Идемпотентный моноид** — это алгебраическая структура, которая сочетает в себе свойства [моноида](monoid.md) и [идемпотентности](band.md). 

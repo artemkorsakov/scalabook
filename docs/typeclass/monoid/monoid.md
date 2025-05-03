@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = semigroup.html
+showNext = true
+nextPage = group.html
+%}
+
 # Моноид
 
 Моноиды — это фундаментальная концепция в функциональном программировании, 

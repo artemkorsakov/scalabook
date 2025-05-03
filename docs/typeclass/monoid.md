@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = index.html
+showNext = true
+nextPage = monoid/semigroup.html
+%}
+
 # Группа моноидов
 
 ## Введение

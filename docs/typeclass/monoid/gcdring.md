@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = cring-with-one.html
+showNext = true
+nextPage = euclidean-ring.html
+%}
+
 # Кольца НОД
 
 **Кольца НОД** (кольца с наибольшим общим делителем) — это [коммутативные кольца с единицей](cring-with-one.md), 

@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = plus.html
+showNext = true
+nextPage = applicative-plus.html
+%}
+
 # PlusEmpty
 
 `PlusEmpty` — это расширение концепции [`Plus`](plus.md) в функциональном программировании, 

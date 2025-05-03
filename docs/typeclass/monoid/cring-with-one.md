@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = cring.html
+showNext = true
+nextPage = gcdring.html
+%}
+
 # Коммутативное кольцо с единицей
 
 **Коммутативное кольцо с единицей** — это кольцо, которое одновременно является:

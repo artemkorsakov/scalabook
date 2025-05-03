@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = monad-plus.html
+showNext = true
+nextPage = foldable.html
+%}
+
 # IsEmpty
 
 `IsEmpty` — это концепция из функционального программирования, которая расширяет [`PlusEmpty`](plus-empty.md), 

@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = csemiring.html
+showNext = true
+nextPage = ring.html
+%}
+
 #  Идемпотентное полукольцо
 
 **Идемпотентное полукольцо** — это [полукольцо](semiring.md), в котором операция сложения идемпотентна. 

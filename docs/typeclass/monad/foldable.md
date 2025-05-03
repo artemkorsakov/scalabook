@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = is-empty.html
+showNext = true
+nextPage = traverse.html
+%}
+
 # Foldable
 
 `Foldable` — это концепция из функционального программирования, 

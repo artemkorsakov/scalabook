@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = gcdring.html
+showNext = true
+nextPage = field.html
+%}
+
 # Евклидово кольцо
 
 **Евклидово кольцо** — это [коммутативное кольцо с единицей](cring-with-one.md), в котором определена функция, называемая **евклидовой нормой**, 

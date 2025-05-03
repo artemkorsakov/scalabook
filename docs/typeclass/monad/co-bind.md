@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = divisible.html
+showNext = true
+nextPage = co-monads.html
+%}
+
 # CoBind
 
 **`CoBind`** (или **`Cobind`**) — это типовой класс, который расширяет возможности [**функтора**](functor.md) 

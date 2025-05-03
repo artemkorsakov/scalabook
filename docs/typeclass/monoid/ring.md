@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = isemiring.html
+showNext = true
+nextPage = ring-with-one.html
+%}
+
 # Кольцо
 
 **Кольцо** — это одна из ключевых алгебраических структур в математике, которая обобщает понятие чисел и операций над ними. 

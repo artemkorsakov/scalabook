@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = cmonoid.html
+showNext = true
+nextPage = semiring.html
+%}
+
 # Абелева группа
 
 **Абелева группа** (или коммутативная группа) — это алгебраическая структура, 

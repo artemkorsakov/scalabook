@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = monoid/field.html
+showNext = true
+nextPage = monad/invariant-functor.html
+%}
+
 # Группа Monad
 
 ## Введение

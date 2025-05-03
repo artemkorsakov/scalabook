@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = euclidean-ring.html
+showNext = true
+nextPage = ../monad.html
+%}
+
 # Поле
 
 **Поле** — это алгебраическая структура, которая является [коммутативным кольцом с единицей](cring-with-one.md), 

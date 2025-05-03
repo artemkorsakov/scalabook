@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = abgroup.html
+showNext = true
+nextPage = semiring-with-one.html
+%}
+
 # Полукольцо
 
 **Полукольцо** — это алгебраическая структура, которая обобщает понятие [кольца](ring.md), ослабляя некоторые из его свойств. 

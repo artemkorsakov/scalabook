@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = co-bind.html
+showNext = true
+nextPage = bimonad.html
+%}
+
 # Co-Monad
 
 **`CoMonad`** (или **`Comonad`**) — это типовой класс в функциональном программировании, 

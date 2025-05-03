@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = monad-transformer.html
+showNext = true
+nextPage = ../arrow.html
+%}
+
 # Свободная монада
 
 Свободная монада — это способ структурировать вычисления, 

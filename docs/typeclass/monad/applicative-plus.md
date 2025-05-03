@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = plus-empty.html
+showNext = true
+nextPage = monad-plus.html
+%}
+
 # ApplicativePlus
 
 `ApplicativePlus` — это концепция из функционального программирования, 

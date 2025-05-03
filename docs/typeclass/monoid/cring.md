@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = ring-with-one.html
+showNext = true
+nextPage = cring-with-one.html
+%}
+
 # Коммутативное кольцо
 
 **Коммутативное кольцо** — это [кольцо](ring.md), в котором операция умножения коммутативна. 

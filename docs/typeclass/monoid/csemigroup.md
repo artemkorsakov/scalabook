@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = idempotent-monoid.html
+showNext = true
+nextPage = cmonoid.html
+%}
+
 # Коммутативная полугруппа
 
 **Коммутативная полугруппа** — это алгебраическая структура, которая сочетает в себе свойства [полугруппы](semigroup.md) и коммутативности. 

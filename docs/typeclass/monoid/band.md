@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = group.html
+showNext = true
+nextPage = idempotent-monoid.html
+%}
+
 # Идемпотентная полугруппа
 
 **Что такое идемпотентная полугруппа?**

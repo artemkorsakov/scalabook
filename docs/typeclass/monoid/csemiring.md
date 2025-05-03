@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = semiring-with-one.html
+showNext = true
+nextPage = isemiring.html
+%}
+
 # Коммутативное полукольцо
 
 **Коммутативное полукольцо** — это [полукольцо](semiring.md), в котором операция умножения коммутативна. 

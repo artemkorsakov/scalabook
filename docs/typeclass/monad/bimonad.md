@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = co-monads.html
+showNext = true
+nextPage = monad-transformer.html
+%}
+
 # Bi-Monad
 
 **Bi-Monad** (или **Bimonad**) — это типовой класс в функциональном программировании, 

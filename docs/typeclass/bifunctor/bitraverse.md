@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = bifoldable.html
+showNext = true
+nextPage = ../equal.html
+%}
+
 # Bitraverse
 
 **Bitraverse** — это типовой класс, который обобщает концепцию [**Traverse**](../monad/traverse.md) для типов, имеющих два параметра. 

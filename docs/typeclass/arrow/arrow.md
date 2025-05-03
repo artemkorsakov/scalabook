@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = strong.html
+showNext = true
+nextPage = ../bifunctor.html
+%}
+
 # Arrow
 
 `Arrow` — это типовой класс в функциональном программировании, 

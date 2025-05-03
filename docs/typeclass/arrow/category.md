@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = compose.html
+showNext = true
+nextPage = split.html
+%}
+
 # Category
 
 `Category` — это типовой класс в Scala, который представляет собой **категорию** в математическом смысле. 

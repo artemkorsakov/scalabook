@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = bifunctor/bitraverse.html
+showNext = true
+nextPage = equal/equal.html
+%}
+
 # Группа Equal
 
 ## Введение

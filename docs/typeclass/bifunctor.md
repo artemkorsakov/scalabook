@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = arrow/arrow.html
+showNext = true
+nextPage = bifunctor/bifunctor.html
+%}
+
 # Группа Bifunctor
 
 ## Введение

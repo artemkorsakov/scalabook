@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = signed.html
+showNext = true
+nextPage = enum.html
+%}
+
 # Predecessible и Successible
 
 ## `Predecessible`

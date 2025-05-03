@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = split.html
+showNext = true
+nextPage = strong.html
+%}
+
 # Profunctor
 
 `Profunctor` — это типовой класс в функциональном программировании, 

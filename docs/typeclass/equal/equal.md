@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = ../equal.html
+showNext = true
+nextPage = order.html
+%}
+
 # Equal
 
 `Equal` — это типовой класс, который определяет метод для проверки равенства двух объектов. 

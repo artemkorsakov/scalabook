@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = monad/free-monads.html
 showNext = true
-nextPage = conferences.html
+nextPage = arrow/compose.html
 %}
 
 # Группа Arrow

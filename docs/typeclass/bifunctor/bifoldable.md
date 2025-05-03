@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = bifunctor.html
+showNext = true
+nextPage = bitraverse.html
+%}
+
 # Bifoldable
 
 **Bifoldable** — это типовой класс, который обобщает операцию [свертки](../monad/foldable.md) (fold) 

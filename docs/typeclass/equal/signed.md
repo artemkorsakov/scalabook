@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = bounded.html
+showNext = true
+nextPage = bothable.html
+%}
+
 # Signed
 
 `Signed` — это типовой класс, который определяет методы для работы со знаковыми типами. 

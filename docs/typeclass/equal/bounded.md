@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = order.html
+showNext = true
+nextPage = signed.html
+%}
+
 # Bounded 
 
 **Что такое `Bounded`?**

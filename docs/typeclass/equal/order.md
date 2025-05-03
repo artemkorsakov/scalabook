@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = equal.html
+showNext = true
+nextPage = bounded.html
+%}
+
 # Order
 
 **Что такое `Order`?**

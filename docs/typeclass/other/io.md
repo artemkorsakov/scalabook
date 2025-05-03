@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = read.html
+showNext = true
+nextPage = ../affixes.html
+%}
+
 # IO
  
 `IO` — это типовой класс, который представляет собой абстракцию 

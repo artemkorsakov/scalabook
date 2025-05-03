@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = profunctor.html
+showNext = true
+nextPage = arrow.html
+%}
+
 # Strong
 
 `Strong` — это типовой класс в функциональном программировании, 

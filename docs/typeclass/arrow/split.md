@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = category.html
+showNext = true
+nextPage = profunctor.html
+%}
+
 # Split
 
 `Split` — это типовой класс в Scala, который предоставляет возможность 

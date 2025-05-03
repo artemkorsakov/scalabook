@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = bothable.html
+showNext = true
+nextPage = ../other.html
+%}
+
 # Enum
 
 **Типовой класс `Enum`**, расширяющий [`Order`](order.md) и [`Bothable`](bothable.md), — это абстракция, 

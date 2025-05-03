@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = equal/enum.html
+showNext = true
+nextPage = other/show.html
+%}
+
 # Вне группы
 
 В функциональном программировании типовые классы играют ключевую роль, 

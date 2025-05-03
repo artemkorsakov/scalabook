@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = ../arrow.html
+showNext = true
+nextPage = category.html
+%}
+
 # Compose
 
 `Compose` — это типовой класс, который предоставляет возможность композиции функций или морфизмов. 

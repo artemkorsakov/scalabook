@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = ../other.html
+showNext = true
+nextPage = read.html
+%}
+
 # Show
 
 **Типовой класс `Show`** — это абстракция, которая предоставляет возможность преобразовывать значения любого типа 

@@ -1,3 +1,8 @@
+{%
+showPrev = true
+prevPage = other/io.html
+%}
+
 # Значение аффиксов Scala
 
 [Перевод статьи "Build your vocabulary with Scala affixes", автор Ross A. Baker][Affixes]

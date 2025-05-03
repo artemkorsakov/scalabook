@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = ../data-structures.html
+showNext = true
+nextPage = linear_list/lists.html
+%}
+
 # Линейный список
 
 Линейный список представляет собой последовательность \\(n \geq 0\\) узлов \\(X\_{1}, X\_{2}, ... , X\_{n}\\), 

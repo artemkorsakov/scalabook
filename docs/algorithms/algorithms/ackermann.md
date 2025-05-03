@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = newton.html
+showNext = true
+nextPage = equations.html
+%}
+
 # Функция Аккермана
 
 **Алгоритм:**

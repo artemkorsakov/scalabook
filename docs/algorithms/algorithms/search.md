@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = sort.html
+showNext = true
+nextPage = newton.html
+%}
+
 # Поиск
 
 Поиск часто используется в повседневной жизни, а также в компьютерных науках. 

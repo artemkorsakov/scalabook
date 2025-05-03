@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = ../combinatorics.html
+showNext = true
+nextPage = permutation.html
+%}
+
 # Факториал
 
 _n-факториал_ - величина, записанная следующим образом: \\(n! = 1 · 2 · ... · n = \prod_{k=1}^{n}k \\).

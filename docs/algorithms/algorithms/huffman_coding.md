@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = derivative.html
+showNext = true
+nextPage = ../data-structures.html
+%}
+
 # Деревья кодирования по Хаффману
 
 Стандартный код ASCII, который используется для представления текста в компьютерах, 

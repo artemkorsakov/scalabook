@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = queues.html
+showNext = true
+nextPage = arrays.html
+%}
+
 # Двусторонняя очередь
 
 _Дек_ или _двусторонняя очередь_ (_double-ended queue_) - это линейный список, 

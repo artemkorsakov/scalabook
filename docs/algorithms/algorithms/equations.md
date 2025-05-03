@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = ackermann.html
+showNext = true
+nextPage = geometry.html
+%}
+
 # Решение уравнений
 
 ## Квадратное уравнение

@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = arrangement.html
+showNext = true
+nextPage = ../sequences.html
+%}
+
 # Партиции, монеты и др.
 
 ## Монеты

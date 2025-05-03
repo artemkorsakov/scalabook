@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = lists.html
+showNext = true
+nextPage = stacks.html
+%}
+
 # Дважды связанные списки
 
 _Дважды связанные списки_ содержат ссылки не только на следующий список, но и на предыдущий.

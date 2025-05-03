@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = primes.html
+showNext = true
+nextPage = ../combinatorics.html
+%}
+
 # Двоичные числа и другие системы счисления
 
 > Для снятия метрик использовалась библиотека [Metrics-Scala](https://github.com/erikvanoosten/metrics-scala/blob/master/docs/Manual.md).

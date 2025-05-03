@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = algorithms/huffman_coding.html
+showNext = true
+nextPage = data-structures/linear_list.html
+%}
+
 # Структуры данных
 
 Структуры данных – это фундаментальная концепция в информатике, 

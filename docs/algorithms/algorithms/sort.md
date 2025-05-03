@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = sequences.html
+showNext = true
+nextPage = search.html
+%}
+
 # Сортировка
 
 Сортировка — обычная операция как в жизни, так и в информатике.

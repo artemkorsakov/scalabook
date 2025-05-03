@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = permutation.html
+showNext = true
+nextPage = arrangement.html
+%}
+
 # Сочетание
 
 _Сочетания из `n` объектов по `k`_ — это возможные варианты выбора `k` различных элементов из `n` объектов 

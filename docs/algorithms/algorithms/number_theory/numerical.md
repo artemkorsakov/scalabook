@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = ../number_theory.html
+showNext = true
+nextPage = primes.html
+%}
+
 # Численные алгоритмы
 
 > Для снятия метрик использовалась библиотека [Metrics-Scala](https://github.com/erikvanoosten/metrics-scala/blob/master/docs/Manual.md).

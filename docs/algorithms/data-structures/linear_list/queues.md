@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = stacks.html
+showNext = true
+nextPage = deq.html
+%}
+
 # Очереди
 
 _Очередь_ или _односторонняя очередь_ — это линейный список, 

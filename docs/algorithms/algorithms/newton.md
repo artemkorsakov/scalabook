@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = search.html
+showNext = true
+nextPage = ackermann.html
+%}
+
 # Метод Ньютона
 
 Метод Ньютона — это итерационный численный метод нахождения корня (нуля) заданной функции. 

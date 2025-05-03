@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = index.html
+showNext = true
+nextPage = algorithms/number_theory.html
+%}
+
 # Алгоритмы
 
 ## Алгоpитм

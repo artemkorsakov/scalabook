@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = binary-tree.html
+showNext = true
+nextPage = ../heap.html
+%}
+
 # Двоичное дерево поиска
 
 **Определение:**

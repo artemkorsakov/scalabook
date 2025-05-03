@@ -1,3 +1,10 @@
+{%
+showPrev = true
+prevPage = factorial.html
+showNext = true
+nextPage = combination.html
+%}
+
 # Перестановка
 
 _Перестановкой `n` объектов_ называется способ последовательного расположения `n` различных объектов с учетом порядка. 

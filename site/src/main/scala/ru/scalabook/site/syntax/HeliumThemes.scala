@@ -51,13 +51,15 @@ object HeliumThemes:
 
   private def addCSSJS(theme: Helium): Helium =
     theme.site
-      .internalCSS(Root / "css" / "sidebar.css")
+      .internalCSS(Root / "css" / "left-menu.css")
       .site
-      .internalCSS(Root / "css" / "page-nav.css")
+      .internalCSS(Root / "css" / "right-menu.css")
       .site
-      .internalCSS(Root / "css" / "prev-next-nav.css")
+      .internalCSS(Root / "css" / "prev-next-pages.css")
       .site
       .internalCSS(Root / "css" / "notes.css")
+      .site
+      .internalCSS(Root / "css" / "common.css")    
       .site
       .internalJS(Root / "js" / "tex-mml-chtml.js")
 

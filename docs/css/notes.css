@@ -1,27 +1,43 @@
 .tooltip {
-  position: relative;
+  position: relative; /* Необходимо для позиционирования подсказки */
+  display: inline-block; /* Чтобы элемент занимал только нужную ширину */
   cursor: help;
 }
 
 .tooltip-text {
   visibility: hidden;
   background: #2A8D9C;  /* secondary цвет из палитры Laika */
-  color: #ebf6f7;       /* primaryLight для текста - мягкий контраст */
+  color: #ebf6f7;       /* primaryLight для текста */
   padding: 12px;
   border-radius: 4px;
-  position: fixed; /* fixed или absolute, если нужно относительно родителя */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 50vw; /* не больше 50% ширины окна */
-  max-height: 50vh; /* не больше 50% высоты окна */
-  width: auto;
-  overflow-y: auto; /* если контент слишком большой */
-  white-space: normal; /* разрешаем перенос текста */
+
+  /* Позиционирование в правом верхнем углу */
+  position: absolute;
+  bottom: 100%; /* Располагаем выше родительского элемента */
+  right: 0;     /* Выравниваем по правому краю */
+
+  /* Стилизация */
+  width: 500px; /* Фиксированная ширина */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
+
+  /* Анимация появления */
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .tooltip:hover .tooltip-text {
   visibility: visible;
+  opacity: 1;
+}
+
+/* Треугольник-указатель */
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 15px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: #2A8D9C transparent transparent transparent;
 }

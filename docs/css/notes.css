@@ -14,7 +14,7 @@
   /* Позиционирование в правом верхнем углу */
   position: absolute;
   bottom: 100%; /* Располагаем выше родительского элемента */
-  right: 0;     /* Выравниваем по правому краю */
+  left: 0;     /* Выравниваем по правому краю */
 
   /* Стилизация */
   width: 500px; /* Фиксированная ширина */
@@ -36,7 +36,7 @@
   content: "";
   position: absolute;
   top: 100%;
-  right: 15px;
+  left: 15px;
   border-width: 8px;
   border-style: solid;
   border-color: #2A8D9C transparent transparent transparent;

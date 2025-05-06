@@ -19,10 +19,10 @@ nextPage = five_stars.html
 - В алфавитном порядке внутри категорий
 @:@
 
-| Название                                                                                                                       | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий  |
-| ------------------------------------------------------------------------------------------------------------------------------ | :-------: | :-----: | ------ |-----------------|
-| [**Cats Effect Tutorial**](https://typelevel.org/cats-effect/docs/tutorial)                                                    |  Scala 3  |  🇬🇧 EN  | -      | 🐈 Cats Effect  |
-| [**Functional Programming in Scala (Red Book)**](https://www.manning.com/books/functional-programming-in-scala-second-edition) |  Scala 3  |  🇬🇧 EN  | 2023   | 🏆 Классика     |
+| Название                                                                                                                       | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий  | 🔍 Подробнее               |
+| ------------------------------------------------------------------------------------------------------------------------------ | :-------: | :-----: | ------ |-----------------|----------------------------|
+| [**Cats Effect Tutorial**](https://typelevel.org/cats-effect/docs/tutorial)                                                    |  Scala 3  |  🇬🇧 EN  | -      | 🐈 Cats Effect  | @:note(🔍 Подробнее) @:@   |
+| [**Functional Programming in Scala (Red Book)**](https://www.manning.com/books/functional-programming-in-scala-second-edition) |  Scala 3  |  🇬🇧 EN  | 2023   | 🏆 Классика     | @:note(🔍 Подробнее) @:@   |
 
 ## 🎓 Курсы
 

@@ -19,24 +19,24 @@ nextPage = two_stars.html
 - В алфавитном порядке внутри категорий
 @:@
 
-| Название                                                                                                                           | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий |
-| ---------------------------------------------------------------------------------------------------------------------------------- | :-------: | :-----: | ------ | -------------- |
-| [**Scala. Профессиональное программирование**](https://www.piter.com/product/scala-professionalnoe-programmirovanie-5-e-izd)       |  Scala 3  |  🇷🇺 RU  | 2022   |                |
-| [**Advanced Programming in Scala**](https://www.artima.com/shop/advanced_programming_in_scala_5ed)                                 |  Scala 3  |  🇬🇧 EN  | 2022   |                |
-| [**Creative Scala**](https://www.creativescala.org/)                                                                               |  Scala 3  |  🇬🇧 EN  | 2020   |                |
-| [**Get Programming with Scala**](https://www.manning.com/books/get-programming-with-scala)                                         |  Scala 3  |  🇬🇧 EN  | 2021   |                |
-| [**Programming in Scala**](https://www.artima.com/shop/programming_in_scala_5ed)                                                   |  Scala 3  |  🇬🇧 EN  | 2021   |                |
-| [**Scala 3 Programming for Beginners**](https://www.amazon.com/Scala-Programming-Beginners-Introduction-Hands-ebook/dp/B09NDTC95J) |  Scala 3  |  🇬🇧 EN  | 2021   |                |
-| [**Scala Best Practices**](https://github.com/alexandru/scala-best-practices)                                                      |   Scala   |  🇬🇧 EN  | 2016   | Общие практики |
-| [**Scala Language Specification**](https://scala-lang.org/files/archive/spec/3.4/)                                                 |  Scala 3  |  🇬🇧 EN  | 2023   |                |
-| [**Spire - числовая библиотека**](https://typelevel.org/spire)                                                                     |  Scala 3  |  🇬🇧 EN  | 2023   |                |
-| [**Путеводитель неофита по Scala**](https://github.com/anton-k/ru-neophyte-guide-to-scala)                                         |  Scala 2  |  🇷🇺 RU  | 2014   |                |
-| [**All about Scala**](https://allaboutscala.com/)                                                                                  |  Scala 2  |  🇬🇧 EN  | 2020   |                |
-| [**Functional Programming Simplified**](https://alvinalexander.com/photos/functional-programming-simplied-free-pdf-preview/)       |  Scala 2  |  🇬🇧 EN  | 2017   |                |
-| [**Hello Scala**](https://alvinalexander.com/photos/hello-scala-free-pdf-preview/)                                                 |  Scala 2  |  🇬🇧 EN  | 2019   |                |
-| [**Scala Cookbook**](https://www.amazon.com/Scala-Cookbook-Object-Oriented-Functional-Programming-dp-1492051543/dp/1492051543)     |  Scala 2  |  🇬🇧 EN  | 2021   |                |
-| [**The Neophyte's Guide to Scala**](https://danielwestheide.com/books/the-neophytes-guide-to-scala)                                |  Scala 2  |  🇬🇧 EN  | 2013   |                |
-| [**The Type Astronaut's Guide to Shapeless**](https://underscore.io/books/shapeless-guide)                                         |  Scala 2  |  🇬🇧 EN  | 2017   |                |
+| Название                                                                                                                           | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий | 🔍 Подробнее               |
+| ---------------------------------------------------------------------------------------------------------------------------------- | :-------: | :-----: | ------ | -------------- |----------------------------|
+| [**Scala. Профессиональное программирование**](https://www.piter.com/product/scala-professionalnoe-programmirovanie-5-e-izd)       |  Scala 3  |  🇷🇺 RU  | 2022   |                | @:note(🔍 Подробнее) @:@   |
+| [**Advanced Programming in Scala**](https://www.artima.com/shop/advanced_programming_in_scala_5ed)                                 |  Scala 3  |  🇬🇧 EN  | 2022   |                | @:note(🔍 Подробнее) @:@   |
+| [**Creative Scala**](https://www.creativescala.org/)                                                                               |  Scala 3  |  🇬🇧 EN  | 2020   |                | @:note(🔍 Подробнее) @:@   |
+| [**Get Programming with Scala**](https://www.manning.com/books/get-programming-with-scala)                                         |  Scala 3  |  🇬🇧 EN  | 2021   |                | @:note(🔍 Подробнее) @:@   |
+| [**Programming in Scala**](https://www.artima.com/shop/programming_in_scala_5ed)                                                   |  Scala 3  |  🇬🇧 EN  | 2021   |                | @:note(🔍 Подробнее) @:@   |
+| [**Scala 3 Programming for Beginners**](https://www.amazon.com/Scala-Programming-Beginners-Introduction-Hands-ebook/dp/B09NDTC95J) |  Scala 3  |  🇬🇧 EN  | 2021   |                | @:note(🔍 Подробнее) @:@   |
+| [**Scala Best Practices**](https://github.com/alexandru/scala-best-practices)                                                      |   Scala   |  🇬🇧 EN  | 2016   | Общие практики | @:note(🔍 Подробнее) @:@   |
+| [**Scala Language Specification**](https://scala-lang.org/files/archive/spec/3.4/)                                                 |  Scala 3  |  🇬🇧 EN  | 2023   |                | @:note(🔍 Подробнее) @:@   |
+| [**Spire - числовая библиотека**](https://typelevel.org/spire)                                                                     |  Scala 3  |  🇬🇧 EN  | 2023   |                | @:note(🔍 Подробнее) @:@   |
+| [**Путеводитель неофита по Scala**](https://github.com/anton-k/ru-neophyte-guide-to-scala)                                         |  Scala 2  |  🇷🇺 RU  | 2014   |                | @:note(🔍 Подробнее) @:@   |
+| [**All about Scala**](https://allaboutscala.com/)                                                                                  |  Scala 2  |  🇬🇧 EN  | 2020   |                | @:note(🔍 Подробнее) @:@   |
+| [**Functional Programming Simplified**](https://alvinalexander.com/photos/functional-programming-simplied-free-pdf-preview/)       |  Scala 2  |  🇬🇧 EN  | 2017   |                | @:note(🔍 Подробнее) @:@   |
+| [**Hello Scala**](https://alvinalexander.com/photos/hello-scala-free-pdf-preview/)                                                 |  Scala 2  |  🇬🇧 EN  | 2019   |                | @:note(🔍 Подробнее) @:@   |
+| [**Scala Cookbook**](https://www.amazon.com/Scala-Cookbook-Object-Oriented-Functional-Programming-dp-1492051543/dp/1492051543)     |  Scala 2  |  🇬🇧 EN  | 2021   |                | @:note(🔍 Подробнее) @:@   |
+| [**The Neophyte's Guide to Scala**](https://danielwestheide.com/books/the-neophytes-guide-to-scala)                                |  Scala 2  |  🇬🇧 EN  | 2013   |                | @:note(🔍 Подробнее) @:@   |
+| [**The Type Astronaut's Guide to Shapeless**](https://underscore.io/books/shapeless-guide)                                         |  Scala 2  |  🇬🇧 EN  | 2017   |                | @:note(🔍 Подробнее) @:@   |
 
 ## 🎓 Курсы
 
@@ -50,16 +50,16 @@ nextPage = two_stars.html
 - В алфавитном порядке внутри категорий
 @:@
 
-| Название                                                                                           | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий                                                          |
-| -------------------------------------------------------------------------------------------------- | :-------: | :-----: | ------ |-------------------------------------------------------------------------|
-| [**Effective Programming in Scala**](https://www.coursera.org/learn/effective-scala)               |  Scala 3  |  🇬🇧 EN  | 2021   |                                                                         |
-| [**Functional Programming in Scala**](https://www.coursera.org/learn/scala-functional-programming) |  Scala 3  |  🇬🇧 EN  | 2021   | 3 части                                                                 |
-| [**Scala & FP Essentials**](https://rockthejvm.com/p/scala)                                        |  Scala 3  |  🇬🇧 EN  | 2022   | [Udemy](https://www.udemy.com/course/rock-the-jvm-scala-for-beginners/) |
-| [**Scala at Light Speed**](https://rockthejvm.com/p/scala-at-light-speed)                          |  Scala 3  |  🇬🇧 EN  | 2023   |                                                                         |
-| [**Scala 3 New Features**](https://rockthejvm.com/p/scala-3-new-features)                          |  Scala 3  |  🇬🇧 EN  | 2023   |                                                                         |
-| [**Введение в Scala**](https://stepik.org/course/16243/promo)                                      |  Scala 2  |  🇷🇺 RU  | 2019   |                                                                         |
-| [**Основы Scala**](https://stepik.org/course/89974/promo)                                          |  Scala 2  |  🇷🇺 RU  | 2021   |                                                                         |
-| [**Scala Knowledge Bits**](https://leobenkel.com/category/scala/knowledge-bits)                    |  Scala 2  |  🇬🇧 EN  | 2020   |                                                                         |
+| Название                                                                                           | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий                                                          | 🔍 Подробнее               |
+| -------------------------------------------------------------------------------------------------- | :-------: | :-----: | ------ |-------------------------------------------------------------------------|----------------------------|
+| [**Effective Programming in Scala**](https://www.coursera.org/learn/effective-scala)               |  Scala 3  |  🇬🇧 EN  | 2021   |                                                                         | @:note(🔍 Подробнее) @:@   |
+| [**Functional Programming in Scala**](https://www.coursera.org/learn/scala-functional-programming) |  Scala 3  |  🇬🇧 EN  | 2021   | 3 части                                                                 | @:note(🔍 Подробнее) @:@   |
+| [**Scala & FP Essentials**](https://rockthejvm.com/p/scala)                                        |  Scala 3  |  🇬🇧 EN  | 2022   | [Udemy](https://www.udemy.com/course/rock-the-jvm-scala-for-beginners/) | @:note(🔍 Подробнее) @:@   |
+| [**Scala at Light Speed**](https://rockthejvm.com/p/scala-at-light-speed)                          |  Scala 3  |  🇬🇧 EN  | 2023   |                                                                         | @:note(🔍 Подробнее) @:@   |
+| [**Scala 3 New Features**](https://rockthejvm.com/p/scala-3-new-features)                          |  Scala 3  |  🇬🇧 EN  | 2023   |                                                                         | @:note(🔍 Подробнее) @:@   |
+| [**Введение в Scala**](https://stepik.org/course/16243/promo)                                      |  Scala 2  |  🇷🇺 RU  | 2019   |                                                                         | @:note(🔍 Подробнее) @:@   |
+| [**Основы Scala**](https://stepik.org/course/89974/promo)                                          |  Scala 2  |  🇷🇺 RU  | 2021   |                                                                         | @:note(🔍 Подробнее) @:@   |
+| [**Scala Knowledge Bits**](https://leobenkel.com/category/scala/knowledge-bits)                    |  Scala 2  |  🇬🇧 EN  | 2020   |                                                                         | @:note(🔍 Подробнее) @:@   |
 
 ## 🏋️ Упражнения
 
@@ -73,13 +73,13 @@ nextPage = two_stars.html
 - В алфавитном порядке внутри категорий
 @:@
 
-| Название                                                                                         | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий           |
-| ------------------------------------------------------------------------------------------------ | :-------: | :-----: | ------ | ------------------------ |
-| [**Exercism - Scala**](https://exercism.org/tracks/scala)                                        |  Scala 2  |  🇬🇧 EN  |        | Практические задания     |
-| [**Learn X in Y minutes**](https://learnxinyminutes.com/docs/scala)                              |  Scala 2  |  🇬🇧 EN  |        | Быстрый старт            |
-| [**Revised Scala Exercises**](https://blog.tmorris.net/posts/revised-scala-exercises/index.html) |  Scala 2  |  🇬🇧 EN  |        |                          |
-| [**Scala exercises**](https://www.scala-exercises.org/)                                          |  Scala 2  |  🇬🇧 EN  | 2008   | Интерактивные упражнения |
-| [**Tour of Scala**](https://tourofscala.com/)                                                    |  Scala 2  |  🇬🇧 EN  |        |                          |
+| Название                                                                                         | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий           | 🔍 Подробнее               |
+| ------------------------------------------------------------------------------------------------ | :-------: | :-----: | ------ | ------------------------ |----------------------------|
+| [**Exercism - Scala**](https://exercism.org/tracks/scala)                                        |  Scala 2  |  🇬🇧 EN  |        | Практические задания     | @:note(🔍 Подробнее) @:@   |
+| [**Learn X in Y minutes**](https://learnxinyminutes.com/docs/scala)                              |  Scala 2  |  🇬🇧 EN  |        | Быстрый старт            | @:note(🔍 Подробнее) @:@   |
+| [**Revised Scala Exercises**](https://blog.tmorris.net/posts/revised-scala-exercises/index.html) |  Scala 2  |  🇬🇧 EN  |        |                          | @:note(🔍 Подробнее) @:@   |
+| [**Scala exercises**](https://www.scala-exercises.org/)                                          |  Scala 2  |  🇬🇧 EN  | 2008   | Интерактивные упражнения | @:note(🔍 Подробнее) @:@   |
+| [**Tour of Scala**](https://tourofscala.com/)                                                    |  Scala 2  |  🇬🇧 EN  |        |                          | @:note(🔍 Подробнее) @:@   |
 
 ## 📝 Статьи
 

@@ -19,15 +19,15 @@ nextPage = three_stars.html
 - В алфавитном порядке внутри категорий
 @:@
 
-| Название                                                                                                             | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий                 |
-| -------------------------------------------------------------------------------------------------------------------- | :-------: | :-----: | ------ | ------------------------------ |
-| [**Programming Scala, 3rd Edition**](https://deanwampler.github.io/books/programmingscala.html)                      |  Scala 3  |  🇬🇧 EN  | 2021   | 📘 Полное руководство          |
-| [**Refinement types for Scala**](https://github.com/fthomas/refined)                                                 |  Scala 3  |  🇬🇧 EN  | -      | 🔍 Refined Types               |
-| [**Functional and Reactive Domain Modeling**](https://www.manning.com/books/functional-and-reactive-domain-modeling) |  Scala 2  |  🇬🇧 EN  | 2016   | ⚡ Реактивное программирование |
-| [**Hands-on Scala Programming**](https://www.handsonscala.com/)                                                      |  Scala 2  |  🇬🇧 EN  | 2020   | 🛠️ Практическое руководство    |
-| [**Pure functional HTTP APIs in Scala**](https://leanpub.com/pfhais)                                                 |  Scala 2  |  🇬🇧 EN  | 2022   | 🌐 Веб-разработка              |
-| [**Scala & Design Patterns**](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf)                 |  Scala 2  |  🇬🇧 EN  | 2009   | 🏗️ Паттерны проектирования     |
-| [**Scala with Cats**](https://www.scalawithcats.com/)                                                                |  Scala 2  |  🇬🇧 EN  | 2020   | 🐈 Cats                        |
+| Название                                                                                                             | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий                 | 🔍 Подробнее               |
+| -------------------------------------------------------------------------------------------------------------------- | :-------: | :-----: | ------ | ------------------------------ |----------------------------|
+| [**Programming Scala, 3rd Edition**](https://deanwampler.github.io/books/programmingscala.html)                      |  Scala 3  |  🇬🇧 EN  | 2021   | 📘 Полное руководство          | @:note(🔍 Подробнее) @:@   |
+| [**Refinement types for Scala**](https://github.com/fthomas/refined)                                                 |  Scala 3  |  🇬🇧 EN  | -      | 🔍 Refined Types               | @:note(🔍 Подробнее) @:@   |
+| [**Functional and Reactive Domain Modeling**](https://www.manning.com/books/functional-and-reactive-domain-modeling) |  Scala 2  |  🇬🇧 EN  | 2016   | ⚡ Реактивное программирование | @:note(🔍 Подробнее) @:@   |
+| [**Hands-on Scala Programming**](https://www.handsonscala.com/)                                                      |  Scala 2  |  🇬🇧 EN  | 2020   | 🛠️ Практическое руководство    | @:note(🔍 Подробнее) @:@   |
+| [**Pure functional HTTP APIs in Scala**](https://leanpub.com/pfhais)                                                 |  Scala 2  |  🇬🇧 EN  | 2022   | 🌐 Веб-разработка              | @:note(🔍 Подробнее) @:@   |
+| [**Scala & Design Patterns**](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf)                 |  Scala 2  |  🇬🇧 EN  | 2009   | 🏗️ Паттерны проектирования     | @:note(🔍 Подробнее) @:@   |
+| [**Scala with Cats**](https://www.scalawithcats.com/)                                                                |  Scala 2  |  🇬🇧 EN  | 2020   | 🐈 Cats                        | @:note(🔍 Подробнее) @:@   |
 
 ## 🎓 Курсы
 
@@ -41,12 +41,12 @@ nextPage = three_stars.html
 - В алфавитном порядке внутри категорий
 @:@
 
-| Название                                                                                                   | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий         |
-| ---------------------------------------------------------------------------------------------------------- | :-------: | :-----: | ------ | ---------------------- |
-| [**Big Data Analysis with Scala and Spark**](https://www.coursera.org/learn/scala-spark-big-data)          |  Scala 3  |  🇬🇧 EN  | 2021   | 🔥 Spark               |
-| [**Functional Programming in Scala Capstone**](https://www.coursera.org/learn/scala-capstone)              |  Scala 3  |  🇬🇧 EN  | 2021   | 🏆 Продвинутый уровень |
-| [**Scala - продвинутый уровень**](https://stepik.org/course/92864/promo)                                   |  Scala 2  |  🇷🇺 RU  | 2021   | 🚀 Продвинутый уровень |
-| [**Pure Functional HTTP APIs in Scala**](https://www.educative.io/courses/pure-functional-http-apis-scala) |  Scala 2  |  🇬🇧 EN  | 2022   | 🌐 Веб-разработка      |
+| Название                                                                                                   | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий         | 🔍 Подробнее               |
+| ---------------------------------------------------------------------------------------------------------- | :-------: | :-----: | ------ | ---------------------- |----------------------------|
+| [**Big Data Analysis with Scala and Spark**](https://www.coursera.org/learn/scala-spark-big-data)          |  Scala 3  |  🇬🇧 EN  | 2021   | 🔥 Spark               | @:note(🔍 Подробнее) @:@   |
+| [**Functional Programming in Scala Capstone**](https://www.coursera.org/learn/scala-capstone)              |  Scala 3  |  🇬🇧 EN  | 2021   | 🏆 Продвинутый уровень | @:note(🔍 Подробнее) @:@   |
+| [**Scala - продвинутый уровень**](https://stepik.org/course/92864/promo)                                   |  Scala 2  |  🇷🇺 RU  | 2021   | 🚀 Продвинутый уровень | @:note(🔍 Подробнее) @:@   |
+| [**Pure Functional HTTP APIs in Scala**](https://www.educative.io/courses/pure-functional-http-apis-scala) |  Scala 2  |  🇬🇧 EN  | 2022   | 🌐 Веб-разработка      | @:note(🔍 Подробнее) @:@   |
 
 ## 🏋️ Упражнения
 
@@ -60,14 +60,14 @@ nextPage = three_stars.html
 - В алфавитном порядке внутри категорий
 @:@
 
-| Название                                                                                                         | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий                    |
-|------------------------------------------------------------------------------------------------------------------|:---------:| :-----: | ------ |-----------------------------------|
-| [**HackerEarth: Practice Problems**](https://www.hackerearth.com/practice)                                       |  Scala 3  |  🇬🇧 EN  | -      | 🏗️ Основы программирования       |
-| [**20 Intermediate Scala Exercises**](https://blog.tmorris.net/posts/20-intermediate-scala-exercises/index.html) |  Scala 2  |  🇬🇧 EN  | 2008   | 🧩 Упражнения среднего уровня     |
-| [**Learn Functional Programming**](https://github.com/dehun/learn-fp)                                            |  Scala 2  |  🇬🇧 EN  | 2017   | λ Функциональное программирование |
-| [**Scala puzzlers**](https://scalapuzzlers.com/index.html)                                                       |  Scala 2  |  🇬🇧 EN  | 2014   | 🧩 Головоломки                    |
-| [**Scalacaster**](https://github.com/vkostyukov/scalacaster/tree/master)                                         |  Scala 2  |  🇬🇧 EN  | 2018   | 🎯 Алгоритмы                      |
-| [**Scalgos**](https://github.com/pathikrit/scalgos/tree/master)                                                  |  Scala 2  |  🇬🇧 EN  | 2015   | 🎯 Алгоритмы                      |
+| Название                                                                                                         | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий                    | 🔍 Подробнее               |
+|------------------------------------------------------------------------------------------------------------------|:---------:| :-----: | ------ |-----------------------------------|----------------------------|
+| [**HackerEarth: Practice Problems**](https://www.hackerearth.com/practice)                                       |  Scala 3  |  🇬🇧 EN  | -      | 🏗️ Основы программирования       | @:note(🔍 Подробнее) @:@   |
+| [**20 Intermediate Scala Exercises**](https://blog.tmorris.net/posts/20-intermediate-scala-exercises/index.html) |  Scala 2  |  🇬🇧 EN  | 2008   | 🧩 Упражнения среднего уровня     | @:note(🔍 Подробнее) @:@   |
+| [**Learn Functional Programming**](https://github.com/dehun/learn-fp)                                            |  Scala 2  |  🇬🇧 EN  | 2017   | λ Функциональное программирование | @:note(🔍 Подробнее) @:@   |
+| [**Scala puzzlers**](https://scalapuzzlers.com/index.html)                                                       |  Scala 2  |  🇬🇧 EN  | 2014   | 🧩 Головоломки                    | @:note(🔍 Подробнее) @:@   |
+| [**Scalacaster**](https://github.com/vkostyukov/scalacaster/tree/master)                                         |  Scala 2  |  🇬🇧 EN  | 2018   | 🎯 Алгоритмы                      | @:note(🔍 Подробнее) @:@   |
+| [**Scalgos**](https://github.com/pathikrit/scalgos/tree/master)                                                  |  Scala 2  |  🇬🇧 EN  | 2015   | 🎯 Алгоритмы                      | @:note(🔍 Подробнее) @:@   |
 
 ## 📝 Статьи
 

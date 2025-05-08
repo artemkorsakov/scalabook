@@ -1,6 +1,6 @@
 name: Проверка сборки проекта
 on:
-pull_request:
+ pull_request:
  push:
 jobs:
   build-test:

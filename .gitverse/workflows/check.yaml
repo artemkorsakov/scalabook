@@ -1,0 +1,20 @@
+name: Проверка сборки проекта
+on:
+pull_request:
+ push:
+jobs:
+  build-test:
+    name: Full check
+    runs-on: ubuntu-cloud-runner
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 11
+      - name: Setup sbt launcher
+        uses: sbt/setup-sbt@v1
+      - name: Build and Test
+        run: sbt +test

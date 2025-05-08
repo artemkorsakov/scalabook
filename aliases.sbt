@@ -9,5 +9,5 @@ addCommandAlias(
 )
 addCommandAlias(
   "fullCheck",
-  "com; fmtcheck; test; undeclaredCompileDependencies; unusedCompileDependencies"
+  "clean; com; test; fmtcheck; undeclaredCompileDependencies; unusedCompileDependencies"
 )

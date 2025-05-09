@@ -23,3 +23,6 @@ jobs:
 
       - name: Build and Test
         run: sbt fullCheck
+
+      - name: Site generation
+        run: sbt site

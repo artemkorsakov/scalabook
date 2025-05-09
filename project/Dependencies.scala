@@ -54,6 +54,10 @@ object Dependencies {
     val scalacheck      = "org.scalaz" %% "scalaz-scalacheck-binding" % version
   }
 
+  object sttp {
+    val core = "com.softwaremill.sttp.client4" %% "core" % "4.0.0-RC1"
+  }
+
   object typelevel {
     private val catsVersion       = "2.13.0"
     private val catsEffectVersion = "3.7-4972921"
@@ -126,6 +130,7 @@ object Dependencies {
       laika.core,
       laika.io,
       laika.preview,
+      sttp.core,
       typelevel.catsCore,
       typelevel.catsEffect,
       typelevel.catsEffectKernel

@@ -283,6 +283,6 @@ stateDiagram
 **Ссылки:**
 
 - [The Art of Computer Programming - Donald E. Knuth][TAOCP]
-- [Марков А.А., Нагорный Н.М. - Теория алгорифмов](https://www.rfbr.ru/rffi/ru/books/o_67122)
+- [Марков А.А., Нагорный Н.М. - Теория алгорифмов](https://www.ozon.ru/product/teoriya-algorifmov-markov-andrey-andreevich-nagornyy-nikolay-makarovich-1799472833)
 
 [TAOCP]: https://www-cs-faculty.stanford.edu/~knuth/taocp.html

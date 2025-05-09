@@ -55,7 +55,8 @@ object Dependencies {
   }
 
   object sttp {
-    val core = "com.softwaremill.sttp.client4" %% "core" % "4.0.0-RC1"
+    val client = "com.softwaremill.sttp.client4" %% "core" % "4.0.0-RC1"
+    val model = "com.softwaremill.sttp.model" %% "core" % "1.7.11"
   }
 
   object typelevel {
@@ -130,7 +131,8 @@ object Dependencies {
       laika.core,
       laika.io,
       laika.preview,
-      sttp.core,
+      sttp.client,
+      sttp.model,
       typelevel.catsCore,
       typelevel.catsEffect,
       typelevel.catsEffectKernel

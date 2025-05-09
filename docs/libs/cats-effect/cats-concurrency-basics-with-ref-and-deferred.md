@@ -236,7 +236,7 @@ abstract class Deferred[F[_], A]:
 
 Хороший пример использования `Deferred` — это когда одна часть вашего приложения должна ждать другую. 
 Пример ниже взят из отличного выступления Fabio Labella на Scala Italy 2019 — 
-[Composable Concurrency with Ref + Deferred](https://vimeo.com/366191463), доступного на Vimeo.
+[Composable Concurrency with Ref + Deferred](https://www.youtube.com/watch?v=-dLp3u6y2DQ).
 
 ```dotty
 def consumer(done: Deferred[IO, Unit]) =

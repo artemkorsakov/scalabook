@@ -552,7 +552,6 @@ Person.refine("Andrew", 150, "id")
     - [Refined типы в Scala - hakain](https://habr.com/ru/articles/574080/)
     - [Refinement types in practice - Peter Mortier](https://kwark.github.io/refined-in-practice-bescala/#1)
     - [Refining your data from configuration to database - Pere Villega](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)
-    - [Safe, Expressive Code with Refinement Types - Gordon Rennie](https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/)
     - [Tests - can we have too many? - Jack Low][tests]
     - [Type safety with Iron - Michał Pawlik](https://blog.michal.pawlik.dev/posts/scala/iron/)
     - [Type safety with refined - Michał Pawlik](https://blog.michalp.net/posts/scala/refined/)

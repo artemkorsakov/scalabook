@@ -255,6 +255,6 @@ import spire.math.Real.apply
 
 **Ссылки:**
 
-- [Spire home page](https://typelevel.org/spire)
+- [Spire home page](https://typelevel.org/spire/)
 - [Spire User's Guide](https://typelevel.org/spire/guide.html)
 - [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%BB%D0%B5_(%D0%B0%D0%BB%D0%B3%D0%B5%D0%B1%D1%80%D0%B0))

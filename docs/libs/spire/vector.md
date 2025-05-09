@@ -226,5 +226,5 @@ Vector(1.0, 5.0, 3.0).dot(Vector(1.0, 5.0, 3.0))
 
 **Ссылки:**
 
-- [Spire home page](https://typelevel.org/spire)
+- [Spire home page](https://typelevel.org/spire/)
 - [Learning Spire - Vector Spaces!](https://www.chrisstucchio.com/blog/2013/learning_spire_vector_space.html)

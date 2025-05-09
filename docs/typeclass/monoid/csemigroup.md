@@ -127,5 +127,5 @@ CSemigroup.combine(1, 2) == CSemigroup.combine(2, 1)
 
 **Ссылки:**
 
-- [Spire home page](https://typelevel.org/spire)
+- [Spire home page](https://typelevel.org/spire/)
 

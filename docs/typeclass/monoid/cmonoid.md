@@ -129,5 +129,5 @@ CMonoid.combine(100, CMonoid.empty[Int]) // 100
 
 **Ссылки:**
 
-- [Spire home page](https://typelevel.org/spire)
+- [Spire home page](https://typelevel.org/spire/)
 

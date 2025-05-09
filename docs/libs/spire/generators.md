@@ -88,5 +88,5 @@ object DistDemo:
 
 **Ссылки:**
 
-- [Spire home page](https://typelevel.org/spire)
+- [Spire home page](https://typelevel.org/spire/)
 - [Spire User's Guide](https://typelevel.org/spire/guide.html)

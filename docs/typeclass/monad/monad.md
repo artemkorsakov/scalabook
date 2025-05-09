@@ -412,7 +412,7 @@ List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 
 - [Monads are Elephants Part 4](https://james-iry.blogspot.com/2007/11/monads-are-elephants-part-4.html)
 - [ObserveFunctorMonad](https://blog.tmorris.net/posts/observefunctormonad/index.html)
 - [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics/#monads)
-- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#sec:monads)
+- [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#sec:monads)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monad.html)
 - [SKB – Scala Monad](https://leobenkel.com/2021/01/skb-scala-monad)
 - [Strong Type Systems](https://blog.tmorris.net/posts/strong-type-systems/index.html)

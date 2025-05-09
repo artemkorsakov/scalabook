@@ -189,4 +189,4 @@ classDiagram
 - [Scala with Cats][Scala with Cats]
 - [Semigroups and Monoids in Scala](https://www.youtube.com/watch?v=LmBTiFYa-V4&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 
-[Scala with Cats]: https://www.scalawithcats.com/dist/scala-with-cats.html#applications-of-monoids
+[Scala with Cats]: https://scalawithcats.com/dist/scala-with-cats.html#applications-of-monoids

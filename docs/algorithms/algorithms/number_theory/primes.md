@@ -1221,8 +1221,8 @@ isSquareFree(100) // false: 100 = 2^2 * 5^2
 **Ссылки:**
 
 - [Решето Эратосфена][sieve]
-- [Род Стивенс - Алгоритмы. Теория и практическое применение. Глава 2. Численные алгоритмы](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854)
-- [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://link.springer.com/book/10.1007/978-3-030-12561-5)
+- [Род Стивенс - Алгоритмы. Теория и практическое применение. Глава 2. Численные алгоритмы](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854/)
+- [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://idp.springer.com/authorize?response_type=cookie&client_id=springerlink&redirect_uri=https%3A%2F%2Flink.springer.com%2Fbook%2F10.1007%2F978-3-030-12561-5)
 - [Project Euler, Problem 7](https://projecteuler.net/problem=7)
 - [SICP: Абельсон Х., Сассман Д. - Структура и интерпретация компьютерных программ][sicp]
 - [Scalacaster](https://github.com/vkostyukov/scalacaster)

@@ -557,7 +557,7 @@ import Scalaz.*
 - [Herding Cats](http://eed3si9n.com/herding-cats/Applicative.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Applicative.html)
-- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#apply-and-applicative)
+- [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#apply-and-applicative)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Applicative.html)
 - [SKB – Scala Applicative](https://leobenkel.com/2021/01/skb-scala-applicative/)
 - [Tour of Scala](https://tourofscala.com/scala/applicative)

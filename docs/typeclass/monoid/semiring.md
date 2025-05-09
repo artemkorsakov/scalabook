@@ -260,6 +260,6 @@ Semiring.pow(Rational(1, 2), 3)
 **Ссылки:**
 
 - [A tale on Semirings](https://typelevel.org/blog/2018/11/02/semirings.html)
-- [Spire home page](https://typelevel.org/spire)
+- [Spire home page](https://typelevel.org/spire/)
 - [Spire User's Guide](https://typelevel.org/spire/guide.html)
 - [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%BB%D1%83%D0%BA%D0%BE%D0%BB%D1%8C%D1%86%D0%BE)

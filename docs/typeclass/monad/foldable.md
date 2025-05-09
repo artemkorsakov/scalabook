@@ -302,7 +302,7 @@ Foldable[List].fold(digits)                                // 45
 - [Herding Cats](http://eed3si9n.com/herding-cats/using-monoids-to-fold.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Foldable.html)
-- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#sec:foldable)
+- [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#sec:foldable)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Foldable.html)
 - [SKB – Scala Foldable](https://leobenkel.com/2021/01/skb-scala-foldable)
 - [Tour of Scala](https://tourofscala.com/scala/foldable)

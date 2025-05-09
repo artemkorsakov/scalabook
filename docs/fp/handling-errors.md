@@ -264,6 +264,6 @@ def catchNonFatal[A](a: => A): Either[Throwable, A] =
 - [Martians vs Monads: Null Considered Harmful](https://james-iry.blogspot.com/2007/08/martians-vs-monads-null-considered.html)
 - [Maybe in Java](https://blog.tmorris.net/posts/maybe-in-java/index.html)
 - [Null, NullPointerException and dealing with it](https://scalac.io/blog/null-pointer-exception-npe/)
-- [Null References: The Billion Dollar Mistake](https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare)
+- [Null References: The Billion Dollar Mistake](https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/)
 - [Scala Option - a Gentle Introduction](https://www.youtube.com/watch?v=xywCiwNwPEU&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 - [The Difference Between Null, Nothing, Nil, None and Unit in Scala - Rock the JVM](https://www.youtube.com/watch?v=0_-jRrdg9Dw&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)

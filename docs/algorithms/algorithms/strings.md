@@ -199,7 +199,7 @@ validateParenthesis("(1 + (2 * 3))") // true
 
 **Алгоритм:**
 
-[Наивный алгоритм поиска по шаблону](https://www.geeksforgeeks.org/naive-algorithm-for-pattern-searching).
+[Наивный алгоритм поиска по шаблону](https://www.geeksforgeeks.org/naive-algorithm-for-pattern-searching/).
 
 **Оценка:**
 

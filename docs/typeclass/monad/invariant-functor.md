@@ -203,5 +203,5 @@ classDiagram
 **Ссылки:**
 
 - [Cats](https://typelevel.org/cats/typeclasses/invariant.html)
-- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#sec:functors:invariant)
+- [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#sec:functors:invariant)
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/InvariantFunctor.html)

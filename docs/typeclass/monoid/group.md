@@ -174,6 +174,6 @@ import spire.syntax.group.*
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/group.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Grp.html)
-- [Spire home page](https://typelevel.org/spire)
+- [Spire home page](https://typelevel.org/spire/)
 - [The Group Typeclass](https://www.inner-product.com/posts/define-group)
 - [Wikipedia](https://ru.wikipedia.org/wiki/%D0%93%D1%80%D1%83%D0%BF%D0%BF%D0%B0_(%D0%BC%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B0))

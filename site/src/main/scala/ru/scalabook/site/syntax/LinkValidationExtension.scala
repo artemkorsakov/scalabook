@@ -27,14 +27,14 @@ object LinkValidationExtension extends ExtensionBundle:
             if url.startsWith("http") =>
           if isStatusCodeValid(url) then RewriteAction.Retain
           else RewriteAction.Replace(SpanSequence(Text(url)))
-        case spanLink @ SpanLink(ExternalTarget(url), _, _, _)
+        case _ @SpanLink(content, ExternalTarget(url), _, _)
             if url.startsWith("http") =>
           if isStatusCodeValid(url) then RewriteAction.Retain
-          else RewriteAction.Replace(SpanSequence(spanLink.content))
+          else RewriteAction.Replace(SpanSequence(content))
         case _ =>
-          println(s"Type of link is not recognized: ${link.getClass}")
           link.target match
             case ExternalTarget(url) if url.startsWith("http") =>
+              println(s"Type of link is not recognized: ${link.getClass}")
               if isStatusCodeValid(url) then RewriteAction.Retain
               else RewriteAction.Replace(SpanSequence(Text(url)))
             case _ => RewriteAction.Retain

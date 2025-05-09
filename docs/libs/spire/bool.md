@@ -75,5 +75,5 @@ nextPage = trig.html
 
 **Ссылки:**
 
-- [Spire home page](https://typelevel.org/spire)
+- [Spire home page](https://typelevel.org/spire/)
 - [Learning Spire - Boolean Algebras are pretty cool](https://www.chrisstucchio.com/blog/2013/learning_spire_boolean_algebra.html)

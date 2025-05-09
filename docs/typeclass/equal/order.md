@@ -186,4 +186,4 @@ Order.max(Rational(1, 2), Rational(1, 3))        // 1/2
 - [Herding Cats](http://eed3si9n.com/herding-cats/Order.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Order.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Order.html)
-- [Spire home page](https://typelevel.org/spire)
+- [Spire home page](https://typelevel.org/spire/)

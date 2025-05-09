@@ -359,4 +359,4 @@ val (state, result) = both.run(20).value
 - [Functional Programming in Scala, Second Edition, Chapter 6](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Herding Cats](http://eed3si9n.com/herding-cats/State.html)
 - [Memorisation with State using Scala](https://blog.tmorris.net/posts/memoisation-with-state-using-scala/index.html)
-- [Scala with Cats](https://www.scalawithcats.com/dist/scala-with-cats.html#the-state-monad)
+- [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#the-state-monad)

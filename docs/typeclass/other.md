@@ -21,5 +21,3 @@ nextPage = other/show.html
 ---
 
 **Ссылки:**
-
-- [Scalaz](https://scalaz.github.io/7/)

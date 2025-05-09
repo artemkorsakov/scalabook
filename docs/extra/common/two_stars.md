@@ -64,7 +64,7 @@ _(раздел пока пуст)_
 | [**In Defense of OOFP**](https://alexn.org/blog/2018/02/12/in-defense-oofp/)                                                                |  🇬🇧 EN  | 2018   | ⚖️ ФП vs ООП                      |
 | [**Infinity Category Theory**](https://www.scientificamerican.com/article/infinity-category-theory-offers-a-birds-eye-view-of-mathematics1) |  🇬🇧 EN  | 2021   | 🧮 Теория категорий               |
 | [**Strong Type Systems**](https://blog.tmorris.net/posts/strong-type-systems/index.html)                                                    |  🇬🇧 EN  | 2007   | 🔢 Системы типов                  |
-| [**What is Functional Programming?**](https://alexn.org/blog/2017/10/15/functional-programming)                                             |  🇬🇧 EN  | 2017   | λ Функциональное программирование |
+| [**What is Functional Programming?**](https://alexn.org/blog/2017/10/15/functional-programming/)                                            |  🇬🇧 EN  | 2017   | λ Функциональное программирование |
 
 ## 🎥 Видео
 

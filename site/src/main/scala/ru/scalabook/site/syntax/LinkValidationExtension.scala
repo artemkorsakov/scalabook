@@ -49,7 +49,9 @@ object LinkValidationExtension extends ExtensionBundle:
     else RewriteAction.Replace(span)
 
   private def isStatusCodeValid(url: String): Boolean =
-    Try(quickRequest.get(uri"$url").readTimeout(5.seconds).send()) match
+    Try {
+      quickRequest.head(uri"$url").response(ignore).readTimeout(5.seconds).send()
+    } match
       case Success(response) =>
         if response.code.isSuccess then true
         else

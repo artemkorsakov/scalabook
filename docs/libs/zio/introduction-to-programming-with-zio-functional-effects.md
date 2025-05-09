@@ -1055,7 +1055,7 @@ val run: IO[IOException, Unit] =
 
 - [Оригинал статьи - Introduction to Programming with ZIO Functional Effects by Jorge Vasquez][Article]
 
-[Article]: https://scalac.io/blog/introduction-to-programming-with-zio-functional-effects
+[Article]: https://scalac.io/blog/introduction-to-programming-with-zio-functional-effects/
 [Gitverse]: https://gitverse.ru/artemkorsakov/scalabook/content/master/examples/src/main/scala/ru/scalabook/libs/zio/hangman
 [Github]: https://github.com/jorge-vasquez-2301/zio-hangman
 [Wiki]: https://ru.wikipedia.org/wiki/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F_(%D0%BC%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B0)

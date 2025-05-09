@@ -158,5 +158,5 @@ classDiagram
 
 **Ссылки:**
 
-- [Life Is A Comonad](https://eli-jordan.github.io/2018/02/16/life-is-a-comonad)
+- [Life Is A Comonad](https://eli-jordan.github.io/2018/02/16/life-is-a-comonad/)
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Comonad.html)

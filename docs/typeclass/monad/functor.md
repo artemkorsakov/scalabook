@@ -326,7 +326,7 @@ listOpt.map(List(Some(1), None, Some(3)))(_ + 1)   // List(Some(2), None, Some(4
 - [Algebird](https://twitter.github.io/algebird/typeclasses/functor.html)
 - Category Theory for Programmers - Bartosz Milewski:
     - [Теория категорий для программистов](https://henrychern.wordpress.com/2022/09/15/%d1%82%d0%b5%d0%be%d1%80%d0%b8%d1%8f-%d0%ba%d0%b0%d1%82%d0%b5%d0%b3%d0%be%d1%80%d0%b8%d0%b9-%d0%b4%d0%bb%d1%8f-%d0%bf%d1%80%d0%be%d0%b3%d1%80%d0%b0%d0%bc%d0%bc%d0%b8%d1%81%d1%82%d0%be%d0%b2/)
-    - [Category Theory for Programmers, Functors](https://bartoszmilewski.com/2015/01/20/functors)
+    - [Category Theory for Programmers, Functors](https://bartoszmilewski.com/2015/01/20/functors/)
 - [Cats](https://typelevel.org/cats/typeclasses/functor.html)
 - [Functional Programming in Scala, Second Edition, Chapter 11](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Functor.html)

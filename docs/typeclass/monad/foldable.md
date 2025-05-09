@@ -304,5 +304,5 @@ Foldable[List].fold(digits)                                // 45
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Foldable.html)
 - [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#sec:foldable)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Foldable.html)
-- [SKB – Scala Foldable](https://leobenkel.com/2021/01/skb-scala-foldable)
+- [SKB – Scala Foldable](https://leobenkel.com/2021/01/skb-scala-foldable/)
 - [Tour of Scala](https://tourofscala.com/scala/foldable)

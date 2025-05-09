@@ -17,7 +17,7 @@ nextPage = cats-concurrency-basics-with-ref-and-deferred.html
 К нашему преимуществу, в Scala есть много замечательных инструментов, 
 помогающих "укротить" параллельное программирование, 
 таких как [Akka](https://akka.io), [ZIO](https://zio.dev), [Finagle](https://twitter.github.io/finagle/guide/index.html) 
-или [Cats Effect](https://typelevel.org/cats-effect) (далее CE). 
+или [Cats Effect](https://typelevel.org/cats-effect/) (далее CE). 
 В этой статье сосредоточимся на функциях, предлагаемых последней библиотекой.
 
 ## Что такое fiber?
@@ -338,4 +338,4 @@ IO(1).delayBy(1.second) <& IO(2).delayBy(2.seconds)
 
 - [Оригинал статьи - Concurrency with Cats Effect][Article]
 
-[Article]: https://softwaremill.com/concurrency-with-cats-effect
+[Article]: https://softwaremill.com/concurrency-with-cats-effect/

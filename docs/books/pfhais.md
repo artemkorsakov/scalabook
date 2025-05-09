@@ -125,7 +125,7 @@ final case class Product(id: ProductId, names: NonEmptySet[Translation])
 #### Тестирование
 
 Отдельно остановимся на тестировании. 
-В качестве тестового фреймворка можно выбрать любой фреймворк, я выбрал [MUnit](https://scalameta.org/munit).
+В качестве тестового фреймворка можно выбрать любой фреймворк, я выбрал [MUnit](https://scalameta.org/munit/).
 Кроме того, используем [интеграцию со ScalaCheck](https://scalameta.org/munit/docs/integrations/scalacheck.html)
 для покрытия большего количества вариантов.
 

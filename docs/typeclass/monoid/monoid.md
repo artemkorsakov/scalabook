@@ -369,7 +369,7 @@ Monoid.isEmpty(Monoid.empty[Int]) // true
 **Ссылки:**
 
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monoid.html)
-- [Category Theory for Programmers - Bartosz Milewski](https://bartoszmilewski.com/2014/12/05/categories-great-and-small)
+- [Category Theory for Programmers - Bartosz Milewski](https://bartoszmilewski.com/2014/12/05/categories-great-and-small/)
 - [Cats](https://typelevel.org/cats/typeclasses/monoid.html)
 - [Functional Programming in Scala, Second Edition, Chapter 10](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Monoid.html)

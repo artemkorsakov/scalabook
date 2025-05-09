@@ -283,4 +283,4 @@ trait Traverse[F[_]]:
 
 - [Build your vocabulary with Scala affixes][Affixes]
 
-[Affixes]: https://rossabaker.com/blog/scala-affixes
+[Affixes]: https://rossabaker.com/blog/scala-affixes/

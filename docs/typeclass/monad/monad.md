@@ -417,4 +417,4 @@ List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 
 - [SKB – Scala Monad](https://leobenkel.com/2021/01/skb-scala-monad)
 - [Strong Type Systems](https://blog.tmorris.net/posts/strong-type-systems/index.html)
 - [Tour of Scala](https://tourofscala.com/scala/monad)
-- [When you hear ‘Monad’, think ‘Chainable’](https://jamesward.com/2017/10/02/when-you-hear-monad-think-chainable)
+- [When you hear ‘Monad’, think ‘Chainable’](https://jamesward.com/2017/10/02/when-you-hear-monad-think-chainable/)

@@ -203,7 +203,7 @@ def selectionSort(ns: Array[Int]): Unit =
 
 ### Тесты
 
-Помимо модульных тестов, Spire поставляется с относительно детальным набором микротестов [JMH](https://openjdk.java.net/projects/code-tools/jmh). 
+Помимо модульных тестов, Spire поставляется с относительно детальным набором микротестов [JMH](https://openjdk.org/projects/code-tools/jmh). 
 Чтобы запустить тесты из SBT, перейдите к подпроекту `benchmark` и затем запустите `Jmh / run -l`, чтобы просмотреть список тестов:
 
 ```

@@ -114,7 +114,7 @@ val (log, result) = a.run
 - [Тройка полезных монад](https://habr.com/ru/articles/184722/)
 - Category Theory for Programmers - Bartosz Milewski:
     - [Теория категорий для программистов](https://henrychern.files.wordpress.com/2023/05/mil-ct3.pdf#page=134)
-    - [Category Theory for Programmers, Functoriality](https://bartoszmilewski.com/2015/02/03/functoriality)
+    - [Category Theory for Programmers, Functoriality](https://bartoszmilewski.com/2015/02/03/functoriality/)
     - [Category Theory for Programmers, Kleisli Categories](https://bartoszmilewski.com/2014/12/23/kleisli-categories)
 - [Cats](https://typelevel.org/cats/datatypes/writer.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Writer.html)

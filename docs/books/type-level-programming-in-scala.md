@@ -849,7 +849,7 @@ object Pali1 extends Pali0:
 иногда сталкиваемся с ограничениями компилятора или языка, а некоторые полезные операции требуют сложных типов.
 
 `HList`-ы ранее были продемонстрированы [в Scala](http://jnordenberg.blogspot.com/2008/08/hlist-in-scala.html) 
-(и даже [в Java](https://apocalisp.wordpress.com/2008/10/23/heterogeneous-lists-and-the-limits-of-the-java-type-system)). 
+(и даже [в Java](https://apocalisp.wordpress.com/2008/10/23/heterogeneous-lists-and-the-limits-of-the-java-type-system/)). 
 Реализация Scala использовала сочетание членов типа в иерархии `HList` и класса типов.
 
 Здесь мы реализуем четыре основные операции, которые позволяют нам реализовать другие операции вне иерархии `HList` 
@@ -1821,7 +1821,7 @@ val dropRight = x.reverse.asInstanceOf[R].t[Char].drop.reverse
 
 [Исходная статья][part 7]
 
-В исходной статье разбирается проблема определения [естественного преобразования](https://apocalisp.wordpress.com/2010/07/02/higher-rank-polymorphism-in-scala)?
+В исходной статье разбирается проблема определения [естественного преобразования](https://apocalisp.wordpress.com/2010/07/02/higher-rank-polymorphism-in-scala/)?
 
 В версии Scala, используемой в исходной статье, естественные преобразования вызывали проблемы.
 Например, мы нельзя было определить функцию, которая сопоставляет `Option[T]` с `List[T]` для каждого `T`. 
@@ -2233,7 +2233,7 @@ ZipWith.zipped(a :^: b :^: c :^: KNil) foreach { case n :: s :: b :: HNil =>
     - [Part 8a: KList motivation][part 8a]
     - [Part 8b: KList basics][part 8b]
     - [Part 8c: KList ZipWith][part 8c]
-- [Scala Reference - Match Types](http://dotty.epfl.ch/docs/reference/new-types/match-types.html#) 
+- [Scala Reference - Match Types](https://dotty.epfl.ch/docs/reference/new-types/match-types.html) 
 - [In Dotty try match types as a replacement for type projections](https://stackoverflow.com/questions/59101681/dotty-cannot-infer-result-type-of-generic-scala-function-taking-type-parameter-t) 
 - [Converting code using simple type projections to dotty](https://users.scala-lang.org/t/converting-code-using-simple-type-projections-to-dotty/6516)
 

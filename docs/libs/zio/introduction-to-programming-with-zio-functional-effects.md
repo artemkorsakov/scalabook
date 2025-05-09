@@ -1047,7 +1047,7 @@ val run: IO[IOException, Unit] =
 Наконец, если вы хотите узнать о ZIO больше, то можете ознакомиться со следующими ресурсами:
 
 - [Официальная документация ZIO][ZIO]
-- [Статьи о ZIO в блоге Scalac](https://scalac.io/zio)
+- [Статьи о ZIO в блоге Scalac](https://scalac.io/zio/)
 
 ---
 

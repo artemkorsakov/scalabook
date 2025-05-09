@@ -187,7 +187,7 @@ showString
 
 - Category Theory for Programmers - Bartosz Milewski:
     - [Теория категорий для программистов](https://henrychern.files.wordpress.com/2023/05/mil-ct3.pdf#page=137)
-    - [Category Theory for Programmers, Functoriality](https://bartoszmilewski.com/2015/02/03/functoriality)
+    - [Category Theory for Programmers, Functoriality](https://bartoszmilewski.com/2015/02/03/functoriality/)
 - [Cats](https://typelevel.org/cats/typeclasses/contravariant.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
 - [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#contravariant)

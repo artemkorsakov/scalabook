@@ -7,7 +7,7 @@ nextPage = spire.html
 
 # Уточняющие типы в Scala
 
-Статья вышла [в блоге компании "Криптонит" на хабре](https://habr.com/ru/company/kryptonite/blog/719488/).
+Статья вышла [в блоге компании "Криптонит" на хабре](https://habr.com/ru/companies/kryptonite/articles/719488/).
 
 Ни один программист не застрахован от ситуации, в которой его программа принимает на вход невалидные значения. 
 Будь то пользовательский ввод или сырой массив данных — неважно. 
@@ -549,7 +549,7 @@ Person.refine("Andrew", 150, "id")
     - [Refined types in Scala - Daniel Ciocîrlan](https://blog.rockthejvm.com/refined-types/)
     - [Refined types in Scala: the Good, the Bad and the Ugly - Manuel Rodríguez](https://medium.com/swlh/refined-types-the-good-the-bad-and-the-ugly-ee971e5d9137)
     - [Refined types, what are they good for? - Malcolm](https://beyondthelines.net/programming/refined-types/)
-    - [Refined типы в Scala - hakain](https://habr.com/ru/post/574080)
+    - [Refined типы в Scala - hakain](https://habr.com/ru/post/574080/)
     - [Refinement types in practice - Peter Mortier](https://kwark.github.io/refined-in-practice-bescala/#1)
     - [Refining your data from configuration to database - Pere Villega](https://underscore.io/blog/posts/2017/03/07/refined-data-config-database.html)
     - [Safe, Expressive Code with Refinement Types - Gordon Rennie](https://tech.ovoenergy.com/safe-expressive-code-with-refinement-types/)
@@ -564,6 +564,6 @@ Person.refine("Andrew", 150, "id")
 [refined lib]: https://github.com/fthomas/refined
 [refined cats]: https://index.scala-lang.org/fthomas/refined/artifacts/refined-cats?pre-releases=false
 [conversion]: refined/conversionInScala3
-[thetypesystem]: https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems
+[thetypesystem]: https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems/
 [tests]: https://github.com/wjlow/blog/blob/3c27de716b40660801e68561252883fd0428395e/Tests.md
-[parse, don’t validate]: https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate
+[parse, don’t validate]: https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/

@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = index.html
+prevPage = fp/composition.html
 showNext = true
 nextPage = handling-errors.html
 %}

@@ -34,3 +34,5 @@ metals.sbt
 ### Generated site
 /generated/
 .DS_Store
+
+test.sc

@@ -150,7 +150,7 @@ Add(Var("x"), Mul(Num(2), Num(3)))   => Add(Var("x"), Num(6))
 Mul(Var("y"), Sub(Var("x"), Num(1))) => Без изменений   
 ```
 
-@:note(🔎 Детальный разбор решения 🔍)
+@:note(🔍 Показать решение)
 
 ```dotty
 def oneStepReduction(expr: Expr): Expr =
@@ -205,7 +205,7 @@ Add(Num(2), Num(3))        => false  // Может быть редуцирова
 Add(Var("x"), Num(3))      => true   // Не может быть редуцировано дальше
 ```
 
-@:note(🔎 Детальный разбор решения 🔍)
+@:note(🔍 Показать решение)
 
 ```dotty
 // Если редукция не изменяет выражение - оно каноническое
@@ -241,7 +241,7 @@ Add(Num(2), Num(3))                           => Num(5)
 Sub(Mul(Add(Num(1), Num(1)), Num(3)), Num(2)) => Num(4)
 ```
 
-@:note(🔎 Детальный разбор решения 🔍)
+@:note(🔍 Показать решение)
 
 ```dotty
 def reduction(expr: Expr): Expr =
@@ -309,7 +309,7 @@ Mul(Sub(Num(1), Num(1)), Var("x")) => Mul(Num(0), Var("x"))
 Add(Var("x"), Var("y"))         => Add(Var("x"), Var("y"))
 ```
 
-@:note(🔎 Детальный разбор решения 🔍)
+@:note(🔍 Показать решение)
 
 ```dotty
 def oneStepReduction(expr: Expr): Expr =

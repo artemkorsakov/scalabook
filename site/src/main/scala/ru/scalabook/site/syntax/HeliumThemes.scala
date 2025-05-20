@@ -68,7 +68,10 @@ object HeliumThemes:
         navLinks = Seq(
           ButtonLink.internal(Root / "fp/index.md", "Функ. программирование"),
           ButtonLink.internal(Root / "algorithms/index.md", "Алгоритмы"),
-          ButtonLink.internal(Root / "data-structures/index.md", "Структуры данных"),
+          ButtonLink.internal(
+            Root / "data-structures/index.md",
+            "Структуры данных"
+          ),
           ButtonLink.internal(Root / "typeclass/index.md", "Типовые классы"),
           ButtonLink.internal(Root / "libs/index.md", "Библиотеки"),
           ButtonLink.internal(Root / "translations/index.md", "Переводы"),

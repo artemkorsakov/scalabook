@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = ../data-structures.html
+prevPage = index.html
 showNext = true
 nextPage = linear_list/lists.html
 %}

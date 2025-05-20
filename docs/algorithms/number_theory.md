@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = ../algorithms.html
+prevPage = index.html
 showNext = true
 nextPage = number_theory/numerical.html
 %}

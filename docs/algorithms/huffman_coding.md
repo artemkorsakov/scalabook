@@ -1,8 +1,6 @@
 {%
 showPrev = true
 prevPage = derivative.html
-showNext = true
-nextPage = ../data-structures.html
 %}
 
 # Деревья кодирования по Хаффману

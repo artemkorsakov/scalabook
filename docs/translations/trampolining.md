@@ -1,9 +1,11 @@
 {%
 showPrev = true
-prevPage = parallelism.html
+prevPage = index.html
+showNext = true
+nextPage = affixes.html
 %}
 
-# Stackless Scala
+# Как избежать переполнения стека в Scala с помощью free-монад
 
 Перевод статьи Runar Oli Bjarnason ["Stackless Scala With Free Monads"][Trampolines] с небольшими отступлениями.
 

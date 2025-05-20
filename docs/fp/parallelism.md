@@ -1,8 +1,6 @@
 {%
 showPrev = true
 prevPage = writer.html
-showNext = true
-nextPage = trampolining.html
 %}
 
 # Параллелизм

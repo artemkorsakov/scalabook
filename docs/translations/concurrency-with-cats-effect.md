@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = producer-consumer-problem.html
+prevPage = affixes.html
 showNext = true
 nextPage = cats-concurrency-basics-with-ref-and-deferred.html
 %}

@@ -1,8 +1,6 @@
 {%
 showPrev = true
 prevPage = sorting.html
-showNext = true
-nextPage = ../cats-effect.html
 %}
 
 # Генераторы псевдослучайных чисел

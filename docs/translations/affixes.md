@@ -1,6 +1,8 @@
 {%
 showPrev = true
-prevPage = other/io.html
+prevPage = trampolining.html
+showNext = true
+nextPage = concurrency-with-cats-effect.html
 %}
 
 # Значение аффиксов Scala
@@ -17,7 +19,7 @@ prevPage = other/io.html
 Обычно префикс означает обобщение одного параметра типа до двух. 
 Это полезно, когда есть канал ошибок, например `Either`.
 
-[Functor](monad/functor.md) против [Bifunctor](bifunctor/bifunctor.md):
+[Functor](../typeclass/monad/functor.md) против [Bifunctor](../typeclass/bifunctor/bifunctor.md):
 
 ```dotty
 trait Functor[F[_]]:
@@ -27,7 +29,7 @@ trait Bifunctor[F[_, _]]:
   def bimap[A, B, C, D](fab: F[A, B])(f: A => C, g: B => D): F[C, D]
 ```
 
-[Traverse](monad/traverse.md) против [Bitraverse](bifunctor/bitraverse.md).
+[Traverse](../typeclass/monad/traverse.md) против [Bitraverse](../typeclass/bifunctor/bitraverse.md).
 
 ```dotty
 trait Traverse[F[_]]:
@@ -37,7 +39,7 @@ trait Bitraverse[F[_, _]]:
   def bitraverse[G[_]: Applicative, A, B, C, D](  fab: F[A, B])(f: A => G[C], g: B => G[D]): G[F[C, D]]
 ```
 
-Как ни странно, [Bimonad](monad/bimonad.md) не вводит второй параметр, 
+Как ни странно, [Bimonad](../typeclass/monad/bimonad.md) не вводит второй параметр, 
 а скорее объединяет категорию и ее двойственность.
 
 ```dotty
@@ -49,7 +51,7 @@ trait Bimonad[F[_]] extends Monad[F], Comonad[F]
 **co**-представляет собой [категориальную двойственность](index.md). 
 Наивный способ думать об этом — «переворачивать стрелки».
 
-`FlatMap` (другое имя - [Bind](monad/bind.md)) и `CoflatMap` (другое имя - [Co-Bind](monad/co-bind.md)). 
+`FlatMap` (другое имя - [Bind](../typeclass/monad/bind.md)) и `CoflatMap` (другое имя - [Co-Bind](../typeclass/monad/co-bind.md)). 
 
 ```dotty
 trait FlatMap[F[_]]:
@@ -75,7 +77,7 @@ final case class Cokleisli[F[_], A, B](run: F[A] => B)
 
 ### contra-
 
-[Functor](monad/functor.md) и [Contra-Functor](monad/contravariant-functor.md):
+[Functor](../typeclass/monad/functor.md) и [Contra-Functor](../typeclass/monad/contravariant-functor.md):
 
 ```dotty
 trait Functor[F[_]]:
@@ -88,7 +90,7 @@ trait Contravariant[F[_]]:
 ### di- 
 
 Принимая во внимание, что `bimap` отображает обе стороны, `dimap` противопоставляет одну сторону и отображает другую. 
-Функции с одним аргументом — это простой пример [Arrow](arrow/arrow.md) и [Profunctor](arrow/profunctor.md).
+Функции с одним аргументом — это простой пример [Arrow](../typeclass/arrow/arrow.md) и [Profunctor](../typeclass/arrow/profunctor.md).
 
 ```dotty
 trait Arrow[F[_, _]]:
@@ -157,7 +159,7 @@ case class OptionT[F[_], A](value: F[Option[A]]):
 
 ### -A
 
-`-A` для операций [Applicative](monad/applicative.md).
+`-A` для операций [Applicative](../typeclass/monad/applicative.md).
 
 ```dotty
 trait Applicative[F[_]]:
@@ -168,7 +170,7 @@ trait Applicative[F[_]]:
 
 ### -F
 
-`-F` для операций [Functor-а](monad/functor.md).
+`-F` для операций [Functor-а](../typeclass/monad/functor.md).
 
 ```dotty
 trait Functor[F[_]]:
@@ -207,7 +209,7 @@ object Stream:
 
 `-K` предназначен для "высшего рода" и, как правило, не зависит от того, "что внутри коробки".
 
-[MonoidK](https://typelevel.org/cats/typeclasses/monoidk.html) и [Monoid](monoid/monoid.md):
+[MonoidK](https://typelevel.org/cats/typeclasses/monoidk.html) и [Monoid](../typeclass/monoid/monoid.md):
 
 ```dotty
 trait Monoid[A]:

@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = index.html
 showNext = true
-nextPage = spire.html
+nextPage = cats-effect.html
 %}
 
 # Уточняющие типы в Scala

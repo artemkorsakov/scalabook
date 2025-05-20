@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = refined.html
+prevPage = cats-effect/producer-consumer-problem.html
 showNext = true
 nextPage = spire/user_guide.html
 %}

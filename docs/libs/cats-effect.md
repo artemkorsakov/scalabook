@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = spire/generators.html
+prevPage = refined.html
 showNext = true
 nextPage = cats-effect/copy-files.html
 %}

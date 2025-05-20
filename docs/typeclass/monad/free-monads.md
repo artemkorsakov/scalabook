@@ -100,5 +100,5 @@ given freeMonad[F[_]]: Monad[[X] =>> Free[F, X]] with
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Free+Monad.html)
 - [Monadic IO: Laziness Makes You Free](https://noelwelsh.com/posts/monadic-io-laziness-makes-you-free/)
-- [Stackless Scala](../../fp/trampolining.md)
+- [Stackless Scala](../../translations/trampolining.md)
 - [Why free monads matter](https://www.haskellforall.com/2012/06/you-could-have-invented-free-monads.html)

@@ -1,8 +1,6 @@
 {%
 showPrev = true
 prevPage = read.html
-showNext = true
-nextPage = ../affixes.html
 %}
 
 # IO

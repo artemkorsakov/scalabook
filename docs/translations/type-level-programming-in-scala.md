@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = project_euler/project_euler_81_100.html
+prevPage = introduction-to-programming-with-zio-functional-effects.html
 showNext = true
 nextPage = puzzlers.html
 %}

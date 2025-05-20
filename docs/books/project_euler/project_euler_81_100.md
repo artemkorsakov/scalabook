@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = project_euler_61_80.html
 showNext = true
-nextPage = ../type-level-programming-in-scala.html
+nextPage = ../pfhais.html
 %}
 
 # Задачи №81-№100

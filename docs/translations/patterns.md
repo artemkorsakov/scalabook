@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = mil-dfp.html
+prevPage = puzzlers.html
 %}
 
 # Паттерны проектирования

@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = type-level-programming-in-scala.html
 showNext = true
-nextPage = pfhais.html
+nextPage = patterns.html
 %}
 
 # Головоломки на Scala

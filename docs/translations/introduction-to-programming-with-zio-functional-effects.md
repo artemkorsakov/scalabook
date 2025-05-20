@@ -1,6 +1,8 @@
 {%
 showPrev = true
 prevPage = cats-concurrency-basics-with-ref-and-deferred.html
+showNext = true
+nextPage = type-level-programming-in-scala.html
 %}
 
 # Введение в программирование с функциональными ZIO эффектами

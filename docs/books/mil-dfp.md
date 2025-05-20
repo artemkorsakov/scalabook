@@ -1,8 +1,6 @@
 {%
 showPrev = true
 prevPage = sicp/chapter2.html
-showNext = true
-nextPage = patterns.html
 %}
 
 # Дао функционального программирования

@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = puzzlers.html
+prevPage = project_euler/project_euler_81_100.html
 showNext = true
 nextPage = sicp.html
 %}

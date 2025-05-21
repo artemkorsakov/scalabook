@@ -162,7 +162,7 @@ val solution: String => String = ???
 
 **Примеры работы**:
 
-```scala
+```dotty
 solution("5")    // "15"
 solution("-3")   // "7"
 solution("")     // "10"
@@ -202,7 +202,7 @@ val solution2: String => String = ???
 
 **Примеры работы**:
 
-```scala
+```dotty
 solution2("16.0")  // "Результат: 4,00"
 solution2("-4.0")  // "Результат: 0,00"
 solution2("abc")   // "Результат: 0,00"

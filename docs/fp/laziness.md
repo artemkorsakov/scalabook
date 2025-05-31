@@ -113,6 +113,8 @@ val y = maybeTwiceCached(true, { println("hi"); 1 + 41 })
 
 ### Упражнение 4.1.1: Ленивый if-else
 
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
 Реализуйте функцию `lazyIf`, которая принимает условие и два ленивых блока, 
 но вычисляет только один из них в зависимости от условия.
 
@@ -512,4 +514,7 @@ val fibsViaUnfold: LazyList[Int] =
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Functional Programming in Scala, Second Edition, Chapter 5](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
+
+[sample]: https://gitverse.ru/artemkorsakov_scalabook/functional_programming_sample

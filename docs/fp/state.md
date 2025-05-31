@@ -354,9 +354,12 @@ val (state, result) = both.run(20).value
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Тройка полезных монад](https://habr.com/ru/articles/184722/)
 - [Cats](https://typelevel.org/cats/datatypes/state.html)
 - [Functional Programming in Scala, Second Edition, Chapter 6](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Herding Cats](http://eed3si9n.com/herding-cats/State.html)
 - [Memorisation with State using Scala](https://blog.tmorris.net/posts/memoisation-with-state-using-scala/index.html)
 - [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#the-state-monad)
+
+[sample]: https://gitverse.ru/artemkorsakov_scalabook/functional_programming_sample

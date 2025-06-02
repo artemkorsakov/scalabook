@@ -6,8 +6,7 @@
 
 .tooltip-text {
   visibility: hidden;
-  background: #2A8D9C;  /* secondary цвет из палитры Laika */
-  color: #ebf6f7;       /* primaryLight для текста */
+  background: #DCDCDC;
   padding: 12px;
   border-radius: 4px;
 
@@ -39,5 +38,5 @@
   left: 15px;
   border-width: 8px;
   border-style: solid;
-  border-color: #2A8D9C transparent transparent transparent;
+  border-color: #DCDCDC transparent transparent transparent;
 }

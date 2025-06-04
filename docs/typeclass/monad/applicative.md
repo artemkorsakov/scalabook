@@ -549,6 +549,7 @@ import Scalaz.*
 
 **Ссылки:**
 
+- [Классические абстракции используемые в ФП](https://habr.com/ru/articles/896660/)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/applicative.html)
 - [Applicative Programming with Effects](https://www.staff.city.ac.uk/~ross/papers/Applicative.html)
 - [Cats](https://typelevel.org/cats/typeclasses/applicative.html)

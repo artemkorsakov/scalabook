@@ -296,6 +296,7 @@ Foldable[List].fold(digits)                                // 45
 
 **Ссылки:**
 
+- [Классические абстракции используемые в ФП](https://habr.com/ru/articles/896660/)
 - [Cats](https://typelevel.org/cats/typeclasses/foldable.html)
 - [Folds for Imperative Programmers](https://blog.tmorris.net/posts/folds-for-imperative-programmers/index.html)
 - [Functional Programming in Scala, Second Edition, Chapter 10](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)

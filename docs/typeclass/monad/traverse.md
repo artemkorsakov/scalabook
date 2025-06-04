@@ -273,6 +273,7 @@ List(1.some, 2.some).sequence                           // Some(List(1, 2))
 
 **Ссылки:**
 
+- [Классические абстракции используемые в ФП](https://habr.com/ru/articles/896660/)
 - [Cats](https://typelevel.org/cats/typeclasses/traverse.html)
 - [Functional Programming in Scala, Second Edition](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Traverse.html)

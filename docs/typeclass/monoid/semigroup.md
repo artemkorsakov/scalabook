@@ -201,6 +201,7 @@ Semigroup.combineN(3, 5)          // 15
 
 **Ссылки:**
 
+- [Классические абстракции используемые в ФП](https://habr.com/ru/articles/896660/)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/semigroup.html)
 - [Cats](https://typelevel.org/cats/typeclasses/semigroup.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Semigroup.html)

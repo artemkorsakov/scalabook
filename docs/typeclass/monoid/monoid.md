@@ -368,6 +368,7 @@ Monoid.isEmpty(Monoid.empty[Int]) // true
 
 **Ссылки:**
 
+- [Классические абстракции используемые в ФП](https://habr.com/ru/articles/896660/)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/monoid.html)
 - [Category Theory for Programmers - Bartosz Milewski](https://bartoszmilewski.com/2014/12/05/categories-great-and-small/)
 - [Cats](https://typelevel.org/cats/typeclasses/monoid.html)

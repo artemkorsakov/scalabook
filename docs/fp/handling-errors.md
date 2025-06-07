@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = data-structures.html
 showNext = true
-nextPage = laziness.html
+nextPage = for-comprehension.html
 %}
 
 # Обработка ошибок

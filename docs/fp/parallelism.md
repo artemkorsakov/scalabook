@@ -1,6 +1,8 @@
 {%
 showPrev = true
 prevPage = writer.html
+showNext = true
+nextPage = external-effects.html
 %}
 
 # Параллелизм

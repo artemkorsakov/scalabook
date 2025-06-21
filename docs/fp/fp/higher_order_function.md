@@ -235,6 +235,7 @@ List(1, 2, 3).filter(x => x % 2 == 1) // List(1, 3)
 - [Харрисон - Введение в функциональное программирование](https://funprog-ru.github.io/)
 - [Functional Programming by Alexander Alvin](https://alvinalexander.com/photos/functional-programming-simplied-free-pdf-preview/)
 - [Functional Programming in Scala, Second Edition, Chapter 1-2 by Michael Pilquist, Rúnar Bjarnason, and Paul Chiusano](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
+- [Higher-Order Functions in Scala - Baeldung](https://www.baeldung.com/scala/higher-order-functions)
 - [Introduction to Functional Programming - Bird, Wadler](https://archive.org/details/introductiontofu0000bird/mode/2up)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fp-what-is-fp.html)
 

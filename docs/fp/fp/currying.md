@@ -213,7 +213,7 @@ def pipeline(validate: Validator)(transform: Transformer)(save: Saver): Data => 
 val dataPipeline = pipeline(jsonValidator)(jsonToModel)(dbSaver)
 ```
 
-## Упражнение 1.5.1: Практика каррирования и частичного применения
+## Упражнение 1.6.1: Практика каррирования и частичного применения
 
 > [Репозиторий с упражнениями и инструкцией по выполнению][sample]
 

@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = pure_function.html
 showNext = true
-nextPage = higher_order_function.html
+nextPage = tail_recursion.html
 %}
 
 # Редукция
@@ -230,7 +230,7 @@ def reduction(expr: Expr): Expr = ???
 
 **Требования:**
 
-1. Функция должна использовать хвостовую рекурсию для эффективности
+1. Функция должна использовать рекурсию для эффективности
 2. Должна корректно обрабатывать все варианты выражений
 3. Должна завершаться, когда достигнута каноническая форма
 
@@ -245,7 +245,6 @@ Sub(Mul(Add(Num(1), Num(1)), Num(3)), Num(2)) => Num(4)
 
 ```dotty
 def reduction(expr: Expr): Expr =
-  @annotation.tailrec
   def loop(current: Expr): Expr =
     if isCanonical(current) then current
     else loop(oneStepReduction(current))
@@ -253,7 +252,7 @@ def reduction(expr: Expr): Expr =
   loop(expr)
 ```
 
-Функция использует вспомогательную хвостоворекурсивную функцию `loop` для эффективного выполнения многократных редукций.
+Функция использует вспомогательную рекурсивную функцию `loop` для эффективного выполнения многократных редукций.
 Проверка на каноничность выполняется на каждом шаге для определения момента завершения.
 
 @:@

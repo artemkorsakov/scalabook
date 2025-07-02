@@ -36,3 +36,5 @@ metals.sbt
 .DS_Store
 
 test.sc
+
+/.scannerwork/

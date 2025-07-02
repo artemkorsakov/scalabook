@@ -1,6 +1,5 @@
 package ru.scalabook.site.syntax
 
-import laika.ast.*
 import laika.ast.Path.*
 import laika.helium.Helium
 import laika.helium.config.*

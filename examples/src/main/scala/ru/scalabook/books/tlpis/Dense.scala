@@ -1,7 +1,5 @@
 package ru.scalabook.books.tlpis
 
-import ru.scalabook.books.tlpis.Bool.*
-
 sealed trait Dense:
   type digit <: Digit
   type tail <: Dense

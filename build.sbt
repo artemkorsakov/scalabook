@@ -29,6 +29,7 @@ lazy val root = (project in file("."))
 lazy val examples = (project in file("examples"))
   .settings(name := "scalabook-examples")
   .settings(
+    coverageEnabled := true,
     libraryDependencies ++= exampleLibs,
     libraryDependencies ++= exampleTestLibs,
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
@@ -39,11 +40,13 @@ lazy val bench = (project in file("bench"))
   .settings(name := "scalabook-bench")
   .dependsOn(examples)
   .settings(
+    coverageEnabled := true,
     libraryDependencies ++= benchLibs
   )
 
 lazy val site = project
   .in(file("site"))
   .settings(
+    coverageEnabled := true,
     libraryDependencies ++= siteLibs
   )

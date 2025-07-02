@@ -1,7 +1,6 @@
 package ru.scalabook.typeclass.monoid
 
 import ru.scalabook.typeclass.monoid.MonoidLaws.*
-import ru.scalabook.typeclass.monoid.MonoidSuite.{expect, test}
 import weaver.*
 import weaver.scalacheck.*
 

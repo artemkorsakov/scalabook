@@ -1,6 +1,5 @@
 package ru.scalabook.algorithms.numbers
 
-import ru.scalabook.algorithms.fundamental.Numerical
 import ru.scalabook.algorithms.fundamental.Numerical.*
 import spire.math.SafeLong
 

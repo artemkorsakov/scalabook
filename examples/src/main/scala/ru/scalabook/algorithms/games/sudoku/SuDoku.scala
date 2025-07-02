@@ -4,8 +4,6 @@ import cats.Show
 import cats.syntax.show.*
 import ru.scalabook.algorithms.games.sudoku.SuDoku.*
 
-import scala.collection.immutable
-
 final case class SuDoku(cells: Map[SuDokuIndex, SuDokuCell]):
   def getCell(row: SuDokuRow, column: SuDokuColumn): Option[SuDokuCell] =
     getCell(SuDokuIndex(row, column))

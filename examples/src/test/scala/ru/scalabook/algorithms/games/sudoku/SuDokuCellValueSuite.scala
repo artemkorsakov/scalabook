@@ -5,7 +5,7 @@ import weaver.SimpleIOSuite
 object SuDokuCellValueSuite extends SimpleIOSuite:
   pureTest("SuDokuCellValue should have correct integer values"):
     expect.all(
-      SuDokuCellValue.fromOrdinal(1 - 1) == SuDokuCellValue.One,
+      SuDokuCellValue.fromOrdinal(0) == SuDokuCellValue.One,
       SuDokuCellValue.fromOrdinal(2 - 1) == SuDokuCellValue.Two,
       SuDokuCellValue.fromOrdinal(3 - 1) == SuDokuCellValue.Three,
       SuDokuCellValue.fromOrdinal(4 - 1) == SuDokuCellValue.Four,

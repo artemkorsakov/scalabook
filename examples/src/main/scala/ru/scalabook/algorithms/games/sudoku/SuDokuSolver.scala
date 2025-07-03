@@ -2,7 +2,6 @@ package ru.scalabook.algorithms.games.sudoku
 
 import ru.scalabook.algorithms.games.sudoku.SuDokuComplexInner.*
 import ru.scalabook.algorithms.games.sudoku.SuDokuInner.*
-import ru.scalabook.fp.state.State
 
 import scala.annotation.tailrec
 import scala.util.Try

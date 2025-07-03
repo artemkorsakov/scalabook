@@ -1,7 +1,6 @@
 package ru.scalabook.algorithms.games.sudoku
 
 import cats.Show
-import ru.scalabook.fp.state.State
 
 final case class SuDokuCell(possibleValues: Set[SuDokuCellValue]):
   lazy val maybeValue: Option[SuDokuCellValue] =

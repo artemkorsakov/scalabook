@@ -95,7 +95,6 @@ object Dependencies {
       http4s.dsl,
       http4s.server,
       iron.iron,
-      iron.cats,
       scalaz.core,
       typelevel.algebra,
       typelevel.catsCore,
@@ -110,6 +109,7 @@ object Dependencies {
 
   val exampleTestLibs: Seq[ModuleID] =
     Seq(
+      iron.cats,
       iron.scalacheck,
       scalaz.scalacheck,
       typelevel.catsEffectKernel,

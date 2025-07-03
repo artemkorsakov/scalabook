@@ -6,7 +6,6 @@ import ru.scalabook.algorithms.games.sudoku.SuDokuSolver.{
   SuDokuOutput,
   SuDokuState
 }
-import ru.scalabook.fp.state.State
 
 object SuDokuInner:
   enum SuDokuInnerOperation:

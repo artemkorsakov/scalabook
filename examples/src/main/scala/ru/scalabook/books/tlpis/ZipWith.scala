@@ -34,7 +34,7 @@ object ZipWith:
   def collect[HL <: HList, T](kl: KList[LazyList, HL])(
       f: HL => Option[T]
   ): LazyList[T] =
-    zipped(kl).collect { case hl if f(hl).isDefined => f(hl).get }
+    zipped(kl).map(f).collect { case Some(t) => t }
 
   def flatMap[HL <: HList, T](kl: KList[LazyList, HL])(
       f: HL => LazyList[T]

@@ -3,8 +3,7 @@ package ru.scalabook.algorithms.games.poker
 import ru.scalabook.algorithms.games.poker.PokerCard.*
 
 final class PokerHand(hand: String):
-  private val split: Array[String] = hand.split(" ")
-  require(split.length == 5)
+  private val split: Array[String]  = hand.split(" ")
   private val cards: Seq[PokerCard] = split.flatMap(string2PokerCard).toSeq
   private val sortedRanks: Seq[PokerRank] =
     cards

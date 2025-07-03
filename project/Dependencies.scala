@@ -81,19 +81,8 @@ object Dependencies {
     val scalacheck      = "com.disneystreaming" %% "weaver-scalacheck" % version
   }
 
-  object zio {
-    private val version = "2.1.17"
-    val core        = "dev.zio" %% "zio"             % version
-    val stacktracer = "dev.zio" %% "zio-stacktracer" % version
-  }
-
   val exampleLibs: Seq[ModuleID] =
     Seq(
-      fs2.core,
-      http4s.blaze,
-      http4s.core,
-      http4s.dsl,
-      http4s.server,
       iron.iron,
       scalaz.core,
       typelevel.algebra,
@@ -102,9 +91,7 @@ object Dependencies {
       typelevel.catsEffectKernel,
       typelevel.catsEffectStd,
       typelevel.catsKernel,
-      typelevel.spire,
-      zio.core,
-      zio.stacktracer
+      typelevel.spire
     )
 
   val exampleTestLibs: Seq[ModuleID] =

@@ -637,22 +637,25 @@ Pull.fromList(List(1, 2, 3)).mapAccumulate(0)((sum, x) => (sum + x, sum + x)).to
 
 ## Упражнения
 
-### Упражнение 11.1.1: ???
+### Упражнение 11.1.1: Реализация fromListViaUnfold и fromLazyListViaUnfold
 
 > [Репозиторий с упражнениями и инструкцией по выполнению][sample]
 
 **Задача:**
 
-Реализуйте `fromListViaUnfold` и `fromLazyListViaUnfold` как методы на `Pull` сопутствующем объекте, используя `unfold`:
+Реализуйте `fromListViaUnfold` и `fromLazyListViaUnfold` как методы сопутствующего объекта `Pull`, используя `unfold`:
 
 ```dotty
-def fromListViaUnfold[O](os: List[O]): Pull[O, Unit]
-def fromLazyListViaUnfold[O](os: LazyList[O]): Pull[O, Unit]
+def fromListViaUnfold[O](os: List[O]): Pull[O, Unit] = ???
+def fromLazyListViaUnfold[O](os: LazyList[O]): Pull[O, Unit] = ???
 ```
 
 @:note(🔍 Показать решение)
 
-???
+Эти функции преобразуют `List[O]` и `LazyList[O]` в поток `Pull[O, Unit]` с помощью `unfold`: 
+для `List` используется паттерн-матчинг с `Nil` и `hd :: tl`, а для `LazyList` — с `LazyList()` и `hd #:: tl`, 
+где каждый элемент последовательности эмитится в поток, а хвост становится новым состоянием, 
+пока коллекция не будет исчерпана (возврат `Left`), после чего результат игнорируется через `.map(_ => ())`.
 
 ```dotty
 def fromListViaUnfold[O](os: List[O]): Pull[O, Unit] =
@@ -670,19 +673,37 @@ def fromLazyListViaUnfold[O](os: LazyList[O]): Pull[O, Unit] =
 
 @:@
 
-### Упражнение 11.1.2: ???
+### Упражнение 11.1.2: Создание бесконечного потока с iterate
 
-Определить `iterate` как метод на `Pull` сопутствующем объекте. 
+Определите `iterate` как метод сопутствующего объекта `Pull`.
 Он должен возвращать бесконечный поток, который сначала выводит предоставленное начальное значение, 
 затем выводит результат применения этого значения к предоставленной функции и т.д.:
 
 ```dotty
-def iterate[O](initial: O)(f: O => O): Pull[O, Nothing]
+def iterate[O](initial: O)(f: O => O): Pull[O, Nothing] = ???
+```
+
+**Пояснение:**
+
+- Метод `iterate` создает бесконечную последовательность (поток) значений
+- Первым значением будет `initial`
+- Каждое следующее значение получается применением функции `f` к предыдущему значению
+
+**Пример использования:**
+
+```dotty
+// Создает поток: 1, 2, 4, 8, 16...
+val powersOfTwo = Pull.iterate(1)(_ * 2)
 ```
 
 @:note(🔍 Показать решение)
 
-???
+Это рекурсивная реализация метода `iterate`, который создаёт бесконечный поток значений, начиная с `initial`, 
+где каждое следующее значение вычисляется применением функции `f` к предыдущему. 
+Сначала выводится начальное значение через `Output`, затем рекурсивно генерируется следующий элемент (`f(initial)`), 
+что обеспечивает последовательное "развёртывание" потока. 
+Оператор `>>` (flatMap) связывает шаги, гарантируя корректную ленивую обработку. 
+Тип `Nothing` указывает, что поток не завершается ошибкой.
 
 ```dotty
 def iterate[O](initial: O)(f: O => O): Pull[O, Nothing] =
@@ -691,131 +712,104 @@ def iterate[O](initial: O)(f: O => O): Pull[O, Nothing] =
 
 @:@
 
-### Упражнение 11.1.3: ???
+### Упражнение 11.1.3: Реализация операторов drop и while для Pull
 
-Реализовать `drop`, `takeWhile`, и `dropWhile` на `Pull`:
+Реализуйте методы `drop`, `takeWhile`, и `dropWhile`:
 
 ```dotty
-def drop(n: Int): Pull[O, R]
-def takeWhile(p: O => Boolean): Pull[O, Pull[O, R]]
-def dropWhile(p: O => Boolean): Pull[Nothing, Pull[O, R]]
+def drop(n: Int): Pull[O, R] = ???
+def takeWhile(p: O => Boolean): Pull[O, Pull[O, R]] = ???
+def dropWhile(f: O => Boolean): Pull[O, R] = ???
+```
+
+**Пояснение:**
+
+- `drop(n)` - пропускает первые `n` элементов потока
+- `takeWhile(p)` - возвращает элементы пока предикат `p` истинен, затем останавливается
+- `dropWhile(p)` - пропускает элементы пока предикат `p` истинен, затем возвращает оставшиеся
+- Все методы работают через рекурсивное разворачивание потока (`uncons`)
+
+**Примеры использования:**
+
+```dotty
+val nums = Pull.fromList(List(1, 2, 3, 4, 5))
+
+nums.drop(2).toList          // List(3, 4, 5)
+nums.takeWhile(_ < 4).toList // List(1, 2, 3)
+nums.dropWhile(_ < 3).toList // List(3, 4, 5)
 ```
 
 @:note(🔍 Показать решение)
 
-???
+Эти методы реализуют базовые операции над ленивыми потоками (`Pull`): 
+`drop` пропускает первые `n` элементов через рекурсивное разворачивание потока (`uncons`), возвращая оставшуюся часть; 
+`takeWhile` последовательно выводит элементы, удовлетворяющие предикату `f`, а затем возвращает остаток потока; 
+`dropWhile` пропускает элементы, пока они удовлетворяют `f`, а затем возвращает оставшиеся. 
+Все операции работают лениво через `flatMap` и рекурсию, сохраняя потоковую природу `Pull`, 
+где `Result` завершает обработку, а `Output` эмитит значения. 
+Типы результатов (`Pull[O, R]` или вложенные `Pull`) обеспечивают корректную композицию.
 
 ```dotty
 def drop(n: Int): Pull[O, R] =
   if n <= 0 then this
-  else uncons.flatMap:
-    case Left(r) => Result(r)
-    case Right((_, tl)) => tl.drop(n - 1)
+  else
+    uncons.flatMap:
+      // Конец потока
+      case Left(r) => Result(r)
+      // Пропускаем текущий элемент
+      case Right((_, tl)) => tl.drop(n - 1)
 
 def takeWhile(f: O => Boolean): Pull[O, Pull[O, R]] =
   uncons.flatMap:
-    case Left(r) => Result(Result(r))
+    // Конец потока
+    case Left(r)         => Result(Result(r))
     case Right((hd, tl)) =>
-      if f(hd) then Output(hd) >> tl.takeWhile(f)
+      // Выводим подходящий элемент
+      if f(hd) then
+        Output(hd) >> tl.takeWhile(f)
+      // Возвращаем оставшийся поток
       else Result(Output(hd) >> tl)
 
-def dropWhile(f: O => Boolean): Pull[Nothing, Pull[O, R]] =
+def dropWhile(f: O => Boolean): Pull[O, R] =
   uncons.flatMap:
-    case Left(r) => Result(Result(r))
+    // Конец потока
+    case Left(r)         => Result(r)
     case Right((hd, tl)) =>
+      // Пропускаем подходящий элемент
       if f(hd) then tl.dropWhile(f)
-      else Result(Output(hd) >> tl)
+      // Возвращаем оставшийся поток
+      else Output(hd) >> tl  
 ```
 
 @:@
 
-### Упражнение 11.1.4: ???
+### Упражнение 11.1.4: Реализация countViaMapAccumulate
 
-Реализуйте метод, `Pull` который выводит текущий счет всех входов, используя моноид для объединения элементов. 
-Для каждого входного элемента объедините его с накопленным счетом, выведя результат:
+Переопределите `count`, используя `mapAccumulate` вместо явной рекурсии.
 
 ```dotty
-def tally[O2 >: O](используя m: Monoid[O2]): Pull[O2, R]
+def countViaMapAccumulate: Pull[Int, R] = ???
+```
 
-scala> значение t = ints.tally.take(10).toList
-значение t: Список[Int] = Список(0, 0, 1, 3, 6, 10, 15, 21, 28, 36)
+**Примеры использования:**
+
+```dotty
+Pull.fromList(List("a", "b", "c")).countViaMapAccumulate.toList
+// List(0, 1, 2, 3)
 ```
 
 @:note(🔍 Показать решение)
 
-???
-
-```dotty
-def tally[O2 >: O](using m: Monoid[O2]): Pull[O2, R] =
-  def go(total: O2, p: Pull[O, R]): Pull[O2, R] =
-    p.uncons.flatMap:
-      case Left(r) => Result(r)
-      case Right((hd, tl)) =>
-        val newTotal = m.combine(total, hd)
-        Output(newTotal) >> go(newTotal, tl)
-  Output(m.empty) >> go(m.empty, this)
-```
-
-@:@
-
-### Упражнение 11.1.5: ???
-
-Реализуйте метод расширения для `Pull[Int, R]`, который выводит среднее значение последних `n` значений в виде `Pull[Double, R]`:
-
-```dotty
-extension [R](self: Pull[Int, R])
-  def slidingMean(n: Int): Pull[Double, R]
-```
-
-@:note(🔍 Показать решение)
-
-???
-
-```dotty
-extension [R](self: Pull[Int, R])
-  def slidingMean(n: Int): Pull[Double, R] =
-    def go(
-      window: collection.immutable.Queue[Int],
-      p: Pull[Int, R]
-    ): Pull[Double, R] =
-      p.uncons.flatMap:
-        case Left(r) => Result(r)
-        case Right((hd, tl)) =>
-          val newWindow = if window.size < n then window :+ hd
-                                             else window.tail :+ hd
-          val meanOfNewWindow = newWindow.sum / newWindow.size.toDouble
-          Output(meanOfNewWindow) >> go(newWindow, tl)
-    go(collection.immutable.Queue.empty, self)
-```
-
-@:@
-
-### Упражнение 11.1.6: ???
-
-Переопределите `count`, `tally`, и `slidingMean`, используя `mapAccumulate` вместо явной рекурсии.
-
-@:note(🔍 Показать решение)
-
-???
+Это решение реализует подсчёт элементов в потоке через `mapAccumulate`, начиная с 0: 
+сначала эмитится начальное значение 0 (`Output(0)`), 
+затем для каждого элемента потока аккумулируется состояние-счётчик (увеличивается на 1), 
+при этом эмитится текущее значение счётчика (`s + 1`), 
+а `map(_(1))` извлекает только эмитируемые значения (второй элемент кортежа), игнорируя промежуточные состояния. 
+Результат — поток чисел от 1 до N (где N — количество элементов), предваренный нулём.
 
 ```dotty
 def countViaMapAccumulate: Pull[Int, R] =
   Output(0) >> mapAccumulate(0)((s, o) => (s + 1, s + 1)).map(_(1))
-
-def tallyViaMapAccumulate[O2 >: O](using m: Monoid[O2]): Pull[O2, R] =
-  Output(m.empty) >> mapAccumulate(m.empty): (s, o) =>
-    val s2 = m.combine(s, o)
-    (s2, s2)
-  .map(_(1))
-
-extension [R](self: Pull[Int, R])
-  def slidingMeanViaMapAccumulate(n: Int): Pull[Double, R] =
-    self.mapAccumulate(Queue.empty[Int]): (window, o) =>
-      val newWindow = if window.size < n then window :+ o
-                                         else window.tail :+ o
-      val meanOfNewWindow = newWindow.sum / newWindow.size.toDouble
-      (newWindow, meanOfNewWindow)
-    .map(_(1))
 ```
 
 @:@

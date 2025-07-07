@@ -154,7 +154,7 @@ nextPage = three_stars.html
 @:@
 
 | Название                                                                                                                 | 📺 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий                   |
-|--------------------------------------------------------------------------------------------------------------------------| :-------: | :-----: | ------ |----------------------------------|
+|--------------------------------------------------------------------------------------------------------------------------| :-------: | :-----: |--------|----------------------------------|
 | [**Современное ФП с Tagless Final**](https://www.youtube.com/watch?v=sWEtnq0ReZA)                                        |   Scala   |  🇷🇺 RU  | 2023   | 🏷️ Tagless Final                |
 | [**Direct Style Scala**](https://www.youtube.com/watch?v=0Fm0y4K4YO8)                                                    |  Scala 3  |  🇬🇧 EN  | 2023   | 🚀 Scalar Conf                   |
 | [**Scala 3 Type System**](https://www.youtube.com/watch?v=vuTFg5g_f6w)                                                   |  Scala 3  |  🇬🇧 EN  | 2023   | 🧮 Система типов                 |
@@ -170,5 +170,6 @@ nextPage = three_stars.html
 | [**Literal Types**](https://slideslive.com/38907881/literal-types-what-they-are-good-for)                                |  Scala 2  |  🇬🇧 EN  | 2018   | 🔍 Refined • 🧮 Литеральные типы |
 | [**Refined Types**](https://www.youtube.com/watch?v=IDrGbsupaok)                                                         |  Scala 2  |  🇬🇧 EN  | 2020   | 🔍 Refined • 🎓 Rock the JVM     |
 | [**Security with Refined**](https://slideslive.com/38908776/security-with-scala-refined-types-and-object-capabilities)   |  Scala 2  |  🇬🇧 EN  | 2018   | 🔍 Refined • 🔒 Безопасность     |
+| [**Simplicitly: foundations and applications of implicit function types**](https://dl.acm.org/doi/10.1145/3158130)       |  Scala 2  |  🇬🇧 EN  | 2018   | 🧮 Система типов                 |
 | [**Strings are Evil**](https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types)      |  Scala 2  |  🇬🇧 EN  | 2018   | 🔍 Refined • 🚫 Примитивные типы |
 | [**Why Types Matter**](https://www.youtube.com/watch?v=n1Y2V4zCZdQ)                                                      |  Scala 2  |  🇬🇧 EN  | 2020   | 🧮 Система типов • 🔍 Refined    |

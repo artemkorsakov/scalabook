@@ -2,7 +2,7 @@ import sbt.*
 
 // @formatter:off
 object Dependencies {
-  val Scala = "3.7.0" // Не забыть в sonar-project.properties обновить папку
+  val Scala = "3.7.2" // Не забыть в sonar-project.properties обновить папку
 
   object fs2 {
     val core = "co.fs2" %% "fs2-core" % "3.12.0"
@@ -18,7 +18,7 @@ object Dependencies {
   }
 
   object iron {
-    private val version = "3.0.0"
+    private val version = "3.0.4"
     private val org     = "io.github.iltotore"
     val iron            = org %% "iron"      % version
     val cats            = org %% "iron-cats" % version
@@ -27,8 +27,8 @@ object Dependencies {
 
   // https://github.com/erikvanoosten/metrics-scala/blob/master/docs/Manual.md
   object metrics {
-    val dropwizardCore = "io.dropwizard.metrics" % "metrics-core"    % "4.2.30"
-    val metrics4Scala  = "nl.grons"              %% "metrics4-scala" % "4.3.3"
+    val dropwizardCore = "io.dropwizard.metrics" % "metrics-core"    % "4.2.33"
+    val metrics4Scala  = "nl.grons"              %% "metrics4-scala" % "4.3.5"
   }
 
   object logback {

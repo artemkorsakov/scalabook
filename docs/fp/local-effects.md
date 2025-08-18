@@ -770,4 +770,4 @@ def timesTwo(x: Int): Int =
 - [Ссылка на репозиторий с упражнениями][sample]
 - [Functional Programming in Scala, Second Edition, Chapter 14](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 
-[sample]: https://gitverse.ru/artemkorsakov_scalabook/functional_programming_sample
+[sample]: https://gitverse.ru/scalabook/fp

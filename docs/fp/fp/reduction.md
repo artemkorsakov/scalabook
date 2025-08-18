@@ -354,4 +354,4 @@ def oneStepReduction(expr: Expr): Expr =
 - [Introduction to Functional Programming - Bird, Wadler](https://archive.org/details/introductiontofu0000bird/mode/2up)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fp-what-is-fp.html)
 
-[sample]: https://gitverse.ru/artemkorsakov_scalabook/functional_programming_sample
+[sample]: https://gitverse.ru/scalabook/fp

@@ -786,4 +786,4 @@ def createUserDetailed(
 - [Scala Option - a Gentle Introduction](https://www.youtube.com/watch?v=xywCiwNwPEU&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 - [The Difference Between Null, Nothing, Nil, None and Unit in Scala - Rock the JVM](https://www.youtube.com/watch?v=0_-jRrdg9Dw&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 
-[sample]: https://gitverse.ru/artemkorsakov_scalabook/functional_programming_sample
+[sample]: https://gitverse.ru/scalabook/fp

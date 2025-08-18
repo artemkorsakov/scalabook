@@ -285,4 +285,4 @@ val c =
 - [Ссылка на репозиторий с упражнениями][sample]
 - [A Comprehensive Guide to For-Comprehension in Scala - Baeldung](https://www.baeldung.com/scala/for-comprehension)
 
-[sample]: https://gitverse.ru/artemkorsakov_scalabook/functional_programming_sample
+[sample]: https://gitverse.ru/scalabook/fp

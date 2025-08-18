@@ -517,4 +517,4 @@ val ((totalCoins, remainingCandies), finalState) =
 - [Memorisation with State using Scala](https://blog.tmorris.net/posts/memoisation-with-state-using-scala/index.html)
 - [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#the-state-monad)
 
-[sample]: https://gitverse.ru/artemkorsakov_scalabook/functional_programming_sample
+[sample]: https://gitverse.ru/scalabook/fp

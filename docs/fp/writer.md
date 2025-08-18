@@ -446,4 +446,4 @@ def mapLog[W2](f: W => W2): Writer[W2, A] =
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Writer.html)
 - [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#writer-monad)
 
-[sample]: https://gitverse.ru/artemkorsakov_scalabook/functional_programming_sample
+[sample]: https://gitverse.ru/scalabook/fp

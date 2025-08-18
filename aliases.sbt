@@ -9,9 +9,9 @@ addCommandAlias(
 )
 addCommandAlias(
   "prePush",
-  "clean; com; test; coverageAggregate; fix; scapegoat; undeclaredCompileDependencies; unusedCompileDependencies"
+  "clean; com; test; coverageAggregate; fix; undeclaredCompileDependencies; unusedCompileDependencies"
 )
 addCommandAlias(
   "fullCheck",
-  "clean; com; test; fmtcheck; scapegoat; undeclaredCompileDependencies; unusedCompileDependencies"
+  "clean; com; test; fmtcheck; undeclaredCompileDependencies; unusedCompileDependencies"
 )

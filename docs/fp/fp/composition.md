@@ -36,10 +36,10 @@ nextPage = ../data-structures.html
 val f: A => B = ???
 val g: B => C = ???
 
-// 1. compose: g(f(x))
+// Первый: compose - g(f(x))
 val h1 = g compose f  // "g после f"
 
-// 2. andThen: f andThen g означает сначала f, затем g
+// Второй: andThen - f andThen g означает сначала f, затем g
 val h2 = f andThen g   // "f затем g"
 ```
 
@@ -54,16 +54,16 @@ val h2 = f andThen g   // "f затем g"
 
 ```dotty
 val toUpperCase: String => String = _.toUpperCase
-val addExclamation: String => String = _ + "!"
+val toLowerCase: String => String = _.toLowerCase
 
 // Композиция 1: математический стиль
-val emphasize1 = addExclamation compose toUpperCase
+val emphasize1 = toLowerCase compose toUpperCase
 
 // Композиция 2: последовательный стиль
-val emphasize2 = toUpperCase andThen addExclamation
+val emphasize2 = toLowerCase andThen toUpperCase
 
-emphasize1("hello") // "HELLO!"
-emphasize2("hello") // "HELLO!"
+emphasize1("Hello") // "Hello" -> "HELLO" -> "hello"
+emphasize2("Hello") // "Hello" -> "hello" -> "HELLO"
 ```
 
 ### Работа с разными типами

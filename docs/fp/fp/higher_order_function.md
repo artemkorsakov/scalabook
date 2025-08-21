@@ -99,6 +99,15 @@ def map[A, B](as: List[A])(f: A => B): List[B] = ???
 - Поддерживать работу с разными типами данных
 - Реализовать рекурсивную версию
 
+**Примеры использования**:
+
+```dotty
+map(List(1, 2, 3))(_ * 2) // List(2, 4, 6)
+map(List("a", "b"))(_.toUpperCase) // List("A", "B")
+```
+
+Это упражнение демонстрирует классическую функцию высшего порядка `map`, которая является основой функционального программирования.
+
 @:note(🔍 Показать решение)
 
 ```dotty
@@ -107,15 +116,6 @@ def map[A, B](as: List[A])(f: A => B): List[B] =
     case Nil => Nil
     case h :: t => f(h) :: map(t)(f)
 ```
-
-Примеры использования:
-
-```dotty
-map(List(1, 2, 3))(_ * 2) // List(2, 4, 6)
-map(List("a", "b"))(_.toUpperCase) // List("A", "B")
-```
-
-Это упражнение демонстрирует классическую функцию высшего порядка `map`, которая является основой функционального программирования.
 
 @:@
 
@@ -141,16 +141,7 @@ def validatorFactory[A](predicate: A => Boolean, errorMessage: String): A => Eit
 - Сохранять исходное значение при успешной проверке
 - Возвращать функцию (не вычислять результат сразу)
 
-@:note(🔍 Показать решение)
-
-```dotty
-def validatorFactory[A](predicate: A => Boolean, errorMessage: String): A => Either[String, A] =
-  (value: A) =>
-    if predicate(value) then Right(value)
-    else Left(errorMessage)
-```
-
-Примеры использования:
+**Примеры использования**:
 
 ```dotty
 // Создаем валидаторы
@@ -162,6 +153,15 @@ ageValidator(25)    // Right(25)
 ageValidator(16)    // Left("Age must be >= 18")
 emailValidator("test@example.com") // Right("test@example.com")
 emailValidator("invalid")          // Left("Invalid email format")
+```
+
+@:note(🔍 Показать решение)
+
+```dotty
+def validatorFactory[A](predicate: A => Boolean, errorMessage: String): A => Either[String, A] =
+  (value: A) =>
+    if predicate(value) then Right(value)
+    else Left(errorMessage)
 ```
 
 @:@

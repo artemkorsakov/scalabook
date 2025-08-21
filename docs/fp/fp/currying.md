@@ -142,7 +142,7 @@ def uncurry[A, B, C](f: A => B => C): (A, B) => C =
 Преобразования `curry` и `uncurry` являются взаимно обратными:
 
 ```dotty
-uncurry(curry(f)) == f  // Для любой f: (A,B) => C
+uncurry(curry(f)) == f  // Для любой f: (A, B) => C
 curry(uncurry(g)) == g  // Для любой g: A => B => C
 ```
 

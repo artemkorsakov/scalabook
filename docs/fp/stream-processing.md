@@ -1,6 +1,8 @@
 {%
 showPrev = true
 prevPage = local-effects.html
+showNext = true
+nextPage = stream-processing/monad-pull.html
 %}
 
 # Потоковая обработка и инкрементный ввод-вывод

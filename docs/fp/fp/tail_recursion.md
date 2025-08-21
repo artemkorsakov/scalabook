@@ -47,7 +47,7 @@ def factorial(n: Int): Int =
 
 1. Рекурсивный вызов должен быть последней операцией в функции
 2. Часто используется аккумулятор для накопления результата
-3. Требует аннотации `@tailrec` для проверки компилятором
+3. Требует аннотации `@tailrec` для проверки компилятором, действительно ли рекурсия хвостовая
 
 ### Пример с вычислением длины списка
 
@@ -279,7 +279,7 @@ def lengthTailRec(list: List[String], acc: Long = 0): Long =
 
 ### Ограничения JVM
 
-На JVM есть некоторые ограничения для TCO:
+На JVM есть некоторые ограничения для TCO (_Tail Call Optimization_ или _Оптимизация хвостовой рекурсии_):
 полная оптимизация работает только для прямых хвостовых вызовов в одном методе
 
 ## Заключение
@@ -340,10 +340,7 @@ maxTailRec(List(1, 2, 3, 4, 5)) // Some(5)
 ```dotty
 def maxTailRec(list: List[Int]): Option[Int] =
   @annotation.tailrec
-  def loop(
-      remaining: List[Int],
-      currentMax: Int
-  ): Int =
+  def loop(remaining: List[Int], currentMax: Int): Int =
     remaining match
       case Nil => currentMax
       case head :: tail =>
@@ -352,8 +349,9 @@ def maxTailRec(list: List[Int]): Option[Int] =
           else currentMax
         loop(tail, newMax)
 
-  if list.isEmpty then None
-  else Some(loop(list.tail, list.head))
+  list match
+    case Nil          => None
+    case head :: tail => Some(loop(tail, head))
 ```
 
 @:@
@@ -414,7 +412,7 @@ def countOccurrences[A](
 **Подсказка:**
 
 - Простое число делится только на `1` и само себя.
-- Можно проверять делители от `2` до `sqrt(n)`.
+- Достаточно проверить только делители от `2` до `sqrt(n)`.
 
 ```dotty
 def isPrime(n: Int): Boolean =

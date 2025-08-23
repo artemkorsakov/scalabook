@@ -653,8 +653,11 @@ def converter: IO[Unit] =
 4. Затем выводит их произведение
 
 ```dotty
-val sumAndProduct: IO[Unit] = 
-  ???
+def readInput(): IO[String] = ???
+
+def readNumber(): IO[Int] = ???
+
+val sumAndProduct: IO[Unit] = ???
 ```
 
 @:note(🔍 Показать решение)

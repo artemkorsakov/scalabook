@@ -344,7 +344,7 @@ yield (a, b)
 
 ```dotty
 ST[S, STRef[S, Int]]  // Опасная операция - возвращает изменяемую ссылку
-ST[S, Int]            // Безопасная операция - возвращает просто значение
+ST[S, Int]            // Безопасная операция - просто возвращает значение
 ```
 
 ### Гарантии безопасности
@@ -542,16 +542,16 @@ final class STArray[S, A] private (private var value: Array[A]):
 **Примеры:**
 
 ```dotty
-// Создаем массив размером 3 с начальным значением 0
-val arrayAction = STArray[Unit, Int](3, 0)
-
 // Программа для заполнения массива
-val program = [S] => () =>
-  for
-    arr <- arrayAction
-    _ <- arr.fill(Map(0 -> 10, 2 -> 30)) // Заполняем индексы 0 и 2
-    result <- arr.freeze
-  yield result
+val program = [s] =>
+  () =>
+    for
+      // Создаем массив размером 3 с начальным значением 0
+      arr    <- STArray[s, Int](3, 0)
+      // Заполняем индексы 0 и 2
+      _      <- arr.fill(Map(0 -> 10, 2 -> 30))
+      result <- arr.freeze
+    yield result
 
 // Выполняем программу
 val result = ST.run(program) // Результат: List(10, 0, 30)
@@ -665,21 +665,6 @@ def qs[S](a: STArray[S, Int], l: Int, r: Int): ST[S, Unit] =
 ```
 
 @:@
-
-### quicksort
-
-Теперь по написанным компонентам можно собрать `quicksort`:
-
-```dotty
-def qs[S](a: STArray[S,Int], l: Int, r: Int): ST[S, Unit] =
-  if l < r then  // Если есть что сортировать
-    for
-      pi <- partition(a, l, r, l + (r - l) / 2) // Разделяем массив
-      _ <- qs(a, l, pi - 1)                     // Сортируем левую часть
-      _ <- qs(a, pi + 1, r)                     // Сортируем правую часть
-    yield ()
-  else ST[S, Unit](())  // Базовый случай рекурсии
-```
 
 ## Чистота в программировании зависит от контекста
 

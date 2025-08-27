@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = ../stream-processing.html
 showNext = true
-nextPage = monad-pull.html
+nextPage = stream.html
 %}
 
 # Создание и комбинирование Pull-операций

@@ -555,7 +555,11 @@ def exists1[I](f: I => Boolean): Pipe[I, Boolean] =
       .dropWhile(i => !i)  // Пропускаем все false до первого true
       .takeWhile(identity) // Берем все true (но обычно только первый)
       .take(1)             // Гарантируем, что возьмем только один элемент
-      .map(_ => ())        // Игнорируем результат        
+      .uncons.flatMap:
+        // Если достигли результата, то в исходном стриме нет элемента, удовлетворяющего предикату
+        case Left(_)  => Pull.Output(false)
+        // В противном случае такой элемент есть
+        case Right(_) => Pull.Output(true)       
 ```
 
 @:@

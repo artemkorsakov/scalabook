@@ -450,10 +450,9 @@ def getShippingAddress(orderId: Int): Option[String] =
 
 @:@
 
-### Упражнение 3.1.3: Работа с опциональными полями профилей
+### Упражнение 3.1.3: Работа с опциональными полями профилей: getEmailOrDefault
 
-В этом упражнении мы будем работать с профилями пользователей, где некоторые поля (`email` и `age`) являются опциональными. 
-Реализуйте три функции разной сложности для обработки таких данных, используя методы работы с `Option`.
+Напишите функцию, которая возвращает `email` профиля или `"no-email@example.com"` если `email` отсутствует.
 
 ```dotty
 case class Profile(id: Int, name: String, email: Option[String], age: Option[Int])
@@ -464,67 +463,104 @@ val profiles = List(
   Profile(3, "Charlie", Some("charlie@example.com"), None)
 )
 
-// 1. Напишите функцию, которая возвращает email профиля или "no-email@example.com" если email отсутствует
 def getEmailOrDefault(profile: Profile): String = ???
+```
 
-// 2. Реализуйте функцию, которая вычисляет средний возраст профилей (учитывая только тех, у кого возраст указан)
+**Примеры:**
+
+```dotty
+getEmailOrDefault(profiles(0)) // "alice@example.com"
+getEmailOrDefault(profiles(1)) // "no-email@example.com"
+```
+
+@:note(🔍 Показать решение)
+
+Функция возвращает email пользователя или стандартное значение `"no-email@example.com"`,
+если email отсутствует, используя метод `getOrElse` для безопасной обработки `Option`.
+Это гарантирует, что результат всегда будет строкой, исключая необходимость последующих проверок на `None`.
+
+```dotty
+def getEmailOrDefault(profile: Profile): String =
+  profile.email.getOrElse("no-email@example.com")
+```
+
+@:@
+
+### Упражнение 3.1.4: Работа с опциональными полями профилей: averageAge
+
+Реализуйте функцию, которая вычисляет средний возраст профилей (учитывая только тех, у кого возраст указан).
+
+```dotty
+case class Profile(id: Int, name: String, email: Option[String], age: Option[Int])
+
+val profiles = List(
+  Profile(1, "Alice", Some("alice@example.com"), Some(30)),
+  Profile(2, "Bob", None, Some(25)),
+  Profile(3, "Charlie", Some("charlie@example.com"), None)
+)
+
 def averageAge(profiles: List[Profile]): Option[Double] = ???
+```
 
-// 3. Напишите функцию, которая возвращает список пар (name, email) только для профилей с email
+**Примеры:**
+
+```dotty
+averageAge(profiles)          // Some(27.5) = (30 + 25) / 2
+averageAge(List(Profile(4, "Diana", None, None))) // None
+```
+
+@:note(🔍 Показать решение)
+
+Функция вычисляет средний возраст, предварительно извлекая все указанные возрасты через `flatMap`,
+и возвращает `Some` с результатом, если есть данные, или `None`, если ни у одного профиля возраст не указан.
+Решение корректно обрабатывает пустые коллекции, сохраняя типобезопасность.
+
+```dotty
+def averageAge(profiles: List[Profile]): Option[Double] =
+  val ages = profiles.flatMap(_.age)
+  if ages.isEmpty then None
+  else Some(ages.sum.toDouble / ages.length)
+```
+
+@:@
+
+### Упражнение 3.1.5: Работа с опциональными полями профилей: nameEmailPairs
+
+Напишите функцию, которая возвращает список пар (name, email) только для профилей с email.
+
+```dotty
+case class Profile(id: Int, name: String, email: Option[String], age: Option[Int])
+
+val profiles = List(
+  Profile(1, "Alice", Some("alice@example.com"), Some(30)),
+  Profile(2, "Bob", None, Some(25)),
+  Profile(3, "Charlie", Some("charlie@example.com"), None)
+)
+
 def nameEmailPairs(profiles: List[Profile]): List[(String, String)] = ???
 ```
 
 **Примеры:**
 
 ```dotty
-// 1.
-getEmailOrDefault(profiles(0)) // "alice@example.com"
-getEmailOrDefault(profiles(1)) // "no-email@example.com"
-
-// 2.
-averageAge(profiles)          // Some(27.5) = (30 + 25) / 2
-averageAge(List(Profile(4, "Diana", None, None))) // None
-
-// 3.
 nameEmailPairs(profiles) 
 // List(("Alice", "alice@example.com"), ("Charlie", "charlie@example.com"))
 ```
 
 @:note(🔍 Показать решение)
-
-1. `getEmailOrDefault`  
-   Функция возвращает email пользователя или стандартное значение `"no-email@example.com"`, 
-   если email отсутствует, используя метод `getOrElse` для безопасной обработки `Option`. 
-   Это гарантирует, что результат всегда будет строкой, исключая необходимость последующих проверок на `None`.
-
-2. `averageAge`  
-   Функция вычисляет средний возраст, предварительно извлекая все указанные возрасты через `flatMap`, 
-   и возвращает `Some` с результатом, если есть данные, или `None`, если ни у одного профиля возраст не указан. 
-   Решение корректно обрабатывает пустые коллекции, сохраняя типобезопасность.
-
-3. `nameEmailPairs`  
-   Функция формирует список пар "имя-email" только для профилей с указанным email, 
-   используя комбинацию `flatMap` для фильтрации и `map` для преобразования данных. 
-   Это эффективно отбрасывает профили без email и создает результирующий список только с валидными данными.
+ 
+Функция формирует список пар "имя-email" только для профилей с указанным email,
+используя комбинацию `flatMap` для фильтрации и `map` для преобразования данных.
+Это эффективно отбрасывает профили без email и создает результирующий список только с валидными данными.
 
 ```dotty
-// 1. Получение email с значением по умолчанию
-def getEmailOrDefault(profile: Profile): String =
-  profile.email.getOrElse("no-email@example.com")
-
-// 2. Вычисление среднего возраста
-def averageAge(profiles: List[Profile]): Option[Double] =
-  val ages = profiles.flatMap(_.age)
-  if ages.isEmpty then None
-  else Some(ages.sum.toDouble / ages.length)
-
-// 3. Получение пар имя-email
 def nameEmailPairs(profiles: List[Profile]): List[(String, String)] =
   profiles.flatMap: p =>
     p.email.map(email => (p.name, email))
 ```
 
 @:@
+
 
 ## Тип данных Either: Расширенная обработка ошибок в функциональном программировании
 
@@ -751,28 +787,23 @@ def parseAge(s: String): Either[String, Int] =
 
 @:@
 
-### Упражнение 3.2.3: Валидация пользователя с Either
+### Упражнение 3.2.3: Валидация пользователя с Either: createUser
 
 Реализуйте две версии функции создания пользователя с разными стратегиями обработки ошибок: 
 первая возвращает первую обнаруженную ошибку, вторая собирает все ошибки валидации. 
 Упражнение демонстрирует композицию `Either` и разные подходы к валидации сложных данных.
 
+Реализуйте функцию `createUser`, которая:
+
+- Принимает имя (не пустое) и возраст (строку)
+- Использует `parseAge` из предыдущего упражнения
+- Возвращает `Right(User)` если все проверки пройдены
+- Возвращает `Left` с описанием первой ошибки  
+
 ```dotty  
 case class User(name: String, age: Int)  
   
-/** 1. Реализуйте функцию createUser, которая:  
-  * - Принимает имя (не пустое) и возраст (строку)  
-  * - Использует parseAge из предыдущего упражнения  
-  * - Возвращает Right(User) если все проверки пройдены  
-  * - Возвращает Left с описанием первой ошибки  
-  */
-def createUser(name: String, ageStr: String): Either[String, User] = ???  
-  
-/** 2. Улучшенная версия createUser:  
-  * - Собирает ВСЕ ошибки валидации (имени и возраста)  
-  * - Использует Either с типом ошибки List[String]  
-  */
-def createUserDetailed(name: String, ageStr: String): Either[List[String], User] = ???  
+def createUser(name: String, ageStr: String): Either[String, User] = ???   
 ```  
 
 **Примеры:**
@@ -782,7 +813,39 @@ createUser("Alice", "30") // Right(User("Alice", 30))
 createUser("", "25")      // Left("Имя не может быть пустым")
 createUser("Bob", "abc")  // Left("Некорректный формат возраста")
 createUser("", "abc")     // Left("Имя не может быть пустым")
+```
 
+@:note(🔍 Показать решение)
+
+Функция `createUser` реализует базовую валидацию пользователя, проверяя имя на пустоту 
+и используя `parseAge` для валидации возраста, возвращая первую обнаруженную ошибку в `Left`. 
+
+```dotty
+def createUser(name: String, ageStr: String): Either[String, User] =
+  if name.isEmpty then
+    Left("Имя не может быть пустым")
+  else
+    parseAge(ageStr).map(age => User(name, age))
+```
+
+@:@
+
+### Упражнение 3.2.4: Валидация пользователя с Either: createUserDetailed
+
+Улучшенная версия `createUser`:
+
+- Собирает ВСЕ ошибки валидации (имени и возраста)
+- Использует `Either` с типом ошибки `List[String]  `
+
+```dotty  
+case class User(name: String, age: Int)  
+  
+def createUserDetailed(name: String, ageStr: String): Either[List[String], User] = ???  
+```  
+
+**Примеры:**
+
+```dotty
 createUserDetailed("Alice", "30")
 // Right(User("Alice", 30))
 createUserDetailed("", "abc")
@@ -793,22 +856,14 @@ createUserDetailed("", "150")
 
 @:note(🔍 Показать решение)
 
-Функция `createUser` реализует базовую валидацию пользователя, проверяя имя на пустоту 
-и используя `parseAge` для валидации возраста, возвращая первую обнаруженную ошибку в `Left`. 
-Её расширенная версия `createUserDetailed` применяет более продвинутую стратегию валидации: 
-с помощью `Either.cond` проверяет имя и комбинирует с результатом `parseAge`, собирая все возможные ошибки в список. 
-Решение демонстрирует два подхода к обработке ошибок - "fail-fast" (первая ошибка) 
-и "полную валидацию" (все ошибки), используя pattern matching для композиции `Either`-значений. 
-Обе функции возвращают либо валидного пользователя в `Right`, 
+Расширенная версия `createUserDetailed` применяет более продвинутую стратегию валидации:
+с помощью `Either.cond` проверяет имя и комбинирует с результатом `parseAge`, собирая все возможные ошибки в список.
+Решение демонстрирует два подхода к обработке ошибок - "fail-fast" (первая ошибка)
+и "полную валидацию" (все ошибки), используя сопоставление с шаблоном для композиции `Either`-значений.
+Обе функции возвращают либо валидного пользователя в `Right`,
 либо список ошибок в `Left`, сохраняя типобезопасность.
 
 ```dotty
-def createUser(name: String, ageStr: String): Either[String, User] =
-  if name.isEmpty then
-    Left("Имя не может быть пустым")
-  else
-    parseAge(ageStr).map(age => User(name, age))
-
 def createUserDetailed(
     name: String,
     ageStr: String

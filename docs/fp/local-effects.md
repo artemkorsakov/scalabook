@@ -589,16 +589,13 @@ def swap(i: Int, j: Int): ST[S, Unit] =
   yield ()
 ```
 
-### Упражнение 10.1.2: Реализация partition и qs
+### Упражнение 10.1.2: Реализация partition
 
-Напишите чисто функциональные версии `partition` и `qs`:
+Напишите чисто функциональную версию `partition`:
 
 ```dotty
 def partition[S](a: STArray[S, Int], l: Int, r: Int, pivot: Int): ST[S, Int] = ???
-def qs[S](a: STArray[S, Int], l: Int, r: Int): ST[S, Unit] = ???
 ```
-
-##### `partition`
 
 @:note(🔍 Показать решение)
 
@@ -642,7 +639,13 @@ def partition[S](
 
 @:@
 
-##### `qs`
+### Упражнение 10.1.3: Реализация qs
+
+Напишите чисто функциональную версию `qs`:
+
+```dotty
+def qs[S](a: STArray[S, Int], l: Int, r: Int): ST[S, Unit] = ???
+```
 
 @:note(🔍 Показать решение)
 

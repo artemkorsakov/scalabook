@@ -104,10 +104,11 @@ Scala — язык, объединяющий ФП и ООП, но в этом п
 ## Контакты
 
 - **Исходный код проекта**: доступен на [GitVerse][home]
-- **Профили**:
+- **Мои профили**:
     - Основной: [GitVerse](https://gitverse.ru/artemkorsakov)
     - Дополнительный: [GitHub](https://github.com/artemkorsakov)
 - **Для связи**: [написать email](mailto:artemkorsakov@mail.ru)
+- [Вакансии ИТ-компании «Криптонит»](https://career.kryptonite.ru/vacancies/?locations=moscow&search=Scala)
 
 [home]: https://gitverse.ru/artemkorsakov/scalabook
 [exercises]: https://gitverse.ru/scalabook/fp

@@ -152,24 +152,29 @@ Mul(Var("y"), Sub(Var("x"), Num(1))) => Без изменений
 
 @:note(🔍 Показать решение)
 
+Функция `oneStepReduction` выполняет пошаговую редукцию арифметических выражений, 
+рекурсивно применяя операции к числам: для выражений `Add`, `Sub` и `Mul` с числовыми операндами вычисляется результат, 
+а для выражений с переменными или вложенными операциями рекурсивно применяется редукция к подвыражениям, 
+пока не будут получены числовые значения или неприводимые переменные.
+
 ```dotty
 def oneStepReduction(expr: Expr): Expr =
   import Expr.*
   expr match
     // Базовые случаи - не редуцируем дальше
     case Num(_) | Var(_) => expr
-    
+
     // Редукция сложения
     case Add(Num(x), Num(y)) => Num(x + y)
-    case Add(e1, e2) => Add(reduction(e1), reduction(e2))
-    
+    case Add(e1, e2) => Add(oneStepReduction(e1), oneStepReduction(e2))
+
     // Редукция вычитания
     case Sub(Num(x), Num(y)) => Num(x - y)
-    case Sub(e1, e2) => Sub(reduction(e1), reduction(e2))
-    
+    case Sub(e1, e2) => Sub(oneStepReduction(e1), oneStepReduction(e2))
+
     // Редукция умножения
     case Mul(Num(x), Num(y)) => Num(x * y)
-    case Mul(e1, e2) => Mul(reduction(e1), reduction(e2))
+    case Mul(e1, e2) => Mul(oneStepReduction(e1), oneStepReduction(e2))
 ```
 
 @:@
@@ -207,8 +212,11 @@ Add(Var("x"), Num(3))      => true   // Не может быть редуцир�
 
 @:note(🔍 Показать решение)
 
+Функция `isCanonical` проверяет, является ли выражение `expr` канонической формой (т.е. полностью приведенным), 
+путем сравнения исходного выражения с результатом применения к нему одного шага редукции: 
+если они равны, это означает, что дальнейшее упрощение невозможно, и выражение считается каноническим.
+
 ```dotty
-// Если редукция не изменяет выражение - оно каноническое
 def isCanonical(expr: Expr): Boolean =
   oneStepReduction(expr) == expr
 ```
@@ -243,6 +251,12 @@ Sub(Mul(Add(Num(1), Num(1)), Num(3)), Num(2)) => Num(4)
 
 @:note(🔍 Показать решение)
 
+Функция `reduction` выполняет полную редукцию выражения до канонической формы, 
+используя вспомогательную рекурсивную функцию `loop`: на каждом шаге проверяется, 
+является ли текущее выражение каноническим (дальнейшее упрощение невозможно), 
+и если нет — применяется одношаговая редукция 
+и процесс повторяется, пока не будет достигнуто неприводимое состояние.
+
 ```dotty
 def reduction(expr: Expr): Expr =
   def loop(current: Expr): Expr =
@@ -251,9 +265,6 @@ def reduction(expr: Expr): Expr =
   
   loop(expr)
 ```
-
-Функция использует вспомогательную рекурсивную функцию `loop` для эффективного выполнения многократных редукций.
-Проверка на каноничность выполняется на каждом шаге для определения момента завершения.
 
 @:@
 
@@ -271,7 +282,7 @@ def reduction(expr: Expr): Expr =
 
 **Задача:**  
 
-Модифицировать функцию `oneStepReduction` для поддержки следующих оптимизаций:
+Реализовать функцию `optimizedOneStepReduction` для поддержки следующих оптимизаций:
 
 1. Упрощение операций с нулём:
     - `x + 0` → `x`
@@ -308,38 +319,48 @@ Mul(Sub(Num(1), Num(1)), Var("x")) => Mul(Num(0), Var("x"))
 Add(Var("x"), Var("y"))         => Add(Var("x"), Var("y"))
 ```
 
+Это упражнение демонстрирует, как даже простые оптимизации могут значительно улучшить эффективность вычислений,
+особенно при работе с большими или сложными выражениями.
+
 @:note(🔍 Показать решение)
 
+Функция `optimizedOneStepReduction` выполняет одношаговую редукцию арифметических выражений с дополнительными оптимизациями: 
+помимо базового вычисления операций между числами, 
+она применяет алгебраические правила упрощения (например, `x + 0 → x`, `x - x → 0`, `0 * x → 0`) 
+и рекурсивно обрабатывает подвыражения, что позволяет сразу получать более простую форму на каждом шаге редукции.
+
 ```dotty
-def oneStepReduction(expr: Expr): Expr =
+def optimizedOneStepReduction(expr: Expr): Expr =
   import Expr.*
   expr match
     // Базовые случаи - не изменяем
     case Num(_) | Var(_) => expr
 
     // Оптимизации для сложения
-    case Add(Num(0), e) => e // 0 + x → x
-    case Add(e, Num(0)) => e // x + 0 → x
+    case Add(Num(0), e)      => e // 0 + x → x
+    case Add(e, Num(0))      => e // x + 0 → x
     case Add(Num(x), Num(y)) => Num(x + y)
-    case Add(e1, e2) => Add(reduction(e1), reduction(e2))
+    case Add(e1, e2) =>
+      Add(optimizedOneStepReduction(e1), optimizedOneStepReduction(e2))
 
     // Оптимизации для вычитания
-    case Sub(e, Num(0)) => e // x - 0 → x
-    case Sub(e1, e2) if e1 == e2 => Num(0) // x - x → 0 
-    case Sub(Num(x), Num(y)) => Num(x - y)
-    case Sub(e1, e2) => Sub(reduction(e1), reduction(e2))
+    case Sub(e, Num(0))          => e      // x - 0 → x
+    case Sub(e1, e2) if e1 == e2 => Num(0) // x - x → 0
+    case Sub(Num(x), Num(y))     => Num(x - y)
+    case Sub(e1, e2) =>
+      Sub(optimizedOneStepReduction(e1), optimizedOneStepReduction(e2))
 
     // Оптимизации для умножения
-    case Mul(Num(0), _) => Num(0) // 0 * x → 0
-    case Mul(_, Num(0)) => Num(0) // x * 0 → 0
-    case Mul(Num(1), e) => e // 1 * x → x (доп. оптимизация)
-    case Mul(e, Num(1)) => e // x * 1 → x (доп. оптимизация)
+    case Mul(Num(0), _)      => Num(0) // 0 * x → 0
+    case Mul(_, Num(0))      => Num(0) // x * 0 → 0
+    case Mul(Num(1), e)      => e      // 1 * x → x (доп. оптимизация)
+    case Mul(e, Num(1))      => e      // x * 1 → x (доп. оптимизация)
     case Mul(Num(x), Num(y)) => Num(x * y)
-    case Mul(e1, e2) => Mul(reduction(e1), reduction(e2))
+    case Mul(e1, e2) =>
+      Mul(optimizedOneStepReduction(e1), optimizedOneStepReduction(e2))
+  end match
+end optimizedOneStepReduction
 ```
-
-Это упражнение демонстрирует, как даже простые оптимизации могут значительно улучшить эффективность вычислений, 
-особенно при работе с большими или сложными выражениями.
 
 @:@
 

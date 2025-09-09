@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = stream-processing/expandable.html
+prevPage = stream-processing/applications.html
 %}
 
 # Заключение

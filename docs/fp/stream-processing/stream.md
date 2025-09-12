@@ -854,8 +854,8 @@ def checkFileForGt40K(file: java.io.File): IO[Boolean] =
 
 Напишите программу, которая считывает градусы Фаренгейта как `Double` значения из файла по одному значению на строку,
 отправляет каждое значение по каналу для преобразования его в градусы Фаренгейта и записывает результат в другой файл.
-Ваша программа должна игнорировать пустые строки во входном файле, 
-а также строки, начинающиеся с `#` символа (комментарии).
+Ваша программа должна игнорировать пустые строки во входном файле, строки, начинающиеся с `#` символа (комментарии),
+а также строки, которые не удалось преобразовать в `Double`.
 Вы можете использовать функцию `toCelsius`:
 
 ```dotty
@@ -884,13 +884,13 @@ def nonComment: Pipe[String, String] = ???
 
 ```dotty
 def trimmed: Pipe[String, String] =
-  src => src.map(_.trim)
+  src => src.mapOutput(_.trim)
 
 def nonEmpty: Pipe[String, String] =
   src => src.filter(_.nonEmpty)
 
 def nonComment: Pipe[String, String] =
-  src => src.filter(_.charAt(0) != '#')
+  src => src.filter(_.headOption.forall(_ != '#'))
 ```
 
 @:@
@@ -914,13 +914,13 @@ val conversion: Pipe[String, Double] = ???
 и в конце применяется бизнес-логика (конвертация в градусы Цельсия), 
 что в итоге формирует надёжный и читаемый ETL-процесс.
 
-```dotty
+```dotty   
 def asDouble: Pipe[String, Double] =
   src =>
-    src.flatMap: s =>
-      s.toDoubleOption match
-        case Some(d) => Stream(d)
-        case None    => Stream()
+    src.flatMapOutput: str =>
+      str.toDoubleOption match
+        case Some(d) => Pull.Output(d)
+        case None    => Pull.done        
 
 def convertToCelsius: Pipe[Double, Double] =
   src => src.map(toCelsius)
@@ -951,18 +951,20 @@ def convert(inputFile: String, outputFile: String): IO[Unit] = ???
 
 ```dotty
 import java.nio.file.{Files, Paths}
+import scala.util.chaining.scalaUtilChainingOps
 
 def convert(inputFile: String, outputFile: String): IO[Unit] =
   IO:
     val source = scala.io.Source.fromFile(inputFile)
     try
       val writer = Files.newBufferedWriter(Paths.get(outputFile))
-      try () =>
-          fromIterator(source.getLines)
-            .pipe(conversion)
-            .fold(()): (_, a) =>
-              writer.write(a.toString)
-              writer.newLine()
+      try
+        Pull.fromLazyList(LazyList.from(source.getLines))
+          .pipe(conversion)
+          .fold(()): (_, a) =>
+            writer.write(a.toString)
+            writer.newLine()
+          ._1
       finally writer.close()
     finally source.close()
 ```

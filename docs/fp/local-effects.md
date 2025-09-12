@@ -55,21 +55,21 @@ def quicksort(xs: List[Int]): List[Int] =
       arr(y) = tmp
 
     // 3. Функция разделения массива
-    def partition(n: Int, r: Int, pivot: Int) =
+    def partition(l: Int, r: Int, pivot: Int) =
       val pivotVal = arr(pivot)
       swap(pivot, r)
-      var j = n
-      for i <- n until r if arr(i) < pivotVal do
+      var j = l
+      for i <- l until r if arr(i) < pivotVal do
         swap(i, j)
         j += 1
       swap(j, r)
       j
 
     // 4. Основная рекурсивная функция сортировки
-    def qs(n: Int, r: Int): Unit =
-      if n < r then
-        val pi = partition(n, r, n + (n - r) / 2)
-        qs(n, pi - 1)
+    def qs(l: Int, r: Int): Unit =
+      if l < r then
+        val pi = partition(l, r, l + (r - l) / 2)
+        qs(l, pi - 1)
         qs(pi + 1, r)
 
     // 5. Запускаем сортировку

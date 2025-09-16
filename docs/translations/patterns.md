@@ -1295,6 +1295,7 @@ print(eval(e1))
 **Ссылки:**
 
 - [Scala & Design Patterns by Frederik Skeel Løkke](https://www.scala-lang.org/old/sites/default/files/FrederikThesis.pdf)
+- [Dealing with Java builder's pattern](https://alexitc.com/blog/2025-08-31-dealing-with-java-builder-pattern/)
 - [Design Patterns by Gamma, Helm, Johnson, and Vlissides][Design Patterns]
 - [Wikipedia, Порождающие шаблоны проектирования][Wikipedia Creational]
 - [Wikipedia, Structural pattern][Wikipedia Structural]

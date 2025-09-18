@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = external-effects/stack_overflow_error.html
+prevPage = external-effects/conclusion.html
 showNext = true
 nextPage = stream-processing.html
 %}
@@ -560,15 +560,15 @@ val result = ST.run(program) // Результат: List(10, 0, 30)
 @:note(🔍 Показать решение)
 
 Метод `fill` последовательно записывает значения из переданной `Map` в массив, 
-используя `foldRight` для объединения операций записи: 
+используя `foldLeft` для объединения операций записи: 
 начиная с пустого действия `ST[S, Unit](())`, для каждой пары (индекс, значение) 
 он добавляет операцию `write` через `flatMap`, 
-гарантируя порядок выполнения и безопасность типов благодаря системе `ST`.
+гарантируя безопасность типов благодаря системе `ST`.
 
 ```dotty
 def fill(xs: Map[Int, A]): ST[S, Unit] =
-  xs.foldRight(ST[S, Unit](())):
-    case ((k, v), st) => st.flatMap(_ => write(k, v))
+  xs.foldLeft(ST[S, Unit](())):
+    case (st, (k, v)) => st.flatMap(_ => write(k, v))
 ```
 
 @:@

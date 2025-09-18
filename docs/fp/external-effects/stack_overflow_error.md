@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = ../external-effects.html
 showNext = true
-nextPage = ../local-effects.html
+nextPage = free_monad.html
 %}
 
 # TailRec: прыжки на батуте
@@ -69,9 +69,9 @@ def flatMap[B](f: A => IO[B]): IO[B] = new IO[B]:
     - Каждый следующий `flatMap` добавляет новый вызов `unsafeRun()` в стек:
       ```dotty
       IO(1)
-        .flatMap(x => IO(x + 1)) // Уровень 1
-        .flatMap(y => IO(y * 2)) // Уровень 2
-        .unsafeRun()
+          .flatMap(x => IO(x + 1)) // Уровень 1
+          .flatMap(y => IO(y * 2)) // Уровень 2
+          .unsafeRun()
       ```
     - Стек вызовов:
       ```
@@ -364,8 +364,10 @@ val p = IO(println("A"))
 FlatMap(
   FlatMap(
     Suspend(() => println("A")),
-    _ => Suspend(() => println("B"))),
-  _ => Suspend(() => println("C")))
+    _ => Suspend(() => println("B"))
+  ),
+  _ => Suspend(() => println("C"))
+)
 ```
 
 ### После перезаписи
@@ -375,7 +377,9 @@ FlatMap(
   Suspend(() => println("A")),
   _ => FlatMap(
     Suspend(() => println("B")),
-    _ => Suspend(() => println("C"))))
+    _ => Suspend(() => println("C"))
+  )
+)
 ```
 
 ### Шаги выполнения:

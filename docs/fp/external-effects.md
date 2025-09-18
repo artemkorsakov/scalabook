@@ -765,7 +765,7 @@ val sumAndProduct: IO[Unit] =
     - *Пример опасного кода*:
       ```dotty
       def recursiveIO(n: Int): IO[Unit] = 
-        IO.unit.flatMap(_ => if n > 0 then recursiveIO(n-1) else IO.unit)
+          IO.unit.flatMap(_ => if n > 0 then recursiveIO(n - 1) else IO.unit)
       ```
     - *Решение*: Требуется механизм "ленивого" выполнения или трамплины
 

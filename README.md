@@ -4,6 +4,20 @@
 
 Все заметные изменения в проекте будут документироваться ниже, начиная с самых последних изменений.
 
+## 2025-09-??
+
+### Добавлено
+
+- Добавлены разделы "Внешние эффекты и ввод/вывод":
+    - [Свободная монада](https://scalabook.ru/fp/external-effects/free_monad.html)
+    - [Неблокируемый и асинхронный ввод-вывод](https://scalabook.ru/fp/external-effects/asynchronous_io.html)
+    - [Тип ввода-вывода общего назначения: IO](https://scalabook.ru/fp/external-effects/common_io.html)
+    - [Заключение](https://scalabook.ru/fp/external-effects/conclusion.html)
+
+### Исправлено
+
+- Исправлено решение "Упражнение 10.1.1: Реализация метода fill для STArray"
+
 ## 2025-09-12
 
 ### Добавлено

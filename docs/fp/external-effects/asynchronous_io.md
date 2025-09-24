@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = free_monad.html
 showNext = true
-nextPage = conclusion.html
+nextPage = common_io.html
 %}
 
 # Неблокируемый и асинхронный ввод-вывод

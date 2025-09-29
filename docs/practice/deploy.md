@@ -12,10 +12,9 @@ prevPage = index.html
 
 Перед началом убедитесь, что на вашем компьютере установлены следующие инструменты:
 
-**Установите Scala и sbt**: SBT (Simple Build Tool) — это стандартный инструмент для сборки проектов на Scala. 
+[**Установите Scala и sbt**](https://docs.scala-lang.org/ru/getting-started/install-scala.html): 
+SBT (Scala Build Tool) — это стандартный инструмент для сборки проектов на Scala. 
 Он управляет зависимостями, компиляцией и запуском вашего кода.
-
-**Официальная инструкция по установке**: [Установка Scala и sbt](https://docs.scala-lang.org/ru/getting-started/install-scala.html)
 
 ## Шаг 1: Генерация шаблона проекта
 
@@ -57,37 +56,39 @@ prevPage = index.html
 
 ### Назначение каждого плагина
 
-#### sbt-scalafix
+#### Статический анализ кода sbt-scalafix
+
+**Репозиторий:** [scalacenter/sbt-scalafix](https://github.com/scalacenter/sbt-scalafix)
 
 - **Что делает?** Выполняет статический анализ кода и применяет правила рефакторинга. 
   Помогает находить и исправлять проблемы, устаревшие конструкции (deprecations) и приводит код к единому стилю.
-- **Настройка:** Создайте файл `.scalafix.conf` в корне проекта.
+- **Настройка:** Создайте файл `.scalafix.conf` в корне проекта. [Описание правил](https://scalacenter.github.io/scalafix/docs/users/installation.html).
 
   ```text
   # Включаем набор правил
   rules = [
-    DisableSyntax,        # Запрещает использование некоторых "опасных" конструкций
-    LeakingImplicitClassVal,
-    RedundantSyntax       # Удаляет избыточный синтаксис
+      DisableSyntax,        # Запрещает использование некоторых "опасных" конструкций
+      LeakingImplicitClassVal,
+      RedundantSyntax       # Удаляет избыточный синтаксис
   ]
 
   # Конкретные настройки для правила DisableSyntax
-  DisableSyntax.noVars = true          # Запрещает объявление `var` (иммутабельность)
-  DisableSyntax.noThrows = true        # Запрещает `throw` (используйте типы вроде Either, Try)
-  DisableSyntax.noNulls = true         # Запрещает `null` (основной источник ошибок)
+  DisableSyntax.noVars = true          # Запрещает объявление `var` - изменяемых переменных
+  DisableSyntax.noThrows = true        # Запрещает `throw` - исключения
+  DisableSyntax.noNulls = true         # Запрещает `null`
   DisableSyntax.noReturns = true       # Запрещает ключевое слово `return`
-  DisableSyntax.noWhileLoops = true    # Запрещает циклы `while` (используйте рекурсию или функции высшего порядка)
+  DisableSyntax.noWhileLoops = true    # Запрещает циклы `while`
   DisableSyntax.noAsInstanceOf = true  # Запрещает небезопасные приведения типов
   DisableSyntax.noIsInstanceOf = true  # Запрещает небезопасные проверки типов
   DisableSyntax.noXml = true           # Запрещает устаревший XML-литерал в Scala
   DisableSyntax.noDefaultArgs = true   # Запрещает аргументы по умолчанию в методах
-  DisableSyntax.noFinalVal = true      # (Опционально) Запрещает `final val`
+  DisableSyntax.noFinalVal = true      # Запрещает `final val`
   DisableSyntax.noFinalize = true      # Запрещает переопределение метода `finalize`
   ```
 
-**Репозиторий:** [scalacenter/sbt-scalafix](https://github.com/scalacenter/sbt-scalafix)
+#### Форматирование sbt-scalafmt
 
-#### sbt-scalafmt
+**Репозиторий:** [scalameta/scalafmt](https://github.com/scalameta/scalafmt/)
 
 - **Что делает?** Автоматически форматирует ваш исходный код согласно заданным правилам. 
   Гарантирует, что весь код в проекте выглядит одинаково, что упрощает чтение и совместную работу.
@@ -111,22 +112,22 @@ prevPage = index.html
   rewrite.scala3.insertEndMarkerMinLines = 20
   ```
 
-**Репозиторий:** [scalameta/scalafmt](https://github.com/scalameta/scalafmt/)
+#### Обновление зависимостей sbt-dependency-updates
 
-#### sbt-dependency-updates
+**Репозиторий:** [aiyanbo/sbt-dependency-updates](https://github.com/aiyanbo/sbt-dependency-updates)
 
 - **Что делает?** По sbt-команде проверяет репозитории Maven/Ivy и показывает список зависимостей 
   и самих плагинов SBT, для которых вышла новая версия. Помогает поддерживать проект в актуальном состоянии.
 - **Использование:** Запустите в SBT команду `dependencyUpdates`.
-- **Репозиторий:** [aiyanbo/sbt-dependency-updates](https://github.com/aiyanbo/sbt-dependency-updates)
 
-#### sbt-explicit-dependencies
+#### Скрытые зависимости sbt-explicit-dependencies
+
+**Репозиторий:** [cb372/sbt-explicit-dependencies](https://github.com/cb372/sbt-explicit-dependencies)
 
 - **Что делает?** Проверяет, что в файле `build.sbt` явно объявлены ВСЕ библиотеки, которые использует ваш код для компиляции. 
   Иногда SBT может неявно подтянуть зависимости, что приводит к "скрытым" зависимостям и проблемам при их изменении. 
   Этот плагин устраняет такую неявность.
 - **Использование:** Запустите в SBT команды `undeclaredCompileDependencies` и `unusedCompileDependencies`.
-- **Репозиторий:** [cb372/sbt-explicit-dependencies](https://github.com/cb372/sbt-explicit-dependencies)
 
 ## Шаг 3: Создание псевдонимов (алиасов) для SBT команд
 
@@ -142,13 +143,13 @@ prevPage = index.html
     // "fix" - Применение всех исправлений и форматирования
     addCommandAlias("fix", "scalafmtSbt; scalafmtAll; scalafixAll")
 
-    // "prePush" - Полная проверка перед тем, как закоммитить код в репозиторий (например, в Git)
+    // "prePush" - Полная проверка перед тем, как закоммитить код
     addCommandAlias(
       "prePush",
       "clean; com; test; fix; undeclaredCompileDependencies; unusedCompileDependencies"
     )
 
-    // "fullCheck" - Самая полная проверка, включая поиск обновлений для библиотек
+    // "fullCheck" - Полная проверка + поиск обновлений для библиотек
     addCommandAlias("fullCheck", "prePush; dependencyUpdates")
     ```
 
@@ -240,76 +241,98 @@ prevPage = index.html
 ```dotty
 ThisBuild / scalacOptions ++=
   Seq(
-    "-deprecation",        // Предупреждает об использовании устаревших конструкций
-    "-explain",            // Подробно объясняет ошибки компиляции
-    "-Wunused:imports",    // Превращает неиспользуемые импорты в ошибки
-    "-unchecked",          // Предупреждает о местах, где компилятор делал предположения о типах
-    "-Xfatal-warnings",    // Превращает все предупреждения (warnings) в ошибки! Не даст скомпилировать код с предупреждениями.
-    "-feature",            // Предупреждает об использовании экспериментальных features языка
-    "-Wnonunit-statement"  // Предупреждает, если значимый результат выражения (не `Unit`) игнорируется
+    // Предупреждает об использовании устаревших конструкций
+    "-deprecation",    
+    // Подробно объясняет ошибки компиляции    
+    "-explain",  
+    // Превращает неиспользуемые импорты в ошибки          
+    "-Wunused:imports", 
+    // Предупреждает о местах, где компилятор делал предположения о типах   
+    "-unchecked",  
+    // Превращает все предупреждения (warnings) в ошибки! 
+    // Не даст скомпилировать код с предупреждениями.        
+    "-Xfatal-warnings",  
+    // Предупреждает об использовании экспериментальных features языка  
+    "-feature",   
+    // Предупреждает, если значимый результат выражения (не `Unit`) игнорируется         
+    "-Wnonunit-statement"  
   ) 
 ```
 
-## Шаг 6: Финальная проверка
+## Шаг 6: Финальная проверка работоспособности
 
-- Очищаем папки `src/main/scala` и `src/test/scala`
-- Создаем в них пакет `ru.scalabook.pdp`
-- В папке `src/main/scala` создаем файл `Main.scala`:
-  ```dotty
-  package ru.scalabook.pdp
-  
-  import cats.effect.IO
-  
-  @main def hello(): Unit =
-      println("Hello world!")
-  
-  def msgIO: IO[String] = IO("I was compiled by Scala 3. :)")
-  ```
-- В папке `src/test/scala` создаем файл `MainSuite.scala`:
-  ```dotty
-  package ru.scalabook.pdp
+После настройки всех инструментов и конфигураций необходимо убедиться, 
+что проект корректно собирается и проходит все проверки.
 
-  import weaver.*
-  
-  object MainSuite extends SimpleIOSuite:
-  
-    test("hello side-effects"):
-      for
-        x <- msgIO
-      yield expect.same("I was compiled by Scala 3. :)", x)
-  ```
-  
-Все настроено! Пришло время убедиться, что проект собирается и проходит все проверки.
+### Подготовка структуры проекта
 
+1. **Очистите стандартные папки:** Удалите содержимое папок `src/main/scala` и `src/test/scala`
+2. **Создайте пакет:** В обеих папках создайте структуру пакета `ru/scalabook/pdp`
+3. **Добавьте основной код:** Создайте файл `Main.scala` в `src/main/scala/ru/scalabook/pdp/`:
 
+   ```dotty
+   package ru.scalabook.pdp
+   
+   import cats.effect.IO
+   
+   @main def hello(): Unit =
+       println("Hello world!")
+   
+   def msgIO: IO[String] = IO("I was compiled by Scala 3. :)")
+   ```
+
+4. **Добавьте тесты:** Создайте файл `MainSuite.scala` в `src/test/scala/ru/scalabook/pdp/`:
+
+   ```dotty
+   package ru.scalabook.pdp
+
+   import weaver.*
+   
+   object MainSuite extends SimpleIOSuite:
+   
+     test("hello side-effects"):
+       for
+         x <- msgIO
+       yield expect.same("I was compiled by Scala 3. :)", x)
+   ```
+
+### Запуск полной проверки
 
 В терминале, в корневой папке проекта, выполните команду:
 
-```dotty
+```bash
 sbt fullCheck
 ```
 
-Эта команда, которую мы определили ранее, выполнит полный цикл проверки: 
-очистку, компиляцию, тесты, форматирование, анализ зависимостей и проверку на обновления. 
-Если все этапы прошли успешно, ваш проект полностью готов к началу разработки.
+Эта команда, которую мы определили ранее, выполнит полный цикл проверки:
+
+1. **`clean`** — очистка предыдущих артефактов сборки
+2. **`com`** — компиляция основного и тестового кода
+3. **`test`** — запуск всех тестов
+4. **`fix`** — форматирование кода и применение исправлений Scalafix
+5. **`undeclaredCompileDependencies`** — проверка на скрытые зависимости
+6. **`unusedCompileDependencies`** — поиск неиспользуемых зависимостей
+7. **`dependencyUpdates`** — проверка доступных обновлений библиотек
+
+Если все этапы пройдены успешно, проект полностью готов к началу разработки.
 
 ## Заключение
 
-Поздравляем! Вы успешно настроили современный проект на Scala 3 с использованием лучших практик:
+Отлично! Проект на Scala 3 успешно настроен с использованием лучших практик:
 
-- **Автоматизация:** Форматирование и рефакторинг кода происходят по команде.
-- **Качество код:** Строгие настройки компилятора и линтеры помогают избегать ошибок.
-- **Структура:** Зависимости и настройки аккуратно организованы.
-- **Функциональный стек:** В основе проекта лежат мощные и популярные библиотеки Cats Effect и Weaver.
+- **Автоматизация:** Форматирование и рефакторинг кода происходят по команде
+- **Качество кода:** Строгие настройки компилятора и линтеры помогают избегать ошибок
+- **Структура:** Зависимости и настройки аккуратно организованы
+- **Функциональный стек:** В основе проекта лежат мощные и популярные библиотеки Cats Effect и Weaver
 
-Теперь вы можете сосредоточиться на написании кода, а инструменты позаботятся о его качестве.
+Теперь можно сосредоточиться на написании кода, а инструменты позаботятся о его качестве.
 
 ---
 
 **Ссылки:**
 
-- [Документация к плагину "Персональный план развития"][plugin]
-- [Исходный код этого проекта на GitVerse][repo]
+- [Персональный план развития][plugin]
+- [Исходный репозиторий][repo]
 
 [repo]: https://gitverse.ru/scalabook/pdp
 [plugin]: https://artemkorsakov.github.io/personal-development-plan/ru/

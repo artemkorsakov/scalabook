@@ -72,6 +72,7 @@ object HeliumThemes:
             "Структуры данных"
           ),
           ButtonLink.internal(Root / "typeclass/index.md", "Классы типов"),
+          ButtonLink.internal(Root / "practice/index.md", "ФП на практике"),
           ButtonLink.internal(Root / "libs/index.md", "Библиотеки"),
           ButtonLink.internal(Root / "translations/index.md", "Переводы"),
           ButtonLink.internal(Root / "books/index.md", "Решения задач"),

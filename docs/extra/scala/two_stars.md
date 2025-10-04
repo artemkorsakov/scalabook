@@ -153,23 +153,24 @@ nextPage = three_stars.html
 - В алфавитном порядке внутри категорий
 @:@
 
-| Название                                                                                                                 | 📺 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий                   |
-|--------------------------------------------------------------------------------------------------------------------------| :-------: | :-----: |--------|----------------------------------|
-| [**Современное ФП с Tagless Final**](https://www.youtube.com/watch?v=sWEtnq0ReZA)                                        |   Scala   |  🇷🇺 RU  | 2023   | 🏷️ Tagless Final                |
-| [**Direct Style Scala**](https://www.youtube.com/watch?v=0Fm0y4K4YO8)                                                    |  Scala 3  |  🇬🇧 EN  | 2023   | 🚀 Scalar Conf                   |
-| [**Scala 3 Type System**](https://www.youtube.com/watch?v=vuTFg5g_f6w)                                                   |  Scala 3  |  🇬🇧 EN  | 2023   | 🧮 Система типов                 |
-| [**О дивный контекстный мир Scala**](https://www.youtube.com/watch?v=fR0hj-Lz1Vc)                                        |  Scala 2  |  🇷🇺 RU  | 2023   | 🧠 Контексты                     |
-| [**Cats by example – State**](https://www.youtube.com/watch?v=T8fhAHw9GM0&list=PLy4hTMY6erDBmvZiEDjtCTP8XCdhaXc2c)       |  Scala 2  |  🇬🇧 EN  | 2018   | 🐈 Cats                          |    
-| [**Combining Refined Types with Type Class Derivation in Scala**](https://www.youtube.com/watch?v=Hq2QWbUXKbE)           |  Scala 2  |  🇬🇧 EN  | 2018   | 🔍 Refined • 🧩 Type Classes     |
-| [**Decorate Types with Refined**](https://www.youtube.com/watch?v=zExb9x3fzKs)                                           |  Scala 2  |  🇬🇧 EN  | 2016   | 🔍 Refined                       |
-| [**Defusing the configuration time bomb with PureConfig and Refined**](https://www.youtube.com/watch?v=NjqRi-cF3-g)      |  Scala 2  |  🇬🇧 EN  | 2017   | 🔍 Refined • ⚙️ Конфигурация     |
-| [**Functional Structures**](https://www.youtube.com/playlist?list=PLFrwDVdSrYE6dy14XCmUtRAJuhCxuzJp0)                    |  Scala 2  |  🇬🇧 EN  | 2015   | λ ФП                             |
-| [**Getting Started with Refined**](https://www.youtube.com/watch?v=aZsmapo1afQ)                                          |  Scala 2  |  🇬🇧 EN  | 2020   | 🔍 Refined • 🎓 DevInsideYou     |
-| [**How to Build a Functional API**](https://www.youtube.com/watch?v=__zuECMFCRc)                                         |  Scala 2  |  🇬🇧 EN  | 2018   | 🌐 API • λ ФП                    |
-| [**Let The Compiler Help You: How To Make The Most Of Scala's Typesystem**](https://www.youtube.com/watch?v=hhXPeuJohM4) |  Scala 2  |  🇬🇧 EN  | 2017   | 🧮 Система типов • 🔍 Refined    |
-| [**Literal Types**](https://slideslive.com/38907881/literal-types-what-they-are-good-for)                                |  Scala 2  |  🇬🇧 EN  | 2018   | 🔍 Refined • 🧮 Литеральные типы |
-| [**Refined Types**](https://www.youtube.com/watch?v=IDrGbsupaok)                                                         |  Scala 2  |  🇬🇧 EN  | 2020   | 🔍 Refined • 🎓 Rock the JVM     |
-| [**Security with Refined**](https://slideslive.com/38908776/security-with-scala-refined-types-and-object-capabilities)   |  Scala 2  |  🇬🇧 EN  | 2018   | 🔍 Refined • 🔒 Безопасность     |
-| [**Simplicitly: foundations and applications of implicit function types**](https://dl.acm.org/doi/10.1145/3158130)       |  Scala 2  |  🇬🇧 EN  | 2018   | 🧮 Система типов                 |
-| [**Strings are Evil**](https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types)      |  Scala 2  |  🇬🇧 EN  | 2018   | 🔍 Refined • 🚫 Примитивные типы |
-| [**Why Types Matter**](https://www.youtube.com/watch?v=n1Y2V4zCZdQ)                                                      |  Scala 2  |  🇬🇧 EN  | 2020   | 🧮 Система типов • 🔍 Refined    |
+| Название                                                                                                                 | 📺 Версия | 🌐 Язык  | 📅 Год | 💬 Комментарий                   |
+|--------------------------------------------------------------------------------------------------------------------------|:---------:|:--------:|--------|----------------------------------|
+| [**Процесс - Ахтям Сакаев, Авто.ру, FScala 2024**](https://vkvideo.ru/video-226874299_456239077)                         |   Scala   | 🇷🇺 RU  | 2024   | Streams                          |
+| [**Современное ФП с Tagless Final**](https://www.youtube.com/watch?v=sWEtnq0ReZA)                                        |   Scala   | 🇷🇺 RU  | 2023   | 🏷️ Tagless Final                |
+| [**Direct Style Scala**](https://www.youtube.com/watch?v=0Fm0y4K4YO8)                                                    |  Scala 3  | 🇬🇧 EN  | 2023   | 🚀 Scalar Conf                   |
+| [**Scala 3 Type System**](https://www.youtube.com/watch?v=vuTFg5g_f6w)                                                   |  Scala 3  | 🇬🇧 EN  | 2023   | 🧮 Система типов                 |
+| [**О дивный контекстный мир Scala**](https://www.youtube.com/watch?v=fR0hj-Lz1Vc)                                        |  Scala 2  | 🇷🇺 RU  | 2023   | 🧠 Контексты                     |
+| [**Cats by example – State**](https://www.youtube.com/watch?v=T8fhAHw9GM0&list=PLy4hTMY6erDBmvZiEDjtCTP8XCdhaXc2c)       |  Scala 2  | 🇬🇧 EN  | 2018   | 🐈 Cats                          |    
+| [**Combining Refined Types with Type Class Derivation in Scala**](https://www.youtube.com/watch?v=Hq2QWbUXKbE)           |  Scala 2  | 🇬🇧 EN  | 2018   | 🔍 Refined • 🧩 Type Classes     |
+| [**Decorate Types with Refined**](https://www.youtube.com/watch?v=zExb9x3fzKs)                                           |  Scala 2  | 🇬🇧 EN  | 2016   | 🔍 Refined                       |
+| [**Defusing the configuration time bomb with PureConfig and Refined**](https://www.youtube.com/watch?v=NjqRi-cF3-g)      |  Scala 2  | 🇬🇧 EN  | 2017   | 🔍 Refined • ⚙️ Конфигурация     |
+| [**Functional Structures**](https://www.youtube.com/playlist?list=PLFrwDVdSrYE6dy14XCmUtRAJuhCxuzJp0)                    |  Scala 2  | 🇬🇧 EN  | 2015   | λ ФП                             |
+| [**Getting Started with Refined**](https://www.youtube.com/watch?v=aZsmapo1afQ)                                          |  Scala 2  | 🇬🇧 EN  | 2020   | 🔍 Refined • 🎓 DevInsideYou     |
+| [**How to Build a Functional API**](https://www.youtube.com/watch?v=__zuECMFCRc)                                         |  Scala 2  | 🇬🇧 EN  | 2018   | 🌐 API • λ ФП                    |
+| [**Let The Compiler Help You: How To Make The Most Of Scala's Typesystem**](https://www.youtube.com/watch?v=hhXPeuJohM4) |  Scala 2  | 🇬🇧 EN  | 2017   | 🧮 Система типов • 🔍 Refined    |
+| [**Literal Types**](https://slideslive.com/38907881/literal-types-what-they-are-good-for)                                |  Scala 2  | 🇬🇧 EN  | 2018   | 🔍 Refined • 🧮 Литеральные типы |
+| [**Refined Types**](https://www.youtube.com/watch?v=IDrGbsupaok)                                                         |  Scala 2  | 🇬🇧 EN  | 2020   | 🔍 Refined • 🎓 Rock the JVM     |
+| [**Security with Refined**](https://slideslive.com/38908776/security-with-scala-refined-types-and-object-capabilities)   |  Scala 2  | 🇬🇧 EN  | 2018   | 🔍 Refined • 🔒 Безопасность     |
+| [**Simplicitly: foundations and applications of implicit function types**](https://dl.acm.org/doi/10.1145/3158130)       |  Scala 2  | 🇬🇧 EN  | 2018   | 🧮 Система типов                 |
+| [**Strings are Evil**](https://slideslive.com/38908213/strings-are-evil-methods-to-hide-the-use-of-primitive-types)      |  Scala 2  | 🇬🇧 EN  | 2018   | 🔍 Refined • 🚫 Примитивные типы |
+| [**Why Types Matter**](https://www.youtube.com/watch?v=n1Y2V4zCZdQ)                                                      |  Scala 2  | 🇬🇧 EN  | 2020   | 🧮 Система типов • 🔍 Refined    |

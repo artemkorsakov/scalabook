@@ -163,6 +163,7 @@ factorial(10)   // 3628800
 
 - [Ссылка на репозиторий с упражнениями][sample]
 - [Не использовать `null`](https://docs.scala-lang.org/scala3/book/first-look-at-types.html#nothing-and-null)
+- [Почему функциональное программирование такое сложное?](https://habr.com/ru/articles/505928/)
 - [Харрисон - Введение в функциональное программирование](https://funprog-ru.github.io/)
 - [A bite of functional programming (in Scala)](https://scalac.io/blog/functional-programming-in-scala/)
 - [Business benefits of functional programming and how to make it work for your company](https://www.youtube.com/watch?v=EcGZdzECmIk)

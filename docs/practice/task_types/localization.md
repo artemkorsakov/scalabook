@@ -7,7 +7,304 @@ nextPage = ../db.html
 
 # Локализация
 
-В процессе написания...
+В данном разделе мы разберём, как реализуется **локализация** 
+в приложении управления персональным планом развития (ИПР), 
+чтобы оно могло поддерживать несколько языков. 
+Мы будем использовать библиотеку `pureconfig` для чтения конфигураций 
+и библиотеку `iron` для добавления ограничений на типы данных.
+
+## Зачем нужна локализация?
+
+Локализация позволяет:
+
+- Предоставлять интерфейс на разных языках.
+- Позволять пользователям добавлять новые языки.
+- Гарантировать корректность данных.
+- Упрощать обслуживание текстовых сообщений в приложении.
+
+## Добавление зависимостей
+
+Для работы с конфигурациями и уточнёнными типами данных, нам нужны следующие зависимости:
+
+```dotty
+object Dependencies {
+  ...
+
+  object iron {
+    private val version = "3.2.0"
+    val iron            = "io.github.iltotore" %% "iron"            % version
+    val pureconfig      = "io.github.iltotore" %% "iron-pureconfig" % version
+  }
+
+  object pureconfig {
+    private val version = "0.17.9"
+    val core            = "com.github.pureconfig" %% "pureconfig-core" % version
+  }
+
+  ...
+
+  val rootLibs: Seq[ModuleID] =
+    Seq(
+      cats.catsEffect,
+      iron.iron,
+      iron.pureconfig,
+      pureconfig.core
+    )
+
+  ...
+}
+```
+
+> [iron](https://iltotore.github.io/iron/docs/overview.html) — библиотека для уточнённых типов.  
+> [pureconfig](https://pureconfig.github.io/docs/) — библиотека для автоматического парсинга конфигураций.
+
+## Конфигурационный файл
+
+Создадим файл `application.conf` в директории `src/main/resources`:
+
+```conf
+// src/main/resources/application.conf
+localization = {
+  languages = [
+    {
+      code = "ru"
+      name = "Русский"
+      status = {
+        "in-progress": "В работе"
+        "planned": "Запланировано"
+        "knowledge-base": "База знаний"
+      }
+      types = {
+        "book" = "Книга"
+        "article" = "Статья"
+        "podcast" = "Подкаст"
+        "video" = "Видео"
+        "course" = "Курс"
+      }
+    },
+    {
+      code = "en"
+      name = "English"
+      status = {
+        "in-progress": "In progress"
+        "planned": "Planned"
+        "knowledge-base": "Knowledge base"
+      }
+      types = {
+        "book" = "Book"
+        "article" = "Article"
+        "podcast" = "Podcast"
+        "video" = "Video"
+        "course" = "Course"
+      }
+    }
+  ]
+}
+```
+
+## Модели конфигурации
+
+Создадим файл `Config.scala` в пакете `ru.scalabook.pdp.localization`:
+
+```dotty
+// src/main/scala/ru/scalabook/pdp/localization/Config.scala
+package ru.scalabook.pdp.localization
+
+import io.github.iltotore.iron.pureconfig.given
+import pureconfig.*
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
+
+/** Тип `NonEmptyString` — это строка, которая:
+  *   - не пустая
+  *   - без начальных и конечных пробелов
+  */
+type NonEmptyString = String :| (Not[Empty] & Trimmed)
+
+/** Тип `LanguageCode` — это код языка:
+  *   - длина от 2 до 3 символов
+  */
+type LanguageCode = String :| (MinLength[2] & MaxLength[3])
+
+/** Тип `LanguageName` — это имя языка:
+  *   - длина от 2 до 20 символов
+  */
+type LanguageName = String :| (MinLength[2] & MaxLength[20])
+
+/** `StatusConfig` содержит локализацию статусов задач:
+  *   - inProgress — статус "В работе"
+  *   - planned — статус "Запланировано"
+  *   - knowledgeBase — статус "База знаний"
+  */
+final case class StatusConfig(
+    inProgress: NonEmptyString,
+    planned: NonEmptyString,
+    knowledgeBase: NonEmptyString
+)
+
+/** `TypesConfig` содержит локализацию типов задач:
+  *   - book — тип "Книга"
+  *   - article — тип "Статья"
+  *   - podcast — тип "Подкаст"
+  *   - video — тип "Видео"
+  *   - course — тип "Курс"
+  */
+final case class TypesConfig(
+    book: NonEmptyString,
+    article: NonEmptyString,
+    podcast: NonEmptyString,
+    video: NonEmptyString,
+    course: NonEmptyString
+)
+
+/** `LanguageConfig` содержит информацию о языке и его локализации:
+  *   - `code` — код языка (например, "ru", "en")
+  *   - `name` — имя языка (например, "Русский", "English")
+  *   - `status` — локализация статусов
+  *   - `types` — локализация типов задач
+  */
+final case class LanguageConfig(
+    code: LanguageCode,
+    name: LanguageName,
+    status: StatusConfig,
+    types: TypesConfig
+) derives ConfigReader
+
+/** `Languages` — список языков, поддерживающих минимум 2 элемента. Это
+  * гарантирует, что всегда есть хотя бы два языка в конфиге.
+  */
+type Languages = List[LanguageConfig] :| MinLength[2]
+
+/** `LocalizationConfig` содержит все локализационные настройки. В ней хранится
+  * список поддерживаемых языков.
+  */
+final case class LocalizationConfig(languages: Languages)
+    derives ConfigReader
+
+/** `Config` — корневой объект конфигурации. Он содержит все данные, необходимые
+  * для локализации.
+  */
+final case class Config(localization: LocalizationConfig) derives ConfigReader
+```
+
+Кроме требования того, чтобы список языков содержал минимум два языка, 
+потребуем, чтобы этот список содержал языки по-умолчанию: русский и английский.
+
+## Тестирование конфигурации
+
+Создадим файл `ConfigSuite.scala` в аналогичном пакете, но в директории тестов, 
+где проверим корректность загрузки конфигурации:
+
+```dotty
+// src/main/test/ru/scalabook/pdp/localization/ConfigSuite.scala
+package ru.scalabook.pdp.localization
+
+import pureconfig.*
+import weaver.*
+
+object ConfigSuite extends SimpleIOSuite:
+  private val configSource = ConfigSource.default.load[Config]
+
+  pureTest("check read config"):
+    expect(configSource.isRight)
+
+  pureTest("check Russian language config"):
+    matches(configSource):
+      case Right(config) =>
+        expect(config.localization.languages.exists(_.code == "ru"))
+
+  pureTest("check English language config"):
+    matches(configSource):
+      case Right(config) =>
+        expect(config.localization.languages.exists(_.code == "en"))
+end ConfigSuite
+```
+
+### Что проверяет тест?
+
+- Проверяет, что конфиг прочитался корректно.
+- Проверяет, что обязательный языки, русский и английский, присутствуют в конфиге.
+- Гарантирует, что данные соответствуют ограничениям.
+
+## Расширяемость системы
+
+Одной из важных особенностей разработанной системы локализации является её **гибкость и расширяемость**. 
+Система спроектирована так, чтобы добавление новых языков было максимально простым, не требуя изменений в коде приложения.
+
+### Как добавить новый язык?
+
+Чтобы добавить поддержку нового языка, например, испанский (`es`), 
+достаточно **изменить конфигурационный файл** `application.conf`, 
+добавив в секцию `languages` новый блок:
+
+```conf
+{
+  code = "es"
+  name = "Español"
+  status = {
+    "in-progress": "En progreso"
+    "planned": "Planificado"
+    "knowledge-base": "Base de conocimientos"
+  }
+  types = {
+    "book" = "Libro"
+    "article" = "Artículo"
+    "podcast" = "Podcast"
+    "video" = "Video"
+    "course" = "Curso"
+  }
+}
+```
+
+> ✅ Все остальные части системы будут работать без изменений, 
+> потому что модель `LanguageConfig` ожидает список произвольной длины.
+
+### Автоматическая проверка данных
+
+Поскольку мы используем библиотеку `iron` для создания уточнённых типов, система автоматически проверяет:
+
+- Что код языка имеет длину от 2 до 3 символов.
+- Что имя языка содержит от 2 до 20 символов.
+- Что все строки (статусы, типы задач) не пустые и не содержат лишних пробелов.
+- Что список языков содержит минимум два элемента (по умолчанию — русский и английский).
+
+Если какая-либо запись в конфиге не соответствует этим ограничениям, 
+загрузка конфигурации завершится с ошибкой в момент прогонки тестов. 
+Это позволяет **рано выявлять проблемы** и **гарантировать стабильность** системы.
+
+### Преимущества архитектуры
+
+#### Не требуется изменять код приложения
+
+При добавлении нового языка **не нужно менять ни одну строку кода**. 
+Все изменения происходят только в конфигурационном файле. 
+Это делает систему очень удобной для администраторов и переводчиков.
+
+#### Гарантии качества данных
+
+С помощью уточненных типов, мы можем быть уверены, что:
+
+- Нет пустых или некорректных строк.
+- Коды языков соблюдены.
+- Все необходимые поля присутствуют.
+
+Это снижает вероятность ошибок в будущем и упрощает обслуживание.
+
+#### Поддержка нескольких языков из коробки
+
+Система уже настроена на работу с несколькими языками. 
+Её можно использовать как основу для международной версии продукта 
+или для внутреннего использования в мультиязычной команде.
+
+## Итоги
+
+- **Локализация** реализована через конфигурационные файлы, что делает её **удобной и гибкой**.
+- Благодаря **уточнённым типам**, данные проходят автоматическую проверку на корректность.
+- **Библиотека `pureconfig`** позволяет легко загружать конфигурации из `application.conf`.
+- Система **легко расширяема**: новые языки добавляются без изменений в код.
+- **Тесты** гарантируют, что конфигурация читается правильно и содержит все необходимые данные,
+  в том числе после обновления конфигурационного файла.
+- Вся архитектура спроектирована так, чтобы поддерживать **долгосрочную устойчивость** и **лёгкое масштабирование**.
 
 ---
 

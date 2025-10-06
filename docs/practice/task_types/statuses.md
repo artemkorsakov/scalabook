@@ -401,8 +401,8 @@ sealed trait Task:
   val status: Status
   val section: Section
   val order: TaskOrder
-  val startDate: LocalDate
-  val endDate: LocalDate
+  val startDate: Option[LocalDate]
+  val endDate: Option[LocalDate]
   val information: String
   val plan: List[TaskStep]
 ```

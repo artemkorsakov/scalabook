@@ -20,8 +20,8 @@ object Dependencies {
   object iron {
     private val version = "3.0.4"
     private val org     = "io.github.iltotore"
-    val iron            = org %% "iron"      % version
-    val cats            = org %% "iron-cats" % version
+    val cats            = org %% "iron-cats"       % version
+    val core            = org %% "iron"            % version
     val scalacheck      = org %% "iron-scalacheck" % version
   }
 
@@ -83,7 +83,7 @@ object Dependencies {
 
   val exampleLibs: Seq[ModuleID] =
     Seq(
-      iron.iron,
+      iron.core,
       scalaz.core,
       typelevel.algebra,
       typelevel.catsCore,

@@ -32,7 +32,7 @@ object Dependencies {
 
   object iron {
     private val version = "3.2.0"
-    val iron            = "io.github.iltotore" %% "iron"            % version
+    val core            = "io.github.iltotore" %% "iron"            % version
     val pureconfig      = "io.github.iltotore" %% "iron-pureconfig" % version
   }
 
@@ -46,7 +46,7 @@ object Dependencies {
   val rootLibs: Seq[ModuleID] =
     Seq(
       cats.catsEffect,
-      iron.iron,
+      iron.core,
       iron.pureconfig,
       pureconfig.core
     )

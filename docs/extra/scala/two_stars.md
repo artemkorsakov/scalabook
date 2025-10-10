@@ -139,6 +139,7 @@ nextPage = three_stars.html
 | [**Type safety with refined**](https://blog.michalp.net/posts/scala/refined/)                                                                                                                |  Scala 2  | 🇬🇧 EN | 2022   | 🔍 Refined                                     |
 | [**Type-Level Programming in Scala**](https://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/)                                                                           |  Scala 2  | 🇬🇧 EN | 2010   |                                                |
 | [**Validate Service Configuration in Scala**](https://medium.com/se-notes-by-alexey-novakov/validate-service-configuration-in-scala-85f661c4b5a6)                                            |  Scala 2  | 🇬🇧 EN | 2019   | 🔍 Refined                                     |
+| [**Why is ADT pattern matching allowed?**](https://typelevel.org/blog/2014/11/10/why_is_adt_pattern_matching_allowed.html)                                                                   |  Scala 2  | 🇬🇧 EN | 2014   |                                                |
 | [**Wtf is Refined?**](https://medium.com/@Methrat0n/wtf-is-refined-5008eb233194)                                                                                                             |  Scala 2  | 🇬🇧 EN | 2019   | 🔍 Refined                                     |
 
 ## 🎥 Видео

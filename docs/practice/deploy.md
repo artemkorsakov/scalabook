@@ -61,11 +61,11 @@ SBT (Scala Build Tool) — это стандартный инструмент д
 
 #### Статический анализ кода sbt-scalafix
 
-**Репозиторий:** [scalacenter/sbt-scalafix](https://github.com/scalacenter/sbt-scalafix)
-
+- [**Репозиторий**](https://github.com/scalacenter/sbt-scalafix)
+- [**Описание правил**](https://scalacenter.github.io/scalafix/docs/users/installation.html)
 - **Что делает?** Выполняет статический анализ кода и применяет правила рефакторинга. 
   Помогает находить и исправлять проблемы, устаревшие конструкции (deprecations) и приводит код к единому стилю.
-- **Настройка:** Создайте файл `.scalafix.conf` в корне проекта. [Описание правил](https://scalacenter.github.io/scalafix/docs/users/installation.html).
+- **Настройка:** Создайте файл `.scalafix.conf` в корне проекта со следующим содержимым:
 
   ```text
   # Включаем набор правил
@@ -91,11 +91,10 @@ SBT (Scala Build Tool) — это стандартный инструмент д
 
 #### Форматирование sbt-scalafmt
 
-**Репозиторий:** [scalameta/scalafmt](https://github.com/scalameta/scalafmt/)
-
+- [**Репозиторий**](https://github.com/scalameta/scalafmt/)
 - **Что делает?** Автоматически форматирует ваш исходный код согласно заданным правилам. 
   Гарантирует, что весь код в проекте выглядит одинаково, что упрощает чтение и совместную работу.
-- **Настройка:** Создайте файл `.scalafmt.conf` в корне проекта.
+- **Настройка:** Создайте файл `.scalafmt.conf` в корне проекта со следующим содержимым:
 
   ```text
   # Версия scalafmt
@@ -117,17 +116,15 @@ SBT (Scala Build Tool) — это стандартный инструмент д
 
 #### Обновление зависимостей sbt-dependency-updates
 
-**Репозиторий:** [aiyanbo/sbt-dependency-updates](https://github.com/aiyanbo/sbt-dependency-updates)
-
+- [**Репозиторий**](https://github.com/aiyanbo/sbt-dependency-updates)
 - **Что делает?** По sbt-команде проверяет репозитории Maven/Ivy и показывает список зависимостей 
   и самих плагинов SBT, для которых вышла новая версия. Помогает поддерживать проект в актуальном состоянии.
 - **Использование:** Запустите в SBT команду `dependencyUpdates`.
 
 #### Скрытые зависимости sbt-explicit-dependencies
 
-**Репозиторий:** [cb372/sbt-explicit-dependencies](https://github.com/cb372/sbt-explicit-dependencies)
-
-- **Что делает?** Проверяет, что в файле `build.sbt` явно объявлены ВСЕ библиотеки, которые использует ваш код для компиляции. 
+- [**Репозиторий**](https://github.com/cb372/sbt-explicit-dependencies)
+- **Что делает?** Проверяет, что в файле `build.sbt` явно объявлены все библиотеки, которые использует ваш код для компиляции. 
   Иногда SBT может неявно подтянуть зависимости, что приводит к "скрытым" зависимостям и проблемам при их изменении. 
   Этот плагин устраняет такую неявность.
 - **Использование:** Запустите в SBT команды `undeclaredCompileDependencies` и `unusedCompileDependencies`.

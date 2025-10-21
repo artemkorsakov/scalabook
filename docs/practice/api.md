@@ -1,11 +1,13 @@
 {%
 showPrev = true
 prevPage = db.html
+showNext = true
+nextPage = lifecycle.html
 %}
 
 # Определение клиентского API и создание сервиса
 
-В процессе написания...
+[В процессе написания...](https://t.me/scalabook)
 
 ---
 

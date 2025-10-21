@@ -81,6 +81,8 @@ enum Status:
 
 Таким образом, каждая задача может иметь один из трёх возможных статусов.
 
+Перечисление (enum) — это специальный тип данных, позволяющий определить фиксированный набор именованных констант. 
+
 ## Типы задач
 
 В системе управления персональным планом развития (ИПР) важно иметь возможность гибко описывать разные форматы задач. 
@@ -131,109 +133,254 @@ object Dependencies {
 
 Теперь мы можем использовать функционал Iron для создания безопасных типов данных.
 
-### Определение перечисления `TaskType`
+### Подробное объяснение перечисления `TaskType`
 
 Создадим файл `TaskType.scala` в директории `src/main/scala/ru/scalabook/pdp/model`.
 
 ```dotty
-// src/main/scala/ru/scalabook/pdp.model/TaskType.scala
+// src/main/scala/ru/scalabook/pdp/model/TaskType.scala
 package ru.scalabook.pdp.model
 
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
+import ru.scalabook.pdp.model.TaskType.*
 
-type TaskTypeId   = Int :| GreaterEqual[0]
-type TaskTypeName = String :| (MinLength[2] & MaxLength[20] & Trimmed)
+import scala.language.implicitConversions
 
-enum TaskType:
-  case Book
-  case Article
-  case Podcast
-  case Video
-  case Course
-  case UserType(id: TaskTypeId, name: TaskTypeName)
+enum TaskType(val id: TaskTypeId):
+  case Book    extends TaskType(PredefinedTaskTypeId(0))
+  case Article extends TaskType(PredefinedTaskTypeId(1))
+  case Podcast extends TaskType(PredefinedTaskTypeId(2))
+  case Video   extends TaskType(PredefinedTaskTypeId(3))
+  case Course  extends TaskType(PredefinedTaskTypeId(4))
+
+  case UserType(override val id: UserTaskTypeId, name: TaskTypeName)
+      extends TaskType(id)
+end TaskType
+
+object TaskType:
+  type PredefinedTaskTypeId = PredefinedTaskTypeId.T
+  object PredefinedTaskTypeId
+      extends RefinedType[Int, GreaterEqual[0] & Less[5]]
+
+  type UserTaskTypeId = UserTaskTypeId.T
+  object UserTaskTypeId extends RefinedType[Int, GreaterEqual[5]]
+
+  type TaskTypeId = PredefinedTaskTypeId | UserTaskTypeId
+
+  type TaskTypeName = TaskTypeName.T
+  object TaskTypeName
+      extends RefinedType[String, MinLength[2] & MaxLength[20] & Trimmed]
+end TaskType
 ```
 
-### Разбор кода
-
-#### Уточнённые типы
+#### Объявление перечисления
 
 ```dotty
-type TaskTypeId   = Int :| GreaterEqual[0]
-type TaskTypeName = String :| (MinLength[2] & MaxLength[20] & Trimmed)
+enum TaskType(val id: TaskTypeId):
 ```
 
-- `TaskTypeId` — это целое число, которое должно быть **не меньше 0**.
-- `TaskTypeName` — это строка, которая должна:
-    - иметь **минимум 2 символа**
-    - иметь **максимум 20 символов**
-    - быть **обрезанной от лишних пробелов** (trimmed)
+Здесь:
 
-Эти ограничения гарантируют, что данные будут корректными при работе с пользовательскими типами задач.
+- `enum` — ключевое слово для создания перечисления
+- `TaskType` — название нашего перечисления
+- `val id: TaskTypeId` — каждый вариант перечисления имеет идентификатор определенного типа
 
-#### Перечисление `TaskType`
+#### Предопределенные типы задач
+
+Это стандартные, заранее определенные типы задач:
 
 ```dotty
-enum TaskType:
-  case Book
-  case Article
-  case Podcast
-  case Video
-  case Course
-  case UserType(id: TaskTypeId, name: TaskTypeName)
+case Book    extends TaskType(PredefinedTaskTypeId(0)) // Книга
+case Article extends TaskType(PredefinedTaskTypeId(1)) // Статья
+case Podcast extends TaskType(PredefinedTaskTypeId(2)) // Подкаст
+case Video   extends TaskType(PredefinedTaskTypeId(3)) // Видео
+case Course  extends TaskType(PredefinedTaskTypeId(4)) // Курс
 ```
 
-Перечисление содержит следующие варианты:
-
-| Название     | Описание                             |
-|--------------|--------------------------------------|
-| `Book`       | Задача, связанная с книгой           |
-| `Article`    | Задача, связанная со статьей         |
-| `Podcast`    | Задача, связанная с подкастом        |
-| `Video`      | Задача, связанная с видео            |
-| `Course`     | Задача, связанная с курсом           |
-| `UserType`   | Пользовательский тип задачи          |
-
-#### Пользовательский тип (`UserType`)
+#### Пользовательский тип задачи
 
 ```dotty
-case UserType(id: TaskTypeId, name: TaskTypeName)
+case UserType(override val id: UserTaskTypeId, name: TaskTypeName)
+    extends TaskType(id)
 ```
 
-- `id`: уникальный идентификатор пользовательского типа задачи (например, 1, 2, 3...).
-- `name`: имя пользовательского типа (например, "Ведение блога", "Участие в open-source").
+Это специальный случай, который позволяет пользователям создавать свои собственные типы задач:
 
-> 💡 Пример использования:
->
-> ```dotty
-> val blogTaskType = TaskType.UserType(1, "Ведение блога")
-> ```
+- `id` — идентификатор пользовательского типа (должен быть ≥ 5)
+- `name` — название пользовательского типа
 
-### Пример ошибки при неверном использовании
-
-Если попытаться создать `UserType` с некорректными данными, компилятор выдаст ошибку:
+#### PredefinedTaskTypeId — ID предопределенных типов
 
 ```dotty
-val invalid = UserType(-1, " blog ")
+type PredefinedTaskTypeId = PredefinedTaskTypeId.T
+object PredefinedTaskTypeId
+    extends RefinedType[Int, GreaterEqual[0] & Less[5]]
 ```
 
-Это приведёт к следующим ошибкам:
+**Что это значит:**
+
+- Это целое число (`Int`)
+- Допустимые значения: от 0 до 4
+
+#### UserTaskTypeId — ID пользовательских типов
+
+```dotty
+type UserTaskTypeId = UserTaskTypeId.T
+object UserTaskTypeId extends RefinedType[Int, GreaterEqual[5]]
+```
+
+**Что это значит:**
+
+- Это целое число (`Int`)
+- Должно быть ≥ 5
+- Это гарантирует, что пользовательские ID не пересекаются с предопределенными
+
+#### TaskTypeId — общий тип для ID
+
+```dotty
+type TaskTypeId = PredefinedTaskTypeId | UserTaskTypeId
+```
+
+[Объединяет оба типа ID](https://docs.scala-lang.org/ru/scala3/book/types-union.html) в один общий тип.
+
+#### TaskTypeName — название типа задачи
+
+```dotty
+type TaskTypeName = TaskTypeName.T
+object TaskTypeName
+    extends RefinedType[String, MinLength[2] & MaxLength[20] & Trimmed]
+```
+
+**Ограничения для названия:**
+
+- Минимальная длина: 2 символа
+- Максимальная длина: 20 символов
+- Строка должна быть обрезана (без пробелов в начале и конце)
+
+#### Что такое "уточненные типы" (Refined Types)?
+
+Библиотека Iron позволяет создавать типы с ограничениями. 
+Вместо простого `Int` или `String` мы создаем типы, которые гарантируют, что данные соответствуют определенным правилам.
+
+##### Пример без уточненных типов (проблемный):
+
+```dotty
+// Проблема: никаких проверок!
+case class TaskType(id: Int, name: String)
+
+// Можно создать некорректные данные:
+val bad1 = TaskType(-1, "A")         // ID отрицательный, имя слишком короткое
+val bad2 = TaskType(1, "   test   ") // Лишние пробелы
+```
+
+##### Пример с уточненными типами (безопасный):
+
+```dotty
+// Решение: типы с ограничениями
+case class TaskType(id: TaskTypeId, name: TaskTypeName)
+
+// Некорректные данные не скомпилируются!
+// val bad1 = TaskType(-1, "A")         // Ошибка компиляции!
+// val bad2 = TaskType(1, "   test   ") // Ошибка компиляции!
+```
+
+#### Зачем нужны opaque types (запечатанные типы)?
+
+[Создание новых типов](https://iltotore.github.io/iron/docs/reference/newtypes.html) через
+
+```dotty
+type A = A.T
+object A extends RefinedType...
+```
+
+создает [запечатанный (opaque)](https://docs.scala-lang.org/ru/scala3/book/types-opaque-types.html) тип `A`.
+
+##### Проблема, которую они решают:
+
+Без opaque types:
+
+```dotty
+type UserId = Int
+type ProductId = Int
+
+def getUser(id: UserId): User = ???
+def getProduct(id: ProductId): Product = ???
+
+// Проблема: можно перепутать ID!
+val userId: UserId = 123
+getProduct(userId) // Ошибка, но компилятор не поймет!
+```
+
+С opaque types:
+
+```dotty
+type UserId = UserId.T
+object UserId extends RefinedType[Int, Positive]
+
+type ProductId = ProductId.T
+object ProductId extends RefinedType[Int, Positive]
+
+// Теперь нельзя перепутать!
+val userId: UserId = UserId(123)
+// getProduct(userId) // Ошибка компиляции! Типы разные
+```
+
+#### Практические примеры использования
+
+##### Создание предопределенных типов:
+
+```dotty
+// Это работает, т.к. значения корректны
+val bookType: TaskType = TaskType.Book
+val articleType: TaskType = TaskType.Article
+```
+
+##### Создание пользовательских типов:
+
+```dotty
+// Корректные примеры:
+UserType(UserTaskTypeId(5), TaskTypeName("Блог"))
+UserType(UserTaskTypeId(6), TaskTypeName("Open Source"))
+
+// Некорректные примеры (не скомпилируются):
+// Ошибка: ID=3 < 5
+UserType(UserTaskTypeId(3), TaskTypeName("Тест")) 
+// Ошибка: название слишком короткое  
+UserType(UserTaskTypeId(5), TaskTypeName("A"))      
+UserType(UserTaskTypeId(5), TaskTypeName("Очень длинное название которое не подходит"))
+// Ошибка: есть лишние пробелы
+UserType(UserTaskTypeId(5), TaskTypeName(" тест ")) 
+```
+
+#### Пример ошибки при неверном использовании
+
+Если попытаться создать `UserType` с некорректными данными, компилятор выдаст ошибку.
+
+Например, `val invalid = UserType(UserTaskTypeId(-1), TaskTypeName(" blog "))` приведёт к следующим ошибкам:
 
 - `-1` не проходит ограничение `GreaterEqual[0]`, при компиляции выдает:
   "Could not satisfy a constraint for type scala. Int. Value: -1 Message: Should be greater than or equal to 0"
 - `" blog "` не проходит ограничения `MinLength[2]`, `MaxLength[20]` и `Trimmed`, при компиляции выдает:
-  "Could not satisfy a constraint for type java. lang. String. 
-  Value: blog Message: Should have a minimum length of 2 & Should have a maximum length of 20 
+  "Could not satisfy a constraint for type java. lang. String.
+  Value: blog Message: Should have a minimum length of 2 & Should have a maximum length of 20
   & Should not have leading or trailing whitespaces"
 
 Компиляция завершится с сообщением об ошибке, что помогает избежать некорректных значений на этапе разработки.
+
+#### Преимущества такого подхода
+
+1. **Безопасность типов** — компилятор проверяет корректность данных
+2. **Ясность кода** — типы документируют свои ограничения
+3. **Предотвращение ошибок** — многие ошибки обнаруживаются на этапе компиляции
+4. **Легкость рефакторинга** — изменения типов автоматически проверяются компилятором
 
 ### Итоги
 
 - `TaskType` — это перечисление, описывающее типы задач в системе.
 - Оно включает стандартные типы: `Book`, `Article`, `Podcast`, `Video`, `Course`.
 - Также предусмотрен `UserType` для пользовательских форматов задач.
-- Для обеспечения безопасности данных используются уточнённые типы из библиотеки Iron.
+- Для обеспечения безопасности данных используются уточнённые типы.
 - Такой подход позволяет создавать структурированный, читаемый и надёжный код.
 
 ## Разделы задачи
@@ -273,11 +420,19 @@ package ru.scalabook.pdp.model
 
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
-
-type SectionId   = Int :| GreaterEqual[0]
-type SectionName = String :| (MinLength[2] & MaxLength[100] & Trimmed)
+import ru.scalabook.pdp.model.Section.*
 
 final case class Section(id: SectionId, name: SectionName)
+
+object Section:
+
+  type SectionId = SectionId.T
+  object SectionId extends RefinedType[Int, GreaterEqual[0]]
+
+  type SectionName = SectionName.T
+  object SectionName
+      extends RefinedType[String, MinLength[2] & MaxLength[100] & Trimmed]
+end Section
 ```
 
 Этот класс будет использоваться для хранения информации о каждом разделе. Он состоит из двух полей:
@@ -285,7 +440,8 @@ final case class Section(id: SectionId, name: SectionName)
 #### `id`: Уникальный идентификатор раздела
 
 ```dotty
-type SectionId = Int :| GreaterEqual[0]
+type SectionId = SectionId.T
+object SectionId extends RefinedType[Int, GreaterEqual[0]]
 ```
 
 - `GreaterEqual[0]` гарантирует, что `id` не может быть меньше 0 (например, `-1`, `null` и т.п.).
@@ -293,13 +449,15 @@ type SectionId = Int :| GreaterEqual[0]
 #### `name`: Название раздела
 
 ```dotty
-type SectionName = String :| (MinLength[2] & MaxLength[100] & Trimmed)
+type SectionName = SectionName.T
+object SectionName
+    extends RefinedType[String, MinLength[2] & MaxLength[100] & Trimmed]
 ```
 
 - Строка, которая:
     - имеет **минимум 2 символа**
     - имеет **максимум 100 символов**
-    - **не содержит лишних пробелов** в начале или конце (`Trimmed`)
+    - **не содержит лишних пробелов** в начале или конце
 
 > ✅ Пример допустимого значения: `"Функциональное программирование"`
 > 
@@ -324,9 +482,9 @@ final case class Section(id: SectionId, name: SectionName)
 ### Пример использования
 
 ```dotty
-val algorithmsSection = Section(1, "Алгоритмы")
-val softSkillsSection = Section(2, "Soft skills")
-val webDevSection     = Section(3, "Web-разработка")
+Section(SectionId(1), SectionName("Алгоритмы"))
+Section(SectionId(2), SectionName("Soft skills"))
+Section(SectionId(3), SectionName("Web-разработка"))
 ```
 
 ### Почему это важно?
@@ -344,7 +502,6 @@ val webDevSection     = Section(3, "Web-разработка")
 - Они позволяют группировать задачи по темам и упрощают управление обучением.
 - Реализуются через `case class` с использованием уточнённых типов.
 - Каждый раздел имеет уникальный идентификатор и проверенное имя.
-- Разделы связываются с задачами через поле `section` в классе `Task`.
 
 ## Общие поля задачи
 
@@ -355,18 +512,18 @@ val webDevSection     = Section(3, "Web-разработка")
 
 ### Список общих полей
 
-| Поле          | Тип данных          | Описание                                                                                                         |
-|---------------|---------------------|------------------------------------------------------------------------------------------------------------------|
-| `id`          | `UUID`              | Уникальный идентификатор задачи. Гарантирует уникальность каждой задачи в системе.                               |
-| `name`        | `TaskName`          | Название задачи. Должно быть не короче 2 символов, не длиннее 200 и не содержать лишних пробелов.                |
-| `taskType`    | `TaskType`          | Тип задачи (из перечисления `TaskType`). Может быть `Book`, `Article`, `Podcast`, `Video`, `Course`, `UserType`. |
-| `status`      | `Status`            | Текущий статус задачи: `InProgress`, `Planned`, `KnowledgeBase`.                                                 |
-| `section`     | `Section`           | Раздел, к которому относится задача. Позволяет группировать задачи по темам.                                     |
-| `order`       | `TaskOrder`         | Порядковый номер задачи. Используется для определения последовательности выполнения.                             |
-| `startDate`   | `Option[LocalDate]` | Дата, когда задача была взята в работу.                                                                          |
-| `endDate`     | `Option[LocalDate]` | Планируемая дата завершения.                                                                                     |
-| `information` | `String`            | Дополнительная информация о задаче (например, цели, примечания, источники).                                      |
-| `plan`        | `List[TaskStep]`    | План выполнения задачи — список шагов или действий, необходимых для её завершения.                               |
+| Поле          | Тип данных          | Описание                                                                             |
+|---------------|---------------------|--------------------------------------------------------------------------------------|
+| `id`          | `UUID`              | Уникальный идентификатор задачи.                                                     |
+| `name`        | `TaskName`          | Название задачи.                                                                     |
+| `taskTypeId`  | `TaskTypeId`        | Идентификатор типа задачи (из перечисления `TaskType`).                              |
+| `status`      | `Status`            | Текущий статус задачи: `InProgress`, `Planned`, `KnowledgeBase`.                     |
+| `sectionId`   | `SectionId`         | Идентификатор раздела, к которому относится задача.                                  |
+| `order`       | `TaskOrder`         | Порядковый номер задачи. Используется для определения последовательности выполнения. |
+| `startDate`   | `Option[LocalDate]` | Дата, когда задача была взята в работу.                                              |
+| `endDate`     | `Option[LocalDate]` | Планируемая дата завершения.                                                         |
+| `information` | `String`            | Дополнительная информация о задаче (например, цели, примечания, источники).          |
+| `plan`        | `List[TaskStep]`    | План выполнения задачи — список шагов или действий, необходимых для её завершения.   |
 
 
 ### Реализация через `sealed trait Task`
@@ -384,27 +541,39 @@ package ru.scalabook.pdp.model
 
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
+import ru.scalabook.pdp.model.BookTask.*
+import ru.scalabook.pdp.model.Section.SectionId
+import ru.scalabook.pdp.model.Task.*
+import ru.scalabook.pdp.model.TaskType.*
 
-import java.net.URL
 import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.duration.{FiniteDuration, MILLISECONDS}
 
-type TaskName  = String :| (MinLength[2] & MaxLength[200] & Trimmed)
-type TaskOrder = Int :| Positive
-type TaskStep  = String :| (MinLength[2] & MaxLength[200] & Trimmed)
-
 sealed trait Task:
   val id: UUID
   val name: TaskName
-  val taskType: TaskType
+  val taskTypeId: TaskTypeId
   val status: Status
-  val section: Section
+  val sectionId: SectionId
   val order: TaskOrder
   val startDate: Option[LocalDate]
   val endDate: Option[LocalDate]
   val information: String
   val plan: List[TaskStep]
+
+object Task:
+  type TaskName = TaskName.T
+  object TaskName
+      extends RefinedType[String, MinLength[2] & MaxLength[200] & Trimmed]
+
+  type TaskOrder = TaskOrder.T
+  object TaskOrder extends RefinedType[Int, Positive]
+
+  type TaskStep = TaskStep.T
+  object TaskStep
+      extends RefinedType[String, MinLength[2] & MaxLength[200] & Trimmed]
+end Task
 ```
 
 ### Разбор каждого поля
@@ -426,11 +595,12 @@ sealed trait Task:
 - **Пример**: `"Изучить книгу 'Clean Code'"`
 - **Зачем нужно**: Название помогает быстро понять, о чём задача.
 
-#### `taskType: TaskType`
+#### `taskTypeId: TaskTypeId`
 
-- **Описание**: Тип задачи (из перечисления `TaskType`).
-- **Пример**: `TaskType.Book`, `TaskType.Article`, `TaskType.Podcast`, `TaskType.UserType(...)`
-- **Зачем нужно**: Тип задачи определяет, как она будет обрабатываться, где хранится и какие дополнительные поля требуются.
+- **Описание**: Идентификатор типа задачи.
+- **Пример**: `TaskType.Book.id`, `UserTaskTypeId(5)`
+- **Зачем нужно**: Тип задачи определяет, как она будет обрабатываться, где хранится 
+  и какие дополнительные поля требуются для заполнения.
 
 #### `status: Status`
 
@@ -442,29 +612,29 @@ sealed trait Task:
 - **Пример**: `Status.InProgress`
 - **Зачем нужно**: Статус помогает отслеживать прогресс и планировать дальнейшие действия.
 
-#### `section: Section`
+#### `sectionId: SectionId`
 
-- **Описание**: Раздел, к которому относится задача.
-- **Пример**: `Section(1, "Алгоритмы")`
+- **Описание**: Идентификатор раздела, к которому относится задача.
+- **Пример**: `SectionId(1)`
 - **Зачем нужно**: Разделы позволяют логически группировать задачи, что упрощает управление обучением и фильтрацию.
 
 #### `order: TaskOrder`
 
 - **Описание**: Порядковый номер задачи.
 - **Ограничения**: Должно быть положительное число (`Positive`)
-- **Пример**: `1`, `2`, `3`
+- **Пример**: `1`, `2`, `3`, ...
 - **Зачем нужно**: Позволяет определить, в какой последовательности выполнять задачи.
 
 #### `startDate: Option[LocalDate]`
 
 - **Описание**: Дата начала работы над задачей.
-- **Пример**: `2025-01-10`
+- **Пример**: `Some(2025-01-10)`
 - **Зачем нужно**: Отмечает начало этапа выполнения задачи.
 
 #### `endDate: Option[LocalDate]`
 
 - **Описание**: Планируемая дата окончания работы над задачей.
-- **Пример**: `2025-01-20`
+- **Пример**: `Some(2025-01-20)`
 - **Зачем нужно**: Показывает, когда задачу планируется завершить.
 
 #### `information: String`
@@ -525,13 +695,11 @@ sealed trait Task:
 > 💡 Пример: `"Robert C. Martin"`, `464`
 
 ```dotty
-type Pages = Int :| Positive
-
 final case class BookTask(
     id: UUID,
     name: TaskName,
     status: Status,
-    section: Section,
+    sectionId: SectionId,
     order: TaskOrder,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
@@ -540,10 +708,12 @@ final case class BookTask(
     authors: String,
     pages: Pages
 ) extends Task:
-  val taskType: TaskType = TaskType.Book
-```
+  val taskTypeId: TaskTypeId = TaskType.Book.id
 
-> ✅ **taskType** указывает, что это задача типа `Book`.
+object BookTask:
+  type Pages = Pages.T
+  object Pages extends RefinedType[Int, Positive]
+```
 
 ### Статьи
 
@@ -553,7 +723,7 @@ final case class BookTask(
 | Поле       | Тип данных       | Описание                                          |
 |------------|------------------|---------------------------------------------------|
 | `author`   | `String`         | Автор статьи                                      |
-| `link`     | `URL`            | Ссылка на статью                                  |
+| `link`     | `String`         | Ссылка на статью                                  |
 | `duration` | `FiniteDuration` | Приблизительное время чтения (например, 15 минут) |
 
 > 💡 Пример: `"John Doe"`, `https://example.com/article`, `15 минут`
@@ -567,17 +737,17 @@ final case class ArticleTask(
     id: UUID,
     name: TaskName,
     status: Status,
-    section: Section,
+    sectionId: SectionId,
     order: TaskOrder,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
     author: String,
-    link: URL,
+    link: String,
     duration: FiniteDuration
 ) extends TaskWithDuration:
-  val taskType: TaskType = TaskType.Article
+  val taskTypeId: TaskTypeId = TaskType.Article.id
 ```
 
 > ✅ Наследует интерфейс `TaskWithDuration`, чтобы работать с трудозатратностью по времени.
@@ -590,7 +760,7 @@ final case class ArticleTask(
 | Поле              | Тип данных       | Описание                        |
 |-------------------|------------------|---------------------------------|
 | `author`          | `String`         | Имя автора или команды подкаста |
-| `link`            | `URL`            | Ссылка на подкаст               |
+| `link`            | `String`         | Ссылка на подкаст               |
 | `episodes`        | `Positive`       | Количество эпизодов             |
 | `episodeDuration` | `FiniteDuration` | Длительность одного эпизода     |
 | `duration`        | `FiniteDuration` | Общая длительность подкаста     |
@@ -602,24 +772,25 @@ final case class PodcastTask(
     id: UUID,
     name: TaskName,
     status: Status,
-    section: Section,
+    sectionId: SectionId,
     order: TaskOrder,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
     author: String,
-    link: URL,
+    link: String,
     episodes: Long :| Positive,
     episodeDuration: FiniteDuration
 ) extends TaskWithDuration:
-  val taskType: TaskType       = TaskType.Podcast
+  val taskTypeId: TaskTypeId   = TaskType.Podcast.id
   val duration: FiniteDuration =
     val ms = episodeDuration.toMillis * episodes
     FiniteDuration(ms, MILLISECONDS)
 ```
 
-> ✅ Автоматически вычисляется общая длительность подкаста на основе количества эпизодов и их продолжительности.
+> - ✅ Наследует интерфейс `TaskWithDuration`, чтобы работать с трудозатратностью по времени.
+> - ✅ Автоматически вычисляется общая длительность подкаста на основе количества эпизодов и их продолжительности.
 
 ### Видео
 
@@ -630,7 +801,7 @@ final case class PodcastTask(
 |------------|------------------|-----------------------------------|
 | `author`   | `String`         | Имя докладчика или организатора   |
 | `platform` | `String`         | Платформа (YouTube, Vimeo и т.д.) |
-| `link`     | `URL`            | Ссылка на видео                   |
+| `link`     | `String`         | Ссылка на видео                   |
 | `duration` | `FiniteDuration` | Длительность видео                |
 
 > 💡 Пример: `"Jane Smith"`, `"YouTube"`, `https://www.youtube.com/watch?v=xyz123`, `45 минут`
@@ -640,7 +811,7 @@ final case class VideoTask(
     id: UUID,
     name: TaskName,
     status: Status,
-    section: Section,
+    sectionId: SectionId,
     order: TaskOrder,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
@@ -648,11 +819,13 @@ final case class VideoTask(
     plan: List[TaskStep],
     author: String,
     platform: String,
-    link: URL,
+    link: String,
     duration: FiniteDuration
 ) extends TaskWithDuration:
-  val taskType: TaskType = TaskType.Video
+  val taskTypeId: TaskTypeId = TaskType.Video.id
 ```
+
+> ✅ Наследует интерфейс `TaskWithDuration`, чтобы работать с трудозатратностью по времени.
 
 ### Курсы
 
@@ -663,7 +836,7 @@ final case class VideoTask(
 |------------|------------------|----------------------------------------------------|
 | `author`   | `String`         | Имя преподавателя или название платформы           |
 | `platform` | `String`         | Образовательная платформа (Udemy, Coursera и т.д.) |
-| `link`     | `URL`            | Ссылка на курс                                     |
+| `link`     | `String`         | Ссылка на курс                                     |
 | `duration` | `FiniteDuration` | Общая длительность курса                           |
 
 > 💡 Пример: `"Т Банк"`, `"Stepik"`, `https://stepik.org/course/16243/syllabus`, `720 минут`
@@ -673,7 +846,7 @@ final case class CourseTask(
     id: UUID,
     name: TaskName,
     status: Status,
-    section: Section,
+    sectionId: SectionId,
     order: TaskOrder,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
@@ -681,11 +854,13 @@ final case class CourseTask(
     plan: List[TaskStep],
     author: String,
     platform: String,
-    link: URL,
+    link: String,
     duration: FiniteDuration
 ) extends TaskWithDuration:
-  val taskType: TaskType = TaskType.Course
+  val taskTypeId: TaskTypeId = TaskType.Course.id
 ```
+
+> ✅ Наследует интерфейс `TaskWithDuration`, чтобы работать с трудозатратностью по времени.
 
 ### Пользовательский тип
 
@@ -708,9 +883,9 @@ final case class CourseTask(
 final case class UserTask(
     id: UUID,
     name: TaskName,
-    taskType: TaskType,
+    taskTypeId: UserTaskTypeId,
     status: Status,
-    section: Section,
+    sectionId: SectionId,
     order: TaskOrder,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
@@ -720,7 +895,8 @@ final case class UserTask(
 ) extends TaskWithDuration
 ```
 
-> ✅ В отличие от других типов, `UserTask` сам указывает свой `taskType`.
+> - ✅ В отличие от других типов, `UserTask` сам указывает свой `taskType`.
+> - ✅ Наследует интерфейс `TaskWithDuration`, чтобы работать с трудозатратностью по времени.
 
 ## Зачем это нужно?
 
@@ -760,38 +936,37 @@ final case class UserTask(
 ## Пример использования
 
 ```dotty
-val bookTask = BookTask(
-  id = UUID.randomUUID(),
-  name = "Изучить книгу 'Clean Code'",
-  status = Status.InProgress,
-  section = Section(1, "Алгоритмы"),
-  order = 1,
-  startDate = Some(LocalDate.now()),
-  endDate = Some(LocalDate.now().plusDays(30)),
-  information = "Основы написания чистого кода",
-  plan = List(
-    "Прочитать первую главу",
-    "Прочитать вторую главу",
-    "Сделать заметки",
-    "Применить на практике"
-  ),
-  authors = "Robert C. Martin",
-  pages = 464
-)
+val book: BookTask =
+  BookTask(
+    id = UUID.randomUUID(),
+    name = TaskName("Scala Programming"),
+    status = Status.InProgress,
+    sectionId = scala.id,
+    order = TaskOrder(1),
+    startDate = Some(LocalDate.of(2024, 1, 1)),
+    endDate = Some(LocalDate.of(2024, 12, 31)),
+    information = "Best practices and advanced features",
+    plan = List(TaskStep("Intro"), TaskStep("Basics"), TaskStep("OOP")),
+    authors = "John Doe",
+    pages = Pages(500)
+  )
 
-val articleTask = ArticleTask(
+val userTask: UserTask = UserTask(
   id = UUID.randomUUID(),
-  name = "Читать статью о паттернах проектирования",
-  status = Status.Planned,
-  section = Section(2, "Функциональное программирование"),
-  order = 2,
-  startDate = None,
-  endDate = None,
-  information = "Ознакомиться с основными паттернами",
-  plan = List("Прочитать статью", "Сделать резюме", "Обсудить с коллегами"),
-  author = "Jane Smith",
-  link = new URL("https://example.com/patterns"),
-  duration = FiniteDuration(15, MINUTES)
+  name = TaskName("Создать презентацию по проекту"),
+  taskTypeId = myBlog.id,
+  status = Status.InProgress,
+  sectionId = fp.id,
+  order = TaskOrder(6),
+  startDate = Some(LocalDate.of(2023, 10, 1)),
+  endDate = Some(LocalDate.of(2023, 10, 15)),
+  information = "Создание презентации для внутреннего совещания.",
+  plan = List(
+    TaskStep("Собрать данные"),
+    TaskStep("Создать слайды"),
+    TaskStep("Проверить дизайн")
+  ),
+  duration = FiniteDuration(3, HOURS)
 )
 ```
 

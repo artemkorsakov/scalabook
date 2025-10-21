@@ -9,7 +9,7 @@ nextPage = ../db.html
 
 В данном разделе мы разберём, как реализуется **локализация** 
 в приложении управления персональным планом развития (ИПР), 
-чтобы оно могло поддерживать несколько языков. 
+чтобы оно могло поддерживать несколько языков. Например, русский и английский. 
 Мы будем использовать библиотеку `pureconfig` для чтения конфигураций 
 и библиотеку `iron` для добавления ограничений на типы данных.
 
@@ -119,17 +119,20 @@ import io.github.iltotore.iron.constraint.all.*
   *   - не пустая
   *   - без начальных и конечных пробелов
   */
-type NonEmptyString = String :| (Not[Empty] & Trimmed)
+type NonEmptyString = NonEmptyString.T
+object NonEmptyString extends RefinedType[String, Not[Empty] & Trimmed]
 
 /** Тип `LanguageCode` — это код языка:
   *   - длина от 2 до 3 символов
   */
-type LanguageCode = String :| (MinLength[2] & MaxLength[3])
+type LanguageCode = LanguageCode.T
+object LanguageCode extends RefinedType[String, MinLength[2] & MaxLength[3]]
 
 /** Тип `LanguageName` — это имя языка:
   *   - длина от 2 до 20 символов
   */
-type LanguageName = String :| (MinLength[2] & MaxLength[20])
+type LanguageName = LanguageName.T
+object LanguageName extends RefinedType[String, MinLength[2] & MaxLength[20]]
 
 /** `StatusConfig` содержит локализацию статусов задач:
   *   - inProgress — статус "В работе"
@@ -211,12 +214,16 @@ object ConfigSuite extends SimpleIOSuite:
   pureTest("check Russian language config"):
     matches(configSource):
       case Right(config) =>
-        expect(config.localization.languages.exists(_.code == "ru"))
+        expect(
+          config.localization.languages.exists(_.code == LanguageCode("ru"))
+        )
 
   pureTest("check English language config"):
     matches(configSource):
       case Right(config) =>
-        expect(config.localization.languages.exists(_.code == "en"))
+        expect(
+          config.localization.languages.exists(_.code == LanguageCode("en"))
+        )
 end ConfigSuite
 ```
 
@@ -233,7 +240,7 @@ end ConfigSuite
 
 ### Как добавить новый язык?
 
-Чтобы добавить поддержку нового языка, например, испанский (`es`), 
+Чтобы добавить поддержку нового языка, например, испанского, 
 достаточно **изменить конфигурационный файл** `application.conf`, 
 добавив в секцию `languages` новый блок:
 

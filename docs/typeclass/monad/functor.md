@@ -323,6 +323,7 @@ listOpt.map(List(Some(1), None, Some(3)))(_ + 1)   // List(Some(2), None, Some(4
 
 **Ссылки:**
 
+- [Категория Hask](https://habr.com/ru/articles/133277/)
 - [Классические абстракции используемые в ФП](https://habr.com/ru/articles/896660/)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/functor.html)
 - Category Theory for Programmers - Bartosz Milewski:

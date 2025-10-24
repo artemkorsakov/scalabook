@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = db.html
+prevPage = db/db_test.html
 showNext = true
 nextPage = lifecycle.html
 %}

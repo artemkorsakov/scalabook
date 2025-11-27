@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = stream-processing/applications.html
+prevPage = patterns/tagless-final.html
 %}
 
 # Заключение

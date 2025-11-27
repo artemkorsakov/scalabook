@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = resource.html
 showNext = true
-nextPage = ../conclusion.html
+nextPage = ../patterns.html
 %}
 
 # Применение

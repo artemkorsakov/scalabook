@@ -1,8 +1,6 @@
 {%
 showPrev = true
 prevPage = type-level-programming-in-scala.html
-showNext = true
-nextPage = patterns.html
 %}
 
 # Головоломки на Scala

@@ -2,7 +2,7 @@ import sbt.*
 
 // @formatter:off
 object Dependencies {
-  val Scala = "3.7.2" // Не забыть в sonar-project.properties обновить папку
+  val Scala = "3.7.2"
 
   object fs2 {
     val core = "co.fs2" %% "fs2-core" % "3.12.0"

@@ -164,6 +164,7 @@ factorial(10)   // 3628800
 - [Ссылка на репозиторий с упражнениями][sample]
 - [Жаргон функционального программирования](https://habr.com/ru/articles/310172/)
 - [Не использовать `null`](https://docs.scala-lang.org/scala3/book/first-look-at-types.html#nothing-and-null)
+- [Не морочьте мне голову со своим функциональным программированием](https://habr.com/ru/companies/oleg-bunin/articles/462505/)
 - [Почему функциональное программирование такое сложное?](https://habr.com/ru/articles/505928/)
     - [Глубже в дебри ФП](https://habr.com/ru/articles/506782/) 
 - [Харрисон - Введение в функциональное программирование](https://funprog-ru.github.io/)

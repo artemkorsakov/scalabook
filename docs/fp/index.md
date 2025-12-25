@@ -162,6 +162,7 @@ factorial(10)   // 3628800
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
+- [Десять причин не использовать статически типизированный функциональный язык программирования](https://habr.com/ru/articles/190492/)
 - [Жаргон функционального программирования](https://habr.com/ru/articles/310172/)
 - [Не использовать `null`](https://docs.scala-lang.org/scala3/book/first-look-at-types.html#nothing-and-null)
 - [Не морочьте мне голову со своим функциональным программированием](https://habr.com/ru/companies/oleg-bunin/articles/462505/)

@@ -65,6 +65,7 @@ SBT (Scala Build Tool) — это стандартный инструмент д
 - [**Описание правил**](https://scalacenter.github.io/scalafix/docs/users/installation.html)
 - **Что делает?** Выполняет статический анализ кода и применяет правила рефакторинга. 
   Помогает находить и исправлять проблемы, устаревшие конструкции (deprecations) и приводит код к единому стилю.
+  Особенно эффективен в больших командах, помогая обеспечить единый code style.
 - **Настройка:** Создайте файл `.scalafix.conf` в корне проекта со следующим содержимым:
 
   ```text
@@ -133,7 +134,7 @@ SBT (Scala Build Tool) — это стандартный инструмент д
 
 Чтобы не запоминать длинные последовательности команд, удобно создать для них короткие псевдонимы (алиасы).
 
-1.  Создайте файл `aliases.sbt` в корне проекта (или в папке `project/`). SBT автоматически подхватит его.
+1.  Создайте файл `aliases.sbt` в корне проекта (на уровне `build.sbt`). SBT автоматически подхватит его.
 2.  Добавьте в файл следующие алиасы:
 
     ```dotty
@@ -194,7 +195,7 @@ SBT (Scala Build Tool) — это стандартный инструмент д
       }
 
       // Список библиотек для основного кода
-      val rootLibs: Seq[ModuleID] =
+      val pdpLibs: Seq[ModuleID] =
         Seq(
           cats.catsEffect
         )
@@ -213,17 +214,30 @@ SBT (Scala Build Tool) — это стандартный инструмент д
     // Импортируем зависимости
     import Dependencies.*
 
-    lazy val root = project
-      .in(file("."))
+    lazy val pdp = (project in file("pdp"))
+      // Имя проекта
+      .settings(name := "PersonalDevelopmentPlan") 
       .settings(
-        name         := "PersonalDevelopmentPlan", // Имя проекта
-        version      := "0.1.0-SNAPSHOT",          // Версия проекта
-        scalaVersion := Scala,                     // Версия Scala из Dependencies.scala
         // Добавляем зависимости из нашего объекта
-        libraryDependencies ++= rootLibs,
+        libraryDependencies ++= pdpLibs,
         libraryDependencies ++= testLibs
       )
+    
+    lazy val root = (project in file("."))
+      // Сборка всех модулей
+      .aggregate(pdp)
+      .settings(
+        name := "root",
+        publish / skip := true
+      )
     ```
+
+    В сложных проектах рекомендуется использовать модульную структуру, когда функциональность разбита на отдельные куски.
+    Например, `pdp` — это модуль для разработки личного плана, а `root` — это корневой модуль.
+    В этом случае `root` не является самостоятельным проектом, а просто объединяет все модули.
+    Это позволяет легко собирать и тестировать отдельные части проекта.
+    В будущем мы добавим модуль `sql` для генерации SQL-запросов.
+    
 
 **Используемый стек технологий (Typelevel Stack):**
 
@@ -243,21 +257,27 @@ SBT (Scala Build Tool) — это стандартный инструмент д
 ThisBuild / scalacOptions ++=
   Seq(
     // Предупреждает об использовании устаревших конструкций
-    "-deprecation",    
-    // Подробно объясняет ошибки компиляции    
-    "-explain",  
-    // Превращает неиспользуемые импорты в ошибки          
-    "-Wunused:imports", 
-    // Предупреждает о местах, где компилятор делал предположения о типах   
-    "-unchecked",  
-    // Превращает все предупреждения (warnings) в ошибки! 
-    // Не даст скомпилировать код с предупреждениями.        
-    "-Xfatal-warnings",  
-    // Предупреждает об использовании экспериментальных features языка  
-    "-feature",   
-    // Предупреждает, если значимый результат выражения (не `Unit`) игнорируется         
-    "-Wnonunit-statement"  
-  ) 
+    "-deprecation",
+    // Подробно объясняет ошибки компиляции
+    "-explain",
+    // Превращает неиспользуемые импорты в ошибки
+    "-Wunused:imports",
+    // Предупреждает о местах, где компилятор делал предположения о типах
+    "-unchecked",
+    // Превращает все предупреждения (warnings) в ошибки!
+    // Не даст скомпилировать код с предупреждениями.
+    "-Xfatal-warnings",
+    // Предупреждает об использовании экспериментальных features языка
+    "-feature",
+    // Предупреждает, если значимый результат выражения (не `Unit`) игнорируется
+    "-Wnonunit-statement"
+  )
+  
+// Версия Scala берется из Dependencies.scala  
+ThisBuild / scalaVersion := Scala
+
+// Версия проекта (чаще всего выносят в отдельный файл version.sbt)
+ThisBuild / version := "0.1.0-SNAPSHOT"
 ```
 
 ## Шаг 6: Финальная проверка работоспособности
@@ -267,35 +287,9 @@ ThisBuild / scalacOptions ++=
 
 ### Подготовка структуры проекта
 
-1. **Очистите стандартные папки:** Удалите содержимое папок `src/main/scala` и `src/test/scala`
-2. **Создайте пакет:** В обеих папках создайте структуру пакета `ru/scalabook/pdp`
-3. **Добавьте основной код:** Создайте файл `Main.scala` в `src/main/scala/ru/scalabook/pdp/`:
-
-   ```dotty
-   package ru.scalabook.pdp
-   
-   import cats.effect.IO
-   
-   @main def hello(): Unit =
-       println("Hello world!")
-   
-   def msgIO: IO[String] = IO("I was compiled by Scala 3. :)")
-   ```
-
-4. **Добавьте тесты:** Создайте файл `MainSuite.scala` в `src/test/scala/ru/scalabook/pdp/`:
-
-   ```dotty
-   package ru.scalabook.pdp
-
-   import weaver.*
-   
-   object MainSuite extends SimpleIOSuite:
-   
-     test("hello side-effects"):
-       for
-         x <- msgIO
-       yield expect.same("I was compiled by Scala 3. :)", x)
-   ```
+1. **Очистите стандартные папки:** Удалите папки `src/main/scala` и `src/test/scala`
+2. В модуле `pdp` создайте папки `src/main/scala` и `src/test/scala`
+3. **Создайте пакет:** В обеих папках создайте пакет `ru.scalabook.pdp`
 
 ### Запуск полной проверки
 
@@ -312,10 +306,11 @@ sbt fullCheck
 3. **`test`** — запуск всех тестов
 4. **`fix`** — форматирование кода Scalafmt и применение исправлений Scalafix
 5. **`undeclaredCompileDependencies`** — проверка на скрытые зависимости
-6. **`unusedCompileDependencies`** — поиск неиспользуемых зависимостей
+6. **`unusedCompileDependencies`** — поиск неиспользуемых зависимостей 
+   (пока игнорируем предупреждение о неиспользуемых библиотеках, т.к. ещё не написан код)
 7. **`dependencyUpdates`** — проверка доступных обновлений библиотек
 
-Если все этапы пройдены успешно, проект полностью готов к началу разработки.
+Проект полностью готов к началу разработки.
 
 ## Заключение
 

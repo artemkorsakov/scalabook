@@ -75,7 +75,6 @@ _(раздел пока пуст)_
 | [**Reading postmortems**](https://danluu.com/postmortem-lessons/)                                                                                                                      | 🇬🇧 EN | 2015   | 📊 Аналитика • 🛠️ Best Practices           |
 | [**Software requirements do not change**](https://blog.tmorris.net/posts/software-requirements-do-not-change/index.html)                                                               | 🇬🇧 EN | 2006   | 📝 Документация • 🏗️ Управление            |
 | [**Top Five (Wrong) Reasons You Don’t Have Testers**](https://www.joelonsoftware.com/2000/04/30/top-five-wrong-reasons-you-dont-have-testers/)                                         | 🇬🇧 EN | 2000   |                                             |
-| [**Types and Typeclasses: Believe the type**](https://learnyouahaskell.com/types-and-typeclasses)                                                                                      | 🇬🇧 EN | 2011   | λ Haskell • 🧮 Теория типов                 |
 | [**Where do These People Get Their (Unoriginal) Ideas?**](https://www.joelonsoftware.com/2000/04/19/where-do-these-people-get-their-unoriginal-ideas/)                                 | 🇬🇧 EN | 2000   |                                             |
 
 ## 🎥 Видео

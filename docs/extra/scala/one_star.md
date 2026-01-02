@@ -148,7 +148,6 @@ nextPage = two_stars.html
 | [**Tail Recursive Functions in Scala**](https://alexn.org/blog/2021/01/26/tail-recursive-functions-in-scala/)                                              |  Scala 2  | 🇬🇧 EN  | 2021   | О хвостовой рекурсии                      |
 | [**The Power of Type-classes with Scala implicit defs**](https://blog.tmorris.net/posts/the-power-of-type-classes-with-scala-implicit-defs/index.html)     |  Scala 2  | 🇬🇧 EN  | 2007   | О возможностях тайпклассов                |
 | [**Traits are better than Legos!**](https://danielasfregola.com/2014/12/24/traits-are-better-than-legos/)                                                  |  Scala 2  | 🇬🇧 EN  | 2014   | О трейтах                                 |
-| [**What is F with a hole in Scala?**](https://xebia.com/blog/what-is-F-with-hole-in-scala/)                                                                |  Scala 2  | 🇬🇧 EN  | 2021   | О высших типах                            |
 
 ## 🎥 Видео
 

@@ -152,8 +152,6 @@ final case class Product(id: ProductId, names: NonEmptySet[Translation])
     - `p.asJson.noSpaces` должен равняться `json`
     - как следствие двух предыдущих: `decode[Product](p.asJson.noSpaces)` должен равняться `p`
 
-[Исходный код тестов](https://github.com/artemkorsakov/pfhais/tree/my_solutions/pure-scala-3/pure/src/test/scala/com/wegtam/books/pfhais/models)
-
 ## Обработка конфигурации
 
 Теперь определимся с конфигурацией.
@@ -236,8 +234,6 @@ ConfigSource.fromConfig(databaseConfig).at("database").load[DatabaseConfig]
   `config: ApiConfig`, где `val config = ConfigFactory.parseString(s"""api{"host":"${config.host}","port":${config.port}}""")`
 
 Аналогично добавляются тесты для `DatabaseConfig`.
-
-[Исходный код тестов](https://github.com/artemkorsakov/pfhais/tree/my_solutions/pure-scala-3/pure/src/test/scala/com/wegtam/books/pfhais/config)
 
 ## Уровень базы данных
 
@@ -444,8 +440,6 @@ end ProductRoutes
   возвращается статус `Status.NoContent` с пустым телом ответа
 - `GET` после `PUT` должен возвращать обновленный продукт
 
-[Исходный код тестов](https://github.com/artemkorsakov/pfhais/tree/my_solutions/pure-scala-3/pure/src/test/scala/com/wegtam/books/pfhais/api)
-
 Маршрут продуктов:
 
 ```dotty
@@ -505,8 +499,6 @@ end ProductsRoutes
 - при добавлении продукта с валидным телом запроса, но он не может быть сохранен, 
   возвращается статус `Status.InternalServerError` с пустым телом ответа
 - `GET` после `POST` должен возвращать добавленные продукты
-
-[Исходный код тестов](https://github.com/artemkorsakov/pfhais/tree/my_solutions/pure-scala-3/pure/src/test/scala/com/wegtam/books/pfhais/api)
 
 ## Запуск приложения
 
@@ -595,7 +587,6 @@ object Pure extends IOApp:
 
 **Ссылки:**
 
-- [Исходный код разобранных примеров на Scala 3][source]
 - Grassel Jens - Pure functional HTTP APIs in Scala:
     - [Книга][book]
     - [Исходный код книги][book source]
@@ -603,4 +594,3 @@ object Pure extends IOApp:
 [book]: https://leanpub.com/pfhais
 [refined]: ../libs/refined.md
 [book source]: https://github.com/jan0sch/pfhais
-[source]: https://github.com/artemkorsakov/pfhais/tree/my_solutions/pure-scala-3

@@ -808,7 +808,6 @@ type Enumeratee[I, O, A] = Free[[X] =>> Either[I => X, (O, X)], A]
 
 **Ссылки:**
 
-- [Исходный код](https://gitverse.ru/artemkorsakov/scalabook/content/master/examples/src/main/scala/ru/scalabook/fp/trampolining)
 - [Эффекты, трамплины и зачем нам это надо - Алексей Шуксто, Scala Meetup 20.04.23](https://www.youtube.com/watch?v=4jSi6RRIaCk)
 - [Asymptotic Improvement of Computations over Free Monads - Janis Voigtlander][Asymptotic Improvement of Computations over Free Monads]
 - [Category Theory - S. Awodey][Category Theory]

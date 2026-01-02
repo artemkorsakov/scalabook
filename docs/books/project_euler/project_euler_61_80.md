@@ -1373,7 +1373,6 @@ getFirst100Sum(2) // 475
 
 - [Project Euler site][euler]
 - [Project Euler chat][euler_chat]
-- [Проект Эйлера на русском](https://euler.jakumo.org/problems.html)
 
 [euler]: https://projecteuler.net
 [euler_chat]: https://projecteuler.chat

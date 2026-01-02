@@ -8,12 +8,9 @@ nextPage = ../db.html
 # Локализация
 
 В данном разделе мы разберём, как реализуется **локализация** 
-в приложении управления персональным планом развития (ИПР), 
+в приложении управления индивидуальным планом развития (ИПР), 
 чтобы оно могло поддерживать несколько языков. Например, русский и английский. 
-Мы будем использовать библиотеку `pureconfig` для чтения конфигураций 
-и библиотеку `iron` для добавления ограничений на типы данных.
-
-## Зачем нужна локализация?
+Мы будем использовать библиотеку [pureconfig](https://pureconfig.github.io/docs/) для чтения конфигураций.
 
 Локализация позволяет:
 
@@ -31,7 +28,7 @@ object Dependencies {
   ...
 
   object iron {
-    private val version = "3.2.0"
+    private val version = "3.2.1"
     val core            = "io.github.iltotore" %% "iron"            % version
     val pureconfig      = "io.github.iltotore" %% "iron-pureconfig" % version
   }
@@ -43,7 +40,7 @@ object Dependencies {
 
   ...
 
-  val rootLibs: Seq[ModuleID] =
+  val pdpLibs: Seq[ModuleID] =
     Seq(
       cats.catsEffect,
       iron.core,
@@ -55,15 +52,12 @@ object Dependencies {
 }
 ```
 
-> [iron](https://iltotore.github.io/iron/docs/overview.html) — библиотека для уточнённых типов.  
-> [pureconfig](https://pureconfig.github.io/docs/) — библиотека для автоматического парсинга конфигураций.
-
 ## Конфигурационный файл
 
-Создадим файл `application.conf` в директории `src/main/resources`:
+Создадим файл `application.conf` в директории `pdp/src/main/resources`:
 
 ```conf
-// src/main/resources/application.conf
+// pdp/src/main/resources/application.conf
 localization = {
   languages = [
     {
@@ -107,7 +101,7 @@ localization = {
 Создадим файл `Config.scala` в пакете `ru.scalabook.pdp.localization`:
 
 ```dotty
-// src/main/scala/ru/scalabook/pdp/localization/Config.scala
+// pdp/src/main/scala/ru/scalabook/pdp/localization/Config.scala
 package ru.scalabook.pdp.localization
 
 import io.github.iltotore.iron.pureconfig.given
@@ -115,43 +109,28 @@ import pureconfig.*
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 
-/** Тип `NonEmptyString` — это строка, которая:
-  *   - не пустая
-  *   - без начальных и конечных пробелов
+/** Тип `NonEmptyString` — это непустая строка без начальных и конечных
+  * пробелов.
   */
 type NonEmptyString = NonEmptyString.T
 object NonEmptyString extends RefinedType[String, Not[Empty] & Trimmed]
 
-/** Тип `LanguageCode` — это код языка:
-  *   - длина от 2 до 3 символов
-  */
+/** Тип `LanguageCode` — это код языка от 2 до 3 символов. */
 type LanguageCode = LanguageCode.T
 object LanguageCode extends RefinedType[String, MinLength[2] & MaxLength[3]]
 
-/** Тип `LanguageName` — это имя языка:
-  *   - длина от 2 до 20 символов
-  */
+/** Тип `LanguageName` — это имя языка от 2 до 20 символов. */
 type LanguageName = LanguageName.T
 object LanguageName extends RefinedType[String, MinLength[2] & MaxLength[20]]
 
-/** `StatusConfig` содержит локализацию статусов задач:
-  *   - inProgress — статус "В работе"
-  *   - planned — статус "Запланировано"
-  *   - knowledgeBase — статус "База знаний"
-  */
+/** `StatusConfig` содержит локализацию статусов задач. */
 final case class StatusConfig(
     inProgress: NonEmptyString,
     planned: NonEmptyString,
     knowledgeBase: NonEmptyString
 )
 
-/** `TypesConfig` содержит локализацию типов задач:
-  *   - book — тип "Книга"
-  *   - article — тип "Статья"
-  *   - podcast — тип "Подкаст"
-  *   - video — тип "Видео"
-  *   - course — тип "Курс"
-  */
+/** `TypesConfig` содержит локализацию типов задач. */
 final case class TypesConfig(
     book: NonEmptyString,
     article: NonEmptyString,
@@ -173,33 +152,27 @@ final case class LanguageConfig(
     types: TypesConfig
 ) derives ConfigReader
 
-/** `Languages` — список языков, поддерживающих минимум 2 элемента. Это
-  * гарантирует, что всегда есть хотя бы два языка в конфиге.
-  */
+/** `Languages` — список языков, поддерживающих как минимум 2 языка. */
 type Languages = List[LanguageConfig] :| MinLength[2]
 
-/** `LocalizationConfig` содержит все локализационные настройки. В ней хранится
-  * список поддерживаемых языков.
-  */
+/** `LocalizationConfig` содержит все локализационные настройки. */
 final case class LocalizationConfig(languages: Languages)
     derives ConfigReader
 
-/** `Config` — корневой объект конфигурации. Он содержит все данные, необходимые
-  * для локализации.
-  */
+/** `Config` — корневой объект конфигурации. */
 final case class Config(localization: LocalizationConfig) derives ConfigReader
 ```
 
-Кроме требования того, чтобы список языков содержал минимум два языка, 
-потребуем, чтобы этот список содержал языки по-умолчанию: русский и английский.
-
 ## Тестирование конфигурации
+
+Кроме требования того, чтобы список языков содержал минимум два языка,
+потребуем, чтобы этот список содержал языки по-умолчанию: русский и английский.
 
 Создадим файл `ConfigSuite.scala` в аналогичном пакете, но в директории тестов, 
 где проверим корректность загрузки конфигурации:
 
 ```dotty
-// src/main/test/ru/scalabook/pdp/localization/ConfigSuite.scala
+// pdp/src/main/test/ru/scalabook/pdp/localization/ConfigSuite.scala
 package ru.scalabook.pdp.localization
 
 import pureconfig.*
@@ -268,7 +241,7 @@ end ConfigSuite
 
 ### Автоматическая проверка данных
 
-Поскольку мы используем библиотеку `iron` для создания уточнённых типов, система автоматически проверяет:
+Поскольку мы используем уточненные типы, система автоматически проверяет:
 
 - Что код языка имеет длину от 2 до 3 символов.
 - Что имя языка содержит от 2 до 20 символов.
@@ -308,10 +281,10 @@ end ConfigSuite
 - **Локализация** реализована через конфигурационные файлы, что делает её **удобной и гибкой**.
 - Благодаря **уточнённым типам**, данные проходят автоматическую проверку на корректность.
 - **Библиотека `pureconfig`** позволяет легко загружать конфигурации из `application.conf`.
-- Система **легко расширяема**: новые языки добавляются без изменений в код.
+- Система **легко расширяема**: новые языки добавляются без изменений в коде.
 - **Тесты** гарантируют, что конфигурация читается правильно и содержит все необходимые данные,
   в том числе после обновления конфигурационного файла.
-- Вся архитектура спроектирована так, чтобы поддерживать **долгосрочную устойчивость** и **лёгкое масштабирование**.
+- Архитектура спроектирована так, чтобы поддерживать **долгосрочную устойчивость** и **лёгкое масштабирование**.
 
 ---
 

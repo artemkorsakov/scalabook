@@ -181,10 +181,12 @@ SBT (Scala Build Tool) — это стандартный инструмент д
       val Scala = "3.7.3"
 
       object cats {
-        private val catsEffectVersion = "3.7-4972921"
-
-        // Библиотека Cats Effect для функционального асинхронного программирования
-        val catsEffect = "org.typelevel" %% "cats-effect" % catsEffectVersion
+        private val version       = "2.13.0"
+        private val effectVersion = "3.7-4972921"
+      
+        val core         = "org.typelevel" %% "cats-core"          % version
+        val effect       = "org.typelevel" %% "cats-effect"        % effectVersion
+        val effectKernel = "org.typelevel" %% "cats-effect-kernel" % effectVersion
       }
 
       object weaver {
@@ -197,7 +199,9 @@ SBT (Scala Build Tool) — это стандартный инструмент д
       // Список библиотек для основного кода
       val pdpLibs: Seq[ModuleID] =
         Seq(
-          cats.catsEffect
+          cats.core,
+          cats.effect,
+          cats.effectKernel,
         )
 
       // Список библиотек для тестов (указывается с модификатором `% Test`)

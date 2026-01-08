@@ -114,18 +114,13 @@ Scala — язык, объединяющий ФП и ООП, но в этом п
 ## Контакты
 
 - **Исходный код проекта**: доступен на [GitVerse][home]
+- **Telegram**: [Telegram-канал Scalabook][telegram]: анонсы обновлений, интересные примеры кода,
+  сложные вопросы и мотивирующие цитаты о программировании.
 - **Мои профили**:
     - Основной: [GitVerse](https://gitverse.ru/artemkorsakov)
     - Дополнительный: [GitHub](https://github.com/artemkorsakov)
 - **Для связи**: [написать email](mailto:artemkorsakov@mail.ru)
 - **Для совместной работы**: [вакансии ИТ-компании «Криптонит»](https://career.kryptonite.ru/vacancies/?locations=moscow&search=Scala)
-
-### Telegram канал
-
-По ссылке [telegram-канал проекта ScalaBook][telegram]:
-
-- Обновление Scalabook
-- Статьи по функциональному программированию
 
 [home]: https://gitverse.ru/artemkorsakov/scalabook
 [exercises]: https://gitverse.ru/scalabook/fp

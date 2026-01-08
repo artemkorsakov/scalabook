@@ -111,14 +111,16 @@ nextPage = binary.html
   и проверяем, что ни одно из них не является делителем `x`.
 
 ```dotty
-lazy val primes: LazyList[Int] =
-  2 #::
-    LazyList.from(3).filter: x =>
-      val sqrtOfPrimes = primes.takeWhile(p => p <= math.sqrt(x))
-      sqrtOfPrimes.forall(p => x % p != 0)
+val primes: LazyList[Int] =
+  2 #:: LazyList
+    .from(3, 2)
+    .filter: x =>
+      primes
+        .takeWhile(_ <= math.sqrt(x))
+        .forall(p => x % p != 0)
 
-primes.take(10).toList
-// List(2, 3, 5, 7, 11, 13, 17, 19, 23, 29)
+primes.take(10).toVector
+// Vector(2, 3, 5, 7, 11, 13, 17, 19, 23, 29)
 ```
 
 **Метрики:**

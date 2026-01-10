@@ -1,13 +1,20 @@
 name: Проверка сборки проекта
+
 on:
- pull_request:
- push:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
 jobs:
   build-test:
     name: Full check
-    runs-on: ubuntu-cloud-runner
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3  # Checkout the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install jdk
         run: |

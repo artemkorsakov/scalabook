@@ -1070,6 +1070,8 @@ def delete(id: UUID, taskType: TaskType): IO[Unit] =
 
 - [Персональный план развития][plugin]
 - [Репозиторий с исходниками][repo]
+- [Ещё один ORM для SQL на Scala][sql-gen]
 
 [repo]: https://gitverse.ru/scalabook/pdp
 [plugin]: https://artemkorsakov.github.io/personal-development-plan/ru/
+[sql-gen]: https://gitverse.ru/scalabook/sql-gen

@@ -172,47 +172,19 @@ CREATE TABLE IF NOT EXISTS books (
 потребность в глубокой интеграции с Cats Effect/Doobie), самым прагматичным, хотя и нетривиальным решением, 
 является создание собственного **макроса для генерации SQL**.
 
-**Почему "самое глупое", но правильное?** Это выражение отражает понимание, 
-что написание макросов — это сложная задача, которая добавляет сложности в проект. 
-Однако в данном контексте это оправдано, так как позволяет достичь максимального соответствия нашим требованиям: 
+**Зачем "ещё один ORM для SQL на Scala"?** В данном контексте это оправдано, 
+так как позволяет достичь максимального соответствия нашим требованиям: 
 генерировать валидный, безопасный SQL прямо из структуры данных, определенной на Scala, избегая дублирования и ручных ошибок.
 
-#### Архитектурное решение: выделение отдельного модуля
+#### Архитектурное решение: создание отдельного репозитория
 
-Для изоляции логики генерации SQL и обеспечения ее переиспользования создадим отдельный модуль в проекте — `sql-gen`.
+Для изоляции логики генерации SQL и обеспечения её повторного использования,
+создадим [отдельный репозиторий][sql-gen] — `sql-gen`.
 
-Обновление структуры проекта в `build.sbt`:
-
-```sbt
-// Определяем модуль, ответственный только за генерацию SQL.
-lazy val sqlGen = (project in file("sql"))
-  .settings(
-    name := "sql-gen",
-    libraryDependencies ++= sqlGenLibs,
-    libraryDependencies ++= testLibs
-  )
-
-// Основной модуль приложения
-lazy val pdp = (project in file("pdp"))
-  .settings(
-    name := "personal-development-plan",
-    libraryDependencies ++= pdpLibs,
-    libraryDependencies ++= testLibs
-  ).dependsOn(sqlGen) // Основной модуль зависит от модуля генерации SQL.
-
-// Корневой агрегирующий проект
-lazy val root = (project in file("."))
-  .aggregate(pdp, sqlGen) // Управляет сборкой обоих модулей.
-  .settings(
-    name           := "pdp-root",
-    publish / skip := true 
-  )
-```
-
-Соответствующее обновление файла зависимостей `Dependencies.scala`:
+В файле `project/Dependencies.scala` добавляем блок зависимостей для `sql-gen`:
 
 ```dotty
-// Список зависимостей, специфичных для модуля sql-gen.
+// Список зависимостей, специфичных для sql-gen.
 val sqlGenLibs: Seq[ModuleID] =
   Seq(
     doobie.core,
@@ -221,10 +193,10 @@ val sqlGenLibs: Seq[ModuleID] =
   )
 ```
 
-После настройки структуры проекта создаем стандартную директорию для исходного кода модуля `sql-gen`:
+После настройки структуры проекта создадим стандартные директории для исходного кода:
 
-- `sql/src/main/scala/` — для основной логики макросов и утилит генерации.
-- `sql/src/test/scala/` — для модульных тестов генератора SQL.
+- `src/main/scala/` — для основной логики макросов и утилит генерации.
+- `src/test/scala/` — для модульных тестов генератора SQL.
 
 ## Моделирование метаданных таблицы
 
@@ -237,7 +209,7 @@ val sqlGenLibs: Seq[ModuleID] =
 Для обеспечения типобезопасности и валидации на этапе компиляции мы используем библиотеку Iron для создания уточненных типов.
 
 ```dotty
-// sql/src/main/scala/ru/scalabook/sql/ColumnDefinition.scala
+// src/main/scala/ru/scalabook/sql/ColumnDefinition.scala
 package ru.scalabook.sql
 
 import io.github.iltotore.iron.*
@@ -372,7 +344,7 @@ end ColumnDefinition
 Каждая реализация содержит имя таблицы и коллекцию определений ее колонок.
 
 ```dotty
-// sql/src/main/scala/ru/scalabook/sql/TableSchema.scala
+// src/main/scala/ru/scalabook/sql/TableSchema.scala
 package ru.scalabook.sql
 
 import io.github.iltotore.iron.*
@@ -464,7 +436,7 @@ object TableSchema:
 который может безопасно комбинироваться с другими фрагментами и параметрами.
 
 ```dotty
-// sql/src/main/scala/ru/scalabook/sql/SqlMacros.scala
+// src/main/scala/ru/scalabook/sql/SqlMacros.scala
 package ru.scalabook.sql
 
 import doobie.*
@@ -580,7 +552,7 @@ CREATE TABLE IF NOT EXISTS user_types (id SERIAL PRIMARY KEY, name VARCHAR(255) 
 генерировать корректный DDL на SQL, минимизируя ручной труд и возможность синтаксических ошибок. 
 Все преобразования контролируются компилятором и используют заранее определенные, проверенные шаблоны.
 
-Проверку корректности DDL [можно проводить в тестах](https://gitverse.ru/scalabook/pdp/content/master/sql/src/test/scala/ru/scalabook/sql/SqlMacrosSuite.scala?line=98).
+Проверку корректности DDL [можно проводить в тестах](https://gitverse.ru/scalabook/sql-gen/content/master/src/test/scala/ru/scalabook/sql/SqlMacrosSuite.scala).
 
 Например, тест для проверки генерации SQL для `BookTask`:
 
@@ -611,7 +583,7 @@ pureTest("Generate create table"):
 Для генерации DDL-запросов для таких типов создаем дополнительный макрос в файле `SqlMacros.scala`.
 
 ```dotty
-// sql/src/main/scala/ru/scalabook/sql/SqlMacros.scala
+// src/main/scala/ru/scalabook/sql/SqlMacros.scala
 object SqlMacros:
   // Суффикс, добавляемый к имени Scala enum для получения имени SQL-типа
   private inline val enumSuf = "Enum"
@@ -1021,7 +993,7 @@ object SqlMacros:
 
 ## Итог: библиотека для типобезопасной генерации SQL
 
-В результате мы создали не просто набор макросов, а целую **библиотеку для гарантированно корректной генерации SQL**, которая:
+В результате мы создали не просто набор макросов, а целую [библиотеку для гарантированно корректной генерации SQL][sql-gen], которая:
 
 1.  Исключает целый класс runtime-ошибок, связанных с SQL.
 2.  Обеспечивает согласованность между структурой Scala-классов и таблиц БД.
@@ -1097,14 +1069,33 @@ WHERE id = '14c8fa94-4896-4449-82fb-5b1adec2504a'
 DELETE FROM books WHERE id = '14c8fa94-4896-4449-82fb-5b1adec2504a'
 ```
 
+Эта библиотека доступна в [Maven Central](https://mvnrepository.com/artifact/ru.scalabook/sql-gen).
+
+Добавляем её в зависимости (`project/Dependencies.scala`):
+
+```sbt
+object scalabook {
+  val sqlGen = "ru.scalabook" %% "sql-gen" % "0.1.1"
+}
+
+... 
+
+val pdpLibs: Seq[ModuleID] =
+  Seq(
+    ...
+    scalabook.sqlGen,
+    ...
+  )
+```
+
 ---
 
 **Ссылки:**
 
+- [Ещё один ORM для SQL на Scala][sql-gen]
 - [Персональный план развития][plugin]
 - [Репозиторий с исходниками][repo]
 
 [repo]: https://gitverse.ru/scalabook/pdp
 [plugin]: https://artemkorsakov.github.io/personal-development-plan/ru/
-
-
+[sql-gen]: https://gitverse.ru/scalabook/sql-gen

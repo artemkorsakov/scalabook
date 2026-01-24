@@ -120,17 +120,18 @@ CREATE TYPE StatusEnum AS ENUM ('InProgress', 'Planned', 'KnowledgeBase');
 
 -- Создание таблицы для задач типа "Книга" со специфичными полями
 CREATE TABLE IF NOT EXISTS books (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  status StatusEnum NOT NULL,
-  section_id INT NOT NULL,
-  goal_id INT NOT NULL,
-  ordinal INT NOT NULL,
-  start_date DATE,
-  end_date DATE,
-  information TEXT,
-  plan VARCHAR[],
-  authors VARCHAR(255) NOT NULL,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY, 
+  name VARCHAR(255) NOT NULL, 
+  status StatusEnum NOT NULL, 
+  section_id INT NOT NULL, 
+  goal_id INT NOT NULL, 
+  ordinal INT NOT NULL, 
+  start_date DATE, 
+  end_date DATE, 
+  information TEXT, 
+  plan VARCHAR[], 
+  is_archived BOOLEAN NOT NULL DEFAULT FALSE, 
+  authors VARCHAR(255) NOT NULL, 
   pages INT NOT NULL
 );
 -- ... аналогичные CREATE TABLE для articles, podcasts, videos, courses, user_tasks ...
@@ -568,6 +569,7 @@ pureTest("Generate create table"):
        end_date DATE,
        information TEXT,
        plan VARCHAR[],
+       is_archived BOOLEAN NOT NULL DEFAULT FALSE, 
        authors VARCHAR(255),
        pages INT NOT NULL CHECK (pages > 0));"""
       .replaceAll("\n", " ").replaceAll("\\s+", " "),
@@ -682,6 +684,10 @@ object Task:
     ColumnDefinition(ColumnName("information"), ColumnType.Text)
   val planColumn: ColumnDefinition =
     ColumnDefinition(ColumnName("plan"), ColumnType.VarcharArray)
+  val isArchivedColumn: ColumnDefinition =
+    ColumnDefinition(ColumnName("is_archived"), ColumnType.Boolean)
+      .asNotNull()
+      .default(ColumnDefault("FALSE"))
 
   // Коллекция всех общих колонок в правильном порядке
   val commonColumns: Columns = Columns(
@@ -694,7 +700,8 @@ object Task:
     startColumn,
     endColumn,
     infoColumn,
-    planColumn
+    planColumn,
+    isArchivedColumn
   )
 
   // --- Определения специфичных колонок для повторного использования ---
@@ -748,6 +755,7 @@ object UserTask:
         endColumn,
         infoColumn,
         planColumn,
+        isArchivedColumn,
         durationColumn
       )
   end given
@@ -768,6 +776,7 @@ CREATE TABLE IF NOT EXISTS books (
   end_date DATE,
   information TEXT,
   plan VARCHAR[],
+  is_archived BOOLEAN NOT NULL DEFAULT FALSE, 
   authors VARCHAR(255) NOT NULL,
   pages INT NOT NULL
 );
@@ -1036,6 +1045,7 @@ CREATE TABLE IF NOT EXISTS books (
   end_date DATE,
   information TEXT,
   plan VARCHAR[],
+  is_archived BOOLEAN NOT NULL DEFAULT FALSE, 
   authors VARCHAR(255) NOT NULL,
   pages INT NOT NULL
 );
@@ -1061,6 +1071,7 @@ UPDATE books SET
   end_date = ?,
   information = ?,
   plan = ?,
+  is_archived = ?, 
   authors = ?,
   pages = ?
 WHERE id = '14c8fa94-4896-4449-82fb-5b1adec2504a'

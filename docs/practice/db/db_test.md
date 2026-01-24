@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = db_crud.html
 showNext = true
-nextPage = ../api.html
+nextPage = ../lifecycle.html
 %}
 
 # Интеграционное тестирование с базой данных

@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = lifecycle.html
+prevPage = api.html
 showNext = true
 nextPage = statistics.html
 %}

@@ -186,6 +186,7 @@ sealed trait CreateTask:
   val endDate: Option[LocalDate]
   val information: String
   val plan: List[TaskStep]
+  val isArchived: Boolean
 
 final case class CreateBookTask(
     name: TaskName,
@@ -197,6 +198,7 @@ final case class CreateBookTask(
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
+    isArchived: Boolean = false,
     authors: Authors,
     pages: Pages
 ) extends CreateTask:

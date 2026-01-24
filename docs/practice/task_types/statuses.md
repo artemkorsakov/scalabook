@@ -456,6 +456,7 @@ Goal(GoalId(5), GoalName("Понять принципы TDD"))
 | `endDate`     | `Option[LocalDate]` | Планируемая дата завершения                                                         |
 | `information` | `String`            | Дополнительная информация о задаче (например, цели, примечания, источники)          |
 | `plan`        | `List[TaskStep]`    | План выполнения задачи — список шагов или действий, необходимых для её завершения   |
+| `isArchived`  | `Boolean`           | Флаг завершенности задачи                                                           |
 
 ### Реализация через `sealed trait Task`
 
@@ -486,6 +487,7 @@ sealed trait Task:
   val endDate: Option[LocalDate]
   val information: String
   val plan: List[TaskStep]
+  val isArchived: Boolean
 ```
 
 Для описания типов создадим отдельный `package object`:
@@ -592,6 +594,13 @@ package object model {
     - Каждый шаг должен быть от 2 до 200 символов без начальных и конечных пробелов
 - **Зачем нужно**: План помогает структурировать процесс выполнения задачи и контролировать прогресс.
 
+#### `isArchived: Boolean`
+
+- **Описание**: Флаг, указывающий, завершена ли задача.
+- **Пример**: `true`, если задача завершена, в ином случае - `false`.
+- **Зачем нужно**: Завершенные задачи не отображаются в списке активных задач, 
+  но полезны для истории, расчета статистики и прогноза.
+
 ### Почему это важно?
 
 Использование общих полей в классе `Task` дает следующие преимущества:
@@ -634,6 +643,7 @@ final case class BookTask(
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
+    isArchived: Boolean,
     authors: Authors,
     pages: Pages
 ) extends Task:
@@ -679,6 +689,7 @@ final case class ArticleTask(
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
+    isArchived: Boolean,
     authors: Authors,
     link: Link,
     duration: FiniteDuration
@@ -724,6 +735,7 @@ final case class PodcastTask(
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
+    isArchived: Boolean,
     authors: Authors,
     link: Link,
     episodes: Episodes,
@@ -776,6 +788,7 @@ final case class VideoTask(
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
+    isArchived: Boolean,
     authors: Authors,
     platform: Platform,
     link: Link,
@@ -821,6 +834,7 @@ final case class CourseTask(
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
+    isArchived: Boolean,
     authors: Authors,
     platform: Platform,
     link: Link,
@@ -859,6 +873,7 @@ final case class UserTask(
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
+    isArchived: Boolean,
     duration: FiniteDuration
 ) extends Task:
   val taskType: TaskType = TaskType.Other
@@ -916,6 +931,7 @@ val book: BookTask =
     endDate = Some(LocalDate.of(2024, 12, 31)),
     information = "Best practices and advanced features",
     plan = List(TaskStep("Intro"), TaskStep("Basics"), TaskStep("OOP")),
+    isArchived = false,
     authors = Authors("John Doe"),
     pages = Pages(500)
   )
@@ -936,6 +952,7 @@ val userTask: UserTask = UserTask(
     TaskStep("Создать слайды"),
     TaskStep("Проверить дизайн")
   ),
+  isArchived = true,
   duration = FiniteDuration(3, HOURS)
 )
 ```

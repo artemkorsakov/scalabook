@@ -111,9 +111,26 @@ object Dependencies {
 
 ```sql
 -- Создание таблиц для основных сущностей
-CREATE TABLE IF NOT EXISTS user_types (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL);
-CREATE TABLE IF NOT EXISTS sections (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL);
-CREATE TABLE IF NOT EXISTS goals (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL);
+CREATE TABLE IF NOT EXISTS user_types (
+  id SERIAL PRIMARY KEY, 
+  name VARCHAR(255) NOT NULL, 
+  displayed BOOLEAN NOT NULL DEFAULT TRUE, 
+  ordinal INT NOT NULL DEFAULT 1000
+);
+
+CREATE TABLE IF NOT EXISTS sections (
+  id SERIAL PRIMARY KEY, 
+  name VARCHAR(255) NOT NULL, 
+  displayed BOOLEAN NOT NULL DEFAULT TRUE, 
+  ordinal INT NOT NULL DEFAULT 1000
+); 
+
+CREATE TABLE IF NOT EXISTS goals (
+  id SERIAL PRIMARY KEY, 
+  name VARCHAR(255) NOT NULL, 
+  displayed BOOLEAN NOT NULL DEFAULT TRUE, 
+  ordinal INT NOT NULL DEFAULT 1000
+);
 
 -- Создание пользовательского типа ENUM для статуса задачи
 CREATE TYPE StatusEnum AS ENUM ('InProgress', 'Planned', 'KnowledgeBase');
@@ -518,7 +535,19 @@ object UserType:
         ColumnDefinition(
           ColumnName("name"),
           ColumnType.Varchar
+        ).asNotNull(),
+        // Колонка 'displayed' типа BOOLEAN, по умолчанию TRUE.
+        ColumnDefinition(
+          ColumnName("displayed"), 
+          ColumnType.Boolean
         ).asNotNull()
+          .default(ColumnDefault("TRUE")),
+        // Колонка 'ordinal' типа INT, по умолчанию 1000.  
+        ColumnDefinition(
+          ColumnName("ordinal"),
+          ColumnType.Int
+        ).asNotNull()
+          .default(ColumnDefault("1000"))
       )
 end UserType
 ```
@@ -534,7 +563,10 @@ end UserType
     - Макрос `generateCreateTableForImpl` получает доступ к этой реализации.
     - Вызывается метод `generateCreateTable` этой реализации, который возвращает строку:
       ```sql
-      CREATE TABLE IF NOT EXISTS user_types (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL);
+      CREATE TABLE IF NOT EXISTS user_types (
+          id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, 
+          displayed BOOLEAN NOT NULL DEFAULT TRUE, ordinal INT NOT NULL DEFAULT 1000
+      );
       ```
     - Эта строка оборачивается в `Fragment.const(...)`.
     - Код макроса "раскрывается", и в месте вызова оказывается валидное выражение типа `Fragment`.
@@ -546,7 +578,10 @@ end UserType
 **Итоговый сгенерированный SQL:**
 
 ```sql
-CREATE TABLE IF NOT EXISTS user_types (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL);
+CREATE TABLE IF NOT EXISTS user_types (
+    id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, 
+    displayed BOOLEAN NOT NULL DEFAULT TRUE, ordinal INT NOT NULL DEFAULT 1000
+);
 ```
 
 Таким образом, мы построили типобезопасную систему, которая позволяет по типу Scala (например, `UserType`) 
@@ -1015,7 +1050,9 @@ object SqlMacros:
 generateCreateTableFor[UserType]
 // Результат: 
 // CREATE TABLE IF NOT EXISTS user_types 
-// (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL);
+// (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, 
+// displayed BOOLEAN NOT NULL DEFAULT TRUE, 
+// ordinal INT NOT NULL DEFAULT 1000);
 
 generateInsertReturningId[UserType, UserTypeName, UserTypeId](name)
 // Результат: INSERT INTO user_types (name) VALUES (?) RETURNING id

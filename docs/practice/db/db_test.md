@@ -231,8 +231,10 @@ class PostgreSQLUserServiceSuite(global: GlobalRead) extends IOSuite:
       whenSuccess(maybeUserType): actual => 
         // Проверка корректности сохраненных данных.
         expect.all(
-          actual.id == id,      // ID должен совпадать
-          actual.name == name   // Имя должно совпадать
+          actual.id == id,              // ID должен совпадать
+          actual.name == name,          // Имя должно совпадать
+          actual.displayed == true,     // Значение по умолчанию
+          actual.ordinal == Ordinal.Max // Значение по умолчанию
         )
 
   // Тест на обработку случая, когда сущность не найдена.
@@ -262,13 +264,21 @@ class PostgreSQLUserServiceSuite(global: GlobalRead) extends IOSuite:
     val newName   = UserTypeName("Exercises (updated)")
     for
       id <- service.create(exercises)
-      updated = UserType(id, newName) // Новая версия сущности с тем же ID
+      // Новая версия сущности с тем же ID
+      updated = UserType(
+        id = id,
+        name = newName,
+        displayed = false,
+        ordinal = Ordinal(10)
+      ) 
       _            <- service.update(updated) // Операция обновления
       maybeUpdated <- service.get(updated.id) // Получение для проверки
     yield whenSuccess(maybeUpdated): actual =>
       expect.all(
         actual.id == updated.id,
-        actual.name == newName // Имя должно измениться
+        actual.name == newName,       // Имя должно измениться
+        actual.displayed == false,    // Статус отображения должен измениться
+        actual.ordinal == Ordinal(10) // Порядок должен измениться
       )
 
   // Тест на удаление сущности.

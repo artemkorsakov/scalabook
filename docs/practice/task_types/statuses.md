@@ -147,7 +147,12 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 import ru.scalabook.pdp.model.UserType.*
 
-final case class UserType(id: UserTypeId, name: UserTypeName)
+final case class UserType(
+    id: UserTypeId,
+    name: UserTypeName,
+    displayed: Boolean = true,
+    ordinal: Ordinal = Ordinal.Max
+)
 
 object UserType:
   type UserTypeId = UserTypeId.T
@@ -155,11 +160,11 @@ object UserType:
 
   type UserTypeName = UserTypeName.T
   object UserTypeName
-      extends RefinedType[String, MinLength[2] & MaxLength[20] & Trimmed]
+      extends RefinedType[String, MinLength[2] & MaxLength[20] & Trimmed]      
 ```
 
 Это обычный [**case class**](https://docs.scala-lang.org/ru/tour/case-classes.html), 
-который содержит два обязательных поля: `id` и `name`:
+который содержит два обязательных поля: `id` и `name` и два необязательных: `displayed` и `ordinal`:
 
 - `final` — указывает, что класс не может быть расширен (используется для гарантии иммутабельности и безопасности).
 - `case class` автоматически предоставляет:
@@ -171,6 +176,8 @@ object UserType:
 - `name` — название пользовательского типа
     - От 2 до 20 символов
     - Строка должна быть обрезана (без пробелов в начале и конце)
+- `displayed` — флаг, указывающий, отображается ли пользовательский тип в пользовательском интерфейсе
+- `ordinal` — порядковый номер пользовательского типа (тип `Ordinal` описан ниже)
 
 #### Что такое "уточненные типы" (Refined Types)?
 
@@ -330,7 +337,12 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 import ru.scalabook.pdp.model.Section.*
 
-final case class Section(id: SectionId, name: SectionName)
+final case class Section(
+    id: SectionId,
+    name: SectionName,
+    displayed: Boolean = true,
+    ordinal: Ordinal = Ordinal.Max
+)
 
 object Section:
   type SectionId = SectionId.T
@@ -345,7 +357,7 @@ object Section:
 
 ```dotty
 Section(SectionId(1), SectionName("Алгоритмы"))
-Section(SectionId(2), SectionName("Soft skills"))
+Section(SectionId(2), SectionName("Soft skills"), false, Ordinal(2))
 Section(SectionId(3), SectionName("Web-разработка"))
 ```
 
@@ -394,7 +406,12 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 import ru.scalabook.pdp.model.Goal.*
 
-final case class Goal(id: GoalId, name: GoalName)
+final case class Goal(
+    id: GoalId,
+    name: GoalName,
+    displayed: Boolean = true,
+    ordinal: Ordinal = Ordinal.Max
+)
 
 object Goal:
   type GoalId = GoalId.T
@@ -411,8 +428,8 @@ object Goal:
 Goal(GoalId(1), GoalName("Освоить основы алгоритмического мышления"))
 Goal(GoalId(2), GoalName("Научиться проектировать REST API"))
 Goal(GoalId(3), GoalName("Развить навыки работы с PostgreSQL"))
-Goal(GoalId(4), GoalName("Приобрести опыт код-ревью"))
-Goal(GoalId(5), GoalName("Понять принципы TDD"))
+Goal(GoalId(4), GoalName("Приобрести опыт код-ревью"), true, Ordinal(2))
+Goal(GoalId(5), GoalName("Понять принципы TDD"), false, Ordinal(11))
 ```
 
 ### Связь целей с задачами
@@ -451,7 +468,7 @@ Goal(GoalId(5), GoalName("Понять принципы TDD"))
 | `status`      | `Status`            | Текущий статус задачи: `InProgress`, `Planned`, `KnowledgeBase`                     |
 | `sectionId`   | `SectionId`         | Идентификатор раздела, к которому относится задача                                  |
 | `goalId`      | `GoalId`            | Идентификатор цели, которую выполняет задача                                        |
-| `ordinal`     | `TaskOrdinal`       | Порядковый номер задачи. Используется для определения последовательности выполнения |
+| `ordinal`     | `Ordinal`           | Порядковый номер задачи. Используется для определения последовательности выполнения |
 | `startDate`   | `Option[LocalDate]` | Дата, когда задача была взята в работу                                              |
 | `endDate`     | `Option[LocalDate]` | Планируемая дата завершения                                                         |
 | `information` | `String`            | Дополнительная информация о задаче (например, цели, примечания, источники)          |
@@ -482,7 +499,7 @@ sealed trait Task:
   val status: Status
   val sectionId: SectionId
   val goalId: GoalId
-  val ordinal: TaskOrdinal
+  val ordinal: Ordinal
   val startDate: Option[LocalDate]
   val endDate: Option[LocalDate]
   val information: String
@@ -504,8 +521,9 @@ package object model {
   object TaskName
       extends RefinedType[String, MinLength[2] & MaxLength[200] & Trimmed]
 
-  type TaskOrdinal = TaskOrdinal.T
-  object TaskOrdinal extends RefinedType[Int, Positive]
+  type Ordinal = Ordinal.T
+  object Ordinal extends RefinedType[Int, Positive]:
+    val Max: T = Ordinal(1000)
 
   type TaskStep = TaskStep.T
   object TaskStep
@@ -558,7 +576,7 @@ package object model {
 - **Пример**: `GoalId(1)`
 - **Зачем нужно**: Цели помогают определить, зачем выполняется каждая задача.
 
-#### `ordinal: TaskOrdinal`
+#### `ordinal: Ordinal`
 
 - **Описание**: Порядковый номер задачи - её приоритет.
 - **Ограничения**: Должно быть положительное число (`Positive`)
@@ -638,7 +656,7 @@ final case class BookTask(
     status: Status,
     sectionId: SectionId,
     goalId: GoalId,
-    ordinal: TaskOrdinal,
+    ordinal: Ordinal,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
     information: String,
@@ -684,7 +702,7 @@ final case class ArticleTask(
     status: Status,
     sectionId: SectionId,
     goalId: GoalId,
-    ordinal: TaskOrdinal,
+    ordinal: Ordinal,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
     information: String,
@@ -730,7 +748,7 @@ final case class PodcastTask(
     status: Status,
     sectionId: SectionId,
     goalId: GoalId,
-    ordinal: TaskOrdinal,
+    ordinal: Ordinal,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
     information: String,
@@ -783,7 +801,7 @@ final case class VideoTask(
     status: Status,
     sectionId: SectionId,
     goalId: GoalId,
-    ordinal: TaskOrdinal,
+    ordinal: Ordinal,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
     information: String,
@@ -829,7 +847,7 @@ final case class CourseTask(
     status: Status,
     sectionId: SectionId,
     goalId: GoalId,
-    ordinal: TaskOrdinal,
+    ordinal: Ordinal,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
     information: String,
@@ -868,7 +886,7 @@ final case class UserTask(
     status: Status,
     sectionId: SectionId,
     goalId: GoalId,
-    ordinal: TaskOrdinal,
+    ordinal: Ordinal,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
     information: String,
@@ -926,7 +944,7 @@ val book: BookTask =
     status = Status.InProgress,
     sectionId = SectionId(1),
     goalId = GoalId(1),
-    ordinal = TaskOrdinal(1),
+    ordinal = Ordinal(1),
     startDate = Some(LocalDate.of(2024, 1, 1)),
     endDate = Some(LocalDate.of(2024, 12, 31)),
     information = "Best practices and advanced features",
@@ -943,7 +961,7 @@ val userTask: UserTask = UserTask(
   status = Status.InProgress,
   sectionId = SectionId(2),
   goalId = GoalId(1),
-  ordinal = TaskOrdinal(6),
+  ordinal = Ordinal(6),
   startDate = Some(LocalDate.of(2023, 10, 1)),
   endDate = Some(LocalDate.of(2023, 10, 15)),
   information = "Создание презентации для внутреннего совещания.",

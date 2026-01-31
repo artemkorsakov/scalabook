@@ -183,6 +183,19 @@ private[services] class PostgreSQLHistoryService(xa: Aux[[x] =>> IO[x], Unit])
       .query[CompletedTask].to[List].transact(xa)
 ```
 
+Добавим в сервис жизненого цикла задач только что созданный сервис.
+
+```dotty
+final case class TaskLifecycleService[F[_]: {MonadThrow as MT}](
+    typeService: UserService[F],
+    sectionService: SectionService[F],
+    goalService: GoalService[F],
+    taskService: TaskService[F],
+    historyService: HistoryService[F]
+):
+```
+
+
 Команда для выполнения задачи:
 
 ```dotty

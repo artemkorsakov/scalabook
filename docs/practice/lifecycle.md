@@ -7,27 +7,49 @@ nextPage = lifecycle/complete.html
 
 # Жизненный цикл задач
 
-## Сервис настройки
+После успешного определения алгебр (интерфейсов операций) и их интерпретаторов (реализаций для конкретных эффектов), 
+наступает ключевой этап проектирования — создание программ, инкапсулирующих бизнес-логику. 
+Эти программы, построенные на абстракциях алгебр, обеспечивают переносимость, тестируемость и чистоту предметной области.
 
-Для начала создадим сервис настройки, который будет отвечать за работу с пользовательскими типами, целями и разделами.
+## Сервис управления настройками (SettingsService)
+
+В системе персонального планирования и развития одной из фундаментальных подсистем является сервис настройки. 
+Он отвечает за управление метаданными и структурой задач: 
+пользовательскими типами задач, глобальными целями и разделами.
+Без корректно настроенной структуры работа с самими задачами становится невозможной.
+
+### Архитектура и композиция
+
+Сервис реализован как финальный case-класс, который агрегирует три более специализированных сервиса. 
+Это демонстрирует принцип композиции и разделения ответственности:
 
 ```dotty
-final case class SettingsService[F[_]: {MonadThrow as MT, Logger as log}](
-    typeService: UserService[F],
-    sectionService: SectionService[F],
-    goalService: GoalService[F]
+final case class SettingsService[F[_]: {MonadThrow as MT}](
+    typeService: UserService[F],       // Сервис работы с типами задач
+    sectionService: SectionService[F], // Сервис работы с разделами
+    goalService: GoalService[F]        // Сервис работы с целями
 )
 ```
 
-Он будет выполнять следующие функции:
+Контекстная граница `MonadThrow` наделяет сервис способностью работать с эффектами, 
+поддерживающими последовательные вычисления (`Monad`) и 
+обработку ошибок через выбрасывание исключений в контексте эффекта (`Throw`). 
 
-- Создание типов, целей и разделов
-- Обновление типов, целей и разделов
-- Изменение порядка типов, целей и разделов
-- Получение списка типов, целей и разделов
-- Удаление типов, целей и разделов
+### Функциональная ответственность
 
-### Создание пользовательского типа
+`SettingsService` предоставляет полный CRUD (Create, Read, Update, Delete) цикл, а также операции изменения порядка для каждой из сущностей:
+
+- **Создание** новых типов, целей и разделов.
+- **Чтение/получение** списков существующих сущностей.
+- **Обновление** атрибутов существующих сущностей.
+- **Изменение порядка** следования сущностей (например, для отображения в UI).
+- **Удаление** сущностей.
+
+Рассмотрим каждую операцию детально.
+
+### 1. Создание пользовательского типа задачи
+
+Операция создания гарантирует уникальность имени типа в пределах системы, предотвращая дублирование.
 
 ```dotty
 def createTaskType(name: UserTypeName): F[UserTypeId] =
@@ -48,17 +70,30 @@ private def createItem[A, B, C](
     if items.exists(getName(_) == name) then
       MT.raiseError(
         new IllegalArgumentException(
-          s"An item with name $name already exists"
+          s"An item with name '$name' already exists"
         )
       )
-    else create(name) 
+    else create(name)  
 ```
 
-Нельзя создать тип, если он уже существует.
+**Принцип работы:**
 
-Создание цели и раздела аналогично.
+1. Запрашиваем полный список существующих типов через `getAll`.
+2. Проверяем, не существует ли уже тип с запрошенным именем (`items.exists(getName(_) == name)`).
+3. Если дубликат найден, операция прерывается с ошибкой `IllegalArgumentException`.
+4. Если имя уникально, делегирует создание в `typeService.create(name)`, который возвращает идентификатор нового типа (`UserTypeId`).
 
-### Обновление типов, целей и разделов
+**Обобщенная приватная логика `createItem`:**
+Для избежания дублирования кода, общая логика проверки уникальности и создания вынесена в параметризованный метод `createItem`. 
+Он абстрагирован от конкретных типов сущностей (`A`), их имен (`B`) и идентификаторов (`C`), 
+принимая соответствующие функции доступа и операции.
+
+### 2. Обновление типов, целей и разделов
+
+Операция обновления должна обеспечить две ключевые инвариантности:
+
+1. Обновляемая сущность должна существовать.
+2. Новое имя сущности не должно конфликтовать с именами других сущностей (кроме себя самой).
 
 ```dotty
 def updateTaskType(userType: UserType): F[Unit] =
@@ -69,7 +104,7 @@ def updateTaskType(userType: UserType): F[Unit] =
     getName = _.name,
     update = typeService.update
   )
-
+  
 private def updateItem[A, B, C](
     getAll: F[List[A]],
     updated: A,
@@ -83,20 +118,28 @@ private def updateItem[A, B, C](
 
     if types.forall(getId(_) != id) then
       MT.raiseError(
-        new IllegalArgumentException(s"An item with id $id not found")
+        new IllegalArgumentException(s"An item with id '$id' not found")
       )
     else if types.exists(t => getName(t) == newName && getId(t) != id) then
       MT.raiseError(
         new IllegalArgumentException(
-          s"Can't update! Task type with name $newName already exists"
+          s"Can't update! Task type with name '$newName' already exists"
         )
       )
-    else update(updated)
+    else update(updated)  
 ```
 
-Обновление цели и раздела аналогично.
+**Логика валидации в `updateItem`:**
 
-### Изменение порядка типов, целей и разделов
+1. **Проверка существования:** `types.forall(getId(_) != id)` — если элемент с идентификатором `id` не найден в базе данных, генерируется ошибка.
+2. **Проверка уникальности имени:** `types.exists(t => getName(t) == newName && getId(t) != id)` — ошибка возникает, 
+   если имя `newName` уже занято другой сущностью (чей идентификатор не совпадает с обновляемым).
+3. Если обе проверки пройдены элемент обновляется.
+
+### 3. Изменение порядка сущностей
+
+Эта операция позволяет пользователю кастомизировать порядок отображения элементов (типов, целей, разделов) в интерфейсе. 
+На вход принимается вектор идентификаторов в желаемом порядке.
 
 ```dotty
 def reorderTaskTypes(ids: Vector[UserTypeId]): F[Unit] =
@@ -107,7 +150,7 @@ def reorderTaskTypes(ids: Vector[UserTypeId]): F[Unit] =
     update = item => ordinal => item.copy(ordinal = ordinal),
     updateAll = typeService.updateAll
   )
-
+  
 private def reorderItems[A, B](
     getAll: F[List[A]],
     ids: Vector[B],
@@ -119,7 +162,9 @@ private def reorderItems[A, B](
     val notFoundIds = ids.filterNot(id => items.exists(getId(_) == id))
     if notFoundIds.nonEmpty then
       MT.raiseError(
-        new IllegalArgumentException(s"Some ids are not found: $notFoundIds")
+        new IllegalArgumentException(
+          s"Some ids are not found: ${notFoundIds.mkString(", ")}"
+        )
       )
     else
       val updated =
@@ -127,26 +172,263 @@ private def reorderItems[A, B](
           val index   = ids.indexOf(getId(item))
           val ordinal = if index >= 0 then Ordinal.option(index + 1) else None
           update(item)(ordinal.getOrElse(Ordinal.Max))
-      updateAll(updated)
+      updateAll(updated)  
 ```
 
-Изменение порядка цели и раздела аналогично.
+**Алгоритм в `reorderItems`:**
 
-### Получение списка типов, целей и разделов
+1. **Валидация входных данных:** Определяются те идентификаторы из запроса `ids`, которые отсутствуют в базе данных (`notFoundIds`). 
+   Если такие идентификаторы найдены, операция завершается с ошибкой.
+2. **Сопоставление и расчет порядка:** Для каждой существующей сущности (`item`) вычисляется её новая позиция (`index`) 
+   в переданном векторе `ids`. На основе индекса вычисляется порядок `ordinal`. 
+   Если сущность не указана в `ids`, ей присваивается максимальный порядок (`Ordinal.Max`).
+3. **Формирование обновленных объектов:** С помощью функции `update` обновляются порядок.
+
+### 4. Получение списка сущностей
+
+Наиболее простая операция, которая делегируется соответствующему специализированному сервису.
 
 ```dotty
 def getTaskTypes: F[List[UserType]] = typeService.getAll
 ```
 
-Получение списка цели и раздела аналогично.
+Аналогичные методы `getGoals` и `getSections` будут обращаться к `goalService.getAll` и `sectionService.getAll` соответственно.
 
-### Удаление типов, целей и разделов
+### 5. Удаление сущностей
+
+Удаление сущностей также делегируется соответствующему сервису.
 
 ```dotty
 def deleteTaskType(id: UserTypeId): F[Unit] = typeService.delete(id)
 ```
 
-Удаление цели и раздела аналогично.
+**Важное замечание:** В реальной системе перед удалением типа, цели или раздела необходимо проверить, 
+не существуют ли задачи, которые их используют. 
+Эта логика валидации должна быть инкапсулирована внутри `typeService.delete`, `goalService.delete` или `sectionService.delete`.
+
+### Заключение по сервису настроек
+
+`SettingsService` представляет собой согласованный фасад над тремя подсистемами, 
+обеспечивающий целостность и непротиворечивость данных в рамках предметной области. 
+Его реализация демонстрирует применение обобщенного программирования 
+для устранения дублирования кода и строгой типизации для обеспечения безопасности.
+
+С проектированием сервиса настройки работа над инфраструктурой системы завершена. 
+Следующим логическим шагом является определение **сервиса жизненного цикла задач (`TaskLifecycleService`)**, 
+который будет оперировать непосредственно экземплярами задач, 
+используя настроенную структуру (типы, цели, разделы) для их организации 
+и управления их состоянием (создание, выполнение, завершение, архивация).
+
+
+
+
+
+
+
+
+
+
+## Создание задачи
+
+Процесс создания задачи является фундаментальной операцией в системе управления персональным развитием. Ключевой особенностью системы является возможность инициализации задачи сразу в одном из трех возможных статусов, что позволяет гибко планировать и структурировать работу. Каждый статус накладывает определенные требования к полноте заполнения данных:
+
+- **База знаний**: Требуется заполнение всех базовых полей (название, описание, тип, раздел, цель), но **не требуется** план выполнения и даты. Это идеальный статус для идей и намерений, которые еще не детализированы.
+- **Запланировано**: Необходимо заполнить **все поля, включая подробный план выполнения**, но **без указания дат начала и окончания**. Задача полностью готова к переходу в активную фазу.
+- **В работе**: Требуется **полное заполнение всех полей** задачи, включая план выполнения, дату начала и планируемую дату завершения. Это статус для активной, текущей работы.
+
+### Реализация операции создания
+
+Сервис жизненного цикла задач (`TaskLifecycleService`) агрегирует все необходимые сервисы для валидации и сохранения задачи.
+
+```dotty
+final case class TaskLifecycleService[F[_]: {MonadThrow as MT}](
+    typeService: UserService[F],     // Для проверки пользовательских типов
+    sectionService: SectionService[F], // Для проверки раздела
+    goalService: GoalService[F],     // Для проверки цели
+    taskService: TaskService[F]      // Для непосредственного сохранения задачи
+):
+  import TaskLifecycleService.*
+
+  def createTask(task: CreateTask): F[UUID] =
+    // 1. Сбор и валидация всех зависимых сущностей
+    val validationResult: F[EitherNel[String, Unit]] =
+      for
+        sectionOpt  <- sectionService.get(task.sectionId)
+        goalOpt     <- goalService.get(task.goalId)
+        userTypeVal <- validateUserTaskType(task) // Спец. проверка для пользовательского типа
+      yield (
+        // Преобразование Option в Either с ошибкой
+        sectionOpt.toRightNel(s"Раздел с id ${task.sectionId} не найден"),
+        goalOpt.toRightNel(s"Цель с id ${task.goalId} не найден"),
+        userTypeVal,
+        // Валидация статус-специфичных полей (план, даты)
+        validateStatus(task)
+      ).mapN { (_, _, _, _) => () } // Комбинирование результатов: успех, только если все Right
+
+    // 2. Исполнение валидации и создание или возврат ошибки
+    validationResult.flatMap {
+      case Right(_) =>
+        // Вся валидация пройдена → создаем задачу
+        taskService.create(task)
+      case Left(errors) =>
+        // Накопленные ошибки объединяются и выбрасываются как исключение
+        MT.raiseError(
+          new IllegalArgumentException(errors.toList.mkString("; "))
+        )
+    }
+  end createTask
+
+  // Приватный метод для валидации пользовательского типа задачи.
+  // Проверка требуется только для задач типа `CreateUserTask`.
+  private def validateUserTaskType(task: CreateTask): F[EitherNel[String, Unit]] =
+    task match
+      case userTask: CreateUserTask =>
+        typeService
+          .get(userTask.userTypeId)
+          .map {
+            case Some(_) => Right(()) // Тип существует
+            case None    => Left(NonEmptyList.one(
+              s"Пользовательский тип с id ${userTask.userTypeId} не найден"
+            ))
+          }
+      case _ =>
+        // Для задач без пользовательского типа (например, системных) проверка не требуется
+        MT.pure(Right(()))
+end TaskLifecycleService
+
+// Объект-компаньон содержит чистые функции валидации, зависящие только от статуса.
+object TaskLifecycleService:
+  // Основная функция валидации статуса. Определяет, какие дополнительные проверки нужны.
+  private def validateStatus(task: CreateTask): EitherNel[String, Unit] =
+    task.status match
+      case Status.InProgress =>
+        // Для статуса "В работе" обязательны И план, И корректные даты
+        (validatePlan(task), validateDates(task)).mapN((_, _) => ())
+      case Status.Planned =>
+        // Для "Запланировано" обязателен только план
+        validatePlan(task)
+      case Status.KnowledgeBase =>
+        // Для "Базы знаний" дополнительных проверок нет
+        Right(())
+
+  // Проверка наличия плана выполнения (непустого списка шагов).
+  private def validatePlan(task: CreateTask): EitherNel[String, Unit] =
+    if task.plan.isEmpty then
+      Left(NonEmptyList.one("План выполнения задачи не может быть пустым для данного статуса"))
+    else Right(())
+
+  // Проверка корректности дат: обе даты должны быть указаны, а дата окончания — быть после даты начала.
+  private def validateDates(task: CreateTask): EitherNel[String, Unit] =
+    (task.startDate, task.endDate) match
+      case (Some(start), Some(end)) if end.isAfter(start) =>
+        Right(())
+      case (Some(start), Some(end)) =>
+        Left(NonEmptyList.one(s"Дата окончания ($end) не может быть раньше или равна дате начала ($start)"))
+      case _ =>
+        Left(NonEmptyList.one("Для статуса 'В работе' необходимо указать как дату начала, так и дату окончания"))
+```
+
+## Постановка задачи в очередь (Перевод из "Базы знаний" в "Запланировано")
+
+Эта операция переводит задачу из стадии идеи ("База знаний") в стадию готового к выполнению плана ("Запланировано"). Ключевые действия:
+
+1.  **Смена статуса** с `KnowledgeBase` на `Planned`.
+2.  **Обязательное предоставление плана выполнения** — задача не может быть запланирована без детального плана.
+3.  _(Логика для UI)_ **Автоматическое назначение порядкового номера (ординала)**: Система может предлагать первые свободные порядковые номера среди задач того же типа, чтобы облегчить пользователю организацию очереди.
+
+```dotty
+def enqueue(
+    id: UUID,
+    taskType: TaskType,
+    plan: NonEmptyList[TaskStep] // Непустой список шагов — гарантия на уровне типов
+): F[Unit] =
+  // 1. Находим задачу, строго проверяя её текущий статус
+  findTask(id, taskType, Status.KnowledgeBase).flatMap: task =>
+    // 2. Создаем обновленную версию: меняем статус и привязываем план
+    val updated = task.copy(status = Status.Planned, plan = plan.toList)
+    // 3. Сохраняем изменения
+    taskService.update(updated)
+
+// Вспомогательная функция для безопасного поиска задачи с предварительной валидацией статуса.
+private def findTask(id: UUID, taskType: TaskType, expectedStatus: Status): F[Task] =
+  get(id, taskType).flatMap {
+    case Some(task) if task.status == expectedStatus =>
+      MT.pure(task) // Задача найдена и имеет ожидаемый статус
+    case Some(_) =>
+      // Задача найдена, но в неправильном статусе (бизнес-логическая ошибка)
+      MT.raiseError(
+        new IllegalArgumentException(
+          s"Задача с id '$id' находится в статусе '${task.status}', а ожидался '$expectedStatus'"
+        )
+      )
+    case None =>
+      // Задача не найдена (ошибка данных)
+      MT.raiseError(
+        new IllegalArgumentException(s"Задача с id '$id' не найдена")
+      )
+  }
+```
+
+## Начало работы над задачей (Перевод из "Запланировано" в "В работе")
+
+Операция переводит задачу в активное состояние. При этом необходимо:
+
+1.  **Установить дату начала работы** (может подставляться текущая дата по умолчанию).
+2.  **Установить планируемую дату завершения**, которая должна быть логически корректной (после даты начала).
+
+```dotty
+def start(
+    id: UUID,
+    taskType: TaskType,
+    startDate: LocalDate,
+    endDate: LocalDate
+): F[Unit] =
+  // Предварительная проверка логики дат на уровне сервиса
+  if endDate.isBefore(startDate) then
+    MT.raiseError(
+      new IllegalArgumentException(
+        s"Планируемая дата завершения ($endDate) не может быть раньше даты начала ($startDate)"
+      )
+    )
+  else
+    // Поиск задачи в статусе "Запланировано"
+    findTask(id, taskType, Status.Planned).flatMap: task =>
+      val updated = task.copy(
+        status = Status.InProgress,
+        startDate = Some(startDate),   // Фиксация даты начала
+        endDate = Some(endDate)        // Фиксация дедлайна
+      )
+      taskService.update(updated)
+```
+
+## Откладывание задачи (Возврат из "В работе" в "Запланировано")
+
+Данная операция позволяет временно снять задачу с активного выполнения, не отменяя её полностью. Это полезно при смене приоритетов или возникновении блокировок.
+
+1.  **Смена статуса** с `InProgress` обратно на `Planned`.
+2.  **Очистка дат**: Даты начала и окончания обнуляются, так как при повторном взятии в работу они, скорее всего, будут другими.
+
+```dotty
+def defer(id: UUID, taskType: TaskType): F[Unit] =
+  findTask(id, taskType, Status.InProgress).flatMap: task =>
+    val updated = task.copy(
+      status = Status.Planned,
+      startDate = None, // Очищаем дату начала
+      endDate = None    // Очищаем дату окончания
+    )
+    taskService.update(updated)
+```
+
+## Удаление задачи
+
+Важная и необратимая операция. Сервис жизненного цикла делегирует её напрямую в `TaskService`, который отвечает за постоянное хранение. **Важно:** В реальной системе здесь или в `taskService.delete` должна быть добавлена проверка на возможность удаления (например, отсутствие связанных записей).
+
+```dotty
+def delete(id: UUID, taskType: TaskType): F[Unit] =
+  taskService.delete(id, taskType) // Безвозвратное удаление
+```
+
+
 
 ## Создание задачи
 
@@ -268,8 +550,7 @@ private def findTask(id: UUID, taskType: TaskType, status: Status): F[Task] =
 Заполняемые поля:
 
 - Дата начала (автоподстановка текущей даты)
-- Планируемая дата завершения
-  Планируемая дата завершения не может быть раньше даты начала
+- Планируемая дата завершения. Планируемая дата завершения не может быть раньше даты начала
 
 ```dotty
 def start(

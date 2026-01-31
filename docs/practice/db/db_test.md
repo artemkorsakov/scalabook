@@ -95,7 +95,7 @@ object Dependencies {
 
 Для эффективного повторного использования ресурсов между тестовыми наборами 
 и минимизации накладных расходов на запуск контейнеров создается специализированный объект `SharedResources`. 
-Этот объект реализует паттерн `GlobalResource` из фреймворка Weaver, 
+Этот объект реализует паттерн `GlobalResource` из [фреймворка Weaver][weaver], 
 что позволяет инициализировать общие ресурсы один раз перед всеми тестами и корректно освободить их после завершения.
 
 ```dotty
@@ -188,7 +188,7 @@ end SharedResources
 
 ## Структура и написание тестов
 
-[Фреймворк Weaver](https://typelevel.org/weaver-test/), интегрированный с Cats Effect, 
+[Фреймворк Weaver][weaver], интегрированный с Cats Effect, 
 используется для организации тестовых сценариев. 
 Тестовый класс наследуется от `IOSuite` и использует механизм общих ресурсов (shared resources).
 
@@ -286,9 +286,9 @@ class PostgreSQLUserServiceSuite(global: GlobalRead) extends IOSuite:
     val name = UserTypeName("Deprecated")
     for
       id        <- service.create(name)
-      initial   <- service.getAll // Состояние до удаления
+      initial   <- service.getAll     // Состояние до удаления
       _         <- service.delete(id) // Операция удаления
-      finalList <- service.getAll // Состояние после удаления
+      finalList <- service.getAll     // Состояние после удаления
     yield expect.all(
       initial.exists(_.id == id),  // Сущность должна присутствовать в начальном списке
       finalList.forall(_.id != id) // Сущность должна отсутствовать в конечном списке
@@ -399,3 +399,4 @@ override def sharedResource: Resource[IO, Res]
 [repo]: https://gitverse.ru/scalabook/pdp
 [plugin]: https://artemkorsakov.github.io/personal-development-plan/ru/
 [tests]: https://gitverse.ru/scalabook/pdp/content/master/pdp/src/test/scala/ru/scalabook/pdp/services/postgresql
+[weaver]: https://typelevel.org/weaver-test/

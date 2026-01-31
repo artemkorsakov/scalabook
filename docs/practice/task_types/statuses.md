@@ -12,7 +12,7 @@ nextPage = localization.html
 Каждая задача в персональном плане развития имеет статус, который определяет её текущее состояние и этап выполнения.
 Статусы позволяют отслеживать прогресс, планировать нагрузку и анализировать эффективность обучения.
 
-Существует три основных статуса задач:
+Рассмотрим следующие статусы задач:
 
 ### **В работе**
 
@@ -67,6 +67,23 @@ nextPage = localization.html
 Вы решили, что хотели бы начать свой блог, но пока не знаете, как это сделать. 
 Эта задача находится в "Базе знаний", потому что вы ещё не определились с шагами реализации.
 
+### **Завершено**
+
+**Описание:**
+
+Задачи, которые были полностью выполнены. Этот статус фиксирует завершение работы и позволяет сохранить историю достижений.
+
+**Характеристики:**
+
+- Задача выполнена в полном объеме согласно изначальному или актуализированному плану.
+- Проставлена **фактическая дата окончания**.
+- Задачи в этом статусе служат архивом вашего прогресса и могут использоваться для анализа пройденного пути.
+
+**Пример использования:**
+
+Вы прочитали книгу "Clean Code", выполнили все практические задания к ней и оформили конспект основных принципов. 
+После этого вы завершаете задачу и указываете дату окончания, отмечая это достижение в своем плане.
+
 ### Реализация статусов в коде
 
 Статусы реализуются в виде [перечисления (`enum`)](https://docs.scala-lang.org/scala3/reference/enums/enums.html).
@@ -79,10 +96,10 @@ nextPage = localization.html
 package ru.scalabook.pdp.model
 
 enum Status:
-  case InProgress, Planned, KnowledgeBase
+  case InProgress, Planned, KnowledgeBase, Completed
 ```
 
-Таким образом, каждая задача может иметь один из трёх возможных статусов.
+Таким образом, каждая задача может иметь один из перечисленных статусов.
 
 ## Типы задач
 
@@ -234,7 +251,7 @@ object A extends RefinedType...
 
 Проблема, которую они решают:
 
-Без opaque types:
+Без запечатанных типов:
 
 ```dotty
 type UserId = Int
@@ -248,7 +265,7 @@ val userId: UserId = 123
 getProduct(userId) // Ошибка, но компилятор не поймет!
 ```
 
-С opaque types:
+С запечатанными типами:
 
 ```dotty
 type UserId = UserId.T
@@ -446,7 +463,7 @@ Goal(GoalId(5), GoalName("Понять принципы TDD"), false, Ordinal(11
 - **Стратегическое планирование** — можно строить индивидуальные траектории развития, опираясь на цели.
 - **Измеримость прогресса** — можно отслеживать прогресс не только по выполненным задачам, но и по достигнутым целям.
 - **Гибкость системы** — цели позволяют адаптировать задачи под разные карьерные пути и специализации.
-- **Мотивационный аспект** — понимание "зачем" повышает вовлеченность пользователя.
+- **Мотивационный аспект** — понимание "зачем" повышает вовлеченность.
 
 Цели превращают задачи из простых упражнений в осмысленные шаги профессионального развития, 
 делая систему ИПР более эффективной и персонализированной.
@@ -465,7 +482,7 @@ Goal(GoalId(5), GoalName("Понять принципы TDD"), false, Ordinal(11
 | `id`          | `UUID`              | Уникальный идентификатор задачи                                                     |
 | `name`        | `TaskName`          | Название задачи                                                                     |
 | `taskType`    | `TaskType`          | Идентификатор типа задачи (из перечисления `TaskType`)                              |
-| `status`      | `Status`            | Текущий статус задачи: `InProgress`, `Planned`, `KnowledgeBase`                     |
+| `status`      | `Status`            | Текущий статус задачи                                                               |
 | `sectionId`   | `SectionId`         | Идентификатор раздела, к которому относится задача                                  |
 | `goalId`      | `GoalId`            | Идентификатор цели, которую выполняет задача                                        |
 | `ordinal`     | `Ordinal`           | Порядковый номер задачи. Используется для определения последовательности выполнения |
@@ -473,7 +490,6 @@ Goal(GoalId(5), GoalName("Понять принципы TDD"), false, Ordinal(11
 | `endDate`     | `Option[LocalDate]` | Планируемая дата завершения                                                         |
 | `information` | `String`            | Дополнительная информация о задаче (например, цели, примечания, источники)          |
 | `plan`        | `List[TaskStep]`    | План выполнения задачи — список шагов или действий, необходимых для её завершения   |
-| `isArchived`  | `Boolean`           | Флаг завершенности задачи                                                           |
 
 ### Реализация через `sealed trait Task`
 
@@ -504,7 +520,6 @@ sealed trait Task:
   val endDate: Option[LocalDate]
   val information: String
   val plan: List[TaskStep]
-  val isArchived: Boolean
 ```
 
 Для описания типов создадим отдельный `package object`:
@@ -562,6 +577,7 @@ package object model {
     - `Status.InProgress` – задача в работе
     - `Status.Planned` – задача запланирована
     - `Status.KnowledgeBase` – задача в базе знаний
+    - `Status.Completed` – задача выполнена
 - **Зачем нужно**: Статус помогает отслеживать прогресс и планировать дальнейшие действия.
 
 #### `sectionId: SectionId`
@@ -612,24 +628,6 @@ package object model {
     - Каждый шаг должен быть от 2 до 200 символов без начальных и конечных пробелов
 - **Зачем нужно**: План помогает структурировать процесс выполнения задачи и контролировать прогресс.
 
-#### `isArchived: Boolean`
-
-- **Описание**: Флаг, указывающий, завершена ли задача.
-- **Пример**: `true`, если задача завершена, в ином случае - `false`.
-- **Зачем нужно**: Завершенные задачи не отображаются в списке активных задач, 
-  но полезны для истории, расчета статистики и прогноза.
-
-### Почему это важно?
-
-Использование общих полей в классе `Task` дает следующие преимущества:
-
-- **Единообразие** — все задачи имеют одинаковый набор обязательных полей, что упрощает их обработку и хранение.
-- **Гибкость** — можно легко добавлять новые типы задач, расширяя функционал без изменения базовой структуры.
-- **Безопасность данных** — благодаря уточненным типам, мы можем гарантировать, 
-  что данные соответствуют требованиям (например, длина строки, минимальное значение числа и т.д.).
-- **Удобство анализа** — наличие полей `startDate`, `endDate`, `order`, `section` позволяет строить графики, 
-  анализировать прогресс и составлять отчёты.
-
 ## Конкретные типы задач
 
 В системе управления персональным планом развития помимо общих полей, 
@@ -661,7 +659,6 @@ final case class BookTask(
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
-    isArchived: Boolean,
     authors: Authors,
     pages: Pages
 ) extends Task:
@@ -707,7 +704,6 @@ final case class ArticleTask(
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
-    isArchived: Boolean,
     authors: Authors,
     link: Link,
     duration: FiniteDuration
@@ -753,7 +749,6 @@ final case class PodcastTask(
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
-    isArchived: Boolean,
     authors: Authors,
     link: Link,
     episodes: Episodes,
@@ -806,7 +801,6 @@ final case class VideoTask(
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
-    isArchived: Boolean,
     authors: Authors,
     platform: Platform,
     link: Link,
@@ -852,7 +846,6 @@ final case class CourseTask(
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
-    isArchived: Boolean,
     authors: Authors,
     platform: Platform,
     link: Link,
@@ -891,7 +884,6 @@ final case class UserTask(
     endDate: Option[LocalDate],
     information: String,
     plan: List[TaskStep],
-    isArchived: Boolean,
     duration: FiniteDuration
 ) extends Task:
   val taskType: TaskType = TaskType.Other
@@ -949,7 +941,6 @@ val book: BookTask =
     endDate = Some(LocalDate.of(2024, 12, 31)),
     information = "Best practices and advanced features",
     plan = List(TaskStep("Intro"), TaskStep("Basics"), TaskStep("OOP")),
-    isArchived = false,
     authors = Authors("John Doe"),
     pages = Pages(500)
   )
@@ -970,7 +961,6 @@ val userTask: UserTask = UserTask(
     TaskStep("Создать слайды"),
     TaskStep("Проверить дизайн")
   ),
-  isArchived = true,
   duration = FiniteDuration(3, HOURS)
 )
 ```

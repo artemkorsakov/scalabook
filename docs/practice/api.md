@@ -7,6 +7,7 @@ nextPage = sources.html
 
 # Определение клиентского API и создание сервиса
 
+[В процессе написания...](https://t.me/scalabook)
 
 ---
 

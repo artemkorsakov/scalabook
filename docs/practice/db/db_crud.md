@@ -328,6 +328,10 @@ private[services] class PostgreSQLUserService(xa: Aux[[x] =>> IO[x], Unit])
       .transact(xa)
       .void          // Преобразуем IO[Int] в IO[Unit]
 
+  /** Обновляет несколько пользовательских типов задач. */
+  def updateAll(userTypes: List[UserType]): IO[Unit] =
+    userTypes.traverse(update).void
+    
   /** Удаляет пользовательский тип задачи по ID.
     *
     * @param id
@@ -418,18 +422,6 @@ generateSelectById[UserType, UserTypeId](id)
 3. **Автоматическая деривация**: Для case class'ов, таких как `UserType`, 
    Doobie может автоматически сгенерировать `Get[UserType]`, 
    если для всех его полей существуют соответствующие экземпляры `Get`.
-
-#### Аналогия для понимания контекстных параметров
-
-Представьте, что вы входите в **конференц-зал** для проведения встречи:
-
-- **Явные параметры** — это **документы**, которые вы приносите с собой специально для этой встречи (например, презентация, отчет).
-- **Неявные параметры (контекст)** — это **инфраструктура зала**, которая уже есть на месте: проектор, микрофон, флипчарт, правила поведения.
-
-В нашем коде:
-
-- `userType: UserType` — это явный параметр (документ), который нужно передать явно.
-- `given Get[UserType]` — это контекст (проектор), который уже "есть в зале" благодаря импорту.
 
 ### Правила корректного использования неявных параметров
 
@@ -581,8 +573,6 @@ CREATE TABLE podcasts (id UUID, name VARCHAR, status StatusEnum, ..., episodes I
   ```
   **Проблемы**: Потеря типобезопасности, сложность валидации, ограниченные возможности индексации.
 
-Наш выбор TPCC обеспечивает оптимальный баланс между производительностью, типобезопасностью и простотой поддержки.
-
 ## Реализация специальных преобразований типов для работы с Doobie
 
 ### Проблема соответствия типов Scala и SQL
@@ -606,7 +596,7 @@ Doobie, как библиотека для типобезопасной рабо
 ```dotty
 // Доменный тип - перечисление статусов задачи
 enum Status:
-  case InProgress, Planned, KnowledgeBase
+  case InProgress, Planned, KnowledgeBase, Completed
 
 object Status:
   /** Ручное определение преобразования между типом Status и строковым
@@ -731,7 +721,7 @@ package object model {
 
 ```dotty
 enum Status:
-  case InProgress, Planned, KnowledgeBase
+  case InProgress, Planned, KnowledgeBase, Completed
 
 // Идеальное размещение - в сопутствующем объекте самого типа
 object Status:
@@ -788,7 +778,7 @@ import DatabaseTypeConversions.given
 // Файл: src/main/scala/utils/SomeUtility.scala
 package utils
 
-// СИРОТСТВУЮЩИЙ ЭКЗЕМПЛЯР - ОПАСНО!
+// Сиротствующий экземпляр
 given Meta[Status] =
   Meta[String].timap(Status.valueOf)(_.toString)
 

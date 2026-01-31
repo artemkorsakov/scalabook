@@ -67,6 +67,7 @@ localization = {
         "in-progress": "В работе"
         "planned": "Запланировано"
         "knowledge-base": "База знаний"
+        "completed": "Завершено"
       }
       types = {
         "book" = "Книга"
@@ -83,6 +84,7 @@ localization = {
         "in-progress": "In progress"
         "planned": "Planned"
         "knowledge-base": "Knowledge base"
+        "completed": "Completed"
       }
       types = {
         "book" = "Book"
@@ -127,7 +129,8 @@ object LanguageName extends RefinedType[String, MinLength[2] & MaxLength[20]]
 final case class StatusConfig(
     inProgress: NonEmptyString,
     planned: NonEmptyString,
-    knowledgeBase: NonEmptyString
+    knowledgeBase: NonEmptyString,
+    completed: NonEmptyString
 )
 
 /** `TypesConfig` содержит локализацию типов задач. */
@@ -225,6 +228,7 @@ end ConfigSuite
     "in-progress": "En progreso"
     "planned": "Planificado"
     "knowledge-base": "Base de conocimientos"
+    "completed": "Terminado"
   }
   types = {
     "book" = "Libro"
@@ -258,7 +262,7 @@ end ConfigSuite
 
 При добавлении нового языка **не нужно менять ни одну строку кода**. 
 Все изменения происходят только в конфигурационном файле. 
-Это делает систему очень удобной для администраторов и переводчиков.
+Это делает систему очень удобной для администраторов и локализаторов.
 
 #### Гарантии качества данных
 

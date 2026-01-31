@@ -60,7 +60,7 @@ object Dependencies {
     val postgres = "org.tpolecat" %% "doobie-postgres" % version
   }
 
-  // Блок зависимостей для библиотеки Iron, используемой для уточненных (refined) типов
+  // Блок зависимостей для библиотеки Iron, используемой для уточненных типов
   object iron {
     private val version = "3.2.1"
 
@@ -147,7 +147,6 @@ CREATE TABLE IF NOT EXISTS books (
   end_date DATE, 
   information TEXT, 
   plan VARCHAR[], 
-  is_archived BOOLEAN NOT NULL DEFAULT FALSE, 
   authors VARCHAR(255) NOT NULL, 
   pages INT NOT NULL
 );
@@ -604,7 +603,6 @@ pureTest("Generate create table"):
        end_date DATE,
        information TEXT,
        plan VARCHAR[],
-       is_archived BOOLEAN NOT NULL DEFAULT FALSE, 
        authors VARCHAR(255),
        pages INT NOT NULL CHECK (pages > 0));"""
       .replaceAll("\n", " ").replaceAll("\\s+", " "),
@@ -675,7 +673,7 @@ end SqlMacros
 **Результат работы**: При вызове `generateCreateEnumType[Status]` на этапе компиляции будет сгенерирован следующий SQL-запрос:
 
 ```sql
-CREATE TYPE StatusEnum AS ENUM ('InProgress', 'Planned', 'KnowledgeBase');
+CREATE TYPE StatusEnum AS ENUM ('InProgress', 'Planned', 'KnowledgeBase', 'Completed');
 ```
 
 ## Организация определения схем для иерархии типов задач
@@ -719,10 +717,6 @@ object Task:
     ColumnDefinition(ColumnName("information"), ColumnType.Text)
   val planColumn: ColumnDefinition =
     ColumnDefinition(ColumnName("plan"), ColumnType.VarcharArray)
-  val isArchivedColumn: ColumnDefinition =
-    ColumnDefinition(ColumnName("is_archived"), ColumnType.Boolean)
-      .asNotNull()
-      .default(ColumnDefault("FALSE"))
 
   // Коллекция всех общих колонок в правильном порядке
   val commonColumns: Columns = Columns(
@@ -735,8 +729,7 @@ object Task:
     startColumn,
     endColumn,
     infoColumn,
-    planColumn,
-    isArchivedColumn
+    planColumn
   )
 
   // --- Определения специфичных колонок для повторного использования ---
@@ -790,7 +783,6 @@ object UserTask:
         endColumn,
         infoColumn,
         planColumn,
-        isArchivedColumn,
         durationColumn
       )
   end given
@@ -811,7 +803,6 @@ CREATE TABLE IF NOT EXISTS books (
   end_date DATE,
   information TEXT,
   plan VARCHAR[],
-  is_archived BOOLEAN NOT NULL DEFAULT FALSE, 
   authors VARCHAR(255) NOT NULL,
   pages INT NOT NULL
 );
@@ -1058,10 +1049,10 @@ generateInsertReturningId[UserType, UserTypeName, UserTypeId](name)
 // Результат: INSERT INTO user_types (name) VALUES (?) RETURNING id
 
 generateSelectById[UserType, UserTypeId](1)
-// Результат: SELECT id, name FROM user_types WHERE id = '1'
+// Результат: SELECT id, name, displayed, ordinal FROM user_types WHERE id = '1' 
 
 generateUpdateById[UserType, Int](userType)
-// Результат: UPDATE user_types SET name = ? WHERE id = ?
+// Результат: UPDATE user_types SET name = ?, displayed = ?, ordinal = ? WHERE id = ?
 
 generateDeleteById[UserType, UserTypeId](id)
 // Результат: DELETE FROM user_types WHERE id = '4'
@@ -1082,7 +1073,6 @@ CREATE TABLE IF NOT EXISTS books (
   end_date DATE,
   information TEXT,
   plan VARCHAR[],
-  is_archived BOOLEAN NOT NULL DEFAULT FALSE, 
   authors VARCHAR(255) NOT NULL,
   pages INT NOT NULL
 );
@@ -1108,7 +1098,6 @@ UPDATE books SET
   end_date = ?,
   information = ?,
   plan = ?,
-  is_archived = ?, 
   authors = ?,
   pages = ?
 WHERE id = '14c8fa94-4896-4449-82fb-5b1adec2504a'

@@ -107,7 +107,7 @@ private[services] trait UserService[F[_]: Monad]:
   def update(userType: UserType): F[Unit]
 
   /** Обновляет список пользовательских типов задач. */
-  def updateAll(userTypes: List[UserType]): F[Unit]
+  def updateAll(userTypes: NonEmptyList[UserType]): F[Unit]
 
   /** Удаляет пользовательский тип задачи по его идентификатору. */
   def delete(id: UserTypeId): F[Unit]
@@ -316,8 +316,8 @@ private[services] class MockUserService(
     userTypes.update(currentMap => currentMap + (userType.id -> userType))
 
   /** Обновляет все переданные записи в Map. */
-  def updateAll(items: List[UserType]): IO[Unit] =
-    userTypes.update(_ ++ items.map(t => t.id -> t))
+  def updateAll(items: NonEmptyList[UserType]): IO[Unit] =
+    userTypes.update(_ ++ items.toList.map(t => t.id -> t))
     
   /** Удаляет запись по ID. Если ID не существует, операция не имеет эффекта. */
   def delete(id: UserTypeId): IO[Unit] =

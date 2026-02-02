@@ -328,9 +328,31 @@ private[services] class PostgreSQLUserService(xa: Aux[[x] =>> IO[x], Unit])
       .transact(xa)
       .void          // Преобразуем IO[Int] в IO[Unit]
 
-  /** Обновляет несколько пользовательских типов задач. */
-  def updateAll(userTypes: List[UserType]): IO[Unit] =
-    userTypes.traverse(update).void
+  /** Пакетно обновляет несколько пользовательских типов задач. 
+    * Этот метод используется, например, при массовом изменении порядка (reordering)
+    * типов, когда необходимо обновить ordinal для списка элементов.
+    * 
+    * Реализация последовательно выполняет UPDATE-запросы для каждого элемента списка
+    * в рамках единой транзакции. Для оптимизации можно было бы использовать 
+    * batch-запрос, но текущая реализация обеспечивает простоту и надежность.
+    *
+    * @param userTypes
+    *   NonEmptyList[UserType] - гарантированно непустой список типов для обновления.
+    * @return
+    *   IO[Unit] - эффект, подтверждающий выполнение всех операций обновления.
+    */
+  def updateAll(userTypes: NonEmptyList[UserType]): IO[Unit] =
+    def toConn: UserType => ConnectionIO[Int] =
+      generateUpdateById[UserType, Int](_).update.run
+    
+    // Сворачиваем хвост списка, начиная с первого элемента.
+    // Используем оператор *> (sequencing) для последовательного выполнения запросов
+    // с игнорированием промежуточных результатов (важен только побочный эффект).
+    userTypes.tail.foldLeft(toConn(userTypes.head)) { case (acc, userType) =>
+      acc *> toConn(userType)
+    }
+      .transact(xa)  // Выполняем всю последовательность в одной транзакции
+      .void          
     
   /** Удаляет пользовательский тип задачи по ID.
     *

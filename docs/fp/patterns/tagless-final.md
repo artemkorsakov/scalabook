@@ -432,9 +432,10 @@ class CheckoutService[F[_]: Monad](
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
-- [Volpe Gabriel - Practical FP in Scala](https://leanpub.com/pfp-scala)
-- [Tagless-final style][kiselyov]
 - [Final tagless encodings have little to do with typeclasses](https://www.foxhound.systems/blog/final-tagless/)
+- [Tagless Final](https://www.youtube.com/playlist?list=PLJGDHERh23x-3_T3Dua6Fwp4KlG0J25DI)
+- [Tagless-final style][kiselyov]
+- [Volpe Gabriel - Practical FP in Scala](https://leanpub.com/pfp-scala)
 
 [sample]: https://gitverse.ru/scalabook/fp
 [kiselyov]: http://okmij.org/ftp/tagless-final/index.html

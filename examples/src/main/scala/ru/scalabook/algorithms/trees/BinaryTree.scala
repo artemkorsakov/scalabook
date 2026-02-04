@@ -23,7 +23,7 @@ enum BinaryTree[+A]:
   def rootPath[B >: A](b: B): Option[NonEmptyList[B]] = this match
     case Leaf                              => None
     case Branch(value, _, _) if value == b => Some(NonEmptyList.one(b))
-    case Branch(value, left, right) =>
+    case Branch(value, left, right)        =>
       left.rootPath(b).orElse(right.rootPath(b)).map: nel =>
         value :: nel
 
@@ -52,17 +52,17 @@ enum BinaryTree[+A]:
   end level
 
   lazy val preorder: IndexedSeq[A] = this match
-    case Leaf => IndexedSeq.empty
+    case Leaf                       => IndexedSeq.empty
     case Branch(value, left, right) =>
       IndexedSeq(value) ++ left.preorder ++ right.preorder
 
   lazy val inorder: IndexedSeq[A] = this match
-    case Leaf => IndexedSeq.empty
+    case Leaf                       => IndexedSeq.empty
     case Branch(value, left, right) =>
       left.inorder ++ IndexedSeq(value) ++ right.inorder
 
   lazy val postorder: IndexedSeq[A] = this match
-    case Leaf => IndexedSeq.empty
+    case Leaf                       => IndexedSeq.empty
     case Branch(value, left, right) =>
       left.postorder ++ right.postorder ++ IndexedSeq(value)
 end BinaryTree
@@ -72,7 +72,7 @@ object BinaryTree:
 
   def apply[A](values: List[A]): BinaryTree[A] =
     values match
-      case Nil => Leaf
+      case Nil     => Leaf
       case x :: xs =>
         val (left, right) = xs.splitAt(xs.length / 2)
         Branch(x, BinaryTree(left), BinaryTree(right))
@@ -85,7 +85,7 @@ object BinaryTree:
 
   def areSimilar[A, B](treeA: BinaryTree[A], treeB: BinaryTree[B]): Boolean =
     (treeA, treeB) match
-      case (Leaf, Leaf) => true
+      case (Leaf, Leaf)                                         => true
       case (Branch(_, leftA, rightA), Branch(_, leftB, rightB)) =>
         areSimilar(leftA, leftB) && areSimilar(rightA, rightB)
       case _ => false

@@ -34,7 +34,7 @@ object SuDokuInner:
       value: SuDokuCellValue
   ): (Boolean, SuDoku) =
     sudoku.getCell(i, j) match
-      case None => (false, sudoku)
+      case None          => (false, sudoku)
       case Some(oldCell) =>
         val (result, newCell) = SuDokuCell.execute((oper, value)).run(oldCell)
         if result then

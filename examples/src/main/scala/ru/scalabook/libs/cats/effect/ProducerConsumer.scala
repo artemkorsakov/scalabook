@@ -48,9 +48,10 @@ object ProducerConsumer extends IOApp:
               State(queue, capacity, rest, offerers) -> taker.complete(i).void
             case State(queue, capacity, takers, offerers)
                 if queue.size < capacity =>
-              State(queue.enqueue(i), capacity, takers, offerers) -> Async[
-                F
-              ].unit
+              State(queue.enqueue(i), capacity, takers, offerers) ->
+                Async[
+                  F
+                ].unit
             case State(queue, capacity, takers, offerers) =>
               val cleanup = stateR.update { s =>
                 s.copy(offerers = s.offerers.filter(_._2 ne offerer))
@@ -91,9 +92,10 @@ object ProducerConsumer extends IOApp:
             case State(queue, capacity, takers, offerers) if queue.nonEmpty =>
               val (i, rest)               = queue.dequeue
               val ((move, release), tail) = offerers.dequeue
-              State(rest.enqueue(move), capacity, takers, tail) -> release
-                .complete(())
-                .as(i)
+              State(rest.enqueue(move), capacity, takers, tail) ->
+                release
+                  .complete(())
+                  .as(i)
             case State(queue, capacity, takers, offerers)
                 if offerers.nonEmpty =>
               val ((i, release), rest) = offerers.dequeue

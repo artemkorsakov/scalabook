@@ -29,7 +29,7 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
           val block1        = SuDokuBlock.getBlock(row, col1)
           val block2        = SuDokuBlock.getBlock(row, col2)
           val cell          = SuDokuCell(Set(value))
-          val cells = initialSudoku
+          val cells         = initialSudoku
             .cells
             .updated((row, col1, block1), cell)
             .updated((row, col2, block2), cell)
@@ -50,7 +50,7 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
           val block1        = SuDokuBlock.getBlock(row1, col)
           val block2        = SuDokuBlock.getBlock(row2, col)
           val cell          = SuDokuCell(Set(value))
-          val cells = initialSudoku
+          val cells         = initialSudoku
             .cells
             .updated((row1, col, block1), cell)
             .updated((row2, col, block2), cell)
@@ -64,7 +64,7 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
       val indexes =
         SuDoku.initial.cells.keys.filter(_._3 == block).take(2).toList
       matches(indexes) { case first :: second :: Nil =>
-        val cell = SuDokuCell(Set(value))
+        val cell  = SuDokuCell(Set(value))
         val cells = initialSudoku
           .cells
           .updated(first, cell)
@@ -86,7 +86,7 @@ object SuDokuSuite extends SimpleIOSuite with Checkers:
     "SuDoku.singletonIndexes should return the indexes of all cells with only one possible value"
   ):
     val initialCell = SuDokuCell.initial
-    val sudoku =
+    val sudoku      =
       SuDoku(
         Map(
           (

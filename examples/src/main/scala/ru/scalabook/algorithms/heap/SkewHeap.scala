@@ -29,8 +29,8 @@ object SkewHeap:
 
   def merge[A: Ordering](x: SkewHeap[A], y: SkewHeap[A]): SkewHeap[A] =
     (x, y) match
-      case (_, Leaf) => x
-      case (Leaf, _) => y
+      case (_, Leaf)                                => x
+      case (Leaf, _)                                => y
       case (Branch(x1, l1, r1), Branch(x2, l2, r2)) =>
         if x1 < x2 then
           Branch(x1, merge(Branch(x2, l2, r2), r1), l1)

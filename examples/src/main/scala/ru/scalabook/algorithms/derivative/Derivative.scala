@@ -13,8 +13,8 @@ object Derivative:
 
     def show: String =
       self match
-        case Number(value)  => value.toString
-        case Variable(name) => name
+        case Number(value)                       => value.toString
+        case Variable(name)                      => name
         case Complex(Operation.Add, left, right) =>
           s"(${left.show} + ${right.show})"
         case Complex(Operation.Mul, left, right) =>
@@ -88,11 +88,11 @@ object Derivative:
 
   def makeProduct(exp1: Expression, exp2: Expression): Expression =
     (exp1, exp2) match
-      case (Number(0), _)           => Number(0)
-      case (_, Number(0))           => Number(0)
-      case (Number(1), exp2)        => exp2
-      case (exp1, Number(1))        => exp1
-      case (Number(n1), Number(n2)) => Number(n1 * n2)
+      case (Number(0), _)                              => Number(0)
+      case (_, Number(0))                              => Number(0)
+      case (Number(1), exp2)                           => exp2
+      case (exp1, Number(1))                           => exp1
+      case (Number(n1), Number(n2))                    => Number(n1 * n2)
       case (Number(n1), Complex(Mul, Number(n2), exp)) =>
         makeProduct(Number(n1 * n2), exp)
       case (exp1, Complex(Mul, Number(n), exp2)) =>
@@ -147,10 +147,10 @@ object Derivative:
       variabe: Expression.Variable
   ): Either[String, Expression] =
     exp match
-      case _: Number => Right(Number(0))
+      case _: Number                                 => Right(Number(0))
       case v: Variable if isSameVariable(v, variabe) =>
         Right(Number(1))
-      case _: Variable => Right(Number(0))
+      case _: Variable               => Right(Number(0))
       case Complex(Add, left, right) =>
         for
           s1 <- deriv(left, variabe)

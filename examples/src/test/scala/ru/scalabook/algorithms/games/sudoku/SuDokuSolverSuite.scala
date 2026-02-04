@@ -10,7 +10,7 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
   private val initialValues = SuDokuCellValue.values.toSet
 
   pureTest("SuDoku.setValue should correctly set a value in a cell - example"):
-    val initialSudoku = SuDoku.initial
+    val initialSudoku    = SuDoku.initial
     val (result, sudoku) =
       SuDokuSolver.setValue(
         SuDokuRow.First,
@@ -48,7 +48,8 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
               expect(cell.maybeValue.contains(value))
             else if index._1 == row && index._2 != col ||
               index._1 != row && index._2 == col ||
-              index._3 == block && (index._1 != row || index._2 != col)
+              index._3 == block &&
+              (index._1 != row || index._2 != col)
             then
               expect(cell.possibleValues == initialValues - value)
             else
@@ -56,7 +57,7 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
       )
 
   pureTest("SuDoku.setValue should false if one of the operators fails"):
-    val initialSudoku = SuDoku.initial
+    val initialSudoku            = SuDoku.initial
     val inputs: Seq[SuDokuInput] = Seq(
       (SuDokuRow.First, SuDokuColumn.First, SuDokuCellValue.One),
       (SuDokuRow.First, SuDokuColumn.Second, SuDokuCellValue.Two),
@@ -234,7 +235,7 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
         "695417382"
     )
 
-    val index = (SuDokuRow.Ninth, SuDokuColumn.Ninth, SuDokuBlock.Ninth)
+    val index         = (SuDokuRow.Ninth, SuDokuColumn.Ninth, SuDokuBlock.Ninth)
     val updatedSudoku = SuDoku(initialSudoku.cells.updated(
       index,
       SuDokuCell(Set(
@@ -401,7 +402,7 @@ object SuDokuSolverSuite extends SimpleIOSuite with Checkers:
   pureTest(
     "SuDoku.getSolution should return the solution of the sudoku puzzle"
   ):
-    val initialSudoku = SuDoku.initial
+    val initialSudoku            = SuDoku.initial
     val inputs: Seq[SuDokuInput] = Seq(
       (SuDokuRow.First, SuDokuColumn.Third, SuDokuCellValue.Three),
       (SuDokuRow.First, SuDokuColumn.Fifth, SuDokuCellValue.Two),

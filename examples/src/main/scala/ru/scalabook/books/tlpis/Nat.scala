@@ -39,8 +39,8 @@ object Nat:
 
   type Mult[A <: Nat, B <: Nat] <: Nat =
     A match
-      case _0 => _0
-      case _1 => B
+      case _0      => _0
+      case _1      => B
       case Succ[a] =>
         B match
           case _0 => _0

@@ -47,7 +47,7 @@ object CombinatorialOps:
         list match
           case Nil         => Nil
           case _ if n == 1 => list.map(List(_))
-          case hd :: tl =>
+          case hd :: tl    =>
             tl.xcombinations(n - 1).map(hd :: _) ::: tl.xcombinations(n)
 
     /** Generates all the subsets of this list. The order doesn't matter.
@@ -56,8 +56,9 @@ object CombinatorialOps:
       *
       * S_n = sum(i=1..n) {C_i,n} = 2 ** n Time - O(S_n) Space - O(S_n)
       */
-    def xsubsets: List[List[A]] =
-      (2 to list.length).foldLeft(list.xcombinations(1)): (a, i) =>
+    def xsubsets
+        : List[List[A]] = (2 to list.length).foldLeft(list.xcombinations(1)):
+      (a, i) =>
         list.xcombinations(i) ::: a
 
     /** Generates the variations of this list with given length 'n'. The order
@@ -87,7 +88,7 @@ object CombinatorialOps:
         list match
           case Nil         => Nil
           case _ if n == 1 => list.map(List(_))
-          case hd :: tl =>
+          case hd :: tl    =>
             mixmany(hd, tl.xvariations(n - 1)) ::: tl.xvariations(n)
     end xvariations
 

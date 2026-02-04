@@ -3,8 +3,8 @@ package ru.scalabook.algorithms.structures
 import weaver.FunSuite
 
 object QueueSuite extends FunSuite:
-  private val emptyQueue: Queue[Int] = Queue.empty[Int]
-  private val oneElQueue: Queue[Int] = emptyQueue.enqueue(1)
+  private val emptyQueue: Queue[Int]  = Queue.empty[Int]
+  private val oneElQueue: Queue[Int]  = emptyQueue.enqueue(1)
   private val someElQueue: Queue[Int] =
     emptyQueue.enqueue(1).enqueue(2).enqueue(3)
 

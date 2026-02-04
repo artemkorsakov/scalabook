@@ -3,8 +3,8 @@ package ru.scalabook.algorithms.heap
 import weaver.FunSuite
 
 object BinaryHeapSuite extends FunSuite:
-  private val emptyBinaryHeap: BinaryHeap[Int] = BinaryHeap.empty
-  private val oneElBinaryHeap: BinaryHeap[Int] = BinaryHeap(1)
+  private val emptyBinaryHeap: BinaryHeap[Int]  = BinaryHeap.empty
+  private val oneElBinaryHeap: BinaryHeap[Int]  = BinaryHeap(1)
   private val someElBinaryHeap: BinaryHeap[Int] =
     BinaryHeap.empty.insert(1).insert(2).insert(3)
 

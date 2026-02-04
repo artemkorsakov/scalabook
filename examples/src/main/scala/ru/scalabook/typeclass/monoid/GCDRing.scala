@@ -13,7 +13,7 @@ object GCDRing:
     val one: Int                     = 1
     def combine(x: Int, y: Int): Int = x + y
     def times(x: Int, y: Int): Int   = x * y
-    def gcd(x: Int, y: Int): Int =
+    def gcd(x: Int, y: Int): Int     =
       if y == 0 then x else gcd(y, x % y)
     def lcm(x: Int, y: Int): Int = times(x, y) / gcd(x, y)
 

@@ -59,7 +59,7 @@ object Dense:
 
   infix type Add[A <: Dense, B <: Dense] <: Dense =
     A match
-      case DNil => B
+      case DNil            => B
       case DCons[Zero, ta] =>
         B match
           case DNil          => A
@@ -74,7 +74,7 @@ object Dense:
     A match
       case DNil             => DNil
       case DCons[One, DNil] => B
-      case _ =>
+      case _                =>
         B match
           case DNil => DNil
           case _    => Add[Mult[Dec[A], B], B]
@@ -94,7 +94,7 @@ object Dense:
           case _    => LT
       case DCons[ha, ta] =>
         B match
-          case DNil => GT
+          case DNil          => GT
           case DCons[hb, tb] =>
             Compare[ta, tb] match
               case EQ => Digit.Compare[ha, hb]

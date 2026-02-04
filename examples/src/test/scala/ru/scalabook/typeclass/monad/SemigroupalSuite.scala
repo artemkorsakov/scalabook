@@ -10,5 +10,9 @@ object SemigroupalSuite extends SimpleIOSuite, Checkers:
   test("Semigroupal[Id] must satisfy the Semigroupal laws"):
     forall: (a: Int, b: String, c: Boolean) =>
       expect(
-        checkSemigroupalLaw[Id, Int, String, Boolean](Id(a), Id(b), Id(c)).isValid
+        checkSemigroupalLaw[Id, Int, String, Boolean](
+          Id(a),
+          Id(b),
+          Id(c)
+        ).isValid
       )

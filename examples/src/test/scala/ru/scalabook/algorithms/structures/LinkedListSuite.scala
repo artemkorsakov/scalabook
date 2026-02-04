@@ -3,8 +3,8 @@ package ru.scalabook.algorithms.structures
 import weaver.FunSuite
 
 object LinkedListSuite extends FunSuite:
-  private val emptyList: LinkedList[Int] = LinkedList.Nil
-  private val oneElList: LinkedList[Int] = LinkedList.Cons(1, emptyList)
+  private val emptyList: LinkedList[Int]  = LinkedList.Nil
+  private val oneElList: LinkedList[Int]  = LinkedList.Cons(1, emptyList)
   private val someElList: LinkedList[Int] =
     LinkedList.Cons(3, LinkedList.Cons(2, oneElList))
 

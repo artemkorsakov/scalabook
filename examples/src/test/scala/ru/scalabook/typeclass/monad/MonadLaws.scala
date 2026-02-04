@@ -426,7 +426,7 @@ object MonadLaws extends BasicLaws:
     val a2GB: A => G[B] = a => apG.unit(f(a))
     val b2HC: B => H[C] = b => apH.unit(g(b))
 
-    val optFb: G[F[B]] = trF.traverse(fa)(a2GB)
+    val optFb: G[F[B]]         = trF.traverse(fa)(a2GB)
     val optListFc1: G[H[F[C]]] =
       apG.map(optFb)(fb => trF.traverse(fb)(b2HC))
     val optListFc2: G[H[F[C]]] =

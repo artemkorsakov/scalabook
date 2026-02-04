@@ -8,8 +8,8 @@ object Sorting:
     @tailrec
     def loop(as: List[A], zs: List[A], sorted: List[A]): List[A] =
       as match
-        case Nil       => sorted
-        case h1 :: Nil => loop(zs, Nil, h1 :: sorted)
+        case Nil           => sorted
+        case h1 :: Nil     => loop(zs, Nil, h1 :: sorted)
         case h1 :: h2 :: t =>
           if h1 > h2 then loop(h1 :: t, h2 :: zs, sorted)
           else loop(h2 :: t, h1 :: zs, sorted)
@@ -63,9 +63,9 @@ object Sorting:
     def merge(as: List[A], bs: List[A]): List[A] =
       @tailrec
       def loop(cs: List[A], ds: List[A], r: List[A]): List[A] = (cs, ds) match
-        case (Nil, Nil) => r.reverse
-        case (_, Nil)   => r.reverse ++ cs
-        case (Nil, _)   => r.reverse ++ ds
+        case (Nil, Nil)           => r.reverse
+        case (_, Nil)             => r.reverse ++ cs
+        case (Nil, _)             => r.reverse ++ ds
         case (ha :: ta, hb :: tb) =>
           if ha < hb then loop(ta, ds, ha :: r)
           else loop(cs, tb, hb :: r)

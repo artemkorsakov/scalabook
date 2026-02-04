@@ -30,7 +30,7 @@ object NumbersDescription:
       case _                    => None
 
   private def constructEnglish(n: Long, base: Long): Option[String] =
-    val rest = n % base
+    val rest     = n % base
     val restText =
       if rest == 0 then "".some
       else if base == hundred then " and ".some |+| inEnglish(rest)
@@ -86,7 +86,7 @@ object NumbersDescription:
         toBasicRussianNumbers((number / hundred) * hundred) |+|
           " ".some |+| inRussian(number % hundred)
       case n if n < million =>
-        val thousands = number / thousand
+        val thousands          = number / thousand
         val maybeThousandsInRu =
           (thousands % 10, (thousands % hundred) / 10 != 1) match
             case (1, true) => inRussian(thousands - 1) |+| " одна тысяча".some
@@ -102,7 +102,7 @@ object NumbersDescription:
   end inRussian
 
   private def constructRussian(n: Long, base: Long): Option[String] =
-    val whole = n / base
+    val whole  = n / base
     val suffix =
       (whole % 10, (whole % base) / 10 != 1) match
         case (1, true)         => "".some

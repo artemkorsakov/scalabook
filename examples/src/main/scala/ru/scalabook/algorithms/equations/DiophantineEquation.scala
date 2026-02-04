@@ -32,11 +32,10 @@ final case class Iteration(a: BigInt, b: BigInt, k: BigInt, d: Int):
     * \|m<sup>2</sup> − d| minimal.
     */
   private lazy val getM: BigInt =
-    val last = BigInt(math.sqrt(2.0 * d).toInt)
-    val maybeM =
-      (BigInt(1) to last)
-        .filter(isMCorrect)
-        .minByOption(i => (i * i - d).abs)
+    val last   = BigInt(math.sqrt(2.0 * d).toInt)
+    val maybeM = (BigInt(1) to last)
+      .filter(isMCorrect)
+      .minByOption(i => (i * i - d).abs)
 
     @tailrec
     def loop(m: BigInt): BigInt =
@@ -56,7 +55,6 @@ final case class Iteration(a: BigInt, b: BigInt, k: BigInt, d: Int):
       val newK = (m * m - d) / k
       Iteration(newA, newB, newK, d)
 
-  private def isMCorrect(m: BigInt): Boolean =
-    (a + b * m) % k.abs == BigInt(0)
+  private def isMCorrect(m: BigInt): Boolean = (a + b * m) % k.abs == BigInt(0)
 
 end Iteration

@@ -11,12 +11,16 @@ final case class Queue[+A](in: List[A], out: List[A]):
 
   def dequeue: Option[(A, Queue[A])] = out match
     case hd :: tl => Some((hd, Queue(in, tl)))
-    case Nil => in.reverse match
+    case Nil      => in.reverse match
         case hd :: tl => Some((hd, Queue(Nil, tl)))
         case Nil      => None
 
-  override lazy val toString: String =
-    (out ::: in.reverse).mkString("Queue(", ",", ")")
+  override lazy val toString: String = (out ::: in.reverse).mkString(
+    "Queue(",
+    ",",
+    ")"
+  )
+end Queue
 
 object Queue:
   def empty[A]: Queue[A] = Queue(Nil, Nil)

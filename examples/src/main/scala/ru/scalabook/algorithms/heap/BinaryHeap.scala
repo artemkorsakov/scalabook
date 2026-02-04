@@ -32,7 +32,7 @@ enum BinaryHeap[+A]:
     case _              => None
 
   def insert[B >: A: Ordering](x: B): BinaryHeap[B] = this match
-    case Leaf => BinaryHeap(x)
+    case Leaf                                   => BinaryHeap(x)
     case Branch(min, left, right, size, height) =>
       if left.size < left.height * left.height - 1 then
         bubbleUp(min, left.insert(x), right)
@@ -56,7 +56,7 @@ enum BinaryHeap[+A]:
 
     def mergeChildren(l: BinaryHeap[A], r: BinaryHeap[A]): BinaryHeap[A] =
       (l, r) match
-        case (Leaf, Leaf) => Leaf
+        case (Leaf, Leaf)                                        => Leaf
         case (Leaf, Branch(rmin, rleft, rright, rsize, rheight)) =>
           floatRight(rmin, l, mergeChildren(rleft, rright))
         case (Branch(lmin, lleft, lright, lsize, lheight), Leaf) =>

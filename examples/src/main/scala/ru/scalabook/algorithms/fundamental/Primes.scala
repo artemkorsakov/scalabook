@@ -5,11 +5,12 @@ import scala.util.Random
 
 object Primes:
   lazy val primes: LazyList[Int] =
-    2 #:: LazyList
-      .from(3)
-      .filter: x =>
-        val sqrtOfPrimes = primes.takeWhile(p => p <= math.sqrt(x))
-        sqrtOfPrimes.forall(p => x % p != 0)
+    2 #::
+      LazyList
+        .from(3)
+        .filter: x =>
+          val sqrtOfPrimes = primes.takeWhile(p => p <= math.sqrt(x))
+          sqrtOfPrimes.forall(p => x % p != 0)
 
   def isPrime(n: Long): Boolean =
     if n < 2 then false
@@ -29,11 +30,10 @@ object Primes:
       loop(5)
 
   @tailrec
-  def isProbablyPrime(p: Long, maxTest: Int): Boolean =
-    (maxTest <= 0) || {
-      (BigInt(Random.nextLong(p)).modPow(p - 1, p) == 1) &&
-      isProbablyPrime(p, maxTest - 1)
-    }
+  def isProbablyPrime(p: Long, maxTest: Int): Boolean = (maxTest <= 0) || {
+    (BigInt(Random.nextLong(p)).modPow(p - 1, p) == 1) &&
+    isProbablyPrime(p, maxTest - 1)
+  }
 
   def sieveOfEratosthenes(n: Int): Array[Boolean] =
     val result = Array.fill(n + 1)(true)

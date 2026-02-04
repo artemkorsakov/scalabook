@@ -2,14 +2,14 @@ import sbt.*
 
 // @formatter:off
 object Dependencies {
-  val Scala = "3.7.2"
+  val Scala = "3.8.1"
 
   object fs2 {
-    val core = "co.fs2" %% "fs2-core" % "3.12.0"
+    val core = "co.fs2" %% "fs2-core" % "3.12.2"
   }
 
   object http4s {
-    private val version = "0.23.30"
+    private val version = "0.23.33"
     private val org     = "org.http4s"
     val blaze           = org %% "http4s-blaze-server" % "0.23.17"
     val core            = org %% "http4s-core"         % version
@@ -18,7 +18,7 @@ object Dependencies {
   }
 
   object iron {
-    private val version = "3.0.4"
+    private val version = "3.2.3"
     private val org     = "io.github.iltotore"
     val cats            = org %% "iron-cats"       % version
     val core            = org %% "iron"            % version
@@ -27,16 +27,16 @@ object Dependencies {
 
   // https://github.com/erikvanoosten/metrics-scala/blob/master/docs/Manual.md
   object metrics {
-    val dropwizardCore = "io.dropwizard.metrics" % "metrics-core"    % "4.2.33"
-    val metrics4Scala  = "nl.grons"              %% "metrics4-scala" % "4.3.5"
+    val dropwizardCore = "io.dropwizard.metrics" % "metrics-core"    % "4.2.38"
+    val metrics4Scala  = "nl.grons"              %% "metrics4-scala" % "4.3.7"
   }
 
   object logback {
-    val logback = "ch.qos.logback" % "logback-classic" % "1.4.11"
+    val logback = "ch.qos.logback" % "logback-classic" % "1.5.27"
   }
 
   object refined {
-    private val version = "0.11.0"
+    private val version = "0.11.3"
     val core            = "eu.timepit" %% "refined"      % version
     val cats            = "eu.timepit" %% "refined-cats" % version
   }
@@ -51,8 +51,8 @@ object Dependencies {
   }
 
   object sttp {
-    val client = "com.softwaremill.sttp.client4" %% "core" % "4.0.0-RC1"
-    val model = "com.softwaremill.sttp.model" %% "core" % "1.7.11"
+    val client = "com.softwaremill.sttp.client4" %% "core" % "4.0.15"
+    val model = "com.softwaremill.sttp.model" %% "core" % "1.7.17"
   }
 
   object typelevel {

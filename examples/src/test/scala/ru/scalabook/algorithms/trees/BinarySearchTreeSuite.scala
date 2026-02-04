@@ -36,7 +36,7 @@ object BinarySearchTreeSuite extends FunSuite:
   }
 
   test("insert multiple elements into dictionary") {
-    val dict = empty[Int]
+    val dict        = empty[Int]
     val updatedDict = dict
       .insert("key1", 1)
       .insert("key2", 2)

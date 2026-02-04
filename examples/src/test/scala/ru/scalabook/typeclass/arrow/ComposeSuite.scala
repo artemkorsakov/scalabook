@@ -13,5 +13,9 @@ object ComposeSuite extends SimpleIOSuite, Checkers:
   test("Compose[Function1] must satisfy the laws of Compose"):
     forall: (x: Int) =>
       expect(
-        checkComposeLaw[Function1, Int, String, Boolean, Char](ab, bc, cd)(x).isValid
+        checkComposeLaw[Function1, Int, String, Boolean, Char](
+          ab,
+          bc,
+          cd
+        )(x).isValid
       )

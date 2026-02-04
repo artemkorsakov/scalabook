@@ -4,8 +4,7 @@ import ru.scalabook.algorithms.fundamental.Primes.{nextPrime, primesNoMoreThanN}
 import scala.annotation.tailrec
 
 /** The radical of n, rad(n), is the product of distinct prime factors of n. For
-  * example, 504 = 2<sup>3</sup> × 3<sup>2</sup> × 7, so rad(504) = 2 × 3 × 7 =
-  * 42.
+  * example, 504 = 2<sup>3</sup> × 3<sup>2</sup> × 7, so rad(504) = 2 × 3 × 7 = 42.
   */
 object Radicals:
   /** Return the product of distinct prime factors of n.

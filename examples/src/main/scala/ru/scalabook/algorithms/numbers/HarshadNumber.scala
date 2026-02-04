@@ -23,7 +23,7 @@ object HarshadNumber:
       Seq(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L),
       Seq.empty[Long]
     )) { case ((numbers, acc), _) =>
-      val next = rightTruncatableHarshadNumbers(numbers)
+      val next   = rightTruncatableHarshadNumbers(numbers)
       val newAcc = acc ++
         next
           .withFilter(isStrongHarshadNumber)
@@ -38,10 +38,9 @@ object HarshadNumber:
     */
   private def strongRightTruncatableHarshadPrimes(
       strongHarshadNumber: Long
-  ): Seq[Long] =
-    (1 to 9 by 2)
-      .withFilter(i => isPrime(strongHarshadNumber * 10 + i))
-      .map(strongHarshadNumber * 10 + _)
+  ): Seq[Long] = (1 to 9 by 2)
+    .withFilter(i => isPrime(strongHarshadNumber * 10 + i))
+    .map(strongHarshadNumber * 10 + _)
 
   /** 201 — это число Харшада, поскольку оно делится на 3 (сумму своих цифр).
     * Когда мы отсекаем последнюю цифру от 201, то получаем 20, что является

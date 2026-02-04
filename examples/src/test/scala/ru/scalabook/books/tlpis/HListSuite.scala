@@ -58,14 +58,14 @@ object HListSuite extends FunSuite:
     expect.all(ab.length == 7)
 
   test("Checking HList reversibility"):
-    val reversed = b.reverse
+    val reversed      = b.reverse
     val checkReversed = reversed match
       case "sdfh" :: 'j' :: 2 :: '3' :: HNil => true
       case _                                 => false
     expect.all(checkReversed)
 
   test("Validating the hit and then adding the HList"):
-    val reverseAppend = a reverse_::: b
+    val reverseAppend      = a reverse_::: b
     val checkReverseAppend = reverseAppend match
       case List('r', 'H') :: "ai4" :: 3 :: '3' :: 2 :: 'j' :: "sdfh" :: HNil =>
         true

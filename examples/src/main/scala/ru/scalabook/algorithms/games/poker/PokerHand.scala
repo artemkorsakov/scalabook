@@ -61,7 +61,7 @@ final class PokerHand(hand: String):
     countOfRank == 2 && (countOfFirstCard == 1 || countOfFirstCard == 4)
   private lazy val fourOfAKind: (PokerHandsType, Seq[PokerRank]) =
     val isFirstEqualSecond = sortedRanks.head.rank == sortedRanks(1).rank
-    val pokerRank1 =
+    val pokerRank1         =
       if isFirstEqualSecond then sortedRanks.head else sortedRanks(1)
     val pokerRank2 =
       if isFirstEqualSecond then sortedRanks(4) else sortedRanks.head
@@ -88,7 +88,9 @@ final class PokerHand(hand: String):
     sortedDistinctRanks.length == 3 && {
       val countOfFirstCard = cards.count(c => c.pokerRank == sortedRanks.head)
       val countOfLastCard  = cards.count(c => c.pokerRank == sortedRanks.last)
-      (countOfFirstCard == 1 && countOfLastCard == 1) || (countOfFirstCard == 3 && countOfLastCard == 1) || (countOfFirstCard == 1 && countOfLastCard == 3)
+      (countOfFirstCard == 1 && countOfLastCard == 1) ||
+      (countOfFirstCard == 3 && countOfLastCard == 1) ||
+      (countOfFirstCard == 1 && countOfLastCard == 3)
     }
   private lazy val threeOfAKind: (PokerHandsType, Seq[PokerRank]) =
     val indexThreeOfAKind = (0 until sortedRanks.length - 2)
@@ -113,12 +115,14 @@ final class PokerHand(hand: String):
     sortedDistinctRanks.length == 3 && {
       val countOfFirstCard = cards.count(c => c.pokerRank == sortedRanks.head)
       val countOfLastCard  = cards.count(c => c.pokerRank == sortedRanks.last)
-      (countOfFirstCard == 2 && countOfLastCard == 2) || (countOfFirstCard == 2 && countOfLastCard == 1) || (countOfFirstCard == 1 && countOfLastCard == 2)
+      (countOfFirstCard == 2 && countOfLastCard == 2) ||
+      (countOfFirstCard == 2 && countOfLastCard == 1) ||
+      (countOfFirstCard == 1 && countOfLastCard == 2)
     }
   private lazy val twoPair: (PokerHandsType, Seq[PokerRank]) =
     val isFirstEqualSecond = sortedRanks.head.rank == sortedRanks(1).rank
     val isThirdEqualFourth = sortedRanks(2).rank == sortedRanks(3).rank
-    val thirdIndex =
+    val thirdIndex         =
       if isFirstEqualSecond && isThirdEqualFourth then 4
       else if isFirstEqualSecond then 2
       else 0

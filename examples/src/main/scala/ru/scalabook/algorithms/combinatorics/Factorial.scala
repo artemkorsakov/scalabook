@@ -5,8 +5,7 @@ import spire.math.SafeLong
 import scala.annotation.tailrec
 
 object Factorial:
-  def factorial(n: Int): SafeLong =
-    (2 to n).foldLeft(SafeLong(1))(_ * _)
+  def factorial(n: Int): SafeLong = (2 to n).foldLeft(SafeLong(1))(_ * _)
 
   def approximateFactorial(n: Int): BigInt =
     (BigDecimal(math.sqrt(2 * math.Pi * n)) *

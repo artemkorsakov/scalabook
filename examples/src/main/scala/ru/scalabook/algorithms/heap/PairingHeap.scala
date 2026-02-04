@@ -34,8 +34,8 @@ object PairingHeap:
       y: PairingHeap[A]
   ): PairingHeap[A] =
     (x, y) match
-      case (_, Leaf) => x
-      case (Leaf, _) => y
+      case (_, Leaf)                              => x
+      case (Leaf, _)                              => y
       case (Branch(x1, subs1), Branch(x2, subs2)) =>
         if x1 < x2 then
           Branch(x1, Branch(x2, subs2) :: subs1)

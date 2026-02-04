@@ -17,7 +17,7 @@ object Search:
       if lst == sub then None
       else
         middle(lst, sub) match
-          case Nil => None
+          case Nil          => None
           case head :: next =>
             if key < head then search(lst, head :: next)
             else if key > head then search(next, sub)
@@ -38,7 +38,7 @@ object Search:
   def selectionSearch[A: Ordering](list: List[A], n: Int): Option[A] =
     @tailrec
     def partitionAndSearch(as: List[A], m: Int): Option[A] = as match
-      case Nil => None
+      case Nil    => None
       case h :: t =>
         val (l, p, g) = partition(h, t)
         val len       = l.length
@@ -77,7 +77,7 @@ object Search:
     source.indices
       .foldLeft((-1, 0)) {
         case ((foundIndex, _), _) if foundIndex > 0 => (foundIndex, 0)
-        case ((_, x), i) =>
+        case ((_, x), i)                            =>
           val stepsX = LazyList.iterate(x)(x => prefixTab(x - 1))
           val lowerX =
             stepsX

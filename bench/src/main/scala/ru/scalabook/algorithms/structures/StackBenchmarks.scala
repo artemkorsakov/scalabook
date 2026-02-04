@@ -20,7 +20,7 @@ import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
 import StackBenchmarks.*
 
-private val emptyStack: Stack[Int] = EmptyStack
+private val emptyStack: Stack[Int]    = EmptyStack
 private val nonEmptyStack: Stack[Int] =
   NonEmptyStack(2, NonEmptyStack(1, EmptyStack))
 

@@ -10,11 +10,11 @@ enum DoublyList[+A]:
 
 object DoublyList:
   def prepend[A](list: DoublyList[A], a: A): DoublyList[A] = list match
-    case Nil => DoublyListCons(Nil, a, Nil)
+    case Nil                                => DoublyListCons(Nil, a, Nil)
     case DoublyListCons(left, value, right) =>
       DoublyListCons(prepend(left, a), value, right)
 
   def append[A](list: DoublyList[A], a: A): DoublyList[A] = list match
-    case Nil => DoublyListCons(Nil, a, Nil)
+    case Nil                                => DoublyListCons(Nil, a, Nil)
     case DoublyListCons(left, value, right) =>
       DoublyListCons(left, value, append(right, a))

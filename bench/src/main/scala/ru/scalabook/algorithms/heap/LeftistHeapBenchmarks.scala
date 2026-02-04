@@ -18,7 +18,7 @@ import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
 import LeftistHeapBenchmarks.*
 
-private val emptyLeftistHeap: LeftistHeap[Int] = LeftistHeap.empty
+private val emptyLeftistHeap: LeftistHeap[Int]    = LeftistHeap.empty
 private val nonEmptyLeftistHeap: LeftistHeap[Int] =
   LeftistHeap.empty.insert(1).insert(2)
 

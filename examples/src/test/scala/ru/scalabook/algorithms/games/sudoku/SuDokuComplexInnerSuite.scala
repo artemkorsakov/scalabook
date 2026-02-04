@@ -13,7 +13,7 @@ object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
 
   test("SuDokuComplexInner.execute should correctly remove a value from a row"):
     forall: (row: SuDokuRow, col: SuDokuColumn, value: SuDokuCellValue) =>
-      val initialSudoku = SuDoku.initial
+      val initialSudoku                         = SuDoku.initial
       val inputs: List[SuDokuComplexInnerInput] =
         List((SuDokuInnerComplexOperation.RemoveFromRow, row, col, value))
 
@@ -34,7 +34,7 @@ object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
 
   test("SuDokuComplexInner.execute should correctly remove a value from a row"):
     forall: (row: SuDokuRow, col: SuDokuColumn, value: SuDokuCellValue) =>
-      val initialSudoku = SuDoku.initial
+      val initialSudoku                         = SuDoku.initial
       val inputs: List[SuDokuComplexInnerInput] =
         List((SuDokuInnerComplexOperation.RemoveFromColumn, row, col, value))
 
@@ -57,7 +57,7 @@ object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
     "SuDokuComplexInner.execute should correctly remove a value from a block"
   ):
     forall: (row: SuDokuRow, col: SuDokuColumn, value: SuDokuCellValue) =>
-      val initialSudoku = SuDoku.initial
+      val initialSudoku                         = SuDoku.initial
       val inputs: List[SuDokuComplexInnerInput] =
         List((SuDokuInnerComplexOperation.RemoveFromBlock, row, col, value))
 
@@ -81,7 +81,7 @@ object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
   pureTest(
     "SuDokuComplexInner.execute should not execute an operation if the previous operation is incorrect"
   ):
-    val initialSudoku = SuDoku.initial
+    val initialSudoku                = SuDoku.initial
     val innerInput: SuDokuInnerInput =
       (
         SuDokuInnerOperation.SetToCell,
@@ -118,7 +118,7 @@ object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
 
   test("SuDokuComplexInner.execute should handle multiple operations"):
     forall: (row: SuDokuRow, col: SuDokuColumn, value: SuDokuCellValue) =>
-      val initialSudoku = SuDoku.initial
+      val initialSudoku                         = SuDoku.initial
       val inputs: List[SuDokuComplexInnerInput] =
         List(
           (SuDokuInnerComplexOperation.RemoveFromRow, row, col, value),
@@ -139,7 +139,8 @@ object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
           (index: SuDokuIndex, cell: SuDokuCell) =>
             if index._1 == row && index._2 != col ||
               index._1 != row && index._2 == col ||
-              index._3 == block && (index._1 != row || index._2 != col)
+              index._3 == block &&
+              (index._1 != row || index._2 != col)
             then
               expect(cell.possibleValues == initialValues - value)
             else
@@ -150,7 +151,7 @@ object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
     "SuDokuComplexInner.execute should correctly remove a value from a row except the block"
   ):
     forall: (row: SuDokuRow, col: SuDokuColumn, value: SuDokuCellValue) =>
-      val initialSudoku = SuDoku.initial
+      val initialSudoku                         = SuDoku.initial
       val inputs: List[SuDokuComplexInnerInput] =
         List((
           SuDokuInnerComplexOperation.RemoveFromRowExceptBlock,
@@ -159,7 +160,7 @@ object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
           value
         ))
 
-      val block = SuDokuBlock.getBlock(row, col)
+      val block            = SuDokuBlock.getBlock(row, col)
       val (result, sudoku) =
         SuDokuComplexInner.execute(inputs).run(initialSudoku)
 
@@ -179,7 +180,7 @@ object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
     "SuDokuComplexInner.execute should correctly remove a value from a column except the block"
   ):
     forall: (row: SuDokuRow, col: SuDokuColumn, value: SuDokuCellValue) =>
-      val initialSudoku = SuDoku.initial
+      val initialSudoku                         = SuDoku.initial
       val inputs: List[SuDokuComplexInnerInput] =
         List((
           SuDokuInnerComplexOperation.RemoveFromColumnExceptBlock,
@@ -188,7 +189,7 @@ object SuDokuComplexInnerSuite extends SimpleIOSuite with Checkers:
           value
         ))
 
-      val block = SuDokuBlock.getBlock(row, col)
+      val block            = SuDokuBlock.getBlock(row, col)
       val (result, sudoku) =
         SuDokuComplexInner.execute(inputs).run(initialSudoku)
 

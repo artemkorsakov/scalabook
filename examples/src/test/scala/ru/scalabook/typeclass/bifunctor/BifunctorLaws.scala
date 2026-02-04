@@ -23,7 +23,12 @@ object BifunctorLaws extends BasicLaws:
       far: F[A, R],
       fla: F[L, A],
       faa: F[A, A]
-  )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B)(using
+  )(using
+      f: A => B,
+      fReverse: B => A,
+      g: B => C,
+      gReverse: C => B
+  )(using
       m: Monoid[Vector[A]]
   )(using
       bi: Bitraverse[F]
@@ -60,7 +65,12 @@ object BifunctorLaws extends BasicLaws:
       far: F[A, R],
       fla: F[L, A],
       faa: F[A, A]
-  )(using f: A => B, fReverse: B => A, g: B => C, gReverse: C => B)(using
+  )(using
+      f: A => B,
+      fReverse: B => A,
+      g: B => C,
+      gReverse: C => B
+  )(using
       bi: Bifunctor[F]
   ): ValidatedNel[String, Unit] =
     checkBimapIdentityLaw[F, A, B](fab) combine

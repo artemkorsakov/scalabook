@@ -19,8 +19,8 @@ object ChineseRemainderTheorem:
       aArray: Array[SafeLong],
       rArray: Array[SafeLong]
   ): Option[SafeLong] =
-    val m      = aArray.product         // Step 1
-    val mArray = aArray.map(a => m / a) // Step 2
+    val m                 = aArray.product         // Step 1
+    val mArray            = aArray.map(a => m / a) // Step 2
     val maybeMMinus1Array =
       mArray.indices.toList.traverse: i => // Step 3
         gcdInverse(mArray(i), aArray(i))

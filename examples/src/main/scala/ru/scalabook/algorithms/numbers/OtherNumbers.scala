@@ -17,11 +17,10 @@ object OtherNumbers:
       case 1 => Rational(-1, 2)
       case n if n % 2 == 1 => Rational(0)
       case n =>
-        val s =
-          (2 to n by 2)
-            .map: l =>
-              bernoulli(n - l) * Rational(binomialCoefficient(n + 1, l + 1))
-            .sum
+        val s = (2 to n by 2)
+          .map: l =>
+            bernoulli(n - l) * Rational(binomialCoefficient(n + 1, l + 1))
+          .sum
         Rational(1, 2) - (s / (n + 1))
     }
 

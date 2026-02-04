@@ -35,8 +35,8 @@ object PointSuite extends FunSuite:
     expect(Point.distance(p1, p2) == expectedDistance)
 
   test("distance between a Cartesian and a Polar point"):
-    val p1 = CartesianPoint(1, 1)
-    val p2 = PolarPoint(sqrt(2), Pi / 4)
+    val p1               = CartesianPoint(1, 1)
+    val p2               = PolarPoint(sqrt(2), Pi / 4)
     val expectedDistance = sqrt(
       pow(1 - sqrt(2) * cos(Pi / 4), 2) +
         pow(1 - sqrt(2) * sin(Pi / 4), 2)
@@ -44,8 +44,8 @@ object PointSuite extends FunSuite:
     expect(Point.distance(p1, p2) == expectedDistance)
 
   test("distance between a Polar and a Cartesian point"):
-    val p1 = PolarPoint(sqrt(2), Pi / 4)
-    val p2 = CartesianPoint(1, 1)
+    val p1               = PolarPoint(sqrt(2), Pi / 4)
+    val p2               = CartesianPoint(1, 1)
     val expectedDistance = sqrt(
       pow(1 - sqrt(2) * cos(Pi / 4), 2) +
         pow(1 - sqrt(2) * sin(Pi / 4), 2)

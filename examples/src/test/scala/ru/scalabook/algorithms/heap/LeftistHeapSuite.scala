@@ -3,8 +3,8 @@ package ru.scalabook.algorithms.heap
 import weaver.FunSuite
 
 object LeftistHeapSuite extends FunSuite:
-  private val emptyLeftistHeap: LeftistHeap[Int] = LeftistHeap.empty
-  private val oneElLeftistHeap: LeftistHeap[Int] = LeftistHeap(1)
+  private val emptyLeftistHeap: LeftistHeap[Int]  = LeftistHeap.empty
+  private val oneElLeftistHeap: LeftistHeap[Int]  = LeftistHeap(1)
   private val someElLeftistHeap: LeftistHeap[Int] =
     LeftistHeap.empty.insert(1).insert(2).insert(3)
 

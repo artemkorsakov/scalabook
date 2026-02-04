@@ -14,7 +14,7 @@ ThisBuild / scalacOptions ++=
     "-explain",
     "-Wunused:imports",
     "-unchecked",
-    "-Xfatal-warnings",
+    "-Werror",
     "-feature",
     "-Wnonunit-statement"
   )

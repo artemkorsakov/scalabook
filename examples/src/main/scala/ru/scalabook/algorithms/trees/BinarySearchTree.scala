@@ -37,7 +37,7 @@ object BinarySearchTree:
 
     def remove(key: String): Dictionary[A] =
       dict match
-        case Leaf => Leaf
+        case Leaf                              => Leaf
         case Branch((k, v), lb, rb) if key < k =>
           Branch((k, v), lb.remove(key), rb)
         case Branch((k, v), lb, rb) if key > k =>
@@ -59,8 +59,8 @@ object BinarySearchTree:
     def height: Int = dict.height
 
     def isValid: Boolean = dict match
-      case Leaf                       => true
-      case Branch((_, _), Leaf, Leaf) => true
+      case Leaf                                                 => true
+      case Branch((_, _), Leaf, Leaf)                           => true
       case Branch((key, _), Leaf, rb @ Branch((keyR, _), _, _)) =>
         key <= keyR && rb.isValid
       case Branch((key, _), lb @ Branch((keyL, _), _, _), Leaf) =>
@@ -73,14 +73,14 @@ object BinarySearchTree:
         key >= keyL && key <= keyR && lb.isValid && rb.isValid
 
     def isBalanced: Boolean = dict match
-      case Leaf => true
+      case Leaf                   => true
       case Branch((_, _), lb, rb) =>
         math.abs(lb.height - rb.height) <= 1 && lb.isBalanced && rb.isBalanced
 
     private def popMax: Option[((String, A), Dictionary[A])] = dict match
       case Leaf                     => None
       case Branch((k, v), lb, Leaf) => Some(((k, v), lb))
-      case Branch((k, v), lb, rb) =>
+      case Branch((k, v), lb, rb)   =>
         rb.popMax.map { case (item, dict) =>
           (item, Branch((k, v), lb, dict))
         }
@@ -88,7 +88,7 @@ object BinarySearchTree:
     private def popMin: Option[((String, A), Dictionary[A])] = dict match
       case Leaf                     => None
       case Branch((k, v), Leaf, rb) => Some(((k, v), rb))
-      case Branch((k, v), lb, rb) =>
+      case Branch((k, v), lb, rb)   =>
         lb.popMin.map { case (item, dict) =>
           (item, Branch((k, v), dict, rb))
         }

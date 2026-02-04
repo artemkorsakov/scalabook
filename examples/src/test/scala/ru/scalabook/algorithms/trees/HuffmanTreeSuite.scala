@@ -15,7 +15,7 @@ object HuffmanTreeSuite extends FunSuite:
     )
 
   test("makeCodeTree with leaf and branch"):
-    val left = HuffmanLeaf('A', 1)
+    val left  = HuffmanLeaf('A', 1)
     val right =
       HuffmanTree.makeCodeTree(HuffmanLeaf('B', 2), HuffmanLeaf('C', 3))
     val tree = HuffmanTree.makeCodeTree(left, right)
@@ -70,7 +70,7 @@ object HuffmanTreeSuite extends FunSuite:
     expect(result == List(leaf1, leaf2))
 
   test("adjoinSet with leaf and branch"):
-    val leaf = HuffmanLeaf('A', 1)
+    val leaf   = HuffmanLeaf('A', 1)
     val branch =
       HuffmanTree.makeCodeTree(HuffmanLeaf('B', 2), HuffmanLeaf('C', 3))
     val set    = List(branch)
@@ -228,7 +228,7 @@ object HuffmanTreeSuite extends FunSuite:
     expect(result.contains(HuffmanTree.makeCodeTree(leaf1, leaf2)))
 
   test("successiveMerge with leaf and branch"):
-    val leaf = HuffmanLeaf('A', 1)
+    val leaf   = HuffmanLeaf('A', 1)
     val branch =
       HuffmanTree.makeCodeTree(HuffmanLeaf('B', 2), HuffmanLeaf('C', 3))
     val set    = List(leaf, branch)

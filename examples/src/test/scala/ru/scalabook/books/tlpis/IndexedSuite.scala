@@ -39,7 +39,8 @@ object IndexedSuite extends FunSuite:
   ):
     val fmp = x.i[_2].flatMap(s => s.charAt(0) :: s.substring(1) :: HNil)
     expect.all(
-      fmp == 3 :: true :: 'a' :: "sfd" :: false :: 'k' :: () :: 13 :: 9.3 :: HNil
+      fmp ==
+        3 :: true :: 'a' :: "sfd" :: false :: 'k' :: () :: 13 :: 9.3 :: HNil
     )
 
   test("inserting a value at the beginning of an HList"):
@@ -54,7 +55,8 @@ object IndexedSuite extends FunSuite:
   test("inserting a value at index 7"):
     val ins7 = x.i[_7].insert(-3.0f)
     expect.all(
-      ins7 == 3 :: true :: "asfd" :: false :: 'k' :: () :: 13 :: -3.0 :: 9.3 :: HNil
+      ins7 ==
+        3 :: true :: "asfd" :: false :: 'k' :: () :: 13 :: -3.0 :: 9.3 :: HNil
     )
 
   test("insert HList at index 3"):
@@ -65,7 +67,8 @@ object IndexedSuite extends FunSuite:
     val insH = rm.i[_3].insertH('h' :: b2 :: Some(3) :: None :: HNil)
     expect.all(
       insH ==
-        3 :: true :: "asfd" :: 'h' :: false :: Some(
+        3 :: true :: "asfd" :: 'h' :: false ::
+        Some(
           3
         ) :: None :: false :: 'k' :: 13 :: 9.3 :: HNil
     )

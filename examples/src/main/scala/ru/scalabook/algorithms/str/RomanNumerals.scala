@@ -41,7 +41,7 @@ object RomanNumerals:
         if i >= min.length then Some(sum)
         else
           toRomanNumeralSymbol(temp.substring(i, i + 2)) match
-            case None => None
+            case None         => None
             case Some(symbol) =>
               loop(i + symbol.toString.length, sum + symbol.id)
 

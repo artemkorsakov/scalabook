@@ -38,7 +38,7 @@ object SuDokuComplexInner:
                 .toList
             SuDokuInner.execute(inputs*).run(sudoku)
           case (RemoveFromBlock, true) =>
-            val block = SuDokuBlock.getBlock(i, j)
+            val block                          = SuDokuBlock.getBlock(i, j)
             val inputs: List[SuDokuInnerInput] =
               sudoku
                 .cells
@@ -50,7 +50,7 @@ object SuDokuComplexInner:
                 .toList
             SuDokuInner.execute(inputs*).run(sudoku)
           case (RemoveFromRowExceptBlock, true) =>
-            val block = SuDokuBlock.getBlock(i, j)
+            val block                          = SuDokuBlock.getBlock(i, j)
             val inputs: List[SuDokuInnerInput] =
               sudoku
                 .cells
@@ -62,7 +62,7 @@ object SuDokuComplexInner:
                 .toList
             SuDokuInner.execute(inputs*).run(sudoku)
           case (RemoveFromColumnExceptBlock, true) =>
-            val block = SuDokuBlock.getBlock(i, j)
+            val block                          = SuDokuBlock.getBlock(i, j)
             val inputs: List[SuDokuInnerInput] =
               sudoku
                 .cells

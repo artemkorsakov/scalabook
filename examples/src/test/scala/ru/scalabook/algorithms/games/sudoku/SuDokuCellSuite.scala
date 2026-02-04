@@ -103,7 +103,7 @@ object SuDokuCellSuite extends SimpleIOSuite with Checkers:
 
   pureTest("SuDokuCell execute should handle multiple operations"):
     val initialCell = SuDokuCell.initial
-    val inputs = List(
+    val inputs      = List(
       (SuDokuCellOperation.Remove, SuDokuCellValue.One),
       (SuDokuCellOperation.Set, SuDokuCellValue.Two)
     )
@@ -120,7 +120,7 @@ object SuDokuCellSuite extends SimpleIOSuite with Checkers:
     "SuDokuCell execute should handle multiple operations with invalid operation"
   ):
     val initialCell = SuDokuCell.initial
-    val inputs = List(
+    val inputs      = List(
       (SuDokuCellOperation.Remove, SuDokuCellValue.One),
       (SuDokuCellOperation.Set, SuDokuCellValue.One),
       (SuDokuCellOperation.Remove, SuDokuCellValue.Two),

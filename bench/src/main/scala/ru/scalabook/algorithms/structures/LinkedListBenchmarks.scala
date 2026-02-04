@@ -24,7 +24,7 @@ import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
 import LinkedListBenchmarks.*
 
-private val emptyList: LinkedList[Int] = LinkedList.Nil
+private val emptyList: LinkedList[Int]    = LinkedList.Nil
 private val nonEmptyList: LinkedList[Int] =
   LinkedList.Cons(2, LinkedList.Cons(1, LinkedList.Nil))
 

@@ -19,7 +19,7 @@ import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
 import BinaryHeapBenchmarks.*
 
-private val emptyBinaryHeap: BinaryHeap[Int] = BinaryHeap.empty
+private val emptyBinaryHeap: BinaryHeap[Int]    = BinaryHeap.empty
 private val nonEmptyBinaryHeap: BinaryHeap[Int] =
   BinaryHeap.empty.insert(1).insert(2)
 

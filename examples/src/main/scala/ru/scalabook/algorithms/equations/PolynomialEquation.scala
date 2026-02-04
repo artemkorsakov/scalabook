@@ -28,14 +28,16 @@ object PolynomialEquation:
     for i <- k - 1 to 0 by -1 do
       val coefficients = coefficientsList(i)
       val index        = k - coefficients.length
-      val divisor = coefficients.indices.foldLeft(0L): (divisor, j) =>
+      val divisor      = coefficients.indices.foldLeft(0L): (divisor, j) =>
         aList(index) += coefficients(j) * solutions(coefficients.length - 1 - j)
         (0 until index).foreach: m =>
-          aList(index) -= aList(m) * coefficients(j) * math
-            .pow(coefficients.length.toDouble - j, k - 1.0 - m)
-            .toLong
+          aList(index) -= aList(m) * coefficients(j) *
+            math
+              .pow(coefficients.length.toDouble - j, k - 1.0 - m)
+              .toLong
         divisor +
-          coefficients(j) * math
+          coefficients(j) *
+          math
             .pow(
               coefficients.length.toDouble - j,
               coefficients.length.toDouble - 1
@@ -53,7 +55,7 @@ object PolynomialEquation:
     else
       val coefficients = coefficientsForSolutionSearching(k - 1)
       val last         = coefficients.last
-      val current = 1L +:
+      val current      = 1L +:
         (0 until last.length - 1).map(i => last(i + 1) - last(i)).toVector :+
         -last.last
       coefficients :+ current

@@ -55,9 +55,12 @@ object TipSuite extends FunSuite:
       fmp == 3 :: true :: 'a' :: "sfd" :: 'k' :: () :: 9.3 :: HNil,
       ins0 == List(3, 4) :: 3 :: true :: "asfd" :: 'k' :: () :: 9.3 :: HNil,
       ins7 == 3 :: true :: "asfd" :: 'k' :: () :: -3.0 :: 9.3 :: HNil,
-      insH == 3 :: true :: 'h' :: true :: Some(
-        3
-      ) :: None :: "asfd" :: 'k' :: () :: 9.3 :: HNil,
+      insH ==
+        3 :: true :: 'h' :: true ::
+        Some(
+          3
+        ) :: None :: "asfd" :: 'k' ::
+        () :: 9.3 :: HNil,
       aa == 3 :: true :: "asfd" :: 'k' :: HNil,
       bb == () :: 9.3 :: HNil,
       dropRight == 3 :: true :: "asfd" :: 'k' :: HNil

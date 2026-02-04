@@ -7,7 +7,7 @@ import weaver.scalacheck.*
 object MonadTransformerSuite extends SimpleIOSuite, Checkers:
   test("optionTMonadTransformer should cast Option inside the monad"):
     forall: (x: Int) =>
-      val monadA = IO(() => x)
+      val monadA                    = IO(() => x)
       val monadIdA: IO[Option[Int]] =
         MonadTransformer[OptionT, IO].lift[Int](monadA).run
       expect(

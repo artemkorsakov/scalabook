@@ -16,7 +16,7 @@ object CopyFiles extends IOApp:
       orig = new File(args.head)
       dest = new File(args(1))
       count <- copy(orig, dest)
-      _ <- IO.println(
+      _     <- IO.println(
         s"$count bytes copied from ${orig.getPath} to ${dest.getPath}"
       )
     yield ExitCode.Success
@@ -63,7 +63,7 @@ object CopyFiles extends IOApp:
   ): IO[Long] =
     for
       amount <- IO.blocking(origin.read(buffer, 0, buffer.length))
-      count <-
+      count  <-
         if amount > -1 then
           IO.blocking(destination.write(buffer, 0, amount)) >> transmit(
             origin,

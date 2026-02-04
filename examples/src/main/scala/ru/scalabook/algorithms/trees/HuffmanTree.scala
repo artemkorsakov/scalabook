@@ -34,7 +34,7 @@ object HuffmanTree:
       (bits, currentBranch) match
         case (_, HuffmanLeaf(symbol, _)) =>
           decodeLoop(bits, tree, message :+ symbol)
-        case (Nil, _) => message
+        case (Nil, _)                                         => message
         case (Bit.Zero :: tail, HuffmanBranch(_, _, left, _)) =>
           decodeLoop(tail, left, message)
         case (Bit.One :: tail, HuffmanBranch(_, _, _, right)) =>
@@ -48,7 +48,7 @@ object HuffmanTree:
       tree: HuffmanTree
   ): Either[String, List[Bit]] =
     message match
-      case Nil => Right(List.empty)
+      case Nil          => Right(List.empty)
       case head :: tail =>
         for
           encodedHead <- encodeSymbol(head, tree)
@@ -80,7 +80,7 @@ object HuffmanTree:
 
   def makeLeafSet(pairs: List[(Char, Int)]): List[HuffmanTree] =
     pairs match
-      case Nil => List.empty
+      case Nil                      => List.empty
       case (symbol, weigth) :: tail =>
         val leaf = HuffmanLeaf(symbol, weigth)
         adjoinSet(leaf, makeLeafSet(tail))
@@ -90,8 +90,8 @@ object HuffmanTree:
 
   def successiveMerge(trees: List[HuffmanTree]): Option[HuffmanTree] =
     trees match
-      case Nil         => None
-      case head :: Nil => Some(head)
+      case Nil                     => None
+      case head :: Nil             => Some(head)
       case first :: second :: tail =>
         successiveMerge(adjoinSet(makeCodeTree(first, second), tail))
 

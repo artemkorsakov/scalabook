@@ -18,7 +18,7 @@ object LinkValidationExtension extends ExtensionBundle:
 
   val description: String = "Link Validation Extension for site's validation"
 
-  private val correctCodes: Set[Int] = Set(302, 307, 403, 429)
+  private val correctCodes: Set[Int]    = Set(302, 307, 403, 429)
   private val blockedHosts: Set[String] = Set(
     "https://www.coursera.org",
     "https://rockthejvm.com",
@@ -64,7 +64,9 @@ object LinkValidationExtension extends ExtensionBundle:
 
   private def sendRequest(url: String): Try[Response[Unit]] =
     Try {
-      quickRequest.head(uri"$url").response(ignore).readTimeout(5.seconds).send()
+      quickRequest.head(
+        uri"$url"
+      ).response(ignore).readTimeout(5.seconds).send()
     } match
       case Success(response) if response.code.code == 405 =>
         Try {

@@ -4,8 +4,8 @@ import ru.scalabook.algorithms.structures.Stack.*
 import weaver.FunSuite
 
 object StackSuite extends FunSuite:
-  private val emptyStack: Stack[Int] = EmptyStack
-  private val oneElStack: Stack[Int] = NonEmptyStack(1, EmptyStack)
+  private val emptyStack: Stack[Int]  = EmptyStack
+  private val oneElStack: Stack[Int]  = NonEmptyStack(1, EmptyStack)
   private val someElStack: Stack[Int] =
     NonEmptyStack(3, NonEmptyStack(2, NonEmptyStack(1, EmptyStack)))
 

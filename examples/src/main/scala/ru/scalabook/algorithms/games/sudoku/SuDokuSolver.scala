@@ -187,7 +187,7 @@ object SuDokuSolver:
       blocks: List[SuDokuBlock]
   ): SuDokuOutput =
     blocks match
-      case Nil => (true, sudoku) // Обошли все блоки
+      case Nil          => (true, sudoku) // Обошли все блоки
       case head :: tail =>
         val singleValues = getSingleValues(sudoku, head)
         if singleValues.isEmpty then

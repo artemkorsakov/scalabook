@@ -89,9 +89,6 @@ final case class HealthRoutes[F[_]: Monad](
 В этой области существует множество допустимых вариантов дизайна, но мы будем придерживаться этого простого.
 
 
-
-
-
 ## Публичное API без авторизации
 
 ```http
@@ -147,6 +144,214 @@ Response code:
 Request body и Response body не требуются
 ```
 
+## Авторизация
+
+Для доступа к аутентифицированному пользователю нам необходимо использовать `AuthedUser[F, User]`,
+который является классом-оболочкой, изоморфным `(User, Request[F])`, где `User` — это некоторый произвольный тип данных, 
+который мы объявляем для представления пользователя в нашей системе. 
+Однако на самом деле это псевдоним типа для `ContextRequest`, определенный как полиморфный класс-оболочка.
+
+```
+final case class ContextRequest[F[_], A](
+  context: A, req: Request[F]
+)
+```
+
+Аналогичным образом, нам следует использовать `AuthedRoutes[User, F]` вместо `HttpRoutes[F]`, если мы
+хотим получить доступ к аутентифицированному пользователю в каждом запросе. 
+Например:
+
+```
+val authedRoutes: AuthedRoutes[User, IO] =
+  AuthedRoutes.of {
+    case GET -> Root as user =>
+      Ok(s"Welcome, ${user.name}")
+  }
+```
+
+`AuthedRoutes[T, F]` — это псевдоним типа для `Kleisli[OptionT[F, *]`, `AuthedRequest[F, T]`, `Response[F]`, 
+аналогично `HttpRoutes`, за исключением того, что тип запроса теперь содержит информацию
+об аутентифицированном пользователе.
+Http4s позволяет нам определить, как аутентифицировать пользователя. 
+Все, что нам нужно, это функция, которая решает, может ли пользователь быть аутентифицирован 
+или нет, учитывая `Request[F]`, и функция, которая определяет, что делать в случае сбоя. 
+Как только у нас появятся обе функции, мы можем применить их к `AuthMiddleware`, 
+который можно использовать как еще одно обычное промежуточное ПО.
+В качестве демонстрации см. пример ниже.
+
+```dotty
+val authUser: Kleisli[F, Request[F], Either[String, User]] =
+  Kleisli.pure(myUser.asRight) // Authenticate user
+val onFailure: AuthedRoutes[String, F] =
+  Kleisli(req => OptionT.liftF(Forbidden(req.context)))
+val middleware = AuthMiddleware(authUser, onFailure)
+val authedRoutes: AuthedRoutes[User, F] = ???
+val routes: HttpRoutes[F] = middleware(authedRoutes)
+```
+
+Наиболее распространенными методами аутентификации являются cookie и bearer token. 
+Примеры обоих вариантов можно найти в официальной документации, однако мы сосредоточимся на втором.
+
+### JWT Auth
+
+В качестве библиотеки мы выберем [Http4s JWT Auth4](https://github.com/profunktor/http4s-jwt-auth), 
+которая предлагает некоторые функциональные возможности поверх Http4s и [JWT Scala](https://github.com/jwt-scala/jwt-scala). 
+Http4s предоставляет `AuthMiddleware`, упомянутый ранее. 
+Это псевдоним типа для сложного типа.
+
+```dotty
+type AuthMiddleware[F[_], T] = Middleware[OptionT[F, *], AuthedRequest[F, T], Response[F], Request[F], Response[F]]
+```
+
+Однако не пугайтесь, вы всё поймёте, когда мы рассмотрим промежуточные обработчики вскоре, с некоторыми примерами. 
+Пока что их можно рассматривать как функции `AuthedRoutes[T, F] => HttpRoutes[F]`.
+
+Вместо обычного `AuthMiddleware` мы будем использовать пользовательский `JwtAuthMiddleware`,
+определенный в Http4s JWT Auth.
+
+```dotty
+val usersAuth: JwtToken => JwtClaim => F[Option[User]] =
+  t => c => User("Joe").some.pure[F]
+val usersMiddleware: AuthMiddleware[F, User] =
+  JwtAuthMiddleware[F, User](jwtAuth, usersAuth)
+```
+
+Для этого требуется `JwtAuth` и функция `JwtToken => JwtClaim => F[Option[A]]`, как показано выше. 
+Первую можно создать следующим образом.
+
+```dotty
+val jwtAuth = JwtAuth.hmac("53cr3t", JwtAlgorithm.HS256)
+```
+
+После того, как мы определили все необходимое, мы можем использовать наш `AuthMiddleware` 
+как любой другой промежуточный обработчик. 
+Например:
+
+```dotty
+val routes: HttpRoutes[F] = usersMiddleware(authedRoutes)
+```
+
+Следуя тому же принципу, мы могли бы реализовать аутентификацию для других типов пользователей,
+например, для администраторов.
+
+```dotty
+val adminAuth: JwtToken => JwtClaim => F[Option[AdminUser]] =
+  t => c => AdminUser("admin").some.pure[F]
+val adminMiddleware: AuthMiddleware[F, AdminUser] =
+  JwtAuthMiddleware[F, AdminUser](jwtAuth, adminAuth)
+```
+
+Вот как мы могли бы это использовать.
+
+```dotty
+val adminRoutes: AuthedRoutes[AdminUser, F] =
+  AuthedRoutes.of {
+    case POST -> Root as adminUser =>
+      Ok(s"You have admin rights, ${adminUser.show}!")
+  }
+  
+val routes: HttpRoutes[F] = adminMiddleware(adminRoutes)
+```
+
+Стоит отметить, что мы можем комбинировать HTTP-маршруты пользователей и администраторов,
+достигая функциональности, позволяющей иметь разные роли.
+
+```dotty
+val allRoutes: HttpRoutes[F] =
+  usersMiddleware(authedRoutes) <+> adminMiddleware(adminRoutes)
+```
+
+Http4s обладает высокой композиционной способностью.
+
+## API для логирования
+
+Ещё одна новая функция, которую стоит отметить, — это `decodeR`, 
+пользовательская функция декодирования, которая обрабатывает ошибки проверки 
+и возвращает код ответа 400 (Неверный запрос) вместе с сообщением об ошибке, вме
+сто кода ответа по умолчанию 422 (Необрабатываемая сущность), 
+когда входные данные недопустимы, например, пустое имя. 
+
+```dotty
+package ru.scalabook.pdp.http.routes
+
+import cats.MonadThrow
+import cats.syntax.all.*
+import io.circe.*
+import org.http4s.*
+import org.http4s.circe.*
+import org.http4s.circe.CirceEntityEncoder.*
+import org.http4s.dsl.Http4sDsl
+
+trait PdpRoutes[F[_]: {JsonDecoder, MonadThrow}] extends Http4sDsl[F]:
+  extension (req: Request[F])
+    def decodeR[A: Decoder](f: A => F[Response[F]]): F[Response[F]] =
+      req.asJsonDecode[A].attempt.flatMap {
+        case Left(e) =>
+          Option(e.getCause) match {
+            case Some(c) if c.getMessage.startsWith("Predicate") =>
+              BadRequest(c.getMessage)
+            case _ => UnprocessableContent()
+          }
+        case Right(a) => f(a)
+      }
+
+```
+
+Сам сервис:
+
+```dotty
+package ru.scalabook.pdp.http.routes
+
+import cats.MonadThrow
+import cats.syntax.all.*
+import org.http4s.*
+import org.http4s.circe.CirceEntityEncoder.*
+import org.http4s.circe.JsonDecoder
+import org.http4s.server.Router
+import ru.scalabook.pdp.auth.*
+import ru.scalabook.pdp.model.LoginUser
+import ru.scalabook.pdp.services.AuthService
+
+final case class LoginRoutes[F[_]: {JsonDecoder, MonadThrow}](
+    authService: AuthService[F]
+) extends PdpRoutes[F] {
+
+  private[routes] val prefixPath = "/auth"
+
+  private val httpRoutes: HttpRoutes[F] = HttpRoutes.of[F] {
+
+    case req @ POST -> Root / "login" =>
+      req.decodeR[LoginUser] { user =>
+        authService
+          .login(user.username, user.password)
+          .flatMap(Ok(_))
+          .recoverWith {
+            case UserNotFound(_) | InvalidPassword(_) => Forbidden()
+          }
+      }
+
+  }
+
+  val routes: HttpRoutes[F] = Router(
+    prefixPath -> httpRoutes
+  )
+
+}
+```
+
+В любом другом случае мы бы возвращали NotFound (404) при ошибке UserNotFound 
+или BadRequest (400) с конкретным сообщением об ошибке при ошибке InvalidPassword.
+Однако здесь мы возвращаем Forbidden (403) в обоих случаях, чтобы избежать утечки информации.
+Поскольку это открытая конечная точка, любой потенциально может осуществить атаку методом перебора, 
+и получение ошибки 404 покажет, что имя пользователя существует, и нам просто нужно взломать пароль.
+Также следует отметить использование метода расширения toDomain, 
+который преобразует уточненные значения в значения общего домена.
+
+### Logout
+
+
+
+
 ## Публичное API с авторизацией
 
 Это HTTP-маршруты, для работы которых требуется авторизация зарегистрированных пользователей. 
@@ -186,31 +391,75 @@ Response body on success:
 package ru.scalabook.pdp.http.routes
 
 import cats.MonadThrow
+import cats.data.NonEmptyList
+import cats.syntax.all.*
+import io.circe.*
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.circe.given
+import io.github.iltotore.iron.constraint.all.*
 import org.http4s.*
+import org.http4s.circe.*
 import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.dsl.Http4sDsl
-import org.http4s.server.Router
+import org.http4s.server.*
+import ru.scalabook.pdp.model.*
+import ru.scalabook.pdp.model.UserType.{UserTypeId, UserTypeName, given}
 import ru.scalabook.pdp.services.SettingsService
-import ru.scalabook.pdp.model.UserType
-import ru.scalabook.pdp.model.UserType.given
 
-final case class UserTypeRoutes[F[_]: MonadThrow](
+final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow}](
     settingsService: SettingsService[F]
-) extends Http4sDsl[F] {
+) extends Http4sDsl[F]:
 
   private[routes] val prefixPath = "/user_types"
 
-  private val httpRoutes: HttpRoutes[F] = HttpRoutes.of[F] {
-    case GET -> Root =>
-      Ok(settingsService.getTaskTypes)
-  }
+  private val httpRoutes: AuthedRoutes[User, F] =
+    AuthedRoutes.of {
+      // Список всех пользовательских типов
+      case GET -> Root as user =>
+        Ok(settingsService.getTaskTypes)
 
-  val routes: HttpRoutes[F] = Router(
-    prefixPath -> httpRoutes
-  )
+      // Добавление нового типа
+      case ar @ POST -> Root as user =>
+        ar.req.asJsonDecode[UserTypeName].flatMap: name =>
+          settingsService
+            .createTaskType(name)
+            .flatMap(_ => Created())
+            .recoverWith {
+              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+            }
 
-}
+      // Обновить пользовательский тип
+      case ar @ PUT -> Root / "update" as user =>
+        ar.req.asJsonDecode[UserType].flatMap: userType =>
+          settingsService
+            .updateTaskType(userType)
+            .flatMap(_ => Ok())
+            .recoverWith {
+              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+            }
 
+      // Пересортировать пользовательские типы
+      case ar @ PUT -> Root / "reorder" as user =>
+        ar.req.asJsonDecode[NonEmptyList[UserTypeId]].flatMap: ids =>
+          settingsService
+            .reorderTaskTypes(ids)
+            .flatMap(_ => Ok())
+            .recoverWith {
+              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+            }
+
+      // Удалить пользовательский тип
+      case DELETE -> Root / UserTypeIdVar(id) as user =>
+        settingsService.deleteTaskType(id)
+          .flatMap(_ => NoContent())
+          .recoverWith {
+            case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+          }
+    }
+
+  def routes(authMiddleware: AuthMiddleware[F, User]): HttpRoutes[F] =
+    Router(prefixPath -> authMiddleware(httpRoutes))
+end UserTypeRoutes
 ```
 
 Здесь происходит несколько вещей:
@@ -238,6 +487,37 @@ object UserType:
 
   given encoder: Encoder[UserType] = deriveEncoder[UserType]
 ```
+
+Давайте разберем это по частям, поскольку здесь много всего происходит.
+
+- У нас есть новое ограничение `JsonDecoder`, которое представляет собой просто интерфейс, 
+  позволяющий нам декодировать наш запрос как требуемую сущность `A`, имея `Decoder[A]`.
+- Мы используем `AuthedRoutes[CommonUser, F]` вместо `HttpRoutes[F]`.
+- Наши маршруты принимают в качестве аргумента `AuthMiddleware[F, CommonUser]`.
+- Мы декодируем данные в наших POST и PUT конечных точках, что делается с помощью `JsonDecoder` (для этого требуется `Decoder[Cart]`).
+
+
+В последнем методе DELETE мы также захватываем переменную пути с помощью `UserTypeIdVar`. 
+Его определение:
+
+```dotty
+package ru.scalabook.pdp.http
+
+import ru.scalabook.pdp.model.UserType.UserTypeId
+
+package object routes {
+  object UserTypeIdVar:
+    def unapply(str: String): Option[UserTypeId] =
+      for
+        int <- str.toIntOption
+        id  <- UserTypeId.option(int)
+      yield id
+}
+```
+
+Пользователям рекомендуется определять пользовательские объекты таким образом и использовать предоставленные объекты, когда это
+целесообразно. Http4s поддерживает `IntVar`, `LongVar` и `UUIDVar`, среди прочих.
+
 
 Добавление типа:
 
@@ -303,37 +583,37 @@ import cats.syntax.all.*
 import io.circe.*
 import org.http4s.*
 import org.http4s.circe.CirceEntityEncoder.*
+import org.http4s.circe.JsonDecoder
 import org.http4s.dsl.Http4sDsl
-import org.http4s.server.Router
+import org.http4s.server.{AuthMiddleware, Router}
 import ru.scalabook.pdp.model.*
 import ru.scalabook.pdp.services.*
 
-final case class TaskRoutes[F[_]: MonadThrow](
+final case class TaskRoutes[F[_]: {JsonDecoder, MonadThrow}](
     taskLifecycleService: TaskLifecycleService[F],
     taskService: TaskService[F]
-) extends Http4sDsl[F] {
+) extends Http4sDsl[F]:
 
   private[routes] val prefixPath = "/tasks"
 
   object BrandQueryParam
       extends OptionalQueryParamDecoderMatcher[TaskType]("task_type")
 
-  private val httpRoutes: HttpRoutes[F] = HttpRoutes.of[F] {
-    case GET -> Root :? BrandQueryParam(maybeTaskType) =>
-      maybeTaskType match
-        case None =>
-          Ok(taskService.getAll)
-        case Some(taskType) =>
-          taskService.getAll
-            .map(tasks => tasks.filter(_.taskType == taskType))
-            .flatMap(Ok(_))
-  }
+  private val httpRoutes: AuthedRoutes[User, F] =
+    AuthedRoutes.of {
+      case GET -> Root :? BrandQueryParam(maybeTaskType) as user =>
+        maybeTaskType match
+          case None =>
+            Ok(taskService.getAll)
+          case Some(taskType) =>
+            taskService.getAll
+              .map(_.filter(_.taskType == taskType))
+              .flatMap(Ok(_))
+    }
 
-  val routes: HttpRoutes[F] = Router(
-    prefixPath -> httpRoutes
-  )
-
-}
+  def routes(authMiddleware: AuthMiddleware[F, User]): HttpRoutes[F] =
+    Router(prefixPath -> authMiddleware(httpRoutes))
+end TaskRoutes
 ```
 
 Для работы необходимы кодеки:

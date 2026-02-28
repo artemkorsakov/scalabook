@@ -227,8 +227,8 @@ graph TD
 Принцип **"Program to an interface, not an implementation"** является фундаментальным 
 в объектно-ориентированном и функциональном программировании. В нашем контексте это означает:
 
-- **Абстрактный уровень**: Трейт `UserService[F[_]]` определяет **что** нужно сделать (контракт).
-- **Конкретный уровень**: Класс `PostgreSQLUserService` определяет **как** это сделать для PostgreSQL (реализация).
+- **Абстрактный уровень**: Трейт `UserTypeService[F[_]]` определяет **что** нужно сделать (контракт).
+- **Конкретный уровень**: Класс `PostgreSQLUserTypeService` определяет **как** это сделать для PostgreSQL (реализация).
 
 Такое разделение обеспечивает несколько ключевых преимуществ:
 
@@ -238,12 +238,12 @@ graph TD
 - **Соблюдение принципа инверсии зависимостей**: Высокоуровневые модули (бизнес-логика) зависят от абстракций, 
   а не от деталей низкоуровневых модулей (работы с БД).
 
-### Структура и реализация PostgreSQLUserService
+### Структура и реализация PostgreSQLUserTypeService
 
-Класс `PostgreSQLUserService` является конкретной реализацией алгебры `UserService[IO]`, использующей PostgreSQL в качестве бэкенда.
+Класс `PostgreSQLUserTypeService` является конкретной реализацией алгебры `UserTypeService[IO]`, использующей PostgreSQL в качестве бэкенда.
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLUserService.scala
+// pdp/src/main/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLUserTypeService.scala
 package ru.scalabook.pdp.services.postgresql
 
 // `doobie` необходимо импортировать через `_root_` из-за конфликта имен
@@ -260,19 +260,19 @@ import ru.scalabook.pdp.model
 import ru.scalabook.pdp.model.*
 import ru.scalabook.pdp.model.Section.SectionName.given
 import ru.scalabook.pdp.model.UserType.{UserTypeId, UserTypeName}
-import ru.scalabook.pdp.services.UserService
+import ru.scalabook.pdp.services.UserTypeService
 import ru.scalabook.sql.SqlMacros.*
 
-/** Конкретная реализация UserService для PostgreSQL. Наследует абстрактный
-  * интерфейс UserService[IO] и предоставляет реализацию всех его методов с
+/** Конкретная реализация UserTypeService для PostgreSQL. Наследует абстрактный
+  * интерфейс UserTypeService[IO] и предоставляет реализацию всех его методов с
   * использованием Doobie и сгенерированного SQL.
   *
   * @param xa
   *   Transactor[[x] =>> IO[x], Unit] - Doobie Transactor для выполнения
   *   запросов.
   */
-private[services] class PostgreSQLUserService(xa: Aux[[x] =>> IO[x], Unit])
-    extends UserService[IO]:
+private[services] class PostgreSQLUserTypeService(xa: Aux[[x] =>> IO[x], Unit])
+    extends UserTypeService[IO]:
 
   /** Создает новый пользовательский тип задачи. Использует макрос
     * generateInsertReturningId для генерации параметризованного INSERT-запроса.
@@ -368,12 +368,12 @@ private[services] class PostgreSQLUserService(xa: Aux[[x] =>> IO[x], Unit])
       .transact(xa)
       .void
 
-end PostgreSQLUserService
+end PostgreSQLUserTypeService
 ```
 
 ### Принцип минимального и точного соответствия контракту
 
-Важнейший аспект реализации — строгое соблюдение контракта, определенного в интерфейсе `UserService`.
+Важнейший аспект реализации — строгое соблюдение контракта, определенного в интерфейсе `UserTypeService`.
 
 #### Что означает "реализовывать только необходимые методы"?
 

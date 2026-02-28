@@ -25,7 +25,7 @@ nextPage = lifecycle/complete.html
 
 ```dotty
 final case class SettingsService[F[_]: {MonadThrow as MT}](
-    typeService: UserService[F],       // Сервис работы с типами задач
+    typeService: UserTypeService[F],       // Сервис работы с типами задач
     sectionService: SectionService[F], // Сервис работы с разделами
     goalService: GoalService[F],       // Сервис работы с целями
     taskService: TaskService[F]        // Сервис задач
@@ -326,7 +326,7 @@ def deleteTaskType(id: UserTypeId): F[Unit] =
 
 ```dotty
 final case class TaskLifecycleService[F[_]: {MonadThrow as MT}](
-    typeService: UserService[F],       // Для проверки пользовательских типов
+    typeService: UserTypeService[F],   // Для проверки пользовательских типов
     sectionService: SectionService[F], // Для проверки раздела
     goalService: GoalService[F],       // Для проверки цели
     taskService: TaskService[F],       // Для непосредственного сохранения задачи

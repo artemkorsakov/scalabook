@@ -151,7 +151,7 @@ Request body и Response body не требуются
 который мы объявляем для представления пользователя в нашей системе. 
 Однако на самом деле это псевдоним типа для `ContextRequest`, определенный как полиморфный класс-оболочка.
 
-```
+```dotty
 final case class ContextRequest[F[_], A](
   context: A, req: Request[F]
 )
@@ -161,7 +161,7 @@ final case class ContextRequest[F[_], A](
 хотим получить доступ к аутентифицированному пользователю в каждом запросе. 
 Например:
 
-```
+```dotty
 val authedRoutes: AuthedRoutes[User, IO] =
   AuthedRoutes.of {
     case GET -> Root as user =>
@@ -267,8 +267,8 @@ Http4s обладает высокой композиционной способ
 
 Ещё одна новая функция, которую стоит отметить, — это `decodeR`, 
 пользовательская функция декодирования, которая обрабатывает ошибки проверки 
-и возвращает код ответа 400 (Неверный запрос) вместе с сообщением об ошибке, вме
-сто кода ответа по умолчанию 422 (Необрабатываемая сущность), 
+и возвращает код ответа 400 (Неверный запрос) вместе с сообщением об ошибке, 
+вместо кода ответа по умолчанию 422 (Необрабатываемая сущность), 
 когда входные данные недопустимы, например, пустое имя. 
 
 ```dotty
@@ -349,8 +349,93 @@ final case class LoginRoutes[F[_]: {JsonDecoder, MonadThrow}](
 
 ### Logout
 
+Здесь у нас что-то новое: `AuthHeaders.getBearerToken`.
 
+```dotty
+package ru.scalabook.pdp.http.routes
 
+import cats.Monad
+import cats.syntax.all.*
+import dev.profunktor.auth.AuthHeaders
+import org.http4s.*
+import org.http4s.dsl.Http4sDsl
+import org.http4s.server.*
+import ru.scalabook.pdp.model.User
+import ru.scalabook.pdp.services.AuthService
+
+final case class LogoutRoutes[F[_]: Monad](
+    authService: AuthService[F]
+) extends Http4sDsl[F]:
+
+  private[routes] val prefixPath = "/auth"
+
+  private val httpRoutes: AuthedRoutes[User, F] = AuthedRoutes.of {
+
+    case ar @ POST -> Root / "logout" as user =>
+      AuthHeaders
+        .getBearerToken(ar.req)
+        .traverse_(authService.logout(_, user.username)) *> NoContent()
+
+  }
+
+  def routes(authMiddleware: AuthMiddleware[F, User]): HttpRoutes[F] =
+    Router(
+      prefixPath -> authMiddleware(httpRoutes)
+    )
+```
+
+Мы обращаемся к заголовкам запроса, чтобы найти текущий токен доступа и аннулировать его, 
+то есть удалить из нашего кеша, как мы увидим в интерпретаторе аутентификации.
+
+### Users
+
+За регистрацию новых пользователей будут отвечать следующие HTTP-маршруты.
+
+```dotty
+package ru.scalabook.pdp.http.routes
+
+import cats.MonadThrow
+import cats.syntax.all.*
+import io.circe.*
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.circe.given
+import org.http4s.*
+import org.http4s.circe.CirceEntityEncoder.*
+import org.http4s.circe.JsonDecoder
+import org.http4s.server.Router
+import ru.scalabook.pdp.auth.*
+import ru.scalabook.pdp.model.LoginUser
+import ru.scalabook.pdp.services.AuthService
+
+final case class UserRoutes[F[_]: {JsonDecoder, MonadThrow}](
+    authService: AuthService[F]
+) extends PdpRoutes[F]:
+
+  private[routes] val prefixPath = "/auth"
+
+  private val httpRoutes: HttpRoutes[F] = HttpRoutes.of[F] {
+
+    case req @ POST -> Root / "users" =>
+      req.decodeR[LoginUser] { user =>
+        authService
+          .newUser(user.username, user.password)
+          .flatMap(Created(_))
+          .recoverWith {
+            case UserNameInUse(username) => Conflict(username)
+          }
+      }
+
+  }
+
+  val routes: HttpRoutes[F] = Router(
+    prefixPath -> httpRoutes
+  )
+end UserRoutes
+```
+
+Обратите внимание, что мы можем регистрировать только новых обычных пользователей; создание новых администраторов невозможно. 
+Ещё раз, для проверки данных мы используем `decodeR`, для преобразования данных — `toDomain`, 
+а для обработки ошибок бизнес-логики — `recoverWith`.
 
 ## Публичное API с авторизацией
 
@@ -650,6 +735,98 @@ object Task:
   given encoder: Encoder[Task] = deriveEncoder[Task]   
 ```
 
+## HTTP-сервер
+
+Сейчас мы быстро рассмотрим, как создать наш сервер. 
+До этого момента мы видели только функции, но для запуска HTTP-сервера нам нужно нечто большее. 
+Позвольте представить вам нашу реализацию сервера по умолчанию — Ember.
+
+```dotty
+val httpApp: HttpApp[F] = ???
+
+EmberServerBuilder
+.default[IO]
+.withHttpApp(httpApp)
+.build
+```
+
+Метод `build` возвращает `Resource[F, Server[F]]`. 
+Поскольку `Resource` образует монаду, мы можем последовательно запускать несколько ресурсов, 
+таких как удаленная база данных или брокер сообщений, и запускать их все одновременно.
+Имейте в виду, что Ember — относительно новый интерпретатор. 
+Если вы ищете проверенный сервер, я бы рекомендовал Blaze. То же самое относится и к клиентской части.
+
+> Ember — новейший HTTP-сервер и клиент для Http4s
+
+## Redis for Cats
+
+[Redis4Cats][redis4cats] — это чисто функциональный и асинхронный клиент Redis, построенный на основе Cats Effect, Fs2 и Java-библиотеки Lettuce.
+
+Добавляем зависимости:
+
+```sbt
+object redis4cats {
+  private val version = "2.0.3"
+  val effects         = "dev.profunktor" %% "redis4cats-effects"  % version
+  val log4cats        = "dev.profunktor" %% "redis4cats-log4cats" % version
+}
+
+val pdpLibs: Seq[ModuleID] =
+  Seq(
+    // ...
+    redis4cats.effects,
+    redis4cats.log4cats,
+    // ...
+  )
+```
+
+#### Аутентификация
+
+Ранее уже упоминалось, что алгебра аутентификации, возможно, потребует изменений, и это неизбежно произойдет. 
+Мы определим две разные алгебры; первая, аутентификация, является наиболее общей.
+
+```dotty
+trait AuthService[F[_]]:
+  def newUser(username: UserName, password: Password): F[JwtToken]
+
+  def login(username: UserName, password: Password): F[JwtToken]
+
+  def logout(token: JwtToken, username: UserName): F[Unit]
+```
+
+Наша вторая алгебра специализируется на получении определенного типа пользователя, что обозначается ее вторым параметром типа A.
+
+```dotty
+trait UsersAuthService[F[_], A]:
+  def findUser(token: JwtToken)(claim: JwtClaim): F[Option[A]]
+```
+
+Функция `findUser` каррирована для упрощения интеграции с JWT-аутентификацией Http4s. 
+Помните, что функция `authenticate` из `JWTAuthMiddleware` имеет вид `JwtToken => JwtClaim => F[Option[A]]`.
+
+Далее рассмотрим интерпретатор для `CommonUser`.
+
+```dotty
+object UsersAuthService:
+  def make[F[_]: Functor](
+      redis: RedisCommands[F, String, String]
+  ): UsersAuthService[F, UserWithoutPassword] =
+    new UsersAuthService[F, UserWithoutPassword]:
+      def findUser(token: JwtToken)(claim: JwtClaim)
+          : F[Option[UserWithoutPassword]] =
+        redis
+          .get(token.value)
+          .map(_.flatMap(u => decode[UserWithoutPassword](u).toOption))
+```
+
+Теперь давайте посмотрим, как выглядит структура интерпретатора аутентификации, а затем проанализируем каждую функцию шаг за шагом.
+
+```dotty
+
+```
+
+
+
 ---
 
 **Ссылки:**
@@ -660,3 +837,4 @@ object Task:
 [repo]: https://gitverse.ru/scalabook/pdp
 [plugin]: https://artemkorsakov.github.io/personal-development-plan/ru/
 [http4s]: https://http4s.org/
+[redis4cats]: https://github.com/profunktor/redis4cats

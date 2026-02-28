@@ -113,7 +113,7 @@ import org.typelevel.log4cats.{Logger, LoggerFactory}
 import ru.scalabook.pdp.services.postgresql.{
   PostgreSQLSectionService,
   PostgreSQLTaskService,
-  PostgreSQLUserService
+  PostgreSQLUserTypeService
 }
 import weaver.*
 
@@ -123,10 +123,10 @@ object SharedResources extends GlobalResource:
   private given log: Logger[IO]                  = loggerFactory.getLogger
 
   // Ключи для доступа к общим ресурсам (сервисам) из глобального хранилища Weaver
-  val UserServiceKey: Option[String]    = "userService".some
-  val SectionServiceKey: Option[String] = "sectionService".some
-  val GoalServiceKey: Option[String]    = "goalService".some
-  val TaskServiceKey: Option[String]    = "taskService".some
+  val UserTypeServiceKey: Option[String] = "userTypeService".some
+  val SectionServiceKey: Option[String]  = "sectionService".some
+  val GoalServiceKey: Option[String]     = "goalService".some
+  val TaskServiceKey: Option[String]     = "taskService".some
 
   // Кастомный обработчик логирования SQL-запросов, выполняемых Doobie.
   // Позволяет видеть все выполняемые запросы в логах тестов, что упрощает отладку.
@@ -144,9 +144,9 @@ object SharedResources extends GlobalResource:
       // 3. Выполнение миграций базы данных (создание схемы, таблиц, индексов).
       _ <- Resource.eval(migration(transactor))
       // 4. Создание экземпляров сервисов, инъектированных созданным Transactor'ом.
-      userService = new PostgreSQLUserService(transactor)
+      userService = new PostgreSQLUserTypeService(transactor)
       // 5. Регистрация каждого сервиса в глобальном хранилище.
-      _ <- global.putR(userService, UserServiceKey)
+      _ <- global.putR(userService, UserTypeServiceKey)
       sectionService = new PostgreSQLSectionService(transactor)
       _ <- global.putR(sectionService, SectionServiceKey)
       goalService = new PostgreSQLGoalService(transactor)
@@ -193,28 +193,28 @@ end SharedResources
 Тестовый класс наследуется от `IOSuite` и использует механизм общих ресурсов (shared resources).
 
 ```dotty
-// pdp/src/test/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLUserServiceSuite.scala
+// pdp/src/test/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLUserTypeServiceSuite.scala
 package ru.scalabook.pdp.services.postgresql
 
 import cats.effect.*
 import ru.scalabook.pdp.model.*
 import ru.scalabook.pdp.model.UserType.{UserTypeId, UserTypeName}
-import ru.scalabook.pdp.services.postgresql.PostgreSQLUserService
-import ru.scalabook.pdp.services.postgresql.SharedResources.UserServiceKey
+import ru.scalabook.pdp.services.postgresql.PostgreSQLUserTypeService
+import ru.scalabook.pdp.services.postgresql.SharedResources.UserTypeServiceKey
 import weaver.*
 
-// Класс тестового набора для PostgreSQLUserService.
+// Класс тестового набора для PostgreSQLUserTypeService.
 // Параметр `global: GlobalRead` предоставляется Weaver 
 // и дает доступ к ранее зарегистрированным общим ресурсам.
-class PostgreSQLUserServiceSuite(global: GlobalRead) extends IOSuite:
+class PostgreSQLUserTypeServiceSuite(global: GlobalRead) extends IOSuite:
   // Тип Res определяет, какой именно ресурс будет использоваться 
   // всеми тестами этого набора.
-  override type Res = PostgreSQLUserService
+  override type Res = PostgreSQLUserTypeService
 
   // Метод, который Weaver использует для получения общего ресурса.
   // Ресурс инициализируется один раз (перед первым тестом) и используется повторно.
   override def sharedResource: Resource[IO, Res] =
-    global.getOrFailR[PostgreSQLUserService](UserServiceKey)
+    global.getOrFailR[PostgreSQLUserTypeService](UserTypeServiceKey)
 
   // Пример теста на создание сущности.
   // Каждый тест - это функция, которая получает экземпляр `service` (общий ресурс).
@@ -294,7 +294,7 @@ class PostgreSQLUserServiceSuite(global: GlobalRead) extends IOSuite:
       finalList.forall(_.id != id) // Сущность должна отсутствовать в конечном списке
     )
 
-end PostgreSQLUserServiceSuite
+end PostgreSQLUserTypeServiceSuite
 ```
 
 [Полный список тестов][tests]
@@ -310,13 +310,13 @@ end PostgreSQLUserServiceSuite
      `Transactor` Doobie - основная абстракция для выполнения запросов.
    - Выполняются миграции базы данных (DDL-скрипты), которые создают необходимые таблицы, индексы 
      и, возможно, заполняют справочные данные.
-   - Создаются экземпляры всех сервисов (`PostgreSQLUserService`, `PostgreSQLSectionService` и т.д.), 
+   - Создаются экземпляры всех сервисов (`PostgreSQLUserTypeService`, `PostgreSQLSectionService` и т.д.), 
      которым инъектируется общий `Transactor`.
    - Созданные сервисы регистрируются в глобальном хранилище Weaver под уникальными ключами.
 
 2. **Фаза выполнения каждого тестового набора (suite)**:
-   - При создании экземпляра тестового класса (например, `PostgreSQLUserServiceSuite`) 
-     Weaver через метод `sharedResource` извлекает из глобального хранилища соответствующий сервис (`PostgreSQLUserService`).
+   - При создании экземпляра тестового класса (например, `PostgreSQLUserTypeServiceSuite`) 
+     Weaver через метод `sharedResource` извлекает из глобального хранилища соответствующий сервис (`PostgreSQLUserTypeService`).
    - Этот экземпляр сервиса предоставляется каждому тесту в наборе как параметр функции-теста.
    - Тест выполняет бизнес-операции (create, get, update, delete) через сервис, 
      который, в свою очередь, выполняет реальные SQL-запросы к PostgreSQL в контейнере.
@@ -356,7 +356,7 @@ expect.all(
 
 ```dotty
 override def sharedResource: Resource[IO, Res]
-// Weaver гарантирует, что ресурс (в данном случае `PostgreSQLUserService`)
+// Weaver гарантирует, что ресурс (в данном случае `PostgreSQLUserTypeService`)
 // будет инициализирован один раз для всего тестового набора и предоставлен каждому тесту.
 // Это значительно эффективнее, чем перезапуск контейнера для каждого отдельного теста.
 ```

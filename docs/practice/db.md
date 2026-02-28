@@ -84,7 +84,7 @@ nextPage = db/sql_generation.html
 Начнем с создания алгебры для работы с пользовательскими типами задач.
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/services/UserService.scala
+// pdp/src/main/scala/ru/scalabook/pdp/services/UserTypeService.scala
 package ru.scalabook.pdp.services
 
 import cats.Monad
@@ -92,7 +92,7 @@ import ru.scalabook.pdp.model.*
 import ru.scalabook.pdp.model.UserType.{UserTypeId, UserTypeName}
 
 /** Интерфейс сервиса для управления пользовательскими типами задач. */
-private[services] trait UserService[F[_]: Monad]:
+private[services] trait UserTypeService[F[_]: Monad]:
 
   /** Создаёт новый пользовательский тип задачи. */
   def create(name: UserTypeName): F[UserTypeId]
@@ -137,12 +137,12 @@ private[services] trait UserService[F[_]: Monad]:
 Согласно паттерну [Tagless Final][tagless], такая логика описывается в виде **программы** (program) — функции, 
 которая принимает экземпляры необходимых алгебр (через параметры типа или контекст) 
 и, используя их, описывает последовательность действий. 
-Таким образом, `UserService` остается простым и стабильным репозиторием, 
+Таким образом, `UserTypeService` остается простым и стабильным репозиторием, 
 а вся сложная логика поднимается на уровень программы, которую мы рассмотрим в разделе ["Жизненный цикл задач"](lifecycle.md).
 
 ### Остальные алгебры
 
-Алгебры `SectionService` и `GoalService` проектируются по аналогичной с `UserService` схеме, 
+Алгебры `SectionService` и `GoalService` проектируются по аналогичной с `UserTypeService` схеме, 
 отличаясь лишь типами моделей (`Section`, `SectionId`, `Goal`, `GoalId`). 
 Их реализации можно найти в [исходном коде проекта](https://gitverse.ru/scalabook/pdp/content/master/pdp/src/main/scala/ru/scalabook/pdp/services).
 
@@ -268,25 +268,25 @@ graph TD
 и отладить всю цепочку вызовов от контроллеров до сервисов, не заботясь о миграциях базы данных и подключении.
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/services/mock/MockUserService.scala
+// pdp/src/main/scala/ru/scalabook/pdp/services/mock/MockUserTypeService.scala
 package ru.scalabook.pdp.services.mock
 
 import cats.effect.*
 import ru.scalabook.pdp.model.*
 import ru.scalabook.pdp.model.UserType.{UserTypeId, UserTypeName}
-import ru.scalabook.pdp.services.UserService
+import ru.scalabook.pdp.services.UserTypeService
 
 /**
- * Мок-реализация UserService, использующая иммутабельную Map в памяти
+ * Мок-реализация UserTypeService, использующая иммутабельную Map в памяти
  * для хранения состояния, защищенного с помощью Ref из Cats Effect.
  *
  * @param userTypes Ref, содержащий текущее состояние хранилища (Map из ID в UserType).
  * @param nextId Ref-счетчик для генерации новых уникальных ID.
  */
-private[services] class MockUserService(
+private[services] class MockUserTypeService(
     userTypes: Ref[IO, Map[UserTypeId, UserType]],
     nextId: Ref[IO, UserTypeId]
-) extends UserService[IO]: // Интерпретируем алгебру в конкретном эффекте IO
+) extends UserTypeService[IO]: // Интерпретируем алгебру в конкретном эффекте IO
 
   /**
    * Создает новый тип задачи.
@@ -323,23 +323,23 @@ private[services] class MockUserService(
   def delete(id: UserTypeId): IO[Unit] =
     userTypes.update(_ - id)
 
-end MockUserService
+end MockUserTypeService
 
 /** Компаньон-объект, предоставляющий безопасный конструктор Resource для создания сервиса. */
-object MockUserService:
+object MockUserTypeService:
   /**
-   * Фабричный метод, возвращающий Resource[IO, UserService[IO]].
+   * Фабричный метод, возвращающий Resource[IO, UserTypeService[IO]].
    * Гарантирует, что состояние (Ref) будет корректно инициализировано.
    * Resource управляет жизненным циклом, хотя для Ref это не критично.
    */
-  def apply(): Resource[IO, UserService[IO]] =
+  def apply(): Resource[IO, UserTypeService[IO]] =
     Resource.eval { // Создаем ресурс из чистого эффекта (eval).
       for
         // Инициализируем хранилище пустой Map.
         types <- Ref[IO].of(Map.empty[UserTypeId, UserType])
         // Инициализируем счетчик ID значением 0 (первый ID будет 0).
         id    <- Ref[IO].of(UserTypeId(0))
-      yield new MockUserService(types, id) // Возвращаем новый экземпляр сервиса.
+      yield new MockUserTypeService(types, id) // Возвращаем новый экземпляр сервиса.
     }    
 ```
 

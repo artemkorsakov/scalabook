@@ -209,7 +209,7 @@ private[services] class PostgreSQLHistoryService(xa: Aux[[x] =>> IO[x], Unit])
 
 ```dotty
 final case class TaskLifecycleService[F[_]: {MonadThrow as MT}](
-    typeService: UserService[F],
+    typeService: UserTypeService[F],
     sectionService: SectionService[F],
     goalService: GoalService[F],
     taskService: TaskService[F],

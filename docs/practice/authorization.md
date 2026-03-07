@@ -326,6 +326,27 @@ trait UsersAuthService[F[_], A]:
 JWT токены используются для поддержания пользовательской сессии. 
 Они хранятся в Redis с ограниченным временем жизни для возможности принудительного завершения сессий.
 
+Для работы с Redis будем использовать библиотеку [Redis4Cats][redis4cats] — это чисто функциональный 
+и асинхронный клиент Redis, построенный на основе Cats Effect, Fs2 и Java-библиотеки Lettuce.
+
+Добавляем зависимости:
+
+```dotty
+object redis4cats {
+  private val version = "2.0.3"
+  val effects         = "dev.profunktor" %% "redis4cats-effects"  % version
+  val log4cats        = "dev.profunktor" %% "redis4cats-log4cats" % version
+}
+
+val pdpLibs: Seq[ModuleID] =
+  Seq(
+    // ...
+    redis4cats.effects,
+    redis4cats.log4cats,
+    // ...
+  )
+```
+
 #### Генерация токенов
 
 Компонент `Tokens` отвечает за создание JWT токенов с уникальными идентификаторами:
@@ -363,6 +384,42 @@ object Tokens:
         yield token
   end make
 end Tokens
+```
+
+#### Конфигурация
+
+Константы конфигурации вынесены во внешний файл `application.conf`:
+
+```conf
+// pdp/src/main/resources/application.conf
+
+token = {
+  jwt-access-token-key = "5h0pp1ng_k4rt"
+  expiration = 60.minutes
+}
+```
+
+В конфигурационном файле определены следующие новые параметры:
+
+```dotty
+type JwtAccessTokenKeyConfig = JwtAccessTokenKeyConfig.T
+
+object JwtAccessTokenKeyConfig extends RefinedType[String, Not[Empty] & Trimmed]
+
+final case class TokenConfig(
+    jwtAccessTokenKey: Secret[JwtAccessTokenKeyConfig],
+    expiration: FiniteDuration
+) derives ConfigReader
+
+object TokenConfig:
+  given ConfigReader[Secret[JwtAccessTokenKeyConfig]] =
+    ConfigReader[JwtAccessTokenKeyConfig].map(Secret.apply)
+
+/** `Config` — корневой объект конфигурации. */
+final case class Config(
+    localization: LocalizationConfig,
+    token: TokenConfig
+) derives ConfigReader
 ```
 
 #### Управление временем жизни токенов
@@ -1015,3 +1072,4 @@ test("UsersAuthService.login should login after logout"):
 [repo]: https://gitverse.ru/scalabook/pdp
 [plugin]: https://artemkorsakov.github.io/personal-development-plan/ru/
 [pfp]: https://leanpub.com/pfp-scala
+[redis4cats]: https://github.com/profunktor/redis4cats

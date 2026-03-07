@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = api.html
+prevPage = api/task_routes.html
 showNext = true
 nextPage = statistics.html
 %}

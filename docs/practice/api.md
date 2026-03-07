@@ -1,11 +1,53 @@
 {%
 showPrev = true
-prevPage = lifecycle/authorization.html
+prevPage = authorization.html
 showNext = true
 nextPage = sources.html
 %}
 
 # Клиентское АПИ
+
+
+
+
+
+
+## Проверка работоспособности
+
+Нашему приложению необходимо сообщать о своем состоянии работоспособности,
+что обычно включает в себя, помимо прочего, проверку подключения к базе данных.
+Мы можем смоделировать это следующим образом.
+
+```dotty  
+// pdp/src/main/scala/ru/scalabook/pdp/model/AppStatus.scala
+package ru.scalabook.pdp.model
+
+import ru.scalabook.pdp.model.AppStatus.*
+
+final case class AppStatus(redis: RedisStatus, postgres: PostgresStatus)
+
+object AppStatus:
+  opaque type RedisStatus    = Status
+  opaque type PostgresStatus = Status
+
+  enum Status(isOk: Boolean):
+    case Okay()        extends Status(true)
+    case Unreachable() extends Status(false)  
+```  
+
+API:
+
+```dotty  
+// pdp/src/main/scala/ru/scalabook/pdp/services/HealthCheck.scala
+package ru.scalabook.pdp.services
+
+import ru.scalabook.pdp.model.AppStatus
+
+trait HealthCheck[F[_]]:
+  def status: F[AppStatus] 
+```
+
+
 
 Для создания клиентского сервиса будет использовать библиотеку [Http4s][http4s].
 
@@ -822,8 +864,248 @@ object UsersAuthService:
 Теперь давайте посмотрим, как выглядит структура интерпретатора аутентификации, а затем проанализируем каждую функцию шаг за шагом.
 
 ```dotty
-
+object AuthService:
+  def make[F[_]: {MonadThrow as MT}](
+      tokenExpiration: FiniteDuration,
+      tokens: Tokens[F],
+      usersService: UsersService[F],
+      redis: RedisCommands[F, String, String],
+      crypto: Crypto
+  ): AuthService[F] =
 ```
+
+Его конструктор принимает пять различных аргументов:
+
+- `tokenExpiration: FiniteDuration` — время жизни токена
+- `Tokens[F]` позволяет создавать новые токены JWT
+  ```dotty
+  trait Tokens[F[_]]:
+      def create: F[JwtToken]
+  ```
+- `UsersService[F]` позволяет находить и создавать новых пользователей
+- `RedisCommands` — это интерфейс Redis.
+- `Crypto` позволяет нам шифровать и расшифровывать пароли.
+  ```dotty
+  trait Crypto:
+      def encrypt(value: Password): Either[String, EncryptedPassword]
+      def decrypt(value: EncryptedPassword): Either[String, Password]
+  ```
+
+Реализация:
+
+```dotty
+object Tokens:
+  def make[F[_]: {GenUUID, Monad}](
+      jwtExpire: JwtExpire[F],
+      config: TokenConfig
+  ): Tokens[F] =
+    val secretKey =
+      JwtSecretKey(config.jwtAccessTokenKey.value.value.toCharArray)
+
+    new Tokens[F]:
+      def create: F[JwtToken] =
+        for
+          uuid  <- GenUUID[F].make
+          claim <- jwtExpire.expiresIn(
+            JwtClaim(uuid.asJson.noSpaces),
+            config.expiration
+          )
+          token <- jwtEncode[F](claim, secretKey, JwtAlgorithm.HS256)
+        yield token
+```
+
+И декодирование
+
+```dotty
+object Crypto:
+  private val charsetName    = "UTF-8"
+  private val transformation = "AES/CBC/PKCS5Padding"
+
+  def make[F[_]: Sync](passwordSalt: PasswordSalt): F[Crypto] =
+    Sync[F]
+      .delay {
+        val random  = new SecureRandom()
+        val ivBytes = new Array[Byte](16)
+        random.nextBytes(ivBytes)
+        val iv       = new IvParameterSpec(ivBytes);
+        val salt     = passwordSalt.value.getBytes(charsetName)
+        val keySpec  = new PBEKeySpec("password".toCharArray, salt, 65536, 256)
+        val factory  = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
+        val bytes    = factory.generateSecret(keySpec).getEncoded
+        val sKeySpec = new SecretKeySpec(bytes, "AES")
+        val eCipher  = Cipher.getInstance(transformation)
+        eCipher.init(Cipher.ENCRYPT_MODE, sKeySpec, iv)
+        val dCipher = Cipher.getInstance(transformation)
+        dCipher.init(Cipher.DECRYPT_MODE, sKeySpec, iv)
+        (eCipher, dCipher)
+      }
+      .map {
+        case (ec, dc) =>
+          new Crypto:
+            def encrypt(password: Password): Either[String, EncryptedPassword] =
+              val base64 = Base64.getEncoder
+              val bytes  = password.value.getBytes(charsetName)
+              val result =
+                new String(base64.encode(ec.doFinal(bytes)), charsetName)
+              EncryptedPassword.either(result)
+
+            def decrypt(password: EncryptedPassword): Either[String, Password] =
+              val base64 = Base64.getDecoder
+              val bytes  = base64.decode(password.value.getBytes(charsetName))
+              val result = new String(dc.doFinal(bytes), charsetName)
+              Password.either(result)
+      }
+end Crypto
+```
+
+Наша первая функция — `newUser`.
+
+```dotty
+def newUser(username: UserName, password: Password): F[JwtToken] =
+  usersService.find(username).flatMap:
+    case Some(_) => UserNameInUse(username).raiseError[F, JwtToken]
+    case None    =>
+      val encryptedPasswordF =
+        MT.fromEither(
+          crypto.encrypt(password)
+            .leftMap(new IllegalArgumentException(_))
+        )
+
+      for
+        encryptedPassword <- encryptedPasswordF
+        newUser = NewUser(username, encryptedPassword)
+        uuid  <- usersService.create(newUser)
+        token <- tokens.create
+        user = UserWithoutPassword(uuid, username).asJson.noSpaces
+        _ <- redis.setEx(token.value, user, tokenExpiration)
+        _ <- redis.setEx(username.show, token.value, tokenExpiration)
+      yield token
+```
+
+Здесь мы пытаемся найти пользователя в PostgreSQL. 
+Если он не существует, мы продолжаем его создание; в противном случае мы вызываем ошибку `UserNameInUse`.
+
+Создание пользователя означает его сохранение в PostgreSQL, создание JWT-токена, 
+сериализацию пользователя в формате JSON и сохранение как токена, 
+так и сериализованного пользователя в Redis для быстрого доступа с указанием времени истечения срока действия.
+
+Далее следует наша функция авторизации.
+
+```dotty
+def login(username: UserName, password: Password): F[JwtToken] =
+  usersService.find(username).flatMap:
+    case None => UserNotFound(username).raiseError[F, JwtToken]
+    case Some(user) if crypto.encrypt(password).contains(user.password) =>
+      InvalidPassword(user.username).raiseError[F, JwtToken]
+    case Some(user) =>
+      redis.get(username.show).flatMap:
+        case Some(t) => JwtToken(t).pure[F]
+        case None    =>
+          tokens.create.flatTap: token =>
+            redis.setEx(
+              token.value,
+              user.asJson.noSpaces,
+              tokenExpiration
+            ) *>
+              redis.setEx(username.show, token.value, tokenExpiration)
+```
+
+Мы пытаемся найти пользователя в PostgreSQL. Если он не существует, мы просто генерируем ошибку `UserNotFound`; 
+если существует, мы проверяем, совпадает ли сохраненный зашифрованный пароль с тем, 
+который был передан функции, и генерируем ошибку `InvalidPassword`, если они не совпадают. 
+Если совпадают, мы ищем токен по пользователю в Redis (на случай, если пользователь уже авторизован). 
+Если мы получаем токен, мы возвращаем его; 
+в противном случае мы создаем новый токен и сохраняем как пользователя, 
+так и токен с указанием времени истечения срока действия.
+
+Когда мы получаем существующий токен, мы также можем продлить его срок действия, то есть обновить его срок действия.
+Однако это будет иметь смысл только в том случае, если время истечения срока действия наших JWT больше, 
+чем то, которое мы настраиваем для наших токенов, хранящихся в Redis.
+
+Наконец, у нас есть функция выхода из системы, которая является самой простой.
+
+```dotty
+def logout(token: JwtToken, username: UserName): F[Unit] =
+  redis.del(token.value) *> redis.del(username.show).void
+```
+
+Всё, что это делает, — это удаляет токен и пользователя из Redis, если таковые имеются.
+
+## Health check
+
+Это покажет статус подключения как Redis, так и Postgres. 
+Если статус OK, значит, соединение установлено; в противном случае — `Unreachable`. 
+Давайте посмотрим на интерпретатор.
+
+```dotty
+object HealthCheck:
+  def make[F[_]: Temporal](
+      postgres: PostgreSQLHealthCheck[F],
+      redis: RedisCommands[F, String, String]
+  ): HealthCheck[F] =
+    new HealthCheck[F]:
+      val redisHealth: F[RedisStatus] =
+        redis.ping
+          .map(_.nonEmpty)
+          .timeout(1.second)
+          .map(RedisStatus.apply)
+          .orElse(RedisStatus(false).pure[F].widen)
+
+      val postgresHealth: F[PostgresStatus] =
+        postgres
+          .status
+          .timeout(1.second)
+          .map(PostgresStatus.apply)
+          .orElse(PostgresStatus(false).pure[F].widen)
+
+      val status: F[AppStatus] =
+        (redisHealth, postgresHealth).parMapN(AppStatus.apply)
+
+end HealthCheck
+```
+
+Реализация `PostgreSQLHealthCheck`:
+
+```dotty
+package ru.scalabook.pdp.services.postgresql
+
+import _root_.doobie.*
+import _root_.doobie.implicits.*
+import _root_.doobie.util.transactor.Transactor.*
+import cats.effect.IO
+
+trait PostgreSQLHealthCheck[F[_]]:
+  def status: F[Boolean]
+
+object PostgreSQLHealthCheck:
+  def make(xa: Aux[[x] =>> IO[x], Unit]): PostgreSQLHealthCheck[IO] =
+    new PostgreSQLHealthCheck[IO]:
+      def status: IO[Boolean] =
+        sql"""SELECT pid FROM pg_stat_activity;"""
+          .query[Int]
+          .to[List]
+          .transact(xa)
+          .map(_.nonEmpty)
+```
+
+Для Redis мы просто отправляем ping-запрос на сервер; для Postgres — выполняем простой запрос. 
+Оба действия имеют таймаут в одну секунду и выполняются параллельно с использованием функции `parMapN`.
+
+В обоих случаях, если что-то пойдет не так (например, не удается подключиться к серверу), 
+мы возвращаем `Unreachable`, используя комбинатор `orElse` из `ApplicativeError`.
+
+## HTTP
+
+В главе 5 мы изучили маршруты и клиенты Http4s, а также другие возможности. 
+Теперь нам нужно посмотреть, как тестировать эти компоненты, и я должен признаться, 
+что мне нравится писать именно такие тесты из-за универсальности этого фреймворка; он действительно хорошо продуман.
+
+### Маршруты
+
+Я утверждал, что сервер — это функция, и я буквально это имел в виду! 
+Нам не нужно запускать сервер для тестирования наших HttpRoutes, поскольку это обычные функции. 
+Более того, мы можем использовать возможности тестирования на основе свойств для написания точных тестов.
+Вот тест для `BrandRoutes`, который предоставляет единственную GET-конечную точку для получения всех брендов.
 
 
 
@@ -833,8 +1115,10 @@ object UsersAuthService:
 
 - [Персональный план развития][plugin]
 - [Репозиторий с исходниками][repo]
+- [Gabriel Volpe - Practical FP in Scala][pfp]
 
 [repo]: https://gitverse.ru/scalabook/pdp
 [plugin]: https://artemkorsakov.github.io/personal-development-plan/ru/
+[pfp]: https://leanpub.com/pfp-scala
 [http4s]: https://http4s.org/
 [redis4cats]: https://github.com/profunktor/redis4cats

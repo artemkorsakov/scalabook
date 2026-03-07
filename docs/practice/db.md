@@ -332,7 +332,7 @@ object MockUserTypeService:
    * Гарантирует, что состояние (Ref) будет корректно инициализировано.
    * Resource управляет жизненным циклом, хотя для Ref это не критично.
    */
-  def apply(): Resource[IO, UserTypeService[IO]] =
+  def make: Resource[IO, UserTypeService[IO]] =
     Resource.eval { // Создаем ресурс из чистого эффекта (eval).
       for
         // Инициализируем хранилище пустой Map.

@@ -177,7 +177,7 @@ object UserType:
 
   type UserTypeName = UserTypeName.T
   object UserTypeName
-      extends RefinedType[String, MinLength[2] & MaxLength[20] & Trimmed]      
+      extends RefinedType[String, MinLength[2] & MaxLength[30] & Trimmed]      
 ```
 
 Это обычный [**case class**](https://docs.scala-lang.org/ru/tour/case-classes.html), 
@@ -191,7 +191,7 @@ object UserType:
 - `id` — идентификатор пользовательского типа 
     - должен быть ≥ 0
 - `name` — название пользовательского типа
-    - От 2 до 20 символов
+    - От 2 до 30 символов
     - Строка должна быть обрезана (без пробелов в начале и конце)
 - `displayed` — флаг, указывающий, отображается ли пользовательский тип в пользовательском интерфейсе
 - `ordinal` — порядковый номер пользовательского типа (тип `Ordinal` описан ниже)

@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = ../lifecycle.html
 showNext = true
-nextPage = authorization.html
+nextPage = ../authorization.html
 %}
 
 # Завершение задачи

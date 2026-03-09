@@ -7,6 +7,18 @@ nextPage = tasks_routes.html
 
 # Endpoint-ы настроек
 
+## Работа под пользователем
+
+Т.к. в нашей системе предусмотрен многопользовательский режим,
+то все разделы, типы задачи, цели и сами задачи должны быть привязаны к конкретному пользователю.
+
+Поэтому доработаем `SettingsService`, прокинув в каждый метод идентификатор пользователя
+
+```dotty
+
+```
+
+
 ## Авторизация
 
 Для доступа к аутентифицированному пользователю нам необходимо использовать `AuthedUser[F, User]`,
@@ -94,39 +106,6 @@ val jwtAuth = JwtAuth.hmac("53cr3t", JwtAlgorithm.HS256)
 val routes: HttpRoutes[F] = usersMiddleware(authedRoutes)
 ```
 
-Следуя тому же принципу, мы могли бы реализовать аутентификацию для других типов пользователей,
-например, для администраторов.
-
-```dotty
-val adminAuth: JwtToken => JwtClaim => F[Option[AdminUser]] =
-  t => c => AdminUser("admin").some.pure[F]
-val adminMiddleware: AuthMiddleware[F, AdminUser] =
-  JwtAuthMiddleware[F, AdminUser](jwtAuth, adminAuth)
-```
-
-Вот как мы могли бы это использовать.
-
-```dotty
-val adminRoutes: AuthedRoutes[AdminUser, F] =
-  AuthedRoutes.of {
-    case POST -> Root as adminUser =>
-      Ok(s"You have admin rights, ${adminUser.show}!")
-  }
-  
-val routes: HttpRoutes[F] = adminMiddleware(adminRoutes)
-```
-
-Стоит отметить, что мы можем комбинировать HTTP-маршруты пользователей и администраторов,
-достигая функциональности, позволяющей иметь разные роли.
-
-```dotty
-val allRoutes: HttpRoutes[F] =
-  usersMiddleware(authedRoutes) <+> adminMiddleware(adminRoutes)
-```
-
-Http4s обладает высокой композиционной способностью.
-
-
 ## Публичное API с авторизацией
 
 Это HTTP-маршруты, для работы которых требуется авторизация зарегистрированных пользователей.
@@ -188,49 +167,12 @@ final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow}](
   private[routes] val prefixPath = "/user_types"
 
   private val httpRoutes: AuthedRoutes[User, F] =
-    AuthedRoutes.of {
+    AuthedRoutes.of:
       // Список всех пользовательских типов
       case GET -> Root as user =>
         Ok(settingsService.getTaskTypes)
-
-      // Добавление нового типа
-      case ar @ POST -> Root as user =>
-        ar.req.asJsonDecode[UserTypeName].flatMap: name =>
-          settingsService
-            .createTaskType(name)
-            .flatMap(_ => Created())
-            .recoverWith {
-              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
-            }
-
-      // Обновить пользовательский тип
-      case ar @ PUT -> Root / "update" as user =>
-        ar.req.asJsonDecode[UserType].flatMap: userType =>
-          settingsService
-            .updateTaskType(userType)
-            .flatMap(_ => Ok())
-            .recoverWith {
-              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
-            }
-
-      // Пересортировать пользовательские типы
-      case ar @ PUT -> Root / "reorder" as user =>
-        ar.req.asJsonDecode[NonEmptyList[UserTypeId]].flatMap: ids =>
-          settingsService
-            .reorderTaskTypes(ids)
-            .flatMap(_ => Ok())
-            .recoverWith {
-              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
-            }
-
-      // Удалить пользовательский тип
-      case DELETE -> Root / UserTypeIdVar(id) as user =>
-        settingsService.deleteTaskType(id)
-          .flatMap(_ => NoContent())
-          .recoverWith {
-            case ex: IllegalArgumentException => BadRequest(ex.getMessage)
-          }
-    }
+        
+      ...  
 
   def routes(authMiddleware: AuthMiddleware[F, User]): HttpRoutes[F] =
     Router(prefixPath -> authMiddleware(httpRoutes))
@@ -271,29 +213,6 @@ object UserType:
 - Наши маршруты принимают в качестве аргумента `AuthMiddleware[F, CommonUser]`.
 - Мы декодируем данные в наших POST и PUT конечных точках, что делается с помощью `JsonDecoder` (для этого требуется `Decoder[Cart]`).
 
-
-В последнем методе DELETE мы также захватываем переменную пути с помощью `UserTypeIdVar`.
-Его определение:
-
-```dotty
-package ru.scalabook.pdp.http
-
-import ru.scalabook.pdp.model.UserType.UserTypeId
-
-package object routes {
-  object UserTypeIdVar:
-    def unapply(str: String): Option[UserTypeId] =
-      for
-        int <- str.toIntOption
-        id  <- UserTypeId.option(int)
-      yield id
-}
-```
-
-Пользователям рекомендуется определять пользовательские объекты таким образом и использовать предоставленные объекты, когда это
-целесообразно. Http4s поддерживает `IntVar`, `LongVar` и `UUIDVar`, среди прочих.
-
-
 Добавление типа:
 
 ```http
@@ -301,7 +220,7 @@ POST /user_types
 
 Response code:
 – 201: Новый тип успешно добавлен.
-– 409: Тип с таким наименованием уже существует.
+– 400: Тип с таким наименованием уже существует.
 
 Request body:
 
@@ -312,10 +231,28 @@ Request body:
 No Response body.
 ```
 
+```dotty
+  private val httpRoutes: AuthedRoutes[User, F] =
+    AuthedRoutes.of:
+      ...
+
+      // Добавление нового типа
+      case ar @ POST -> Root as user =>
+        ar.req.asJsonDecode[UserTypeName].flatMap: name =>
+          settingsService
+            .createTaskType(name)
+            .flatMap(_ => Created())
+            .recoverWith {
+              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+            }
+            
+      ...
+```
+
 Обновление типа:
 
 ```http
-PUT /user_types
+PUT /user_types/update
 
 Response code:
 – 200: пользовательский тип обновлен
@@ -331,6 +268,61 @@ Request body:
 No Response body.
 ```
 
+```dotty
+  private val httpRoutes: AuthedRoutes[User, F] =
+    AuthedRoutes.of:
+      ...
+
+      // Обновить пользовательский тип
+      case ar @ PUT -> Root / "update" as user =>
+        ar.req.asJsonDecode[UserType].flatMap: userType =>
+          settingsService
+            .updateTaskType(userType)
+            .flatMap(_ => Ok())
+            .recoverWith {
+              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+            }
+
+      ...
+```
+
+Пересортирование списка элементов:
+
+```http
+PUT /user_types/reorder
+
+Response code:
+– 200: сортировка обновлена
+– 400: ошибки обновления
+
+Request body:
+
+{
+  "id": 1,
+  "name": "OpenSource"
+}
+
+No Response body.
+```
+
+```dotty
+  private val httpRoutes: AuthedRoutes[User, F] =
+    AuthedRoutes.of:
+      ...
+
+      // Пересортировать пользовательские типы
+      case ar @ PUT -> Root / "reorder" as user =>
+        ar.req.asJsonDecode[NonEmptyList[UserTypeId]].flatMap: ids =>
+          settingsService
+            .reorderTaskTypes(ids)
+            .flatMap(_ => Ok())
+            .recoverWith {
+              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+            }
+
+      ...
+```
+
 Удаление типа:
 
 ```http
@@ -341,10 +333,54 @@ DELETE /user_types/{id}
 No Request body and no Response body.
 ```
 
+В последнем методе DELETE мы также захватываем переменную пути с помощью `UserTypeIdVar`.
+Его определение:
+
+```dotty
+// pdp/src/mail/scala/ru/scalabook/pdp/http/routes/src.scala
+package ru.scalabook.pdp.http.routes
+
+...
+
+object UserTypeIdVar:
+  def unapply(str: String): Option[UserTypeId] =
+    for
+      int <- str.toIntOption
+      id  <- UserTypeId.option(int)
+    yield id
+
+```
+
+Пользователям рекомендуется определять пользовательские объекты таким образом и использовать предоставленные объекты, когда это
+целесообразно. Http4s поддерживает `IntVar`, `LongVar` и `UUIDVar`, среди прочих.
+
+```dotty
+  private val httpRoutes: AuthedRoutes[User, F] =
+    AuthedRoutes.of:
+      ...
+
+      // Удалить пользовательский тип
+      case DELETE -> Root / UserTypeIdVar(id) as user =>
+        settingsService.deleteTaskType(id)
+          .flatMap(_ => NoContent())
+          .recoverWith {
+            case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+          }
+```
+
 ## Работа с разделами
+
+Роуты для разделов работют аналогично:
+
+```dotty
+```
 
 ## Работа с целями
 
+Роуты для целей работют аналогично:
+
+```dotty
+```
 
 ---
 

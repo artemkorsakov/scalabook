@@ -54,14 +54,14 @@ final case class LoginRequest(
 
 // Публичная информация о пользователе (без чувствительных данных)
 final case class UserInfo(
-    id: UUID,
+    id: UserId,
     username: UserName
 )
 
 // Полная модель пользователя в системе
 // Хранит все данные, включая хеш пароля
 final case class User(
-    id: UUID,
+    id: UserId,
     username: UserName,
     passwordHash: EncryptedPassword
 )
@@ -71,12 +71,17 @@ final case class User(
 
 Для обеспечения целостности данных на уровне типов используются уточненные типы с чёткими ограничениями:
 
+- `UserID`: непрозрачный тип, содержащий значение типа `java.util.UUID`
 - `UserName`: строка от 2 до 20 символов, обрезанная от пробелов
 - `Password`: сырой пароль от 8 до 100 символов, обрезанный от пробелов
 - `EncryptedPassword`: зашифрованный пароль (хеш) с теми же ограничениями длины
 
 ```dotty
 object User:
+  opaque type UserId = UUID
+  object UserId:
+    def apply(uuid: UUID): UserId = uuid
+
   type UserName = UserName.T
   object UserName
       extends RefinedType[String, MinLength[2] & MaxLength[20] & Trimmed]
@@ -128,7 +133,7 @@ private[services] trait UsersService[F[_]]:
     * @return
     *   UUID созданного пользователя
     */
-  def create(newUser: UserRegistration): F[UUID]
+  def create(newUser: UserRegistration): F[UserId]
 
   /** Получение пользователя по идентификатору
     *
@@ -137,7 +142,7 @@ private[services] trait UsersService[F[_]]:
     * @return
     *   пользователь, если найден
     */
-  def get(id: UUID): F[Option[User]]
+  def get(id: UserId): F[Option[User]]
 
   /** Поиск пользователя по имени
     *
@@ -160,7 +165,7 @@ private[services] trait UsersService[F[_]]:
     * @param id
     *   UUID пользователя для удаления
     */
-  def delete(id: UUID): F[Unit]
+  def delete(id: UserId): F[Unit]
 end UsersService
 ```
 
@@ -171,16 +176,18 @@ end UsersService
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/mock/MockUsersService.scala
 
-private[services] class MockUsersService(users: Ref[IO, Map[UUID, User]])
+private[services] class MockUsersService(users: Ref[IO, Map[UserId, User]])
     extends UsersService[IO]:
 
-  def create(newUser: UserRegistration): IO[UUID] =
-    val id = UUID.randomUUID()
-    users.update(
-      _ + (id -> User(id, newUser.username, newUser.passwordHash))
-    ).as(id)
+  def create(newUser: UserRegistration): IO[UserId] =
+    for
+      uuid <- GenUUID[IO].make
+      id   = UserId(uuid)
+      user = User(id, newUser.username, newUser.passwordHash)
+      _ <- users.update(_ + (id -> user))
+    yield id
 
-  def get(id: UUID): IO[Option[User]] =
+  def get(id: UserId): IO[Option[User]] =
     users.get.map(_.values.find(_.id == id))
 
   def find(username: UserName): IO[Option[User]] =
@@ -189,13 +196,13 @@ private[services] class MockUsersService(users: Ref[IO, Map[UUID, User]])
   def update(user: User): IO[Unit] =
     users.update(_ + (user.id -> user))
 
-  def delete(id: UUID): IO[Unit] =
+  def delete(id: UserId): IO[Unit] =
     users.update(_ - id)
 
 object MockUsersService:
   def make: Resource[IO, UsersService[IO]] =
     Resource.eval:
-      Ref[IO].of(Map.empty[UUID, User]).map: users =>
+      Ref[IO].of(Map.empty[UserId, User]).map: users =>
         new MockUsersService(users)
 ```
 
@@ -207,15 +214,15 @@ object MockUsersService:
 private[services] class PostgreSQLUsersService(xa: Aux[[x] =>> IO[x], Unit])
     extends UsersService[IO]:
 
-  def create(newUser: UserRegistration): IO[UUID] =
+  def create(newUser: UserRegistration): IO[UserId] =
     // Макрос генерирует INSERT запрос с RETURNING id
     generateInsertReturningId[User, UserRegistration, Int](newUser)
-      .query[UUID]
+      .query[UserId]
       .unique
       .transact(xa)
 
-  def get(id: UUID): IO[Option[User]] =
-    generateSelectById[User, UUID](id)
+  def get(id: UserId): IO[Option[User]] =
+    generateSelectById[User, UserId](id)
       .query[User]
       .option
       .transact(xa)
@@ -233,14 +240,14 @@ private[services] class PostgreSQLUsersService(xa: Aux[[x] =>> IO[x], Unit])
       .transact(xa)
 
   def update(user: User): IO[Unit] =
-    generateUpdateById[User, UUID](user)
+    generateUpdateById[User, UserId](user)
       .update
       .run
       .transact(xa)
       .void
 
-  def delete(id: UUID): IO[Unit] =
-    generateDeleteById[User, UUID](id)
+  def delete(id: UserId): IO[Unit] =
+    generateDeleteById[User, UserId](id)
       .update
       .run
       .transact(xa)
@@ -597,20 +604,20 @@ def newUser(username: UserName, password: Password): F[JwtToken] =
         newUser = UserRegistration(username, encryptedPassword)
 
         // 3.3 Сохраняем пользователя в БД и получаем ID
-        uuid <- usersService.create(newUser)
+        userId <- usersService.create(newUser)
 
         // 3.4 Генерируем JWT токен для новой сессии
         token <- tokens.create
 
         // 3.5 Подготавливаем публичные данные пользователя для Redis
-        user = UserInfo(uuid, username).asJson.noSpaces
+        user = UserInfo(userId, username).asJson.noSpaces
 
         // 3.6 Сохраняем связку токен -> данные пользователя
         _ <- redis.setEx(token.value, user, tokenExpiration)
 
         // 3.7 Сохраняем обратную связку username -> текущий токен
         _ <- redis.setEx(username.show, token.value, tokenExpiration)
-      yield token    
+      yield token       
 ```
 
 **Ключевые моменты регистрации:**

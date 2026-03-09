@@ -522,28 +522,26 @@ sealed trait Task:
   val plan: List[TaskStep]
 ```
 
-Для описания типов создадим отдельный `package object`:
+Для описания типов создадим отдельный файл:
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/model/package.scala
-package ru.scalabook.pdp
+// pdp/src/main/scala/ru/scalabook/pdp/model/src.scala
+package ru.scalabook.pdp.model
 
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 
-package object model {
-  type TaskName = TaskName.T
-  object TaskName
-      extends RefinedType[String, MinLength[2] & MaxLength[200] & Trimmed]
+type TaskName = TaskName.T
+object TaskName
+    extends RefinedType[String, MinLength[2] & MaxLength[200] & Trimmed]
 
-  type Ordinal = Ordinal.T
-  object Ordinal extends RefinedType[Int, Positive]:
-    val Max: T = Ordinal(1000)
+type Ordinal = Ordinal.T
+object Ordinal extends RefinedType[Int, Positive]:
+  val Max: T = Ordinal(1000)
 
-  type TaskStep = TaskStep.T
-  object TaskStep
-      extends RefinedType[String, MinLength[2] & MaxLength[200] & Trimmed]
-}
+type TaskStep = TaskStep.T
+object TaskStep
+    extends RefinedType[String, MinLength[2] & MaxLength[200] & Trimmed]
 ```
 
 ### Разбор каждого поля
@@ -664,18 +662,17 @@ final case class BookTask(
 ) extends Task:
   val taskType: TaskType = TaskType.Book
 
-// pdp/src/main/scala/ru/scalabook/pdp/model/package.scala
-package object model {
-  ...
-  
-  type Authors = Authors.T
-  object Authors extends RefinedType[String, MinLength[1] & Trimmed]
-  
-  type Pages = Pages.T
-  object Pages extends RefinedType[Int, Positive]
-  
-  ...
-}
+// pdp/src/main/scala/ru/scalabook/pdp/model/src.scala
+
+...
+
+type Authors = Authors.T
+object Authors extends RefinedType[String, MinLength[1] & Trimmed]
+
+type Pages = Pages.T
+object Pages extends RefinedType[Int, Positive]
+
+...
 ```
 
 ### Статьи
@@ -710,15 +707,13 @@ final case class ArticleTask(
 ) extends Task:
   val taskType: TaskType = TaskType.Article
   
-// pdp/src/main/scala/ru/scalabook/pdp/model/package.scala
-package object model {
-  ...
-  
-  type Link = Link.T
-  object Link extends RefinedType[String, MinLength[1] & Trimmed]
-  
-  ...
-}  
+// pdp/src/main/scala/ru/scalabook/pdp/model/src.scala
+...
+
+type Link = Link.T
+object Link extends RefinedType[String, MinLength[1] & Trimmed]
+
+...
 ```
 
 ### Подкасты
@@ -761,15 +756,13 @@ final case class PodcastTask(
     FiniteDuration(ms, MILLISECONDS)
 end PodcastTask
 
-// pdp/src/main/scala/ru/scalabook/pdp/model/package.scala
-package object model {
-  ...
-  
-  type Episodes = Episodes.T
-  object Episodes extends RefinedType[Int, Positive]
-  
-  ...
-} 
+// pdp/src/main/scala/ru/scalabook/pdp/model/src.scala
+...
+
+type Episodes = Episodes.T
+object Episodes extends RefinedType[Int, Positive]
+
+...
 ```
 
 > - ✅ Общая длительность подкаста вычисляется на основе количества эпизодов и их продолжительности.
@@ -808,15 +801,13 @@ final case class VideoTask(
 ) extends Task:
   val taskType: TaskType = TaskType.Video
   
-// pdp/src/main/scala/ru/scalabook/pdp/model/package.scala
-package object model {
-  ...
-  
-  type Platform = Platform.T
-  object Platform extends RefinedType[String, MinLength[1] & Trimmed]
-  
-  ...
-}   
+// pdp/src/main/scala/ru/scalabook/pdp/model/src.scala
+...
+
+type Platform = Platform.T
+object Platform extends RefinedType[String, MinLength[1] & Trimmed]
+
+... 
 ```
 
 ### Курсы

@@ -75,14 +75,10 @@ object Status:
 
   given encoder: Encoder[Status] = deriveEncoder[Status] 
   
-package object model {
-  ...
-  
-  /** Конвертация в JSON для длительности. */
-  given encoderDuration: Encoder[FiniteDuration] =
-    Encoder.encodeLong.contramap(_.toMillis)
-}
-  
+/** Конвертация в JSON для продолжительности. */
+given encoderDuration: Encoder[FiniteDuration] =
+  Encoder.encodeLong.contramap(_.toMillis)
+
 object Task:
   given encoder: Encoder[Task] = deriveEncoder[Task]   
 ```

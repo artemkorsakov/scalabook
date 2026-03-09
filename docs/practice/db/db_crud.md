@@ -322,7 +322,7 @@ private[services] class PostgreSQLUserTypeService(xa: Aux[[x] =>> IO[x], Unit])
     *   IO[Unit] - эффект, подтверждающий выполнение операции.
     */
   def update(userType: UserType): IO[Unit] =
-    generateUpdateById[UserType, Int](userType)
+    generateUpdateById[UserType, UserTypeId](userType)
       .update        // Указываем, что это update-запрос
       .run           // Выполняем, игнорируя количество измененных строк
       .transact(xa)
@@ -343,7 +343,7 @@ private[services] class PostgreSQLUserTypeService(xa: Aux[[x] =>> IO[x], Unit])
     */
   def updateAll(userTypes: NonEmptyList[UserType]): IO[Unit] =
     def toConn: UserType => ConnectionIO[Int] =
-      generateUpdateById[UserType, Int](_).update.run
+      generateUpdateById[UserType, UserTypeId](_).update.run
     
     // Сворачиваем хвост списка, начиная с первого элемента.
     // Используем оператор *> (sequencing) для последовательного выполнения запросов
@@ -692,37 +692,35 @@ object TaskStep
 #### 3. Преобразования для `Option[LocalDate]` и `FiniteDuration`
 
 ```dotty
-// Файл: pdp/src/main/scala/ru/scalabook/pdp/model/package.scala
-package ru.scalabook.pdp
+// Файл: pdp/src/main/scala/ru/scalabook/pdp/model/src.scala
+package ru.scalabook.pdp.model
 
-package object model {
-  // ... остальная часть модели
-  
-  /** Преобразование для опциональной даты. Option[LocalDate] соответствует
-    * nullable колонке DATE в PostgreSQL.
-    */
-  given Meta[Option[LocalDate]] =
-    Meta[LocalDate].imap[Option[LocalDate]](
-      // Из БД (не NULL) -> Some(date)
-      // Из БД (NULL) -> None
-      date => Option(date) 
-    )(
-      // В БД: Some(date) -> date, None -> NULL
-      _.orNull             
-    )
+// ... остальная часть модели
 
-  /** Преобразование для длительности. Храним как BIGINT (миллисекунды) для
-    * эффективности и точности.
-    */
-  given Meta[FiniteDuration] =
-    Meta[Long].timap(
-      // Из БД: Long -> FiniteDuration
-      millis => FiniteDuration(millis, MILLISECONDS)  
-    )(
-      // В БД: FiniteDuration -> Long
-      _.toMillis                  
-    )  
-}    
+/** Преобразование для опциональной даты. Option[LocalDate] соответствует
+  * nullable колонке DATE в PostgreSQL.
+  */
+given Meta[Option[LocalDate]] =
+  Meta[LocalDate].imap[Option[LocalDate]](
+    // Из БД (не NULL) -> Some(date)
+    // Из БД (NULL) -> None
+    date => Option(date) 
+  )(
+    // В БД: Some(date) -> date, None -> NULL
+    _.orNull             
+  )
+
+/** Преобразование для длительности. Храним как BIGINT (миллисекунды) для
+  * эффективности и точности.
+  */
+given Meta[FiniteDuration] =
+  Meta[Long].timap(
+    // Из БД: Long -> FiniteDuration
+    millis => FiniteDuration(millis, MILLISECONDS)  
+  )(
+    // В БД: FiniteDuration -> Long
+    _.toMillis                  
+  )    
 ```
 
 **Обоснование выбранных представлений:**

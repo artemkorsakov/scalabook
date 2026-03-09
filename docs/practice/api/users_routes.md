@@ -448,7 +448,7 @@ test(
 ): service =>
   val userInfo =
     UserInfo(
-      id = UUID.randomUUID(),
+      id = UserId(UUID.randomUUID),
       username = UserName("CheckBadRequest")
     )
   val req    = POST(userInfo, createUri)
@@ -521,7 +521,7 @@ test(
     val authMiddleware: AuthMiddleware[IO, User] =
       AuthMiddleware(Kleisli.pure(User(
         // Не используется в тесте, можно генерировать любой
-        id = UUID.randomUUID(),
+        id = UserId(UUID.randomUUID),
         // Нужна именно эта строка
         username = loginUser.username,
         // Не используется в тесте

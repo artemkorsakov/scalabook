@@ -155,22 +155,21 @@ private[services] trait UserTypeService[F[_]: Monad]:
 package ru.scalabook.pdp.services
 
 import ru.scalabook.pdp.model.*
-import java.util.UUID
 
 private[services] trait TaskService[F[_]]:
 
-  // Принимает объект для создания, возвращает сгенерированный UUID.
-  def create(task: CreateTask): F[UUID]
+  // Принимает объект для создания, возвращает сгенерированный TaskId.
+  def create(task: CreateTask): F[TaskId]
 
   // Для получения нужен и id, и taskType, чтобы однозначно идентифицировать запись.
-  def get(id: UUID, taskType: TaskType): F[Option[Task]]
+  def get(id: TaskId, taskType: TaskType): F[Option[Task]]
 
   def getAll: F[Vector[Task]]
 
   // Принимает полноценную Task с id.
   def update(task: Task): F[Unit] 
 
-  def delete(id: UUID, taskType: TaskType): F[Unit]
+  def delete(id: TaskId, taskType: TaskType): F[Unit]
 
 ```
 

@@ -390,8 +390,8 @@ end PostgreSQLUserTypeService
 // ❌ НЕПРАВИЛЬНО: Класс добавляет методы, не объявленные в интерфейсе
 class PostgreSQLTaskService extends TaskService[IO]:
   // Методы из интерфейса - правильно
-  def create(task: CreateTask): IO[UUID] = ...
-  def get(id: UUID, taskType: TaskType): IO[Option[Task]] = ...
+  def create(task: CreateTask): IO[TaskId] = ...
+  def get(id: TaskId, taskType: TaskType): IO[Option[Task]] = ...
 
   // Лишний публичный метод - НЕПРАВИЛЬНО!
   def internalDatabaseOptimization(): IO[Unit] = ...
@@ -406,11 +406,11 @@ class PostgreSQLTaskService extends TaskService[IO]:
 // ✅ ПРАВИЛЬНО: Точное соответствие интерфейсу
 class PostgreSQLTaskService extends TaskService[IO]:
   // Только методы из интерфейса
-  def create(task: CreateTask): IO[UUID] = ...
-  def get(id: UUID, taskType: TaskType): IO[Option[Task]] = ...
+  def create(task: CreateTask): IO[TaskId] = ...
+  def get(id: TaskId, taskType: TaskType): IO[Option[Task]] = ...
   def getAll: IO[Vector[Task]] = ...  // Без параметров, как в интерфейсе
   def update(task: Task): IO[Unit] = ...
-  def delete(id: UUID, taskType: TaskType): IO[Unit] = ...
+  def delete(id: TaskId, taskType: TaskType): IO[Unit] = ...
 
   // Приватные вспомогательные методы - допустимо
   private def buildWhereClause(filters: Map[String, String]): String = ...
@@ -856,47 +856,47 @@ given Meta[Status] =
   * @param task
   *   Данные для создания задачи (абстрактный CreateTask).
   * @return
-  *   IO[UUID] - эффект, возвращающий идентификатор созданной задачи.
+  *   IO[TaskId] - эффект, возвращающий идентификатор созданной задачи.
   */
-def create(task: CreateTask): IO[UUID] =
+def create(task: CreateTask): IO[TaskId] =
   task match
     case book: CreateBookTask =>
       // Для книг: используем макрос для BookTask
-      generateInsertReturningId[BookTask, CreateBookTask, UUID](book)
-        .query[UUID]
+      generateInsertReturningId[BookTask, CreateBookTask, TaskId](book)
+        .query[TaskId]
         .unique
         .transact(xa)
 
     case article: CreateArticleTask =>
       // Для статей: используем макрос для ArticleTask
-      generateInsertReturningId[ArticleTask, CreateArticleTask, UUID](article)
-        .query[UUID]
+      generateInsertReturningId[ArticleTask, CreateArticleTask, TaskId](article)
+        .query[TaskId]
         .unique
         .transact(xa)
 
     case podcast: CreatePodcastTask =>
       // Для подкастов: аналогично
-      generateInsertReturningId[PodcastTask, CreatePodcastTask, UUID](podcast)
-        .query[UUID]
+      generateInsertReturningId[PodcastTask, CreatePodcastTask, TaskId](podcast)
+        .query[TaskId]
         .unique
         .transact(xa)
 
     case video: CreateVideoTask =>
-      generateInsertReturningId[VideoTask, CreateVideoTask, UUID](video)
-        .query[UUID]
+      generateInsertReturningId[VideoTask, CreateVideoTask, TaskId](video)
+        .query[TaskId]
         .unique
         .transact(xa)
 
     case course: CreateCourseTask =>
-      generateInsertReturningId[CourseTask, CreateCourseTask, UUID](course)
-        .query[UUID]
+      generateInsertReturningId[CourseTask, CreateCourseTask, TaskId](course)
+        .query[TaskId]
         .unique
         .transact(xa)
 
     case userTask: CreateUserTask =>
       // Пользовательские задачи хранятся отдельно
-      generateInsertReturningId[UserTask, CreateUserTask, UUID](userTask)
-        .query[UUID]
+      generateInsertReturningId[UserTask, CreateUserTask, TaskId](userTask)
+        .query[TaskId]
         .unique
         .transact(xa)
 ```
@@ -907,7 +907,7 @@ def create(task: CreateTask): IO[UUID] =
    сопоставление с шаблоном позволяет определить конкретный тип и вызвать соответствующий метод.
 2. **Использование сгенерированного SQL**: Для каждого типа вызывается специализированный макрос, 
    который генерирует корректный INSERT-запрос с учетом специфичных полей.
-3. **Возврат сгенерированного идентификатора**: Все варианты возвращают `UUID`, 
+3. **Возврат сгенерированного идентификатора**: Все варианты возвращают `TaskId`, 
    который генерируется базой данных (через `DEFAULT gen_random_uuid()`).
 
 ### Операция получения одной задачи по идентификатору (Read One)
@@ -917,39 +917,39 @@ def create(task: CreateTask): IO[UUID] =
   * необходим для определения, в какой таблице искать.
   *
   * @param id
-  *   Уникальный идентификатор задачи (UUID).
+  *   Уникальный идентификатор задачи (TaskId).
   * @param taskType
   *   Тип задачи, определяющий таблицу для поиска.
   * @return
   *   IO[Option[Task]] - эффект, возвращающий Optional задачу.
   */
-def get(id: UUID, taskType: TaskType): IO[Option[Task]] =
+def get(id: TaskId, taskType: TaskType): IO[Option[Task]] =
   taskType match
     case Book =>
       // Поиск в таблице books
-      generateSelectById[BookTask, UUID](id)
+      generateSelectById[BookTask, TaskId](id)
         .query[BookTask].option.transact(xa)
 
     case Article =>
       // Поиск в таблице articles
-      generateSelectById[ArticleTask, UUID](id)
+      generateSelectById[ArticleTask, TaskId](id)
         .query[ArticleTask].option.transact(xa)
 
     case Podcast =>
-      generateSelectById[PodcastTask, UUID](id)
+      generateSelectById[PodcastTask, TaskId](id)
         .query[PodcastTask].option.transact(xa)
 
     case Video =>
-      generateSelectById[VideoTask, UUID](id)
+      generateSelectById[VideoTask, TaskId](id)
         .query[VideoTask].option.transact(xa)
 
     case Course =>
-      generateSelectById[CourseTask, UUID](id)
+      generateSelectById[CourseTask, TaskId](id)
         .query[CourseTask].option.transact(xa)
 
     case Other =>
       // Все остальные типы считаем пользовательскими задачами
-      generateSelectById[UserTask, UUID](id)
+      generateSelectById[UserTask, TaskId](id)
         .query[UserTask].option.transact(xa)
 ```
 
@@ -994,32 +994,32 @@ def update(task: Task): IO[Unit] =
   task match
     case book: BookTask =>
       // Обновление книги: генерация UPDATE запроса для таблицы books
-      generateUpdateById[BookTask, UUID](book)
+      generateUpdateById[BookTask, TaskId](book)
         .update.run.transact(xa).void
 
     case article: ArticleTask =>
       // Обновление статьи: генерация UPDATE запроса для таблицы articles
-      generateUpdateById[ArticleTask, UUID](article)
+      generateUpdateById[ArticleTask, TaskId](article)
         .update.run.transact(xa).void
 
     case podcast: PodcastTask =>
       // Обновление подкаста: генерация UPDATE запроса для таблицы podcasts
-      generateUpdateById[PodcastTask, UUID](podcast)
+      generateUpdateById[PodcastTask, TaskId](podcast)
         .update.run.transact(xa).void
 
     case video: VideoTask =>
       // Обновление видео: генерация UPDATE запроса для таблицы videos
-      generateUpdateById[VideoTask, UUID](video)
+      generateUpdateById[VideoTask, TaskId](video)
         .update.run.transact(xa).void
 
     case course: CourseTask =>
       // Обновление курса: генерация UPDATE запроса для таблицы courses
-      generateUpdateById[CourseTask, UUID](course)
+      generateUpdateById[CourseTask, TaskId](course)
         .update.run.transact(xa).void
 
     case userTask: UserTask =>
       // Обновление пользовательской задачи: генерация UPDATE запроса для таблицы user_tasks
-      generateUpdateById[UserTask, UUID](userTask)
+      generateUpdateById[UserTask, TaskId](userTask)
         .update.run.transact(xa).void
 ```
 
@@ -1035,30 +1035,30 @@ def update(task: Task): IO[Unit] =
   * @return
   *   IO[Unit] - эффект, подтверждающий выполнение.
   */
-def delete(id: UUID, taskType: TaskType): IO[Unit] =
+def delete(id: TaskId, taskType: TaskType): IO[Unit] =
   taskType match
     case Book =>
-      generateDeleteById[BookTask, UUID](id)
+      generateDeleteById[BookTask, TaskId](id)
         .update.run.transact(xa).void
 
     case Article =>
-      generateDeleteById[ArticleTask, UUID](id)
+      generateDeleteById[ArticleTask, TaskId](id)
         .update.run.transact(xa).void
 
     case Podcast =>
-      generateDeleteById[PodcastTask, UUID](id)
+      generateDeleteById[PodcastTask, TaskId](id)
         .update.run.transact(xa).void
 
     case Video =>
-      generateDeleteById[VideoTask, UUID](id)
+      generateDeleteById[VideoTask, TaskId](id)
         .update.run.transact(xa).void
 
     case Course =>
-      generateDeleteById[CourseTask, UUID](id)
+      generateDeleteById[CourseTask, TaskId](id)
         .update.run.transact(xa).void
 
     case Other =>
-      generateDeleteById[UserTask, UUID](id)
+      generateDeleteById[UserTask, TaskId](id)
         .update.run.transact(xa).void
 ```
 

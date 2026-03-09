@@ -28,7 +28,7 @@ nextPage = ../authorization.html
 
 1.  **Идентификационные данные:**
     - Тип задачи (книга, статья, курс и т.д.)
-    - Уникальный идентификатор задачи (UUID)
+    - Уникальный идентификатор задачи (TaskId)
     - Наименование задачи
 2.  **Контекст выполнения:**
     - Раздел, к которому относится задача
@@ -53,7 +53,7 @@ package ru.scalabook.pdp.model
   * задачи на момент её завершения. 
   */
 final case class CompletedTask(
-    taskId: UUID,
+    taskId: TaskId,
     taskType: TaskType,
     name: TaskName,
     sectionId: SectionId,
@@ -243,7 +243,7 @@ final case class TaskLifecycleService[F[_]: {MonadThrow as MT}](
   *   если задача не найдена или находится не в статусе "В работе".
   */
 def complete(
-    id: UUID,
+    id: TaskId,
     taskType: TaskType,
     rating: Rating,
     review: Review,

@@ -334,7 +334,7 @@ final case class TaskLifecycleService[F[_]: {MonadThrow as MT}](
 ):
   import TaskLifecycleService.*
 
-  def create(task: CreateTask): F[UUID] =
+  def create(task: CreateTask): F[TaskId] =
     // 1. Сбор и валидация всех зависимых сущностей
     val validationResult =
       for
@@ -434,7 +434,7 @@ end TaskLifecycleService
 
 ```dotty
 def enqueue(
-    id: UUID,
+    id: TaskId,
     taskType: TaskType,
     ordinal: Ordinal,
     plan: NonEmptyList[TaskStep] // Непустой список шагов — гарантия на уровне типов
@@ -452,7 +452,7 @@ def enqueue(
   
 // Вспомогательная функция для безопасного поиска задачи 
 // с предварительной валидацией статуса.  
-private def findTask(id: UUID, taskType: TaskType, status: Status): F[Task] =
+private def findTask(id: TaskId, taskType: TaskType, status: Status): F[Task] =
   get(id, taskType).flatMap {
     case Some(task) if task.status == status =>
       MT.pure(task) // Задача найдена и имеет ожидаемый статус
@@ -480,7 +480,7 @@ private def findTask(id: UUID, taskType: TaskType, status: Status): F[Task] =
 
 ```dotty
 def start(
-    id: UUID,
+    id: TaskId,
     taskType: TaskType,
     startDate: LocalDate,
     endDate: LocalDate
@@ -512,7 +512,7 @@ def start(
 2.  **Очистка дат**: Даты начала и окончания обнуляются, так как при повторном взятии в работу они, скорее всего, будут другими.
 
 ```dotty
-def defer(id: UUID, taskType: TaskType): F[Unit] =
+def defer(id: TaskId, taskType: TaskType): F[Unit] =
   findTask(id, taskType, Status.InProgress).flatMap: task =>
     val updated = task.copy(
       status = Status.Planned,
@@ -528,7 +528,7 @@ def defer(id: UUID, taskType: TaskType): F[Unit] =
 Сервис жизненного цикла делегирует её напрямую в `TaskService`, который отвечает за постоянное хранение. 
 
 ```dotty
-def delete(id: UUID, taskType: TaskType): F[Unit] =
+def delete(id: TaskId, taskType: TaskType): F[Unit] =
   taskService.delete(id, taskType)
 ```
 

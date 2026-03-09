@@ -509,7 +509,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 sealed trait Task:
-  val id: UUID
+  val id: TaskId
   val name: TaskName
   val taskType: TaskType
   val status: Status
@@ -531,6 +531,10 @@ package ru.scalabook.pdp.model
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 
+opaque type TaskId = UUID
+object TaskId:
+  def apply(uuid: UUID): TaskId = uuid
+    
 type TaskName = TaskName.T
 object TaskName
     extends RefinedType[String, MinLength[2] & MaxLength[200] & Trimmed]
@@ -546,9 +550,12 @@ object TaskStep
 
 ### Разбор каждого поля
 
-#### `id: UUID`
+#### `id: TaskId`
 
 - **Описание**: Уникальный идентификатор задачи.
+- **Ограничения**: создаем отдельный [непрозрачный тип](https://docs.scala-lang.org/ru/scala3/book/types-opaque-types.html)
+  для безопасности типов, чтобы случайно не перепутать идентификаторы разных объектов 
+  (например, идентификатор задачи и идентификатор пользователя)
 - **Пример**: `b7a98f3e-5f4d-4c6f-916a-51e05f3c0001`
 - **Зачем нужно**: Уникальный ID позволяет однозначно идентифицировать задачу в системе, 
   особенно при работе с базами данных или API.
@@ -647,7 +654,7 @@ object TaskStep
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/model/Task.scala
 final case class BookTask(
-    id: UUID,
+    id: TaskId,
     name: TaskName,
     status: Status,
     sectionId: SectionId,
@@ -691,7 +698,7 @@ object Pages extends RefinedType[Int, Positive]
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/model/Task.scala
 final case class ArticleTask(
-    id: UUID,
+    id: TaskId,
     name: TaskName,
     status: Status,
     sectionId: SectionId,
@@ -734,7 +741,7 @@ object Link extends RefinedType[String, MinLength[1] & Trimmed]
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/model/Task.scala
 final case class PodcastTask(
-    id: UUID,
+    id: TaskId,
     name: TaskName,
     status: Status,
     sectionId: SectionId,
@@ -784,7 +791,7 @@ object Episodes extends RefinedType[Int, Positive]
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/model/Task.scala
 final case class VideoTask(
-    id: UUID,
+    id: TaskId,
     name: TaskName,
     status: Status,
     sectionId: SectionId,
@@ -827,7 +834,7 @@ object Platform extends RefinedType[String, MinLength[1] & Trimmed]
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/model/Task.scala
 final case class CourseTask(
-    id: UUID,
+    id: TaskId,
     name: TaskName,
     status: Status,
     sectionId: SectionId,
@@ -864,7 +871,7 @@ final case class CourseTask(
 
 ```dotty
 final case class UserTask(
-    id: UUID,
+    id: TaskId,
     name: TaskName,
     userTypeId: UserTypeId,
     status: Status,
@@ -922,7 +929,7 @@ final case class UserTask(
 ```dotty
 val book: BookTask =
   BookTask(
-    id = UUID.randomUUID(),
+    id = TaskId(UUID.randomUUID()),
     name = TaskName("Scala Programming"),
     status = Status.InProgress,
     sectionId = SectionId(1),
@@ -937,7 +944,7 @@ val book: BookTask =
   )
 
 val userTask: UserTask = UserTask(
-  id = UUID.randomUUID(),
+  id = TaskId(UUID.randomUUID()),
   name = TaskName("Создать презентацию по проекту"),
   userTypeId = UserTypeId(1),
   status = Status.InProgress,

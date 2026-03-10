@@ -283,8 +283,8 @@ private[services] class PostgreSQLUserTypeService(xa: Aux[[x] =>> IO[x], Unit])
     *   IO[UserTypeId] - эффект, который при выполнении вернет ID созданной
     *   записи.
     */
-  def create(name: UserTypeName): IO[UserTypeId] =
-    generateInsertReturningId[UserType, UserTypeName, UserTypeId](name)
+  def create(newItem: CreateUserType): IO[UserTypeId] =
+    generateInsertReturningId[UserType, CreateUserType, UserTypeId](newItem)
       .query[UserTypeId] // Указываем, что запрос возвращает UserTypeId
       .unique            // Ожидаем ровно одну запись (возвращаемый ID)
       .transact(xa)      // Выполняем в контексте транзакции
@@ -307,11 +307,11 @@ private[services] class PostgreSQLUserTypeService(xa: Aux[[x] =>> IO[x], Unit])
     * @return
     *   IO[List[UserType]] - эффект, возвращающий список всех типов.
     */
-  def getAll: IO[List[UserType]] =
-    generateSelectAll[UserType]
-      .query[UserType]  // Селект всех полей
-      .to[List]         // Преобразуем поток результатов в List
-      .transact(xa)
+  def getByUser(userId: UserId): IO[List[UserType]] =
+    generateSelectByField[UserType, UserId](userId, "user_id")
+      .query[UserType] // Селект всех полей
+      .to[List]        // Преобразуем поток результатов в List
+      .transact(xa)    
 
   /** Обновляет существующий пользовательский тип задачи.
     *
@@ -408,7 +408,7 @@ class PostgreSQLTaskService extends TaskService[IO]:
   // Только методы из интерфейса
   def create(task: CreateTask): IO[TaskId] = ...
   def get(id: TaskId, taskType: TaskType): IO[Option[Task]] = ...
-  def getAll: IO[Vector[Task]] = ...  // Без параметров, как в интерфейсе
+  def getByUser(userId: UserId): IO[Vector[Task]] = ...  // Без параметров, как в интерфейсе
   def update(task: Task): IO[Unit] = ...
   def delete(id: TaskId, taskType: TaskType): IO[Unit] = ...
 
@@ -491,7 +491,7 @@ def businessOperation(input: Input)(using logger: Logger): IO[Output] =  // ✅ 
 
 1. **Типов доменных моделей**: Вместо `UserType` используются `Section` и `Goal`.
 2. **Типов идентификаторов**: `SectionId` и `GoalId` вместо `UserTypeId`.
-3. **Типов параметров создания**: `SectionName` и `GoalName` вместо `UserTypeName`.
+3. **Типов параметров создания**: `CreateSection` и `CreateGoal` вместо `CreateUserType`.
 
 Структура кода остается идентичной, демонстрируя преимущества нашего подхода:
 
@@ -531,9 +531,9 @@ def businessOperation(input: Input)(using logger: Logger): IO[Output] =  // ✅ 
 
 ```sql
 -- Пример структуры БД при TPCC подходе
-CREATE TABLE books (id UUID, name VARCHAR, status StatusEnum, ..., authors VARCHAR, pages INT);
-CREATE TABLE articles (id UUID, name VARCHAR, status StatusEnum, ..., link TEXT, duration BIGINT);
-CREATE TABLE podcasts (id UUID, name VARCHAR, status StatusEnum, ..., episodes INT, episode_duration BIGINT);
+CREATE TABLE books (id UUID, name VARCHAR, user_id UUID, status StatusEnum, ..., authors VARCHAR, pages INT);
+CREATE TABLE articles (id UUID, name VARCHAR, user_id UUID, status StatusEnum, ..., link TEXT, duration BIGINT);
+CREATE TABLE podcasts (id UUID, name VARCHAR, user_id UUID, status StatusEnum, ..., episodes INT, episode_duration BIGINT);
 -- ... и так для каждого типа задач
 ```
 
@@ -570,7 +570,7 @@ CREATE TABLE podcasts (id UUID, name VARCHAR, status StatusEnum, ..., episodes I
 
   ```sql
   CREATE TABLE tasks (
-      id UUID, name VARCHAR, task_type VARCHAR,
+      id UUID, name VARCHAR, user_id UUID, task_type VARCHAR,
       authors VARCHAR, pages INT, link TEXT, duration BIGINT,
       platform VARCHAR, episodes INT, episode_duration BIGINT
       -- большинство полей будут NULL в большинстве записей
@@ -962,20 +962,38 @@ def get(id: TaskId, taskType: TaskType): IO[Option[Task]] =
   * @return
   *   IO[Vector[Task]] - эффект, возвращающий вектор всех задач.
   */
-def getAll: IO[Vector[Task]] =
+def getByUser(userId: UserId): IO[Vector[Task]] =
   // Параллельное выполнение запросов ко всем таблицам
   (
-    generateSelectAll[BookTask].query[BookTask].to[Vector].transact(xa),
-    generateSelectAll[ArticleTask].query[ArticleTask].to[Vector].transact(xa),
-    generateSelectAll[PodcastTask].query[PodcastTask].to[Vector].transact(xa),
-    generateSelectAll[VideoTask].query[VideoTask].to[Vector].transact(xa),
-    generateSelectAll[CourseTask].query[CourseTask].to[Vector].transact(xa),
-    generateSelectAll[UserTask].query[UserTask].to[Vector].transact(xa)
-  ).mapN {  // mapN объединяет результаты всех параллельных вычислений
+    generateSelectByField[BookTask, UserId](
+      userId,
+      "user_id"
+    ).query[BookTask].to[Vector].transact(xa),
+    generateSelectByField[ArticleTask, UserId](
+      userId,
+      "user_id"
+    ).query[ArticleTask].to[Vector].transact(xa),
+    generateSelectByField[PodcastTask, UserId](
+      userId,
+      "user_id"
+    ).query[PodcastTask].to[Vector].transact(xa),
+    generateSelectByField[VideoTask, UserId](
+      userId,
+      "user_id"
+    ).query[VideoTask].to[Vector].transact(xa),
+    generateSelectByField[CourseTask, UserId](
+      userId,
+      "user_id"
+    ).query[CourseTask].to[Vector].transact(xa),
+    generateSelectByField[UserTask, UserId](
+      userId,
+      "user_id"
+    ).query[UserTask].to[Vector].transact(xa)
+  ).mapN { // mapN объединяет результаты всех параллельных вычислений
     case (books, articles, podcasts, videos, courses, userTasks) =>
       // Объединение всех результатов в один полиморфный список
       books ++ articles ++ podcasts ++ videos ++ courses ++ userTasks
-  }
+  }  
 ```
 
 ### Операция обновления задачи (Update)

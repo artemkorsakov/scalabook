@@ -696,6 +696,11 @@ object Task:
   val nameColumn: ColumnDefinition =
     ColumnDefinition(ColumnName("name"), ColumnType.Varchar).asNotNull()
 
+  val userId: ColumnDefinition = ColumnDefinition(
+    ColumnName("user_id"),
+    ColumnType.UUID
+  ).asNotNull()
+  
   // Статус ссылается на созданный нами ENUM-тип
   val statusColumn: ColumnDefinition =
     ColumnDefinition(ColumnName("status"), ColumnType("StatusEnum")).asNotNull()
@@ -722,6 +727,7 @@ object Task:
   val commonColumns: Columns = Columns(
     idColumn,
     nameColumn,
+    userId,
     statusColumn,
     sectionIdColumn,
     goalIdColumn,
@@ -774,6 +780,7 @@ object UserTask:
       Columns(
         idColumn,
         nameColumn,
+        userId,
         ColumnDefinition(ColumnName("user_type_id"), ColumnType.Int).asNotNull(),
         statusColumn,
         sectionIdColumn,
@@ -795,6 +802,7 @@ end UserTask
 CREATE TABLE IF NOT EXISTS books (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
+  user_id UUID NOT NULL,
   status StatusEnum NOT NULL,
   section_id INT NOT NULL,
   goal_id INT NOT NULL,
@@ -877,6 +885,31 @@ object SqlMacros:
         }
       case None =>
         report.errorAndAbort(s"No TableSchema found for type ${Type.show[T]}")
+      
+  /** Генерирует функцию, которая по идентификатору создает Fragment для
+    * SELECT-запроса, извлекающего одну запись по заданному полю. Тип Value
+    * может быть любым (Int, UUID, String).
+    */
+  inline def generateSelectByField[T, Value]: (Value, String) => Fragment =
+    ${ generateSelectByFieldImpl[T, Value] }
+
+  private def generateSelectByFieldImpl[T: Type, Value: Type](using
+      Quotes
+  ): Expr[(Value, String) => Fragment] =
+    import quotes.reflect.*
+
+    Expr.summon[TableSchema[T]] match
+      case Some(tableSchema) =>
+        '{
+          (id: Value, field: String) =>
+            val schema      = $tableSchema
+            val columnNames = schema.columns.value.map(_.name).mkString(", ")
+            Fragment.const(
+              s"SELECT $columnNames FROM ${schema.tableName} WHERE $field = '$id'"
+            )
+        }
+      case None =>
+        report.errorAndAbort(s"No TableSchema found for type ${Type.show[T]}")    
         
   /** Генерирует Fragment для SELECT-запроса, извлекающего все записи таблицы.
     */
@@ -1042,17 +1075,20 @@ generateCreateTableFor[UserType]
 // Результат: 
 // CREATE TABLE IF NOT EXISTS user_types 
 // (id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, 
-// displayed BOOLEAN NOT NULL DEFAULT TRUE, 
+// user_id UUID NOT NULL, displayed BOOLEAN NOT NULL DEFAULT TRUE, 
 // ordinal INT NOT NULL DEFAULT 1000);
 
 generateInsertReturningId[UserType, UserTypeName, UserTypeId](name)
-// Результат: INSERT INTO user_types (name) VALUES (?) RETURNING id
+// Результат: INSERT INTO user_types (name, user_id, displayed, ordinal) VALUES (?, ?, ?, ?) RETURNING id
 
 generateSelectById[UserType, UserTypeId](1)
-// Результат: SELECT id, name, displayed, ordinal FROM user_types WHERE id = '1' 
+// Результат: SELECT id, name, user_id, displayed, ordinal FROM user_types WHERE id = '1' 
+
+generateSelectByField[UserType, UserId]("ad03ed66-5fee-4d20-ac88-cbba1d5caf9e", "user_id")
+// Результат: SELECT id, name, user_id, displayed, ordinal FROM user_types WHERE user_id = 'ad03ed66-5fee-4d20-ac88-cbba1d5caf9e'
 
 generateUpdateById[UserType, Int](userType)
-// Результат: UPDATE user_types SET name = ?, displayed = ?, ordinal = ? WHERE id = ?
+// Результат: UPDATE user_types SET name = ?, user_id = ?, displayed = ?, ordinal = ? WHERE id = ?
 
 generateDeleteById[UserType, UserTypeId](id)
 // Результат: DELETE FROM user_types WHERE id = '4'
@@ -1063,33 +1099,35 @@ generateDeleteById[UserType, UserTypeId](id)
 ```sql
 -- Создание таблицы
 CREATE TABLE IF NOT EXISTS books (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  status StatusEnum NOT NULL,
-  section_id INT NOT NULL,
-  goal_id INT NOT NULL,
-  ordinal INT NOT NULL,
-  start_date DATE,
-  end_date DATE,
-  information TEXT,
-  plan VARCHAR[],
-  authors VARCHAR(255) NOT NULL,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY, 
+  name VARCHAR(255) NOT NULL, 
+  user_id UUID NOT NULL, 
+  status StatusEnum NOT NULL, 
+  section_id INT NOT NULL, 
+  goal_id INT NOT NULL, 
+  ordinal INT NOT NULL, 
+  start_date DATE, 
+  end_date DATE, 
+  information TEXT, 
+  plan VARCHAR[], 
+  authors VARCHAR(255) NOT NULL, 
   pages INT NOT NULL
-);
+); 
 
 -- Вставка с возвратом ID
-INSERT INTO books (name, status, section_id, goal_id, ordinal, start_date, 
+INSERT INTO books (name, user_id, status, section_id, goal_id, ordinal, start_date, 
   end_date, information, plan, authors, pages)
-VALUES (?, ?::StatusEnum, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id
+VALUES (?, ?, ?::StatusEnum, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id
 
 -- Выборка по ID
-SELECT id, name, status, section_id, goal_id, ordinal, start_date, 
+SELECT id, name, user_id, status, section_id, goal_id, ordinal, start_date, 
   end_date, information, plan, authors, pages
 FROM books WHERE id = '14c8fa94-4896-4449-82fb-5b1adec2504a'
 
 -- Обновление
 UPDATE books SET
   name = ?,
+  user_id = ?,
   status = ?::StatusEnum,
   section_id = ?,
   goal_id = ?,
@@ -1112,7 +1150,7 @@ DELETE FROM books WHERE id = '14c8fa94-4896-4449-82fb-5b1adec2504a'
 
 ```sbt
 object scalabook {
-  val sqlGen = "ru.scalabook" %% "sql-gen" % "0.1.1"
+  val sqlGen = "ru.scalabook" %% "sql-gen" % "0.1.3"
 }
 
 ... 

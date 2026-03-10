@@ -29,7 +29,7 @@ nextPage = db/sql_generation.html
 
 - **`create`** — создание новой записи в базе данных. Возвращает уникальный идентификатор созданной сущности.
 - **`get`** — извлечение записи по ее уникальному идентификатору. Возвращает `Option`, так как запись может отсутствовать.
-    - **`getAll`** — извлечение всех записей данного типа. Возвращает коллекцию (список, вектор), которая может быть пустой.
+    - **`getByUser`** — извлечение всех записей данного типа. Возвращает коллекцию (список, вектор), которая может быть пустой.
 - **`update`** — модификация существующей записи. Ожидается, что идентификатор сущности в обновляемом объекте 
   соответствует идентификатору в хранилище.
     - **`updateAll`** — модификация коллекции записей данного типа.
@@ -95,13 +95,13 @@ import ru.scalabook.pdp.model.UserType.{UserTypeId, UserTypeName}
 private[services] trait UserTypeService[F[_]: Monad]:
 
   /** Создаёт новый пользовательский тип задачи. */
-  def create(name: UserTypeName): F[UserTypeId]
+  def create(newItem: CreateUserType): F[UserTypeId]
 
   /** Получает пользовательский тип задачи по его идентификатору. */
   def get(id: UserTypeId): F[Option[UserType]]
 
   /** Получает список всех пользовательских типов задач. */
-  def getAll: F[List[UserType]]
+  def getByUser(userId: UserId): F[List[UserType]]
 
   /** Обновляет существующий пользовательский тип задачи. */
   def update(userType: UserType): F[Unit]
@@ -110,7 +110,7 @@ private[services] trait UserTypeService[F[_]: Monad]:
   def updateAll(userTypes: NonEmptyList[UserType]): F[Unit]
 
   /** Удаляет пользовательский тип задачи по его идентификатору. */
-  def delete(id: UserTypeId): F[Unit]
+  def delete(id: UserTypeId): F[Unit]  
 ```
 
 ### Семантика возвращаемых типов в контексте эффектов
@@ -156,7 +156,7 @@ package ru.scalabook.pdp.services
 
 import ru.scalabook.pdp.model.*
 
-private[services] trait TaskService[F[_]]:
+private[services] trait TaskService[F[_]: Monad]:
 
   // Принимает объект для создания, возвращает сгенерированный TaskId.
   def create(task: CreateTask): F[TaskId]
@@ -164,13 +164,12 @@ private[services] trait TaskService[F[_]]:
   // Для получения нужен и id, и taskType, чтобы однозначно идентифицировать запись.
   def get(id: TaskId, taskType: TaskType): F[Option[Task]]
 
-  def getAll: F[Vector[Task]]
+  def getByUser(userId: UserId): F[Vector[Task]]
 
   // Принимает полноценную Task с id.
   def update(task: Task): F[Unit] 
 
   def delete(id: TaskId, taskType: TaskType): F[Unit]
-
 ```
 
 Тип `CreateTask` и его варианты (для книг, статей и т.д.) являются точными копиями соответствующих `*Task` типов, но без поля `id`. 
@@ -179,6 +178,7 @@ private[services] trait TaskService[F[_]]:
 ```dotty
 sealed trait CreateTask:
   val name: TaskName
+  val userId: UserId
   val taskType: TaskType
   val status: Status
   val sectionId: SectionId
@@ -191,6 +191,7 @@ sealed trait CreateTask:
 
 final case class CreateBookTask(
     name: TaskName,
+    userId: UserId,
     status: Status,
     sectionId: SectionId,
     goalId: GoalId,
@@ -291,24 +292,31 @@ private[services] class MockUserTypeService(
    * Создает новый тип задачи.
    * Атомарно: 1) берет следующий ID, 2) инкрементирует счетчик, 3) сохраняет запись.
    */
-  def create(name: UserTypeName): IO[UserTypeId] =
+  def create(newItem: CreateUserType): IO[UserTypeId] =
     for
       // Получаем текущий ID и увеличиваем счетчик для следующего вызова.
       // applyUnsafe здесь безопасен, так как мы знаем, 
       // что id.value + 1 - положительное число.
       id <- nextId.getAndUpdate(id => UserTypeId.applyUnsafe(id.value + 1))
       // Создаем объект UserType и сохраняем его в Map.
+      userType = UserType(
+        id = id,
+        name = newItem.name,
+        userId = newItem.userId,
+        displayed = newItem.displayed,
+        ordinal = newItem.ordinal
+      )
       // Используем метод update для сохранения.
-      _  <- update(UserType(id, name)) 
+      _  <- update(userType) 
     yield id // Возвращаем ID, под которым был сохранен тип.
 
   /** Извлекает тип по ID. Возвращает None, если ключ не найден. */
   def get(id: UserTypeId): IO[Option[UserType]] =
     userTypes.get.map(_.get(id)) // Читаем Map и выполняем lookup.
 
-  /** Извлекает все типы, преобразуя значения Map в List. */
-  def getAll: IO[List[UserType]] =
-    userTypes.get.map(_.values.toList)
+  /** Извлекает все значения для заданного пользователя, преобразуя значения Map в List. */
+  def getByUser(userId: UserId): IO[List[UserType]] =
+    userTypes.get.map(_.values.filter(_.userId == userId).toList)
 
   /** Обновляет (или добавляет) запись в Map. */
   def update(userType: UserType): IO[Unit] =
@@ -332,14 +340,13 @@ object MockUserTypeService:
    * Resource управляет жизненным циклом, хотя для Ref это не критично.
    */
   def make: Resource[IO, UserTypeService[IO]] =
-    Resource.eval { // Создаем ресурс из чистого эффекта (eval).
+    Resource.eval: // Создаем ресурс из чистого эффекта (eval).
       for
         // Инициализируем хранилище пустой Map.
         types <- Ref[IO].of(Map.empty[UserTypeId, UserType])
         // Инициализируем счетчик ID значением 0 (первый ID будет 0).
         id    <- Ref[IO].of(UserTypeId(0))
-      yield new MockUserTypeService(types, id) // Возвращаем новый экземпляр сервиса.
-    }    
+      yield new MockUserTypeService(types, id) // Возвращаем новый экземпляр сервиса.     
 ```
 
 ---

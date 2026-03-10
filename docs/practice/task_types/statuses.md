@@ -167,8 +167,9 @@ import ru.scalabook.pdp.model.UserType.*
 final case class UserType(
     id: UserTypeId,
     name: UserTypeName,
-    displayed: Boolean = true,
-    ordinal: Ordinal = Ordinal.Max
+    userId: UserId,
+    displayed: Boolean,
+    ordinal: Ordinal
 )
 
 object UserType:
@@ -180,8 +181,7 @@ object UserType:
       extends RefinedType[String, MinLength[2] & MaxLength[30] & Trimmed]      
 ```
 
-Это обычный [**case class**](https://docs.scala-lang.org/ru/tour/case-classes.html), 
-который содержит два обязательных поля: `id` и `name` и два необязательных: `displayed` и `ordinal`:
+Это обычный [**case class**](https://docs.scala-lang.org/ru/tour/case-classes.html):
 
 - `final` — указывает, что класс не может быть расширен (используется для гарантии иммутабельности и безопасности).
 - `case class` автоматически предоставляет:
@@ -193,6 +193,7 @@ object UserType:
 - `name` — название пользовательского типа
     - От 2 до 30 символов
     - Строка должна быть обрезана (без пробелов в начале и конце)
+- `userId` - идентификатор пользователя (тип [определяется позже](../authorization.md) как `opaque type UserId = UUID`)
 - `displayed` — флаг, указывающий, отображается ли пользовательский тип в пользовательском интерфейсе
 - `ordinal` — порядковый номер пользовательского типа (тип `Ordinal` описан ниже)
 
@@ -357,8 +358,9 @@ import ru.scalabook.pdp.model.Section.*
 final case class Section(
     id: SectionId,
     name: SectionName,
-    displayed: Boolean = true,
-    ordinal: Ordinal = Ordinal.Max
+    userId: UserId,
+    displayed: Boolean,
+    ordinal: Ordinal
 )
 
 object Section:
@@ -373,9 +375,8 @@ object Section:
 ### Пример использования
 
 ```dotty
-Section(SectionId(1), SectionName("Алгоритмы"))
-Section(SectionId(2), SectionName("Soft skills"), false, Ordinal(2))
-Section(SectionId(3), SectionName("Web-разработка"))
+Section(SectionId(1), SectionName("Алгоритмы"), UserId(UUID.randomUUID()), true, Ordinal(1))
+Section(SectionId(2), SectionName("Soft skills"), UserId(UUID.randomUUID()), false, Ordinal(2))
 ```
 
 ### Почему это важно?
@@ -426,8 +427,9 @@ import ru.scalabook.pdp.model.Goal.*
 final case class Goal(
     id: GoalId,
     name: GoalName,
-    displayed: Boolean = true,
-    ordinal: Ordinal = Ordinal.Max
+    userId: UserId,
+    displayed: Boolean,
+    ordinal: Ordinal
 )
 
 object Goal:
@@ -442,11 +444,12 @@ object Goal:
 ### Пример использования
 
 ```dotty
-Goal(GoalId(1), GoalName("Освоить основы алгоритмического мышления"))
-Goal(GoalId(2), GoalName("Научиться проектировать REST API"))
-Goal(GoalId(3), GoalName("Развить навыки работы с PostgreSQL"))
-Goal(GoalId(4), GoalName("Приобрести опыт код-ревью"), true, Ordinal(2))
-Goal(GoalId(5), GoalName("Понять принципы TDD"), false, Ordinal(11))
+val userId = UserId(UUID.randomUUID())
+Goal(GoalId(1), GoalName("Освоить основы алгоритмического мышления"), userId, true, Ordinal(1))
+Goal(GoalId(2), GoalName("Научиться проектировать REST API"), userId, true, Ordinal(2))
+Goal(GoalId(3), GoalName("Развить навыки работы с PostgreSQL"), userId, true, Ordinal(3))
+Goal(GoalId(4), GoalName("Приобрести опыт код-ревью"), userId, true, Ordinal(4))
+Goal(GoalId(5), GoalName("Понять принципы TDD"), userId, false, Ordinal(11))
 ```
 
 ### Связь целей с задачами
@@ -481,6 +484,7 @@ Goal(GoalId(5), GoalName("Понять принципы TDD"), false, Ordinal(11
 |---------------|---------------------|-------------------------------------------------------------------------------------|
 | `id`          | `UUID`              | Уникальный идентификатор задачи                                                     |
 | `name`        | `TaskName`          | Название задачи                                                                     |
+| `userId`      | `UserId`            | Идентификатор пользователя, которому принадлежит задача                             |
 | `taskType`    | `TaskType`          | Идентификатор типа задачи (из перечисления `TaskType`)                              |
 | `status`      | `Status`            | Текущий статус задачи                                                               |
 | `sectionId`   | `SectionId`         | Идентификатор раздела, к которому относится задача                                  |
@@ -504,6 +508,7 @@ package ru.scalabook.pdp.model
 
 import ru.scalabook.pdp.model.Goal.GoalId
 import ru.scalabook.pdp.model.Section.SectionId
+import ru.scalabook.pdp.model.User.UserId
 
 import java.time.LocalDate
 import java.util.UUID
@@ -511,6 +516,7 @@ import java.util.UUID
 sealed trait Task:
   val id: TaskId
   val name: TaskName
+  val userId: UserId
   val taskType: TaskType
   val status: Status
   val sectionId: SectionId
@@ -567,6 +573,11 @@ object TaskStep
     - От 2 до 200 символов без начальных или конечных пробелов
 - **Пример**: `"Изучить книгу 'Clean Code'"`
 - **Зачем нужно**: Название помогает быстро понять, о чём задача.
+
+#### `userId: UserId`
+
+- **Описание**: Идентификатор владельца задачи.
+- **Зачем нужно**: Для реализации многопользовательской модели.
 
 #### `taskType: TaskType`
 
@@ -656,6 +667,7 @@ object TaskStep
 final case class BookTask(
     id: TaskId,
     name: TaskName,
+    userId: UserId,
     status: Status,
     sectionId: SectionId,
     goalId: GoalId,
@@ -700,6 +712,7 @@ object Pages extends RefinedType[Int, Positive]
 final case class ArticleTask(
     id: TaskId,
     name: TaskName,
+    userId: UserId,
     status: Status,
     sectionId: SectionId,
     goalId: GoalId,
@@ -743,6 +756,7 @@ object Link extends RefinedType[String, MinLength[1] & Trimmed]
 final case class PodcastTask(
     id: TaskId,
     name: TaskName,
+    userId: UserId,
     status: Status,
     sectionId: SectionId,
     goalId: GoalId,
@@ -793,6 +807,7 @@ object Episodes extends RefinedType[Int, Positive]
 final case class VideoTask(
     id: TaskId,
     name: TaskName,
+    userId: UserId,
     status: Status,
     sectionId: SectionId,
     goalId: GoalId,
@@ -836,6 +851,7 @@ object Platform extends RefinedType[String, MinLength[1] & Trimmed]
 final case class CourseTask(
     id: TaskId,
     name: TaskName,
+    userId: UserId,
     status: Status,
     sectionId: SectionId,
     goalId: GoalId,
@@ -873,6 +889,7 @@ final case class CourseTask(
 final case class UserTask(
     id: TaskId,
     name: TaskName,
+    userId: UserId,
     userTypeId: UserTypeId,
     status: Status,
     sectionId: SectionId,
@@ -931,6 +948,7 @@ val book: BookTask =
   BookTask(
     id = TaskId(UUID.randomUUID()),
     name = TaskName("Scala Programming"),
+    userId = UserId(UUID.randomUUID()),
     status = Status.InProgress,
     sectionId = SectionId(1),
     goalId = GoalId(1),
@@ -946,6 +964,7 @@ val book: BookTask =
 val userTask: UserTask = UserTask(
   id = TaskId(UUID.randomUUID()),
   name = TaskName("Создать презентацию по проекту"),
+  userId = UserId(UUID.randomUUID()),
   userTypeId = UserTypeId(1),
   status = Status.InProgress,
   sectionId = SectionId(2),

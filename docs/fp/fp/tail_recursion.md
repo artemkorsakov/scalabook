@@ -507,6 +507,11 @@ def reverseTailRec[A](list: List[A]): List[A] =
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
+- [Рекурсивные типы. Часть 1/5. Рекурсия](https://habr.com/ru/articles/863304/)
+- [Рекурсивные типы. Часть 2/5. Неподвижные точки конструкторов типов](https://habr.com/ru/articles/863324/)
+- [Рекурсивные типы. Часть 3/5. Свободные контейнеры](https://habr.com/ru/articles/863334/)
+- [Рекурсивные типы. Часть 4/5. Схемы рекурсии](https://habr.com/ru/articles/863362/)
+- [Рекурсивные типы. Часть 5/5. Занимательный матан](https://habr.com/ru/articles/863376/)
 - [Харрисон - Введение в функциональное программирование](https://funprog-ru.github.io/)
 - [Functional Programming by Alexander Alvin](https://alvinalexander.com/photos/functional-programming-simplied-free-pdf-preview/)
 - [Functional Programming in Scala, Second Edition, Chapter 1-2 by Michael Pilquist, Rúnar Bjarnason, and Paul Chiusano](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)

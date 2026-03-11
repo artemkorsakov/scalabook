@@ -56,6 +56,7 @@ final case class CompletedTask(
     taskId: TaskId,
     taskType: TaskType,
     name: TaskName,
+    userId: UserId,
     sectionId: SectionId,
     goalId: GoalId,
     duration: FiniteDuration,
@@ -113,6 +114,10 @@ object CompletedTask:
           ColumnName("name"),
           ColumnType.Varchar
         ).asNotNull(), // Название задачи
+        ColumnDefinition(
+          ColumnName("user_id"),
+          ColumnType.UUID
+        ).asNotNull(), // Идентификатор пользователя
         ColumnDefinition(
           ColumnName("section_id"),
           ColumnType.Int
@@ -175,10 +180,10 @@ private[services] trait HistoryService[F[_]: Monad]:
     * формирования отчетов, аналитики и отображения достижений пользователя.
     *
     * @return
-    *   F[Vector[CompletedTask]] - эффект, возвращающий коллекцию завершенных
+    *   F[List[CompletedTask]] - эффект, возвращающий коллекцию завершенных
     *   задач.
     */
-  def getAll: F[Vector[CompletedTask]]
+  def getByUser(userId: UserId): F[List[CompletedTask]]
 ```
 
 ### PostgreSQL-реализация HistoryService
@@ -193,13 +198,15 @@ private[services] class PostgreSQLHistoryService(xa: Aux[[x] =>> IO[x], Unit])
       .unique              // Ожидаем ровно один результат
       .transact(xa)        // Выполняем в транзакционном контексте
 
-  def getAll: IO[List[CompletedTask]] =
-    sql"""SELECT task_id, task_type, name, section_id, goal_id,
-                 duration, rating, review, start_date, end_date
-          FROM completed_tasks"""
-      .query[CompletedTask]  // Используем автоматический маппинг через Meta
-      .to[List]              // Преобразуем поток результатов в список
-      .transact(xa)          // Выполняем запрос     
+  def getByUser(userId: UserId): IO[List[CompletedTask]] =
+    Fragment.const(
+      s"""SELECT task_id, task_type, name, user_id, section_id, goal_id, duration, rating, review, start_date, end_date 
+         |FROM completed_tasks 
+         |WHERE user_id = '$userId';""".stripMargin
+    )
+      .query[CompletedTask] // Используем автоматический маппинг через Meta
+      .to[List]             // Преобразуем поток результатов в список
+      .transact(xa)         // Выполняем запрос    
 ```
 
 ### Интеграция HistoryService в жизненный цикл задач
@@ -245,6 +252,7 @@ final case class TaskLifecycleService[F[_]: {MonadThrow as MT}](
 def complete(
     id: TaskId,
     taskType: TaskType,
+    userId: UserId,
     rating: Rating,
     review: Review,
     endDate: LocalDate,
@@ -252,7 +260,7 @@ def complete(
 ): F[Unit] =
   for
     // 1. Находим и валидируем задачу
-    task <- findTask(id, taskType, Status.InProgress)
+    task <- findTask(id, taskType, userId, Status.InProgress)
     
     // Если дата начала отсутствует или больше даты окончания,
     // то она устанавливается равной дате окончания
@@ -264,6 +272,7 @@ def complete(
         taskId = task.id,
         taskType = task.taskType,
         name = task.name,
+        userId = task.userId,
         sectionId = task.sectionId,
         goalId = task.goalId,
         duration = duration,

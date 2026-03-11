@@ -102,20 +102,7 @@ object Dependencies {
 // pdp/src/test/scala/ru/scalabook/pdp/services/postgresql/SharedResources.scala
 package ru.scalabook.pdp.services.postgresql
 
-import cats.effect.{IO, Resource}
-import cats.syntax.all.*
-import doobie.*
-import doobie.util.log.LogEvent
-import doobie.util.transactor.Transactor.Aux
-import org.testcontainers.containers.PostgreSQLContainer
-import org.typelevel.log4cats.slf4j.Slf4jFactory
-import org.typelevel.log4cats.{Logger, LoggerFactory}
-import ru.scalabook.pdp.services.postgresql.{
-  PostgreSQLSectionService,
-  PostgreSQLTaskService,
-  PostgreSQLUserTypeService
-}
-import weaver.*
+...
 
 object SharedResources extends GlobalResource:
   // Настройка системы логирования для тестовой среды
@@ -196,12 +183,7 @@ end SharedResources
 // pdp/src/test/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLUserTypeServiceSuite.scala
 package ru.scalabook.pdp.services.postgresql
 
-import cats.effect.*
-import ru.scalabook.pdp.model.*
-import ru.scalabook.pdp.model.UserType.{UserTypeId, UserTypeName}
-import ru.scalabook.pdp.services.postgresql.PostgreSQLUserTypeService
-import ru.scalabook.pdp.services.postgresql.SharedResources.UserTypeServiceKey
-import weaver.*
+...
 
 // Класс тестового набора для PostgreSQLUserTypeService.
 // Параметр `global: GlobalRead` предоставляется Weaver 
@@ -219,10 +201,13 @@ class PostgreSQLUserTypeServiceSuite(global: GlobalRead) extends IOSuite:
   // Пример теста на создание сущности.
   // Каждый тест - это функция, которая получает экземпляр `service` (общий ресурс).
   test("PostgreSQLTaskService.create"): service =>
-    val name = UserTypeName("Check create")
+    val newType = CreateUserType(
+      name = UserTypeName("Check create"),
+      userId = UserId(UUID.randomUUID())
+    )
     for
       // Выполнение операции создания и получение сгенерированного ID.
-      id            <- service.create(name)
+      id            <- service.create(newType)
       // Попытка получения только что созданной сущности по ID.
       maybeUserType <- service.get(id)
     // Комбинатор `yield` возвращает assertion (проверку).
@@ -231,10 +216,11 @@ class PostgreSQLUserTypeServiceSuite(global: GlobalRead) extends IOSuite:
       whenSuccess(maybeUserType): actual => 
         // Проверка корректности сохраненных данных.
         expect.all(
-          actual.id == id,              // ID должен совпадать
-          actual.name == name,          // Имя должно совпадать
-          actual.displayed == true,     // Значение по умолчанию
-          actual.ordinal == Ordinal.Max // Значение по умолчанию
+          actual.id == id,                       // ID должен совпадать
+          actual.name == newType.name,           // Имя должно совпадать
+          actual.userId == newType.userId,       // ID пользователя должен совпадать
+          actual.displayed == newType.displayed, // Значение по умолчанию
+          actual.ordinal == newType.ordinal      // Значение по умолчанию
         )
 
   // Тест на обработку случая, когда сущность не найдена.
@@ -245,56 +231,76 @@ class PostgreSQLUserTypeServiceSuite(global: GlobalRead) extends IOSuite:
       expect(result.isEmpty)
 
   // Тест на получение всех сущностей.
-  test("PostgreSQLTaskService.getAll"): service =>
-    val opensource = UserTypeName("Open Source")
-    val myBlog     = UserTypeName("Мой блог")
+  test("PostgreSQLTaskService.getByUser"): service =>
+    val firstUserId = UserId(UUID.randomUUID())
+    val opensource  = CreateUserType(
+      name = UserTypeName("Open Source"),
+      userId = firstUserId
+    )
+    val secondUserId = UserId(UUID.randomUUID())
+    val myBlog       = CreateUserType(
+      name = UserTypeName("Мой блог"),
+      userId = secondUserId
+    )
     for
-      osId  <- service.create(opensource)
-      mbId  <- service.create(myBlog)
-      types <- service.getAll // Получение полного списка
+      osId        <- service.create(opensource)
+      mbId        <- service.create(myBlog)
+      // Получение списка пользовательских типов
+      firstTypes  <- service.getByUser(firstUserId)
+      secondTypes <- service.getByUser(secondUserId)
     yield expect.all(
-      types.length >= 2, // Как минимум две созданные нами сущности
-      types.contains(UserType(osId, opensource)), // Проверка наличия первой
-      types.contains(UserType(mbId, myBlog))      // Проверка наличия второй
+      firstTypes.nonEmpty,
+      secondTypes.nonEmpty,
+      firstTypes.exists(_.id == osId),
+      firstTypes.forall(_.id != mbId),
+      secondTypes.forall(_.id != osId),
+      secondTypes.exists(_.id == mbId)
     )
 
   // Тест на обновление существующей сущности.
   test("PostgreSQLTaskService.update"): service =>
-    val exercises = UserTypeName("Exercises")
-    val newName   = UserTypeName("Exercises (updated)")
+    val userId    = UserId(UUID.randomUUID())
+    val exercises = CreateUserType(
+      name = UserTypeName("Exercises"),
+      userId = userId
+    )
+    val newName = UserTypeName("Exercises (updated)")
     for
       id <- service.create(exercises)
       // Новая версия сущности с тем же ID
       updated = UserType(
         id = id,
         name = newName,
-        displayed = false,
+        userId = UserId(UUID.randomUUID()),
+        displayed = !exercises.displayed,
         ordinal = Ordinal(10)
-      ) 
+      )
       _            <- service.update(updated) // Операция обновления
       maybeUpdated <- service.get(updated.id) // Получение для проверки
     yield whenSuccess(maybeUpdated): actual =>
       expect.all(
         actual.id == updated.id,
-        actual.name == newName,       // Имя должно измениться
-        actual.displayed == false,    // Статус отображения должен измениться
-        actual.ordinal == Ordinal(10) // Порядок должен измениться
+        actual.name == updated.name,           // Имя должно измениться
+        actual.userId == updated.userId,       // ID пользователя должен совпадать
+        actual.displayed == updated.displayed, // Статус отображения должен измениться
+        actual.ordinal == updated.ordinal      // Порядок должен измениться
       )
 
   // Тест на удаление сущности.
   test("PostgreSQLTaskService.delete"): service =>
-    val name = UserTypeName("Deprecated")
+    val newType = CreateUserType(
+      name = UserTypeName("Deprecated"),
+      userId = UserId(UUID.randomUUID())
+    )
     for
-      id        <- service.create(name)
-      initial   <- service.getAll     // Состояние до удаления
-      _         <- service.delete(id) // Операция удаления
-      finalList <- service.getAll     // Состояние после удаления
+      id        <- service.create(newType)
+      initial   <- service.getByUser(newType.userId) // Состояние до удаления
+      _         <- service.delete(id)                // Операция удаления
+      finalList <- service.getByUser(newType.userId) // Состояние после удаления
     yield expect.all(
       initial.exists(_.id == id),  // Сущность должна присутствовать в начальном списке
       finalList.forall(_.id != id) // Сущность должна отсутствовать в конечном списке
     )
-
-end PostgreSQLUserTypeServiceSuite
 ```
 
 [Полный список тестов][tests]

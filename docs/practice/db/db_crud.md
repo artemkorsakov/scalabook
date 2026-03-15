@@ -305,12 +305,12 @@ private[services] class PostgreSQLUserTypeService(xa: Aux[[x] =>> IO[x], Unit])
   /** Получает все пользовательские типы задач.
     *
     * @return
-    *   IO[List[UserType]] - эффект, возвращающий список всех типов.
+    *   IO[Vector[UserType]] - эффект, возвращающий список всех типов.
     */
-  def getByUser(userId: UserId): IO[List[UserType]] =
+  def getByUser(userId: UserId): IO[Vector[UserType]] =
     generateSelectByField[UserType, UserId](userId, "user_id")
       .query[UserType] // Селект всех полей
-      .to[List]        // Преобразуем поток результатов в List
+      .to[Vector]        // Преобразуем поток результатов в Vector
       .transact(xa)    
 
   /** Обновляет существующий пользовательский тип задачи.
@@ -337,11 +337,11 @@ private[services] class PostgreSQLUserTypeService(xa: Aux[[x] =>> IO[x], Unit])
     * batch-запрос, но текущая реализация обеспечивает простоту и надежность.
     *
     * @param userTypes
-    *   NonEmptyList[UserType] - гарантированно непустой список типов для обновления.
+    *   NonEmptyVector[UserType] - гарантированно непустой список типов для обновления.
     * @return
     *   IO[Unit] - эффект, подтверждающий выполнение всех операций обновления.
     */
-  def updateAll(userTypes: NonEmptyList[UserType]): IO[Unit] =
+  def updateAll(userTypes: NonEmptyVector[UserType]): IO[Unit] =
     def toConn: UserType => ConnectionIO[Int] =
       generateUpdateById[UserType, UserTypeId](_).update.run
     
@@ -607,7 +607,7 @@ Doobie, как библиотека для типобезопасной рабо
 Типы, требующие специального внимания в нашем проекте:
 
 1. **Перечисления (enum)**: `Status` — пользовательский enum, не имеющий прямого аналога в SQL.
-2. **Коллекции**: `List[TaskStep]` — список пользовательских типов, которые должны храниться как массив в PostgreSQL.
+2. **Коллекции**: `Vector[TaskStep]` — список пользовательских типов, которые должны храниться как массив в PostgreSQL.
 3. **Опциональные значения**: `Option[LocalDate]` — дата, которая может отсутствовать, требует особой обработки NULL.
 4. **Специализированные типы измерений**: `FiniteDuration` — представление длительности, которое эффективнее хранить как число.
 

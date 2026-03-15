@@ -101,13 +101,13 @@ private[services] trait UserTypeService[F[_]: Monad]:
   def get(id: UserTypeId): F[Option[UserType]]
 
   /** Получает список всех пользовательских типов задач. */
-  def getByUser(userId: UserId): F[List[UserType]]
+  def getByUser(userId: UserId): F[Vector[UserType]]
 
   /** Обновляет существующий пользовательский тип задачи. */
   def update(userType: UserType): F[Unit]
 
   /** Обновляет список пользовательских типов задач. */
-  def updateAll(userTypes: NonEmptyList[UserType]): F[Unit]
+  def updateAll(userTypes: NonEmptyVector[UserType]): F[Unit]
 
   /** Удаляет пользовательский тип задачи по его идентификатору. */
   def delete(id: UserTypeId): F[Unit]  
@@ -123,7 +123,7 @@ private[services] trait UserTypeService[F[_]: Monad]:
 - **`F[UserTypeId]`** — операция, которая в процессе выполнения (`F`) произведет побочный эффект (запись в БД) и вернет результат — `UserTypeId`.
 - **`F[Option[UserType]]`** — операция чтения, которая может завершиться успешно, найдя сущность (`Some[UserType]`), 
   или вернуть `None`, если сущность с таким ID не существует.
-- **`F[List[UserType]]`** — операция чтения, всегда возвращающая коллекцию. 
+- **`F[Vector[UserType]]`** — операция чтения, всегда возвращающая коллекцию. 
   Коллекция может быть пустой, если в БД еще нет записей.
 - **`F[Unit]`** — операция, которая выполняется ради своего побочного эффекта (обновление, удаление) 
   и не возвращает значимого значения. `Unit` служит сигналом успешного завершения.
@@ -314,17 +314,17 @@ private[services] class MockUserTypeService(
   def get(id: UserTypeId): IO[Option[UserType]] =
     userTypes.get.map(_.get(id)) // Читаем Map и выполняем lookup.
 
-  /** Извлекает все значения для заданного пользователя, преобразуя значения Map в List. */
-  def getByUser(userId: UserId): IO[List[UserType]] =
-    userTypes.get.map(_.values.filter(_.userId == userId).toList)
+  /** Извлекает все значения для заданного пользователя, преобразуя значения Map в Vector. */
+  def getByUser(userId: UserId): IO[Vector[UserType]] =
+    userTypes.get.map(_.values.filter(_.userId == userId).toVector)
 
   /** Обновляет (или добавляет) запись в Map. */
   def update(userType: UserType): IO[Unit] =
     userTypes.update(currentMap => currentMap + (userType.id -> userType))
 
   /** Обновляет все переданные записи в Map. */
-  def updateAll(items: NonEmptyList[UserType]): IO[Unit] =
-    userTypes.update(_ ++ items.toList.map(t => t.id -> t))
+  def updateAll(items: NonEmptyVector[UserType]): IO[Unit] =
+    userTypes.update(_ ++ items.toVector.map(t => t.id -> t))
     
   /** Удаляет запись по ID. Если ID не существует, операция не имеет эффекта. */
   def delete(id: UserTypeId): IO[Unit] =

@@ -297,7 +297,7 @@ private val httpRoutes: AuthedRoutes[User, F] =
 
     // Пересортировать пользовательские типы
     case ar @ PUT -> Root / "reorder" as user =>
-      ar.req.asJsonDecode[NonEmptyList[UserTypeId]].flatMap: ids =>
+      ar.req.asJsonDecode[NonEmptyVector[UserTypeId]].flatMap: ids =>
         settingsService
           .reorderTaskTypes(ids, user.id)
           .flatMap(Ok(_))

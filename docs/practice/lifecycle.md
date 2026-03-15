@@ -62,7 +62,7 @@ def createTaskType(name: UserTypeName): F[UserTypeId] =
   )
       
 private def createItem[A, B, C](
-    getAll: F[List[A]],
+    getAll: F[Vector[A]],
     getName: A => B,
     name: B,
     create: => F[C]
@@ -107,7 +107,7 @@ def updateTaskType(userType: UserType): F[Unit] =
   )
   
 private def updateItem[A, B, C](
-    getAll: F[List[A]],
+    getAll: F[Vector[A]],
     updated: A,
     getId: A => B,
     getName: A => C,
@@ -143,7 +143,7 @@ private def updateItem[A, B, C](
 На вход принимается вектор идентификаторов в желаемом порядке.
 
 ```dotty
-def reorderTaskTypes(ids: NonEmptyList[UserTypeId], userId: UserId): F[Unit] =
+def reorderTaskTypes(ids: NonEmptyVector[UserTypeId], userId: UserId): F[Unit] =
   reorderItems[UserType, UserTypeId](
     getAll = typeService.getByUser(userId),
     ids = ids,
@@ -153,14 +153,14 @@ def reorderTaskTypes(ids: NonEmptyList[UserTypeId], userId: UserId): F[Unit] =
   )
   
 private def reorderItems[A, B](
-    getAll: F[List[A]],
-    ids: NonEmptyList[B],
+    getAll: F[Vector[A]],
+    ids: NonEmptyVector[B],
     getId: A => B,
     update: A => Ordinal => A,
-    updateAll: NonEmptyList[A] => F[Unit]
+    updateAll: NonEmptyVector[A] => F[Unit]
 ): F[Unit] =
   getAll.flatMap: items =>
-    NonEmptyList.fromList(items) match
+    NonEmptyVector.fromVector(items) match
       case None =>
         MT.raiseError(new IllegalArgumentException("Items list is empty"))
       case Some(neItems) =>
@@ -174,7 +174,7 @@ private def reorderItems[A, B](
         else
           val updated =
             neItems.map: item =>
-              val index   = ids.toList.indexOf(getId(item))
+              val index   = ids.toVector.indexOf(getId(item))
               val ordinal =
                 if index >= 0 then Ordinal.option(index + 1) else None
               update(item)(ordinal.getOrElse(Ordinal.Max))
@@ -196,7 +196,7 @@ private def reorderItems[A, B](
 Наиболее простая операция, которая делегируется соответствующему специализированному сервису.
 
 ```dotty
-def getTaskTypes(userId: UserId): F[List[UserType]] = typeService.getByUser(userId)
+def getTaskTypes(userId: UserId): F[Vector[UserType]] = typeService.getByUser(userId)
 ```
 
 Аналогичные методы `getGoals` и `getSections` будут обращаться к `goalService.getByUser(userId)` 
@@ -366,7 +366,7 @@ final case class TaskLifecycleService[F[_]: {MonadThrow as MT}](
       case Validated.Invalid(errors) =>
         // Накопленные ошибки объединяются и выбрасываются как исключение
         MT.raiseError(
-          new IllegalArgumentException(errors.toList.mkString(", "))
+          new IllegalArgumentException(errors.toVector.mkString(", "))
         )
   end create
 
@@ -441,7 +441,7 @@ def enqueue(
     taskType: TaskType,
     userId: UserId,
     ordinal: Ordinal,
-    plan: NonEmptyList[TaskStep] // Непустой список шагов — гарантия на уровне типов
+    plan: NonEmptyVector[TaskStep] // Непустой список шагов — гарантия на уровне типов
 ): F[Unit] =
   // 1. Находим задачу, строго проверяя её текущий статус
   findTask(id, taskType, userId, Status.KnowledgeBase).flatMap: task =>
@@ -449,7 +449,7 @@ def enqueue(
     val updated = task.copy(
       status = Status.Planned,
       ordinal = ordinal,
-      plan = plan.toList
+      plan = plan.toVector
     )
     // 3. Сохраняем изменения
     taskService.update(updated) 

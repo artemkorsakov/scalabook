@@ -228,13 +228,7 @@ private[services] class PostgreSQLUsersService(xa: Aux[[x] =>> IO[x], Unit])
       .transact(xa)
 
   def find(username: UserName): IO[Option[User]] =
-    // Прямой SQL-запрос для поиска по имени
-    val sqlFragment =
-      Fragment.const(
-        s"""SELECT id, name, password FROM users WHERE name = '$username' LIMIT 1;"""
-      )
-
-    sqlFragment
+    fr"SELECT id, name, password FROM users WHERE name = $username LIMIT 1"
       .query[User]
       .option
       .transact(xa)

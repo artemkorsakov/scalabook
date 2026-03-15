@@ -130,24 +130,6 @@ Response body on success:
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/http/routes/UserTypeRoutes.scala
-package ru.scalabook.pdp.http.routes
-
-import cats.MonadThrow
-import cats.data.NonEmptyList
-import cats.syntax.all.*
-import io.circe.*
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.circe.given
-import io.github.iltotore.iron.constraint.all.*
-import org.http4s.*
-import org.http4s.circe.*
-import org.http4s.circe.CirceEntityEncoder.*
-import org.http4s.dsl.Http4sDsl
-import org.http4s.server.*
-import ru.scalabook.pdp.model.*
-import ru.scalabook.pdp.model.UserType.{UserTypeId, UserTypeName, given}
-import ru.scalabook.pdp.services.SettingsService
-
 final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow}](
     settingsService: SettingsService[F]
 ) extends Http4sDsl[F]:
@@ -158,13 +140,12 @@ final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow}](
     AuthedRoutes.of:
       // Список всех пользовательских типов
       case GET -> Root as user =>
-        Ok(settingsService.getTaskTypes)
-        
+        Ok(settingsService.getTaskTypes(user.id))
+
       ...  
 
   def routes(authMiddleware: AuthMiddleware[F, User]): HttpRoutes[F] =
     Router(prefixPath -> authMiddleware(httpRoutes))
-end UserTypeRoutes
 ```
 
 Здесь происходит несколько вещей:
@@ -227,12 +208,12 @@ No Response body.
       // Добавление нового типа
       case ar @ POST -> Root as user =>
         ar.req.asJsonDecode[UserTypeName].flatMap: name =>
+          val newType = CreateUserType(name, user.id)
           settingsService
-            .createTaskType(name)
-            .flatMap(_ => Created())
-            .recoverWith {
+            .createTaskType(newType)
+            .flatMap(Created(_))
+            .recoverWith:
               case ex: IllegalArgumentException => BadRequest(ex.getMessage)
-            }
             
       ...
 ```
@@ -257,21 +238,37 @@ No Response body.
 ```
 
 ```dotty
-  private val httpRoutes: AuthedRoutes[User, F] =
-    AuthedRoutes.of:
-      ...
+// Определим отдельный класс для редактирования пользовательского типа
+final case class EditUserType(
+    id: UserTypeId,
+    name: UserTypeName,
+    displayed: Boolean,
+    ordinal: Ordinal
+)
 
-      // Обновить пользовательский тип
-      case ar @ PUT -> Root / "update" as user =>
-        ar.req.asJsonDecode[UserType].flatMap: userType =>
-          settingsService
-            .updateTaskType(userType)
-            .flatMap(_ => Ok())
-            .recoverWith {
-              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
-            }
+private val httpRoutes: AuthedRoutes[User, F] =
+  AuthedRoutes.of:
+    ...
 
-      ...
+    // Обновить пользовательский тип
+    case ar @ PUT -> Root / "update" as user =>
+      ar.req.asJsonDecode[EditUserType].flatMap: editUserType =>
+        val updated =
+          UserType(
+            id = editUserType.id,
+            name = editUserType.name,
+            userId = user.id,
+            displayed = editUserType.displayed,
+            ordinal = editUserType.ordinal
+          )
+          
+        settingsService
+          .updateTaskType(updated)
+          .flatMap(Ok(_))
+          .recoverWith:
+            case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+
+    ...
 ```
 
 Пересортирование списка элементов:
@@ -294,21 +291,20 @@ No Response body.
 ```
 
 ```dotty
-  private val httpRoutes: AuthedRoutes[User, F] =
-    AuthedRoutes.of:
-      ...
+private val httpRoutes: AuthedRoutes[User, F] =
+  AuthedRoutes.of:
+    ...
 
-      // Пересортировать пользовательские типы
-      case ar @ PUT -> Root / "reorder" as user =>
-        ar.req.asJsonDecode[NonEmptyList[UserTypeId]].flatMap: ids =>
-          settingsService
-            .reorderTaskTypes(ids)
-            .flatMap(_ => Ok())
-            .recoverWith {
-              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
-            }
+    // Пересортировать пользовательские типы
+    case ar @ PUT -> Root / "reorder" as user =>
+      ar.req.asJsonDecode[NonEmptyList[UserTypeId]].flatMap: ids =>
+        settingsService
+          .reorderTaskTypes(ids, user.id)
+          .flatMap(Ok(_))
+          .recoverWith:
+            case ex: IllegalArgumentException => BadRequest(ex.getMessage)
 
-      ...
+    ...
 ```
 
 Удаление типа:
@@ -343,32 +339,21 @@ object UserTypeIdVar:
 целесообразно. Http4s поддерживает `IntVar`, `LongVar` и `UUIDVar`, среди прочих.
 
 ```dotty
-  private val httpRoutes: AuthedRoutes[User, F] =
-    AuthedRoutes.of:
-      ...
+private val httpRoutes: AuthedRoutes[User, F] =
+  AuthedRoutes.of:
+    ...
 
-      // Удалить пользовательский тип
-      case DELETE -> Root / UserTypeIdVar(id) as user =>
-        settingsService.deleteTaskType(id)
-          .flatMap(_ => NoContent())
-          .recoverWith {
-            case ex: IllegalArgumentException => BadRequest(ex.getMessage)
-          }
+    // Удалить пользовательский тип
+    case DELETE -> Root / UserTypeIdVar(id) as user =>
+      settingsService.deleteTaskType(id, user.id)
+        .flatMap(_ => NoContent())
+        .recoverWith:
+          case ex: IllegalArgumentException => BadRequest(ex.getMessage)
 ```
 
 ## Работа с разделами
 
-Роуты для разделов работют аналогично:
-
-```dotty
-```
-
-## Работа с целями
-
-Роуты для целей работют аналогично:
-
-```dotty
-```
+Роуты для разделов и целей работают аналогично.
 
 ---
 

@@ -180,10 +180,10 @@ private[services] trait HistoryService[F[_]: Monad]:
     * формирования отчетов, аналитики и отображения достижений пользователя.
     *
     * @return
-    *   F[List[CompletedTask]] - эффект, возвращающий коллекцию завершенных
+    *   F[Vector[CompletedTask]] - эффект, возвращающий коллекцию завершенных
     *   задач.
     */
-  def getByUser(userId: UserId): F[List[CompletedTask]]
+  def getByUser(userId: UserId): F[Vector[CompletedTask]]
 ```
 
 ### PostgreSQL-реализация HistoryService
@@ -198,14 +198,11 @@ private[services] class PostgreSQLHistoryService(xa: Aux[[x] =>> IO[x], Unit])
       .unique              // Ожидаем ровно один результат
       .transact(xa)        // Выполняем в транзакционном контексте
 
-  def getByUser(userId: UserId): IO[List[CompletedTask]] =
-    Fragment.const(
-      s"""SELECT task_id, task_type, name, user_id, section_id, goal_id, duration, rating, review, start_date, end_date 
-         |FROM completed_tasks 
-         |WHERE user_id = '$userId';""".stripMargin
-    )
+  def getByUser(userId: UserId): IO[Vector[CompletedTask]] =
+    fr"""SELECT task_id, task_type, name, user_id, section_id, goal_id, duration, rating, review, start_date, end_date 
+         FROM completed_tasks WHERE user_id = $userId"""
       .query[CompletedTask] // Используем автоматический маппинг через Meta
-      .to[List]             // Преобразуем поток результатов в список
+      .to[Vector]             // Преобразуем поток результатов в список
       .transact(xa)         // Выполняем запрос    
 ```
 

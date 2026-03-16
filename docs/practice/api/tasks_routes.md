@@ -576,16 +576,16 @@ case ar @ DELETE -> Root as user =>
 
 ## Сводная таблица endpoint-ов
 
-| Метод  | Path              | Параметры                     | Тело запроса   | Ответ                | Описание               |
-|--------|-------------------|-------------------------------|----------------|----------------------|------------------------|
-| GET    | `/tasks`          | status, task_type, section_id | -              | 200 + `TaskResult[]` | Получение списка задач |
-| POST   | `/tasks`          | -                             | `CreateTask`   | 201 + ID             | Создание задачи        |
-| GET    | `/tasks/task`     | task_id, task_type            | -              | 200 + `TaskResult`   | Получение задачи по ID |
-| PUT    | `/tasks/enqueue`  | -                             | `EnqueueTask`  | 200                  | Постановка в очередь   |
-| PUT    | `/tasks/start`    | -                             | `StartTask`    | 200                  | Начало работы          |
-| PUT    | `/tasks/complete` | -                             | `CompleteTask` | 200                  | Завершение задачи      |
-| PUT    | `/tasks/defer`    | -                             | `TaskInfo`     | 200                  | Откладывание задачи    |
-| DELETE | `/tasks`          | -                             | `TaskInfo`     | 204                  | Удаление задачи        |
+| Метод  | Path              | Параметры                           | Тело запроса   | Ответ                | Описание               |
+|--------|-------------------|-------------------------------------|----------------|----------------------|------------------------|
+| GET    | `/tasks`          | `status`, `task_type`, `section_id` | -              | 200 + `TaskResult[]` | Получение списка задач |
+| POST   | `/tasks`          | -                                   | `CreateTask`   | 201 + ID             | Создание задачи        |
+| GET    | `/tasks/task`     | `task_id`, `task_type`              | -              | 200 + `TaskResult`   | Получение задачи по ID |
+| PUT    | `/tasks/enqueue`  | -                                   | `EnqueueTask`  | 200                  | Постановка в очередь   |
+| PUT    | `/tasks/start`    | -                                   | `StartTask`    | 200                  | Начало работы          |
+| PUT    | `/tasks/complete` | -                                   | `CompleteTask` | 200                  | Завершение задачи      |
+| PUT    | `/tasks/defer`    | -                                   | `TaskInfo`     | 200                  | Откладывание задачи    |
+| DELETE | `/tasks`          | -                                   | `TaskInfo`     | 204                  | Удаление задачи        |
 
 ## Коды ответов
 

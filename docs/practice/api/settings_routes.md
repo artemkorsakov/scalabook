@@ -7,205 +7,150 @@ nextPage = tasks_routes.html
 
 # Endpoint-ы настроек
 
-## Авторизация
+## Система авторизации в HTTP слое
 
-Для доступа к аутентифицированному пользователю нам необходимо использовать `AuthedUser[F, User]`,
-который является классом-оболочкой, изоморфным `(User, Request[F])`, где `User` — это некоторый произвольный тип данных,
-который мы объявляем для представления пользователя в нашей системе.
-Однако на самом деле это псевдоним типа для `ContextRequest`, определенный как полиморфный класс-оболочка.
+### Концепция аутентифицированных запросов
+
+В [HTTP4s](https://http4s.org/) для работы с аутентифицированными пользователями используется специальный механизм, 
+основанный на типах-обёртках. 
+Ключевым понятием является `AuthedRequest[F[_], A]` - структура, которая объединяет HTTP запрос (`Request[F]`) 
+и контекст аутентификации произвольного типа `A` (в нашем случае - модель пользователя `User`).
 
 ```dotty
-final case class ContextRequest[F[_], A](
-  context: A, req: Request[F]
+// Упрощённое представление
+final case class AuthedRequest[F[_], A](
+  context: A,      // Данные аутентифицированного пользователя
+  req: Request[F]  // Исходный HTTP запрос
 )
 ```
 
-Аналогичным образом, нам следует использовать `AuthedRoutes[User, F]` вместо `HttpRoutes[F]`, если мы
-хотим получить доступ к аутентифицированному пользователю в каждом запросе.
-Например:
+Для работы с такими запросами HTTP4s предоставляет специализированный тип `AuthedRoutes[A, F]` - аналог обычных `HttpRoutes[F]`, 
+но с доступом к контексту пользователя в каждом обработчике:
 
 ```dotty
 val authedRoutes: AuthedRoutes[User, IO] =
-  AuthedRoutes.of {
+  AuthedRoutes.of:
+    // В каждом case у нас есть доступ к объекту user
     case GET -> Root as user =>
-      Ok(s"Welcome, ${user.name}")
-  }
+      Ok(s"Welcome, ${user.username}")
 ```
 
-`AuthedRoutes[T, F]` — это псевдоним типа для `Kleisli[OptionT[F, *]`, `AuthedRequest[F, T]`, `Response[F]`,
-аналогично `HttpRoutes`, за исключением того, что тип запроса теперь содержит информацию
-об аутентифицированном пользователе.
-Http4s позволяет нам определить, как аутентифицировать пользователя.
-Все, что нам нужно, это функция, которая решает, может ли пользователь быть аутентифицирован
-или нет, учитывая `Request[F]`, и функция, которая определяет, что делать в случае сбоя.
-Как только у нас появятся обе функции, мы можем применить их к `AuthMiddleware`,
-который можно использовать как еще одно обычное промежуточное ПО.
-В качестве демонстрации см. пример ниже.
+### Техническая реализация
+
+Под капотом `AuthedRoutes[T, F]` является псевдонимом типа для `Kleisli[OptionT[F, *], AuthedRequest[F, T], Response[F]]`. 
+Это делает его полностью совместимым с композиционной природой HTTP4s и позволяет использовать все стандартные комбинаторы.
+
+Процесс аутентификации состоит из трёх ключевых компонентов:
+
+1. **Функция аутентификации** - преобразует `Request[F]` в `Either[String, User]`, где `Left` означает ошибку аутентификации, 
+   а `Right` - успешно аутентифицированного пользователя
+2. **Обработчик ошибок** - определяет, какой HTTP ответ вернуть при неудачной аутентификации
+3. **Middleware** - компонент, который объединяет первые два и преобразует `AuthedRoutes` в обычные `HttpRoutes`
 
 ```dotty
+// 1. Функция аутентификации
 val authUser: Kleisli[F, Request[F], Either[String, User]] =
-  Kleisli.pure(myUser.asRight) // Authenticate user
+  Kleisli { request =>
+    // Извлекаем токен из заголовка Authorization
+    extractToken(request).map: token =>
+      validateToken(token).map(user => user.asRight)
+    .getOrElse("No token".asLeft.pure[F])
+  }
+
+// 2. Обработчик ошибок
 val onFailure: AuthedRoutes[String, F] =
-  Kleisli(req => OptionT.liftF(Forbidden(req.context)))
+  AuthedRoutes.of: case ctxRequest =>
+    // ctxRequest.context содержит сообщение об ошибке
+    OptionT.liftF(Forbidden(ctxRequest.context))
+
+// 3. Создание middleware
 val middleware = AuthMiddleware(authUser, onFailure)
+
+// 4. Применение middleware к защищённым маршрутам
 val authedRoutes: AuthedRoutes[User, F] = ???
-val routes: HttpRoutes[F] = middleware(authedRoutes)
+val publicRoutes: HttpRoutes[F] = middleware(authedRoutes)
 ```
 
-Наиболее распространенными методами аутентификации являются cookie и bearer token.
-Примеры обоих вариантов можно найти в официальной документации, однако мы сосредоточимся на втором.
+### JWT аутентификация
 
-### JWT Auth
+Для JWT аутентификации мы используем библиотеку [Http4s JWT Auth](https://github.com/profunktor/http4s-jwt-auth), 
+которая предоставляет удобную абстракцию поверх стандартного middleware.
 
-В качестве библиотеки мы выберем [Http4s JWT Auth4](https://github.com/profunktor/http4s-jwt-auth),
-которая предлагает некоторые функциональные возможности поверх Http4s и [JWT Scala](https://github.com/jwt-scala/jwt-scala).
-Http4s предоставляет `AuthMiddleware`, упомянутый ранее.
-Это псевдоним типа для сложного типа.
+#### Настройка JWT
 
 ```dotty
-type AuthMiddleware[F[_], T] = Middleware[OptionT[F, *], AuthedRequest[F, T], Response[F], Request[F], Response[F]]
-```
+import dev.profunktor.auth.jwt.*
+import pdi.jwt.*
 
-Однако не пугайтесь, вы всё поймёте, когда мы рассмотрим промежуточные обработчики вскоре, с некоторыми примерами.
-Пока что их можно рассматривать как функции `AuthedRoutes[T, F] => HttpRoutes[F]`.
+// 1. Конфигурация JWT
+val jwtAuth = JwtAuth.hmac(
+  "секретный-ключ-для-подписи-токенов",
+  JwtAlgorithm.HS256
+)
 
-Вместо обычного `AuthMiddleware` мы будем использовать пользовательский `JwtAuthMiddleware`,
-определенный в Http4s JWT Auth.
-
-```dotty
+// 2. Функция валидации пользователя по токену
 val usersAuth: JwtToken => JwtClaim => F[Option[User]] =
-  t => c => User("Joe").some.pure[F]
-val usersMiddleware: AuthMiddleware[F, User] =
+  token => claim =>
+    // Извлекаем user_id из claim и находим пользователя в БД
+    for
+      userId <- claim.content.asJson.hcursor.get[UUID]("user_id").toOption
+      user   <- userService.find(userId)
+    yield user
+
+// 3. Создание JWT middleware
+val jwtMiddleware: AuthMiddleware[F, User] =
   JwtAuthMiddleware[F, User](jwtAuth, usersAuth)
 ```
 
-Для этого требуется `JwtAuth` и функция `JwtToken => JwtClaim => F[Option[A]]`, как показано выше.
-Первую можно создать следующим образом.
+#### Структура JWT Claim
 
-```dotty
-val jwtAuth = JwtAuth.hmac("53cr3t", JwtAlgorithm.HS256)
-```
+JWT токен содержит стандартные поля (iss, exp, iat) и пользовательские данные в поле `content`:
 
-После того, как мы определили все необходимое, мы можем использовать наш `AuthMiddleware`
-как любой другой промежуточный обработчик.
-Например:
-
-```dotty
-val routes: HttpRoutes[F] = usersMiddleware(authedRoutes)
-```
-
-## Публичное API с авторизацией
-
-Это HTTP-маршруты, для работы которых требуется авторизация зарегистрированных пользователей.
-Все они могут возвращать следующие статусы ответа в дополнение к указанным выше:
-
-- 401: неавторизованный пользователь, необходимо авторизоваться.
-- 403: у пользователя нет разрешения на выполнение этого действия.
-
-## Работа с пользовательскими типами
-
-Получение всех типов, доступных для пользователя:
-
-```http
-GET /user_types
-
-Response code:
-– 200: Возвращает список пользовательских типов
-
-Response body on success:
-
-[
-  {
-    "id": 1,
-    "name": "Блог"
-  },
-  {
-    "id": 2,
-    "name": "Opensourse"
+```json
+{
+  "iss": "scalabook.ru",
+  "exp": 1700000000,
+  "iat": 1699996400,
+  "content": {
+    "user_id": "123e4567-e89b-12d3-a456-426614174000",
+    "username": "john_doe"
   }
-]
+}
 ```
 
-Создание сервиса:
+### HTTP статусы авторизации
+
+Защищённые endpoint-ы могут возвращать следующие статусы, связанные с авторизацией:
+
+| Статус           | Код | Описание                                                                |
+|------------------|-----|-------------------------------------------------------------------------|
+| **Unauthorized** | 401 | Пользователь не аутентифицирован. Требуется предоставить валидный токен |
+| **Forbidden**    | 403 | Пользователь аутентифицирован, но не имеет прав для выполнения операции |
+
+## Реализация endpoint-ов для пользовательских типов
+
+### Общая структура
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/http/routes/UserTypeRoutes.scala
 final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow}](
     settingsService: SettingsService[F]
 ) extends Http4sDsl[F]:
 
+  // Базовый путь для всех endpoint-ов этого сервиса
   private[routes] val prefixPath = "/user_types"
 
+  // Защищённые маршруты с доступом к пользователю
   private val httpRoutes: AuthedRoutes[User, F] =
     AuthedRoutes.of:
-      // Список всех пользовательских типов
+      // GET /user_types - получение списка всех типов
       case GET -> Root as user =>
-        Ok(settingsService.getTaskTypes(user.id))
+        Ok(
+          settingsService
+            .getTaskTypes(user.id)
+            .map(_.map(_.toShort))
+        )
 
-      ...  
-
-  def routes(authMiddleware: AuthMiddleware[F, User]): HttpRoutes[F] =
-    Router(prefixPath -> authMiddleware(httpRoutes))
-```
-
-Здесь происходит несколько вещей:
-
-- У нас есть новое ограничение `MonadThrow[F]`, необходимое для `HttpRoutes.of[F]`, а также необходимое для создания ответа.
-- В качестве аргумента для нашего класса используется алгебра `SettingsService[F]`.
-- Мы расширяем `Http4sDsl[F]`, чтобы получить доступ к методам DSL, специфичным для нашего `F`.
-- Существует приватный `prefixPath`, указывающий на корень нашей конечной точки.
-- У нас есть приватный `httpRoutes`, определяющий все наши конечные точки, в данном случае только одну.
-- Наконец, у нас есть публичный `routes`, который использует `Router`,
-  позволяющий добавлять `prefixPath` к группе конечных точек, обозначенных как `HttpRoutes`.
-
-Нам необходимо circe-кодек:
-
-```dotty
-import io.circe.*
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.circe.given
-import io.github.iltotore.iron.constraint.all.*
-
-... // другие import-ы
-
-object UserType:
-  ...
-
-  given encoder: Encoder[UserType] = deriveEncoder[UserType]
-```
-
-Давайте разберем это по частям, поскольку здесь много всего происходит.
-
-- У нас есть новое ограничение `JsonDecoder`, которое представляет собой просто интерфейс,
-  позволяющий нам декодировать наш запрос как требуемую сущность `A`, имея `Decoder[A]`.
-- Мы используем `AuthedRoutes[CommonUser, F]` вместо `HttpRoutes[F]`.
-- Наши маршруты принимают в качестве аргумента `AuthMiddleware[F, CommonUser]`.
-- Мы декодируем данные в наших POST и PUT конечных точках, что делается с помощью `JsonDecoder` (для этого требуется `Decoder[Cart]`).
-
-Добавление типа:
-
-```http
-POST /user_types
-
-Response code:
-– 201: Новый тип успешно добавлен.
-– 400: Тип с таким наименованием уже существует.
-
-Request body:
-
-{
-  "name": "OpenSource"
-}
-
-No Response body.
-```
-
-```dotty
-  private val httpRoutes: AuthedRoutes[User, F] =
-    AuthedRoutes.of:
-      ...
-
-      // Добавление нового типа
+      // POST /user_types - создание нового типа
       case ar @ POST -> Root as user =>
         ar.req.asJsonDecode[UserTypeName].flatMap: name =>
           val newType = CreateUserType(name, user.id)
@@ -214,146 +159,304 @@ No Response body.
             .flatMap(Created(_))
             .recoverWith:
               case ex: IllegalArgumentException => BadRequest(ex.getMessage)
-            
-      ...
+
+      // PUT /user_types/update - обновление существующего типа
+      case ar @ PUT -> Root / "update" as user =>
+        ar.req.asJsonDecode[ShortUserType].flatMap: ShortUserType =>
+          val updated =
+            UserType(
+              id = ShortUserType.id,
+              name = ShortUserType.name,
+              userId = user.id,
+              displayed = ShortUserType.displayed,
+              ordinal = ShortUserType.ordinal
+            )
+
+          settingsService
+            .updateTaskType(updated)
+            .flatMap(Ok(_))
+            .recoverWith:
+              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+
+      // PUT /user_types/reorder - изменение порядка сортировки
+      case ar @ PUT -> Root / "reorder" as user =>
+        ar.req.asJsonDecode[NonEmptyVector[UserTypeId]].flatMap: ids =>
+          settingsService
+            .reorderTaskTypes(ids, user.id)
+            .flatMap(Ok(_))
+            .recoverWith:
+              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+
+      // DELETE /user_types/{id} - удаление типа по ID
+      case DELETE -> Root / UserTypeIdVar(id) as user =>
+        settingsService.deleteTaskType(id, user.id)
+          .flatMap(_ => NoContent())
+          .recoverWith:
+            case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+
+  // Публичный метод, возвращающий HTTP маршруты с применённой авторизацией
+  def routes(authMiddleware: AuthMiddleware[F, User]): HttpRoutes[F] =
+    Router(prefixPath -> authMiddleware(httpRoutes))
+end UserTypeRoutes      
 ```
 
-Обновление типа:
+### Детальный разбор компонентов
 
-```http
+#### 1. Контекстные ограничения
+
+```dotty
+final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow}]
+```
+
+- **`JsonDecoder`** - требование наличия возможности декодировать JSON в типы `F`. Позволяет использовать `.asJsonDecode[T]` на запросе
+- **`MonadThrow`** - требование к эффекту `F` поддерживать обработку ошибок. Необходимо для работы DSL HTTP4s и для `recoverWith`
+
+#### 2. Расширение Http4sDsl
+
+```dotty
+extends Http4sDsl[F]
+```
+
+Http4sDsl предоставляет удобные методы для создания HTTP ответов:
+
+- `Ok()`, `Created()`, `NoContent()` - успешные ответы
+- `BadRequest()`, `Forbidden()`, `Unauthorized()` - ответы с ошибками
+- Возможность передавать любые типы, для которых есть `EntityEncoder`
+
+#### 3. Структура AuthedRoutes
+
+```dotty
+private val httpRoutes: AuthedRoutes[User, F] =
+  AuthedRoutes.of:
+    // сопоставление с шаблоном с доступом к user
+    case method -> path as user =>
+      // бизнес-логика
+```
+
+Ключевой синтаксис: `as user` извлекает аутентифицированного пользователя из контекста запроса и связывает его с переменной `user`.
+
+### Детальная спецификация endpoint-ов
+
+#### GET /user_types
+
+Получение списка всех типов, доступных текущему пользователю.
+
+**Запрос:**
+
+```
+GET /user_types
+Authorization: Bearer <jwt-token>
+```
+
+**Успешный ответ (200 OK):**
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Блог",
+    "displayed": true,
+    "ordinal": 1
+  },
+  {
+    "id": 2,
+    "name": "OpenSource",
+    "displayed": true,
+    "ordinal": 2
+  }
+]
+```
+
+**Ошибки:**
+
+- `401 Unauthorized` - отсутствует или невалидный токен
+
+#### POST /user_types
+
+Создание нового пользовательского типа.
+
+**Запрос:**
+
+```
+POST /user_types
+Authorization: Bearer <jwt-token>
+Content-Type: application/json
+
+{
+  "name": "OpenSource"
+}
+```
+
+**Успешный ответ (201 Created):**
+
+```
+Location: /user_types/3
+```
+
+Тело ответа содержит ID созданного типа.
+
+**Ошибки:**
+
+- `400 Bad Request` - тип с таким именем уже существует
+- `400 Bad Request` - некорректное имя (например, слишком короткое)
+- `401 Unauthorized` - отсутствует или невалидный токен
+
+#### PUT /user_types/update
+
+Обновление существующего пользовательского типа.
+
+**Запрос:**
+
+```
 PUT /user_types/update
-
-Response code:
-– 200: пользовательский тип обновлен
-– 400: ошибки обновления, например, имя уже занято
-
-Request body:
+Authorization: Bearer <jwt-token>
+Content-Type: application/json
 
 {
   "id": 1,
-  "name": "OpenSource"
+  "name": "Личный блог",
+  "displayed": true,
+  "ordinal": 1
 }
-
-No Response body.
 ```
 
+**Успешный ответ (200 OK):**
+Тело ответа содержит обновлённый объект типа.
+
+**Ошибки:**
+
+- `400 Bad Request` - тип с таким именем уже существует
+- `400 Bad Request` - попытка обновить чужой тип
+- `401 Unauthorized` - отсутствует или невалидный токен
+
+#### PUT /user_types/reorder
+
+Изменение порядка сортировки типов. Принимает список ID в новом порядке.
+
+**Запрос:**
+
+```
+PUT /user_types/reorder
+Authorization: Bearer <jwt-token>
+Content-Type: application/json
+
+[3, 1, 2]
+```
+
+**Успешный ответ (200 OK):**
+Тело ответа содержит обновлённый список типов в новом порядке.
+
+**Ошибки:**
+
+- `400 Bad Request` - передан пустой список
+- `400 Bad Request` - некоторые ID не принадлежат пользователю
+- `401 Unauthorized` - отсутствует или невалидный токен
+
+#### DELETE /user_types/{id}
+
+Удаление пользовательского типа по ID.
+
+**Запрос:**
+
+```
+DELETE /user_types/1
+Authorization: Bearer <jwt-token>
+```
+
+**Успешный ответ (204 No Content):**
+Тело ответа отсутствует.
+
+**Ошибки:**
+
+- `400 Bad Request` - попытка удалить несуществующий или чужой тип
+- `401 Unauthorized` - отсутствует или невалидный токен
+
+### Вспомогательные компоненты
+
+#### Модель типа без идентификатора пользователя
+
 ```dotty
-// Определим отдельный класс для редактирования пользовательского типа
-final case class EditUserType(
+final case class ShortUserType(
     id: UserTypeId,
     name: UserTypeName,
     displayed: Boolean,
     ordinal: Ordinal
 )
 
-private val httpRoutes: AuthedRoutes[User, F] =
-  AuthedRoutes.of:
-    ...
-
-    // Обновить пользовательский тип
-    case ar @ PUT -> Root / "update" as user =>
-      ar.req.asJsonDecode[EditUserType].flatMap: editUserType =>
-        val updated =
-          UserType(
-            id = editUserType.id,
-            name = editUserType.name,
-            userId = user.id,
-            displayed = editUserType.displayed,
-            ordinal = editUserType.ordinal
-          )
-          
-        settingsService
-          .updateTaskType(updated)
-          .flatMap(Ok(_))
-          .recoverWith:
-            case ex: IllegalArgumentException => BadRequest(ex.getMessage)
-
-    ...
+object ShortUserType:
+  given encoder: Encoder[ShortUserType] = deriveEncoder[ShortUserType]
+  given decoder: Decoder[ShortUserType] = deriveDecoder[ShortUserType]
 ```
 
-Пересортирование списка элементов:
-
-```http
-PUT /user_types/reorder
-
-Response code:
-– 200: сортировка обновлена
-– 400: ошибки обновления
-
-Request body:
-
-{
-  "id": 1,
-  "name": "OpenSource"
-}
-
-No Response body.
-```
+#### Экстрактор пути для UserTypeId
 
 ```dotty
-private val httpRoutes: AuthedRoutes[User, F] =
-  AuthedRoutes.of:
-    ...
-
-    // Пересортировать пользовательские типы
-    case ar @ PUT -> Root / "reorder" as user =>
-      ar.req.asJsonDecode[NonEmptyVector[UserTypeId]].flatMap: ids =>
-        settingsService
-          .reorderTaskTypes(ids, user.id)
-          .flatMap(Ok(_))
-          .recoverWith:
-            case ex: IllegalArgumentException => BadRequest(ex.getMessage)
-
-    ...
-```
-
-Удаление типа:
-
-```http
-DELETE /user_types/{id}
-
-– 204: Тип с идентификатором id был удален, если таковой был.
-
-No Request body and no Response body.
-```
-
-В последнем методе DELETE мы также захватываем переменную пути с помощью `UserTypeIdVar`.
-Его определение:
-
-```dotty
-// pdp/src/mail/scala/ru/scalabook/pdp/http/routes/src.scala
 package ru.scalabook.pdp.http.routes
 
-...
+import ru.scalabook.pdp.model.UserType.UserTypeId
 
 object UserTypeIdVar:
+  /** Позволяет использовать паттерн-матчинг вида: DELETE -> Root / UserTypeIdVar(id)
+    * Автоматически конвертирует строку из URL в UserTypeId
+    */
   def unapply(str: String): Option[UserTypeId] =
     for
-      int <- str.toIntOption
-      id  <- UserTypeId.option(int)
-    yield id
-
+      int <- str.toIntOption           // Парсим строку в Int
+      id  <- UserTypeId.option(int)    // Валидируем Int как UserTypeId
+    yield id   
 ```
 
-Пользователям рекомендуется определять пользовательские объекты таким образом и использовать предоставленные объекты, когда это
-целесообразно. Http4s поддерживает `IntVar`, `LongVar` и `UUIDVar`, среди прочих.
+HTTP4s предоставляет встроенные экстракторы для примитивных типов: `IntVar`, `LongVar`, `UUIDVar`. 
+Рекомендуется создавать аналогичные экстракторы для доменных типов.
+
+### Обработка ошибок
+
+Все endpoint-ы используют единый подход к обработке ошибок:
+
+1. **Ошибки валидации** от сервиса (`IllegalArgumentException`) преобразуются в `400 Bad Request`
+2. **Ошибки аутентификации** обрабатываются middleware и преобразуются в `401 Unauthorized`
+3. **Ошибки авторизации** (попытка доступа к чужому ресурсу) преобразуются в `403 Forbidden`
 
 ```dotty
-private val httpRoutes: AuthedRoutes[User, F] =
-  AuthedRoutes.of:
-    ...
-
-    // Удалить пользовательский тип
-    case DELETE -> Root / UserTypeIdVar(id) as user =>
-      settingsService.deleteTaskType(id, user.id)
-        .flatMap(_ => NoContent())
-        .recoverWith:
-          case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+settingsService
+  .createTaskType(newType)
+  .flatMap(Created(_))
+  .recoverWith:
+    case ex: IllegalArgumentException =>
+      BadRequest(ex.getMessage)  // Преобразуем ошибку сервиса в HTTP ответ
 ```
 
-## Работа с разделами
+### Маршрутизация
 
-Роуты для разделов и целей работают аналогично.
+Метод `routes` собирает всё вместе:
+
+```dotty
+def routes(authMiddleware: AuthMiddleware[F, User]): HttpRoutes[F] =
+  Router(
+    prefixPath -> authMiddleware(httpRoutes)  // Применяем middleware к защищённым маршрутам
+  )
+```
+
+`Router` позволяет группировать маршруты по префиксам, что особенно полезно при объединении нескольких наборов endpoint-ов:
+
+```dotty
+val allRoutes = Router(
+  "/api/users" -> userRoutes,
+  "/api/settings" -> settingsRoutes,
+  "/api/user_types" -> userTypeRoutes.routes(jwtMiddleware)
+)
+```
+
+## Принципы проектирования
+
+1. **Разделение ответственности** - бизнес-логика в `SettingsService`, HTTP слой только для маршрутизации и преобразования
+2. **Типобезопасность** - использование доменных типов (`UserTypeId`, `UserTypeName`) вместо примитивов
+3. **Композиционность** - middleware для сквозных задач (аутентификация)
+4. **Явная обработка ошибок** - все ошибки бизнес-логики явно преобразуются в HTTP статусы
+5. **Разделы и цели** - реализация роутов для разделов и целей выполняется аналогично.
+
+Эти endpoint-ы формируют основу для управления пользовательскими настройками и типами, 
+обеспечивая безопасный и типобезопасный доступ к функциональности приложения.
 
 ---
 

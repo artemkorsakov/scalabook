@@ -129,23 +129,16 @@ Authorization: Bearer eyJ0eXA...  // Токен для инвалидации
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/http/routes/PdpRoutes.scala
-package ru.scalabook.pdp.http.routes
-
-import cats.MonadThrow
-import cats.syntax.all.*
-import io.circe.*
-import org.http4s.*
-import org.http4s.circe.*
-import org.http4s.circe.CirceEntityEncoder.*
-import org.http4s.dsl.Http4sDsl
-
-trait PdpRoutes[F[_]: {JsonDecoder, MonadThrow}] extends Http4sDsl[F]:
+trait PdpRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}]
+    extends Http4sDsl[F]:
+  given entityDecoder[A: Decoder]: EntityDecoder[F, A] =
+    accumulatingJsonOf[F, A]
 
   /** Расширение для Request, добавляющее декодирование с улучшенной обработкой
     * ошибок
     */
   extension (req: Request[F])
-    
+
     /** Декодирует тело запроса в тип A и обрабатывает ошибки валидации
       *
       * @param f
@@ -153,23 +146,28 @@ trait PdpRoutes[F[_]: {JsonDecoder, MonadThrow}] extends Http4sDsl[F]:
       * @tparam A
       *   тип, в который декодируется запрос (должен иметь Decoder)
       * @return
-      *   F[Response[F]] - HTTP ответ
+      *   {{{F[Response[F]]}}} - HTTP ответ
       *
       * @note
       *   Отличается от стандартного подхода:
-      *   - Для ошибок валидации возвращает 400 с сообщением
+      *   - Для ошибок валидации уточненных типов возвращает 400 с сообщением
+      *   - Для прочих ошибок декодирования возвращает 422
       */
     def decodeR[A: Decoder](f: A => F[Response[F]]): F[Response[F]] =
-      req.asJsonDecode[A].attempt.flatMap:
-        // Успешное декодирование, вызываем обработчик
+      req.as[A].attempt.flatMap:
         case Right(a) => f(a)
-        case Left(e)  =>
-          Option(e.getCause) match
-            // 400 с детальным описанием  
-            case Some(c) if c.getMessage.startsWith("DecodingFailure") =>
-              BadRequest(e.getMessage)
-            case _ =>
-              UnprocessableContent()                       
+        case Left(e)  => e match
+            case ex: InvalidMessageBodyFailure =>
+              Status.UnprocessableContent(
+                ex.cause.map(_.getMessage).getOrElse(ex.getMessage)
+              )
+            case ex: MessageFailure =>
+              ex.toHttpResponse(HttpVersion.`HTTP/1.1`).pure[F]
+            case ex =>
+              Status.BadRequest(ex.getMessage)
+
+  end extension
+end PdpRoutes                       
 ```
 
 **Преимущества подхода:**
@@ -204,22 +202,7 @@ POST /auth/users
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/http/routes/UserRoutes.scala
-package ru.scalabook.pdp.http.routes
-
-import cats.MonadThrow
-import cats.syntax.all.*
-import io.circe.*
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.circe.given
-import org.http4s.*
-import org.http4s.circe.CirceEntityEncoder.*
-import org.http4s.circe.JsonDecoder
-import org.http4s.server.Router
-import ru.scalabook.pdp.auth.*
-import ru.scalabook.pdp.model.LoginRequest
-import ru.scalabook.pdp.services.AuthService
-
-final case class UserRoutes[F[_]: {JsonDecoder, MonadThrow}](
+final case class UserRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
     authService: AuthService[F]
 ) extends PdpRoutes[F]:
 
@@ -251,19 +234,7 @@ final case class UserRoutes[F[_]: {JsonDecoder, MonadThrow}](
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/http/routes/LoginRoutes.scala
-package ru.scalabook.pdp.http.routes
-
-import cats.MonadThrow
-import cats.syntax.all.*
-import org.http4s.*
-import org.http4s.circe.CirceEntityEncoder.*
-import org.http4s.circe.JsonDecoder
-import org.http4s.server.Router
-import ru.scalabook.pdp.auth.*
-import ru.scalabook.pdp.model.LoginRequest
-import ru.scalabook.pdp.services.AuthService
-
-final case class LoginRoutes[F[_]: {JsonDecoder, MonadThrow}](
+final case class LoginRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
     authService: AuthService[F]
 ) extends PdpRoutes[F]:
 

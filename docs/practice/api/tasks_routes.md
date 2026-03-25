@@ -373,10 +373,6 @@ final case class EnqueueTask(
     ordinal: Ordinal,            // Порядок в очереди
     plan: NonEmptyList[TaskStep] // План выполнения (минимум 1 шаг)
 )
-
-object EnqueueTask:
-  given encoder: Encoder[EnqueueTask] = deriveEncoder[EnqueueTask]
-  given decoder: Decoder[EnqueueTask] = deriveDecoder[EnqueueTask]
 ```
 
 **Реализация:**

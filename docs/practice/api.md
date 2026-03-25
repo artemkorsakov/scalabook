@@ -451,20 +451,6 @@ trait HttpSuite extends IOSuite:
     routes.run(req).value.map:
       case Some(resp) => expect.same(resp.status, expectedStatus)
       case None       => failure("route not found")
-
-  /** Проверяет, что запрос завершился с ошибкой (исключением).
-    *
-    * Используется для тестирования обработки ошибок.
-    */
-  def expectHttpFailure(
-      routes: HttpRoutes[IO],
-      req: Request[IO]
-  ): IO[Expectations] =
-    routes.run(req).value.attempt.map:
-      // Ожидаем ошибку
-      case Left(_)  => success
-      // Ошибки нет - тест провален
-      case Right(_) => failure("expected a failure")
 ```
 
 #### Ключевые особенности HttpSuite

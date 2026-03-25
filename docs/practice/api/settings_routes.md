@@ -382,10 +382,6 @@ final case class ShortUserType(
     displayed: Boolean,
     ordinal: Ordinal
 )
-
-object ShortUserType:
-  given encoder: Encoder[ShortUserType] = deriveEncoder[ShortUserType]
-  given decoder: Decoder[ShortUserType] = deriveDecoder[ShortUserType]
 ```
 
 #### Экстрактор пути для UserTypeId

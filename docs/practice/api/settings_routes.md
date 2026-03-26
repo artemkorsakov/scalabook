@@ -132,9 +132,9 @@ JWT токен содержит стандартные поля (iss, exp, iat) 
 ### Общая структура
 
 ```dotty
-final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow}](
+final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
     settingsService: SettingsService[F]
-) extends Http4sDsl[F]:
+) extends PdpRoutes[F]:
 
   // Базовый путь для всех endpoint-ов этого сервиса
   private[routes] val prefixPath = "/user_types"
@@ -152,7 +152,7 @@ final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow}](
 
       // POST /user_types - создание нового типа
       case ar @ POST -> Root as user =>
-        ar.req.asJsonDecode[UserTypeName].flatMap: name =>
+        ar.req.decodeR[UserTypeName]: name =>
           val newType = CreateUserType(name, user.id)
           settingsService
             .createTaskType(newType)
@@ -162,7 +162,7 @@ final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow}](
 
       // PUT /user_types/update - обновление существующего типа
       case ar @ PUT -> Root / "update" as user =>
-        ar.req.asJsonDecode[ShortUserType].flatMap: ShortUserType =>
+        ar.req.decodeR[ShortUserType]: ShortUserType =>
           val updated =
             UserType(
               id = ShortUserType.id,
@@ -180,7 +180,7 @@ final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow}](
 
       // PUT /user_types/reorder - изменение порядка сортировки
       case ar @ PUT -> Root / "reorder" as user =>
-        ar.req.asJsonDecode[NonEmptyVector[UserTypeId]].flatMap: ids =>
+        ar.req.decodeR[NonEmptyVector[UserTypeId]]: ids =>
           settingsService
             .reorderTaskTypes(ids, user.id)
             .flatMap(Ok(_))

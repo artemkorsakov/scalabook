@@ -164,9 +164,9 @@ trait TaskLifecycleService[F[_]]:
 ### HTTP слой с фильтрацией
 
 ```dotty
-final case class TaskRoutes[F[_]: {JsonDecoder, MonadThrow}](
+final case class TaskRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
     taskLifecycleService: TaskLifecycleService[F]
-) extends Http4sDsl[F]:
+) extends PdpRoutes[F]:
 
   private[routes] val prefixPath = "/tasks"
 
@@ -288,7 +288,7 @@ Content-Type: application/json
 
 ```dotty
 case ar @ POST -> Root as user =>
-  ar.req.asJsonDecode[CreateTask].flatMap: createTask =>
+  ar.req.decodeR[CreateTask]: createTask =>
     taskLifecycleService
       .create(createTask)
       .flatMap(Created(_))  // Возвращает 201 Created с ID новой задачи
@@ -379,7 +379,7 @@ final case class EnqueueTask(
 
 ```dotty
 case ar @ PUT -> Root / "enqueue" as user =>
-  ar.req.asJsonDecode[EnqueueTask].flatMap: enqueueTask =>
+  ar.req.decodeR[EnqueueTask]: enqueueTask =>
     taskLifecycleService
       .enqueue(
         id = enqueueTask.id,
@@ -427,7 +427,7 @@ final case class StartTask(
 
 ```dotty
 case ar @ PUT -> Root / "start" as user =>
-  ar.req.asJsonDecode[StartTask].flatMap: task =>
+  ar.req.decodeR[StartTask]: task =>
     taskLifecycleService
       .start(
         id = task.id,
@@ -479,7 +479,7 @@ final case class CompleteTask(
 
 ```dotty
 case ar @ PUT -> Root / "complete" as user =>
-  ar.req.asJsonDecode[CompleteTask].flatMap: task =>
+  ar.req.decodeR[CompleteTask]: task =>
     taskLifecycleService
       .complete(
         id = task.id,
@@ -525,7 +525,7 @@ final case class TaskInfo(
 
 ```dotty
 case ar @ PUT -> Root / "defer" as user =>
-  ar.req.asJsonDecode[TaskInfo].flatMap: task =>
+  ar.req.decodeR[TaskInfo]: task =>
     taskLifecycleService
       .defer(
         id = task.id,
@@ -558,7 +558,7 @@ Content-Type: application/json
 
 ```dotty
 case ar @ DELETE -> Root as user =>
-  ar.req.asJsonDecode[TaskInfo].flatMap: task =>
+  ar.req.decodeR[TaskInfo]: task =>
     taskLifecycleService
       .delete(
         id = task.id,
@@ -585,15 +585,16 @@ case ar @ DELETE -> Root as user =>
 
 ## Коды ответов
 
-| Код                  | Описание            | Когда возникает                         |
-|----------------------|---------------------|-----------------------------------------|
-| **200 OK**           | Успешный запрос     | GET, PUT операции                       |
-| **201 Created**      | Ресурс создан       | POST /tasks                             |
-| **204 No Content**   | Успешное удаление   | DELETE /tasks                           |
-| **400 Bad Request**  | Ошибка валидации    | Некорректные параметры или тело запроса |
-| **401 Unauthorized** | Не аутентифицирован | Отсутствует или невалидный JWT токен    |
-| **403 Forbidden**    | Нет прав            | Попытка доступа к чужой задаче          |
-| **404 Not Found**    | Ресурс не найден    | Задача с указанным ID не существует     |
+| Код                           | Описание            | Когда возникает                         |
+|-------------------------------|---------------------|-----------------------------------------|
+| **200 OK**                    | Успешный запрос     | GET, PUT операции                       |
+| **201 Created**               | Ресурс создан       | POST /tasks                             |
+| **204 No Content**            | Успешное удаление   | DELETE /tasks                           |
+| **400 Bad Request**           | Ошибка валидации    | Некорректные параметры или тело запроса |
+| **401 Unauthorized**          | Не аутентифицирован | Отсутствует или невалидный JWT токен    |
+| **403 Forbidden**             | Нет прав            | Попытка доступа к чужой задаче          |
+| **404 Not Found**             | Ресурс не найден    | Задача с указанным ID не существует     |
+| **422 Unprocessable Content** | Ошибка тела запроса | Некорректные параметры или тело запроса |
 
 ## Особенности реализации
 

@@ -211,7 +211,7 @@ object MockUsersService:
 Продуктовая реализация использует Doobie для работы с базой данных и макросы для генерации типовых SQL-запросов:
 
 ```dotty
-private[services] class PostgreSQLUsersService[F[_]: MonadCancelThrow](
+private[pdp] class PostgreSQLUsersService[F[_]: MonadCancelThrow](
     xa: Aux[[x] =>> F[x], Unit]
 ) extends UsersService[F]:
 

@@ -283,7 +283,7 @@ final case class LogoutRoutes[F[_]: Monad](
   private[routes] val prefixPath = "/auth"
 
   // Используем AuthedRoutes, так как требуется аутентифицированный пользователь
-  private val httpRoutes: AuthedRoutes[User, F] =
+  private val httpRoutes: AuthedRoutes[UserInfo, F] =
     AuthedRoutes.of:
       case ar @ POST -> Root / "logout" as user =>
         // Извлекаем токен из заголовка Authorization
@@ -293,7 +293,7 @@ final case class LogoutRoutes[F[_]: Monad](
           .traverse_(authService.logout(_, user.username)) *>
           NoContent()  // Всегда возвращаем 204, даже если токена не было
 
-  def routes(authMiddleware: AuthMiddleware[F, User]): HttpRoutes[F] =
+  def routes(authMiddleware: AuthMiddleware[F, UserInfo]): HttpRoutes[F] =
     Router(prefixPath -> authMiddleware(httpRoutes))  
 ```
 

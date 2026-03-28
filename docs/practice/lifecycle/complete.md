@@ -189,7 +189,7 @@ private[services] trait HistoryService[F[_]: Monad]:
 ### PostgreSQL-реализация HistoryService
 
 ```dotty
-private[services] class PostgreSQLHistoryService[F[_]: MonadCancelThrow](
+private[pdp] class PostgreSQLHistoryService[F[_]: MonadCancelThrow](
     xa: Aux[[x] =>> F[x], Unit]
 ) extends HistoryService[F]:
 
@@ -299,7 +299,7 @@ end complete
 Добавление таблицы `completed_tasks` требует создания соответствующей миграции, аналогично другим таблицам системы. 
 
 ```dotty
-private[services] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
+private[pdp] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
   xa: Aux[[x] =>> F[x], Unit]
 ):
   ...

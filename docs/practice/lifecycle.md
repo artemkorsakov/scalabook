@@ -230,7 +230,7 @@ private[services] trait TaskService[F[_]: Monad]:
 И реализация: 
 
 ```dotty
-private[services] class PostgreSQLTaskService[F[_]: MonadCancelThrow](
+private[pdp] class PostgreSQLTaskService[F[_]: MonadCancelThrow](
     xa: Aux[[x] =>> F[x], Unit]
 ) extends TaskService[F]:
   ...

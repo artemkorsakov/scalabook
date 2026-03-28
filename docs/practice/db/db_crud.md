@@ -54,7 +54,7 @@ import ru.scalabook.sql.TableSchema
   *   {{{Transactor[F]}}} - абстракция Doobie для выполнения запросов в
   *   контексте F.
   */
-private[services] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
+private[pdp] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
   xa: Aux[[x] =>> F[x], Unit]
 ):
   import PostgreSQLMigrationService.*
@@ -276,7 +276,7 @@ import ru.scalabook.sql.SqlMacros.*
   *   Transactor[[x] =>> F[x], Unit] - Doobie Transactor для выполнения
   *   запросов.
   */
-private[services] class PostgreSQLUserTypeService[F[_]: MonadCancelThrow](
+private[pdp] class PostgreSQLUserTypeService[F[_]: MonadCancelThrow](
     xa: Aux[[x] =>> F[x], Unit]
 ) extends UserTypeService[F]:
 

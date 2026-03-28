@@ -189,21 +189,22 @@ private[services] trait HistoryService[F[_]: Monad]:
 ### PostgreSQL-реализация HistoryService
 
 ```dotty
-private[services] class PostgreSQLHistoryService(xa: Aux[[x] =>> IO[x], Unit])
-    extends HistoryService[IO]:
+private[services] class PostgreSQLHistoryService[F[_]: MonadCancelThrow](
+    xa: Aux[[x] =>> F[x], Unit]
+) extends HistoryService[F]:
 
-  def create(task: CompletedTask): IO[Int] =
+  def create(task: CompletedTask): F[Int] =
     generateInsertReturningId[CompletedTask, CompletedTask, Int](task)
-      .query[Int]          // Запрос возвращает ID вставленной записи
-      .unique              // Ожидаем ровно один результат
-      .transact(xa)        // Выполняем в транзакционном контексте
+      .query[Int]    // Запрос возвращает ID вставленной записи
+      .unique        // Ожидаем ровно один результат
+      .transact(xa)  // Выполняем в транзакционном контексте
 
-  def getByUser(userId: UserId): IO[Vector[CompletedTask]] =
+  def getByUser(userId: UserId): F[Vector[CompletedTask]] =
     fr"""SELECT task_id, task_type, name, user_id, section_id, goal_id, duration, rating, review, start_date, end_date 
          FROM completed_tasks WHERE user_id = $userId"""
-      .query[CompletedTask] // Используем автоматический маппинг через Meta
-      .to[Vector]             // Преобразуем поток результатов в список
-      .transact(xa)         // Выполняем запрос    
+      .query[CompletedTask]  // Используем автоматический маппинг через Meta
+      .to[Vector]            // Преобразуем поток результатов в список
+      .transact(xa)          // Выполняем запрос          
 ```
 
 ### Интеграция HistoryService в жизненный цикл задач
@@ -298,10 +299,9 @@ end complete
 Добавление таблицы `completed_tasks` требует создания соответствующей миграции, аналогично другим таблицам системы. 
 
 ```dotty
-private[services] class PostgreSQLMigrationService(xa: Aux[
-  [x] =>> IO[x],
-  Unit
-]):
+private[services] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
+  xa: Aux[[x] =>> F[x], Unit]
+):
   ...
   
   def initialize(): IO[Unit] =

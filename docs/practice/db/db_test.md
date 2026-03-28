@@ -105,15 +105,20 @@ package ru.scalabook.pdp.services.postgresql
 ...
 
 object SharedResources extends GlobalResource:
+  // Контейнер для сервисов
+  final case class TasksServices(
+      userTypeService: PostgreSQLUserTypeService[IO],
+      sectionService: PostgreSQLSectionService[IO],
+      goalService: PostgreSQLGoalService[IO],
+      taskService: PostgreSQLTaskService[IO]
+  )
+  
   // Настройка системы логирования для тестовой среды
   private given loggerFactory: LoggerFactory[IO] = Slf4jFactory.create[IO]
   private given log: Logger[IO]                  = loggerFactory.getLogger
 
-  // Ключи для доступа к общим ресурсам (сервисам) из глобального хранилища Weaver
-  val UserTypeServiceKey: Option[String] = "userTypeService".some
-  val SectionServiceKey: Option[String]  = "sectionService".some
-  val GoalServiceKey: Option[String]     = "goalService".some
-  val TaskServiceKey: Option[String]     = "taskService".some
+  // Ключ для доступа к общим ресурсам (сервисам) из глобального хранилища Weaver
+  val TasksServiceKey: Option[String] = "tasksServices".some
 
   // Кастомный обработчик логирования SQL-запросов, выполняемых Doobie.
   // Позволяет видеть все выполняемые запросы в логах тестов, что упрощает отладку.
@@ -131,31 +136,38 @@ object SharedResources extends GlobalResource:
       // 3. Выполнение миграций базы данных (создание схемы, таблиц, индексов).
       _ <- Resource.eval(migration(transactor))
       // 4. Создание экземпляров сервисов, инъектированных созданным Transactor'ом.
-      userService = new PostgreSQLUserTypeService(transactor)
+      userTypeService = new PostgreSQLUserTypeService[IO](transactor)
+      sectionService  = new PostgreSQLSectionService[IO](transactor)
+      goalService     = new PostgreSQLGoalService[IO](transactor)
+      taskService     = new PostgreSQLTaskService[IO](transactor)
       // 5. Регистрация каждого сервиса в глобальном хранилище.
-      _ <- global.putR(userService, UserTypeServiceKey)
-      sectionService = new PostgreSQLSectionService(transactor)
-      _ <- global.putR(sectionService, SectionServiceKey)
-      goalService = new PostgreSQLGoalService(transactor)
-      _ <- global.putR(goalService, GoalServiceKey)
-      taskService = new PostgreSQLTaskService(transactor)
-      _ <- global.putR(taskService, TaskServiceKey)
+      _ <- global.putR(
+        TasksServices(
+          userTypeService,
+          sectionService,
+          goalService,
+          taskService
+        ),
+        TasksServiceKey
+      )
     yield () // Ресурс возвращает Unit, так как сервисы помещены в глобальное хранилище.
 
-  private def postgresResource(): Resource[IO, PostgreSQLContainer[Nothing]] =
+  private def postgresResource(): Resource[IO, PostgreSQLContainer] =
     Resource.make {
       // Действие по приобретению ресурса: создание и запуск контейнера.
       IO {
         // Используется официальный образ PostgreSQL 18
-        val postgres = new PostgreSQLContainer("postgres:18") 
+        val container = PostgreSQLContainer(dockerImageNameOverride =
+          DockerImageName.parse("postgres:18")
+        )
         // Блокирующий вызов, запускающий контейнер
-        postgres.start() 
-        postgres
+        container.start() 
+        container
       }
-    } { postgres =>
+    } { container =>
       // Действие по освобождению ресурса: остановка контейнера.
       // Гарантированно выполняется даже в случае неудачи тестов.
-      IO(postgres.stop())
+      IO(container.stop())
     }
 
   private def getTransactor(container: PostgreSQLContainer[Nothing])
@@ -191,12 +203,12 @@ package ru.scalabook.pdp.services.postgresql
 class PostgreSQLUserTypeServiceSuite(global: GlobalRead) extends IOSuite:
   // Тип Res определяет, какой именно ресурс будет использоваться 
   // всеми тестами этого набора.
-  override type Res = PostgreSQLUserTypeService
+  override type Res = PostgreSQLUserTypeService[IO]
 
   // Метод, который Weaver использует для получения общего ресурса.
   // Ресурс инициализируется один раз (перед первым тестом) и используется повторно.
   override def sharedResource: Resource[IO, Res] =
-    global.getOrFailR[PostgreSQLUserTypeService](UserTypeServiceKey)
+    global.getOrFailR[TasksServices](TasksServiceKey).map(_.userTypeService)
 
   // Пример теста на создание сущности.
   // Каждый тест - это функция, которая получает экземпляр `service` (общий ресурс).

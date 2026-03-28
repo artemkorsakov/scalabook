@@ -211,41 +211,33 @@ object MockUsersService:
 Продуктовая реализация использует Doobie для работы с базой данных и макросы для генерации типовых SQL-запросов:
 
 ```dotty
-private[services] class PostgreSQLUsersService(xa: Aux[[x] =>> IO[x], Unit])
-    extends UsersService[IO]:
+private[services] class PostgreSQLUsersService[F[_]: MonadCancelThrow](
+    xa: Aux[[x] =>> F[x], Unit]
+) extends UsersService[F]:
 
-  def create(newUser: UserRegistration): IO[UserId] =
-    // Макрос генерирует INSERT запрос с RETURNING id
+  def create(newUser: UserRegistration): F[UserId] =
     generateInsertReturningId[User, UserRegistration, Int](newUser)
       .query[UserId]
       .unique
       .transact(xa)
 
-  def get(id: UserId): IO[Option[User]] =
+  def get(id: UserId): F[Option[User]] =
     generateSelectById[User, UserId](id)
-      .query[User]
-      .option
-      .transact(xa)
+      .query[User].option.transact(xa)
 
-  def find(username: UserName): IO[Option[User]] =
+  def find(username: UserName): F[Option[User]] =
     fr"SELECT id, name, password FROM users WHERE name = $username LIMIT 1"
       .query[User]
       .option
       .transact(xa)
 
-  def update(user: User): IO[Unit] =
+  def update(user: User): F[Unit] =
     generateUpdateById[User, UserId](user)
-      .update
-      .run
-      .transact(xa)
-      .void
+      .update.run.transact(xa).void
 
-  def delete(id: UserId): IO[Unit] =
+  def delete(id: UserId): F[Unit] =
     generateDeleteById[User, UserId](id)
-      .update
-      .run
-      .transact(xa)
-      .void
+      .update.run.transact(xa).void
 ```
 
 ## Ключевые архитектурные решения

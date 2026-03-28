@@ -176,18 +176,19 @@ trait PostgreSQLHealthCheck[F[_]]:
     *   true если БД отвечает на запросы
     */
   def status: F[Boolean]
-
+        
 object PostgreSQLHealthCheck:
-  def make(xa: Aux[[x] =>> IO[x], Unit]): PostgreSQLHealthCheck[IO] =
-    new PostgreSQLHealthCheck[IO]:
-      def status: IO[Boolean] =
-        // Запрос к системной таблице pg_stat_activity
-        // Возвращает список активных процессов - если список не пуст, БД работает
+  def make[F[_]: MonadCancelThrow](xa: Aux[[x] =>> F[x], Unit])
+      : PostgreSQLHealthCheck[F] =
+    new PostgreSQLHealthCheck[F]:
+      // Запрос к системной таблице pg_stat_activity
+      // Возвращает список активных процессов - если список не пуст, БД работает
+      def status: F[Boolean] =
         sql"""SELECT pid FROM pg_stat_activity;"""
           .query[Int]
           .to[List]
           .transact(xa)
-          .map(_.nonEmpty)
+          .map(_.nonEmpty)          
 ```
 
 **Почему именно такой запрос?**

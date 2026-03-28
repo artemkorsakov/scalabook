@@ -230,12 +230,12 @@ private[services] trait TaskService[F[_]: Monad]:
 И реализация: 
 
 ```dotty
-private[services] class PostgreSQLTaskService(
-    xa: Aux[[x] =>> IO[x], Unit]
-) extends TaskService[IO]:
+private[services] class PostgreSQLTaskService[F[_]: MonadCancelThrow](
+    xa: Aux[[x] =>> F[x], Unit]
+) extends TaskService[F]:
   ...
   
-  def existsSection(id: SectionId, userId: UserId): IO[Boolean] =
+  def existsSection(id: SectionId, userId: UserId): F[Boolean] =
     (
       getExistsFragment[BookTask](Task.sectionIdColumn, id.value, userId),
       getExistsFragment[ArticleTask](Task.sectionIdColumn, id.value, userId),
@@ -245,7 +245,7 @@ private[services] class PostgreSQLTaskService(
       getExistsFragment[UserTask](Task.sectionIdColumn, id.value, userId)
     ).mapN(_ || _ || _ || _ || _ || _)
 
-  def existsGoal(id: GoalId, userId: UserId): IO[Boolean] =
+  def existsGoal(id: GoalId, userId: UserId): F[Boolean] =
     (
       getExistsFragment[BookTask](Task.goalIdColumn, id.value, userId),
       getExistsFragment[ArticleTask](Task.goalIdColumn, id.value, userId),
@@ -255,14 +255,14 @@ private[services] class PostgreSQLTaskService(
       getExistsFragment[UserTask](Task.goalIdColumn, id.value, userId)
     ).mapN(_ || _ || _ || _ || _ || _)
 
-  def existsUserType(id: UserTypeId, userId: UserId): IO[Boolean] =
+  def existsUserType(id: UserTypeId, userId: UserId): F[Boolean] =
     getExistsFragment[UserTask](UserTask.userTypeIdColumn, id.value, userId)
 
   private def getExistsFragment[A: TableSchema as schema](
       col: ColumnDefinition,
       id: Int,
       userId: UserId
-  ): IO[Boolean] =
+  ): F[Boolean] =
     val sqlFragment =
       Fragment.const(
         s"""SELECT 1 FROM ${schema.tableName.value} WHERE ${col.name.value} = $id AND user_id = '$userId' LIMIT 1;"""

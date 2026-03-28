@@ -51,9 +51,12 @@ import ru.scalabook.sql.TableSchema
   * создание таблиц, типов, установку связей и ограничений.
   *
   * @param xa
-  *   Transactor[IO] - абстракция Doobie для выполнения запросов в контексте IO.
+  *   {{{Transactor[F]}}} - абстракция Doobie для выполнения запросов в
+  *   контексте F.
   */
-private[services] class PostgreSQLMigrationService(xa: Aux[[x] =>> IO[x], Unit]):
+private[services] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
+  xa: Aux[[x] =>> F[x], Unit]
+):
   import PostgreSQLMigrationService.*
 
   /** Основной метод инициализации базы данных. Выполняет последовательность
@@ -61,9 +64,9 @@ private[services] class PostgreSQLMigrationService(xa: Aux[[x] =>> IO[x], Unit])
     * выполняются в единой транзакции для атомарности.
     *
     * @return
-    *   IO[Unit] - эффект, представляющий операцию инициализации.
+    *   {{{F[Unit]}}} - эффект, представляющий операцию инициализации.
     */
-  def initialize(): IO[Unit] =
+  def initialize(): F[Unit] =
     val program =
       for
         // 1. Создание таблиц для базовых сущностей
@@ -102,7 +105,7 @@ private[services] class PostgreSQLMigrationService(xa: Aux[[x] =>> IO[x], Unit])
         // 4. Установка дополнительных внешних ключей
         _ <- userTypeFK.update.run
       yield ()
-    // Преобразование программы ConnectionIO в IO с использованием Transactor
+    // Преобразование программы ConnectionIO в F с использованием Transactor
     program.transact(xa)
   end initialize
 
@@ -240,7 +243,7 @@ graph TD
 
 ### Структура и реализация PostgreSQLUserTypeService
 
-Класс `PostgreSQLUserTypeService` является конкретной реализацией алгебры `UserTypeService[IO]`, использующей PostgreSQL в качестве бэкенда.
+Класс `PostgreSQLUserTypeService` является конкретной реализацией алгебры `UserTypeService[F]`, использующей PostgreSQL в качестве бэкенда.
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLUserTypeService.scala
@@ -251,39 +254,42 @@ package ru.scalabook.pdp.services.postgresql
 import _root_.doobie.*
 import _root_.doobie.implicits.*
 import _root_.doobie.util.transactor.Transactor.*
+import cats.data.NonEmptyVector
 import cats.effect.*
-import cats.implicits.*
+import cats.syntax.all.*
 import io.github.iltotore.iron.*
 // Импорт неявных преобразований для Iron-типов
 import io.github.iltotore.iron.doobie.given 
 import ru.scalabook.pdp.model
 import ru.scalabook.pdp.model.*
 import ru.scalabook.pdp.model.Section.SectionName.given
+import ru.scalabook.pdp.model.User.UserId
 import ru.scalabook.pdp.model.UserType.{UserTypeId, UserTypeName}
 import ru.scalabook.pdp.services.UserTypeService
 import ru.scalabook.sql.SqlMacros.*
 
 /** Конкретная реализация UserTypeService для PostgreSQL. Наследует абстрактный
-  * интерфейс UserTypeService[IO] и предоставляет реализацию всех его методов с
+  * интерфейс UserTypeService[F] и предоставляет реализацию всех его методов с
   * использованием Doobie и сгенерированного SQL.
   *
   * @param xa
-  *   Transactor[[x] =>> IO[x], Unit] - Doobie Transactor для выполнения
+  *   Transactor[[x] =>> F[x], Unit] - Doobie Transactor для выполнения
   *   запросов.
   */
-private[services] class PostgreSQLUserTypeService(xa: Aux[[x] =>> IO[x], Unit])
-    extends UserTypeService[IO]:
+private[services] class PostgreSQLUserTypeService[F[_]: MonadCancelThrow](
+    xa: Aux[[x] =>> F[x], Unit]
+) extends UserTypeService[F]:
 
   /** Создает новый пользовательский тип задачи. Использует макрос
     * generateInsertReturningId для генерации параметризованного INSERT-запроса.
     *
-    * @param name
-    *   Имя нового типа задачи (уточненный тип UserTypeName).
+    * @param newItem
+    *   Новый тип задачи.
     * @return
-    *   IO[UserTypeId] - эффект, который при выполнении вернет ID созданной
+    *   {{{F[UserTypeId]}}} - эффект, который при выполнении вернет ID созданной
     *   записи.
     */
-  def create(newItem: CreateUserType): IO[UserTypeId] =
+  def create(newItem: CreateUserType): F[UserTypeId] =
     generateInsertReturningId[UserType, CreateUserType, UserTypeId](newItem)
       .query[UserTypeId] // Указываем, что запрос возвращает UserTypeId
       .unique            // Ожидаем ровно одну запись (возвращаемый ID)
@@ -294,9 +300,9 @@ private[services] class PostgreSQLUserTypeService(xa: Aux[[x] =>> IO[x], Unit])
     * @param id
     *   Идентификатор типа задачи.
     * @return
-    *   IO[Option[UserType]] - эффект, возвращающий опциональный результат.
+    *   {{{F[Option[UserType]]}}} - эффект, возвращающий опциональный результат.
     */
-  def get(id: UserTypeId): IO[Option[UserType]] =
+  def get(id: UserTypeId): F[Option[UserType]] =
     generateSelectById[UserType, UserTypeId](id)
       .query[UserType]  // Указываем тип результата - UserType
       .option           // Может вернуть 0 или 1 запись
@@ -305,9 +311,9 @@ private[services] class PostgreSQLUserTypeService(xa: Aux[[x] =>> IO[x], Unit])
   /** Получает все пользовательские типы задач.
     *
     * @return
-    *   IO[Vector[UserType]] - эффект, возвращающий список всех типов.
+    *   {{{F[Vector[UserType]]}}} - эффект, возвращающий список всех типов.
     */
-  def getByUser(userId: UserId): IO[Vector[UserType]] =
+  def getByUser(userId: UserId): F[Vector[UserType]] =
     generateSelectByField[UserType, UserId](userId, "user_id")
       .query[UserType] // Селект всех полей
       .to[Vector]        // Преобразуем поток результатов в Vector
@@ -319,14 +325,14 @@ private[services] class PostgreSQLUserTypeService(xa: Aux[[x] =>> IO[x], Unit])
     *   Объект UserType с обновленными данными (должен содержать существующий
     *   ID).
     * @return
-    *   IO[Unit] - эффект, подтверждающий выполнение операции.
+    *   {{{F[Unit]}}} - эффект, подтверждающий выполнение операции.
     */
-  def update(userType: UserType): IO[Unit] =
+  def update(userType: UserType): F[Unit] =
     generateUpdateById[UserType, UserTypeId](userType)
       .update        // Указываем, что это update-запрос
       .run           // Выполняем, игнорируя количество измененных строк
       .transact(xa)
-      .void          // Преобразуем IO[Int] в IO[Unit]
+      .void          // Преобразуем F[Int] в F[Unit]
 
   /** Пакетно обновляет несколько пользовательских типов задач. 
     * Этот метод используется, например, при массовом изменении порядка (reordering)
@@ -339,9 +345,9 @@ private[services] class PostgreSQLUserTypeService(xa: Aux[[x] =>> IO[x], Unit])
     * @param userTypes
     *   NonEmptyVector[UserType] - гарантированно непустой список типов для обновления.
     * @return
-    *   IO[Unit] - эффект, подтверждающий выполнение всех операций обновления.
+    *   {{{F[Unit]}}} - эффект, подтверждающий выполнение всех операций обновления.
     */
-  def updateAll(userTypes: NonEmptyVector[UserType]): IO[Unit] =
+  def updateAll(userTypes: NonEmptyVector[UserType]): F[Unit] =
     def toConn: UserType => ConnectionIO[Int] =
       generateUpdateById[UserType, UserTypeId](_).update.run
     
@@ -359,9 +365,9 @@ private[services] class PostgreSQLUserTypeService(xa: Aux[[x] =>> IO[x], Unit])
     * @param id
     *   Идентификатор типа задачи для удаления.
     * @return
-    *   IO[Unit] - эффект, подтверждающий выполнение операции.
+    *   F[Unit] - эффект, подтверждающий выполнение операции.
     */
-  def delete(id: UserTypeId): IO[Unit] =
+  def delete(id: UserTypeId): F[Unit] =
     generateDeleteById[UserType, UserTypeId](id)
       .update
       .run

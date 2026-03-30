@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = settings_routes.html
 showNext = true
-nextPage = ../sources.html
+nextPage = ../main.html
 %}
 
 # Endpoint-ы задач
@@ -180,7 +180,7 @@ final case class TaskRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
   private object OptionalSectionIdQueryParam
       extends OptionalQueryParamDecoderMatcher[SectionId]("section_id")
 
-  private val httpRoutes: AuthedRoutes[User, F] =
+  private val httpRoutes: AuthedRoutes[UserInfo, F] =
     AuthedRoutes.of:
       // GET /tasks?status=...&task_type=...&section_id=...
       case GET -> Root :?
@@ -198,7 +198,7 @@ final case class TaskRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
 
       // ... остальные маршруты
 
-  def routes(authMiddleware: AuthMiddleware[F, User]): HttpRoutes[F] =
+  def routes(authMiddleware: AuthMiddleware[F, UserInfo]): HttpRoutes[F] =
     Router(prefixPath -> authMiddleware(httpRoutes))    
 ```
 
@@ -293,7 +293,7 @@ case ar @ POST -> Root as user =>
       .create(createTask)
       .flatMap(Created(_))  // Возвращает 201 Created с ID новой задачи
       .recoverWith:
-        case ex: IllegalArgumentException =>
+        case ex =>
           BadRequest(ex.getMessage)  // 400 Bad Request при ошибках валидации       
 ```
 
@@ -390,7 +390,7 @@ case ar @ PUT -> Root / "enqueue" as user =>
       )
       .flatMap(Ok(_))
       .recoverWith:
-        case ex: IllegalArgumentException => BadRequest(ex.getMessage)       
+        case ex => BadRequest(ex.getMessage)       
 ```
 
 ### Начало работы над задачей
@@ -438,7 +438,7 @@ case ar @ PUT -> Root / "start" as user =>
       )
       .flatMap(Ok(_))
       .recoverWith:
-        case ex: IllegalArgumentException => BadRequest(ex.getMessage)     
+        case ex => BadRequest(ex.getMessage)     
 ```
 
 ### Завершение задачи
@@ -492,7 +492,7 @@ case ar @ PUT -> Root / "complete" as user =>
       )
       .flatMap(Ok(_))
       .recoverWith:
-        case ex: IllegalArgumentException => BadRequest(ex.getMessage)       
+        case ex => BadRequest(ex.getMessage)       
 ```
 
 ### Откладывание задачи
@@ -534,7 +534,7 @@ case ar @ PUT -> Root / "defer" as user =>
       )
       .flatMap(Ok(_))
       .recoverWith:
-        case ex: IllegalArgumentException => BadRequest(ex.getMessage)       
+        case ex => BadRequest(ex.getMessage)       
 ```
 
 ### Удаление задачи
@@ -567,7 +567,7 @@ case ar @ DELETE -> Root as user =>
       )
       .flatMap(_ => NoContent())  // 204 No Content при успехе
       .recoverWith:
-        case ex: IllegalArgumentException => BadRequest(ex.getMessage)       
+        case ex => BadRequest(ex.getMessage)       
 ```
 
 ## Сводная таблица endpoint-ов

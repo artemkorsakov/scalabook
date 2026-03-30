@@ -185,6 +185,7 @@ factorial(10)   // 3628800
 - [What is Functional Programming? - Alexandru Nedelcu](https://alexn.org/blog/2017/10/15/functional-programming/)
 - [What is functional programming and why it matters for your business?](https://scalac.io/blog/benefits-of-functional-programming/)
 - [What makes a function pure?](https://blog.kubukoz.com/what-makes-a-function-pure/)
+- [Why Functional Programming Matters](https://blog.rhetoricalmusings.com/posts/why-fp-matters/)
 - [Wikipedia][wiki]
 
 [sample]: https://gitverse.ru/scalabook/fp

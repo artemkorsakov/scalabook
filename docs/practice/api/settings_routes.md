@@ -67,7 +67,7 @@ val onFailure: AuthedRoutes[String, F] =
 val middleware = AuthMiddleware(authUser, onFailure)
 
 // 4. Применение middleware к защищённым маршрутам
-val authedRoutes: AuthedRoutes[User, F] = ???
+val authedRoutes: AuthedRoutes[UserInfo, F] = ???
 val publicRoutes: HttpRoutes[F] = middleware(authedRoutes)
 ```
 
@@ -98,8 +98,8 @@ val usersAuth: JwtToken => JwtClaim => F[Option[User]] =
     yield user
 
 // 3. Создание JWT middleware
-val jwtMiddleware: AuthMiddleware[F, User] =
-  JwtAuthMiddleware[F, User](jwtAuth, usersAuth)
+val jwtMiddleware: AuthMiddleware[F, UserInfo] =
+  JwtAuthMiddleware[F, UserInfo](jwtAuth, usersAuth)
 ```
 
 #### Структура JWT Claim
@@ -140,7 +140,7 @@ final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
   private[routes] val prefixPath = "/user_types"
 
   // Защищённые маршруты с доступом к пользователю
-  private val httpRoutes: AuthedRoutes[User, F] =
+  private val httpRoutes: AuthedRoutes[UserInfo, F] =
     AuthedRoutes.of:
       // GET /user_types - получение списка всех типов
       case GET -> Root as user =>
@@ -158,7 +158,7 @@ final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
             .createTaskType(newType)
             .flatMap(Created(_))
             .recoverWith:
-              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+              case ex => BadRequest(ex.getMessage)
 
       // PUT /user_types/update - обновление существующего типа
       case ar @ PUT -> Root / "update" as user =>
@@ -176,7 +176,7 @@ final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
             .updateTaskType(updated)
             .flatMap(Ok(_))
             .recoverWith:
-              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+              case ex => BadRequest(ex.getMessage)
 
       // PUT /user_types/reorder - изменение порядка сортировки
       case ar @ PUT -> Root / "reorder" as user =>
@@ -185,17 +185,17 @@ final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
             .reorderTaskTypes(ids, user.id)
             .flatMap(Ok(_))
             .recoverWith:
-              case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+              case ex => BadRequest(ex.getMessage)
 
       // DELETE /user_types/{id} - удаление типа по ID
       case DELETE -> Root / UserTypeIdVar(id) as user =>
         settingsService.deleteTaskType(id, user.id)
           .flatMap(_ => NoContent())
           .recoverWith:
-            case ex: IllegalArgumentException => BadRequest(ex.getMessage)
+            case ex => BadRequest(ex.getMessage)
 
   // Публичный метод, возвращающий HTTP маршруты с применённой авторизацией
-  def routes(authMiddleware: AuthMiddleware[F, User]): HttpRoutes[F] =
+  def routes(authMiddleware: AuthMiddleware[F, UserInfo]): HttpRoutes[F] =
     Router(prefixPath -> authMiddleware(httpRoutes))
 end UserTypeRoutes      
 ```
@@ -226,7 +226,7 @@ Http4sDsl предоставляет удобные методы для созд
 #### 3. Структура AuthedRoutes
 
 ```dotty
-private val httpRoutes: AuthedRoutes[User, F] =
+private val httpRoutes: AuthedRoutes[UserInfo, F] =
   AuthedRoutes.of:
     // сопоставление с шаблоном с доступом к user
     case method -> path as user =>
@@ -418,7 +418,7 @@ settingsService
   .createTaskType(newType)
   .flatMap(Created(_))
   .recoverWith:
-    case ex: IllegalArgumentException =>
+    case ex =>
       BadRequest(ex.getMessage)  // Преобразуем ошибку сервиса в HTTP ответ
 ```
 
@@ -427,7 +427,7 @@ settingsService
 Метод `routes` собирает всё вместе:
 
 ```dotty
-def routes(authMiddleware: AuthMiddleware[F, User]): HttpRoutes[F] =
+def routes(authMiddleware: AuthMiddleware[F, UserInfo]): HttpRoutes[F] =
   Router(
     prefixPath -> authMiddleware(httpRoutes)  // Применяем middleware к защищённым маршрутам
   )

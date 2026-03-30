@@ -15,7 +15,7 @@ nextPage = settings_routes.html
 ### Регистрация нового пользователя
 
 ```
-POST /auth/users
+POST /new_user
 ```
 
 Регистрация позволяет создать новую учётную запись в системе.
@@ -179,7 +179,7 @@ end PdpRoutes
 
 ```json
 // Запрос с невалидным именем (слишком коротким)
-POST /auth/users
+POST /new_user
 {
   "username": "a",  // Меньше 2 символов
   "password": "validpassword123"
@@ -206,11 +206,11 @@ final case class UserRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
     authService: AuthService[F]
 ) extends PdpRoutes[F]:
 
-  private[routes] val prefixPath = "/auth"
+  private[routes] val prefixPath = "/new_user"
 
   private val httpRoutes: HttpRoutes[F] =
     HttpRoutes.of[F]:
-      case req @ POST -> Root / "users" =>
+      case req @ POST -> Root =>
         // Используем кастомный декодер для валидации
         req.decodeR[LoginRequest]: user =>
           authService
@@ -218,7 +218,11 @@ final case class UserRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
             .flatMap(Created(_))                   // Успех: 201 с токеном
             .recoverWith:
               // Специфичная ошибка: пользователь уже существует
-              case UserNameInUse(username) => Conflict(username)
+              case UserNameInUse(username) =>
+                Conflict(username)
+              // Остальные ошибки  
+              case ex =>
+                Status.BadRequest(ex.getMessage)
 
   val routes: HttpRoutes[F] = Router(prefixPath -> httpRoutes)
 ```
@@ -249,7 +253,11 @@ final case class LoginRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
             .flatMap(Ok(_))                      // Успех: 200 с токеном
             .recoverWith:
               // Обе ошибки маскируются под 403 Forbidden
-              case UserNotFound(_) | InvalidPassword(_) => Forbidden()
+              case UserNotFound(_) | InvalidPassword(_) => 
+                Forbidden()
+              // Остальные ошибки  
+              case ex =>
+                Status.BadRequest(ex.getMessage)
 
   val routes: HttpRoutes[F] = Router(prefixPath -> httpRoutes)  
 ```
@@ -290,8 +298,12 @@ final case class LogoutRoutes[F[_]: Monad](
         AuthHeaders
           .getBearerToken(ar.req)
           // Инвалидируем токен в Redis (traverse_ игнорирует результат)
-          .traverse_(authService.logout(_, user.username)) *>
-          NoContent()  // Всегда возвращаем 204, даже если токена не было
+          // Всегда возвращаем 204, даже если токена не было
+          .traverse_(authService.logout(_, user.username)) *> NoContent()
+          // Непредвиденные ошибки
+          .recoverWith:
+            case ex =>
+              Status.BadRequest(ex.getMessage)      
 
   def routes(authMiddleware: AuthMiddleware[F, UserInfo]): HttpRoutes[F] =
     Router(prefixPath -> authMiddleware(httpRoutes))  
@@ -308,7 +320,7 @@ final case class LogoutRoutes[F[_]: Monad](
 
 ```
 Публичные endpoint-ы (без аутентификации):
-├── POST /auth/users     → Регистрация
+├── POST /new_user       → Регистрация
 ├── POST /auth/login     → Вход
 └── POST /auth/logout    → Выход (требует токен в заголовке)
 ```
@@ -343,7 +355,7 @@ given encoder: Encoder[InvalidLoginRequest] =
   deriveEncoder[InvalidLoginRequest]
 
 // URI для тестируемых endpoint-ов
-private val createUri: Uri = uri"/auth/users"
+private val createUri: Uri = uri"/new_user"
 private val loginUri: Uri  = uri"/auth/login"
 private val logoutUri: Uri = uri"/auth/logout"
 ```
@@ -371,7 +383,7 @@ override def sharedResource: Resource[IO, Res] =
 #### Тест 1: Успешная регистрация
 
 ```dotty
-test("POST /auth/users should successfully register a new user with valid credentials"):
+test("POST /new_user should successfully register a new user with valid credentials"):
   service =>
     val loginUser = LoginRequest(
       username = UserName("CheckCreateUser"),
@@ -385,7 +397,7 @@ test("POST /auth/users should successfully register a new user with valid creden
 
 **Что проверяет:**
 
-- Отправка валидного запроса на `/auth/users`
+- Отправка валидного запроса на `/new_user`
 - Ожидаемый статус ответа — 201 Created
 - Базовая проверка, что endpoint регистрации работает
 
@@ -393,7 +405,7 @@ test("POST /auth/users should successfully register a new user with valid creden
 
 ```dotty
 test(
-  "POST /auth/users should return BadRequest if the request contains invalid data"
+  "POST /new_user should return BadRequest if the request contains invalid data"
 ): service =>
   val loginUser = InvalidLoginRequest(
     username = "TooLongUserNameMoreThan20Symbols",  // Нарушает MinLength[20]
@@ -415,7 +427,7 @@ test(
 
 ```dotty
 test(
-  "POST /auth/users should return BadRequest if the request is invalid"
+  "POST /new_user should return BadRequest if the request is invalid"
 ): service =>
   val userInfo =
     UserInfo(
@@ -438,7 +450,7 @@ test(
 
 ```dotty
 test(
-  "POST /auth/users should return Conflict when registering with an existing username"
+  "POST /new_user should return Conflict when registering with an existing username"
 ): service =>
   val loginUser = LoginRequest(
     username = UserName("CheckDuplicateUser"),
@@ -630,10 +642,10 @@ test("POST /auth/login should return Forbidden when password is incorrect"):
 
 | Endpoint          | Сценарий                              | Статус |
 |-------------------|---------------------------------------|--------|
-| POST /auth/users  | Валидные данные                       | 201    |
-| POST /auth/users  | Невалидные данные (нарушение refined) | 400    |
-| POST /auth/users  | Неправильная структура JSON           | 400    |
-| POST /auth/users  | Дублирование username                 | 409    |
+| POST /new_user    | Валидные данные                       | 201    |
+| POST /new_user    | Невалидные данные (нарушение refined) | 400    |
+| POST /new_user    | Неправильная структура JSON           | 400    |
+| POST /new_user    | Дублирование username                 | 409    |
 | POST /auth/login  | Валидные данные                       | 200    |
 | POST /auth/login  | Несуществующий пользователь           | 403    |
 | POST /auth/login  | Неверный пароль                       | 403    |

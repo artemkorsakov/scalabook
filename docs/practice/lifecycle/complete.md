@@ -190,7 +190,7 @@ private[services] trait HistoryService[F[_]: Monad]:
 
 ```dotty
 private[pdp] class PostgreSQLHistoryService[F[_]: MonadCancelThrow](
-    xa: Aux[[x] =>> F[x], Unit]
+    xa: Transactor[F]
 ) extends HistoryService[F]:
 
   def create(task: CompletedTask): F[Int] =
@@ -300,7 +300,7 @@ end complete
 
 ```dotty
 private[pdp] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
-  xa: Aux[[x] =>> F[x], Unit]
+  xa: Transactor[F]
 ):
   ...
   

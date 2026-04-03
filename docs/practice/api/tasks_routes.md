@@ -286,24 +286,41 @@ Content-Type: application/json
 
 **Реализация:**
 
-```dotty
-case ar @ POST -> Root as user =>
-  ar.req.decodeR[CreateTask]: createTask =>
+```dotty 
+case ar @ POST -> Root / TaskTypeVar(taskType) as user =>
+  def create(task: CreateTask): F[Response[F]] =
     taskLifecycleService
-      .create(createTask)
-      .flatMap(Created(_))  // Возвращает 201 Created с ID новой задачи
+      .create(task)
+      .flatMap(Created(_)) // Возвращает 201 Created с ID новой задачи
       .recoverWith:
-        case ex =>
-          BadRequest(ex.getMessage)  // 400 Bad Request при ошибках валидации       
+        // 400 Bad Request при ошибках валидации  
+        case ex => BadRequest(ex.getMessage)
+
+  taskType match
+    case TaskType.Book =>
+      ar.req.decodeR[NewBookTask]: newTask =>
+        create(newTask.toCreateTask(user.id))
+    case TaskType.Article =>
+      ar.req.decodeR[NewArticleTask]: newTask =>
+        create(newTask.toCreateTask(user.id))
+    case TaskType.Podcast =>
+      ar.req.decodeR[NewPodcastTask]: newTask =>
+        create(newTask.toCreateTask(user.id))
+    case TaskType.Video =>
+      ar.req.decodeR[NewVideoTask]: newTask =>
+        create(newTask.toCreateTask(user.id))
+    case TaskType.Course =>
+      ar.req.decodeR[NewCourseTask]: newTask =>
+        create(newTask.toCreateTask(user.id))
+    case TaskType.Other =>
+      ar.req.decodeR[NewUserTask]: newTask =>
+        create(newTask.toCreateTask(user.id))             
 ```
 
 **Успешный ответ (201 Created):**
 
 ```
-Location: /tasks/123
-Content-Type: application/json
-
-123
+"UUID"
 ```
 
 ### Получение конкретной задачи

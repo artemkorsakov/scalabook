@@ -231,7 +231,7 @@ private[services] trait TaskService[F[_]: Monad]:
 
 ```dotty
 private[pdp] class PostgreSQLTaskService[F[_]: MonadCancelThrow](
-    xa: Aux[[x] =>> F[x], Unit]
+    xa: Transactor[F]
 ) extends TaskService[F]:
   ...
   

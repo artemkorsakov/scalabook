@@ -212,7 +212,7 @@ object MockUsersService:
 
 ```dotty
 private[pdp] class PostgreSQLUsersService[F[_]: MonadCancelThrow](
-    xa: Aux[[x] =>> F[x], Unit]
+    xa: Transactor[F]
 ) extends UsersService[F]:
 
   def create(newUser: UserRegistration): F[UserId] =

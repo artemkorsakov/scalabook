@@ -53,7 +53,8 @@ final case class PostgreSQLConfig(
     port: UserPortNumber, // Используем уточненный тип
     user: NonEmptyString,
     password: Secret[NonEmptyString], // Используем Secret для конфиденциальных данных
-    database: NonEmptyString
+    database: NonEmptyString,
+    max: Int :| Positive
 )
 
 // Модель для конфигурации Redis
@@ -111,6 +112,7 @@ postgresql = {
   user = "postgres"
   password = "my-password"
   database = "pdp"
+  max = 10  
 }
 
 # Конфигурация подключения к Redis
@@ -153,7 +155,7 @@ sealed trait Security[F[_]] private (
 object Security:
   def make[F[_]: {Sync, MonadCancelThrow}](
       cfg: Config,
-      transactor: Aux[[x] =>> F[x], Unit],    // Doobie-транзактор для работы с БД
+      transactor: Transactor[F],              // Doobie-транзактор для работы с БД
       redis: RedisCommands[F, String, String] // Клиент Redis
   ): F[Security[F]] =
     (
@@ -209,7 +211,7 @@ sealed trait Services[F[_]] private (
 
 object Services:
   def make[F[_]: {Sync, MonadCancelThrow, Temporal}](
-      transactor: Aux[[x] =>> F[x], Unit],
+      transactor: Transactor[F],
       redis: RedisCommands[F, String, String]
   ): Services[F] =
     // 1. Сервис проверки работоспособности PostgreSQL и Redis
@@ -348,7 +350,7 @@ object HttpApi:
 
 ```dotty
 sealed trait AppResources[F[_]](
-    val transactor: Aux[[x] =>> F[x], Unit],    // Doobie-транзактор
+    val transactor: Transactor[F],              // Doobie-транзактор
     val redis: RedisCommands[F, String, String] // Redis-клиент
 )
 
@@ -357,27 +359,28 @@ object AppResources:
       config: Config
   ): Resource[F, AppResources[F]] =
     // Функция для создания ресурса подключения к PostgreSQL
-    def makePGResource(pgcfg: PostgreSQLConfig)
-        : Resource[F, Aux[[x] =>> F[x], Unit]] =
-      val jdbcUrl =
+    def makePGResource(pgcfg: PostgreSQLConfig): Resource[F, Transactor[F]] = {
+      val url =
         s"jdbc:postgresql://${pgcfg.host.value}:${pgcfg.port}/${pgcfg.database.value}"
-      // Создаем транзактор из JDBC URL
-      Resource.pure {
-        Transactor.fromDriverManager[[x] =>> F[x]](
-          driver = "org.postgresql.Driver",
-          url = jdbcUrl,
-          user = pgcfg.user.value,
-          password = pgcfg.password.value.value,
-          logHandler = none
-        )
-      }
-        .evalTap(checkPostgresConnection) 
-        .evalTap(migration)               
+      for
+        hikariConfig <- Resource.pure {
+          val config = new HikariConfig()
+          config.setDriverClassName("org.h2.Driver")
+          config.setJdbcUrl(url)
+          config.setUsername(pgcfg.user.value)
+          config.setPassword(pgcfg.password.value.value)
+          config.setMaximumPoolSize(pgcfg.max)
+          config
+        }
+        // Создаем транзактор из JDBC URL
+        xa <- HikariTransactor.fromHikariConfig[F](hikariConfig)
+        _  <- Resource.eval(checkPostgresConnection(xa))
+        _  <- Resource.eval(migration(xa))
+      yield xa
+    }
 
     // Вспомогательная функция для проверки подключения к PostgreSQL
-    def checkPostgresConnection(
-        xa: Aux[[x] =>> F[x], Unit]
-    ): F[Unit] =
+    def checkPostgresConnection(xa: Transactor[F]): F[Unit] =
       sql"select version();"
         .query[String]
         .option
@@ -385,11 +388,12 @@ object AppResources:
         .flatMap {
           case Some(v) => Logger[F].info(s"Connected to Postgres $v")
           case None    =>
-            new RuntimeException("Invalid Postgres connection").raiseError[F, Unit]
+            new RuntimeException("Invalid Postgres connection")
+              .raiseError[F, Unit]
         }
 
     // Функция для запуска миграций базы данных
-    def migration(xa: Aux[[x] =>> F[x], Unit]): F[Unit] =
+    def migration(xa: Transactor[F]): F[Unit] =
       new PostgreSQLMigrationService(xa).migrate()
 
     // Функция для создания ресурса подключения к Redis
@@ -413,7 +417,6 @@ object AppResources:
       makeRedisResource(config.redis)
     ).parMapN(new AppResources[F](_, _) {})
   end make
-end AppResources
 ```
 
 ### Запуск HTTP-сервера как ресурса

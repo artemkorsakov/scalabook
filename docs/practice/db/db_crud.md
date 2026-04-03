@@ -55,7 +55,7 @@ import ru.scalabook.sql.TableSchema
   *   контексте F.
   */
 private[pdp] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
-  xa: Aux[[x] =>> F[x], Unit]
+  xa: Transactor[F]
 ):
   import PostgreSQLMigrationService.*
 
@@ -277,7 +277,7 @@ import ru.scalabook.sql.SqlMacros.*
   *   запросов.
   */
 private[pdp] class PostgreSQLUserTypeService[F[_]: MonadCancelThrow](
-    xa: Aux[[x] =>> F[x], Unit]
+    xa: Transactor[F]
 ) extends UserTypeService[F]:
 
   /** Создает новый пользовательский тип задачи. Использует макрос

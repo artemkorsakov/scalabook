@@ -178,7 +178,7 @@ trait PostgreSQLHealthCheck[F[_]]:
   def status: F[Boolean]
         
 object PostgreSQLHealthCheck:
-  def make[F[_]: MonadCancelThrow](xa: Aux[[x] =>> F[x], Unit])
+  def make[F[_]: MonadCancelThrow](xa: Transactor[F])
       : PostgreSQLHealthCheck[F] =
     new PostgreSQLHealthCheck[F]:
       // Запрос к системной таблице pg_stat_activity

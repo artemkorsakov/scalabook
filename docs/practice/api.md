@@ -420,6 +420,9 @@ import weaver.*
   * проверки ответов от маршрутов.
   */
 trait HttpSuite extends IOSuite:
+  given loggerFactory: LoggerFactory[IO] = Slf4jFactory.create[IO]
+
+  given log: Logger[IO] = loggerFactory.getLogger
 
   /** Проверяет и статус, и тело ответа одновременно. */
   def expectHttpBodyAndStatus(

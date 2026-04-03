@@ -261,7 +261,7 @@ object Services:
 создавая полный набор HTTP-маршрутов, обернутых в необходимые промежуточные обработчики (middleware).
 
 ```dotty
-sealed trait HttpApi[F[_]: Async] private (
+sealed trait HttpApi[F[_]: {Async, Logger}] private (
     services: Services[F],
     security: Security[F]
 ):
@@ -333,7 +333,7 @@ sealed trait HttpApi[F[_]: Async] private (
 end HttpApi
 
 object HttpApi:
-  def make[F[_]: Async](
+  def make[F[_]: {Async, Logger}](
       services: Services[F],
       security: Security[F]
   ): HttpApi[F] =
@@ -365,7 +365,7 @@ object AppResources:
       for
         hikariConfig <- Resource.pure {
           val config = new HikariConfig()
-          config.setDriverClassName("org.h2.Driver")
+          config.setDriverClassName("org.postgresql.Driver")
           config.setJdbcUrl(url)
           config.setUsername(pgcfg.user.value)
           config.setPassword(pgcfg.password.value.value)

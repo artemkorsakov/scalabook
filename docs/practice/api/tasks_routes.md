@@ -164,7 +164,7 @@ trait TaskLifecycleService[F[_]]:
 ### HTTP слой с фильтрацией
 
 ```dotty
-final case class TaskRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
+final case class TaskRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent, Logger}](
     taskLifecycleService: TaskLifecycleService[F]
 ) extends PdpRoutes[F]:
 
@@ -292,9 +292,7 @@ case ar @ POST -> Root / TaskTypeVar(taskType) as user =>
     taskLifecycleService
       .create(task)
       .flatMap(Created(_)) // Возвращает 201 Created с ID новой задачи
-      .recoverWith:
-        // 400 Bad Request при ошибках валидации  
-        case ex => BadRequest(ex.getMessage)
+      .recover()
 
   taskType match
     case TaskType.Book =>
@@ -406,8 +404,7 @@ case ar @ PUT -> Root / "enqueue" as user =>
         plan = enqueueTask.plan
       )
       .flatMap(Ok(_))
-      .recoverWith:
-        case ex => BadRequest(ex.getMessage)       
+      .recover()   
 ```
 
 ### Начало работы над задачей
@@ -454,8 +451,7 @@ case ar @ PUT -> Root / "start" as user =>
         endDate = task.endDate
       )
       .flatMap(Ok(_))
-      .recoverWith:
-        case ex => BadRequest(ex.getMessage)     
+      .recover()     
 ```
 
 ### Завершение задачи
@@ -508,8 +504,7 @@ case ar @ PUT -> Root / "complete" as user =>
         duration = task.duration
       )
       .flatMap(Ok(_))
-      .recoverWith:
-        case ex => BadRequest(ex.getMessage)       
+      .recover()       
 ```
 
 ### Откладывание задачи
@@ -550,8 +545,7 @@ case ar @ PUT -> Root / "defer" as user =>
         userId = user.id
       )
       .flatMap(Ok(_))
-      .recoverWith:
-        case ex => BadRequest(ex.getMessage)       
+      .recover()      
 ```
 
 ### Удаление задачи
@@ -583,8 +577,7 @@ case ar @ DELETE -> Root as user =>
         userId = user.id
       )
       .flatMap(_ => NoContent())  // 204 No Content при успехе
-      .recoverWith:
-        case ex => BadRequest(ex.getMessage)       
+      .recover()       
 ```
 
 ## Сводная таблица endpoint-ов

@@ -129,7 +129,7 @@ Authorization: Bearer eyJ0eXA...  // Токен для инвалидации
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/http/routes/PdpRoutes.scala
-trait PdpRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}]
+trait PdpRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent, Logger}]
     extends Http4sDsl[F]:
   given entityDecoder[A: Decoder]: EntityDecoder[F, A] =
     accumulatingJsonOf[F, A]
@@ -164,9 +164,37 @@ trait PdpRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}]
             case ex: MessageFailure =>
               ex.toHttpResponse(HttpVersion.`HTTP/1.1`).pure[F]
             case ex =>
-              Status.BadRequest(ex.getMessage)
+              Logger[F].error(ex)("Unknown error") *>
+                UnprocessableContent()
 
   end extension
+  
+  extension (respF: F[Response[F]])
+    /** Обрабатывает ошибки в эффекте, возвращающем Response, преобразуя их в
+      * соответствующие HTTP ответы
+      *
+      * @return
+      *   {{{F[Response[F]]}}} - HTTP ответ с обработанными ошибками
+      *
+      * @note
+      *   Обрабатывает следующие ошибки:
+      *   - [[IllegalArgumentException]] - преобразуется в 400 Bad Request с
+      *     сообщением ошибки
+      *   - Любые другие ошибки - логируются и преобразуются в 422 Unprocessable
+      *     Content
+      *
+      * @see
+      *   [[decodeR]] для декодирования тела запроса с обработкой ошибок
+      */
+    def recover(): F[Response[F]] =
+      respF.recoverWith:
+        case ex: IllegalArgumentException =>
+          BadRequest(ex.getMessage)
+        case ex =>
+          Logger[F].error(ex)("Unknown error") *>
+            UnprocessableContent()
+  end extension  
+  
 end PdpRoutes                       
 ```
 
@@ -202,7 +230,7 @@ POST /new_user
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/http/routes/UserRoutes.scala
-final case class UserRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
+final case class UserRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent, Logger}](
     authService: AuthService[F]
 ) extends PdpRoutes[F]:
 
@@ -222,7 +250,8 @@ final case class UserRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
                 Conflict(username)
               // Остальные ошибки  
               case ex =>
-                Status.BadRequest(ex.getMessage)
+                Logger[F].error(ex)("Unknown error") *>
+                  UnprocessableContent()
 
   val routes: HttpRoutes[F] = Router(prefixPath -> httpRoutes)
 ```
@@ -238,7 +267,7 @@ final case class UserRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/http/routes/LoginRoutes.scala
-final case class LoginRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
+final case class LoginRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent, Logger}](
     authService: AuthService[F]
 ) extends PdpRoutes[F]:
 
@@ -257,7 +286,8 @@ final case class LoginRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
                 Forbidden()
               // Остальные ошибки  
               case ex =>
-                Status.BadRequest(ex.getMessage)
+                Logger[F].error(ex)("Unknown error") *>
+                  UnprocessableContent()
 
   val routes: HttpRoutes[F] = Router(prefixPath -> httpRoutes)  
 ```
@@ -284,7 +314,7 @@ import org.http4s.server.*
 import ru.scalabook.pdp.model.User
 import ru.scalabook.pdp.services.AuthService
 
-final case class LogoutRoutes[F[_]: Monad](
+final case class LogoutRoutes[F[_]: {Monad, Logger}](
     authService: AuthService[F]
 ) extends Http4sDsl[F]:
 
@@ -303,7 +333,8 @@ final case class LogoutRoutes[F[_]: Monad](
           // Непредвиденные ошибки
           .recoverWith:
             case ex =>
-              Status.BadRequest(ex.getMessage)      
+              Logger[F].error(ex)("Unknown error") *>
+                UnprocessableContent()     
 
   def routes(authMiddleware: AuthMiddleware[F, UserInfo]): HttpRoutes[F] =
     Router(prefixPath -> authMiddleware(httpRoutes))  

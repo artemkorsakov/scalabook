@@ -132,7 +132,7 @@ JWT токен содержит стандартные поля (iss, exp, iat) 
 ### Общая структура
 
 ```dotty
-final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
+final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent, Logger}](
     settingsService: SettingsService[F]
 ) extends PdpRoutes[F]:
 
@@ -157,8 +157,7 @@ final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
           settingsService
             .createTaskType(newType)
             .flatMap(Created(_))
-            .recoverWith:
-              case ex => BadRequest(ex.getMessage)
+            .recover()
 
       // PUT /user_types/update - обновление существующего типа
       case ar @ PUT -> Root / "update" as user =>
@@ -175,8 +174,7 @@ final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
           settingsService
             .updateTaskType(updated)
             .flatMap(Ok(_))
-            .recoverWith:
-              case ex => BadRequest(ex.getMessage)
+            .recover()
 
       // PUT /user_types/reorder - изменение порядка сортировки
       case ar @ PUT -> Root / "reorder" as user =>
@@ -184,15 +182,13 @@ final case class UserTypeRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent}](
           settingsService
             .reorderTaskTypes(ids, user.id)
             .flatMap(Ok(_))
-            .recoverWith:
-              case ex => BadRequest(ex.getMessage)
+            .recover()
 
       // DELETE /user_types/{id} - удаление типа по ID
       case DELETE -> Root / UserTypeIdVar(id) as user =>
         settingsService.deleteTaskType(id, user.id)
           .flatMap(_ => NoContent())
-          .recoverWith:
-            case ex => BadRequest(ex.getMessage)
+          .recover()
 
   // Публичный метод, возвращающий HTTP маршруты с применённой авторизацией
   def routes(authMiddleware: AuthMiddleware[F, UserInfo]): HttpRoutes[F] =
@@ -417,9 +413,7 @@ HTTP4s предоставляет встроенные экстракторы д
 settingsService
   .createTaskType(newType)
   .flatMap(Created(_))
-  .recoverWith:
-    case ex =>
-      BadRequest(ex.getMessage)  // Преобразуем ошибку сервиса в HTTP ответ
+  .recover()  // Преобразуем ошибку сервиса в HTTP ответ
 ```
 
 ### Маршрутизация

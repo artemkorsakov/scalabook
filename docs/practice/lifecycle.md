@@ -334,94 +334,121 @@ final case class TaskLifecycleService[F[_]: MonadThrow](
     taskService: TaskService[F],       // Для непосредственного сохранения задачи
     historyService: HistoryService[F]  // Для хранения истории задач
 ):
-  import TaskLifecycleService.*
-
   def create(task: CreateTask): F[TaskId] =
     // 1. Сбор и валидация всех зависимых сущностей
-    val validationResult =
-      for
-        sectionOpt  <- sectionService.get(task.sectionId)
-        goalOpt     <- goalService.get(task.goalId)
-        // Проверка для пользовательского типа
-        userTypeVal <- validateUserTaskType(task) 
-      yield (
-        // Преобразование Option в Validated с ошибкой
-        sectionOpt
-          .filter(_.userId == task.userId)
-          .toValidNel(s"Section with id ${task.sectionId} not found"),
-        goalOpt
-          .filter(_.userId == task.userId)
-          .toValidNel(s"Goal with id ${task.goalId} not found"),
-        userTypeVal,
-        // Валидация статуса
-        validateStatus(task)
-      )
-        // Комбинирование результатов: успех, только если все Valid
-        .mapN { (_, _, _, _) => () } 
-
-    // 2. Исполнение валидации и создание или возврат ошибки
-    validationResult.flatMap:
+    validateTask(
+      userId = task.userId,
+      sectionId = task.sectionId,
+      goalId = task.goalId,
+      maybeUserTypeId = task.maybeUserTypeId,
+      status = task.status,
+      plan = task.plan,
+      startDate = task.startDate,
+      endDate = task.endDate
+    ).flatMap:
       // Вся валидация пройдена → создаем задачу
       case Validated.Valid(_)        => taskService.create(task)
       case Validated.Invalid(errors) =>
-        // Накопленные ошибки объединяются и выбрасываются как исключение
+      // Накопленные ошибки объединяются и выбрасываются как исключение  
         MonadThrow[F].raiseError(
-          new IllegalArgumentException(errors.toVector.mkString(", "))
+          new IllegalArgumentException(errors.toList.mkString(", "))
         )
-  end create
+  
+  private def validateTask(
+      userId: UserId,
+      sectionId: SectionId,
+      goalId: GoalId,
+      maybeUserTypeId: Option[UserTypeId],
+      status: Status,
+      plan: List[TaskStep],
+      startDate: Option[LocalDate],
+      endDate: Option[LocalDate]
+  ) =
+    for
+      sectionOpt  <- sectionService.get(sectionId)
+      goalOpt     <- goalService.get(goalId)
+      userTypeVal <-
+        maybeUserTypeId match
+          case Some(userTypeId) =>
+            // Проверка для пользовательского типа
+            validateUserTaskType(userTypeId, userId)
+          case None =>
+            MonadThrow[F].pure(Validated.valid(()))
+    yield (
+      // Преобразование Option в Validated с ошибкой
+      sectionOpt
+        .filter(_.userId == userId)
+        .toValidNel(s"Section with id ${sectionId} not found"),
+      goalOpt
+        .filter(_.userId == userId)
+        .toValidNel(s"Goal with id ${goalId} not found"),
+      userTypeVal,
+      // Валидация статуса
+      validateStatus(
+        status = status,
+        plan = plan,
+        startDate = startDate,
+        endDate = endDate
+      )
+    )
+      // Комбинирование результатов: успех, только если все Valid
+      .mapN { (_, _, _, _) => () }
 
   // Приватный метод для валидации пользовательского типа задачи.
-  // Проверка требуется только для задач типа `CreateUserTask`.
-  private def validateUserTaskType(task: CreateTask)
-      : F[ValidatedNel[String, Unit]] =
-    task match
-      case userTask: CreateUserTask =>
-        typeService
-          .get(userTask.userTypeId)
-          .map:
-            case Some(userType) if userType.userId == task.userId =>
-              Validated.valid(()) // Тип существует
-            case None =>
-              Validated.invalidNel(
-                s"User type with id ${userTask.userTypeId} not found"
-              )
-      // Для задач без пользовательского типа проверка не требуется    
-      case _ => MonadThrow[F].pure(Validated.valid(()))
+  private def validateUserTaskType(
+      id: UserTypeId,
+      userId: UserId
+  ): F[ValidatedNel[String, Unit]] =
+    taskTypeService
+      .get(id)
+      .map:
+        case Some(userType) if userType.userId == userId =>
+          Validated.valid(()) // Тип существует
+        case _ =>
+          Validated.invalidNel(s"User type with id '$id' not found")   
 end TaskLifecycleService
 
 // Сопутствующий объект, содержит чистые функции валидации, зависящие только от статуса.
 object TaskLifecycleService:
-  // Основная функция валидации статуса. Определяет, какие дополнительные проверки нужны.
-  private[services] def validateStatus(task: CreateTask)
+  // Основная функция валидации статуса. Определяет, какие дополнительные проверки нужны. 
+  private[services] def validateStatus(
+      status: Status,
+      plan: List[TaskStep],
+      startDate: Option[LocalDate],
+      endDate: Option[LocalDate]
+  )
       : ValidatedNel[String, Unit] =
-    task.status match
+    status match
+      // Для статуса "В работе" и "Завершено" обязательны И план, И корректные даты
       case Status.InProgress | Status.Completed =>
-        // Для статуса "В работе" и "Завершено" обязательны И план, И корректные даты
-        (validatePlan(task), validateDates(task)).mapN((_, _) => ())
-      case Status.Planned       => 
-        // Для "Запланировано" обязателен только план
-        validatePlan(task)
-      case Status.KnowledgeBase => 
-        // Для "Базы знаний" дополнительных проверок нет
-        Validated.valid(())
+        (
+          validatePlan(plan),
+          validateDates(startDate = startDate, endDate = endDate)
+        ).mapN((_, _) => ())
+      // Для "Запланировано" обязателен только план
+      case Status.Planned       => validatePlan(plan)
+      // Для "Базы знаний" дополнительных проверок нет
+      case Status.KnowledgeBase => Validated.valid(())
 
   // Проверка наличия плана выполнения (непустого списка шагов).
-  private[services] def validatePlan(task: CreateTask)
+  private[services] def validatePlan(plan: List[TaskStep])
       : ValidatedNel[String, Unit] =
-    if task.plan.isEmpty then
-      Validated.invalidNel("Plan is empty")
+    if plan.isEmpty then Validated.invalidNel("Plan is empty")
     else Validated.valid(())
 
   // Проверка корректности дат: обе даты должны быть указаны, 
   // а дата окончания — быть после даты начала.
-  private[services] def validateDates(task: CreateTask)
+  private[services] def validateDates(
+      startDate: Option[LocalDate],
+      endDate: Option[LocalDate]
+  )
       : ValidatedNel[String, Unit] =
-    (task.startDate, task.endDate) match
+    (startDate, endDate) match
       case (Some(start), Some(end)) if end.isAfter(start) => Validated.valid(())
       case (Some(start), Some(end))                       =>
         Validated.invalidNel(s"Start date $start is after end date $end")
       case _ =>
-        Validated.invalidNel("Start or end date is empty")
+        Validated.invalidNel("Start or end date is empty")        
 end TaskLifecycleService
 ```
 

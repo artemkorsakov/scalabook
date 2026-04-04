@@ -24,7 +24,7 @@ nextPage = lifecycle/complete.html
 Это демонстрирует принцип композиции и разделения ответственности:
 
 ```dotty
-final case class SettingsService[F[_]: {MonadThrow as MT}](
+final case class SettingsService[F[_]: MonadThrow](
     typeService: UserTypeService[F],   // Сервис работы с типами задач
     sectionService: SectionService[F], // Сервис работы с разделами
     goalService: GoalService[F],       // Сервис работы с целями
@@ -69,7 +69,7 @@ private def createItem[A, B, C](
 ): F[C] =
   getAll.flatMap: items =>
     if items.exists(getName(_) == name) then
-      MT.raiseError(
+      MonadThrow[F].raiseError(
         new IllegalArgumentException(
           s"An item with name '$name' already exists"
         )
@@ -118,11 +118,11 @@ private def updateItem[A, B, C](
     val newName = getName(updated)
 
     if types.forall(getId(_) != id) then
-      MT.raiseError(
+      MonadThrow[F].raiseError(
         new IllegalArgumentException(s"An item with id '$id' not found")
       )
     else if types.exists(t => getName(t) == newName && getId(t) != id) then
-      MT.raiseError(
+      MonadThrow[F].raiseError(
         new IllegalArgumentException(
           s"Can't update! Task type with name '$newName' already exists"
         )
@@ -162,11 +162,11 @@ private def reorderItems[A, B](
   getAll.flatMap: items =>
     NonEmptyVector.fromVector(items) match
       case None =>
-        MT.raiseError(new IllegalArgumentException("Items list is empty"))
+        MonadThrow[F].raiseError(new IllegalArgumentException("Items list is empty"))
       case Some(neItems) =>
         val notFoundIds = ids.filterNot(id => neItems.exists(getId(_) == id))
         if notFoundIds.nonEmpty then
-          MT.raiseError(
+          MonadThrow[F].raiseError(
             new IllegalArgumentException(
               s"Some ids are not found: ${notFoundIds.mkString(", ")}"
             )
@@ -285,7 +285,7 @@ def deleteTaskType(id: UserTypeId, userId: UserId): F[Boolean] =
   // Сначала проверяем наличие зависимостей
   taskService.existsUserType(id, userId).ifM(
     // Если existsUserType вернул true (тип используется) → вызываем ошибку
-    MT.raiseError(
+    MonadThrow[F].raiseError(
       new IllegalArgumentException(
         s"Невозможно удалить тип задачи с ID $id: тип используется в одной или нескольких задачах"
       )
@@ -327,7 +327,7 @@ def deleteTaskType(id: UserTypeId, userId: UserId): F[Boolean] =
 Сервис жизненного цикла задач (`TaskLifecycleService`) агрегирует все необходимые сервисы для валидации и сохранения задачи.
 
 ```dotty
-final case class TaskLifecycleService[F[_]: {MonadThrow as MT}](
+final case class TaskLifecycleService[F[_]: MonadThrow](
     typeService: UserTypeService[F],   // Для проверки пользовательских типов
     sectionService: SectionService[F], // Для проверки раздела
     goalService: GoalService[F],       // Для проверки цели
@@ -365,7 +365,7 @@ final case class TaskLifecycleService[F[_]: {MonadThrow as MT}](
       case Validated.Valid(_)        => taskService.create(task)
       case Validated.Invalid(errors) =>
         // Накопленные ошибки объединяются и выбрасываются как исключение
-        MT.raiseError(
+        MonadThrow[F].raiseError(
           new IllegalArgumentException(errors.toVector.mkString(", "))
         )
   end create
@@ -386,7 +386,7 @@ final case class TaskLifecycleService[F[_]: {MonadThrow as MT}](
                 s"User type with id ${userTask.userTypeId} not found"
               )
       // Для задач без пользовательского типа проверка не требуется    
-      case _ => MT.pure(Validated.valid(()))
+      case _ => MonadThrow[F].pure(Validated.valid(()))
 end TaskLifecycleService
 
 // Сопутствующий объект, содержит чистые функции валидации, зависящие только от статуса.
@@ -468,17 +468,17 @@ private def findTask(
 ): F[Task] =
   get(id, taskType, userId).flatMap:
     case Some(task) if task.status == status =>
-      MT.pure(task) // Задача найдена и имеет ожидаемый статус
+      MonadThrow[F].pure(task) // Задача найдена и имеет ожидаемый статус
     case Some(_) =>
       // Задача найдена, но в неправильном статусе (ошибка бизнес-логики)
-      MT.raiseError(
+      MonadThrow[F].raiseError(
         new IllegalArgumentException(
           s"Task with id '$id' is not in '$status' state"
         )
       )
     case None =>
       // Задача не найдена (ошибка данных)
-      MT.raiseError(
+      MonadThrow[F].raiseError(
         new IllegalArgumentException(s"Task with id '$id' not found")
       )     
 ```
@@ -500,7 +500,7 @@ def start(
 ): F[Boolean] =
   // Предварительная проверка логики дат на уровне сервиса
   if endDate.isBefore(startDate) then
-    MT.raiseError(
+    MonadThrow[F].raiseError(
       new IllegalArgumentException(
         s"End date $endDate is before start date $startDate"
       )
@@ -544,7 +544,7 @@ def defer(id: TaskId, taskType: TaskType, userId: UserId): F[Boolean] =
 def delete(id: TaskId, taskType: TaskType, userId: UserId): F[Boolean] =
   get(id, taskType, userId).map:
     case Some(_) => taskService.delete(id, taskType)
-    case None    => MT.pure(false)
+    case None    => MonadThrow[F].pure(false)
 ```
 
 ---

@@ -547,7 +547,7 @@ end Crypto
 ### Сигнатура метода
 
 ```dotty
-def make[F[_]: {MonadThrow as MT}](
+def make[F[_]: MonadThrow](
     tokenExpiration: FiniteDuration,         // Время жизни токена (например, 1 час)
     tokens: Tokens[F],                       // Генератор JWT токенов
     usersService: UsersService[F],           // Сервис работы с пользователями БД
@@ -577,7 +577,7 @@ def newUser(username: UserName, password: Password): F[JwtToken] =
     case None =>
       // Шаг 2: Шифрование пароля с обработкой возможных ошибок
       val encryptedPasswordF =
-        MT.fromEither(
+        MonadThrow[F].fromEither(
           crypto.encrypt(password)
             .leftMap(new IllegalArgumentException(_))
         )      

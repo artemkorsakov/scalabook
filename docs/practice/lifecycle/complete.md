@@ -213,7 +213,7 @@ private[pdp] class PostgreSQLHistoryService[F[_]: MonadCancelThrow](
 что позволяет координировать завершение задачи и сохранение её в архиве.
 
 ```dotty
-final case class TaskLifecycleService[F[_]: {MonadThrow as MT}](
+final case class TaskLifecycleService[F[_]: MonadThrow](
     typeService: UserTypeService[F],
     sectionService: SectionService[F],
     goalService: GoalService[F],

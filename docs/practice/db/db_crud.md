@@ -64,9 +64,9 @@ private[pdp] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
     * выполняются в единой транзакции для атомарности.
     *
     * @return
-    *   {{{F[Unit]}}} - эффект, представляющий операцию инициализации.
+    *   {{{F[Boolean]}}} - эффект, представляющий операцию инициализации.
     */
-  def initialize(): F[Unit] =
+  def initialize(): F[Boolean] =
     val program =
       for
         // 1. Создание таблиц для базовых сущностей
@@ -104,7 +104,7 @@ private[pdp] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
 
         // 4. Установка дополнительных внешних ключей
         _ <- userTypeFK.update.run
-      yield ()
+      yield true
     // Преобразование программы ConnectionIO в F с использованием Transactor
     program.transact(xa)
   end initialize
@@ -325,14 +325,14 @@ private[pdp] class PostgreSQLUserTypeService[F[_]: MonadCancelThrow](
     *   Объект UserType с обновленными данными (должен содержать существующий
     *   ID).
     * @return
-    *   {{{F[Unit]}}} - эффект, подтверждающий выполнение операции.
+    *   {{{F[Boolean]}}} - эффект, подтверждающий выполнение операции.
     */
-  def update(userType: UserType): F[Unit] =
+  def update(userType: UserType): F[Boolean] =
     generateUpdateById[UserType, UserTypeId](userType)
       .update        // Указываем, что это update-запрос
       .run           // Выполняем, игнорируя количество измененных строк
       .transact(xa)
-      .void          // Преобразуем F[Int] в F[Unit]
+      .map(_ > 0)    // Преобразуем F[Int] в F[Boolean]
 
   /** Пакетно обновляет несколько пользовательских типов задач. 
     * Этот метод используется, например, при массовом изменении порядка (reordering)
@@ -345,9 +345,9 @@ private[pdp] class PostgreSQLUserTypeService[F[_]: MonadCancelThrow](
     * @param userTypes
     *   NonEmptyVector[UserType] - гарантированно непустой список типов для обновления.
     * @return
-    *   {{{F[Unit]}}} - эффект, подтверждающий выполнение всех операций обновления.
+    *   {{{F[Boolean]}}} - эффект, подтверждающий выполнение всех операций обновления.
     */
-  def updateAll(userTypes: NonEmptyVector[UserType]): F[Unit] =
+  def updateAll(userTypes: NonEmptyVector[UserType]): F[Boolean] =
     def toConn: UserType => ConnectionIO[Int] =
       generateUpdateById[UserType, UserTypeId](_).update.run
     
@@ -358,22 +358,21 @@ private[pdp] class PostgreSQLUserTypeService[F[_]: MonadCancelThrow](
       acc *> toConn(userType)
     }
       .transact(xa)  // Выполняем всю последовательность в одной транзакции
-      .void          
+      .map(_ > 0)              
     
   /** Удаляет пользовательский тип задачи по ID.
     *
     * @param id
     *   Идентификатор типа задачи для удаления.
     * @return
-    *   F[Unit] - эффект, подтверждающий выполнение операции.
+    *   F[Boolean] - эффект, подтверждающий выполнение операции.
     */
-  def delete(id: UserTypeId): F[Unit] =
+  def delete(id: UserTypeId): F[Boolean] =
     generateDeleteById[UserType, UserTypeId](id)
       .update
       .run
       .transact(xa)
-      .void
-
+      .map(_ > 0)
 end PostgreSQLUserTypeService
 ```
 
@@ -415,8 +414,8 @@ class PostgreSQLTaskService extends TaskService[IO]:
   def create(task: CreateTask): IO[TaskId] = ...
   def get(id: TaskId, taskType: TaskType): IO[Option[Task]] = ...
   def getByUser(userId: UserId): IO[Vector[Task]] = ...  // Без параметров, как в интерфейсе
-  def update(task: Task): IO[Unit] = ...
-  def delete(id: TaskId, taskType: TaskType): IO[Unit] = ...
+  def update(task: Task): IO[Boolean] = ...
+  def delete(id: TaskId, taskType: TaskType): IO[Boolean] = ...
 
   // Приватные вспомогательные методы - допустимо
   private def buildWhereClause(filters: Map[String, String]): String = ...
@@ -1011,40 +1010,40 @@ def getByUser(userId: UserId): IO[Vector[Task]] =
   * @param task
   *   Объект задачи с обновленными данными. Должен содержать существующий ID.
   * @return
-  *   IO[Unit] - эффект, подтверждающий успешное выполнение операции
+  *   F[Boolean] - эффект, подтверждающий успешное выполнение операции
   *   обновления.
   */
-def update(task: Task): IO[Unit] =
+def update(task: Task): F[Boolean] =
   task match
     case book: BookTask =>
       // Обновление книги: генерация UPDATE запроса для таблицы books
       generateUpdateById[BookTask, TaskId](book)
-        .update.run.transact(xa).void
+        .update.run.transact(xa).map(_ > 0)
 
     case article: ArticleTask =>
       // Обновление статьи: генерация UPDATE запроса для таблицы articles
       generateUpdateById[ArticleTask, TaskId](article)
-        .update.run.transact(xa).void
+        .update.run.transact(xa).map(_ > 0)
 
     case podcast: PodcastTask =>
       // Обновление подкаста: генерация UPDATE запроса для таблицы podcasts
       generateUpdateById[PodcastTask, TaskId](podcast)
-        .update.run.transact(xa).void
+        .update.run.transact(xa).map(_ > 0)
 
     case video: VideoTask =>
       // Обновление видео: генерация UPDATE запроса для таблицы videos
       generateUpdateById[VideoTask, TaskId](video)
-        .update.run.transact(xa).void
+        .update.run.transact(xa).map(_ > 0)
 
     case course: CourseTask =>
       // Обновление курса: генерация UPDATE запроса для таблицы courses
       generateUpdateById[CourseTask, TaskId](course)
-        .update.run.transact(xa).void
+        .update.run.transact(xa).map(_ > 0)
 
     case userTask: UserTask =>
       // Обновление пользовательской задачи: генерация UPDATE запроса для таблицы user_tasks
       generateUpdateById[UserTask, TaskId](userTask)
-        .update.run.transact(xa).void
+        .update.run.transact(xa).map(_ > 0)
 ```
 
 ### Операция удаления задачи (Delete)
@@ -1057,33 +1056,33 @@ def update(task: Task): IO[Unit] =
   * @param taskType
   *   Тип задачи, определяющий таблицу.
   * @return
-  *   IO[Unit] - эффект, подтверждающий выполнение.
+  *   F[Boolean] - эффект, подтверждающий выполнение.
   */
-def delete(id: TaskId, taskType: TaskType): IO[Unit] =
+def delete(id: TaskId, taskType: TaskType): F[Boolean] =
   taskType match
     case Book =>
       generateDeleteById[BookTask, TaskId](id)
-        .update.run.transact(xa).void
+        .update.run.transact(xa).map(_ > 0)
 
     case Article =>
       generateDeleteById[ArticleTask, TaskId](id)
-        .update.run.transact(xa).void
+        .update.run.transact(xa).map(_ > 0)
 
     case Podcast =>
       generateDeleteById[PodcastTask, TaskId](id)
-        .update.run.transact(xa).void
+        .update.run.transact(xa).map(_ > 0)
 
     case Video =>
       generateDeleteById[VideoTask, TaskId](id)
-        .update.run.transact(xa).void
+        .update.run.transact(xa).map(_ > 0)
 
     case Course =>
       generateDeleteById[CourseTask, TaskId](id)
-        .update.run.transact(xa).void
+        .update.run.transact(xa).map(_ > 0)
 
     case Other =>
       generateDeleteById[UserTask, TaskId](id)
-        .update.run.transact(xa).void
+        .update.run.transact(xa).map(_ > 0)
 ```
 
 ## Заключение

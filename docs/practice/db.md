@@ -104,13 +104,13 @@ private[services] trait UserTypeService[F[_]: Monad]:
   def getByUser(userId: UserId): F[Vector[UserType]]
 
   /** Обновляет существующий пользовательский тип задачи. */
-  def update(userType: UserType): F[Unit]
+  def update(userType: UserType): F[Boolean]
 
   /** Обновляет список пользовательских типов задач. */
-  def updateAll(userTypes: NonEmptyVector[UserType]): F[Unit]
+  def updateAll(userTypes: NonEmptyVector[UserType]): F[Boolean]
 
   /** Удаляет пользовательский тип задачи по его идентификатору. */
-  def delete(id: UserTypeId): F[Unit]  
+  def delete(id: UserTypeId): F[Boolean]  
 ```
 
 ### Семантика возвращаемых типов в контексте эффектов
@@ -125,8 +125,8 @@ private[services] trait UserTypeService[F[_]: Monad]:
   или вернуть `None`, если сущность с таким ID не существует.
 - **`F[Vector[UserType]]`** — операция чтения, всегда возвращающая коллекцию. 
   Коллекция может быть пустой, если в БД еще нет записей.
-- **`F[Unit]`** — операция, которая выполняется ради своего побочного эффекта (обновление, удаление) 
-  и не возвращает значимого значения. `Unit` служит сигналом успешного завершения.
+- **`F[Boolean]`** — операция, которая выполняется ради своего побочного эффекта (обновление, удаление) 
+  и не возвращает значимого значения. `Boolean` служит сигналом успешного завершения.
 
 ### Размещение бизнес-логики: за пределами алгебры
 
@@ -167,9 +167,9 @@ private[services] trait TaskService[F[_]: Monad]:
   def getByUser(userId: UserId): F[Vector[Task]]
 
   // Принимает полноценную Task с id.
-  def update(task: Task): F[Unit] 
+  def update(task: Task): F[Boolean] 
 
-  def delete(id: TaskId, taskType: TaskType): F[Unit]
+  def delete(id: TaskId, taskType: TaskType): F[Boolean]
 ```
 
 Тип `CreateTask` и его варианты (для книг, статей и т.д.) являются точными копиями соответствующих `*Task` типов, но без поля `id`. 
@@ -269,13 +269,6 @@ graph TD
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/mock/MockUserTypeService.scala
-package ru.scalabook.pdp.services.mock
-
-import cats.effect.*
-import ru.scalabook.pdp.model.*
-import ru.scalabook.pdp.model.UserType.{UserTypeId, UserTypeName}
-import ru.scalabook.pdp.services.UserTypeService
-
 /**
  * Мок-реализация UserTypeService, использующая иммутабельную Map в памяти
  * для хранения состояния, защищенного с помощью Ref из Cats Effect.
@@ -283,22 +276,22 @@ import ru.scalabook.pdp.services.UserTypeService
  * @param userTypes Ref, содержащий текущее состояние хранилища (Map из ID в UserType).
  * @param nextId Ref-счетчик для генерации новых уникальных ID.
  */
-private[services] class MockUserTypeService(
-    userTypes: Ref[IO, Map[UserTypeId, UserType]],
-    nextId: Ref[IO, UserTypeId]
-) extends UserTypeService[IO]: // Интерпретируем алгебру в конкретном эффекте IO
+private[services] class MockUserTypeService[F[_]: Monad](
+    userTypes: Ref[F, Map[UserTypeId, UserType]],
+    nextId: Ref[F, UserTypeId]
+) extends UserTypeService[F]: // Интерпретируем алгебру в конкретном эффекте F
 
   /**
    * Создает новый тип задачи.
    * Атомарно: 1) берет следующий ID, 2) инкрементирует счетчик, 3) сохраняет запись.
    */
-  def create(newItem: CreateUserType): IO[UserTypeId] =
+  def create(newItem: CreateUserType): F[UserTypeId] =
     for
       // Получаем текущий ID и увеличиваем счетчик для следующего вызова.
       // applyUnsafe здесь безопасен, так как мы знаем, 
       // что id.value + 1 - положительное число.
       id <- nextId.getAndUpdate(id => UserTypeId.applyUnsafe(id.value + 1))
-      // Создаем объект UserType и сохраняем его в Map.
+      // Создаем объект UserType и сохраняем его в Map.      
       userType = UserType(
         id = id,
         name = newItem.name,
@@ -306,46 +299,46 @@ private[services] class MockUserTypeService(
         displayed = newItem.displayed,
         ordinal = newItem.ordinal
       )
-      // Используем метод update для сохранения.
-      _  <- update(userType) 
+      // Используем метод update для сохранения.      
+      _ <- update(userType)
     yield id // Возвращаем ID, под которым был сохранен тип.
-
+       
   /** Извлекает тип по ID. Возвращает None, если ключ не найден. */
-  def get(id: UserTypeId): IO[Option[UserType]] =
+  def get(id: UserTypeId): F[Option[UserType]] =
     userTypes.get.map(_.get(id)) // Читаем Map и выполняем lookup.
 
   /** Извлекает все значения для заданного пользователя, преобразуя значения Map в Vector. */
-  def getByUser(userId: UserId): IO[Vector[UserType]] =
+  def getByUser(userId: UserId): F[Vector[UserType]] =
     userTypes.get.map(_.values.filter(_.userId == userId).toVector)
 
   /** Обновляет (или добавляет) запись в Map. */
-  def update(userType: UserType): IO[Unit] =
-    userTypes.update(currentMap => currentMap + (userType.id -> userType))
+  def update(userType: UserType): F[Boolean] =
+    userTypes.update(_ + (userType.id -> userType)).as(true)
 
   /** Обновляет все переданные записи в Map. */
-  def updateAll(items: NonEmptyVector[UserType]): IO[Unit] =
-    userTypes.update(_ ++ items.toVector.map(t => t.id -> t))
+  def updateAll(items: NonEmptyVector[UserType]): F[Boolean] =
+    userTypes.update(_ ++ items.toVector.map(t => t.id -> t)).as(true)
     
   /** Удаляет запись по ID. Если ID не существует, операция не имеет эффекта. */
-  def delete(id: UserTypeId): IO[Unit] =
-    userTypes.update(_ - id)
+  def delete(id: UserTypeId): F[Boolean] =
+    userTypes.update(_ - id).as(true)
 
 end MockUserTypeService
 
 /** Компаньон-объект, предоставляющий безопасный конструктор Resource для создания сервиса. */
 object MockUserTypeService:
   /**
-   * Фабричный метод, возвращающий Resource[IO, UserTypeService[IO]].
+   * Фабричный метод, возвращающий Resource[F, UserTypeService[F]].
    * Гарантирует, что состояние (Ref) будет корректно инициализировано.
    * Resource управляет жизненным циклом, хотя для Ref это не критично.
    */
-  def make: Resource[IO, UserTypeService[IO]] =
+  def make[F[_]: Sync]: Resource[F, UserTypeService[F]] =
     Resource.eval: // Создаем ресурс из чистого эффекта (eval).
       for
         // Инициализируем хранилище пустой Map.
-        types <- Ref[IO].of(Map.empty[UserTypeId, UserType])
+        types <- Ref[F].of(Map.empty[UserTypeId, UserType])
         // Инициализируем счетчик ID значением 0 (первый ID будет 0).
-        id    <- Ref[IO].of(UserTypeId(0))
+        id    <- Ref[F].of(UserTypeId(0))
       yield new MockUserTypeService(types, id) // Возвращаем новый экземпляр сервиса.     
 ```
 

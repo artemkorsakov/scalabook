@@ -97,7 +97,7 @@ private def createItem[A, B, C](
 2. Новое имя сущности не должно конфликтовать с именами других сущностей (кроме себя самой).
 
 ```dotty
-def updateTaskType(userType: UserType): F[Unit] =
+def updateTaskType(userType: UserType): F[Boolean] =
   updateItem[UserType, UserTypeId, UserTypeName](
     getAll = typeService.getByUser(userType.userId),
     updated = userType,
@@ -111,8 +111,8 @@ private def updateItem[A, B, C](
     updated: A,
     getId: A => B,
     getName: A => C,
-    update: A => F[Unit]
-): F[Unit] =
+    update: A => F[Boolean]
+): F[Boolean] =
   getAll.flatMap: types =>
     val id      = getId(updated)
     val newName = getName(updated)
@@ -143,7 +143,7 @@ private def updateItem[A, B, C](
 На вход принимается вектор идентификаторов в желаемом порядке.
 
 ```dotty
-def reorderTaskTypes(ids: NonEmptyVector[UserTypeId], userId: UserId): F[Unit] =
+def reorderTaskTypes(ids: NonEmptyVector[UserTypeId], userId: UserId): F[Boolean] =
   reorderItems[UserType, UserTypeId](
     getAll = typeService.getByUser(userId),
     ids = ids,
@@ -157,8 +157,8 @@ private def reorderItems[A, B](
     ids: NonEmptyVector[B],
     getId: A => B,
     update: A => Ordinal => A,
-    updateAll: NonEmptyVector[A] => F[Unit]
-): F[Unit] =
+    updateAll: NonEmptyVector[A] => F[Boolean]
+): F[Boolean] =
   getAll.flatMap: items =>
     NonEmptyVector.fromVector(items) match
       case None =>
@@ -281,7 +281,7 @@ private[pdp] class PostgreSQLTaskService[F[_]: MonadCancelThrow](
 что обеспечивает безопасное удаление только тех сущностей, которые не используются.
 
 ```dotty
-def deleteTaskType(id: UserTypeId, userId: UserId): F[Unit] =
+def deleteTaskType(id: UserTypeId, userId: UserId): F[Boolean] =
   // Сначала проверяем наличие зависимостей
   taskService.existsUserType(id, userId).ifM(
     // Если existsUserType вернул true (тип используется) → вызываем ошибку
@@ -442,7 +442,7 @@ def enqueue(
     userId: UserId,
     ordinal: Ordinal,
     plan: NonEmptyVector[TaskStep] // Непустой список шагов — гарантия на уровне типов
-): F[Unit] =
+): F[Boolean] =
   // 1. Находим задачу, строго проверяя её текущий статус
   findTask(id, taskType, userId, Status.KnowledgeBase).flatMap: task =>
     // 2. Создаем обновленную версию: меняем статус и привязываем план
@@ -497,7 +497,7 @@ def start(
     userId: UserId,
     startDate: LocalDate,
     endDate: LocalDate
-): F[Unit] =
+): F[Boolean] =
   // Предварительная проверка логики дат на уровне сервиса
   if endDate.isBefore(startDate) then
     MT.raiseError(
@@ -525,7 +525,7 @@ def start(
 2.  **Очистка дат**: Даты начала и окончания обнуляются, так как при повторном взятии в работу они, скорее всего, будут другими.
 
 ```dotty
-def defer(id: TaskId, taskType: TaskType, userId: UserId): F[Unit] =
+def defer(id: TaskId, taskType: TaskType, userId: UserId): F[Boolean] =
   findTask(id, taskType, userId, Status.InProgress).flatMap: task =>
     val updated = task.copy(
       status = Status.Planned,
@@ -541,10 +541,10 @@ def defer(id: TaskId, taskType: TaskType, userId: UserId): F[Unit] =
 Сервис жизненного цикла делегирует её напрямую в `TaskService`, который отвечает за постоянное хранение. 
 
 ```dotty
-def delete(id: TaskId, taskType: TaskType, userId: UserId): F[Unit] =
+def delete(id: TaskId, taskType: TaskType, userId: UserId): F[Boolean] =
   get(id, taskType, userId).map:
     case Some(_) => taskService.delete(id, taskType)
-    case None    => MT.unit  
+    case None    => MT.pure(false)
 ```
 
 ---

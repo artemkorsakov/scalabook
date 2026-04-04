@@ -380,20 +380,21 @@ object AppResources:
     }
 
     // Вспомогательная функция для проверки подключения к PostgreSQL
-    def checkPostgresConnection(xa: Transactor[F]): F[Unit] =
+    def checkPostgresConnection(xa: Transactor[F]): F[Boolean] =
       sql"select version();"
         .query[String]
         .option
         .transact(xa)
         .flatMap {
-          case Some(v) => Logger[F].info(s"Connected to Postgres $v")
+          case Some(v) => 
+            Logger[F].info(s"Connected to Postgres $v").as(true)
           case None    =>
             new RuntimeException("Invalid Postgres connection")
-              .raiseError[F, Unit]
+              .raiseError[F, Boolean]
         }
 
     // Функция для запуска миграций базы данных
-    def migration(xa: Transactor[F]): F[Unit] =
+    def migration(xa: Transactor[F]): F[Boolean] =
       new PostgreSQLMigrationService(xa).migrate()
 
     // Функция для создания ресурса подключения к Redis
@@ -404,11 +405,11 @@ object AppResources:
     // Вспомогательная функция для проверки подключения к Redis
     def checkRedisConnection(
         redis: RedisCommands[F, String, String]
-    ): F[Unit] =
+    ): F[Boolean] =
       redis.info.flatMap:
         _.get("redis_version").traverse_ { v =>
           Logger[F].info(s"Connected to Redis $v")
-        }
+        }.as(true)
 
     // Объединяем оба ресурса в один с помощью parMapN.
     // Это значит, что они будут инициализироваться параллельно.

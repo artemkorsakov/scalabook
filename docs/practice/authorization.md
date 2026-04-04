@@ -158,14 +158,14 @@ private[services] trait UsersService[F[_]]:
     * @param user
     *   обновлённая модель пользователя
     */
-  def update(user: User): F[Unit]
+  def update(user: User): F[Boolean]
 
   /** Удаление пользователя
     *
     * @param id
     *   UUID пользователя для удаления
     */
-  def delete(id: UserId): F[Unit]
+  def delete(id: UserId): F[Boolean]
 end UsersService
 ```
 
@@ -176,33 +176,34 @@ end UsersService
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/mock/MockUsersService.scala
 
-private[services] class MockUsersService(users: Ref[IO, Map[UserId, User]])
-    extends UsersService[IO]:
-
-  def create(newUser: UserRegistration): IO[UserId] =
+private[services] class MockUsersService[F[_]: Sync](
+    users: Ref[F, Map[UserId, User]]
+) extends UsersService[F]:
+  def create(newUser: UserRegistration): F[UserId] =
     for
-      uuid <- GenUUID[IO].make
+      uuid <- GenUUID[F].make
       id   = UserId(uuid)
       user = User(id, newUser.username, newUser.passwordHash)
       _ <- users.update(_ + (id -> user))
     yield id
 
-  def get(id: UserId): IO[Option[User]] =
+  def get(id: UserId): F[Option[User]] =
     users.get.map(_.values.find(_.id == id))
 
-  def find(username: UserName): IO[Option[User]] =
+  def find(username: UserName): F[Option[User]] =
     users.get.map(_.values.find(_.username == username))
 
-  def update(user: User): IO[Unit] =
-    users.update(_ + (user.id -> user))
+  def update(user: User): F[Boolean] =
+    users.update(_ + (user.id -> user)).as(true)
 
-  def delete(id: UserId): IO[Unit] =
-    users.update(_ - id)
+  def delete(id: UserId): F[Boolean] =
+    users.update(_ - id).as(true)
+end MockUsersService
 
 object MockUsersService:
-  def make: Resource[IO, UsersService[IO]] =
+  def make[F[_]: Sync]: Resource[F, UsersService[F]] =
     Resource.eval:
-      Ref[IO].of(Map.empty[UserId, User]).map: users =>
+      Ref[F].of(Map.empty[UserId, User]).map: users =>
         new MockUsersService(users)
 ```
 
@@ -231,13 +232,13 @@ private[pdp] class PostgreSQLUsersService[F[_]: MonadCancelThrow](
       .option
       .transact(xa)
 
-  def update(user: User): F[Unit] =
+  def update(user: User): F[Boolean] =
     generateUpdateById[User, UserId](user)
-      .update.run.transact(xa).void
+      .update.run.transact(xa).map(_ > 0)
 
-  def delete(id: UserId): F[Unit] =
+  def delete(id: UserId): F[Boolean] =
     generateDeleteById[User, UserId](id)
-      .update.run.transact(xa).void
+      .update.run.transact(xa).map(_ > 0)
 ```
 
 ## Ключевые архитектурные решения
@@ -296,7 +297,7 @@ trait AuthService[F[_]]:
     * @param username
     *   имя пользователя для дополнительной проверки
     */
-  def logout(token: JwtToken, username: UserName): F[Unit]
+  def logout(token: JwtToken, username: UserName): F[Boolean]
 
 /** Сервис для валидации пользователей по JWT токенам Используется в middleware
   * для аутентификации запросов
@@ -661,10 +662,11 @@ def login(username: UserName, password: Password): F[JwtToken] =
 #### 3. Выход из системы (`logout`)
 
 ```dotty
-def logout(token: JwtToken, username: UserName): F[Unit] =
-  // Атомарное удаление обеих связей из Redis
-  redis.del(token.value) *>       // Удаляем связь токен -> пользователь
-    redis.del(username.show).void // Удаляем связь пользователь -> токен   
+def logout(token: JwtToken, username: UserName): F[Boolean] =
+  for
+    deltoc  <- redis.del(token.value)   // Удаляем связь токен -> пользователь
+    detuser <- redis.del(username.show) // Удаляем связь пользователь -> токен  
+  yield deltoc > 0 && detuser > 0  
 ```
 
 **Особенности реализации:**
@@ -891,18 +893,20 @@ test("UsersAuthService.findUser should return an user if it exists"):
       maybeLoggedUser <- usersAuthService.findUser(loggedUserToken)(jwtClaim)
 
       // Выход из системы
-      _               <- authService.logout(loggedUserToken, username)
+      status          <- authService.logout(loggedUserToken, username)
 
       // Проверка инвалидации токена после выхода
       maybeLoggedOutNewUser <-
         usersAuthService.findUser(newUserToken)(jwtClaim)
     yield whenSuccess(maybeNewUser) { user =>
       expect.same(username, user.username)
-    } and
+    } |+|
       whenSuccess(maybeLoggedUser) { user =>
         expect.same(username, user.username)
-      } and
+      } |+|
+      expect(status) |+|
       expect(maybeLoggedOutNewUser.isEmpty)
+    end for
 ```
 
 **Сценарий проверяет:**
@@ -1010,11 +1014,12 @@ test("UsersAuthService.login should login after logout"):
     for
       token     <- authService.newUser(username, password)
       _         <- authService.login(username, password)
-      _         <- authService.logout(token, username)
+      status    <- authService.logout(token, username)
       newToken  <- authService.login(username, password)
       maybeUser <- usersAuthService.findUser(newToken)(jwtClaim)
     yield whenSuccess(maybeUser): user =>
-      expect.same(username, user.username)
+      expect.same(username, user.username) |+|
+        expect(status)
 ```
 
 **Проверяет:**

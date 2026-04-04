@@ -180,7 +180,7 @@ object SharedResources extends GlobalResource:
       logHandler = Some(sqlLogHandler)  // Подключение логгера SQL-запросов
     )
 
-  private def migration(transactor: Aux[[x] =>> IO[x], Unit]): IO[Unit] =
+  private def migration(transactor: Aux[[x] =>> IO[x], Unit]): IO[Boolean] =
     new PostgreSQLMigrationService(transactor).initialize()
 end SharedResources
 ```

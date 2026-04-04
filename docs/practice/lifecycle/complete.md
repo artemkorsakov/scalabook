@@ -172,9 +172,9 @@ private[services] trait HistoryService[F[_]: Monad]:
     * @param task
     *   Модель завершенной задачи для сохранения.
     * @return
-    *   F[Unit] - эффект, подтверждающий успешное сохранение.
+    *   F[Int] - эффект с идентификатором созданной задачи
     */
-  def create(task: CompletedTask): F[Unit]
+  def create(task: CompletedTask): F[Int]
 
   /** Возвращает все выполненные задачи из истории. Предназначен для
     * формирования отчетов, аналитики и отображения достижений пользователя.
@@ -243,7 +243,7 @@ final case class TaskLifecycleService[F[_]: {MonadThrow as MT}](
   * @param duration
   *   Реальная продолжительность выполнения.
   * @return
-  *   F[Unit] - эффект, представляющий успешное завершение операции.
+  *   F[Boolean] - эффект, представляющий успешное завершение операции.
   * @throws IllegalArgumentException
   *   если задача не найдена или находится не в статусе "В работе".
   */
@@ -255,7 +255,7 @@ def complete(
     review: Review,
     endDate: LocalDate,
     duration: FiniteDuration
-): F[Unit] =
+): F[Boolean] =
   for
     // 1. Находим и валидируем задачу
     task <- findTask(id, taskType, userId, Status.InProgress)
@@ -289,8 +289,8 @@ def complete(
       startDate = completedTask.startDate.some,
       endDate = completedTask.endDate.some
     )
-    _ <- taskService.update(updated)
-  yield ()
+    updateRes <- taskService.update(updated)
+  yield updateRes
 end complete
 ```
 
@@ -304,14 +304,14 @@ private[pdp] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
 ):
   ...
   
-  def initialize(): IO[Unit] =
+  def initialize(): IO[Boolean] =
     val program =
       for
         ...
         _ <- generateCreateTableFor[CompletedTask].update.run
         _ <- addSectionFKToTable[CompletedTask]().update.run
         _ <- addGoalFKToTable[CompletedTask]().update.run
-      yield ()
+      yield true
     program.transact(xa)
 ```
 

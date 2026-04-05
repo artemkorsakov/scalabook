@@ -103,18 +103,24 @@ final case class TaskResult(
 Для гибкой фильтрации по типу задачи используется алгебраический тип данных (ADT):
 
 ```dotty
-sealed trait TaskTypeFilter
+sealed trait TaskTypeFilter:
+  def toPair: TaskType | UserTypeId =
+    this match
+      case BookFilter                  => TaskType.Book
+      case ArticleFilter               => TaskType.Article
+      case PodcastFilter               => TaskType.Podcast
+      case VideoFilter                 => TaskType.Video
+      case CourseFilter                => TaskType.Course
+      case OtherFilter(id: UserTypeId) => id
 
-object TaskTypeFilter:
-  /** Встроенные типы задач */
-  case object Book    extends TaskTypeFilter
-  case object Article extends TaskTypeFilter
-  case object Podcast extends TaskTypeFilter
-  case object Video   extends TaskTypeFilter
-  case object Course  extends TaskTypeFilter
-
-  /** Пользовательские типы (из настроек) */
-  final case class Other(id: UserTypeId) extends TaskTypeFilter
+/** Встроенные типы задач */
+case object BookFilter                 extends TaskTypeFilter
+case object ArticleFilter              extends TaskTypeFilter
+case object PodcastFilter              extends TaskTypeFilter
+case object VideoFilter                extends TaskTypeFilter
+case object CourseFilter               extends TaskTypeFilter
+/** Пользовательские типы (из настроек) */
+case class OtherFilter(id: UserTypeId) extends TaskTypeFilter
 ```
 
 ### Сервисный слой
@@ -133,7 +139,7 @@ trait TaskService[F[_]: Monad]:
   def getAll(
       userId: UserId,
       maybeStatus: Option[Status],
-      maybeTaskType: Option[TaskTypeFilter],
+      maybeTaskType: Option[TaskType | UserTypeId],
       maybeSectionId: Option[SectionId]
   ): F[Vector[TaskResult]]
 ```
@@ -148,7 +154,7 @@ trait TaskLifecycleService[F[_]]:
   def getAll(
       userId: UserId,
       maybeStatus: Option[Status],
-      maybeTaskType: Option[TaskTypeFilter],
+      maybeTaskType: Option[TaskType | UserTypeId],
       maybeSectionId: Option[SectionId]
   ): F[Vector[TaskResult]] =
     taskService.getAll(
@@ -191,7 +197,7 @@ final case class TaskRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent, Logger}]
           taskLifecycleService.getAll(
             userId = user.id,
             maybeStatus = maybeStatus,
-            maybeTaskType = maybeTaskType,
+            maybeTaskType = maybeTaskType.map(_.toPair),
             maybeSectionId = maybeSectionId
           )
         )
@@ -244,7 +250,7 @@ object TaskTypeFilter:
             sanitized = s"Неизвестный фильтр '$str'",
             details =
               "Ожидается book/article/podcast/video/course или числовой ID пользовательского типа"
-          ))
+          ))          
 ```
 
 #### Декодер для SectionId
@@ -344,14 +350,14 @@ private object TaskIdQueryParam
     extends QueryParamDecoderMatcher[TaskId]("task_id")
 
 private object TaskTypeQueryParam
-    extends QueryParamDecoderMatcher[TaskTypeFilter]("task_type")
+    extends QueryParamDecoderMatcher[TaskType]("task_type")
 
 case GET -> Root / "task" :?
     TaskIdQueryParam(id) +& TaskTypeQueryParam(taskType) as user =>
   Ok(
     taskLifecycleService.get(
       id = id,
-      taskType = TaskType.fromFilter(taskType),  // Конвертация фильтра в тип задачи
+      taskType = taskType,  // Конвертация фильтра в тип задачи
       userId = user.id
     )
   )

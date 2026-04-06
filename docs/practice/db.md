@@ -29,10 +29,10 @@ nextPage = db/sql_generation.html
 
 - **`create`** — создание новой записи в базе данных. Возвращает уникальный идентификатор созданной сущности.
 - **`get`** — извлечение записи по ее уникальному идентификатору. Возвращает `Option`, так как запись может отсутствовать.
-    - **`getByUser`** — извлечение всех записей данного типа. Возвращает коллекцию (список, вектор), которая может быть пустой.
-- **`update`** — модификация существующей записи. Ожидается, что идентификатор сущности в обновляемом объекте 
+    - **`getByUser`** — извлечение всех записей заданного пользователя. Возвращает коллекцию (список, вектор), которая может быть пустой.
+- **`update`** — обновление существующей записи. Ожидается, что идентификатор сущности в обновляемом объекте 
   соответствует идентификатору в хранилище.
-    - **`updateAll`** — модификация коллекции записей данного типа.
+    - **`updateAll`** — обновление коллекции записей данного типа.
 - **`delete`** — безвозвратное удаление записи по ее уникальному идентификатору.
 
 ### Принцип единой ответственности на уровне доступа к данным
@@ -80,18 +80,11 @@ nextPage = db/sql_generation.html
 
 ## Проектирование алгебр (интерфейсов)
 
-Алгебра — это абстрактный API, описывающий, _что_ можно сделать, но не _как_ это реализовано. 
+Алгебра — это абстрактный API, описывающий, **что** можно сделать, но не **как** это реализовано. 
 Начнем с создания алгебры для работы с пользовательскими типами задач.
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/UserTypeService.scala
-package ru.scalabook.pdp.services
-
-import cats.Monad
-import ru.scalabook.pdp.model.*
-import ru.scalabook.pdp.model.UserType.{UserTypeId, UserTypeName}
-
-/** Интерфейс сервиса для управления пользовательскими типами задач. */
 private[services] trait UserTypeService[F[_]: Monad]:
 
   /** Создаёт новый пользовательский тип задачи. */
@@ -124,9 +117,9 @@ private[services] trait UserTypeService[F[_]: Monad]:
 - **`F[Option[UserType]]`** — операция чтения, которая может завершиться успешно, найдя сущность (`Some[UserType]`), 
   или вернуть `None`, если сущность с таким ID не существует.
 - **`F[Vector[UserType]]`** — операция чтения, всегда возвращающая коллекцию. 
-  Коллекция может быть пустой, если в БД еще нет записей.
-- **`F[Boolean]`** — операция, которая выполняется ради своего побочного эффекта (обновление, удаление) 
-  и не возвращает значимого значения. `Boolean` служит сигналом успешного завершения.
+  Коллекция может быть пустой, если в БД еще нет записей, удовлетворяющих запросу.
+- **`F[Boolean]`** — операция, которая выполняется ради своего побочного эффекта (обновление, удаление). 
+  `Boolean` служит сигналом успешного завершения.
 
 ### Размещение бизнес-логики: за пределами алгебры
 
@@ -152,10 +145,6 @@ private[services] trait UserTypeService[F[_]: Monad]:
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/TaskService.scala
-package ru.scalabook.pdp.services
-
-import ru.scalabook.pdp.model.*
-
 private[services] trait TaskService[F[_]: Monad]:
 
   // Принимает объект для создания, возвращает сгенерированный TaskId.
@@ -164,11 +153,13 @@ private[services] trait TaskService[F[_]: Monad]:
   // Для получения нужен и id, и taskType, чтобы однозначно идентифицировать запись.
   def get(id: TaskId, taskType: TaskType): F[Option[Task]]
 
+  // Получает список всех задач пользователя.
   def getByUser(userId: UserId): F[Vector[Task]]
 
-  // Принимает полноценную Task с id.
+  // Обновляет существующую задачу.
   def update(task: Task): F[Boolean] 
 
+  // Удаляет задачу по её идентификатору и типу.
   def delete(id: TaskId, taskType: TaskType): F[Boolean]
 ```
 
@@ -238,8 +229,9 @@ graph TD
     Task --> ArticleTask
     Task --> PodcastTask
 
-    CreateBookTask -- ".toTask(id)" --> BookTask
-    CreateArticleTask -- ".toTask(id)" --> ArticleTask
+    CreateBookTask -- ".toTask(id)" ----> BookTask
+    CreateArticleTask -- ".toTask(id)" ----> ArticleTask
+    CreatePodcastTask -- ".toTask(id)" ----> PodcastTask
 ```
 
 Основная причина — **требования библиотеки для автоматической генерации SQL-запросов**, которую мы разберем в следующем разделе. 
@@ -307,7 +299,9 @@ private[services] class MockUserTypeService[F[_]: Monad](
   def get(id: UserTypeId): F[Option[UserType]] =
     userTypes.get.map(_.get(id)) // Читаем Map и выполняем lookup.
 
-  /** Извлекает все значения для заданного пользователя, преобразуя значения Map в Vector. */
+  /** Извлекает все значения для заданного пользователя, 
+    * преобразуя значения Map в Vector. 
+    */
   def getByUser(userId: UserId): F[Vector[UserType]] =
     userTypes.get.map(_.values.filter(_.userId == userId).toVector)
 
@@ -325,7 +319,9 @@ private[services] class MockUserTypeService[F[_]: Monad](
 
 end MockUserTypeService
 
-/** Компаньон-объект, предоставляющий безопасный конструктор Resource для создания сервиса. */
+/** Сопутствующий объект, предоставляющий безопасный конструктор Resource 
+  * для создания сервиса. 
+  */
 object MockUserTypeService:
   /**
    * Фабричный метод, возвращающий Resource[F, UserTypeService[F]].

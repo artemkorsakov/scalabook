@@ -113,21 +113,24 @@ object Dependencies {
 -- Создание таблиц для основных сущностей
 CREATE TABLE IF NOT EXISTS user_types (
   id SERIAL PRIMARY KEY, 
-  name VARCHAR(255) NOT NULL, 
+  name VARCHAR(255) NOT NULL,
+  user_id UUID NOT NULL,  
   displayed BOOLEAN NOT NULL DEFAULT TRUE, 
   ordinal INT NOT NULL DEFAULT 1000
 );
 
 CREATE TABLE IF NOT EXISTS sections (
   id SERIAL PRIMARY KEY, 
-  name VARCHAR(255) NOT NULL, 
+  name VARCHAR(255) NOT NULL,
+  user_id UUID NOT NULL,
   displayed BOOLEAN NOT NULL DEFAULT TRUE, 
   ordinal INT NOT NULL DEFAULT 1000
 ); 
 
 CREATE TABLE IF NOT EXISTS goals (
   id SERIAL PRIMARY KEY, 
-  name VARCHAR(255) NOT NULL, 
+  name VARCHAR(255) NOT NULL,
+  user_id UUID NOT NULL,
   displayed BOOLEAN NOT NULL DEFAULT TRUE, 
   ordinal INT NOT NULL DEFAULT 1000
 );
@@ -138,7 +141,8 @@ CREATE TYPE StatusEnum AS ENUM ('InProgress', 'Planned', 'KnowledgeBase');
 -- Создание таблицы для задач типа "Книга" со специфичными полями
 CREATE TABLE IF NOT EXISTS books (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY, 
-  name VARCHAR(255) NOT NULL, 
+  name VARCHAR(255) NOT NULL,
+  user_id UUID NOT NULL,
   status StatusEnum NOT NULL, 
   section_id INT NOT NULL, 
   goal_id INT NOT NULL, 
@@ -179,7 +183,7 @@ CREATE TABLE IF NOT EXISTS books (
   Однако ее интеграция с Cats Effect и современным функциональным стеком может требовать дополнительных усилий.
 
 Основная проблема существующих решений в контексте нашего проекта — 
-это либо недостаточная поддержка бесшовной интеграции с Cats Effect и нашим стилем `Tagless Final`, 
+это либо недостаточная поддержка бесшовной интеграции с Cats Effect и стилем `Tagless Final`, 
 либо отсутствие удобного механизма **автоматической генерации DDL** напрямую из case class-ов, 
 которые у нас уже определены в модуле `model`.
 
@@ -227,12 +231,6 @@ val sqlGenLibs: Seq[ModuleID] =
 
 ```dotty
 // src/main/scala/ru/scalabook/sql/ColumnDefinition.scala
-package ru.scalabook.sql
-
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.constraint.all.*
-import ColumnDefinition.*
-
 /** Модель, описывающая атрибуты одного столбца (колонки) в SQL таблице.
   *
   * @param name
@@ -362,11 +360,6 @@ end ColumnDefinition
 
 ```dotty
 // src/main/scala/ru/scalabook/sql/TableSchema.scala
-package ru.scalabook.sql
-
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.constraint.all.*
-
 /** Класс типов, предоставляющий метаданные для генерации SQL DDL для типа
   * данных `T`.
   *
@@ -454,11 +447,6 @@ object TableSchema:
 
 ```dotty
 // src/main/scala/ru/scalabook/sql/SqlMacros.scala
-package ru.scalabook.sql
-
-import doobie.*
-import scala.quoted.*
-
 object SqlMacros:
   /** Inline-макрос, который на этапе компиляции генерирует Doobie Fragment с
     * SQL-запросом CREATE TABLE для типа `T`.
@@ -535,6 +523,11 @@ object UserType:
           ColumnName("name"),
           ColumnType.Varchar
         ).asNotNull(),
+        // Колонка 'user_id' типа UUID, обязательна к заполнению (NOT NULL).
+        ColumnDefinition(
+          ColumnName("user_id"),
+          ColumnType.UUID
+        ).asNotNull(),
         // Колонка 'displayed' типа BOOLEAN, по умолчанию TRUE.
         ColumnDefinition(
           ColumnName("displayed"), 
@@ -563,8 +556,9 @@ end UserType
     - Вызывается метод `generateCreateTable` этой реализации, который возвращает строку:
       ```sql
       CREATE TABLE IF NOT EXISTS user_types (
-          id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, 
-          displayed BOOLEAN NOT NULL DEFAULT TRUE, ordinal INT NOT NULL DEFAULT 1000
+          id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL,
+          user_id UUID NOT NULL, displayed BOOLEAN NOT NULL DEFAULT TRUE,
+          ordinal INT NOT NULL DEFAULT 1000
       );
       ```
     - Эта строка оборачивается в `Fragment.const(...)`.
@@ -578,8 +572,9 @@ end UserType
 
 ```sql
 CREATE TABLE IF NOT EXISTS user_types (
-    id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, 
-    displayed BOOLEAN NOT NULL DEFAULT TRUE, ordinal INT NOT NULL DEFAULT 1000
+  id SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL, 
+  user_id UUID NOT NULL, displayed BOOLEAN NOT NULL DEFAULT TRUE, 
+  ordinal INT NOT NULL DEFAULT 1000
 );
 ```
 
@@ -596,6 +591,7 @@ pureTest("Generate create table"):
   expect.same(
     """CREATE TABLE IF NOT EXISTS books (id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
        name VARCHAR(200) NOT NULL,
+       user_id UUID NOT NULL,
        status StatusEnum NOT NULL,
        section_id INT NOT NULL,
        ordinal INT NOT NULL CHECK (ordinal > 0),
@@ -614,7 +610,8 @@ pureTest("Generate create table"):
 
 Помимо создания таблиц, в реляционных базах данных часто используются пользовательские типы данных, 
 такие как ENUM в PostgreSQL, которые идеально подходят для представления ограниченного набора значений. 
-В нашем домене, например, статус задачи (`Status`) - это перечисление: `InProgress`, `Planned`, `KnowledgeBase`. 
+В нашем домене, например, статус задачи (`Status`) - это перечисление: 
+`InProgress`, `Planned`, `KnowledgeBase`, `Completed`. 
 Для генерации DDL-запросов для таких типов создаем дополнительный макрос в файле `SqlMacros.scala`.
 
 ```dotty

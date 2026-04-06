@@ -7,8 +7,7 @@ nextPage = task_types.html
 
 # Создание нового проекта на Scala 3
 
-Это руководство шаг за шагом проведет вас через процесс настройки нового проекта на Scala 3 
-с использованием современных инструментов и лучших практик для обеспечения чистоты, надежности и поддерживаемости кода.
+Итак, начнем с разворачивания нового проекта.
 
 ## Предварительные требования
 
@@ -71,8 +70,9 @@ SBT (Scala Build Tool) — это стандартный инструмент д
   ```text
   # Включаем набор правил
   rules = [
-      DisableSyntax,        # Запрещает использование некоторых "опасных" конструкций
-      LeakingImplicitClassVal,
+      DisableSyntax         # Запрещает использование некоторых "опасных" конструкций
+      LeakingImplicitClassVal
+      OrganizeImports       # Удаляет неиспользуемые импорты
       RedundantSyntax       # Удаляет избыточный синтаксис
   ]
 
@@ -88,6 +88,15 @@ SBT (Scala Build Tool) — это стандартный инструмент д
   DisableSyntax.noDefaultArgs = true   # Запрещает аргументы по умолчанию в методах
   DisableSyntax.noFinalVal = true      # Запрещает `final val`
   DisableSyntax.noFinalize = true      # Запрещает переопределение метода `finalize`
+  
+  # Правила для стандартизации импортов
+  OrganizeImports {
+      removeUnused = false
+      targetDialect = Scala3
+    
+      groupedImports = Keep
+      coalesceToWildcardImportThreshold = 5
+  }
   ```
 
 #### Форматирование sbt-scalafmt
@@ -99,7 +108,7 @@ SBT (Scala Build Tool) — это стандартный инструмент д
 
   ```text
   # Версия scalafmt
-  version = "3.9.10"
+  version = "3.10.6"
 
   # Стиль выравнивания
   align.preset = more
@@ -178,7 +187,7 @@ SBT (Scala Build Tool) — это стандартный инструмент д
 
     object Dependencies {
       // Версия Scala для проекта
-      val Scala = "3.7.3"
+      val Scala = "3.7.3" // Укажите актуальную
 
       object cats {
         private val version       = "2.13.0"
@@ -240,8 +249,6 @@ SBT (Scala Build Tool) — это стандартный инструмент д
     Например, `pdp` — это модуль для разработки личного плана, а `root` — это корневой модуль.
     В этом случае `root` не является самостоятельным проектом, а просто объединяет все модули.
     Это позволяет легко собирать и тестировать отдельные части проекта.
-    В будущем мы добавим модуль `sql` для генерации SQL-запросов.
-    
 
 **Используемый стек технологий (Typelevel Stack):**
 

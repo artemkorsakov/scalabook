@@ -151,19 +151,12 @@ object Dependencies {
 }
 ```
 
-Теперь мы можем использовать функционал Iron для создания безопасных типов данных.
-
 ### `UserType`
 
 Создадим файл `UserType.scala` в директории `pdp/src/main/scala/ru/scalabook/pdp/model`.
 
 ```dotty
-package ru.scalabook.pdp.model
-
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.constraint.all.*
-import ru.scalabook.pdp.model.UserType.*
-
+// pdp/src/main/scala/ru/scalabook/pdp/model/UserType.scala
 final case class UserType(
     id: UserTypeId,
     name: UserTypeName,
@@ -178,7 +171,18 @@ object UserType:
 
   type UserTypeName = UserTypeName.T
   object UserTypeName
-      extends RefinedType[String, MinLength[2] & MaxLength[30] & Trimmed]      
+      extends RefinedType[String, MinLength[2] & MaxLength[30] & Trimmed] 
+      
+// pdp/src/main/scala/ru/scalabook/pdp/model/User.scala      
+object User:
+  opaque type UserId = UUID
+  object UserId:
+    def apply(uuid: UUID): UserId = uuid  
+    
+// pdp/src/main/scala/ru/scalabook/pdp/model/src.scala
+type Ordinal = Ordinal.T
+object Ordinal extends RefinedType[Int, Positive]:
+  val Max: T = Ordinal(1000)             
 ```
 
 Это обычный [**case class**](https://docs.scala-lang.org/ru/tour/case-classes.html):
@@ -193,16 +197,16 @@ object UserType:
 - `name` — название пользовательского типа
     - От 2 до 30 символов
     - Строка должна быть обрезана (без пробелов в начале и конце)
-- `userId` - идентификатор пользователя (тип [определяется позже](../authorization.md) как `opaque type UserId = UUID`)
+- `userId` - идентификатор пользователя
 - `displayed` — флаг, указывающий, отображается ли пользовательский тип в пользовательском интерфейсе
-- `ordinal` — порядковый номер пользовательского типа (тип `Ordinal` описан ниже)
+- `ordinal` — порядковый номер пользовательского типа
 
-#### Что такое "уточненные типы" (Refined Types)?
+### Что такое "уточненные типы" (Refined Types)?
 
 Библиотека Iron позволяет создавать типы с ограничениями. 
 Вместо простого `Int` или `String` мы создаем типы, которые гарантируют, что данные соответствуют определенным правилам.
 
-##### Пример без уточненных типов (проблемный):
+##### Пример без уточненных типов:
 
 ```dotty
 // Проблема: никаких проверок!
@@ -213,7 +217,7 @@ val bad1 = UserType(-1, "A")         // ID отрицательный, имя с
 val bad2 = UserType(1, "   test   ") // Лишние пробелы
 ```
 
-##### Пример с уточненными типами (безопасный):
+##### Пример с уточненными типами:
 
 ```dotty
 // Решение: типы с ограничениями
@@ -234,7 +238,7 @@ val bad2 = UserType(UserTypeId(1), UserTypeName("   test   "))
 // 
 // Value: test
 // Message: Should have a minimum length of 2 & 
-//          Should have a maximum length of 20 & 
+//          Should have a maximum length of 30 & 
 //          Should not have leading or trailing whitespaces
 // ----------------------------------------------------------------------------
 ```
@@ -297,7 +301,7 @@ UserType(UserTypeId(-1), UserTypeName("Тест"))
 UserType(UserTypeId(5), UserTypeName("A"))
 UserType(
   UserTypeId(0),
-  UserTypeName("Очень длинное название которое не подходит")
+  UserTypeName("Очень длинное название, которое не подходит")
 )
 // Ошибка: есть лишние пробелы
 UserType(UserTypeId(5), UserTypeName(" тест "))
@@ -309,14 +313,6 @@ UserType(UserTypeId(5), UserTypeName(" тест "))
 2. **Ясность кода** — типы документируют свои ограничения
 3. **Предотвращение ошибок** — многие ошибки обнаруживаются на этапе компиляции
 4. **Легкость рефакторинга** — изменения типов автоматически проверяются компилятором
-
-### Итого
-
-- `TaskType` — это перечисление, описывающее типы задач в системе.
-    - Оно включает стандартные типы: `Book`, `Article`, `Podcast`, `Video`, `Course`.
-- Также предусмотрен `UserType` для пользовательских форматов задач.
-- Для обеспечения безопасности данных используются уточнённые типы.
-- Такой подход позволяет создавать структурированный, читаемый и надёжный код.
 
 ## Разделы задач
 
@@ -349,12 +345,6 @@ UserType(UserTypeId(5), UserTypeName(" тест "))
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/model/Section.scala
-package ru.scalabook.pdp.model
-
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.constraint.all.*
-import ru.scalabook.pdp.model.Section.*
-
 final case class Section(
     id: SectionId,
     name: SectionName,
@@ -375,8 +365,13 @@ object Section:
 ### Пример использования
 
 ```dotty
-Section(SectionId(1), SectionName("Алгоритмы"), UserId(UUID.randomUUID()), true, Ordinal(1))
-Section(SectionId(2), SectionName("Soft skills"), UserId(UUID.randomUUID()), false, Ordinal(2))
+Section(
+  SectionId(1), 
+  SectionName("Алгоритмы"), 
+  UserId(UUID.randomUUID()), 
+  true, 
+  Ordinal(1)
+)
 ```
 
 ### Почему это важно?
@@ -392,7 +387,7 @@ Section(SectionId(2), SectionName("Soft skills"), UserId(UUID.randomUUID()), fal
 
 Важно не только иметь задачи, но и определять их цели. 
 **Цели** — это мета-описания, которые помогают понять, зачем выполнять ту или иную задачу 
-и как она связана с моим профессиональным ростом.
+и как она связана с профессиональным ростом.
 
 ### Зачем нужны цели задач?
 
@@ -418,12 +413,6 @@ Section(SectionId(2), SectionName("Soft skills"), UserId(UUID.randomUUID()), fal
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/model/Goal.scala
-package ru.scalabook.pdp.model
-
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.constraint.all.*
-import ru.scalabook.pdp.model.Goal.*
-
 final case class Goal(
     id: GoalId,
     name: GoalName,
@@ -444,12 +433,13 @@ object Goal:
 ### Пример использования
 
 ```dotty
-val userId = UserId(UUID.randomUUID())
-Goal(GoalId(1), GoalName("Освоить основы алгоритмического мышления"), userId, true, Ordinal(1))
-Goal(GoalId(2), GoalName("Научиться проектировать REST API"), userId, true, Ordinal(2))
-Goal(GoalId(3), GoalName("Развить навыки работы с PostgreSQL"), userId, true, Ordinal(3))
-Goal(GoalId(4), GoalName("Приобрести опыт код-ревью"), userId, true, Ordinal(4))
-Goal(GoalId(5), GoalName("Понять принципы TDD"), userId, false, Ordinal(11))
+Goal(
+  GoalId(1), 
+  GoalName("Освоить основы алгоритмического мышления"), 
+  UserId(UUID.randomUUID()), 
+  true, 
+  Ordinal(1)
+)
 ```
 
 ### Связь целей с задачами
@@ -492,7 +482,7 @@ Goal(GoalId(5), GoalName("Понять принципы TDD"), userId, false, Or
 | `ordinal`     | `Ordinal`           | Порядковый номер задачи. Используется для определения последовательности выполнения |
 | `startDate`   | `Option[LocalDate]` | Дата, когда задача была взята в работу                                              |
 | `endDate`     | `Option[LocalDate]` | Планируемая дата завершения                                                         |
-| `information` | `String`            | Дополнительная информация о задаче (например, цели, примечания, источники)          |
+| `information` | `String`            | Дополнительная информация о задаче (например, описание, примечания, источники)      |
 | `plan`        | `List[TaskStep]`    | План выполнения задачи — список шагов или действий, необходимых для её завершения   |
 
 ### Реализация через `sealed trait Task`
@@ -504,15 +494,6 @@ Goal(GoalId(5), GoalName("Понять принципы TDD"), userId, false, Or
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/model/Task.scala
-package ru.scalabook.pdp.model
-
-import ru.scalabook.pdp.model.Goal.GoalId
-import ru.scalabook.pdp.model.Section.SectionId
-import ru.scalabook.pdp.model.User.UserId
-
-import java.time.LocalDate
-import java.util.UUID
-
 sealed trait Task:
   val id: TaskId
   val name: TaskName
@@ -528,15 +509,10 @@ sealed trait Task:
   val plan: List[TaskStep]
 ```
 
-Для описания типов создадим отдельный файл:
+Для описания типов создадим отдельный файл `src.scala`:
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/model/src.scala
-package ru.scalabook.pdp.model
-
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.constraint.all.*
-
 opaque type TaskId = UUID
 object TaskId:
   def apply(uuid: UUID): TaskId = uuid

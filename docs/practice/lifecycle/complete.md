@@ -48,7 +48,6 @@ nextPage = ../authorization.html
 // pdp/src/main/scala/ru/scalabook/pdp/model/CompletedTask.scala
 package ru.scalabook.pdp.model
 
-
 /** Модель выполненной задачи, представляющая собой неизменяемый снимок состояния
   * задачи на момент её завершения. 
   */
@@ -157,11 +156,6 @@ end CompletedTask
 
 ```dotty
 // pdp/src/main/scala/ru/scalook/pdp/services/HistroyServices.scala
-package ru.scalabook.pdp.services
-
-import cats.Monad
-import ru.scalabook.pdp.model.CompletedTask
-
 /** Алгебра (интерфейс) сервиса истории выполненных задач. Определяет
   * контракты для работы с архивом завершенных задач, независимо от конкретной
   * реализации хранилища.

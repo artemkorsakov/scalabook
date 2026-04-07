@@ -31,22 +31,11 @@ nextPage = db_test.html
 ### Проектирование и реализация сервиса миграций PostgreSQL
 
 Создаем класс `PostgreSQLMigrationService`, который инкапсулирует всю логику инициализации схемы БД. 
-Класс объявляется как `private[services]`, что ограничивает его использование только в пределах пакета `services`, 
+Класс объявляется как `private[pdp]`, что ограничивает его использование только в пределах пакета `pdp`, 
 и делает его доступным только для внутреннего использования, предотвращая случайный вызов извне.
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLMigrationService.scala
-package ru.scalabook.pdp.services.postgresql
-
-import cats.*
-import cats.effect.*
-import doobie.*
-import doobie.implicits.*
-import doobie.util.transactor.Transactor.Aux
-import ru.scalabook.pdp.model.*
-import ru.scalabook.sql.SqlMacros.*
-import ru.scalabook.sql.TableSchema
-
 /** Сервис для управления структурой базы данных PostgreSQL. Отвечает за
   * создание таблиц, типов, установку связей и ограничений.
   *
@@ -247,27 +236,6 @@ graph TD
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLUserTypeService.scala
-package ru.scalabook.pdp.services.postgresql
-
-// `doobie` необходимо импортировать через `_root_` из-за конфликта имен
-// с `io.github.iltotore.iron.doobie`
-import _root_.doobie.*
-import _root_.doobie.implicits.*
-import _root_.doobie.util.transactor.Transactor.*
-import cats.data.NonEmptyVector
-import cats.effect.*
-import cats.syntax.all.*
-import io.github.iltotore.iron.*
-// Импорт неявных преобразований для Iron-типов
-import io.github.iltotore.iron.doobie.given 
-import ru.scalabook.pdp.model
-import ru.scalabook.pdp.model.*
-import ru.scalabook.pdp.model.Section.SectionName.given
-import ru.scalabook.pdp.model.User.UserId
-import ru.scalabook.pdp.model.UserType.{UserTypeId, UserTypeName}
-import ru.scalabook.pdp.services.UserTypeService
-import ru.scalabook.sql.SqlMacros.*
-
 /** Конкретная реализация UserTypeService для PostgreSQL. Наследует абстрактный
   * интерфейс UserTypeService[F] и предоставляет реализацию всех его методов с
   * использованием Doobie и сгенерированного SQL.
@@ -304,8 +272,8 @@ private[pdp] class PostgreSQLUserTypeService[F[_]: MonadCancelThrow](
     */
   def get(id: UserTypeId): F[Option[UserType]] =
     generateSelectById[UserType, UserTypeId](id)
-      .query[UserType]  // Указываем тип результата - UserType
-      .option           // Может вернуть 0 или 1 запись
+      .query[UserType] // Указываем тип результата - UserType
+      .option          // Может вернуть 0 или 1 запись
       .transact(xa)
 
   /** Получает все пользовательские типы задач.
@@ -316,7 +284,7 @@ private[pdp] class PostgreSQLUserTypeService[F[_]: MonadCancelThrow](
   def getByUser(userId: UserId): F[Vector[UserType]] =
     generateSelectByField[UserType, UserId](userId, "user_id")
       .query[UserType] // Селект всех полей
-      .to[Vector]        // Преобразуем поток результатов в Vector
+      .to[Vector]      // Преобразуем поток результатов в Vector
       .transact(xa)    
 
   /** Обновляет существующий пользовательский тип задачи.
@@ -330,7 +298,7 @@ private[pdp] class PostgreSQLUserTypeService[F[_]: MonadCancelThrow](
   def update(userType: UserType): F[Boolean] =
     generateUpdateById[UserType, UserTypeId](userType)
       .update        // Указываем, что это update-запрос
-      .run           // Выполняем, игнорируя количество измененных строк
+      .run           // Выполняем
       .transact(xa)
       .map(_ > 0)    // Преобразуем F[Int] в F[Boolean]
 
@@ -402,7 +370,7 @@ class PostgreSQLTaskService extends TaskService[IO]:
   def internalDatabaseOptimization(): IO[Unit] = ...
 
   // Метод, меняющий сигнатуру - НЕПРАВИЛЬНО!
-  def getAll(limit: Int): IO[Vector[Task]] = ... // В интерфейсе нет параметра limit!
+  def getByUser(limit: Int): IO[Vector[Task]] = ... // В интерфейсе нет параметра limit!
 ```
 
 **Пример правильной реализации:**
@@ -413,7 +381,7 @@ class PostgreSQLTaskService extends TaskService[IO]:
   // Только методы из интерфейса
   def create(task: CreateTask): IO[TaskId] = ...
   def get(id: TaskId, taskType: TaskType): IO[Option[Task]] = ...
-  def getByUser(userId: UserId): IO[Vector[Task]] = ...  // Без параметров, как в интерфейсе
+  def getByUser(userId: UserId): IO[Vector[Task]] = ... 
   def update(task: Task): IO[Boolean] = ...
   def delete(id: TaskId, taskType: TaskType): IO[Boolean] = ...
 
@@ -468,7 +436,7 @@ def calculatePrice(using discountCalculator: DiscountCalculator): Money =
   // Теперь результат зависит от скрытого контекста.
 
 // 3. Чрезмерное использование для "удобства"
-def getUser(using id: UserId, using db: Database, using logger: Logger): IO[User] =  
+def getUser(using id: UserId, db: Database, logger: Logger): IO[User] =  
   // ❌ Слишком много!
   // Код становится запутанным, сложно понять зависимости.
 ```
@@ -662,7 +630,8 @@ enum Status:
   case Completed
 
   // Переименование - ОПАСНО!
-  // case InProgress -> case InWork // Требует миграции данных!
+  // case InProgress -> case InWork 
+  // Требует миграции данных, т.к. в БД остается InProgress!
 ```
 
 #### 2. Преобразование для уточненного типа `TaskStep`
@@ -715,27 +684,26 @@ given Meta[Option[LocalDate]] =
     _.orNull             
   )
 
-/** Преобразование для длительности. Храним как BIGINT (миллисекунды) для
-  * эффективности и точности.
-  */
+/** Преобразование для длительности. Храним как Long (минуты). */
 given Meta[FiniteDuration] =
   Meta[Long].timap(
     // Из БД: Long -> FiniteDuration
-    millis => FiniteDuration(millis, MILLISECONDS)  
+    FiniteDuration(_, MINUTES)
   )(
     // В БД: FiniteDuration -> Long
-    _.toMillis                  
-  )    
+    _.toMinutes
+  )   
 ```
 
 **Обоснование выбранных представлений:**
 
 - **`Option[LocalDate]`**: Использование `null` в БД для представления отсутствующего значения — это идиоматичный подход в SQL, 
   который эффективно поддерживается индексами и запросами.
-- **`FiniteDuration` как `Long`**: Хранение длительности в миллисекундах как целого числа:
+- **`FiniteDuration` как `Long`**: Хранение длительности в минутах как целого числа:
     - Исключает проблемы с точностью чисел с плавающей точкой.
     - Позволяет эффективно выполнять арифметические операции в SQL.
     - Упрощает индексирование и сортировку по длительности.
+    - Большая точность (секунды, миллисекунды) для продолжительности задач не требуется.
 
 ## Принципы организации неявных экземпляров
 
@@ -968,7 +936,6 @@ def get(id: TaskId, taskType: TaskType): IO[Option[Task]] =
   *   IO[Vector[Task]] - эффект, возвращающий вектор всех задач.
   */
 def getByUser(userId: UserId): IO[Vector[Task]] =
-  // Параллельное выполнение запросов ко всем таблицам
   (
     generateSelectByField[BookTask, UserId](
       userId,
@@ -996,7 +963,6 @@ def getByUser(userId: UserId): IO[Vector[Task]] =
     ).query[UserTask].to[Vector].transact(xa)
   ).mapN { // mapN объединяет результаты всех параллельных вычислений
     case (books, articles, podcasts, videos, courses, userTasks) =>
-      // Объединение всех результатов в один полиморфный список
       books ++ articles ++ podcasts ++ videos ++ courses ++ userTasks
   }  
 ```

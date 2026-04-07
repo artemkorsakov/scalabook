@@ -20,7 +20,7 @@ nextPage = lifecycle/complete.html
 
 ### Архитектура и композиция
 
-Сервис реализован как нерасширяемый case-класс, который агрегирует более специализированные сервисы. 
+Сервис реализован как нерасширяемый case class, который агрегирует более специализированные сервисы. 
 Это демонстрирует принцип композиции и разделения ответственности:
 
 ```dotty
@@ -214,7 +214,7 @@ def getTaskTypes(userId: UserId): F[Vector[UserType]] = typeService.getByUser(us
 который проверяет, используется ли эта сущность хотя бы в одной задаче любого типа.
 
 ```dotty
-private[services] trait TaskService[F[_]: Monad]:
+trait TaskService[F[_]: Monad]:
   ...
 
   /** Проверяет существование задачи с заданным разделом. */
@@ -452,6 +452,30 @@ object TaskLifecycleService:
 end TaskLifecycleService
 ```
 
+Обновление задачи происходит аналогично, но с добавлением проверки на существование задачи:
+
+```dotty
+def update(task: Task): F[Boolean] =
+  get(task.id, task.taskType, task.userId).flatMap:
+    case Some(_) =>
+      validateTask(
+        ...
+      ).flatMap:
+        case Validated.Valid(_) =>
+          taskService.update(task)
+        case Validated.Invalid(errors) =>
+          MonadThrow[F].raiseError(
+            new IllegalArgumentException(errors.toList.mkString(", "))
+          )
+    case None => MonadThrow[F].raiseError(
+        new IllegalArgumentException(s"Task with id '${task.id}' not found")
+      )
+      
+def get(id: TaskId, taskType: TaskType, userId: UserId): F[Option[Task]] =
+  taskService.get(id, taskType).map: task =>
+    task.filter(_.userId == userId)      
+```
+
 ## Постановка задачи в очередь
 
 Эта операция переводит задачу из стадии идеи ("База знаний") в стадию готового к выполнению плана ("Запланировано"). 
@@ -480,10 +504,6 @@ def enqueue(
     )
     // 3. Сохраняем изменения
     taskService.update(updated) 
-  
-def get(id: TaskId, taskType: TaskType, userId: UserId): F[Option[Task]] =
-  taskService.get(id, taskType).map: task =>
-    task.filter(_.userId == userId)
         
 // Вспомогательная функция для безопасного поиска задачи 
 // с предварительной валидацией статуса.  

@@ -303,17 +303,6 @@ final case class LoginRoutes[F[_]: {JsonDecoder, MonadThrow, Concurrent, Logger}
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/http/routes/LogoutRoutes.scala
-package ru.scalabook.pdp.http.routes
-
-import cats.Monad
-import cats.syntax.all.*
-import dev.profunktor.auth.AuthHeaders
-import org.http4s.*
-import org.http4s.dsl.Http4sDsl
-import org.http4s.server.*
-import ru.scalabook.pdp.model.User
-import ru.scalabook.pdp.services.AuthService
-
 final case class LogoutRoutes[F[_]: {Monad, Logger}](
     authService: AuthService[F]
 ) extends Http4sDsl[F]:
@@ -428,9 +417,9 @@ test("POST /new_user should successfully register a new user with valid credenti
 
 **Что проверяет:**
 
-- Отправка валидного запроса на `/new_user`
-- Ожидаемый статус ответа — 201 Created
-- Базовая проверка, что endpoint регистрации работает
+- ✓ Отправка валидного запроса на `/new_user`
+- ✓ Ожидаемый статус ответа — 201 Created
+- ✓ Базовая проверка, что endpoint регистрации работает
 
 #### Тест 2: Невалидные данные (негативный тест)
 
@@ -439,8 +428,8 @@ test(
   "POST /new_user should return BadRequest if the request contains invalid data"
 ): service =>
   val loginUser = InvalidLoginRequest(
-    username = "TooLongUserNameMoreThan20Symbols",  // Нарушает MinLength[20]
-    password = "qwerty"  // Нарушает MinLength[8]
+    username = "TooLongUserNameMoreThan20Symbols", // Нарушает MinLength[20]
+    password = "qwerty"                            // Нарушает MinLength[8]
   )
   val req    = POST(loginUser, createUri)
   val routes = UserRoutes[IO](service).routes
@@ -450,9 +439,9 @@ test(
 
 **Что проверяет:**
 
-- Отправка запроса с данными, нарушающими ограничения уточненных типов
-- Ожидаемый статус — 400 Bad Request (благодаря нашему `decodeR`)
-- Корректная работа валидации на уровне маршрутов
+- ✓ Отправка запроса с данными, нарушающими ограничения уточненных типов
+- ✓ Ожидаемый статус — 400 Bad Request (благодаря нашему `decodeR`)
+- ✓ Корректная работа валидации на уровне маршрутов
 
 #### Тест 3: Полностью невалидная структура запроса
 
@@ -473,9 +462,9 @@ test(
 
 **Что проверяет:**
 
-- Отправка запроса с неправильной структурой JSON (не соответствует `LoginRequest`)
-- Ожидаемый статус — 400 Bad Request
-- Работа декодера при несоответствии типов
+- ✓ Отправка запроса с неправильной структурой JSON (не соответствует `LoginRequest`)
+- ✓ Ожидаемый статус — 400 Bad Request
+- ✓ Работа декодера при несоответствии типов
 
 #### Тест 4: Конфликт при дублировании username
 
@@ -501,9 +490,9 @@ test(
 
 **Что проверяет:**
 
-- Бизнес-логику уникальности `username`
-- Преобразование `UserNameInUse` ошибки в 409 Conflict
-- Состояние системы между запросами
+- ✓ Бизнес-логику уникальности `username`
+- ✓ Преобразование `UserNameInUse` ошибки в 409 Conflict
+- ✓ Состояние системы между запросами
 
 #### Тест 5: Полный lifecycle (регистрация → логин → логаут)
 
@@ -560,9 +549,9 @@ test(
 
 **Что проверяет:**
 
-1. **Регистрация** — создание пользователя (через `createUser`)
-2. **Логин** — получение токена при входе
-3. **Логаут** — успешный выход с токеном
+- ✓ **Регистрация** — создание пользователя (через `createUser`)
+- ✓ **Логин** — получение токена при входе
+- ✓ **Выход** — успешный выход с токеном
 
 **Ключевые моменты:**
 
@@ -632,9 +621,9 @@ test("POST /auth/login should return Forbidden when username is incorrect"):
 
 **Что проверяет:**
 
-- Попытка входа с несуществующим `username`
-- Ожидаемый статус — 403 Forbidden (маскировка ошибки)
-- Что система не раскрывает информацию о существовании пользователей
+- ✓ Попытка входа с несуществующим `username`
+- ✓ Ожидаемый статус — 403 Forbidden
+- ✓ Что система не раскрывает информацию о существовании пользователей
 
 #### Тест 7: Неверный пароль при входе
 
@@ -665,9 +654,9 @@ test("POST /auth/login should return Forbidden when password is incorrect"):
 
 **Что проверяет:**
 
-- Попытка входа с существующим `username`, но неверным паролем
-- Ожидаемый статус — 403 Forbidden (маскировка ошибки)
-- Что система не отличает неверный пароль от несуществующего пользователя
+- ✓ Попытка входа с существующим `username`, но неверным паролем
+- ✓ Ожидаемый статус — 403 Forbidden (маскировка ошибки)
+- ✓ Что система не отличает неверный пароль от несуществующего пользователя
 
 #### Покрытие тестами
 

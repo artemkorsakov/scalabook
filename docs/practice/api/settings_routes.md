@@ -19,8 +19,8 @@ nextPage = tasks_routes.html
 ```dotty
 // Упрощённое представление
 final case class AuthedRequest[F[_], A](
-  context: A,      // Данные аутентифицированного пользователя
-  req: Request[F]  // Исходный HTTP запрос
+  context: A,     // Данные аутентифицированного пользователя
+  req: Request[F] // Исходный HTTP запрос
 )
 ```
 

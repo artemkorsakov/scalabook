@@ -272,7 +272,7 @@ object SectionId extends RefinedType[Int, GreaterEqual[0]]:
 
 ### Создание задачи
 
-Создание новой задачи в статусе "черновик" (Knowledge Base).
+Создание новой задачи в статусе "База знаний" (Knowledge Base).
 
 **Запрос:**
 
@@ -324,7 +324,7 @@ case ar @ POST -> Root / TaskTypeVar(taskType) as user =>
 **Успешный ответ (201 Created):**
 
 ```
-"UUID"
+"aacc1cdd-c54f-4ae1-9551-2bb2c14fd476"
 ```
 
 ### Получение конкретной задачи
@@ -357,7 +357,7 @@ case GET -> Root / "task" :?
   Ok(
     taskLifecycleService.get(
       id = id,
-      taskType = taskType,  // Конвертация фильтра в тип задачи
+      taskType = taskType, // Конвертация фильтра в тип задачи
       userId = user.id
     )
   )

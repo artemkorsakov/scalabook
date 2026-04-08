@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = authorization.html
+prevPage = authorization/create.html
 showNext = true
 nextPage = api/users_routes.html
 %}
@@ -24,12 +24,6 @@ Health check (проверка работоспособности) позвол�
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/model/AppStatus.scala
-package ru.scalabook.pdp.model
-
-import io.circe.*
-import io.circe.generic.semiauto.*
-import ru.scalabook.pdp.model.AppStatus.*
-
 /** Комплексный статус приложения, объединяющий состояние всех зависимостей
   *
   * @param redis
@@ -86,10 +80,6 @@ end AppStatus
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/HealthCheck.scala
-package ru.scalabook.pdp.services
-
-import ru.scalabook.pdp.model.AppStatus
-
 /** Сервис для проверки работоспособности приложения */
 trait HealthCheck[F[_]]:
   /** Получение текущего статуса всех зависимостей
@@ -161,13 +151,6 @@ end HealthCheck
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLHealthCheck.scala
-package ru.scalabook.pdp.services.postgresql
-
-import doobie.*
-import doobie.implicits.*
-import doobie.util.transactor.Transactor.*
-import cats.effect.IO
-
 /** Специализированный сервис для проверки состояния PostgreSQL */
 trait PostgreSQLHealthCheck[F[_]]:
   /** Проверка доступности PostgreSQL
@@ -202,7 +185,7 @@ object PostgreSQLHealthCheck:
 Для Redis используется встроенная команда `PING`:
 
 - Клиент Redis предоставляет метод `.ping`, который отправляет команду `PING`
-- В ответ ожидается строка "PONG" (или любой непустой ответ)
+- В ответ ожидается строка `PONG` (или любой непустой ответ)
 - Непустой ответ интерпретируется как успешное подключение
 
 ### Пример ответа health check
@@ -277,16 +260,6 @@ object iron {
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/http/routes/HealthRoutes.scala
-package ru.scalabook.pdp.http.routes
-
-import cats.*
-import org.http4s.*
-import org.http4s.circe.CirceEntityEncoder.*
-import org.http4s.dsl.Http4sDsl
-import org.http4s.server.Router
-import ru.scalabook.pdp.model.*
-import ru.scalabook.pdp.services.*
-
 /** HTTP маршруты для проверки работоспособности приложения
   *
   * @tparam F
@@ -407,15 +380,6 @@ Http4s предоставляет уникальную возможность т
 который предоставляет набор вспомогательных методов:
 
 ```dotty
-package ru.scalabook.pdp.http.routes
-
-import cats.effect.IO
-import cats.syntax.semigroup.*
-import io.circe.*
-import org.http4s.*
-import org.http4s.circe.*
-import weaver.*
-
 /** Базовый трейт для всех HTTP тестов. Предоставляет удобные методы для
   * проверки ответов от маршрутов.
   */
@@ -469,20 +433,6 @@ trait HttpSuite extends IOSuite:
 Рассмотрим конкретный пример тестирования маршрута для проверки состояния сервиса:
 
 ```dotty
-package ru.scalabook.pdp.http.routes
-
-import cats.effect.{IO, Resource}
-import io.circe.Json
-import io.circe.literal.*  // Для json"""...""" интерполятора
-import org.http4s.Method.*
-import org.http4s.Status as HttpStatus
-import org.http4s.client.dsl.io.*  // DSL для создания запросов (GET, POST и т.д.)
-import org.http4s.syntax.literals.*  // для uri"/path" синтаксиса
-import ru.scalabook.pdp.model.AppStatus
-import ru.scalabook.pdp.model.AppStatus.*
-import ru.scalabook.pdp.services.HealthCheck
-import weaver.*
-
 /** Тесты для HealthRoutes - маршрута проверки состояния сервиса. */
 object HealthRoutesSuite extends HttpSuite:
   // Тип разделяемого ресурса - HealthCheck сервис
@@ -527,9 +477,9 @@ end HealthRoutesSuite
 
 Тест проверит:
 
-1. ✓ Маршрут существует (не вернул `None`)
-2. ✓ Статус ответа = 200 OK
-3. ✓ Тело ответа соответствует ожидаемому JSON
+- ✓ Маршрут существует (не вернул `None`)
+- ✓ Статус ответа = 200 OK
+- ✓ Тело ответа соответствует ожидаемому JSON
 
 ---
 

@@ -14,9 +14,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/RadicalsB
 
 package ru.scalabook.algorithms.fundamental
 
-import ru.scalabook.algorithms.fundamental.Radicals.*
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.fundamental.Radicals.*
+
 import RadicalsBenchmarks.*
 
 @main def radBench(): Unit =

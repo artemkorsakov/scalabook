@@ -5,9 +5,10 @@ import cats.data.ValidatedNel
 import cats.syntax.either.*
 import ru.scalabook.typeclass.common.Functions.given
 import ru.scalabook.typeclass.common.Instancies.given
-import MonadLaws.*
 import weaver.*
 import weaver.scalacheck.*
+
+import MonadLaws.*
 
 object MonadPlusSuite extends SimpleIOSuite, Checkers:
   test("listMonadPlusInstance must satisfy the MonadPlus laws"):

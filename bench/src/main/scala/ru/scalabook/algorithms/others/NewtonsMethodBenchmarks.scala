@@ -9,9 +9,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/others/NewtonsMethodB
 
 package ru.scalabook.algorithms.others
 
-import ru.scalabook.algorithms.others.NewtonsMethod.newtonsMethod
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.others.NewtonsMethod.newtonsMethod
+
 import NewtonsMethodBenchmarks.*
 
 private val g: Double => Double = x => math.cos(x) - x * x * x

@@ -1,6 +1,7 @@
 package ru.scalabook.algorithms.games.sudoku
 
 import weaver.SimpleIOSuite
+
 import SuDokuRow.next
 
 object SuDokuRowSuite extends SimpleIOSuite:

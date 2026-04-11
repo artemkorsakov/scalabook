@@ -15,8 +15,9 @@ package ru.scalabook.algorithms.fundamental
 
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
-import PerfectNumbersBenchmarks.*
 import ru.scalabook.algorithms.fundamental.PerfectNumbers.perfectNumbersType
+
+import PerfectNumbersBenchmarks.*
 
 @main def perfectNumbersTypeBench(): Unit =
   loadPerfectNumbersType

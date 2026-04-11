@@ -1,11 +1,12 @@
 package ru.scalabook.typeclass.monad
 
-import MonadLaws.*
 import cats.Id
 import cats.syntax.either.*
 import ru.scalabook.typeclass.common.Instancies.given
 import weaver.*
 import weaver.scalacheck.*
+
+import MonadLaws.*
 
 object FoldableSuite extends SimpleIOSuite, Checkers:
   test("idFoldable must satisfy the Foldable laws"):

@@ -22,6 +22,7 @@ package ru.scalabook.algorithms.structures
 
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+
 import LinkedListBenchmarks.*
 
 private val emptyList: LinkedList[Int]    = LinkedList.Nil

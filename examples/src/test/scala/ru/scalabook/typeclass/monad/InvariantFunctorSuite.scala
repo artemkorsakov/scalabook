@@ -1,10 +1,11 @@
 package ru.scalabook.typeclass.monad
 
-import MonadLaws.*
 import cats.Id
+import ru.scalabook.typeclass.common.Functions.given
 import weaver.*
 import weaver.scalacheck.*
-import ru.scalabook.typeclass.common.Functions.given
+
+import MonadLaws.*
 
 object InvariantFunctorSuite extends SimpleIOSuite, Checkers:
   test("InvariantFunctor[Id] must satisfy the InvariantFunctor laws"):

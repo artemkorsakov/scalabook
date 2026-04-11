@@ -12,9 +12,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/PythagoreanTr
 
 package ru.scalabook.algorithms.numbers
 
-import ru.scalabook.algorithms.numbers.PythagoreanTriplet.*
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.numbers.PythagoreanTriplet.*
+
 import PythagoreanTripletBenchmarks.*
 
 @main def nextPythagoreanTripletBench(): Unit =

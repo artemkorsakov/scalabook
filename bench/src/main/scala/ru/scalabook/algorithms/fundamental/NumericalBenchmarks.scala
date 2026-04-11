@@ -26,9 +26,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/Numerical
 
 package ru.scalabook.algorithms.fundamental
 
-import ru.scalabook.algorithms.fundamental.Numerical.*
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.fundamental.Numerical.*
+
 import NumericalBenchmarks.*
 
 @main def gcdByEuclideanAlgorithmBench(): Unit =

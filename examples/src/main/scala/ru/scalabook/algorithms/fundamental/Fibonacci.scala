@@ -1,6 +1,7 @@
 package ru.scalabook.algorithms.fundamental
 
 import scalaz.*
+
 import scala.annotation.tailrec
 
 object Fibonacci:

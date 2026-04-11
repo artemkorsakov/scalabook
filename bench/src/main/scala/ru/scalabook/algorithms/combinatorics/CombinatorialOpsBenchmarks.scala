@@ -12,9 +12,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/combinatorics/Combina
 
 package ru.scalabook.algorithms.combinatorics
 
-import ru.scalabook.algorithms.combinatorics.CombinatorialOps.*
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.combinatorics.CombinatorialOps.*
+
 import CombinatorialOpsBenchmarks.*
 
 @main def xCombinationsBench(): Unit =

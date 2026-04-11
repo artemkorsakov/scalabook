@@ -3,9 +3,10 @@ package ru.scalabook.typeclass.monad
 import cats.Id
 import ru.scalabook.typeclass.common.Functions.given
 import ru.scalabook.typeclass.common.Instancies.given
-import MonadLaws.*
 import weaver.*
 import weaver.scalacheck.*
+
+import MonadLaws.*
 
 object BiMonadSuite extends SimpleIOSuite, Checkers:
   private val f: Int => String     = given_Conversion_Int_String.apply

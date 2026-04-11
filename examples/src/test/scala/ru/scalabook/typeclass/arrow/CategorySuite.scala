@@ -1,9 +1,10 @@
 package ru.scalabook.typeclass.arrow
 
-import ArrowLaws.*
 import ru.scalabook.typeclass.common.Functions.given
 import weaver.*
 import weaver.scalacheck.*
+
+import ArrowLaws.*
 
 object CategorySuite extends SimpleIOSuite, Checkers:
   private val ab: Int => String     = given_Conversion_Int_String

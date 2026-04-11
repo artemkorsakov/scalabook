@@ -1,6 +1,7 @@
 package ru.scalabook.algorithms.combinatorics
 
 import spire.math.SafeLong
+
 import scala.annotation.tailrec
 
 object Coins:

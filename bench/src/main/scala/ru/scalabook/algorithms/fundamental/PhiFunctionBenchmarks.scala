@@ -13,9 +13,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/PhiFuncti
 
 package ru.scalabook.algorithms.fundamental
 
-import ru.scalabook.algorithms.fundamental.PhiFunction.*
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.fundamental.PhiFunction.*
+
 import PhiFunctionBenchmarks.*
 
 @main def totientBench(): Unit =

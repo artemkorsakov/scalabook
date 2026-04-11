@@ -1,8 +1,9 @@
 package ru.scalabook.typeclass.monad
 
-import MonadLaws.*
 import weaver.*
 import weaver.scalacheck.*
+
+import MonadLaws.*
 
 object IsEmptySuite extends SimpleIOSuite, Checkers:
   test("listIsEmptyInstance must satisfy the IsEmpty laws"):

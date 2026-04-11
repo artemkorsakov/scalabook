@@ -9,9 +9,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/PalindromeBen
 
 package ru.scalabook.algorithms.numbers
 
-import ru.scalabook.algorithms.numbers.Palindrome.isPalindrome
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.numbers.Palindrome.isPalindrome
+
 import PalindromeBenchmarks.*
 
 @main def isPalindromeBench(): Unit =

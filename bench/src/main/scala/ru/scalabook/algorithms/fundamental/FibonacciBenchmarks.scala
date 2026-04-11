@@ -13,9 +13,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/Fibonacci
 
 package ru.scalabook.algorithms.fundamental
 
-import ru.scalabook.algorithms.fundamental.Fibonacci.*
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.fundamental.Fibonacci.*
+
 import FibonacciBenchmarks.*
 
 @main def memoizedFibBench(): Unit =

@@ -1,11 +1,12 @@
 package ru.scalabook.typeclass.monad
 
-import MonadLaws.*
 import cats.Id
 import ru.scalabook.typeclass.common.Functions.given
 import ru.scalabook.typeclass.common.Instancies.given
 import weaver.*
 import weaver.scalacheck.*
+
+import MonadLaws.*
 
 object BindSuite extends SimpleIOSuite, Checkers:
   private val f: Int => String     = given_Conversion_Int_String.apply

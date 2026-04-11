@@ -17,6 +17,7 @@ package ru.scalabook.algorithms.heap
 
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+
 import BinaryHeapBenchmarks.*
 
 private val emptyBinaryHeap: BinaryHeap[Int]    = BinaryHeap.empty

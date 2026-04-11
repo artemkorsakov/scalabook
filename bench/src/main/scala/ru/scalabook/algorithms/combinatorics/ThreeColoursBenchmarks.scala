@@ -14,6 +14,7 @@ import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
 import ru.scalabook.algorithms.combinatorics.ThreeColours.*
 import spire.math.SafeLong
+
 import ThreeColoursBenchmarks.*
 
 @main def countABCRowsBench(): Unit =

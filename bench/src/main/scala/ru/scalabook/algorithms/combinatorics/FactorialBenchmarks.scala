@@ -14,11 +14,12 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/combinatorics/Factori
 
 package ru.scalabook.algorithms.combinatorics
 
+import ru.scalabook.MetricInstrumented
+import ru.scalabook.Period
 import ru.scalabook.algorithms.combinatorics.Factorial.*
 import ru.scalabook.algorithms.fundamental.Primes.primes
 import spire.math.SafeLong
-import ru.scalabook.MetricInstrumented
-import ru.scalabook.Period
+
 import FactorialBenchmarks.*
 
 @main def factorialBench(): Unit =

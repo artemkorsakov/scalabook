@@ -4,9 +4,9 @@ import cats.data.ValidatedNel
 import cats.syntax.either.*
 import ru.scalabook.typeclass.common.BasicLaws
 import ru.scalabook.typeclass.monad.*
-import ru.scalabook.typeclass.monoid.Monoid
-import ru.scalabook.typeclass.monad.MonadLaws.checkFunctorLaw
 import ru.scalabook.typeclass.monad.MonadLaws.checkFoldableLaw
+import ru.scalabook.typeclass.monad.MonadLaws.checkFunctorLaw
+import ru.scalabook.typeclass.monoid.Monoid
 
 object BifunctorLaws extends BasicLaws:
   def checkBitraverseLaw[

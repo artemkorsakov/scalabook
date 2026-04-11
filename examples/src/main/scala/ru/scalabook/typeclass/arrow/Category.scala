@@ -1,7 +1,7 @@
 package ru.scalabook.typeclass.arrow
 
-import ru.scalabook.typeclass.monoid.Monoid
 import ru.scalabook.typeclass.monad.PlusEmpty
+import ru.scalabook.typeclass.monoid.Monoid
 
 trait Category[=>:[_, _]] extends Compose[=>:]:
   def id[A]: A =>: A

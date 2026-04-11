@@ -15,6 +15,7 @@ package ru.scalabook.algorithms.equations
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
 import spire.math.Complex
+
 import QuadraticEquationBenchmarks.*
 
 @main def solutionsInIntegersBench(): Unit =

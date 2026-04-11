@@ -1,9 +1,8 @@
 package ru.scalabook.algorithms.derivative
 
-import weaver.FunSuite
-
 import ru.scalabook.algorithms.derivative.Derivative.Expression.*
 import ru.scalabook.algorithms.derivative.Derivative.Operation.*
+import weaver.FunSuite
 
 object DerivativeSuite extends FunSuite:
   private val x: Variable = Variable("x")

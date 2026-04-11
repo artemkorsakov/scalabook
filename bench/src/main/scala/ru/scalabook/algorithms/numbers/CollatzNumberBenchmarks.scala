@@ -12,6 +12,7 @@ package ru.scalabook.algorithms.numbers
 
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+
 import CollatzNumberBenchmarks.*
 
 private val collatzNumber = CollatzNumber(1_000_000)

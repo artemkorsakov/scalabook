@@ -13,6 +13,7 @@ package ru.scalabook.algorithms.combinatorics
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
 import ru.scalabook.algorithms.combinatorics.Permutation.*
+
 import PermutationBenchmarks.*
 
 @main def constructByMethod1Bench(): Unit =

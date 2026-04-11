@@ -17,9 +17,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/OtherNumbersB
 
 package ru.scalabook.algorithms.numbers
 
-import ru.scalabook.algorithms.numbers.OtherNumbers.*
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.numbers.OtherNumbers.*
+
 import OtherNumbersBenchmarks.*
 
 @main def bernoulliBench(): Unit =

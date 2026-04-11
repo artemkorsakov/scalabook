@@ -11,6 +11,7 @@ package ru.scalabook.algorithms.games.darts
 
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+
 import DartsBenchmarks.*
 
 @main def dartsBench(): Unit =

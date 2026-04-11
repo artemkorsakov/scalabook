@@ -1,10 +1,11 @@
 package ru.scalabook.typeclass.monad
 
-import ru.scalabook.typeclass.common.Instancies.given
-import MonadLaws.*
 import ru.scalabook.typeclass.common.Functions.given
+import ru.scalabook.typeclass.common.Instancies.given
 import weaver.*
 import weaver.scalacheck.*
+
+import MonadLaws.*
 
 object ApplicativePlusSuite extends SimpleIOSuite, Checkers:
   test("listApplicativePlusInstance must satisfy the ApplicativePlus laws"):

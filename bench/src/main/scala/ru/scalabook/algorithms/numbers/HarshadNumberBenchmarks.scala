@@ -10,9 +10,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/HarshadNumber
 
 package ru.scalabook.algorithms.numbers
 
-import ru.scalabook.algorithms.numbers.HarshadNumber.*
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.numbers.HarshadNumber.*
+
 import HarshadNumberBenchmarks.*
 
 @main def getStrongRightTruncatableHarshadPrimesBench(): Unit =

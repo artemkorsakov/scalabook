@@ -1,9 +1,9 @@
 package ru.scalabook.typeclass.monoid
 
+import ru.scalabook.typeclass.monoid.Monoid.given
 import ru.scalabook.typeclass.monoid.MonoidLaws.*
 import weaver.*
 import weaver.scalacheck.*
-import ru.scalabook.typeclass.monoid.Monoid.given
 
 object MonoidSuite extends SimpleIOSuite, Checkers:
   test("Числа относительно сложения с 0"):

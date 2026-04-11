@@ -1,10 +1,11 @@
 package ru.scalabook.typeclass.monad
 
-import ru.scalabook.typeclass.common.Instancies.given
-import MonadLaws.*
 import ru.scalabook.typeclass.common.Functions.given
+import ru.scalabook.typeclass.common.Instancies.given
 import weaver.*
 import weaver.scalacheck.*
+
+import MonadLaws.*
 
 object TraverseSuite extends SimpleIOSuite, Checkers:
   test("optionTraverse must satisfy the laws of Traverse"):

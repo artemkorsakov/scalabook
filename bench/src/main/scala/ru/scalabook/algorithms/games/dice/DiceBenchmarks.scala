@@ -10,9 +10,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/games/dice/DiceBenchm
 
 package ru.scalabook.algorithms.games.dice
 
-import spire.math.Rational
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import spire.math.Rational
+
 import DiceBenchmarks.*
 
 @main def diceBench(): Unit =

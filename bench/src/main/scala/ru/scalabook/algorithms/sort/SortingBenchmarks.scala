@@ -13,9 +13,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/sort/SortingBenchmark
 
 package ru.scalabook.algorithms.sort
 
-import ru.scalabook.algorithms.sort.Sorting.*
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.sort.Sorting.*
+
 import RadicalsBenchmarks.*
 
 private val unsortedList: List[Int] = (10_000 to 1 by -1).toList

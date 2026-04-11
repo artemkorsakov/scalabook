@@ -15,9 +15,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/structures/StackBench
 
 package ru.scalabook.algorithms.structures
 
-import ru.scalabook.algorithms.structures.Stack.*
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.structures.Stack.*
+
 import StackBenchmarks.*
 
 private val emptyStack: Stack[Int]    = EmptyStack

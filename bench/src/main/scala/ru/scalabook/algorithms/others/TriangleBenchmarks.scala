@@ -9,9 +9,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/others/TriangleBenchm
 
 package ru.scalabook.algorithms.others
 
-import ru.scalabook.algorithms.geometry.Triangle
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.geometry.Triangle
+
 import TriangleBenchmarks.*
 
 @main def getPointOnTriangleTypeBench: Unit =

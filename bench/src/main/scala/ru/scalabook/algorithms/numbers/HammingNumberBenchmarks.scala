@@ -10,9 +10,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/HammingNumber
 
 package ru.scalabook.algorithms.numbers
 
-import ru.scalabook.algorithms.numbers.HammingNumber.isHammingNumber
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.numbers.HammingNumber.isHammingNumber
+
 import HammingNumberBenchmarks.*
 
 @main def isHammingNumberBench(): Unit =

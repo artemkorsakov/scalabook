@@ -12,6 +12,7 @@ package ru.scalabook.algorithms.equations
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
 import ru.scalabook.algorithms.equations.PolynomialEquation.*
+
 import PolynomialEquationBenchmarks.*
 
 @main def polynomialCoefficientsBench(): Unit =

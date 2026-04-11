@@ -16,6 +16,7 @@ package ru.scalabook.algorithms.heap
 
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+
 import LeftistHeapBenchmarks.*
 
 private val emptyLeftistHeap: LeftistHeap[Int]    = LeftistHeap.empty

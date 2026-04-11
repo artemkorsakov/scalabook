@@ -9,9 +9,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/others/OtherAlgorithm
 
 package ru.scalabook.algorithms.others
 
-import ru.scalabook.algorithms.others.OtherAlgorithms.functionAckermann
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.others.OtherAlgorithms.functionAckermann
+
 import OtherAlgorithmsBenchmarks.*
 
 @main def functionAckermannBench(): Unit =

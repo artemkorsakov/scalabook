@@ -1,10 +1,11 @@
 package ru.scalabook.typeclass.monad
 
 import ru.scalabook.typeclass.common.Applicator
-import MonadLaws.*
 import ru.scalabook.typeclass.monad.ContravariantFunctor.given
 import weaver.*
 import weaver.scalacheck.*
+
+import MonadLaws.*
 
 object ContravariantFunctorSuite extends SimpleIOSuite, Checkers:
   test("The unary function must satisfy the laws of contravariant functor"):

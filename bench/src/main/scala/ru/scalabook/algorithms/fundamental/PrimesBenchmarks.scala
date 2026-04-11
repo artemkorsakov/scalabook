@@ -14,9 +14,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/fundamental/PrimesBen
 
 package ru.scalabook.algorithms.fundamental
 
-import ru.scalabook.algorithms.fundamental.Primes.*
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.fundamental.Primes.*
+
 import PrimesBenchmarks.*
 
 @main def primesBench(): Unit =

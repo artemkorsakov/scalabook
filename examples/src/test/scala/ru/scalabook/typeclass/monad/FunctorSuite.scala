@@ -1,10 +1,11 @@
 package ru.scalabook.typeclass.monad
 
-import MonadLaws.*
 import cats.Id
 import ru.scalabook.typeclass.common.Functions.given
 import weaver.*
 import weaver.scalacheck.*
+
+import MonadLaws.*
 
 object FunctorSuite extends SimpleIOSuite, Checkers:
   test("idFunctor must satisfy the Functor laws"):

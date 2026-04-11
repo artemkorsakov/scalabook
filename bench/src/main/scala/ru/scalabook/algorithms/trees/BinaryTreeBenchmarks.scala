@@ -15,9 +15,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/trees/BinaryTreeBench
 
 package ru.scalabook.algorithms.trees
 
-import ru.scalabook.algorithms.trees.BinaryTree.*
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.trees.BinaryTree.*
+
 import BinaryTreeBenchmarks.*
 
 private val exampleBinaryTree: BinaryTree[Char] = Branch(

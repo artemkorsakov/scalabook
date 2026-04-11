@@ -1,12 +1,13 @@
 package ru.scalabook.typeclass.monad
 
 import ru.scalabook.typeclass.common.Applicator
-import MonadLaws.*
 import ru.scalabook.typeclass.monad.Divisible.given
 import ru.scalabook.typeclass.monoid.Monoid
 import ru.scalabook.typeclass.monoid.Monoid.booleanAnd
 import weaver.*
 import weaver.scalacheck.*
+
+import MonadLaws.*
 
 object DivisibleSuite extends SimpleIOSuite, Checkers:
   def delta[A]: A => (A, A) = a => (a, a)

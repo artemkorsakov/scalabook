@@ -1,6 +1,7 @@
 package ru.scalabook.algorithms.fundamental
 
 import ru.scalabook.algorithms.fundamental.Primes.{nextPrime, primesNoMoreThanN}
+
 import scala.annotation.tailrec
 
 /** The radical of n, rad(n), is the product of distinct prime factors of n. For

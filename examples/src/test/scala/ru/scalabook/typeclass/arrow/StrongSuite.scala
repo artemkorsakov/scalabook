@@ -1,9 +1,10 @@
 package ru.scalabook.typeclass.arrow
 
-import ArrowLaws.*
 import ru.scalabook.typeclass.common.Functions.given
 import weaver.*
 import weaver.scalacheck.*
+
+import ArrowLaws.*
 
 object StrongSuite extends SimpleIOSuite, Checkers:
   private val gad: Boolean => String = given_Conversion_Boolean_String

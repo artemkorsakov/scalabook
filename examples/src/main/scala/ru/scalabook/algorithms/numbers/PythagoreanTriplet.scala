@@ -3,8 +3,8 @@ package ru.scalabook.algorithms.numbers
 import ru.scalabook.algorithms.fundamental.Numerical.*
 import spire.math.SafeLong
 
-import scala.collection.mutable
 import scala.annotation.tailrec
+import scala.collection.mutable
 
 /** A Pythagorean triplet is a set of three natural numbers, a &lt; b &lt; c,
   * for which, a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup>.

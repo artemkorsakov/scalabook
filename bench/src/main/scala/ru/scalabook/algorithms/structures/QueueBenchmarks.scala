@@ -15,6 +15,7 @@ package ru.scalabook.algorithms.structures
 
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+
 import QueueBenchmarks.*
 
 private val emptyQueue: Queue[Int]    = Queue.empty[Int]

@@ -15,9 +15,10 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/numbers/CyclicNumbers
 
 package ru.scalabook.algorithms.numbers
 
-import ru.scalabook.algorithms.numbers.CyclicNumbers.*
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
+import ru.scalabook.algorithms.numbers.CyclicNumbers.*
+
 import CyclicNumbersBenchmarks.*
 
 @main def triangleNumberBench(): Unit =

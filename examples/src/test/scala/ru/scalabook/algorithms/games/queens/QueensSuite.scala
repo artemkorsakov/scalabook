@@ -1,8 +1,7 @@
 package ru.scalabook.algorithms.games.queens
 
-import weaver.FunSuite
-
 import ru.scalabook.algorithms.games.queens.Queens.queens
+import weaver.FunSuite
 
 object QueensSuite extends FunSuite:
   private val boardSize = 4

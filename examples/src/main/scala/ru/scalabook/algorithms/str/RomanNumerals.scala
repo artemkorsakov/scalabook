@@ -1,6 +1,7 @@
 package ru.scalabook.algorithms.str
 
 import ru.scalabook.algorithms.str.RomanNumeralSymbol.*
+
 import scala.annotation.tailrec
 
 /** Roman Numerals.

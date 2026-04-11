@@ -14,11 +14,12 @@ scala-cli run bench/src/main/scala/ru/scalabook/algorithms/search/SearchBenchmar
 
 package ru.scalabook.algorithms.search
 
+import ru.scalabook.MetricInstrumented
+import ru.scalabook.Period
 import ru.scalabook.algorithms.search.Search.*
 
 import scala.util.Random
-import ru.scalabook.MetricInstrumented
-import ru.scalabook.Period
+
 import SearchBenchmarks.*
 
 private val text               = "This is a functional implementation."

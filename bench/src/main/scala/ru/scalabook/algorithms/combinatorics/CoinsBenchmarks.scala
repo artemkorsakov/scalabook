@@ -14,6 +14,7 @@ package ru.scalabook.algorithms.combinatorics
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
 import ru.scalabook.algorithms.combinatorics.Coins.*
+
 import CoinsBenchmarks.*
 
 @main def countWaysBench(): Unit =

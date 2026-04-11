@@ -16,6 +16,7 @@ package ru.scalabook.algorithms.fundamental
 import ru.scalabook.MetricInstrumented
 import ru.scalabook.Period
 import spire.math.SafeLong
+
 import ChineseRemainderTheoremBenchmarks.*
 
 @main def solutionChineseRemainderTheoremBench(): Unit =

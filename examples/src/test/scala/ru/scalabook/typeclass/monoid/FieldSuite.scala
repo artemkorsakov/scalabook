@@ -1,8 +1,8 @@
 package ru.scalabook.typeclass.monoid
 
+import ru.scalabook.typeclass.common.Generators.given
 import ru.scalabook.typeclass.monoid.MonoidLaws.*
 import spire.math.Rational
-import ru.scalabook.typeclass.common.Generators.given
 import weaver.*
 import weaver.scalacheck.*
 

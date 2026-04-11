@@ -1,6 +1,7 @@
 package ru.scalabook.algorithms.numbers
 
 import ru.scalabook.algorithms.fundamental.Primes.primesNoMoreThanN
+
 import scala.annotation.tailrec
 
 /** A positive number is a generalized <a

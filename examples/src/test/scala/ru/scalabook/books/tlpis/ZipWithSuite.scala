@@ -14,7 +14,7 @@ object ZipWithSuite extends FunSuite:
         case _ => LazyList.empty
 
     val nats   = LazyList.from(1)
-    val random = LazyList.continually(math.random)
+    val random = LazyList.continually(math.random())
     val seq = zipWith2((nats, random)) { (n, r) => if r > 0.3 then n else -n }
 
     println(seq.take(10).toList)
@@ -22,7 +22,7 @@ object ZipWithSuite extends FunSuite:
 
   test("Check zipWith"):
     val nats   = LazyList.from(1)
-    val random = LazyList.continually(math.random)
+    val random = LazyList.continually(math.random())
     val seq = ZipWith.zipWith(nats :^: random :^: KNil) { case n :: r :: HNil =>
       if r > 0.3 then n else -n
     }

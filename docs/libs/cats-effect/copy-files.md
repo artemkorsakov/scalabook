@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = ../cats-effect.html
+prevPage = getting-started.html
 showNext = true
 nextPage = producer-consumer-problem.html
 %}

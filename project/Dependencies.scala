@@ -2,14 +2,14 @@ import sbt.*
 
 // @formatter:off
 object Dependencies {
-  val Scala = "3.8.1"
+  val Scala = "3.8.3"
 
   object fs2 {
-    val core = "co.fs2" %% "fs2-core" % "3.12.2"
+    val core = "co.fs2" %% "fs2-core" % "3.13.0"
   }
 
   object http4s {
-    private val version = "0.23.33"
+    private val version = "0.23.34"
     private val org     = "org.http4s"
     val blaze           = org %% "http4s-blaze-server" % "0.23.17"
     val core            = org %% "http4s-core"         % version
@@ -18,7 +18,7 @@ object Dependencies {
   }
 
   object iron {
-    private val version = "3.2.3"
+    private val version = "3.3.0"
     private val org     = "io.github.iltotore"
     val cats            = org %% "iron-cats"       % version
     val core            = org %% "iron"            % version
@@ -32,7 +32,7 @@ object Dependencies {
   }
 
   object logback {
-    val logback = "ch.qos.logback" % "logback-classic" % "1.5.27"
+    val logback = "ch.qos.logback" % "logback-classic" % "1.5.32"
   }
 
   object refined {
@@ -51,7 +51,7 @@ object Dependencies {
   }
 
   object sttp {
-    val client = "com.softwaremill.sttp.client4" %% "core" % "4.0.15"
+    val client = "com.softwaremill.sttp.client4" %% "core" % "4.0.21"
     val model = "com.softwaremill.sttp.model" %% "core" % "1.7.17"
   }
 

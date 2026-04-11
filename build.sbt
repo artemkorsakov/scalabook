@@ -7,6 +7,7 @@ ThisBuild / licenses         := Seq(License.Apache2)
 
 ThisBuild / scalaVersion      := Scala
 ThisBuild / semanticdbEnabled := true
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
 ThisBuild / scalacOptions ++=
   Seq(

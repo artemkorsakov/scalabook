@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = effects.html
+prevPage = terminology.html
 showNext = true
 nextPage = producer-consumer-problem.html
 %}

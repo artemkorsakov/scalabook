@@ -1,8 +1,8 @@
 {%
 showPrev = true
-prevPage = fibers.html
+prevPage = effects.html
 showNext = true
-nextPage = effects.html
+nextPage = copy-files.html
 %}
 
 # Асинхронность, Одновременность и Параллелизм

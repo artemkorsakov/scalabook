@@ -1,8 +1,8 @@
 {%
 showPrev = true
-prevPage = terminology.html
+prevPage = fibers.html
 showNext = true
-nextPage = copy-files.html
+nextPage = terminology.html
 %}
 
 # Эффекты

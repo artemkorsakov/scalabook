@@ -2,10 +2,10 @@
 showPrev = true
 prevPage = ../cats-effect.html
 showNext = true
-nextPage = terminology.html
+nextPage = effects.html
 %}
 
-# Глубокое погружение в концепции Cats Effect
+# Волокна
 
 ## Введение
 

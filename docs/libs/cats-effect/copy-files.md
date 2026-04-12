@@ -1,11 +1,11 @@
 {%
 showPrev = true
-prevPage = getting-started.html
+prevPage = effects.html
 showNext = true
 nextPage = producer-consumer-problem.html
 %}
 
-# Копирование файлов 
+# Копирование файлов
 
 ## Основные понятия, обработка ресурсов и отмена
 

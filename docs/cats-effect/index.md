@@ -1,8 +1,6 @@
 {%
-showPrev = true
-prevPage = refined.html
 showNext = true
-nextPage = cats-effect/fibers.html
+nextPage = fibers.html
 %}
 
 # Cats effect

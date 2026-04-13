@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = effects.html
 showNext = true
-nextPage = copy-files.html
+nextPage = foundation/copy-files.html
 %}
 
 # Асинхронность, Одновременность и Параллелизм

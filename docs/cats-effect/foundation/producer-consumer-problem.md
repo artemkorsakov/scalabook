@@ -1,8 +1,6 @@
 {%
 showPrev = true
 prevPage = copy-files.html
-showNext = true
-nextPage = ../spire.html
 %}
 
 # Проблема производитель-потребитель — параллелизм и волокна

@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = ../cats-effect.html
+prevPage = index.html
 showNext = true
 nextPage = effects.html
 %}

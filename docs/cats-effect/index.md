@@ -1,6 +1,6 @@
 {%
 showNext = true
-nextPage = fibers.html
+nextPage = foundation/fibers.html
 %}
 
 # Cats effect

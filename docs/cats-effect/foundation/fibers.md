@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = index.html
+prevPage = ../index.html
 showNext = true
 nextPage = effects.html
 %}
@@ -322,6 +322,7 @@ def transferMoney(
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
+- [Нити и волокна (Threads & Fibers)](https://habr.com/ru/articles/1006576/)
 - [Cats effect documentation][doc]
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

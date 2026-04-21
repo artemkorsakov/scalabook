@@ -123,9 +123,9 @@ graph TB
     end
     
     subgraph cats-effect
-        E --> F[Sync]
         E --> J[MonadCancel]
-        
+        J ----> F[Sync]
+
         F --> H[Async]
         
         J --> K[Spawn]
@@ -133,7 +133,6 @@ graph TB
         L --> G[Temporal]
         G --> H[Async]
 
-        J ----> F
         I[Clock] --> F
         I --> G
         

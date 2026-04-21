@@ -1,6 +1,8 @@
 {%
 showPrev = true
 prevPage = clock.html
+showNext = true
+nextPage = sync.html
 %}
 
 # Defer — ленивое создание эффектов

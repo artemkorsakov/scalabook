@@ -79,7 +79,6 @@ def bracket[A, B](acquire: F[A])(use: A => F[B])(release: A => F[Unit]): F[B]
 
 ```dotty
 def copyFile[F[_]: Sync](src: String, dest: String): F[Unit] =
-
   // bracket гарантирует закрытие ресурсов
   val acquireSrc = Sync[F].delay(new FileInputStream(src))
   val acquireDst = Sync[F].delay(new FileOutputStream(dest))
@@ -314,7 +313,7 @@ releaseAll = semaphore.release >> releaseResource(resource)
 
 **Важно:** Порядок важен! Сначала освобождаем семафор (чтобы другие волокна могли продолжить), потом ресурс.
 
-### Шаг 4: Использование ресурса с гарантией
+### Шаг 4: Использование ресурса с `guarantee`
 
 ```dotty
 result <- poll(useResource(resource)).guarantee(releaseAll)
@@ -349,13 +348,12 @@ acquire.bracket(use)(release)
 #### Сценарий 1: Успешное выполнение
 
 ```
-1. Вход в uncancelable (отмена отключена)
+1. Вход в uncancelable
 2. resource = acquireResource() ────────────────► Получили ресурс
 3. poll(semaphore.acquire) ─────────────────────► Получили семафор
 4. poll(useResource(resource)) ─────────────────► Получили результат
 5. releaseAll = semaphore.release + releaseResource(resource)
 6. Выход из uncancelable
-   (если была отложенная отмена, она сработает здесь)
 ```
 
 #### Сценарий 2: Ошибка в useResource
@@ -484,7 +482,7 @@ F.uncancelable: cancelable1 =>
   F.uncancelable: cancelable2 =>
     cancelable1(     // Включаем отмену через внешний cancelable
       cancelable2(   // Включаем отмену через внутренний cancelable
-        cancelable1( // И так до бесконечности
+        F.uncancelable( // И так до бесконечности
           // ... что здесь происходит?
         )
       )
@@ -615,12 +613,12 @@ val x = foo(bar)
 // Разворачиваем foo(bar):
 F.uncancelable: _ =>
   // Подставляем bar:
-  F.uncancelable{ poll =>
-    poll(F.pure("bar"))
+  F.uncancelable{ cancelable =>
+    cancelable(F.pure("bar"))
   } <* cleanupImportantResource
 ```
 
-**Проблема:** Внутренний `poll` делает внутренний блок `uncancelable` отменяемым. 
+**Проблема:** Внутренний `cancelable` делает внутренний блок `uncancelable` отменяемым. 
 Теперь отмена может произойти **внутри** этого блока, прямо перед `cleanupImportantResource`! 
 Ресурс не будет очищен, что нарушает контракт `foo`.
 

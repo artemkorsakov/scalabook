@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = sync.html
 showNext = true
-nextPage = threads_fibers.html
+nextPage = spawn.html
 %}
 
 # MonadCancel — управление отменами и ресурсами

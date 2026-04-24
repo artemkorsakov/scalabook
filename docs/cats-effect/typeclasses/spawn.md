@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = fiber_join.html
+prevPage = monadcancel.html
 showNext = true
 nextPage = concurrent.html
 %}

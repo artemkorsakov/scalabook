@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = foundation/terminology.html
+prevPage = foundation/fiber_join.html
 showNext = true
 nextPage = typeclasses/unique.html
 %}

@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = monadcancel.html
+prevPage = terminology.html
 showNext = true
 nextPage = fiber_cancel.html
 %}
@@ -489,11 +489,11 @@ val handler = MonadCancel[F].uncancelable: poll =>
 
 #### Зачем нужен `uncancelable`?
 
-`uncancelable` — это [механизм защиты](monadcancel.md) критической секции от **прерывания**.
+`uncancelable` — это [механизм защиты](../typeclasses/monadcancel.md) критической секции от **прерывания**.
 `uncancelable` гарантирует, что внутренний блок `{ ... }` не будет прерван извне. 
 Вместо этого отмена будет «отложена» до выхода из блока.
 
-Аргумент `poll` — это функция, которая позволяет [временно разрешить отмену](monadcancel.md) внутри защищённого блока. 
+Аргумент `poll` — это функция, которая позволяет временно разрешить отмену внутри защищённого блока. 
 В данном случае `poll(server.accept)` означает: «операция принятия соединения _может_ быть отменена, а вот всё остальное — нет».
 
 > Итог: `uncancelable` делает так, что соединение обязательно попадёт либо в `handle`, 

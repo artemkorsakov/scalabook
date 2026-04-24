@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = fiber_cancel.html
 showNext = true
-nextPage = spawn.html
+nextPage = ../typeclasses.html
 %}
 
 # Объединение волокон

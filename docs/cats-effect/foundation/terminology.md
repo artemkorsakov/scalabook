@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = effects.html
 showNext = true
-nextPage = ../typeclasses.html
+nextPage = threads_fibers.html
 %}
 
 # Асинхронность, Одновременность и Параллелизм

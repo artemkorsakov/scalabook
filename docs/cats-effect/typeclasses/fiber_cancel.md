@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = threads_fibers.html
 showNext = true
-nextPage = spawn.html
+nextPage = fiber_join.html
 %}
 
 # Отмена волокон

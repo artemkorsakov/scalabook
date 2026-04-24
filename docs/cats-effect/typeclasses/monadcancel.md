@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = sync.html
 showNext = true
-nextPage = spawn.html
+nextPage = threads_fibers.html
 %}
 
 # MonadCancel — управление отменами и ресурсами
@@ -734,8 +734,6 @@ run.unsafeRunSync()
 
 **Ссылки:**
 
-- [Ссылка на репозиторий с упражнениями][sample]
 - [Cats effect documentation][doc]
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts
-[sample]: https://gitverse.ru/scalabook/cats

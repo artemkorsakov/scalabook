@@ -387,8 +387,6 @@ Cats Effect предоставляет мощные и безопасные ин
 
 **Ссылки:**
 
-- [Ссылка на репозиторий с упражнениями][sample]
 - [Cats effect documentation][doc]
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts
-[sample]: https://gitverse.ru/scalabook/cats

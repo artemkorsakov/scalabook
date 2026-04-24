@@ -208,7 +208,6 @@ Cats Effect предлагает выразительный и безопасн�
 
 **Ссылки:**
 
-- [Ссылка на репозиторий с упражнениями][sample]
 - [Cats Effect 3 for Beginners - Part-1](https://yadukrishnan.live/cats-effect-3-for-beginners-part-1)
 - [Cats Effect 3 for Beginners - Part-2: Common APIs](https://yadukrishnan.live/common-apis-cats-effect-io-part-2)
 - [Cats Effect 3 for Beginners - Part-3: Traversing Cats Effect IOs](https://yadukrishnan.live/traversing-cats-effect-ios-part-3)
@@ -224,4 +223,3 @@ Cats Effect предлагает выразительный и безопасн�
 
 [home]: https://typelevel.org/cats-effect/
 [doc]: https://typelevel.org/cats-effect/docs/getting-started
-[sample]: https://gitverse.ru/scalabook/cats

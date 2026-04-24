@@ -210,8 +210,6 @@ def runServer[F[_]: Async](port: Int): F[Unit] = ...
 
 **Ссылки:**
 
-- [Ссылка на репозиторий с упражнениями][sample]
 - [Cats effect documentation][doc]
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts
-[sample]: https://gitverse.ru/scalabook/cats

@@ -224,5 +224,6 @@ given syncUnique[F[_]: Sync]: Unique[F] with
 **Ссылки:**
 
 - [Cats effect documentation][doc]
+- [Cats effect Unique](https://typelevel.org/cats-effect/docs/typeclasses/unique)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

@@ -326,5 +326,6 @@ def properInterruptibleOp[F[_]: Sync]: F[Unit] =
 **Ссылки:**
 
 - [Cats effect documentation][doc]
+- [Cats effect Sync](https://typelevel.org/cats-effect/docs/typeclasses/sync)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

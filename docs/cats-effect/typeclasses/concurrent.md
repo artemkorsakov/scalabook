@@ -479,5 +479,6 @@ yield ()
 **Ссылки:**
 
 - [Cats effect documentation][doc]
+- [Cats effect Concurrent](https://typelevel.org/cats-effect/docs/typeclasses/concurrent)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

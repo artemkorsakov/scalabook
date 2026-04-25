@@ -735,5 +735,6 @@ run.unsafeRunSync()
 **Ссылки:**
 
 - [Cats effect documentation][doc]
+- [Cats effect MonadCancel](https://typelevel.org/cats-effect/docs/typeclasses/monadcancel)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

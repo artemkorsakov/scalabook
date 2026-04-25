@@ -301,5 +301,6 @@ def race[F[_]: {Spawn, MonadThrow}, A, B](fa: F[A], fb: F[B]): F[Either[A, B]] =
 **Ссылки:**
 
 - [Cats effect documentation][doc]
+- [Cats effect Spawn](https://typelevel.org/cats-effect/docs/typeclasses/spawn)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

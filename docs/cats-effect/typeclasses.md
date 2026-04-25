@@ -211,5 +211,6 @@ def runServer[F[_]: Async](port: Int): F[Unit] = ...
 **Ссылки:**
 
 - [Cats effect documentation][doc]
+- [Cats effect TypeClasses](https://typelevel.org/cats-effect/docs/typeclasses)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

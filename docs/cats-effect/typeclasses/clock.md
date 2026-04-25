@@ -265,5 +265,6 @@ val clock2 = Clock[F]
 **Ссылки:**
 
 - [Cats effect documentation][doc]
+- [Cats effect Clock](https://typelevel.org/cats-effect/docs/typeclasses/clock)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

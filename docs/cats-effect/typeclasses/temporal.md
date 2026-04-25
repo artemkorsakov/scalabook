@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = concurrent/deferred.html
+prevPage = concurrent/workerpool.html
 showNext = true
 nextPage = async.html
 %}

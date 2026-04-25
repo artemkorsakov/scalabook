@@ -12,7 +12,7 @@ import scala.concurrent.duration.*
 object WorkerPoolDemo extends IOApp.Simple:
   case class State[F[_], A](
       queue: Queue[A],
-      waiting: Option[Deferred[F, A]] // волокно, ожидающее задачу
+      waiting: Queue[Deferred[F, A]] // ← очередь ожидающих воркеров
   )
 
   class WorkerPool[F[_]: Concurrent, A](
@@ -22,13 +22,14 @@ object WorkerPoolDemo extends IOApp.Simple:
     // Добавить задачу в очередь
     def submit(a: A): F[Unit] =
       state.modify {
-        // Есть ожидающий воркер — передаём задачу напрямую
-        case State(queue, Some(waiting)) =>
-          (State(queue, None), waiting.complete(a).void)
+        // Есть ожидающие воркеры — отдаём первому
+        case State(queue, waiting) if waiting.nonEmpty =>
+          val (waitingDeferred, newWaiting) = waiting.dequeue
+          (State(queue, newWaiting), waitingDeferred.complete(a).void)
 
         // Нет ожидающих — кладём в очередь
-        case State(queue, None) =>
-          (State(queue.enqueue(a), None), Concurrent[F].unit)
+        case State(queue, waiting) =>
+          (State(queue.enqueue(a), waiting), Concurrent[F].unit)
       }.flatten
 
     // Запустить воркеров
@@ -41,20 +42,19 @@ object WorkerPoolDemo extends IOApp.Simple:
 
     // Забрать задачу (воркер вызывает этот метод)
     private def take: F[A] =
-      Concurrent[F].deferred[A].flatMap { waiting =>
+      Concurrent[F].deferred[A].flatMap { waitingDeferred =>
         state.modify {
           // Есть задача в очереди — отдаём немедленно
-          case State(queue, None) if queue.nonEmpty =>
+          case State(queue, waiting) if queue.nonEmpty =>
             val (a, newQueue) = queue.dequeue
-            (State(newQueue, None), a.pure[F])
+            (State(newQueue, waiting), a.pure[F])
 
           // Нет задач — регистрируем ожидание
-          case State(queue, None) =>
-            (State(queue, Some(waiting)), waiting.get)
-
-          // Не должно случиться (waiting всегда None при some)
-          case State(queue, Some(_)) =>
-            (State(queue, None), Concurrent[F].canceled >> take)
+          case State(queue, waiting) =>
+            (
+              State(queue, waiting.enqueue(waitingDeferred)),
+              waitingDeferred.get
+            )
         }.flatten
       }
   end WorkerPool
@@ -62,27 +62,33 @@ object WorkerPoolDemo extends IOApp.Simple:
   object WorkerPool:
     def make[F[_]: Concurrent, A](workers: Int): Resource[F, WorkerPool[F, A]] =
       Resource.eval(
-        Concurrent[F].ref(State[F, A](Queue.empty, None)).map { state =>
+        // Пустая очередь и пустая очередь ожидающих
+        Concurrent[F].ref(State[F, A](Queue.empty, Queue.empty)).map { state =>
           new WorkerPool[F, A](state, workers)
         }
       )
 
-  // Использование
+  // Демонстрация параллельной работы
   def run: IO[Unit] =
     val resource: Resource[IO, WorkerPool[IO, String]] =
       for
         pool <- WorkerPool.make[IO, String](3)
         _    <- pool.start { task =>
-          IO.sleep(500.millis) *> IO.println(s"✅ Обработано: $task")
+          // Каждая задача выполняется 1 секунду
+          IO.sleep(1.second) *>
+            IO.println(
+              s"✅ ${Thread.currentThread().getName} обработал: $task [${java.time.LocalTime.now()}]"
+            )
         }
       yield pool
 
     resource.use { pool =>
       for
-        _ <- IO.println("🚀 Отправляю задачи...")
+        _ <- IO.println("🚀 Отправляю 10 задач...")
         _ <- (1 to 10).toList.traverse(i => pool.submit(s"Задача $i"))
-        _ <- IO.sleep(6.seconds) // Даём время на обработку
+        _ <- IO.sleep(5.seconds) // Даём время на обработку
         _ <- IO.println("🏁 Завершаем работу")
       yield ()
     }
+  end run
 end WorkerPoolDemo

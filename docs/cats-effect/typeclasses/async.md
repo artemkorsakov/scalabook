@@ -3,270 +3,257 @@ showPrev = true
 prevPage = temporal.html
 %}
 
-# Async
+# Async — асинхронный FFI
 
-`Async` — это асинхронный [интерфейс внешних функций](https://en.wikipedia.org/wiki/Foreign_function_interface) (FFI) для приостановки операций с побочными эффектами, которые
-завершаются в другом месте (часто в другом пуле потоков через API, подобный Future).
-Этот класс типов позволяет нам упорядочивать асинхронные операции, не попадая
-в [ад коллбэков](http://callbackhell.com/), а также дает нам возможность
-переносить выполнение в другие контексты выполнения.
+`Async[F[_]]` — это класс типов, который расширяет `Temporal[F[_]]` 
+и предоставляет [асинхронный интерфейс внешних функций (FFI - Foreign Function Interface)](https://ru.wikipedia.org/wiki/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81_%D0%B2%D0%BD%D0%B5%D1%88%D0%BD%D0%B8%D1%85_%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B9). 
+Он позволяет "приостанавливать" (семантически) эффекты, 
+результаты которых вычисляются **в другом месте** — например, в callback'е из Java-библиотеки, в другом потоке, или в `Future`.
 
-## FFI
+Простыми словами: `Async` — это мост между **асинхронным миром коллбэков** и **функциональным миром Cats Effect**.
 
-Асинхронная задача — это задача, результаты которой вычисляются где-то в другом месте. Мы ожидаем
-результатов этого выполнения, передавая ему коллбэк, который будет вызван с результатом. Это вычисление может завершиться неудачей, поэтому коллбэк имеет тип
-`Either[Throwable, A] => ()`. Это ожидание носит исключительно семантический характер — потоки не блокируются, текущий поток просто отменяется до завершения коллбэка. Это приводит нас непосредственно к простейшему асинхронному FFI
-```scala
-trait Async[F[_]] {
+### Зачем это нужно?
 
+Представьте, что вы используете библиотеку, которая работает так:
+
+```java
+// Java-библиотека для HTTP-запросов
+HttpClient.get("https://api.example.com", new Callback() {
+    void onSuccess(String response) { /* ... */ }
+    void onFailure(Throwable error) { /* ... */ }
+});
+```
+
+`Async` позволяет вам **завернуть** такой коллбэк в чистое `IO[A]`, 
+не блокируя потоки и не погружаясь в ["ад коллбэков" (Callback Hell)](http://callbackhell.com/).
+
+## Проблема: ад коллбэков
+
+Коллбэки порождают глубокую вложенность и сложную обработку ошибок:
+
+```dotty
+// Типичный "ад коллбэков"
+getUser( userId, (user) => {
+  getOrders( user.id, (orders) => {
+    getPayments( user.id, (payments) => {
+      // обработка
+    }, onError)
+  }, onError)
+}, onError)
+```
+
+С `Async` мы превращаем это в читаемый `for`-comprehension:
+
+```dotty
+for
+  user     <- getUser(userId)
+  orders   <- getOrders(user.id)
+  payments <- getPayments(user.id)
+yield (user, orders, payments)
+```
+
+## Базовые методы Async
+
+### 1. `async_` — простейший FFI (ныне устаревший, но полезен для понимания)
+
+```dotty
 def async_[A](k: (Either[Throwable, A] => Unit) => Unit): F[A]
-}
 ```
 
-В качестве примера этого в действии мы можем посмотреть на определение `Async[F].fromFuture`,
-которое использует `Future#onComplete` для вызова предоставленного коллбэка
-```scala
-def fromFuture[A](fut: F[Future[A]]): F[A] =
-flatMap(fut) { f =>
-flatMap(executionContext) { implicit ec =>
+Это **самый простой** способ создать `F[A]` из callback-функции.
 
-async_[A](cb => f.onComplete(t => cb(t.toEither)))
+- Вы получаете коллбэк `cb: Either[Throwable, A] => Unit`.
+- Вы вызываете `cb(Right(a))` при успехе или `cb(Left(error))` при ошибке.
+- Cats Effect сам позаботится об ожидании этого коллбэка.
 
-}
+**Важное ограничение:** Внутри `k` **нельзя выполнять эффекты** `F` (например, `F.delay`), 
+а также **нельзя задать финализатор для отмены**.
 
-}
+#### Пример: обёртка для `onComplete` из `Future`
+
+```dotty
+import scala.concurrent.{Future, ExecutionContext}
+import cats.effect.Async
+
+def fromFuture[F[_]: Async, A](fut: Future[A])(using
+    ec: ExecutionContext
+): F[A] =
+  Async[F].async_[A] { cb =>
+    fut.onComplete:
+      case Success(a) => cb(Right(a))
+      case Failure(e) => cb(Left(e))
+  }
 ```
 
-Однако `async_` несколько ограничен. Мы не можем выполнять никаких эффектов `F`
-в процессе регистрации коллбэка, а также не можем зарегистрировать
-финализатор для отмены асинхронной задачи в случае, если фибер,
-работающий в режиме `async_`, будет отменен.
+### 2. `async` — полный FFI (с эффектами и финализацией)
 
-Поэтому `Async` также предоставляет более общий `async`.
-```scala
-trait Async[F[_]] {
-def async[A](k: (Either[Throwable, A] => Unit) => F[Option[F[Unit]]]): F[A] = {
-}
-```
-
-Как видите, он принимает тот же коллбэк, что и раньше, но на этот раз мы можем
-выполнять эффекты, приостановленные в `F`. `Option[F[Unit]]` позволяет нам
-возвращать финализатор, который будет вызван, если фибер будет отменен. Например, вот
-упрощенная версия `Async[F].fromCompletableFuture`
-
-```scala
-def fromCompletableFuture[A](fut: F[CompletableFuture[A]]): F[A] =
-flatMap(fut) { cf =>
-
-async[A] { cb =>
-delay {
-
-//Вызываем коллбэк с результатом выполнения завершаемого фьючера
-val stage = cf.handle[Unit] {
-
-case (a, null) => cb(Right(a))
-
-case (_, e) => cb(Left(e))
-
-}
-
-
-//Отменяем завершаемый фьючерс, если фибер отменен
-Some(void(delay(stage.cancel(false))))
-
-}
-
-}
-}
-```
-
-## Перенос выполнения в другой пул потоков
-
-`Async` позволяет переносить выполнение в другой пул потоков.
-
-```scala
-trait Async[F[_]] {
-
-//Получить текущий контекст выполнения
-
-def executionContext: F[ExecutionContext]
-
-//Вычислить fa в предоставленном контексте выполнения и
-
-//затем сдвинуть выполнение обратно
-
-def evalOn[A](fa: F[A], ec: ExecutionContext): F[A]
-
-}
-```
-
-Если вы знакомы с монадой reader, то это очень похоже -
-`executionContext` похож на `ask` и дает нам текущий контекст выполнения.
-
-`evalOn` похож на `local` и позволяет нам _локально_ изменить контекст выполнения
-для данного вычисления. После завершения этих вычислений
-выполнение вернется в контекст, указанный `executionContext`
-
-```scala
-val printThread: IO[Unit] =
-
-IO.executionContext.flatMap(IO.println(_))
-
-for {
-
-_ <- printThread //io-compute-1
-
-_ <- IO.evalOn(printThread, someEc) //some-ec-thread
-
-_ <- printThread //io-compute-1
-} yield ()
-```
-
-## Здесь водятся драконы
-
-`Async` также определяет функцию с именем `cont`. Она _не_ предназначена для вызова из пользовательского кода. Вам также _абсолютно не_ нужно понимать ее,
-чтобы использовать `Async`. Однако дизайн очень поучителен для любопытного
-читателя. Для начала рассмотрим определение `async` ещё раз:
-
-```scala
-trait Async[F[_]] {
-
+```dotty
 def async[A](k: (Either[Throwable, A] => Unit) => F[Option[F[Unit]]]): F[A]
 ```
 
-Предположим, мы попытаемся реализовать индуктивный экземпляр this для `OptionT`. У нас есть нечто похожее на
+Это **расширенная версия**, которая решает ограничения `async_`:
 
-```scala
-trait OptionTAsync[F[_]] extends Async[OptionT[F, *]] {
-implicit def delegate: Async[F]
+- **Эффекты:** Вы можете выполнять `F` внутри `k` (например, логирование, изменение `Ref`).
+- **Финализация:** Вы можете вернуть `Some(finalizer)`, который будет вызван **при отмене волокна**.
 
-override def async[A](
-k: (Either[Throwable, A] => Unit) => OptionT[F, Option[OptionT[F, Unit]]])
+**Как это работает:**
 
-: OptionT[F, A] = OptionT.liftF(
-delegate.async { (cb: Either[Throwable, A] => Unit) =>
-val x: F[Option[Option[OptionT[F, Unit]]]] = k(cb).value
-delegate.map(x) { (o: Option[Option[OptionT[F, Unit]]]) =>
+1. Вы получаете коллбэк `cb: Either[Throwable, A] => Unit`.
+2. Вы **внутри эффекта** `F` регистрируете асинхронную операцию.
+3. Вы сохраняете `cb`, чтобы вызвать его позже.
+4. Возвращаете `Some(F[Unit])` — действие, которое отменит операцию (если это возможно).
+5. Если отмены не требуется, возвращаете `None`.
 
-o.flatten.map { (opt: OptionT[F, Unit]) => opt.value.void }
+#### Пример: из реального мира — `fromCompletableFuture`
 
-}
+```dotty
+import java.util.concurrent.CompletableFuture
+import cats.effect.Async
 
-}
+def fromCompletableFuture[F[_]: Async, A](fut: F[CompletableFuture[A]]): F[A] =
+  Async[F].flatMap(fut): cf =>
+    Async[F].async[A]: cb =>
+      Async[F].delay {
+        // Регистрируем обработчик результата
+        val handler: (A, Throwable) => Unit = (result, error) =>
+          if error != null then cb(Left(error))
+          else cb(Right(result))
 
+        val stage = cf.handle[Unit] { (result, error) =>
+          handler(result, error)
+        }
+
+        // Финализатор: отменяем CompletableFuture, если волокно отменят
+        Some(Async[F].delay(stage.cancel(false)))
+      }
+```
+
+## Манипуляции с пулами потоков: `executionContext` и `evalOn`
+
+`Async` даёт вам контроль над **тем, где выполняется ваш эффект**.
+
+### `executionContext: F[ExecutionContext]`
+
+Возвращает текущий `ExecutionContext`, используемый планировщиком Cats Effect.
+
+```dotty
+def printThread[F[_]: Async]: F[Unit] =
+  Async[F].executionContext.flatMap: ec =>
+    Async[F].delay(println(s"Выполняюсь в: ${Thread.currentThread().getName}"))
+```
+
+### `evalOn[A](fa: F[A], ec: ExecutionContext): F[A]`
+
+Выполняет эффект `fa` **на указанном** `ExecutionContext`, а затем возвращается в исходный.
+
+```dotty
+val ec1         = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(1))
+val mainProgram =
+  for
+    _ <- printThread                        // io-compute-1
+    _ <- Async[IO].evalOn(printThread, ec1) // pool-1-thread-1
+    _ <- printThread                        // io-compute-1 (вернулись обратно)
+  yield ()
+```
+
+**Где это полезно?**
+
+- Вы переносите **CPU-интенсивные** операции на специальный пул потоков.
+- Вы интегрируетесь с **блокирующим** API (например, JDBC), перенося его на отдельный пул.
+
+#### Пример: изоляция блокирующего кода
+
+```dotty
+import scala.concurrent.ExecutionContext
+
+val blockingEc = ExecutionContext.fromExecutor(
+  Executors.newCachedThreadPool()
 )
-}
+
+def readFileBlocking[F[_]: Async](path: String): F[String] =
+  Async[F].evalOn(
+    Async[F].delay(...долгое чтение из файла...),
+    blockingEc
+  )
 ```
 
-Это выглядит (довольно) разумно. Однако здесь скрывается тонкая проблема,
-— использование `flatten`. Проблема в том, что `OptionT` (и аналогично `EitherT` и `IorT`) имеет дополнительный канал ошибок (где `x =
-delegate.pure(None)`), который мы вынуждены отбрасывать при сопоставлении с чем-то
-типа `F[Option[F[Unit]]]`.
+## Полный пример: интеграция с callback-based библиотекой
 
-Это фактически нарушает несколько законов `Async`:
+Представьте, что у нас есть простая библиотека для работы с Redis (callback-стиль):
 
-```scala
-def asyncRightIsSequencedPure[A](a: A, fu: F[Unit]) =
+```dotty
+// Гипотетическая Java-библиотека
+trait RedisClient:
+  def get(
+      key: String,
+      cb: (Either[Throwable, String]) => Unit
+  ): Unit
 
-F.async[A](k => F.delay(k(Right(a))) >>
-fu.as(None)) <-> (fu >> F.pure(a))
-
-def asyncLeftIsSequencedRaiseError[A](e: Throwable, fu: F[Unit]) =
-
-F.async[A](k => F.delay(k(Left(e))) >> fu.as(None)) <-> (fu >> F.raiseError(e))
+  def set(
+      key: String,
+      value: String,
+      cb: (Either[Throwable, Unit]) => Unit
+  ): Unit
 ```
 
-В обоих случаях, если у нас есть `fu = OptionT.none[F, A]` (канал ошибки для `OptionT`), то
-левая часть подавит ошибку, а правая — нет.
+Мы хотим обернуть её в типобезопасный `IO`-интерфейс, используя `Async`:
 
-Возможным решением было бы
-отменить [CPS](https://en.wikipedia.org/wiki/Continuation-passing_style)
-вычисления, определив
+```dotty
+class Redis[F[_]: Async](client: RedisClient):
+  def get(key: String): F[String] =
+    Async[F].async[String] { cb =>
+      Async[F].delay {
+        client.get(key, result => cb(result))
+        None // В этой библиотеке нет отмены, поэтому финализатор не нужен
+      }
+    }
 
-```scala
-def cont[A]: F[(Either[Throwable, A] => Unit, F[A])]
+  def set(key: String, value: String): F[Unit] =
+    Async[F].async[Unit] { cb =>
+      Async[F].delay {
+        client.set(key, value, result => cb(result))
+        None
+      }
+    }
+end Redis
+
+object Redis:
+  def create[F[_]: Async]: Resource[F, Redis[F]] =
+    Resource.make(
+      Async[F].delay(new RedisClientImpl()) // создаём клиент
+    )(client => Async[F].delay(client.close()))
+      .map(new Redis(_))
 ```
 
-где первый элемент кортежа `Either[Throwable, A] => Unit` — это
-коллбэк, используемый для получения результата асинхронного вычисления, как и раньше, а
-второй элемент (который мы назовем `get`) похож на промис и может быть
-использован для семантического блокирования ожидания результата асинхронного
-вычисления.
+Теперь можно писать красивый, отменяемый код:
 
-Затем мы могли бы определить `async` через `cont`
-
-```scala
-def async[A](k: (Either[Throwable, A] => Unit) => F[Option[F[Unit]]]): F[A] =
-
-F.uncancelable { poll =>
-
-cont[A].flatMap {
-case (cb, get) =>
-
-k(cb).flatMap {
-case Some(fin) => poll(get).onCancel(fin)
-
-case None => poll(get)
-
-}
-
-}
-
+```dotty
+val program =
+  Redis.create[IO].use: redis =>
+    for
+      _     <- redis.set("key", "value")
+      value <- redis.get("key")
+      _     <- IO.println(s"Получено: $value")
+    yield ()
 ```
 
-В этом случае канал ошибки распространяется от `k(cb)`, поскольку мы напрямую используем `flatMap`
-на результате.
+## Заключение
 
-Отлично! Мы закончили, верно? Ну... не совсем. Проблема в том, что небезопасно
-вызывать параллельные операции, такие как `get.start`. Поэтому нам нужно использовать
-ещё один трюк и ограничить область видимости операций с помощью полиморфизма более высокого ранга.
+`Async` — это мост между миром функциональных эффектов и асинхронными операциями, основанными на коллбэках. Он даёт вам:
 
-```scala
-def cont[K, R](body: Cont[F, K, R]): F[R]
+1. **Чистый FFI** — превращает коллбэки в `F[A]`.
+2. **Поддержку отмены** — финализаторы автоматически вызываются при отмене волокна.
+3. **Контроль над потоками** — `evalOn` и `executionContext`.
+4. **Корректность** — сложная внутренняя механика (`Cont`) гарантирует соблюдение законов даже для монад-трансформеров.
 
-//где
-trait Cont[F[_], K, R] {
-def apply[G[_]](
-implicit
-G: MonadCancel[G, Throwable]): (Either[Throwable, K] => Unit, G[K], F ~> G) => G[R]
-}
-```
-
-Эта странная формулировка означает, что в теле `Cont` находятся только операции до тех, которые определены в
-`MonadCancel`. Третий элемент кортежа — это естественное преобразование, используемое для переноса `k(cb)` и любых финализаторов в
-`G`. С учётом этого реализация фактически почти идентична тому, что мы
-имели выше, но статически запрещает нам вызывать небезопасные операции.
-
-```scala
-def async[A](k: (Either[Throwable, A] => Unit) => F[Option[F[Unit]]]): F[A] = {
-val body = new Cont[F, A, A] {
-def apply[G[_]](implicit G: MonadCancel[G, Throwable]) = { (resume, get, lift) =>
-
-G.uncancelable { poll =>
-
-lift(k(resume)).flatMap {
-case Some(fin) => poll(get).onCancel(lift(fin))
-
-case None => poll(get)
-
-}
-
-}
-
-}
-
-cont(body)
-}
-```
-
-Модель `Cont` также значительно проще в реализации внутри,
-особенно в отношении отмены и финализации. В случае `cont` финализатор можно ввести только через `onCancel`, в отличие от `async`, где финализаторы можно ввести либо через `onCancel`, либо вернув `Some(finalizer)` из продолжения.
-
+Благодаря `Async` Cats Effect может интегрироваться 
+с любым асинхронным API — от `java.nio.channels` до `js.fetch` — предоставляя везде одинаково удобный и безопасный интерфейс.
 
 ---
 
 **Ссылки:**
 
 - [Cats effect documentation][doc]
+- [Cats effect Async](https://typelevel.org/cats-effect/docs/typeclasses/async)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

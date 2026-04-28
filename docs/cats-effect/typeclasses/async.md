@@ -1,6 +1,8 @@
 {%
 showPrev = true
 prevPage = temporal.html
+showNext = true
+nextPage = ../std.html
 %}
 
 # Async — асинхронный FFI

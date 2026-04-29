@@ -362,7 +362,7 @@ object LatchDemo extends IOApp.Simple:
 **Из них строится:**
 
 - `Semaphore` (семафор) — `Ref[(Long, Deferred[F, Unit])]`
-- `Queue` (очередь) — `Ref[Vector[A]]` + `Deferred[F, Unit]` для сигналов
+- [`Queue` (очередь)](../std/dequeue.md) — `Ref[Vector[A]]` + `Deferred[F, Unit]` для сигналов
 - `Mutex` (мьютекс) — `Ref[Boolean]` + `Deferred[F, Unit]` для блокировки
 - `CyclicBarrier` — `Ref` состояния + `Deferred` для пробуждения
 

@@ -361,9 +361,9 @@ object LatchDemo extends IOApp.Simple:
 
 **Из них строится:**
 
-- `Semaphore` (семафор) — `Ref[(Long, Deferred[F, Unit])]`
+- [`Semaphore` (семафор)](../std/semaphore.md) — `Ref[(Long, Deferred[F, Unit])]`
 - [`Queue` (очередь)](../std/dequeue.md) — `Ref[Vector[A]]` + `Deferred[F, Unit]` для сигналов
-- `Mutex` (мьютекс) — `Ref[Boolean]` + `Deferred[F, Unit]` для блокировки
+- [`Mutex` (мьютекс)](../std/mutex.md) — `Ref[Boolean]` + `Deferred[F, Unit]` для блокировки
 - `CyclicBarrier` — `Ref` состояния + `Deferred` для пробуждения
 
 ### Альтернативный подход: почему не `AtomicReference` и `Lock`?

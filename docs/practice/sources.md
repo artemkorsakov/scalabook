@@ -1,13 +1,11 @@
 {%
 showPrev = true
 prevPage = main.html
-showNext = true
-nextPage = statistics.html
 %}
 
 # Источники задач
 
-[В процессе написания...](https://t.me/scalabook)
+[В процессе написания...](https://gitverse.ru/artemkorsakov/scalabook/tasktracker?view=board)
 
 ---
 

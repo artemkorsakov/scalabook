@@ -12,4 +12,4 @@
 
 [Последние обновления Scalabook доступны на следующей странице](https://gitverse.ru/artemkorsakov/scalabook/wiki/WIKISCLBK-6).
 
-[А за будущими изменениями можно следить здесь.](https://gitverse.ru/artemkorsakov/scalabook/tasktracker?view=list)
+[А за будущими изменениями можно следить здесь.](https://gitverse.ru/artemkorsakov/scalabook/tasktracker?view=board)

@@ -113,8 +113,8 @@ def divide(a: Int, b: Int): Option[Int] =
 ## Контакты
 
 - **Исходный код проекта**: доступен на [GitVerse][home]
-- [Telegram-канал Scalabook][telegram]: анонсы обновлений, интересные примеры кода,
-  сложные вопросы и мотивирующие цитаты о программировании.
+- [Последние обновления Scalabook доступны на следующей странице](https://gitverse.ru/artemkorsakov/scalabook/wiki/WIKISCLBK-6)
+- [А за будущими изменениями можно следить здесь](https://gitverse.ru/artemkorsakov/scalabook/tasktracker?view=board)
 - **Мои профили**:
     - Основной: [GitVerse](https://gitverse.ru/artemkorsakov)
     - Дополнительный: [GitHub](https://github.com/artemkorsakov)
@@ -123,4 +123,3 @@ def divide(a: Int, b: Int): Option[Int] =
 
 [home]: https://gitverse.ru/artemkorsakov/scalabook
 [exercises]: https://gitverse.ru/scalabook/fp
-[telegram]: https://t.me/scalabook

@@ -66,7 +66,7 @@ Cats Effect уникальным образом определяет, что з�
 Для начала работы с **Cats Effect** необходимо добавить её в файл сборки `build.sbt`.
 
 ```sbt
-libraryDependencies += "org.typelevel" %% "cats-effect" % "3.8.3"
+libraryDependencies += "org.typelevel" %% "cats-effect" % "3.7.0"
 ```
 
 **Что это даёт?**

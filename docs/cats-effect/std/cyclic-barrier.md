@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = countdown-latch.html
 showNext = true
-nextPage = async-await.html
+nextPage = ../copy-files.html
 %}
 
 # CyclicBarrier — Многократный барьер синхронизации

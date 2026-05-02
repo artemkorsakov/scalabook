@@ -4,25 +4,72 @@ import sbt.*
 object Dependencies {
   val Scala = "3.8.3"
 
+  object algebra {
+    private val version       = "2.13.0"
+
+    val core = "org.typelevel" %% "algebra" % version
+  }
+
+  object cats {
+    private val version       = "2.13.0"
+
+    val core    = "org.typelevel" %% "cats-core"    % version
+    val free    = "org.typelevel" %% "cats-free"    % version
+    val kernel  = "org.typelevel" %% "cats-kernel"  % version
+    val testkit = "org.typelevel" %% "cats-testkit" % version
+  }
+
+  object catsEffect {
+    private val version = "3.7.0"
+
+    val core   = "org.typelevel" %% "cats-effect"        % version
+    val kernel = "org.typelevel" %% "cats-effect-kernel" % version
+    val std    = "org.typelevel" %% "cats-effect-std"    % version
+  }
+
   object fs2 {
-    val core = "co.fs2" %% "fs2-core" % "3.13.0"
+    private val version = "3.13.0"
+
+    val core = "co.fs2" %% "fs2-core" % version
   }
 
   object http4s {
     private val version = "0.23.34"
-    private val org     = "org.http4s"
-    val blaze           = org %% "http4s-blaze-server" % "0.23.17"
-    val core            = org %% "http4s-core"         % version
-    val dsl             = org %% "http4s-dsl"          % version
-    val server          = org %% "http4s-server"       % version
+
+    val blaze  = "org.http4s" %% "http4s-blaze-server" % "0.23.17"
+    val core   = "org.http4s" %% "http4s-core"         % version
+    val dsl    = "org.http4s" %% "http4s-dsl"          % version
+    val server = "org.http4s" %% "http4s-server"       % version
   }
 
   object iron {
-    private val version = "3.3.0"
-    private val org     = "io.github.iltotore"
-    val cats            = org %% "iron-cats"       % version
-    val core            = org %% "iron"            % version
-    val scalacheck      = org %% "iron-scalacheck" % version
+    private val version = "3.3.1"
+
+    val cats       = "io.github.iltotore" %% "iron-cats"       % version
+    val core       = "io.github.iltotore" %% "iron"            % version
+    val scalacheck = "io.github.iltotore" %% "iron-scalacheck" % version
+  }
+
+  object laika {
+    private val version = "1.3.2"
+
+    val core    = "org.typelevel" %% "laika-core"    % version
+    val io      = "org.typelevel" %% "laika-io"      % version
+    val preview = "org.typelevel" %% "laika-preview" % version
+  }
+
+  object log4cats {
+    private val version = "2.8.0"
+
+    val core  = "org.typelevel" %% "log4cats-core"  % version
+    val noop  = "org.typelevel" %% "log4cats-noop"  % version
+    val slf4j = "org.typelevel" %% "log4cats-slf4j" % version
+  }
+
+  object logback {
+    private val version = "1.5.32"
+
+    val logback = "ch.qos.logback" % "logback-classic" % version
   }
 
   // https://github.com/erikvanoosten/metrics-scala/blob/master/docs/Manual.md
@@ -31,99 +78,84 @@ object Dependencies {
     val metrics4Scala  = "nl.grons"              %% "metrics4-scala" % "4.3.7"
   }
 
-  object logback {
-    val logback = "ch.qos.logback" % "logback-classic" % "1.5.32"
-  }
-
   object refined {
     private val version = "0.11.3"
-    val core            = "eu.timepit" %% "refined"      % version
-    val cats            = "eu.timepit" %% "refined-cats" % version
+
+    val core = "eu.timepit" %% "refined"      % version
+    val cats = "eu.timepit" %% "refined-cats" % version
   }
 
   object scalaz {
     private val version = "7.3.8"
-    private val org     = "org.scalaz"
-    val core            = org %% "scalaz-core"               % version
-    val effect          = org %% "scalaz-effect"             % version
-    val iteratee        = org %% "scalaz-iteratee"           % version
-    val scalacheck      = org %% "scalaz-scalacheck-binding" % version
+
+    val core       = "org.scalaz" %% "scalaz-core"               % version
+    val effect     = "org.scalaz" %% "scalaz-effect"             % version
+    val iteratee   = "org.scalaz" %% "scalaz-iteratee"           % version
+    val scalacheck = "org.scalaz" %% "scalaz-scalacheck-binding" % version
+  }
+
+  object spire {
+    val core = "org.typelevel" %% "spire"  % "0.18.0"
   }
 
   object sttp {
-    val client = "com.softwaremill.sttp.client4" %% "core" % "4.0.21"
-    val model = "com.softwaremill.sttp.model" %% "core" % "1.7.17"
-  }
-
-  object typelevel {
-    private val catsVersion       = "2.13.0"
-    private val catsEffectVersion = "3.7-4972921"
-    private val laikaVersion      = "1.3.2"
-    private val org               = "org.typelevel"
-
-    val algebra          = org %% "algebra"            % catsVersion
-    val catsCore         = org %% "cats-core"          % catsVersion
-    val catsEffect       = org %% "cats-effect"        % catsEffectVersion
-    val catsEffectKernel = org %% "cats-effect-kernel" % catsEffectVersion
-    val catsEffectStd    = org %% "cats-effect-std"    % catsEffectVersion
-    val catsFree         = org %% "cats-free"          % catsVersion
-    val catsKernel       = org %% "cats-kernel"        % catsVersion
-    val catsTestkit      = org %% "cats-testkit"       % catsVersion
-    val laikaCore        = org %% "laika-core"         % laikaVersion
-    val laikaIo          = org %% "laika-io"           % laikaVersion
-    val laikaPreview     = org %% "laika-preview"      % laikaVersion
-    val spire            = org %% "spire"              % "0.18.0"
+    val client = "com.softwaremill.sttp.client4" %% "core" % "4.0.23"
+    val model  = "com.softwaremill.sttp.model" %% "core" % "1.7.17"
   }
 
   object weaver {
     private val version = "0.8.4"
-    val cats            = "com.disneystreaming" %% "weaver-cats"       % version
-    val scalacheck      = "com.disneystreaming" %% "weaver-scalacheck" % version
+
+    val cats       = "com.disneystreaming" %% "weaver-cats"       % version
+    val scalacheck = "com.disneystreaming" %% "weaver-scalacheck" % version
   }
 
   val exampleLibs: Seq[ModuleID] =
     Seq(
+      algebra.core,
+      cats.core,
+      cats.kernel,
+      catsEffect.core,
+      catsEffect.kernel,
+      catsEffect.std,
       iron.core,
+      log4cats.core,
+      log4cats.noop,
+      log4cats.slf4j,
       scalaz.core,
-      typelevel.algebra,
-      typelevel.catsCore,
-      typelevel.catsEffect,
-      typelevel.catsEffectKernel,
-      typelevel.catsEffectStd,
-      typelevel.catsKernel,
-      typelevel.spire
+      spire.core
     )
 
   val exampleTestLibs: Seq[ModuleID] =
     Seq(
+      cats.testkit,
+      catsEffect.kernel,
       iron.cats,
       iron.scalacheck,
       scalaz.scalacheck,
-      typelevel.catsEffectKernel,
-      typelevel.catsTestkit,
       weaver.cats,
       weaver.scalacheck
     ).map(_ % Test)
 
   val benchLibs: Seq[ModuleID] =
     Seq(
+      cats.core,
       metrics.dropwizardCore,
       metrics.metrics4Scala,
-      typelevel.catsCore,
-      typelevel.spire
+      spire.core,
     )
 
   val siteLibs: Seq[ModuleID] =
     Seq(
+      cats.core,
+      catsEffect.core,
+      catsEffect.kernel,
       http4s.server,
+      laika.core,
+      laika.io,
+      laika.preview,
       sttp.client,
       sttp.model,
-      typelevel.catsCore,
-      typelevel.catsEffect,
-      typelevel.catsEffectKernel,
-      typelevel.laikaCore,
-      typelevel.laikaIo,
-      typelevel.laikaPreview,
     )
 }
 // @formatter:on

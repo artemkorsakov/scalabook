@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = ../supervisor.html
 showNext = true
-nextPage = ../supervisor.html
+nextPage = ../hotswap.html
 %}
 
 # Общее состояние и области совместного использования

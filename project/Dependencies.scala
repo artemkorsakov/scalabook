@@ -120,7 +120,6 @@ object Dependencies {
       catsEffect.std,
       iron.core,
       log4cats.core,
-      log4cats.noop,
       log4cats.slf4j,
       scalaz.core,
       spire.core

@@ -1,18 +1,21 @@
 package ru.scalabook.libs.cats.effect
 
 import cats.effect.*
-import cats.effect.kernel.MonadCancel
 import cats.syntax.all.*
+import org.typelevel.log4cats.Logger
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 import java.io.*
 
 object CopyFiles extends IOApp:
+  private given Logger[IO] = Slf4jLogger.getLogger[IO]
+
   override def run(args: List[String]): IO[ExitCode] =
     for
       _ <-
         if args.length < 2 then
           IO.raiseError(
-            new IllegalArgumentException("Need origin and destination files")
+            new IllegalArgumentException("Не указаны исходный и целевой файлы")
           )
         else IO.unit
       orig = new File(args.head)
@@ -23,12 +26,15 @@ object CopyFiles extends IOApp:
       )
     yield ExitCode.Success
 
-  private def copy[F[_]: Sync](origin: File, destination: File): F[Long] =
+  private def copy[F[_]: {Sync, Logger}](
+      origin: File,
+      destination: File
+  ): F[Long] =
     inputOutputStreams(origin, destination).use { (in, out) =>
       transfer(in, out)
     }
 
-  private def inputOutputStreams[F[_]: Sync](
+  private def inputOutputStreams[F[_]: {Sync, Logger}](
       in: File,
       out: File
   ): Resource[F, (InputStream, OutputStream)] =
@@ -37,42 +43,48 @@ object CopyFiles extends IOApp:
       outStream <- outputStream(out)
     yield (inStream, outStream)
 
-  private def inputStream[F[_]: Sync](f: File): Resource[F, FileInputStream] =
+  private def inputStream[F[_]: {Sync, Logger}](
+      f: File
+  ): Resource[F, FileInputStream] =
     Resource.make {
       Sync[F].blocking(new FileInputStream(f))
     } { inStream =>
-      Sync[F].blocking(inStream.close()).handleErrorWith(_ => Sync[F].unit)
+      Sync[F].blocking(inStream.close())
+        .handleErrorWith { error =>
+          Logger[F].error(error)("Не смог закрыть исходный файл")
+        }
     }
 
-  private def outputStream[F[_]: Sync](f: File): Resource[F, FileOutputStream] =
+  private def outputStream[F[_]: {Sync, Logger}](
+      f: File
+  ): Resource[F, FileOutputStream] =
     Resource.make {
       Sync[F].blocking(new FileOutputStream(f))
     } { outStream =>
-      Sync[F].blocking(outStream.close()).handleErrorWith(_ => Sync[F].unit)
+      Sync[F].blocking(outStream.close())
+        .handleErrorWith { error =>
+          Logger[F].error(error)("Не смог закрыть целевой файл")
+        }
     }
 
   private def transfer[F[_]: Sync](
       origin: InputStream,
       destination: OutputStream
   ): F[Long] =
-    transmit(origin, destination, new Array[Byte](1024 * 10), 0L)
+    val buffer = new Array[Byte](1024 * 10) // 10 KB буфер
 
-  private def transmit[F[_]: Sync](
-      origin: InputStream,
-      destination: OutputStream,
-      buffer: Array[Byte],
-      acc: Long
-  ): F[Long] =
-    for
-      amount <- Sync[F].blocking(origin.read(buffer, 0, buffer.length))
-      count  <-
-        if amount > -1 then
-          Sync[F].blocking(destination.write(buffer, 0, amount)) >> transmit(
-            origin,
-            destination,
-            buffer,
-            acc + amount
-          )
-        else Sync[F].pure(acc)
-    yield count
+    def loop(acc: Long): F[Long] =
+      for
+        bytesRead <- Sync[F].blocking(origin.read(buffer, 0, buffer.length))
+        // Если прочитано -1 (конец файла), возвращаем накопленную сумму
+        result <- if bytesRead == -1 then
+          Sync[F].pure(acc) // конец потока, возвращаем результат
+        else
+          // Записываем прочитанный блок
+          Sync[F].blocking(destination.write(buffer, 0, bytesRead)) >>
+            loop(acc + bytesRead)
+      yield result
+
+    loop(0L)
+  end transfer
 end CopyFiles

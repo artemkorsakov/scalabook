@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = copy-files.html
 showNext = true
-nextPage = recipes.html
+nextPage = thread-model.html
 %}
 
 # Проблема «производитель-потребитель» — параллелизм и волокна

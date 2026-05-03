@@ -1,8 +1,8 @@
 {%
 showPrev = true
-prevPage = defer.html
+prevPage = monadcancel.html
 showNext = true
-nextPage = monadcancel.html
+nextPage = spawn.html
 %}
 
 # Sync — синхронный FFI в Cats Effect

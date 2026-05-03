@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = monadcancel.html
+prevPage = sync.html
 showNext = true
 nextPage = concurrent.html
 %}

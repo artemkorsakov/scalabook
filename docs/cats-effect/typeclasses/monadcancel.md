@@ -1,8 +1,8 @@
 {%
 showPrev = true
-prevPage = sync.html
+prevPage = defer.html
 showNext = true
-nextPage = spawn.html
+nextPage = sync.html
 %}
 
 # MonadCancel — управление отменами и ресурсами

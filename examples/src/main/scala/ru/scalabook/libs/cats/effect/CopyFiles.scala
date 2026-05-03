@@ -1,6 +1,8 @@
 package ru.scalabook.libs.cats.effect
 
 import cats.effect.*
+import cats.effect.kernel.MonadCancel
+import cats.syntax.all.*
 
 import java.io.*
 
@@ -15,62 +17,62 @@ object CopyFiles extends IOApp:
         else IO.unit
       orig = new File(args.head)
       dest = new File(args(1))
-      count <- copy(orig, dest)
+      count <- copy[IO](orig, dest)
       _     <- IO.println(
         s"$count bytes copied from ${orig.getPath} to ${dest.getPath}"
       )
     yield ExitCode.Success
 
-  private def copy(origin: File, destination: File): IO[Long] =
+  private def copy[F[_]: Sync](origin: File, destination: File): F[Long] =
     inputOutputStreams(origin, destination).use { (in, out) =>
       transfer(in, out)
     }
 
-  private def inputOutputStreams(
+  private def inputOutputStreams[F[_]: Sync](
       in: File,
       out: File
-  ): Resource[IO, (InputStream, OutputStream)] =
+  ): Resource[F, (InputStream, OutputStream)] =
     for
       inStream  <- inputStream(in)
       outStream <- outputStream(out)
     yield (inStream, outStream)
 
-  private def inputStream(f: File): Resource[IO, FileInputStream] =
+  private def inputStream[F[_]: Sync](f: File): Resource[F, FileInputStream] =
     Resource.make {
-      IO.blocking(new FileInputStream(f))
+      Sync[F].blocking(new FileInputStream(f))
     } { inStream =>
-      IO.blocking(inStream.close()).handleErrorWith(_ => IO.unit)
+      Sync[F].blocking(inStream.close()).handleErrorWith(_ => Sync[F].unit)
     }
 
-  private def outputStream(f: File): Resource[IO, FileOutputStream] =
+  private def outputStream[F[_]: Sync](f: File): Resource[F, FileOutputStream] =
     Resource.make {
-      IO.blocking(new FileOutputStream(f))
+      Sync[F].blocking(new FileOutputStream(f))
     } { outStream =>
-      IO.blocking(outStream.close()).handleErrorWith(_ => IO.unit)
+      Sync[F].blocking(outStream.close()).handleErrorWith(_ => Sync[F].unit)
     }
 
-  private def transfer(
+  private def transfer[F[_]: Sync](
       origin: InputStream,
       destination: OutputStream
-  ): IO[Long] =
+  ): F[Long] =
     transmit(origin, destination, new Array[Byte](1024 * 10), 0L)
 
-  private def transmit(
+  private def transmit[F[_]: Sync](
       origin: InputStream,
       destination: OutputStream,
       buffer: Array[Byte],
       acc: Long
-  ): IO[Long] =
+  ): F[Long] =
     for
-      amount <- IO.blocking(origin.read(buffer, 0, buffer.length))
+      amount <- Sync[F].blocking(origin.read(buffer, 0, buffer.length))
       count  <-
         if amount > -1 then
-          IO.blocking(destination.write(buffer, 0, amount)) >> transmit(
+          Sync[F].blocking(destination.write(buffer, 0, amount)) >> transmit(
             origin,
             destination,
             buffer,
             acc + amount
           )
-        else IO.pure(acc)
+        else Sync[F].pure(acc)
     yield count
 end CopyFiles

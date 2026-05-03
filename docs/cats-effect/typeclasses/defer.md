@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = clock.html
 showNext = true
-nextPage = sync.html
+nextPage = monadcancel.html
 %}
 
 # Defer — ленивое создание эффектов

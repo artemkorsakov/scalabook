@@ -380,5 +380,6 @@ object CopyFiles extends IOApp:
 
 **Ссылки:**
 
+- [Исходный код](https://gitverse.ru/artemkorsakov/scalabook/content/master/examples/src/main/scala/ru/scalabook/libs/cats/effect/CopyFiles.scala)
 - [Cats effect documentation](https://typelevel.org/cats-effect/docs/concepts)
 - [Cats effect Копирование файлов](https://typelevel.org/cats-effect/docs/tutorial)

@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = lack-of-processors.html
 showNext = true
-nextPage = others.html
+nextPage = kuber.html
 %}
 
 # Слишком много потоков — обратная сторона медали

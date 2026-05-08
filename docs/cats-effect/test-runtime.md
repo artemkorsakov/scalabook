@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = tracing.html
 showNext = true
-nextPage = test-runtime.html
+nextPage = fiber-dumps.html
 %}
 
 # Тестирование времени выполнения

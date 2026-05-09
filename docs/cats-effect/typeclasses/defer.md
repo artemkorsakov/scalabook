@@ -131,5 +131,6 @@ def lazy_[F[_]: Defer: Monad](fa: => F[A]): F[A] = Defer[F].defer(fa)
 **Ссылки:**
 
 - [Cats effect documentation][doc]
+- [Baeldung: Difference Between delay, defer, and deferred in Cats Effect](https://www.baeldung.com/scala/cats-effect-delay-defer-vs-deferred)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

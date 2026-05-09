@@ -209,6 +209,7 @@ Cats Effect предлагает выразительный и безопасн�
 **Ссылки:**
 
 - [Cats effect documentation][doc]
+- [Concurrency In Scala with Cats-Effect](https://github.com/slouc/concurrency-in-scala-with-ce)
 - [Cats Effect vs ZIO](https://softwaremill.com/cats-effect-vs-zio/)
 - [A practical guide to error handling in Scala Cats and Cats Effect](https://softwaremill.com/practical-guide-to-error-handling-in-scala-cats-and-cats-effect/)
 - [Baeldung: Introduction to Cats Effects](https://www.baeldung.com/scala/cats-effects-intro)

@@ -274,6 +274,7 @@ val file = Resource.fromAutoCloseable(IO(new FileInputStream("data.bin")))
 
 - [Cats effect documentation][doc]
 - [Cats effect Resource](https://typelevel.org/cats-effect/docs/std/resource)
+- [Composable resource management in Scala](https://bszwej.medium.com/composable-resource-management-in-scala-ce902bda48b2)
 - [Baeldung: Resource Handling in Cats Effect](https://www.baeldung.com/scala/cats-effect-resource-handling)
 - [Resource Handling in Cats Effect 3 Part 5](https://yadukrishnan.live/resource-handling-in-cats-effect-3-part-5)
 

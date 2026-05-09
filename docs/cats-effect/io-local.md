@@ -306,5 +306,6 @@ val program =
 
 - [Cats effect documentation][doc]
 - [Cats effect IOLocal](https://typelevel.org/cats-effect/docs/core/io-local)
+- [Flavors of shared state in Cats Effect](https://blog.kubukoz.com/flavors-of-shared-state/)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

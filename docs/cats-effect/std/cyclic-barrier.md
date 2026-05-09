@@ -282,5 +282,6 @@ end BarrierCancel
 
 - [Cats effect documentation][doc]
 - [Cats effect Cyclic Barrier](https://typelevel.org/cats-effect/docs/std/cyclic-barrier)
+- [Synchronisation and Concurrent Access in Cats Effect 3 Part 7](https://yadukrishnan.live/synchronisation-and-concurrent-access-in-cats-effect-3-part-7)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

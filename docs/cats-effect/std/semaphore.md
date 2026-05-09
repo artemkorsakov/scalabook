@@ -226,5 +226,6 @@ yield ()
 
 - [Cats effect documentation][doc]
 - [Cats effect Semaphore](https://typelevel.org/cats-effect/docs/std/semaphore)
+- [Synchronisation and Concurrent Access in Cats Effect 3 Part 7](https://yadukrishnan.live/synchronisation-and-concurrent-access-in-cats-effect-3-part-7)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

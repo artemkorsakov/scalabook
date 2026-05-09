@@ -737,5 +737,6 @@ run.unsafeRunSync()
 - [Cats effect documentation][doc]
 - [Cats effect MonadCancel](https://typelevel.org/cats-effect/docs/typeclasses/monadcancel)
 - [Baeldung: Cancellation in Cats Effect](https://www.baeldung.com/scala/cats-effect-cancellation)
+- [Cancellation of IO/Fiber in Cats Effect 3 Part 6](https://yadukrishnan.live/cancellation-of-iofiber-in-cats-effect-3-part-6)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

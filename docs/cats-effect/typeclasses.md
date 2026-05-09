@@ -212,5 +212,6 @@ def runServer[F[_]: Async](port: Int): F[Unit] = ...
 
 - [Cats effect documentation][doc]
 - [Cats effect TypeClasses](https://typelevel.org/cats-effect/docs/typeclasses)
+- [Error Handling in Cats Effect Part-9](https://yadukrishnan.live/error-handling-in-cats-effect-part-9)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

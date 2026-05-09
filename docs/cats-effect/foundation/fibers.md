@@ -324,5 +324,6 @@ def transferMoney(
 - [Нити и волокна (Threads & Fibers)](https://habr.com/ru/articles/1006576/)
 - [Cats effect documentation][doc]
 - [Cats effect Concepts](https://typelevel.org/cats-effect/docs/concepts)
+- [Concurrent Execution in Cats Effect using Fibers Part 4](https://yadukrishnan.live/concurrent-execution-in-cats-effect-using-fibers)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

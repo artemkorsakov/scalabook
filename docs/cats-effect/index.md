@@ -214,6 +214,9 @@ Cats Effect предлагает выразительный и безопасн�
 - [Baeldung: Introduction to Cats Effects](https://www.baeldung.com/scala/cats-effects-intro)
 - [Baeldung: Introduction to Concurrent Programming With Cats Effect Fibers](https://www.baeldung.com/scala/cats-effect-fibers-concurrent-programming)
 - [Baeldung: Difference Between flatMap(), flatTap(), evalMap() and evalTap() in Cats Effect](https://www.baeldung.com/scala/cats-effect)
+- [Cats Effect 3 for Beginners Part-1](https://yadukrishnan.live/cats-effect-3-for-beginners-part-1)
+- [Common APIs: Cats Effect IO Part-2](https://yadukrishnan.live/common-apis-cats-effect-io-part-2)
+- [Traversing Cats Effect IOs Part-3](https://yadukrishnan.live/traversing-cats-effect-ios-part-3)
 - [Concurrency in Cats Effect 3](https://typelevel.org/blog/concurrency-in-ce3.html)
 - [Flavors of shared state in Cats Effect](https://blog.kubukoz.com/flavors-of-shared-state/)
 

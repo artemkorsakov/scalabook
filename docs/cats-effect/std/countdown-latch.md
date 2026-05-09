@@ -261,5 +261,6 @@ yield ()
 - [Cats effect documentation][doc]
 - [Cats effect Count Down Latch](https://typelevel.org/cats-effect/docs/std/countdown-latch)
 - [Concurrency in Cats Effect 3](https://typelevel.org/blog/concurrency-in-ce3.html)
+- [Synchronisation and Concurrent Access in Cats Effect 3 Part 7](https://yadukrishnan.live/synchronisation-and-concurrent-access-in-cats-effect-3-part-7)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

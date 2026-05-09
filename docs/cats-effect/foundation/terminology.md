@@ -389,5 +389,6 @@ Cats Effect предоставляет мощные и безопасные ин
 
 - [Cats effect documentation][doc]
 - [Cats effect Concepts](https://typelevel.org/cats-effect/docs/concepts)
+- [Concurrent Execution in Cats Effect using Fibers Part 4](https://yadukrishnan.live/concurrent-execution-in-cats-effect-using-fibers)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

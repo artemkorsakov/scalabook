@@ -65,12 +65,13 @@ _(раздел пока пуст)_
 - В алфавитном порядке внутри категорий
 @:@
 
-| Название                                                                                                                             | 📖 Версия | 🌐 Язык | 📅 Год  | 💬 Комментарий |
-|--------------------------------------------------------------------------------------------------------------------------------------| :-------: | :-----: |---------|----------------|
-| [**Жизнь, смерть и управление ресурсами в Scala**](https://habr.com/ru/companies/kryptonite/articles/842332)                         |  Scala 3  |  🇷🇺 RU  | 2024    |                |
-| [**Особенности сред исполнения эффектов в Scala**](https://habr.com/ru/companies/tbank/articles/736056)                              |  Scala 3  |  🇷🇺 RU  | 2023    |                |
-| [**On Eliminating Error in Distributed Systems**](https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems/) |  Scala 2  |  🇬🇧 EN  | 2019    | Refined        |
-| [**Stackless Function Composition**](https://mpilquist.github.io/blog/2017/03/11/stackless-function-composition/)                    |  Scala 2  |  🇬🇧 EN  | 2017    |                |
+| Название                                                                                                                             | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий |
+|--------------------------------------------------------------------------------------------------------------------------------------|:---------:|:-------:|--------|----------------|
+| [**Жизнь, смерть и управление ресурсами в Scala**](https://habr.com/ru/companies/kryptonite/articles/842332)                         |  Scala 3  | 🇷🇺 RU | 2024   |                |
+| [**Особенности сред исполнения эффектов в Scala**](https://habr.com/ru/companies/tbank/articles/736056)                              |  Scala 3  | 🇷🇺 RU | 2023   |                |
+| [**The Effect Pattern and Effect Systems in Scala**](https://rockthejvm.com/articles/the-effect-pattern)                             |  Scala 3  | 🇬🇧 EN | 2025   |                |
+| [**On Eliminating Error in Distributed Systems**](https://blog.colinbreck.com/on-eliminating-error-in-distributed-software-systems/) |  Scala 2  | 🇬🇧 EN | 2019   | Refined        |
+| [**Stackless Function Composition**](https://mpilquist.github.io/blog/2017/03/11/stackless-function-composition/)                    |  Scala 2  | 🇬🇧 EN | 2017   |                |
 
 ## 🎥 Видео
 

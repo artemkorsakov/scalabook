@@ -33,7 +33,6 @@ lazy val examples = (project in file("examples"))
     coverageEnabled := true,
     libraryDependencies ++= exampleLibs,
     libraryDependencies ++= exampleTestLibs,
-    testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     Test / parallelExecution := false
   )
 

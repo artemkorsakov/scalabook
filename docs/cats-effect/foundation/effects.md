@@ -452,5 +452,6 @@ val good: IO[String] = IO.blocking {
 
 - [Cats effect documentation][doc]
 - [Cats effect Concepts](https://typelevel.org/cats-effect/docs/concepts)
+- [Adam Rosien - Essential Effects](https://essentialeffects.dev/)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

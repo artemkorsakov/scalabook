@@ -212,6 +212,7 @@ Cats Effect предлагает выразительный и безопасн�
 - [Concurrency In Scala with Cats-Effect](https://github.com/slouc/concurrency-in-scala-with-ce)
 - [Cats Effect vs ZIO](https://softwaremill.com/cats-effect-vs-zio/)
 - [A practical guide to error handling in Scala Cats and Cats Effect](https://softwaremill.com/practical-guide-to-error-handling-in-scala-cats-and-cats-effect/)
+- [Adam Rosien - Essential Effects](https://essentialeffects.dev/)
 - [Baeldung: Introduction to Cats Effects](https://www.baeldung.com/scala/cats-effects-intro)
 - [Baeldung: Introduction to Concurrent Programming With Cats Effect Fibers](https://www.baeldung.com/scala/cats-effect-fibers-concurrent-programming)
 - [Baeldung: Difference Between flatMap(), flatTap(), evalMap() and evalTap() in Cats Effect](https://www.baeldung.com/scala/cats-effect)

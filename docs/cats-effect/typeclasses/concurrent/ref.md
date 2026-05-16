@@ -231,6 +231,7 @@ Ref[IO].of(List(1, 2, 3)).flatMap: goodRef =>
 - [Cats effect documentation][doc]
 - [Cats effect Ref](https://typelevel.org/cats-effect/docs/std/ref)
 - [Concurrency in Cats Effect 3](https://typelevel.org/blog/concurrency-in-ce3.html)
+- [Essential Effects by Adam Rosien](https://essentialeffects.dev/)
 - [Synchronisation and Concurrent Access in Cats Effect 3 Part 7](https://yadukrishnan.live/synchronisation-and-concurrent-access-in-cats-effect-3-part-7)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

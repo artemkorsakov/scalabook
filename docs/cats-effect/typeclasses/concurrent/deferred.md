@@ -179,6 +179,7 @@ val program = firstSuccessful(List(
 - [Cats effect Deferred](https://typelevel.org/cats-effect/docs/std/deferred)
 - [Baeldung: Difference Between delay, defer, and deferred in Cats Effect](https://www.baeldung.com/scala/cats-effect-delay-defer-vs-deferred)
 - [Concurrency in Cats Effect 3](https://typelevel.org/blog/concurrency-in-ce3.html)
+- [Essential Effects by Adam Rosien](https://essentialeffects.dev/)
 - [Synchronisation and Concurrent Access in Cats Effect 3 Part 7](https://yadukrishnan.live/synchronisation-and-concurrent-access-in-cats-effect-3-part-7)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

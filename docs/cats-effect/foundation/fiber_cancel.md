@@ -218,5 +218,6 @@ def startBackgroundSafe[F[_]: Spawn: MonadCancel](task: F[Unit]): Resource[F, Un
 
 - [Cats effect documentation][doc]
 - [Cats effect MonadCancel](https://typelevel.org/cats-effect/docs/typeclasses/monadcancel)
+- [Essential Effects by Adam Rosien](https://essentialeffects.dev/)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

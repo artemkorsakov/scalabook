@@ -391,5 +391,6 @@ Cats Effect предоставляет мощные и безопасные ин
 - [Cats effect Concepts](https://typelevel.org/cats-effect/docs/concepts)
 - [Concurrent Execution in Cats Effect using Fibers Part 4](https://yadukrishnan.live/concurrent-execution-in-cats-effect-using-fibers)
 - [Coroutines, Event Loops - Build Your Own in Scala](https://rockthejvm.com/articles/build-your-own-async)
+- [Essential Effects by Adam Rosien](https://essentialeffects.dev/)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

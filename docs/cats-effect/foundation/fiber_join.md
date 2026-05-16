@@ -306,5 +306,6 @@ def joinWithNever[F[_]: Spawn, A](fiber: Fiber[F, Throwable, A])(using
 
 - [Cats effect documentation][doc]
 - [Cats effect MonadCancel](https://typelevel.org/cats-effect/docs/typeclasses/monadcancel)
+- [Essential Effects by Adam Rosien](https://essentialeffects.dev/)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

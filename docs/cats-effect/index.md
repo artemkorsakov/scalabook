@@ -212,15 +212,15 @@ Cats Effect предлагает выразительный и безопасн�
 - [Concurrency In Scala with Cats-Effect](https://github.com/slouc/concurrency-in-scala-with-ce)
 - [Cats Effect vs ZIO](https://softwaremill.com/cats-effect-vs-zio/)
 - [A practical guide to error handling in Scala Cats and Cats Effect](https://softwaremill.com/practical-guide-to-error-handling-in-scala-cats-and-cats-effect/)
-- [Adam Rosien - Essential Effects](https://essentialeffects.dev/)
 - [Baeldung: Introduction to Cats Effects](https://www.baeldung.com/scala/cats-effects-intro)
 - [Baeldung: Introduction to Concurrent Programming With Cats Effect Fibers](https://www.baeldung.com/scala/cats-effect-fibers-concurrent-programming)
 - [Baeldung: Difference Between flatMap(), flatTap(), evalMap() and evalTap() in Cats Effect](https://www.baeldung.com/scala/cats-effect)
 - [Cats Effect 3 for Beginners Part-1](https://yadukrishnan.live/cats-effect-3-for-beginners-part-1)
 - [Common APIs: Cats Effect IO Part-2](https://yadukrishnan.live/common-apis-cats-effect-io-part-2)
-- [Traversing Cats Effect IOs Part-3](https://yadukrishnan.live/traversing-cats-effect-ios-part-3)
 - [Concurrency in Cats Effect 3](https://typelevel.org/blog/concurrency-in-ce3.html)
+- [Essential Effects by Adam Rosien](https://essentialeffects.dev/)
 - [Flavors of shared state in Cats Effect](https://blog.kubukoz.com/flavors-of-shared-state/)
+- [Traversing Cats Effect IOs Part-3](https://yadukrishnan.live/traversing-cats-effect-ios-part-3)
 
 [home]: https://typelevel.org/cats-effect/
 [doc]: https://typelevel.org/cats-effect/docs/getting-started

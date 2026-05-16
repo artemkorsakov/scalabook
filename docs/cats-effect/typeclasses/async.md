@@ -258,5 +258,6 @@ val program =
 - [Cats effect documentation][doc]
 - [Cats effect Async](https://typelevel.org/cats-effect/docs/typeclasses/async)
 - [Common Operators in Cats Effect 3 Part-8](https://yadukrishnan.live/common-operators-in-cats-effect-3-part-8)
+- [Essential Effects by Adam Rosien](https://essentialeffects.dev/)
 
 [doc]: https://typelevel.org/cats-effect/docs/concepts

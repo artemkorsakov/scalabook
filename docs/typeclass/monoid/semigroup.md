@@ -10,7 +10,7 @@ nextPage = monoid.html
 **Полугруппа** – это важная математическая структура, 
 которая лежит в основе многих понятий современной алгебры и теории категорий. 
 Она состоит из множества элементов и одной бинарной операции, которая обладает свойством ассоциативности. 
-В отличие от групп и моноидов, полугруппа не требует наличия нейтрального элемента 
+В отличие от [групп](group.md) и [моноидов](monoid.md), полугруппа не требует наличия нейтрального элемента 
 или обратного элемента для каждого своего элемента.
 
 Полугруппы позволяют абстрагироваться от конкретных типов данных 
@@ -77,74 +77,86 @@ trait Semigroup[A]:
 Для операции "сложения" встречаются следующие наименования:
 `combine`, `append`, `mappend` (Haskell), `op`, `plus`, `times`.
 
-### Натуральные числа N образуют полугруппу относительно сложения
-
-- сложение ассоциативно: `(a + b) + c = a + (b + c)`
-
-```dotty
-given additionSemigroup: Semigroup[Int] = (x: Int, y: Int) => x + y
-```
-
-### Натуральные числа N образуют полугруппу относительно умножения
-
-- умножение ассоциативно: `(a * b) * c = a * (b * c)`
-
-```dotty
-given multiplicationSemigroup: Semigroup[Int] = (x: Int, y: Int) => x * y
-```
-
-### Строки
-
-Строки образуют полугруппу относительно конкатенации строк
-
-```dotty
-given concatenationSemigroup: Semigroup[String] =
-  (x: String, y: String) => x + y
-```
-
-### Последовательность
-
-Последовательность образует полугруппу относительно операции объединения
-
-```dotty
-given listSemigroup[T]: Semigroup[List[T]] =
-  (x: List[T], y: List[T]) => x ++ y
-```
-
 ### Законы
 
 Законы полугруппы принимают следующий вид:
 
 - Замыкание следует из определения функции `combine`: тип результата этой функции совпадает с типом переменных,
   которые она принимает.
-  При условии использования при реализации только [чистых функций без побочных эффектов](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D1%82%D0%BE%D1%82%D0%B0_%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B8).
+  При условии использования при реализации только [чистых функций без побочных эффектов](../../fp/fp/pure_function.md).
 - Ассоциативность выражается следующим образом:
   `s.combine(x, s.combine(y, z))` должно быть равно `s.combine(s.combine(x, y), z)`.  
   Это означает, что порядок объединения элементов не влияет на итоговый результат.
 
-```dotty
-def checkAssociativity[A](x: A, y: A, z: A)(using
-    s: Semigroup[A]
-): Either[String, Unit] =
-  Either.cond[String, Unit](
-    s.combine(s.combine(x, y), z) == s.combine(x, s.combine(y, z)),
-    (),
-    s"Не соблюдается ассоциативность: (x + y) + z должно быть равно x + (y + z)"
-  )
+## Упражнение 1.1.1: Реализация полугрупп
 
-checkAssociativity(1, 2, 3)(using additionSemigroup)
-// (1 + 2) + 3 = 1 + (2 + 3) = 6
-checkAssociativity(1, 2, 3)(using multiplicationSemigroup)
-// (1 * 2) * 3 = 1 * (2 * 3) = 6
-checkAssociativity("first", "second", "third")(using concatenationSemigroup)
-// ("first" + "second") + "third" = "first" + ("second" + "third") = "firstsecondthird"
-checkAssociativity(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9))(using
-  listSemigroup
-)
-// (List(1, 2, 3) ++ List(4, 5, 6)) ++ List(7, 8, 9) =
-// List(1, 2, 3, 4, 5, 6, 7, 8, 9) = 
-// List(1, 2, 3) ++ (List(4, 5, 6) ++ List(7, 8, 9))
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Ваша задача - заполнив пропущенные части (`???`), реализовать следующие полугруппы:
+
+- Натуральные числа N относительно сложения
+- Натуральные числа N относительно умножения
+- Строки относительно конкатенации 
+- Последовательность относительно операции объединения
+
+
+```dotty
+given additionSemigroup: Semigroup[Int] = 
+  (x: Int, y: Int) => ???
+    
+given multiplicationSemigroup: Semigroup[Int] = 
+  (x: Int, y: Int) => ???
+
+given concatenationSemigroup: Semigroup[String] =
+  (x: String, y: String) => ??? 
+  
+given listSemigroup[T]: Semigroup[List[T]] =
+  (x: List[T], y: List[T]) => ???  
 ```
+
+@:note(🔍 Показать решение)
+
+```dotty
+given additionSemigroup: Semigroup[Int] = (x: Int, y: Int) => x + y
+    
+given multiplicationSemigroup: Semigroup[Int] = (x: Int, y: Int) => x * y
+
+given concatenationSemigroup: Semigroup[String] =
+  (x: String, y: String) => x + y  
+  
+given listSemigroup[T]: Semigroup[List[T]] =
+  (x: List[T], y: List[T]) => x ++ y      
+```
+
+- сложение ассоциативно: `(a + b) + c = a + (b + c)`
+- умножение ассоциативно: `(a * b) * c = a * (b * c)`
+- конкатенация ассоциативна: 
+  ```
+    ("first" + "second") + "third" = 
+    "first" + ("second" + "third") = 
+    "firstsecondthird"
+  ```
+- объединение последовательностей ассоциативно: 
+  ```
+  (List(1, 2) ++ List(3, 4)) ++ List(5, 6) = 
+  List(1, 2) ++ (List(3, 4) ++ List(5, 6)) = 
+  List(1, 2, 3, 4, 5, 6)
+  ```
+
+**Примеры вызовов**:
+
+```dotty
+additionSemigroup.combine(5, 3)
+// 8
+multiplicationSemigroup.combine(4, 5)
+// 20
+concatenationSemigroup.combine("Hello, ", "World!")
+// "Hello, World!"
+listSemigroup[Int].combine(List(1, 2), List(3, 4))
+// List(1, 2, 3, 4)
+```
+
+@:@
 
 ## Дополнительные свойства
 
@@ -175,17 +187,6 @@ import cats.implicits.*
 ("hello", 123) |+| ("world", 321)           // ("helloworld",444)
 ```
 
-### Реализация в ScalaZ
-
-```dotty
-import scalaz.*
-import Scalaz.*
-
-List(1, 2) |+| List(3)      // List(1, 2, 3)
-List(1, 2) mappend List(3)  // List(1, 2, 3)
-1 |+| 2                     // 3
-```
-
 ### Реализация в Spire
 
 ```dotty
@@ -201,6 +202,7 @@ Semigroup.combineN(3, 5)          // 15
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Классические абстракции используемые в ФП](https://habr.com/ru/articles/896660/)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/semigroup.html)
 - [Cats](https://typelevel.org/cats/typeclasses/semigroup.html)
@@ -213,3 +215,5 @@ Semigroup.combineN(3, 5)          // 15
 - [Spire home page](https://typelevel.org/spire/)
 - [Symbolic operators and type classes for Cats](https://typelevel.org/blog/2015/08/07/symbolic-operators.html)
 - [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%BB%D1%83%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B0)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

@@ -116,6 +116,7 @@ classDiagram
 
 **Ссылки:**
 
-- [Исходный код](https://gitverse.ru/artemkorsakov/scalabook/content/master/examples/src/main/scala/ru/scalabook/typeclass/arrow)
-- [Тесты](https://gitverse.ru/artemkorsakov/scalabook/content/master/examples/src/test/scala/ru/scalabook/typeclass/arrow)
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

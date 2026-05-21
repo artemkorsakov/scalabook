@@ -127,5 +127,7 @@ CSemigroup.combine(1, 2) == CSemigroup.combine(2, 1)
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Spire home page](https://typelevel.org/spire/)
 
+[sample]: https://gitverse.ru/scalabook/typeclasses

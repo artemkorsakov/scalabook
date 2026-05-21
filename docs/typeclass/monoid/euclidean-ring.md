@@ -251,6 +251,9 @@ EuclideanRing.equotmod(15, 10)
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Spire home page](https://typelevel.org/spire/)
 - [Spire User's Guide](https://typelevel.org/spire/guide.html)
 - [Wikipedia](https://ru.wikipedia.org/wiki/%D0%95%D0%B2%D0%BA%D0%BB%D0%B8%D0%B4%D0%BE%D0%B2%D0%BE_%D0%BA%D0%BE%D0%BB%D1%8C%D1%86%D0%BE)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

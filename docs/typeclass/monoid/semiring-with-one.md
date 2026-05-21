@@ -203,6 +203,9 @@ Rig.one[Rational]
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Spire home page](https://typelevel.org/spire/)
 - [Spire User's Guide](https://typelevel.org/spire/guide.html)
 - [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%BB%D1%83%D0%BA%D0%BE%D0%BB%D1%8C%D1%86%D0%BE)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

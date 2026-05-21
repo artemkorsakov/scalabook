@@ -7,7 +7,7 @@ nextPage = group.html
 
 # Моноид
 
-Моноиды — это фундаментальная концепция в функциональном программировании, 
+**Моноиды** — это фундаментальная концепция в функциональном программировании, 
 которая позволяет абстрагироваться от конкретных типов данных и работать с общими операциями, 
 такими как объединение, сложение или конкатенация. 
 Эта абстракция не только делает код более универсальным и повторно используемым, 
@@ -79,13 +79,99 @@ trait Monoid[A] extends Semigroup[A]:
   def empty: A
 ```
 
-Для операции сложения встречаются наименования, перечисленные в [Полугруппе](semigroup.md):
+Для операции сложения встречаются наименования, перечисленные в [полугруппе](semigroup.md):
 `combine`, `append`, `mappend` (Haskell), `op`, `plus`, `times`.
 Для единичного элемента встречаются следующие наименования: `empty`, `mempty` (Haskell), `id`.
 
+### Законы
+
+- Замыкание следует из определения функции `combine`: тип результата этой функции совпадает с типом переменных,
+  которые она принимает.
+- Ассоциативность выражается следующим образом:
+  `m.combine(x, m.combine(y, z))` должно быть равно `m.combine(m.combine(x, y), z)`.  
+  Это означает, что порядок объединения элементов не влияет на итоговый результат.
+- Тождественность означает, что если вы объединяете любой элемент `x` с нейтральным элементом (`m.empty`), 
+  то результат всегда будет равен `x`. Другими словами, нейтральный элемент не меняет значение `x` при объединении. 
+  Это можно записать так:
+    - `m.combine(x, m.empty) == x`
+    - `m.combine(m.empty, x) == x`
+
+
+## Упражнение 1.2.1: Реализация моноидов
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Ваша задача - заполнив пропущенные части (`???`), реализовать следующие моноиды:
+
+- Натуральные числа N относительно сложения
+- Натуральные числа N относительно умножения
+- Строки относительно конкатенации
+- Последовательность относительно операции объединения
+
+
+```dotty
+given additionSemigroup: Semigroup[Int] = 
+  (x: Int, y: Int) => ???
+    
+given multiplicationSemigroup: Semigroup[Int] = 
+  (x: Int, y: Int) => ???
+
+given concatenationSemigroup: Semigroup[String] =
+  (x: String, y: String) => ??? 
+  
+given listSemigroup[T]: Semigroup[List[T]] =
+  (x: List[T], y: List[T]) => ???  
+```
+
+@:note(🔍 Показать решение)
+
+```dotty
+given additionSemigroup: Semigroup[Int] = (x: Int, y: Int) => x + y
+    
+given multiplicationSemigroup: Semigroup[Int] = (x: Int, y: Int) => x * y
+
+given concatenationSemigroup: Semigroup[String] =
+  (x: String, y: String) => x + y  
+  
+given listSemigroup[T]: Semigroup[List[T]] =
+  (x: List[T], y: List[T]) => x ++ y      
+```
+
+- сложение ассоциативно: `(a + b) + c = a + (b + c)`
+- умножение ассоциативно: `(a * b) * c = a * (b * c)`
+- конкатенация ассоциативна:
+  ```
+    ("first" + "second") + "third" = 
+    "first" + ("second" + "third") = 
+    "firstsecondthird"
+  ```
+- объединение последовательностей ассоциативно:
+  ```
+  (List(1, 2) ++ List(3, 4)) ++ List(5, 6) = 
+  List(1, 2) ++ (List(3, 4) ++ List(5, 6)) = 
+  List(1, 2, 3, 4, 5, 6)
+  ```
+
+**Примеры вызовов**:
+
+```dotty
+additionSemigroup.combine(5, 3)
+// 8
+multiplicationSemigroup.combine(4, 5)
+// 20
+concatenationSemigroup.combine("Hello, ", "World!")
+// "Hello, World!"
+listSemigroup[Int].combine(List(1, 2), List(3, 4))
+// List(1, 2, 3, 4)
+```
+
+@:@
+
+
+
 ### Числа относительно сложения с 0
 
-`Int` относительно сложения с `0` образуют моноид, потому что: 
+`Int` относительно сложения с `0` образуют моноид, потому что:
 
 - сложение ассоциативно: `(a + b) + c = a + (b + c)`
 - `0` - это единичный элемент относительно сложения: `0 + a = a + 0 = a`
@@ -114,7 +200,7 @@ given multiplicationMonoid: Monoid[Int] with
 `String` относительно конкатенации строк с единичным элементом пустой строкой `""` образуют моноид, потому что:
 
 - конкатенация строк ассоциативна: `(a + b) + c = a + (b + c)`
-    - `"мама" + ("мыла" + "раму") = ("мама" + "мыла") + "раму" = "мамамылараму"`
+  - `"мама" + ("мыла" + "раму") = ("мама" + "мыла") + "раму" = "мамамылараму"`
 - `""` - это единичный элемент относительно конкатенации: `"" + a = a + "" = a`
 
 ```dotty
@@ -177,40 +263,8 @@ given booleanOr: Monoid[Boolean] with
   def combine(a1: Boolean, a2: Boolean): Boolean = a1 || a2
 ```
 
-### Законы
 
-- Замыкание следует из определения функции `combine`: тип результата этой функции совпадает с типом переменных,
-  которые она принимает.
-- Ассоциативность выражается следующим образом:
-  `m.combine(x, m.combine(y, z))` должно быть равно `m.combine(m.combine(x, y), z)`.  
-  Это означает, что порядок объединения элементов не влияет на итоговый результат.
-- Тождественность означает, что если вы объединяете любой элемент `x` с нейтральным элементом (`m.empty`), 
-  то результат всегда будет равен `x`. Другими словами, нейтральный элемент не меняет значение `x` при объединении. 
-  Это можно записать так:
-    - `m.combine(x, m.empty) == x`
-    - `m.combine(m.empty, x) == x`
 
-```dotty
-... // Законы полугруппы
-
-def checkRightIdentity[A](x: A)(using
-    m: Monoid[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    m.combine(x, m.empty) == x,
-    (),
-    "Не соблюдается тождественность справа: x + e = x"
-  ).toValidatedNel
-
-def checkLeftIdentity[A](x: A)(using
-    m: Monoid[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    m.combine(m.empty, x) == x,
-    (),
-    "Не соблюдается тождественность слева: e + x = x"
-  ).toValidatedNel
-```
 
 ## Дополнительные свойства
 
@@ -383,3 +437,5 @@ Monoid.isEmpty(Monoid.empty[Int]) // true
 - [Semigroups and Monoids in Scala](https://www.youtube.com/watch?v=LmBTiFYa-V4&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 - [Spire home page](https://typelevel.org/spire/)
 - [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%BE%D0%B8%D0%B4)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

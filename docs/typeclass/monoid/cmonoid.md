@@ -129,5 +129,7 @@ CMonoid.combine(100, CMonoid.empty[Int]) // 100
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Spire home page](https://typelevel.org/spire/)
 
+[sample]: https://gitverse.ru/scalabook/typeclasses

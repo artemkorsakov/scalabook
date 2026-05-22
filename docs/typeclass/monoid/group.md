@@ -19,7 +19,7 @@ nextPage = band.html
 
 **Группа** — это алгебраическая структура, которая формализует понятие симметрии и операции, 
 подчиняющейся определенным правилам. Формально, группа определяется как множество \\(G\\), 
-на котором задана бинарная операция \\(\cdot\\) (называемая "умножением" или "групповой операцией"), 
+на котором задана бинарная операция \\(\cdot\\) - "точка" (называемая "умножением" или "групповой операцией"), 
 удовлетворяющая четырем аксиомам:
 
 - **Замкнутость**: Для любых двух элементов \\(a, b \in G\\) результат операции \\(a \cdot b\\) также принадлежит \\(G\\).
@@ -73,30 +73,6 @@ trait Group[A] extends Monoid[A]:
     def inverse: A
 ```
 
-### Числа относительно сложения с 0
-
-```dotty
-given Group[Int] with
-  val empty: Int                      = 0
-  def combine(x: Int, y: Int): Int    = x + y
-  extension (a: Int) def inverse: Int = -a
-```
-
-### Рациональные числа относительно умножения
-
-В упрощенном варианте группа для рациональных чисел будет выглядеть так:
-
-```dotty
-final case class Rational(n: Int, d: Int):
-  def *(that: Rational): Rational =
-    Rational(n * that.n, d * that.d)
-
-given Group[Rational] with
-  val empty: Rational                             = Rational(1, 1)
-  def combine(x: Rational, y: Rational): Rational = x * y
-  extension (a: Rational) def inverse: Rational   = Rational(a.d, a.n)
-```
-
 ### Законы групп
 
 - Замыкание следует из определения функции `combine`: тип результата этой функции совпадает с типом переменных,
@@ -109,25 +85,100 @@ given Group[Rational] with
   Это можно записать так:
     - `g.combine(x, g.empty) == x`
     - `g.combine(g.empty, x) == x`
-- Обратимость означает, что для каждого элемента `x` существует обратный элемент `x.inverse`, 
-  при объединении с которым результат будет равен нейтральному элементу `g.empty`. 
+- Обратимость означает, что для каждого элемента `x` существует обратный элемент `x.inverse`,
+  при объединении с которым результат будет равен нейтральному элементу `g.empty`.
   Это можно записать так:
     - `g.combine(x.inverse, x) == g.empty`
     - `g.combine(x, x.inverse) == g.empty`
 
-```dotty
-... // Законы моноида
+## Упражнения
 
-def checkInverse[A](x: A)(using
-    g: Group[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    g.combine(x.inverse, x) == g.empty &&
-      g.combine(x, x.inverse) == g.empty,
-    (),
-    "Не соблюдается обратимость: x + (-x) = (-x) + x = e"
-  ).toValidatedNel
+### Упражнение 1.3.1: Реализация группы для целых чисел по сложению.
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Ваша задача - заполнив пропущенные части (`???`), реализовать группу по сложению:
+
+```dotty
+given Group[Int] with
+  val empty: Int = ???
+
+  def combine(x: Int, y: Int): Int = ???
+
+  extension (a: Int)
+    def inverse: Int = ???
 ```
+
+@:note(🔍 Показать решение)
+
+```dotty
+given Group[Int] with
+  val empty: Int = 0
+
+  def combine(x: Int, y: Int): Int = x + y
+
+  extension (a: Int)
+    def inverse: Int = -a    
+```
+
+**Примеры вызовов**:
+
+```dotty
+Group[Int].combine(5, 3)
+// 8
+Group[Int].empty
+// 0
+Group[Int].inverse(5)
+// -5
+```
+
+@:@
+
+### Упражнение 1.3.2: Реализация группы для рациональных чисел по умножению.
+
+Ваша задача - заполнив пропущенные части (`???`), реализовать группу по умножению:
+
+```dotty
+import spire.math.Rational
+
+given Group[Rational] with
+  val empty: Rational = ???
+
+  def combine(x: Rational, y: Rational): Rational = ???
+
+  extension (a: Rational)
+    def inverse: Rational = ???
+```
+
+@:note(🔍 Показать решение)
+
+```dotty
+import spire.math.Rational
+
+given Group[Rational] with
+  val empty: Rational = Rational(1, 1)
+
+  def combine(x: Rational, y: Rational): Rational = x * y
+
+  extension (a: Rational)
+    def inverse: Rational = Rational(a.denominator, a.numerator)   
+```
+
+**Примеры вызовов**:
+
+```dotty
+val r1 = Rational(2, 3)
+val r2 = Rational(3, 4)
+    
+Group[Rational].combine(r1, r2)
+// Rational(6, 12) = Rational(1, 2)
+Group[Rational].empty
+// Rational(1, 1)
+Group[Rational].inverse(r1)
+// Rational(3, 2)
+```
+
+@:@
 
 ## Схема
 

@@ -96,175 +96,367 @@ trait Monoid[A] extends Semigroup[A]:
     - `m.combine(x, m.empty) == x`
     - `m.combine(m.empty, x) == x`
 
+## Упражнения
 
-## Упражнение 1.2.1: Реализация моноидов
+### Упражнение 1.2.1: Реализация моноида сложения
 
 > [Репозиторий с упражнениями и инструкцией по выполнению][sample]
 
-Ваша задача - заполнив пропущенные части (`???`), реализовать следующие моноиды:
+Ваша задача - заполнив пропущенные части (`???`), реализовать моноид:
 
 - Натуральные числа N относительно сложения
-- Натуральные числа N относительно умножения
-- Строки относительно конкатенации
-- Последовательность относительно операции объединения
-
 
 ```dotty
-given additionSemigroup: Semigroup[Int] = 
-  (x: Int, y: Int) => ???
-    
-given multiplicationSemigroup: Semigroup[Int] = 
-  (x: Int, y: Int) => ???
+given additionMonoid: Monoid[Int] with
+  val empty = ???
 
-given concatenationSemigroup: Semigroup[String] =
-  (x: String, y: String) => ??? 
-  
-given listSemigroup[T]: Semigroup[List[T]] =
-  (x: List[T], y: List[T]) => ???  
+  def combine(x: Int, y: Int): Int = ???
 ```
 
 @:note(🔍 Показать решение)
 
 ```dotty
-given additionSemigroup: Semigroup[Int] = (x: Int, y: Int) => x + y
-    
-given multiplicationSemigroup: Semigroup[Int] = (x: Int, y: Int) => x * y
+given additionMonoid: Monoid[Int] with
+  val empty = 0
 
-given concatenationSemigroup: Semigroup[String] =
-  (x: String, y: String) => x + y  
-  
-given listSemigroup[T]: Semigroup[List[T]] =
-  (x: List[T], y: List[T]) => x ++ y      
+  def combine(x: Int, y: Int): Int = x + y     
 ```
-
-- сложение ассоциативно: `(a + b) + c = a + (b + c)`
-- умножение ассоциативно: `(a * b) * c = a * (b * c)`
-- конкатенация ассоциативна:
-  ```
-    ("first" + "second") + "third" = 
-    "first" + ("second" + "third") = 
-    "firstsecondthird"
-  ```
-- объединение последовательностей ассоциативно:
-  ```
-  (List(1, 2) ++ List(3, 4)) ++ List(5, 6) = 
-  List(1, 2) ++ (List(3, 4) ++ List(5, 6)) = 
-  List(1, 2, 3, 4, 5, 6)
-  ```
 
 **Примеры вызовов**:
 
 ```dotty
 additionSemigroup.combine(5, 3)
 // 8
-multiplicationSemigroup.combine(4, 5)
-// 20
-concatenationSemigroup.combine("Hello, ", "World!")
-// "Hello, World!"
-listSemigroup[Int].combine(List(1, 2), List(3, 4))
-// List(1, 2, 3, 4)
+additionSemigroup.empty
+// 0
 ```
-
-@:@
-
-
-
-### Числа относительно сложения с 0
 
 `Int` относительно сложения с `0` образуют моноид, потому что:
 
 - сложение ассоциативно: `(a + b) + c = a + (b + c)`
 - `0` - это единичный элемент относительно сложения: `0 + a = a + 0 = a`
 
+@:@
+
+### Упражнение 1.2.2: Реализация моноида умножения
+
+Ваша задача - заполнив пропущенные части (`???`), реализовать моноид:
+
+- Натуральные числа N относительно умножения
+
 ```dotty
-given additionMonoid: Monoid[Int] with
-  val empty                        = 0
-  def combine(x: Int, y: Int): Int = x + y
+given multiplicationMonoid: Monoid[Int] with
+  val empty = ???
+
+  def combine(x: Int, y: Int): Int = ???
 ```
 
-### Числа относительно умножения с 1
+@:note(🔍 Показать решение)
+
+```dotty
+given multiplicationMonoid: Monoid[Int] with
+  val empty = 1
+
+  def combine(x: Int, y: Int): Int = x * y    
+```
+
+**Примеры вызовов**:
+
+```dotty
+multiplicationMonoid.combine(4, 5) 
+// 20
+multiplicationMonoid.empty
+// 1
+```
 
 `Int` относительно умножения с единичным элементом `1` образуют моноид, потому что:
 
 - умножение ассоциативно: `(a * b) * c = a * (b * c)`
 - `1` - это единичный элемент относительно сложения: `1*a = a*1 = a`
 
+@:@
+
+### Упражнение 1.2.3: Реализация моноида конкатенации строк
+
+Ваша задача - заполнив пропущенные части (`???`), реализовать моноид:
+
 ```dotty
-given multiplicationMonoid: Monoid[Int] with
-  val empty = 1
-  def combine(x: Int, y: Int): Int = x * y
+given concatenationMonoid: Monoid[String] with
+  val empty = ???
+  
+  def combine(x: String, y: String): String = ???
 ```
 
-### Строки
+@:note(🔍 Показать решение)
+
+```dotty
+given concatenationMonoid: Monoid[String] with
+  val empty = ""
+  
+  def combine(x: String, y: String): String = x + y   
+```
+
+**Примеры вызовов**:
+
+```dotty
+concatenationMonoid.combine("Hello, ", "World!")
+// "Hello, World!"
+concatenationMonoid.empty
+// ""
+```
 
 `String` относительно конкатенации строк с единичным элементом пустой строкой `""` образуют моноид, потому что:
 
 - конкатенация строк ассоциативна: `(a + b) + c = a + (b + c)`
-  - `"мама" + ("мыла" + "раму") = ("мама" + "мыла") + "раму" = "мамамылараму"`
+    - `"мама" + ("мыла" + "раму") =`
+    - `("мама" + "мыла") + "раму" =`
+    - `"мамамылараму"`
 - `""` - это единичный элемент относительно конкатенации: `"" + a = a + "" = a`
 
-```dotty
-given concatenationMonoid: Monoid[String] with
-  val empty                                 = ""
-  def combine(x: String, y: String): String = x + y
-```
+@:@
 
-### Последовательность
+### Упражнение 1.2.4: Реализация моноида для списков
 
-Последовательность относительно операции объединения с пустой последовательностью в качестве единичного элемента.
+Ваша задача - заполнив пропущенные части (`???`), реализовать моноид:
 
 ```dotty
 given listMonoid[T]: Monoid[List[T]] with
-  val empty                                    = List.empty[T]
-  def combine(x: List[T], y: List[T]): List[T] = x ++ y
+  val empty = ???
+
+  def combine(x: List[T], y: List[T]): List[T] = ???
 ```
 
-### Кортеж от двух и более моноидов
+@:note(🔍 Показать решение)
 
 ```dotty
-given nestedMonoid[A, B](using
-    aMonoid: Monoid[A],
-    bMonoid: Monoid[B]
-): Monoid[(A, B)] with
-  val empty: (A, B) = (aMonoid.empty, bMonoid.empty)
+given listMonoid[T]: Monoid[List[T]] with
+  val empty = List.empty[T]
+
+  def combine(x: List[T], y: List[T]): List[T] = x ++ y  
+```
+
+**Примеры вызовов**:
+
+```dotty
+listMonoid[Int].combine(List(1, 2), List(3, 4)) 
+// List(1, 2, 3, 4)
+listMonoid[Int].empty
+// List()
+```
+
+@:@
+
+### Упражнение 1.2.5: Реализация моноида для кортежей
+
+Ваша задача - заполнив пропущенные части (`???`), реализовать моноид:
+
+```dotty
+given nestedMonoid[A: Monoid as am, B: Monoid as bm]: Monoid[(A, B)] with
+  val empty: (A, B) = ???
+
   def combine(x: (A, B), y: (A, B)): (A, B) =
-    (aMonoid.combine(x._1, y._1), bMonoid.combine(x._2, y._2))
+    ???
 ```
 
-### Option
-
-`Option` является моноидом, если его параметр типа - полугруппа, например:
+@:note(🔍 Показать решение)
 
 ```dotty
-given optionMonoidInstance[A: Semigroup]: Monoid[Option[A]] with
+given nestedMonoid[A: Monoid as am, B: Monoid as bm]: Monoid[(A, B)] with
+  val empty: (A, B) = (am.empty, bm.empty)
+
+  def combine(x: (A, B), y: (A, B)): (A, B) =
+    (am.combine(x._1, y._1), bm.combine(x._2, y._2))  
+```
+
+**Примеры вызовов**:
+
+```dotty
+nestedMonoid[Int, String].combine((1, "a"), (2, "b"))
+// (3, "ab")
+nestedMonoid[Int, String].empty
+// (0, "")
+```
+
+@:@
+
+### Упражнение 1.2.6: Реализация моноида для Option
+
+`Option` является моноидом, если его параметр типа - полугруппа.
+
+Ваша задача - заполнив пропущенные части (`???`), реализовать моноид:
+
+```dotty
+given optionMonoidInstance[A: Semigroup as sm]: Monoid[Option[A]] with
+  val empty: Option[A] = ???
+
+  def combine(x: Option[A], y: Option[A]): Option[A] =
+    ???
+```
+
+@:note(🔍 Показать решение)
+
+```dotty
+given optionMonoidInstance[A: Semigroup as sm]: Monoid[Option[A]] with
   val empty: Option[A] = None
 
   def combine(x: Option[A], y: Option[A]): Option[A] =
     (x, y) match
-      case (Some(a1), Some(a2)) => Some(summon[Semigroup[A]].combine(a1, a2))
+      case (Some(a1), Some(a2)) => Some(sm.combine(a1, a2))
       case (Some(_), None)      => x
       case (None, Some(_))      => y
-      case (None, None)         => None
+      case (None, None)         => None 
 ```
 
-### Множество - `Boolean`, операция - логическое И (`&&`), пустой элемент - `true`
+**Примеры вызовов**:
+
+```dotty
+optionMonoidInstance[Int].combine(Some(1), Some(2))
+// Some(3)
+optionMonoidInstance[Int].combine(Some(1), None)
+// Some(1)
+optionMonoidInstance[Int].combine(None, Some(1))
+// Some(1)
+optionMonoidInstance[Int].empty
+// None
+```
+
+@:@
+
+### Упражнение 1.2.7: Реализация моноида для Boolean (логическое И)
+
+Ваша задача - заполнив пропущенные части (`???`), реализовать моноид:
 
 ```dotty
 given booleanAnd: Monoid[Boolean] with
-  val empty: Boolean                             = true
-  def combine(a1: Boolean, a2: Boolean): Boolean = a1 && a2 
+  val empty: Boolean = ???
+  
+  def combine(a1: Boolean, a2: Boolean): Boolean = 
+    ???
 ```
 
-### Множество - `Boolean`, операция - логическое Или (`||`), пустой элемент - `false`
+@:note(🔍 Показать решение)
+
+```dotty
+given booleanAnd: Monoid[Boolean] with
+  val empty: Boolean = true
+  
+  def combine(a1: Boolean, a2: Boolean): Boolean = a1 && a2   
+```
+
+**Примеры вызовов**:
+
+```dotty
+booleanAnd.combine(true, false)
+// false
+booleanAnd.combine(true, true)
+// true
+booleanAnd.empty
+// true
+```
+
+@:@
+
+### Упражнение 1.2.8: Реализация моноида для Boolean (логическое ИЛИ)
+
+Ваша задача - заполнив пропущенные части (`???`), реализовать моноид:
 
 ```dotty
 given booleanOr: Monoid[Boolean] with
-  val empty: Boolean                             = false
-  def combine(a1: Boolean, a2: Boolean): Boolean = a1 || a2
+  val empty: Boolean = ???
+  
+  def combine(a1: Boolean, a2: Boolean): Boolean = 
+    ???
 ```
 
+@:note(🔍 Показать решение)
 
+```dotty
+given booleanOr: Monoid[Boolean] with
+  val empty: Boolean = false
+  
+  def combine(a1: Boolean, a2: Boolean): Boolean = 
+    a1 || a2  
+```
 
+**Примеры вызовов**:
+
+```dotty
+booleanOr.combine(false, true)
+// true
+booleanOr.combine(false, false)
+// false
+booleanOr.empty
+// false
+```
+
+@:@
+
+### Упражнение 1.2.9: Получение двойственного моноида
+
+Можно получить двойник любого моноида, просто перевернув `combine`
+
+Ваша задача - заполнив пропущенные части (`???`), реализовать моноид:
+
+```dotty
+def dual[A](m: Monoid[A]): Monoid[A] = new:
+  val empty: A = ???
+
+  def combine(x: A, y: A): A = ???
+```
+
+@:note(🔍 Показать решение)
+
+```dotty
+def dual[A](m: Monoid[A]): Monoid[A] = new:
+  val empty: A = m.empty 
+
+  def combine(x: A, y: A): A = m.combine(y, x)
+```
+
+**Примеры вызовов**:
+
+```dotty
+val intAddition = additionMonoid
+val intDualAddition = dual(intAddition)
+
+intDualAddition.combine(1, 2) вернет 
+// 3 (но combine(y, x))
+```
+
+@:@
+
+### Упражнение 1.2.10: Реализация моноида эндоморфизмов
+
+Ваша задача - заполнив пропущенные части (`???`), реализовать моноид:
+
+```dotty
+def endoMonoid[A]: Monoid[A => A] = new:
+  val empty: A => A = ???
+
+  def combine(f: A => A, g: A => A): A => A = ???
+```
+
+@:note(🔍 Показать решение)
+
+Моноид для функций `A => A` с операцией композиции (`andThen`) и нейтральным элементом.
+
+```dotty
+def endoMonoid[A]: Monoid[A => A] = new:
+  val empty: A => A = identity
+
+  def combine(f: A => A, g: A => A): A => A = f andThen g  
+```
+
+**Примеры вызовов**:
+
+```dotty
+val f: Int => Int = _ + 1
+val g: Int => Int = _ * 2
+endoMonoid[Int].combine(f, g).apply(3) 
+// ((3 + 1) * 2) = 8
+```
+
+@:@
 
 ## Дополнительные свойства
 
@@ -280,9 +472,15 @@ given booleanOr: Monoid[Boolean] with
 Например, вот как можно свернуть список, используя моноид:
 
 ```dotty
-def combineAll[A](as: List[A], m: Monoid[A]): A =
+given Monoid[Int] with
+  val empty = 1
+
+  def combine(x: Int, y: Int): Int = x * y
+
+def combineAll[A: Monoid as m](as: List[A]): A =
   as.foldLeft(m.empty)(m.combine)
-combineAll(List(1, 2, 3, 4), intMultiplication)
+
+combineAll(List(1, 2, 3, 4))
 // 24
 ```
 
@@ -338,7 +536,7 @@ List().foldLeft("loremipsumdolorsit")(_ + _)
 если `A` и `B` - это моноиды, то кортеж `(A, B)` также является моноидом (и называется _продуктом_)
 
 ```dotty
-given productMonoid[A, B](using ma: Monoid[A], mb: Monoid[B]): Monoid[(A, B)] with
+given productMonoid[A: Monoid as ma, B: Monoid as mb]: Monoid[(A, B)] with
   def combine(x: (A, B), y: (A, B)): (A, B) =
     (ma.combine(x(0), y(0)), mb.combine(x(1), y(1)))
 
@@ -348,19 +546,22 @@ given productMonoid[A, B](using ma: Monoid[A], mb: Monoid[B]): Monoid[(A, B)] wi
 Моноидом также является `Map`, если доступен моноид для его значений:
 
 ```dotty
-given mapMergeMonoid[K, V](using mv: Monoid[V]): Monoid[Map[K, V]] with
+given mapMergeMonoid[K, V: Monoid as mv]: Monoid[Map[K, V]] with
   def combine(a: Map[K, V], b: Map[K, V]): Map[K, V] =
     (a.keySet ++ b.keySet).foldLeft(empty) { (acc, k) =>
-      acc.updated(k, mv.combine(a.getOrElse(k, mv.empty), b.getOrElse(k, mv.empty)))
+      acc.updated(
+        k,
+        mv.combine(a.getOrElse(k, mv.empty), b.getOrElse(k, mv.empty))
+      )
     }
-    
+
   val empty: Map[K, V] = Map()
 ```
 
 Моноидом является функция, результаты которой являются моноидами.
 
 ```dotty
-given functionMonoid[A, B](using mb: Monoid[B]): Monoid[A => B] with
+given functionMonoid[A, B: Monoid as mb]: Monoid[A => B] with
   def combine(f: A => B, g: A => B): A => B = a => mb.combine(f(a), g(a))
 
   val empty: A => B = _ => mb.empty
@@ -402,18 +603,12 @@ Monoid[Int].combine(1, Monoid[Int].empty)   // 1
 "Hi " |+| "there" |+| Monoid[String].empty  // Hi there
 ```
 
-### Реализация в ScalaZ
-
-```dotty
-import scalaz.*
-import Scalaz.*
-
-mzero[List[Int]]             // List()
-```
-
 ### Реализация в Spire
 
 ```dotty
+import spire.algebra.Monoid
+import spire.implicits.semigroupOps
+
 1 |+| Monoid.empty[Int]           // 1
 Monoid.isEmpty(Monoid.empty[Int]) // true
 ```

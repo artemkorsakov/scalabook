@@ -43,14 +43,6 @@ object MonoidLaws extends BasicLaws:
     checkMonoidLaw(x, y, z)
       .combine(checkIdempotency(x))
 
-  def checkCSemigroup[A: CSemigroup](
-      x: A,
-      y: A,
-      z: A
-  ): ValidatedNel[String, Unit] =
-    checkSemigroupLaw(x, y, z)
-      .combine(checkCommutativity(x, y))
-
   def checkCMonoid[A: CMonoid](
       x: A,
       y: A,

@@ -118,7 +118,6 @@ object Dependencies {
       catsEffect.core,
       catsEffect.kernel,
       catsEffect.std,
-      iron.core,
       log4cats.core,
       log4cats.slf4j,
       scalaz.core,

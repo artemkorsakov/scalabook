@@ -49,8 +49,6 @@ nextPage = euclidean-ring.html
     - Каждое кольцо главных идеалов является кольцом НОД.
     - Например, кольцо целых чисел \\(\mathbb{Z}\\) и кольцо многочленов \\(\mathbb{R}\[x\]\\) являются кольцами главных идеалов.
 
-**Зачем нужны кольца НОД?**
-
 Кольца НОД находят применение в различных областях:
 
 - **Теория чисел**: используются для изучения свойств делимости и алгоритмов нахождения НОД (например, алгоритм Евклида).
@@ -101,26 +99,23 @@ trait GCDRing[A] extends CRingWithUnity[A]:
   def lcm(x: A, y: A): A
 ```
 
-### Числа относительно сложения с 0 и умножения с 1
-
-`(Z, +, *)`
-
-```dotty
-given GCDRing[Int] with
-  val empty: Int                   = 0
-  val one: Int                     = 1
-  def combine(x: Int, y: Int): Int = x + y
-  def times(x: Int, y: Int): Int   = x * y
-  def gcd(x: Int, y: Int): Int =
-    if y == 0 then x else gcd(y, x % y)
-  def lcm(x: Int, y: Int): Int = times(x, y) / gcd(x, y)
-
-  extension (a: Int) override def inverse: Int = -a
-```
-
 ### Законы
 
-Законы наследуются от [коммутативного кольца с единицей](cring-with-one.md).
+Законы наследуются от [коммутативного кольца с единицей](cring-with-one.md):
+
+- _Замыкание сложения_ (_closure_): для \\(\forall x, y \in R\\) выполняется \\(x + y \in R\\).
+- _Ассоциативность сложения_ (_associativity_): для \\(\forall x, y, z \in R\\) выполняется \\((x + y) + z = x + (y + z)\\).
+- _Существование нулевого элемента_: существует \\(\exists 0 \in R\\) такой,
+  что для \\(\forall x \in R\\) выполняется \\(0 + x = x + 0 = x\\)
+- _Обратимость сложения_: для \\(\forall x \in R\\) существует \\((-x)\\) такой,
+  что \\(x + (-x) = (-x) + x = 0\\)
+- _Коммутативность сложения_ (_commutative_): для \\(\forall x, y \in R\\) выполняется \\(x + y = y + x\\).
+- _Замыкание умножения_ (_closure_): для \\(\forall x, y \in R\\) выполняется \\(x \* y \in R\\).
+- _Ассоциативность умножения_ (_associativity_): для \\(\forall x, y, z \in R\\) выполняется \\((x \* y) \* z = x \* (y \* z)\\).
+- _Существование единичного элемента_: \\(\exists 1 \in R \quad \forall x \in R \quad x \* 1 = 1 \* x = x\\)
+- _Коммутативность умножения_: для \\(\forall x, y \in R\\) выполняется \\(x \* y = y \* x\\).
+- _Дистрибутивность_ (_distributivus_, _распределительный закон_):
+  для \\(\forall x, y, z \in R\\) выполняется \\(x \* (y + z) = x \* y + x \* z\\) и \\((x + y) \* z = x \* z + y \* z\\).
 
 Кроме того:
 
@@ -145,54 +140,76 @@ given GCDRing[Int] with
     - Порядок чисел не важен при вычислении НОК. НОК для \\(x\\) и \\(y\\) будет таким же, как и НОК для \\(y\\) и \\(x\\).
     - Формула: `gr.lcm(x, y) == gr.lcm(y, x)`.
 
+## Упражнения
+
+### Упражнение 1.7.1: Реализация кольца с НОД (GCD-кольца) для целых чисел.
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Заполните пропущенные части (`???`):
+
 ```dotty
-... // Законы коммутативного кольца с единицей
+given GCDRing[BigInt] with
+  val empty: BigInt = ???
 
-def checkGCDLCMMultiplication[A](x: A, y: A)(using
-    gr: GCDRing[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    gr.times(gr.gcd(x, y), gr.lcm(x, y)) == gr.times(y, x),
-    (),
-    "Произведение НОД и НОК должно равняться произведению чисел: gcd(x, y) * lcm(x, y) = x * y"
-  ).toValidatedNel
+  val one: BigInt = ???
 
-def checkGCDAssociativity[A](x: A, y: A, z: A)(using
-    gr: GCDRing[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    gr.gcd(gr.gcd(x, y), z) == gr.gcd(x, gr.gcd(y, z)),
-    (),
-    "Не соблюдается ассоциативность НОД: gcd(gcd(x, y), z) = gcd(x, gcd(y, z))"
-  ).toValidatedNel
+  def combine(x: BigInt, y: BigInt): BigInt = ???
 
-def checkLCMAssociativity[A](x: A, y: A, z: A)(using
-    gr: GCDRing[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    gr.lcm(gr.lcm(x, y), z) == gr.lcm(x, gr.lcm(y, z)),
-    (),
-    "Не соблюдается ассоциативность НОК: lcm(lcm(x, y), z) = lcm(x, lcm(y, z))"
-  ).toValidatedNel
+  def times(x: BigInt, y: BigInt): BigInt = ???
 
-def checkGCDCommutativity[A](x: A, y: A)(using
-    gr: GCDRing[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    gr.gcd(x, y) == gr.gcd(y, x),
-    (),
-    "Не соблюдается коммутативность НОД: gcd(x, y) = gcd(y, x)"
-  ).toValidatedNel
+  def gcd(x: BigInt, y: BigInt): BigInt =
+    ???
 
-def checkLCMCommutativity[A](x: A, y: A)(using
-    gr: GCDRing[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    gr.lcm(x, y) == gr.lcm(y, x),
-    (),
-    "Не соблюдается коммутативность НОК: lcm(x, y) = lcm(y, x)"
-  ).toValidatedNel
+  def lcm(x: BigInt, y: BigInt): BigInt =
+    ???
+
+  extension (a: BigInt)
+    def inverse: BigInt = ???
 ```
+
+@:note(🔍 Показать решение)
+
+```dotty
+given GCDRing[BigInt] with
+  val empty: BigInt = 0
+
+  val one: BigInt = 1
+
+  def combine(x: BigInt, y: BigInt): BigInt = x + y
+
+  def times(x: BigInt, y: BigInt): BigInt = x * y
+
+  def gcd(x: BigInt, y: BigInt): BigInt =
+    if y == 0 then x.abs else gcd(y, x % y)
+
+  def lcm(x: BigInt, y: BigInt): BigInt =
+    times(x, y) / gcd(x, y)
+
+  extension (a: BigInt)
+    def inverse: BigInt = a * BigInt(-1)
+```
+
+**Примеры вызовов**:
+
+```dotty
+GCDRing[BigInt].combine(5, 3)
+// 8
+GCDRing[BigInt].empty
+// 0
+GCDRing[BigInt].inverse(5)
+// -5
+GCDRing[BigInt].times(5, 3)
+// 15
+GCDRing[BigInt].one
+// 1
+GCDRing[BigInt].gcd(12, 18)
+// 6
+GCDRing[BigInt].lcm(12, 18)
+// 36
+```
+
+@:@
 
 ## Схема
 

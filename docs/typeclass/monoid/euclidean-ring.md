@@ -51,8 +51,6 @@ nextPage = field.html
 - **Кольцо главных идеалов (PID)**:
   Каждое евклидово кольцо является кольцом главных идеалов, то есть каждый идеал в нём порождается одним элементом.
 
-**Зачем нужны евклидовы кольца?**
-
 Евклидовы кольца находят применение в различных областях:
 
 - **Теория чисел**: используются для изучения свойств делимости и алгоритмов нахождения НОД.
@@ -65,7 +63,7 @@ nextPage = field.html
 Евклидово кольцо — это [кольцо НОД](gcdring.md),
 которое также поддерживает евклидово деление (например, поэтапное или целочисленное деление).
 
-Формально евклидовы кольца определяют _евклидову функцию_ `f` такую, что для любого `x` и `y` в `A`,
+Формально евклидовы кольца определяют _евклидову функцию_ `f` такую, что для любого `a` и `b` в `A`,
 если `y` ненулевое, то существуют `q` и `r` (частное и остаток) такие, что `a = b*q + r` и `r = 0` или `f(r) < f(b)`.
 Для целых чисел обычно `f` - это функция абсолютного значения.
 
@@ -113,23 +111,6 @@ trait EuclideanRing[A] extends GCDRing[A]:
   def mod(x: A, y: A): A
 ```
 
-### Числа относительно сложения с 0 и умножения с 1
-
-`(Z, +, *)`
-
-```dotty
-given EuclideanRing[Int] with
-  val empty: Int                   = 0
-  val one: Int                     = 1
-  def combine(x: Int, y: Int): Int = x + y
-  def times(x: Int, y: Int): Int   = x * y
-  def gcd(x: Int, y: Int): Int = if y == 0 then x else gcd(y, x % y)
-  def lcm(x: Int, y: Int): Int                 = times(x, y) / gcd(x, y)
-  def quot(x: Int, y: Int): Int                = x / y
-  def mod(x: Int, y: Int): Int                 = x % y
-  extension (a: Int) override def inverse: Int = -a
-```
-
 ### Законы
 
 Законы наследуются от [Кольца НОД](gcdring.md).
@@ -140,18 +121,99 @@ given EuclideanRing[Int] with
   если мы разделим \\(x\\) на \\(y\\) с остатком, то результат можно восстановить, используя частное и остаток.
   `er.combine(er.times(y, er.quot(x, y)), er.mod(x, y)) == x`
 
-```dotty
-... // Законы кольца НОД
+## Упражнения
 
-def checkQuotModMultiplication[A](x: A, y: A)(using
-    er: EuclideanRing[A]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    er.combine(er.times(y, er.quot(x, y)), er.mod(x, y)) == x,
-    (),
-    "Для частного и остатка должен соблюдаться закон: b * (a /~ b) + (a % b) = a"
-  ).toValidatedNel
+### Упражнение 1.8.1: Реализация евклидова кольца для целых чисел.
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Заполните пропущенные части (`???`):
+
+```dotty
+given EuclideanRing[BigInt] with
+  val empty: BigInt = ???
+
+  val one: BigInt = ???
+
+  def combine(x: BigInt, y: BigInt): BigInt =
+    ???
+
+  def times(x: BigInt, y: BigInt): BigInt =
+    ???
+
+  extension (a: BigInt)
+    def inverse: BigInt = ???
+
+  def gcd(x: BigInt, y: BigInt): BigInt =
+    ???
+
+  def lcm(x: BigInt, y: BigInt): BigInt =
+    ???
+
+  def quot(x: BigInt, y: BigInt): BigInt =
+    ???
+
+  def mod(x: BigInt, y: BigInt): BigInt =
+    ???
 ```
+
+@:note(🔍 Показать решение)
+
+```dotty
+given EuclideanRing[BigInt] with
+  val empty: BigInt = 0
+
+  val one: BigInt = 1
+
+  def combine(x: BigInt, y: BigInt): BigInt = x + y
+
+  def times(x: BigInt, y: BigInt): BigInt = x * y
+
+  extension (a: BigInt)
+    def inverse: BigInt = a * BigInt(-1)
+    
+  def gcd(x: BigInt, y: BigInt): BigInt =
+    if y == 0 then x.abs else gcd(y, x % y)
+
+  def lcm(x: BigInt, y: BigInt): BigInt =
+    val g = gcd(x, y)
+    if g == 0 then 0 else times(x, y) / g
+
+  def quot(x: BigInt, y: BigInt): BigInt =
+    x / y
+
+  def mod(x: BigInt, y: BigInt): BigInt =
+    x % y
+```
+
+**Примеры вызовов**:
+
+```dotty
+EuclideanRing[BigInt].combine(5, 3)
+// 8
+EuclideanRing[BigInt].empty
+// 0
+EuclideanRing[BigInt].inverse(5)
+// -5
+EuclideanRing[BigInt].times(5, 3)
+// 15
+EuclideanRing[BigInt].one
+// 1
+EuclideanRing[BigInt].gcd(12, 18)
+// 6
+EuclideanRing[BigInt].lcm(12, 18)
+// 36
+EuclideanRing[BigInt].quot(17, 5)
+// 3
+EuclideanRing[BigInt].mod(17, 5)
+// 2
+EuclideanRing[BigInt].quot(20, 4)
+// 5
+EuclideanRing[BigInt].mod(20, 4)
+// 0
+```
+
+@:@
 
 ## Схема
 

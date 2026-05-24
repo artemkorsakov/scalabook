@@ -5,7 +5,6 @@ import cats.data.ValidatedNel
 import cats.syntax.either.*
 import ru.scalabook.typeclass.common.{Applicator, BasicLaws, Runner1}
 import ru.scalabook.typeclass.monoid.Monoid
-import ru.scalabook.typeclass.monoid.MonoidLaws.*
 
 object MonadLaws extends BasicLaws:
   def checkBimonadLaw[F[_]: Bimonad: Runner1, A, B, C](
@@ -154,6 +153,14 @@ object MonadLaws extends BasicLaws:
   ): ValidatedNel[String, Unit] =
     checkApplicativeLaw[F, A, B, C](a, b, c) combine
       checkPlusEmptyLaw[F, A](f1, f2, f3)
+
+  def checkMonoidLaw[A: Monoid](
+      x: A,
+      y: A,
+      z: A
+  ): ValidatedNel[String, Unit] =
+    checkAssociativity(x, y, z)
+      .combine(checkIdentity(x))
 
   def checkPlusEmptyLaw[F[_], A](f1: F[A], f2: F[A], f3: F[A])(using
       pl: PlusEmpty[F]

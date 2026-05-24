@@ -39,16 +39,6 @@ nextPage = ../monad.html
     - Нулевой элемент: \\(0\\).
     - Единичный элемент: \\(1\\).
     - Обратный элемент для \\(a \neq 0\\): \\(\frac{1}{a}\\).
-- **Поле действительных чисел \\(\mathbb{R}\\)**:
-    - Операции: сложение и умножение.
-    - Нулевой элемент: \\(0\\).
-    - Единичный элемент: \\(1\\).
-    - Обратный элемент для \\(a \neq 0\\): \\(\frac{1}{a}\\).
-- **Поле комплексных чисел \\(\mathbb{C}\\)**:
-    - Операции: сложение и умножение.
-    - Нулевой элемент: \\(0\\).
-    - Единичный элемент: \\(1\\).
-    - Обратный элемент для \\(a + bi \neq 0\\): \\(\frac{a - bi}{a^2 + b^2}\\).
 - **Конечные поля (поля Галуа)**:
     - Например, поле \\(\mathbb{Z}/p\mathbb{Z}\\), где \\(p\\) — простое число.
     - Операции: сложение и умножение по модулю \\(p\\).
@@ -62,13 +52,6 @@ nextPage = ../monad.html
   В поле каждый ненулевой элемент имеет обратный относительно умножения.
 - **Отсутствие делителей нуля**:
   В поле если \\(a \cdot b = 0\\), то \\(a = 0\\) или \\(b = 0\\).
-- **Характеристика поля**:
-  Характеристика поля — это наименьшее положительное целое число \\(n\\) такое, что \\(n \cdot 1 = 0\\). 
-  Если такого числа не существует, то характеристика поля равна \\(0\\).
-- **Подполя**:
-  Подмножество поля, которое само является полем относительно тех же операций, называется подполем.
-
-**Зачем нужны поля?**
 
 Поля находят применение в различных областях:
 
@@ -81,15 +64,7 @@ nextPage = ../monad.html
 
 ## Формальное определение
 
-Поля расширяют [Евклидово кольцо](euclidean-ring.md), добавляя операцию обратную умножению для всех элементов,
-за исключением нуля по сложению.
-
-`Field[A]` поддерживает следующие операции:
-
-- `reciprocal` (`a.reciprocal`): обратная операция умножению. Мультипликативный обратный `a`, т.е. `one/a`.
-- `div` (`/`, `a / b`): деление `a` на `b`.
-
-Формально, _поле_ — алгебра над множеством \\(\mathbf{F}\\), 
+_Поле_ — алгебра над множеством \\(\mathbf{F}\\), 
 образующая [коммутативную группу](abgroup.md) по сложению \\(\mathbf{+}\\) над \\(\mathbf{F}\\) с нейтральным элементом \\(\mathbf{0}\\) 
 и коммутативную группу по умножению \\(\mathbf{\*}\\) над ненулевыми элементами \\(\mathbf{F} \backslash \begin{Bmatrix} \mathbf{0} \end{Bmatrix}\\), 
 при выполняющемся свойстве дистрибутивности умножения относительно сложения. 
@@ -99,7 +74,7 @@ nextPage = ../monad.html
 Если раскрыть определение, то множество \\(\mathbf{F}\\) с введёнными на нём алгебраическими операциями 
 сложения \\(\mathbf{+}\\) и умножения \\(\mathbf{\*}\\)
 (\\(\mathbf{+}\colon \mathbf{F} \times \mathbf{F} \to \mathbf{F},\mathbf{\*}\colon \mathbf{F} \times \mathbf{F} \to \mathbf{F}\\), 
-то есть \\(\forall a, b \in F \quad (a + b) \in F, (a \* b) \in F\\) 
+то есть \\(\forall a, b \in F \quad (a + b) \in F, (a \* b) \in F\\))
 называется _полем_ \\(\left< F, +, \* \right>\\), если выполнены следующие аксиомы:
 
 - _Ассоциативность сложения_: для \\(\forall x, y, z \in F\\) выполняется \\((x + y) + z = x + (y + z)\\).
@@ -124,27 +99,6 @@ trait Field[A] extends EuclideanRing[A]:
   def div(x: A, y: A): A = times(x, y.reciprocal)
 ```
 
-### Рациональные числа со сложением и умножением
-
-```dotty
-import spire.math.Rational
-
-given Field[Rational] with
-  val empty: Rational = Rational(0)
-  val one: Rational   = Rational(1)
-  def combine(x: Rational, y: Rational): Rational = x + y
-  def times(x: Rational, y: Rational): Rational = x * y
-  def gcd(x: Rational, y: Rational): Rational = one
-  def lcm(x: Rational, y: Rational): Rational = times(x, y)
-  def quot(x: Rational, y: Rational): Rational = x / y
-  def mod(x: Rational, y: Rational): Rational = empty
-
-  extension (a: Rational)
-    def inverse: Rational    = Rational(-a.numerator, a.denominator)
-    def reciprocal: Rational = Rational(a.denominator, a.numerator)
-end given
-```
-
 ### Законы
 
 Законы наследуются от [Евклидова кольца](euclidean-ring.md).
@@ -156,16 +110,111 @@ end given
   (или \\(\text{reciprocal}\\)), такое что их произведение равно единице. 
   `x == fi.empty || fi.times(x, x.reciprocal) == fi.one`
 
-```dotty
-... // Законы Евклидова кольца
+## Упражнения
 
-def checkReciprocal[A](x: A)(using fi: Field[A]): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    x == fi.empty || fi.times(x, x.reciprocal) == fi.one,
-    (),
-    "Не соблюдается закон существования обратного по умножению числа: x * x^{-1} = 1"
-  ).toValidatedNel
+### Упражнение 1.9.1: Реализация поля для рациональных чисел.
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Заполните пропущенные части (`???`):
+
+```dotty
+import spire.math.Rational
+
+given Field[Rational] with
+  val empty: Rational = ???
+
+  val one: Rational = ???
+
+  def combine(x: Rational, y: Rational): Rational = 
+    ???
+
+  def times(x: Rational, y: Rational): Rational = 
+    ???
+
+  def gcd(x: Rational, y: Rational): Rational = 
+    ???
+
+  def lcm(x: Rational, y: Rational): Rational = 
+    ???
+
+  def quot(x: Rational, y: Rational): Rational = 
+    ???
+
+  def mod(x: Rational, y: Rational): Rational = 
+    ???
+
+  extension (a: Rational)
+    def inverse: Rational    = 
+      ???
+      
+    def reciprocal: Rational = 
+      ???
+end given
 ```
+
+@:note(🔍 Показать решение)
+
+```dotty
+import spire.math.Rational
+
+given Field[Rational] with
+  val empty: Rational = Rational(0)
+
+  val one: Rational = Rational(1)
+
+  def combine(x: Rational, y: Rational): Rational = 
+    x + y
+
+  def times(x: Rational, y: Rational): Rational = 
+    x * y
+
+  def gcd(x: Rational, y: Rational): Rational = 
+    one
+
+  def lcm(x: Rational, y: Rational): Rational = 
+    times(x, y)
+
+  def quot(x: Rational, y: Rational): Rational = 
+    x / y
+
+  def mod(x: Rational, y: Rational): Rational = 
+    empty
+
+  extension (a: Rational)
+    def inverse: Rational    = 
+      Rational(-a.numerator, a.denominator)
+      
+    def reciprocal: Rational = 
+      Rational(a.denominator, a.numerator)
+end given
+```
+
+**Примеры вызовов**:
+
+```dotty
+val a = Rational(1, 2)  // 1/2
+val b = Rational(2, 3)  // 2/3
+val c = Rational(3, 4)  // 3/4
+
+// Базовые операции поля
+Field[Rational].combine(a, b) = 1/2 + 2/3 = 7/6
+Field[Rational].times(a, b) = 1/2 * 2/3 = 2/6 = 1/3
+Field[Rational].inverse(a) = -1/2
+Field[Rational].reciprocal(a) = 2/1 = 2
+Field[Rational].empty = Rational(0) = 0/1
+Field[Rational].one = Rational(1) = 1/1
+
+// Операции GCD и LCM в поле
+Field[Rational].gcd(a, b) = 1 (всегда)
+Field[Rational].lcm(a, b) = times(a, b) = 1/3
+
+// Операции евклидова кольца
+Field[Rational].quot(a, b) = (1/2) / (2/3) = 3/4
+Field[Rational].mod(a, b) = 0 (всегда)
+```
+
+@:@
 
 ## Схема
 

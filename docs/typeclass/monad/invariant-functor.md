@@ -45,7 +45,7 @@ nextPage = functor.html
 
 Инвариантный функтор должен удовлетворять двум законам:
 
-- Тождественность (identity): Если определен метод идентификации `identity` такой, что: `identity(a) == a`,
+- Тождественность (identity): Если определен такой метод `identity`, что: `identity(a) == a`,
   тогда `xmap(ma)(identity, identity) == ma`.
 - Композиция (composition): `xmap(xmap(ma, f1, g1), f2, g2) == xmap(ma, f2 compose f1, g1 compose g2)`
 
@@ -59,34 +59,73 @@ trait InvariantFunctor[F[_]]:
     def xmap[B](f: A => B, g: B => A): F[B]
 ```
 
-### "Обертка"
+### Законы
+
+- Закон тождественности утверждает, что применение тождественного преобразования к значению инвариантного функтора 
+  не изменяет это значение. Формально это выражается так: `inf.xmap(fa)(identity, identity) == fa`
+- Закон композиции утверждает, что последовательное применение двух инвариантных отображений эквивалентно одному отображению, 
+  которое является композицией этих двух отображений. Формально это выражается так:
+  `inf.xmap(inf.xmap(fa)(f, fReverse))(g, gReverse) == inf.xmap(fa)(g compose f, fReverse compose gReverse)`
+
+## Упражнения
+
+### Упражнение 2.1.1: Invariant-отображение для изоморфизма
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Реализуйте экземпляр `InvariantFunctor` для типа `Iso[A, C]` (`case class Iso[A, B](to: A => B, from: B => A)`)
+с фиксированным правым типом `C`.
+Это позволит инвариантно преобразовывать левую часть изоморфизма с помощью пары функций `f: A => B` и `g: B => A`.
 
 ```dotty
-type Id[A] = A
-object Id:
-  def apply[A](a: A): Id[A] = a
-
-given InvariantFunctor[Id] with
-  extension [A](fa: Id[A])
-    def xmap[B](f: A => B, g: B => A): Id[B] = Id(f(fa))
+given invarFunctor[C]: InvariantFunctor[[x] =>> Iso[x, C]] with
+  extension [A](iso: Iso[A, C])
+    def xmap[B](f: A => B, g: B => A): Iso[B, C] =
+      ???
 ```
 
-Докажем, что `Id` удовлетворяет законам инвариантного функтора.
+@:note(🔍 Показать решение)
 
-- тождественность: `xmap(ma)(identity, identity) == ma`
-    - по определению метода `xmap` получим: `Id(a).xmap(identity, identity) == Id(identity(a)) == Id(a)`
-- композиция: `xmap(xmap(ma, f1, g1), f2, g2) == xmap(ma, f2 compose f1, g1 compose g2)`
-    - по определению метода `xmap` получим:
-      `Id(a).xmap(f1, g1).xmap(f2, g2) == Id(f1(a)).xmap(f2, g2) == Id(f2(f1(a)))` 
-      и `Id(a).xmap(f2 compose f1, g1 compose g2) == Id(f2(f1(a)))`
-
-### Codec
-
-Зачастую инвариантный функтор используется в кодеках, кодирующих и декодирующих строки.
+Решение заключается в правильной реализации методов `to` и `from` для результирующего `Iso[B, C]`.
+Метод `to` преобразует значение типа `B` в `C`: сначала с помощью функции `g` преобразуем `B` в `A`,
+затем используем исходный `iso.to` для получения `C`. Метод `from` преобразует `C` обратно в `B`:
+сначала исходный `iso.from` преобразует `C` в `A`, затем функция `f` преобразует `A` в `B`.
+Таким образом, мы сохраняем свойства изоморфизма, применяя функции преобразования с обеих сторон.
 
 ```dotty
-case class Codec[A](encode: A => String, decode: String => Either[String, A])
+given invarFunctor[C]: InvariantFunctor[[x] =>> Iso[x, C]] with
+  extension [A](iso: Iso[A, C])
+    def xmap[B](f: A => B, g: B => A): Iso[B, C] =
+      Iso(
+        to = (b: B) => iso.to(g(b)),
+        from = (c: C) => f(iso.from(c))
+      )
+```
 
+@:@
+
+### Упражнение 2.1.2: Invariant-отображение для Codec.
+
+Реализуйте экземпляр `InvariantFunctor` для типа `Codec`
+(`case class Codec[A](encode: A => String, decode: String => Either[String, A])`), 
+который позволяет преобразовывать кодировщик/декодировщик для одного типа в кодировщик/декодировщик для другого типа:
+
+```dotty
+given InvariantFunctor[Codec] with
+  extension [A](codec: Codec[A])
+    def xmap[B](f: A => B, g: B => A): Codec[B] =
+      ???
+```
+
+@:note(🔍 Показать решение)
+
+Решение заключается в правильной реализации методов `encode` и `decode` для результирующего `Codec[B]`.
+При кодировании значения типа `B` мы сначала преобразуем его в `A` с помощью функции `g`,
+затем используем исходный `encode` исходного `codec`. При декодировании строки мы сначала
+декодируем её в `A`, а затем преобразуем результат в `B` с помощью функции `f`,
+применяя её к значению внутри `Either` через `map`.
+
+```dotty
 given InvariantFunctor[Codec] with
   extension [A](codec: Codec[A])
     def xmap[B](f: A => B, g: B => A): Codec[B] =
@@ -96,98 +135,13 @@ given InvariantFunctor[Codec] with
       )
 ```
 
-Докажем, что `Codec` удовлетворяет законам инвариантного функтора.
-
-- тождественность: `xmap(ma)(identity, identity) == ma`
-    - по определению метода `xmap` получим: `fa.xmap(identity, identity) ==`
-      ```dotty
-      encode: A => String = fa.encode(identity(value)) = fa.encode(value)
-      decode: String => Either[String, A] = fa.decode(value).map(identity) = = fa.decode(value)
-      ```
-      Это эквивалентно исходному `codec` (в случае использования чистых функций).
-- композиция: `xmap(xmap(ma, f1, g1), f2, g2) == xmap(ma, f2 compose f1, g1 compose g2)`
-    - по определению метода `xmap` получим `xmap(xmap(ma, f1, g1), f2, g2) ==`:
-        ```dotty
-        encode: A => String = fb.encode(g2(value)) = fa.encode(g1(g2(value)))
-        decode: String => Either[String, A] = fb.decode(value).map(f2) = fa.decode(value).map(f1).map(f2)
-        ```
-        `xmap(ma, f2 compose f1, g1 compose g2) ==`:
-        ```dotty
-        encode: A => String = fa.encode((g1 compose g2)(value)) = fa.encode(g1(g2(value)))
-        decode: String => Either[String, A] = fa.decode(value).map(f2 compose f1) = fa.decode(value).map(f1).map(f2)
-        ```
-
-### Iso
-
-Изоморфизм — это пара функций, которые могут преобразовывать значения между двумя типами в обоих направлениях.
+**Примеры вызовов**:
 
 ```dotty
-case class Iso[A, B](to: A => B, from: B => A)
-
-given invarFunctor[C]: InvariantFunctor[[x] =>> Iso[x, C]] with
-  extension [A](iso: Iso[A, C])
-    def xmap[B](f: A => B, g: B => A): Iso[B, C] =
-      Iso(
-        to = (b: B) => iso.to(g(b)),
-        from = (i: C) => f(iso.from(i))
-      )
+???
 ```
 
-Здесь `xmap` позволяет преобразовать изоморфизм для типа `A` в изоморфизм для типа `B`, используя функции `f: A => B` и `g: B => A`.
-
-### ParserPrinter
-
-**Тип данных, представляющий парсер и принтер:**
-
-В некоторых библиотеках для работы с парсерами и принтерами используется инвариантный функтор для преобразования между типами.
-
-```dotty
-case class ParserPrinter[A](
-    parse: String => Either[String, A],
-    print: A => String
-)
-
-given InvariantFunctor[ParserPrinter] with
-  extension [A](pp: ParserPrinter[A])
-    def xmap[B](f: A => B, g: B => A): ParserPrinter[B] =
-      ParserPrinter(
-        parse = (s: String) => pp.parse(s).map(f),
-        print = (b: B) => pp.print(g(b))
-      )
-```
-
-### Законы
-
-- Закон тождественности утверждает, что применение тождественного преобразования к значению инвариантного функтора 
-  не изменяет это значение. Формально это выражается так: `inf.xmap(fa)(identity, identity) == fa`
-- Закон композиции утверждает, что последовательное применение двух инвариантных отображений эквивалентно одному отображению, 
-  которое является композицией этих двух отображений. Формально это выражается так:
-  `inf.xmap(inf.xmap(fa)(f, fReverse))(g, gReverse) == inf.xmap(fa)(g compose f, fReverse compose gReverse)`
-
-```dotty
-def checkXMapIdentityLaw[F[_], A](fa: F[A])(using
-    inf: InvariantFunctor[F]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    inf.xmap(fa)(identity, identity) == fa,
-    (),
-    "Не соблюдается тождественность: xmap(ma)(identity, identity) == ma"
-  ).toValidatedNel
-
-def checkXMapСompositionLaw[F[_], A, B, C](fa: F[A])(using
-    inf: InvariantFunctor[F],
-    f: A => B,
-    fReverse: B => A,
-    g: B => C,
-    gReverse: C => B
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    inf.xmap(inf.xmap(fa)(f, fReverse))(g, gReverse) ==
-      inf.xmap(fa)(g compose f, fReverse compose gReverse),
-    (),
-    "Не соблюдается композиция: xmap(xmap(ma, f1, g1), f2, g2) == xmap(ma, f2 compose f1, g1 compose g2)"
-  ).toValidatedNel
-```
+@:@
 
 ## Схема
 

@@ -202,6 +202,9 @@ classDiagram
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Cats](https://typelevel.org/cats/typeclasses/invariant.html)
 - [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#sec:functors:invariant)
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/InvariantFunctor.html)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

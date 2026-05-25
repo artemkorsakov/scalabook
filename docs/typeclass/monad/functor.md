@@ -323,6 +323,7 @@ listOpt.map(List(Some(1), None, Some(3)))(_ + 1)   // List(Some(2), None, Some(4
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Категория Hask](https://habr.com/ru/articles/133277/)
 - [Классические абстракции используемые в ФП](https://habr.com/ru/articles/896660/)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/functor.html)
@@ -340,3 +341,5 @@ listOpt.map(List(Some(1), None, Some(3)))(_ + 1)   // List(Some(2), None, Some(4
 - [SKB – Scala Functor](https://leobenkel.com/2021/01/skb-scala-functor/)
 - [Tour of Scala](https://tourofscala.com/scala/functor)
 - [What the Functor? Functors in Scala - Rock the JVM](https://www.youtube.com/watch?v=aSnY2JBzjUw&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

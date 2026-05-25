@@ -296,6 +296,7 @@ Foldable[List].fold(digits)                                // 45
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Классические абстракции используемые в ФП](https://habr.com/ru/articles/896660/)
 - [Cats](https://typelevel.org/cats/typeclasses/foldable.html)
 - [Folds for Imperative Programmers](https://blog.tmorris.net/posts/folds-for-imperative-programmers/index.html)
@@ -307,3 +308,5 @@ Foldable[List].fold(digits)                                // 45
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Foldable.html)
 - [SKB – Scala Foldable](https://leobenkel.com/2021/01/skb-scala-foldable/)
 - [Tour of Scala](https://tourofscala.com/scala/foldable)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

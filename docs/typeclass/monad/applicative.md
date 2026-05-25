@@ -549,6 +549,7 @@ import Scalaz.*
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Классические абстракции используемые в ФП](https://habr.com/ru/articles/896660/)
 - [Algebird](https://twitter.github.io/algebird/typeclasses/applicative.html)
 - [Applicative Programming with Effects](https://www.staff.city.ac.uk/~ross/papers/Applicative.html)
@@ -562,3 +563,5 @@ import Scalaz.*
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Applicative.html)
 - [SKB – Scala Applicative](https://leobenkel.com/2021/01/skb-scala-applicative/)
 - [Tour of Scala](https://tourofscala.com/scala/applicative)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

@@ -149,7 +149,10 @@ given stateTMonadTransformer[M[_], S](using outerMonad: Monad[M]): MonadTransfor
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [A comprehensive introduction to Cats-mtl](https://typelevel.org/blog/2018/10/06/intro-to-mtl.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp) 
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad+transformers.html)
 - [Scalaz Monad Transformers](https://noelwelsh.com/posts/scalaz-monad-transformers/)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

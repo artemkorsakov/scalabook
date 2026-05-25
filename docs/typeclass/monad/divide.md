@@ -136,4 +136,7 @@ classDiagram
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Divide.html)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

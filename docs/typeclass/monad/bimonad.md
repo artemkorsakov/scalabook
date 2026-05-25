@@ -201,4 +201,7 @@ make(NonEmptyList.one("config"))
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Cats](https://typelevel.org/cats/typeclasses/bimonad.html)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

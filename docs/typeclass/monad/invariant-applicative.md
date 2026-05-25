@@ -42,4 +42,7 @@ classDiagram
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/InvariantApplicative.html)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

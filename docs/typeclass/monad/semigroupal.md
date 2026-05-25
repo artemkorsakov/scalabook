@@ -137,6 +137,9 @@ Semigroupal.tuple3(Option(1), Option(2), Option(3)) // Some((1,2,3))
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Cats API](https://typelevel.org/cats/api/cats/Semigroupal.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Semigroupal.html)
 - [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#semigroupal)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

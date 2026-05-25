@@ -92,6 +92,7 @@ given freeMonad[F[_]]: Monad[[X] =>> Free[F, X]] with
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Deriving the Free Monad](https://noelwelsh.com/posts/deriving-the-free-monad/)
 - [Free Monads Are Simple](https://underscore.io/blog/posts/2015/04/14/free-monads-are-simple.html)
 - [Free Monad in Scala](https://www.youtube.com/watch?v=lzlCjgRWPDU&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
@@ -102,3 +103,5 @@ given freeMonad[F[_]]: Monad[[X] =>> Free[F, X]] with
 - [Monadic IO: Laziness Makes You Free](https://noelwelsh.com/posts/monadic-io-laziness-makes-you-free/)
 - [Stackless Scala](../../translations/trampolining.md)
 - [Why free monads matter](https://www.haskellforall.com/2012/06/you-could-have-invented-free-monads.html)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

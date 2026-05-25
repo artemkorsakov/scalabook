@@ -273,6 +273,7 @@ List(1.some, 2.some).sequence                           // Some(List(1, 2))
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Классические абстракции используемые в ФП](https://habr.com/ru/articles/896660/)
 - [Cats](https://typelevel.org/cats/typeclasses/traverse.html)
 - [Functional Programming in Scala, Second Edition](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
@@ -282,3 +283,5 @@ List(1.some, 2.some).sequence                           // Some(List(1, 2))
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Traverse.html)
 - [SKB – Scala Traversable](https://leobenkel.com/2021/01/skb-scala-traversable/)
 - [Tour of Scala](https://tourofscala.com/scala/traversable)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

@@ -168,5 +168,8 @@ import Scalaz.*
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/MonadPlus.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/PlusEmpty.html)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

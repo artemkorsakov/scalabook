@@ -135,12 +135,6 @@ given InvariantFunctor[Codec] with
       )
 ```
 
-**Примеры вызовов**:
-
-```dotty
-???
-```
-
 @:@
 
 ## Схема

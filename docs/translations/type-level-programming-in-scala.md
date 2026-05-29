@@ -1943,7 +1943,7 @@ sealed class KNil extends KList[Nothing, HNil.type]:
 object KNil extends KNil
 
 object KList:
-  // более удобный псевдоним для сопоставления с образцом
+  // более удобный псевдоним для сопоставления с шаблоном
   val :^: : KCons.type = KCons
 ```
 

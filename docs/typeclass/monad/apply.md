@@ -19,8 +19,6 @@ nextPage = applicative.html
 - `product` (или `tuple2`, `tuple3` и т.д.) — комбинирует два значения в контексте в пару (или кортеж) в том же контексте.
 - `ap` (или `apply`) — применяет функцию в контексте к значению в контексте.
 
-**Зачем нужен Apply?**
-
 `Apply` полезен, когда вам нужно:
 
 - Применять функции, находящиеся в контексте, к значениям, также находящимся в контексте.
@@ -77,69 +75,154 @@ trait Apply[F[_]] extends Functor[F], Semigroupal[F]:
 
 Очевидно, эти операции можно дальше расширять на более длинные кортежи: `apply3`, `apply4` и т.д.
 
-### "Обертка"
+### Законы
 
-```dotty
-type Id[A] = A
-object Id:
-  def apply[A](a: A): Id[A] = a
+- Закон `Apply` гласит, что композиция функций внутри аппликативного функтора должна быть согласована
+  с применением функций по отдельности. Формально это можно выразить так:
+  `apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)`
 
-given Apply[Id] with
-  override def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = Id(fab(fa))
+## Упражнения
 
-  extension [A](as: Id[A]) override def map[B](f: A => B): Id[B] = Id(f(as))
-```
+### Упражнение 2.4.1: Реализация Apply для типа Option.
 
-Докажем, что обертка удовлетворяет закону `Apply`: 
-`apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map(bc => ab => bc compose ab))(fab))(fa)`
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
 
-- `apply(fbc)(apply(fab)(fa)) = apply(fbc)(fab(fa)) = fbc(fab(fa)) = (bc compose ab)(fa)`
-- ```dotty
-  apply(apply(fbc.map(bc => ab => bc compose ab))(fab))(fa) = 
-  fbc.map(bc => ab => bc compose ab)(fab)(fa) = 
-  f(ab => bc compose ab)(fab)(fa) = (bc compose ab)(fa)
-  ```
+Реализуйте экземпляр `Apply` для типа `Option`. Семантика должна быть следующей:
+- Если оба значения — `Some`, функция применяется к значению, результат — `Some`
+- Если хотя бы одно значение — `None`, результат — `None`
 
-### Option
+Также требуется реализовать `map`.
 
 ```dotty
 given Apply[Option] with
-  override def apply[A, B](fab: Option[A => B])(fa: Option[A]): Option[B] =
+  def apply[A, B](fab: Option[A => B])(fa: Option[A]): Option[B] = ???
+
+  extension [A](as: Option[A])
+    def map[B](f: A => B): Option[B] = ???
+```
+
+**Примеры:**
+
+```dotty
+import Apply.given
+
+// product из Semigroupal (должен работать автоматически)
+val product1 = product(someNum, someStr)   // Some((42, "Hello"))
+val product2 = product(someNum, none)      // None
+
+// apply (ap) — применение функции из контекста
+val optFunc: Option[Int => String] = Some(_.toString)
+val applied1 = apply(optFunc)(someNum)    // Some("42")
+val applied2 = apply(optFunc)(none)       // None
+
+val optNoneFunc: Option[Int => String] = None
+val applied3 = apply(optNoneFunc)(someNum) // None
+
+// map
+val mapped1 = someNum.map(_ * 2)          // Some(84)
+val mapped2 = none.map(_ * 2)             // None
+```
+
+@:note(🔍 Показать решение)
+
+Решение использует сопоставление с шаблоном для обработки двух случаев. 
+В методе `apply` мы сопоставляем пару `(fab, fa)`: 
+если оба значения являются `Some` — извлекаем функцию `aToB` и значение `a`, 
+применяем функцию к значению и возвращаем `Some(aToB(a))`. 
+Во всех остальных случаях (когда хотя бы одно значение — `None`) возвращаем `None`. 
+
+В методе `map` мы также используем сопоставление с шаблоном: 
+если значение — `Some(a)`, применяем функцию `f` и возвращаем `Some(f(a))`; 
+если значение — `None`, возвращаем `None`. 
+
+Обратите внимание, что `Apply` наследуется от `Semigroupal`, 
+поэтому метод `product` уже реализован через `apply` и `map` (или должен быть предоставлен отдельно), 
+но в данном экземпляре мы полагаемся на реализации по умолчанию в трейте `Apply`.
+
+```dotty
+given Apply[Option] with
+  def apply[A, B](fab: Option[A => B])(fa: Option[A]): Option[B] =
     (fab, fa) match
       case (Some(aToB), Some(a)) => Some(aToB(a))
       case _                     => None
 
   extension [A](as: Option[A])
-    override def map[B](f: A => B): Option[B] =
+    def map[B](f: A => B): Option[B] =
       as match
         case Some(a) => Some(f(a))
         case None    => None
 ```
 
-### Законы
+@:@
 
-- Закон `Apply` гласит, что композиция функций внутри аппликативного функтора должна быть согласована 
-  с применением функций по отдельности. Формально это можно выразить так:
-  `apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)`
+### Упражнение 2.4.2: Реализация Apply для типа List.
+
+Реализуйте экземпляр `Apply` для типа `List`. Семантика должна быть следующей:
+- Функции и значения комбинируются попарно на одинаковых позициях (как "молния" / zip)
+- Результат имеет длину, равную минимальной длине из двух списков
+- Если один из списков пуст, результат — пустой список
+
+Важно: эта реализация **не** должна создавать декартово произведение всех функций на все значения.
+Также требуется реализовать `map`, который применяет функцию к каждому элементу списка.
 
 ```dotty
-... // Законы Функтора и Semigroupal
+given Apply[List] with
+  def apply[A, B](fab: List[A => B])(fa: List[A]): List[B] = ???
 
-def checkApplyComposition[F[_], A, B, C](
-    fa: F[A],
-    fab: F[A => B],
-    fbc: F[B => C]
-)(using ap: Apply[F]): ValidatedNel[String, Unit] =
-  import ap.apply
-  Either.cond[String, Unit](
-    apply(fbc)(apply(fab)(fa)) ==
-      apply(
-        apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab)
-      )(fa),
-    (),
-    "Не соблюдается композиция: apply(fbc)(apply(fab)(fa)) == apply(apply(fbc.map((bc: B => C) => (ab: A => B) => bc compose ab))(fab))(fa)"
-  ).toValidatedNel
+  extension [A](as: List[A])
+    def map[B](f: A => B): List[B] = ???
 ```
+
+**Примеры:**
+
+```dotty
+import Apply.given
+
+val numbers = List(1, 2, 3, 4, 5)
+val strings = List("a", "b", "c")
+val booleans = List(true, false)
+val empty = List.empty[Int]
+
+// product из Semigroupal (должен работать автоматически)
+val product1 = product(numbers, strings)   
+// List((1,"a"), (2,"b"), (3,"c"))
+
+val product2 = product(numbers, booleans)  
+// List((1,true), (2,false))
+
+val product3 = product(numbers, empty)     
+// Nil
+
+val funcs1: List[Int => String] = List(_.toString, x => s"num:$x")
+val applied2 = apply(funcs1)(List(10, 20))  
+// List("10", "num:10", "20", "num:20")
+```
+
+@:note(🔍 Показать решение)
+
+Это реализация `Apply[List]`, где операция `apply` (известная как `ap`) комбинирует список функций со списком значений, 
+применяя каждую функцию из `fab` ко всем элементам `fa` и объединяя результаты. 
+
+Метод `map` реализован стандартно через рекурсивный обход списка и применяет функцию `f` к каждому элементу, сохраняя структуру. 
+Эта реализация соответствует поведению декартова произведения, где результат содержит `|fab| * |fa|` элементов — 
+в отличие от "зип-подобной" реализации, где результат ограничен минимальной длиной.
+
+```dotty
+given Apply[List] with
+  def apply[A, B](fab: List[A => B])(fa: List[A]): List[B] =
+    fab match
+      case Nil    => Nil
+      case h :: t =>
+        fa.map(h) ++ apply(t)(fa)
+
+  extension [A](as: List[A])
+    def map[B](f: A => B): List[B] =
+      as match
+        case h :: t => f(h) :: t.map(f)
+        case Nil    => Nil
+```
+
+@:@
 
 ## Схема
 

@@ -35,7 +35,10 @@ object Applicative:
     override def unit[A](a: => A): List[A] = List(a)
 
     override def apply[A, B](fab: List[A => B])(fa: List[A]): List[B] =
-      fab.flatMap { aToB => fa.map(aToB) }
+      fab match
+        case f :: tail =>
+          fa.map(f) ++ apply(tail)(fa)
+        case Nil => Nil
 
   given stateApplicative[S]: Applicative[[X] =>> State[S, X]] with
     override def unit[A](a: => A): State[S, A] =

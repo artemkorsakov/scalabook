@@ -99,35 +99,12 @@ nextPage = bind.html
 `Applicative`, дополнительно к операциям `Apply`, реализует операцию `unit` (другие названия: `point`, `pure`),
 оборачивающую значение произвольного типа `A` в `Applicative`.
 
-Для `Applicative` должны соблюдаться следующие законы (помимо законов родительских классов типов):
-
-> Ниже подразумеваются следующие сигнатуры: `a: A, f: A => B, fa: F[A], fb: F[B], fc: F[C], fab: F[A => B], fbc: F[B => C]`
-
-- Тождественность (identity): `apply(unit(identity))(fa) == fa` (`unit` тождественной функции - это тождественность для `apply`)
-- `unit(a).map(f) == unit(f(a))`
-- `fa.map(f) == apply(unit(f))(fa)`
-- Гомоморфизм (Homomorphism): `apply(unit(f))(unit(a)) == unit(f(a))` 
-  (Другими словами, применение идиоматической функции к `unit` такое же, как и к `unit` обычного применения функции. 
-  Точнее, `unit` — это гомоморфизм из `A` в `F[A]` в отношении применения функции.)
-- Обмен (interchange): `apply(fab)(unit(a)) == apply(unit((f: A => B) => f(a)))(fab)`
-  (Этот закон, по сути, говорит о том, что `unit` не разрешено воздействовать на любую реализацию аппликативного функтора. 
-  Если один аргумент, который нужно применить, является `unit`, то другой может появиться в любой позиции. 
-  Другими словами, не должно иметь значения, когда мы выполняем `unit`.)
-- Тождественность слева (left identity): `unit(()).map2(fa)((_, a) => a) == fa`
-- Тождественность справа (right identity): `fa.map2(unit(()))((a, _) => a) == fa`
-- Ассоциативность (associativity): `fa.product(fb).product(fc) == fa.product(fb.product(fc)).map(assoc)`, где
-  `def assoc[A, B, C](p: (A, (B, C))): ((A, B), C) = p match { case (a, (b, c)) => ((a, b), c) }`
-- Естественность (naturality): `fa.map2(fb)((a, b) => (f(a), g(b))) == fa.map(f).product(fb.map(g))`
-- Композиция (composition): 
-  `apply(fbc)(apply(fab)(fa)) == apply(apply(apply(unit((g: B => C) => (f: A => B) => g compose f))(fbc))(fab))(fa)`
-  (Применить `fab` к `fa`, а затем применить `fbc` к этому — то же самое, 
-  что применить композицию к `fbc`, затем `fab`, а затем применить составную функцию к `fa`.) 
-
 ## Код
 
 ```dotty
 trait Applicative[F[_]] extends Apply[F], InvariantApplicative[F]:
   def unit[A](a: => A): F[A]
+  
   override def xunit0[A](a: => A): F[A] = unit(a)
 
   def apply[A, B](fab: F[A => B])(fa: F[A]): F[B]
@@ -137,48 +114,10 @@ trait Applicative[F[_]] extends Apply[F], InvariantApplicative[F]:
 
   extension [A](fa: F[A])
     def map[B](f: A => B): F[B] =
-      apply(unit(f))(fa)
+      ??? // Упражнение
 
     def map2[B, C](fb: F[B])(f: (A, B) => C): F[C] =
-      apply(apply(unit(f.curried))(fa))(fb)
-```
-
-### Виды Applicative
-
-#### Applicative с `unit` и `apply`
-
-`map2` и `map` могут быть выражены так:
-
-```dotty
-trait Applicative[F[_]] extends Functor[F]:
-  def unit[A](a: => A): F[A]
-
-  def apply[A, B](fab: F[A => B])(fa: F[A]): F[B]
-
-  extension [A](fa: F[A])
-    def map2[B,C](fb: F[B])(f: (A, B) => C): F[C] =
-      apply(apply(unit(f.curried))(fa))(fb)
-
-    def map[B](f: A => B): F[B] =
-      apply(unit(f))(fa)
-```
-
-#### Applicative с `unit` и `map2`
-
-`apply` и `map` могут быть выражены так:
-
-```dotty
-trait Applicative[F[_]] extends Functor[F]:
-  def unit[A](a: => A): F[A]
-
-  extension [A](fa: F[A])
-    def map2[B,C](fb: F[B])(f: (A, B) => C): F[C]
-
-    def map[B](f: A => B): F[B] =
-      fa.map2(unit(()))((a, _) => f(a))
-
-  def apply[A, B](fab: F[A => B])(fa: F[A]): F[B] =
-    fab.map2(fa)((f, a) => f(a))
+      ??? // Упражнение
 ```
 
 ### Комбинаторы Applicative
@@ -199,105 +138,346 @@ def product[A, B](fa: F[A], fb: F[B]): F[(A,B)] =
   fa.map2(fb)((a, b) => (a, b))
 ```
 
-### Tuple applicative
+### Законы
 
-Как и монады, аппликативные функторы замкнуты относительно произведений;
-поэтому два независимых аппликативных эффекта обычно могут быть слиты в один, их продукт.
+Для `Applicative` должны соблюдаться следующие законы (помимо законов родительских классов типов):
+
+> Ниже подразумеваются следующие сигнатуры: `a: A, f: A => B, fa: F[A], fb: F[B], fc: F[C], fab: F[A => B], fbc: F[B => C]`
+
+- Тождественность (identity): `apply[A, A](unit(identity))(fa) == fa` (`unit` тождественной функции - это тождественность для `apply`)
+- `unit(a).map(f) == unit(f(a))`
+- `fa.map(f) == apply(unit(f))(fa)`
+- Гомоморфизм (Homomorphism): `apply(unit(f))(unit(a)) == unit(f(a))`
+  (Другими словами, применение идиоматической функции к `unit` такое же, как и к `unit` обычного применения функции.
+  Точнее, `unit` — это гомоморфизм из `A` в `F[A]` в отношении применения функции.)
+- Обмен (interchange): `apply(fab)(unit(a)) == apply(unit((f: A => B) => f(a)))(fab)`
+  (Этот закон, по сути, говорит о том, что `unit` не разрешено воздействовать на любую реализацию аппликативного функтора.
+  Если один аргумент, который нужно применить, является `unit`, то другой может появиться в любой позиции.
+  Другими словами, не должно иметь значения, когда мы выполняем `unit`.)
+- Тождественность слева (left identity): `unit(()).map2(fa)((_, a) => a) == fa`
+- Тождественность справа (right identity): `fa.map2(unit(()))((a, _) => a) == fa`
+- Ассоциативность (associativity): `fa.product(fb).product(fc) == fa.product(fb.product(fc)).map(assoc)`, где
+  `def assoc[A, B, C](p: (A, (B, C))): ((A, B), C) = p match { case (a, (b, c)) => ((a, b), c) }`
+- Естественность (naturality): `fa.map2(fb)((a, b) => (f(a), g(b))) == fa.map(f).product(fb.map(g))`
+- Композиция (composition):
+  `apply(fbc)(apply(fab)(fa)) == apply(apply(apply(unit((g: B => C) => (f: A => B) => g compose f))(fbc))(fab))(fa)`
+  (Применить `fab` к `fa`, а затем применить `fbc` к этому — то же самое,
+  что применить композицию к `fbc`, затем `fab`, а затем применить составную функцию к `fa`.)
+
+## Упражнения
+
+### Упражнение 2.5.1: Реализация `map` и `map2` через `unit` и `apply`.
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Аппликативный функтор предоставляет две основные операции: `unit` (поднятие значения в контекст) 
+и `apply` (применение функции в контексте к значению в контексте). Используя только эти примитивы,
+выразите ковариантное отображение `map` и бинарное отображение `map2`.
+
+Реализуйте методы `map` и `map2` в трейте `Applicative`, используя только `unit` и `apply`.
 
 ```dotty
-given tupleApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>> (F[X], G[X])] with
-  type FG[A] = (F[A], G[A])
+trait Applicative[F[_]] extends Apply[F], InvariantApplicative[F]:
+  /** Поднимает значение в контекст аппликативного функтора. */
+  def unit[A](a: => A): F[A]
 
-  override def unit[A](a: => A): FG[A] = (summon[Applicative[F]].unit(a), summon[Applicative[G]].unit(a))
+  /** Применяет функцию в контексте к значению в контексте. */
+  def apply[A, B](fab: F[A => B])(fa: F[A]): F[B]
 
-  override def apply[A, B](fab: FG[A => B])(fa: FG[A]): FG[B] =
-    (summon[Applicative[F]].apply(fab._1)(fa._1), summon[Applicative[G]].apply(fab._2)(fa._2))
+  extension [A](fa: F[A])
+    /** Упражнение 2.5.1: Реализация `map` через `unit` и `apply`.
+      */
+    def map[B](f: A => B): F[B] =
+      ???
+
+    /** Упражнение 2.5.1: Реализация `map2` через `unit` и `apply`.
+      */
+    def map2[B, C](fb: F[B])(f: (A, B) => C): F[C] =
+      ???
 ```
 
-### Composite Applicative
-
-В отличие от монад, аппликативные функторы также закрыты по композиции;
-поэтому два последовательно зависимых аппликативных эффекта обычно могут быть объединены в один.
-Это называется композицией над `Applicative`:
+**Примеры:**
 
 ```dotty
-given compositeApplicative[F[_]: Applicative, G[_]: Applicative]: Applicative[[X] =>> F[G[X]]] with
-  override def unit[A](a: => A): F[G[A]] = summon[Applicative[F]].unit(summon[Applicative[G]].unit(a))
+// Для Option
+val opt = Some(5)
+val optMapped = opt.map(_ * 3)             // Some(15)
+val optMapped2 = opt.map2(Some(10))(_ + _) // Some(15)
 
-  override def apply[A, B](fab: F[G[A => B]])(fa: F[G[A]]): F[G[B]] =
-    val applicativeF = summon[Applicative[F]]
-    val applicativeG = summon[Applicative[G]]
-    val tmp: F[G[A] => G[B]] = applicativeF.map(fab)(ga2b => applicativeG.apply(ga2b))
-    applicativeF.apply(tmp)(fa)
+// Для List
+val list = List(1, 2, 3)
+val listMapped = list.map(_ * 2)         // List(2, 4, 6)
+val listMapped2 = list.map2(List(10, 20))(_ + _) // List(11, 21, 12, 22)
 ```
 
-Произведение и композиция позволяют комбинировать идиоматические (аппликативные) вычисления двумя разными способами; 
-Обычно они называются параллельной и последовательной композицией соответственно. 
-Тот факт, что можно составлять аппликативы, и они остаются аппликативными, очень полезен.
+@:note(🔍 Показать решение)
 
-### "Обертка"
+Для реализации `map` мы поднимаем функцию `f` в контекст с помощью `unit`, получая `F[A => B]`, 
+а затем применяем её к `fa` с помощью `apply`. 
+Для реализации `map2` мы используем каррирование: 
+сначала поднимаем каррированную версию бинарной функции `f.curried: A => B => C` в контекст через `unit`, 
+затем дважды применяем `apply`: первый раз к `fa` (получая `F[B => C]`), второй раз к `fb` (получая `F[C]`). 
 
 ```dotty
-type Id[A] = A
-object Id:
-  def apply[A](a: A): Id[A] = a
+trait Applicative[F[_]] extends Apply[F], InvariantApplicative[F]:
+  def unit[A](a: => A): F[A]
 
-given idApplicative: Applicative[Id] with
-  def unit[A](a: => A): Id[A]                        = a
-  def apply[A, B](fab: Id[A => B])(fa: Id[A]): Id[B] = fab(fa)
+  def apply[A, B](fab: F[A => B])(fa: F[A]): F[B]
+
+  extension [A](fa: F[A])
+    def map[B](f: A => B): F[B] =
+      apply(unit(f))(fa)
+
+    def map2[B, C](fb: F[B])(f: (A, B) => C): F[C] =
+      apply(apply(unit(f.curried))(fa))(fb)
 ```
 
-### Option
+@:@
+
+### Упражнение 2.5.2: Реализация Applicative для типа Option
+
+Реализуйте экземпляр `Applicative` для `Option`:
+
+- `unit` должен поднимать значение в контекст `Option`
+- `apply` должен применять функцию внутри `Option` к значению внутри `Option`. 
 
 ```dotty
 given optionApplicative: Applicative[Option] with
-  override def unit[A](a: => A): Option[A] = Some(a)
+  def unit[A](a: => A): Option[A] = ???
+  
+  def apply[A, B](fab: Option[A => B])(fa: Option[A]): Option[B] = ???
+```
 
-  override def apply[A, B](fab: Option[A => B])(fa: Option[A]): Option[B] =
+**Примеры:**
+
+```dotty
+import Applicative.given
+
+// unit — поднятие значения
+unit(42)                  // Some(42)
+unit("Hello")             // Some("Hello")
+unit(true)                // Some(true)
+
+// apply — применение функции в контексте
+val optFunc = Some((x: Int) => x * 2)
+apply(optFunc)(Some(21))  // Some(42)
+apply(optFunc)(None)      // None
+
+val noneFunc: Option[Int => Int] = None
+apply(noneFunc)(Some(21)) // None
+apply(noneFunc)(None)     // None
+```
+
+@:note(🔍 Показать решение)
+
+В реализации `unit` достаточно обернуть переданное значение в `Some(a)`. 
+Для `apply` используется сопоставление с шаблоном: в случае, когда оба аргумента являются `Some(aToB)` и `Some(a)`, 
+мы извлекаем функцию и значение, применяем функцию к значению и возвращаем `Some(f(a))`. 
+Во всех остальных случаях (когда хотя бы один аргумент — `None`) возвращаем `None`. 
+Это соответствует семантике "опционального" вычисления, 
+где результат существует только тогда, когда существуют все его компоненты. 
+
+```dotty
+given optionApplicative: Applicative[Option] with
+  def unit[A](a: => A): Option[A] = Some(a)
+
+  def apply[A, B](fab: Option[A => B])(fa: Option[A]): Option[B] =
     (fab, fa) match
       case (Some(aToB), Some(a)) => Some(aToB(a))
       case _                     => None
 ```
 
-### Последовательность
+@:@
+
+### Упражнение 2.5.3: Реализация Applicative для типа List
+
+`List[A]` представляет недетерминированное вычисление, которое может вернуть ноль, одно или множество значений. 
+Реализуйте экземпляр `Applicative` для `List`, используя семантику "декартова произведения":
+
+- `unit` должен создавать одноэлементный список, содержащий переданное значение
+- `apply` должен применять каждую функцию из списка `fab` к каждому значению из списка `fa`, 
+  собирая все результаты в один список (декартово произведение)
 
 ```dotty
 given listApplicative: Applicative[List] with
-  override def unit[A](a: => A): List[A] = List(a)
-
-  override def apply[A, B](fab: List[A => B])(fa: List[A]): List[B] =
-    fab.flatMap { aToB => fa.map(aToB) }
+  def unit[A](a: => A): List[A] = ???
+  
+  def apply[A, B](fab: List[A => B])(fa: List[A]): List[B] = ???
 ```
 
-### Either
+**Примеры:**
+
+```dotty
+import Applicative.given
+
+// unit — создание одноэлементного списка
+unit(42)                  // List(42)
+unit("Hello")             // List("Hello")
+unit(true)                // List(true)
+
+// apply — декартово произведение
+val funcs = List((x: Int) => x + 1, (x: Int) => x * 2, (x: Int) => x - 3)
+val nums = List(1, 2, 3)
+
+apply(funcs)(nums)
+// Результат: List(2, 3, 4,  2, 4, 6,  -2, -1, 0)
+// Пошагово:
+// (_+1): 1+1=2, 2+1=3, 3+1=4
+// (_*2): 1*2=2, 2*2=4, 3*2=6
+// (_-3): 1-3=-2, 2-3=-1, 3-3=0
+
+// Пустые списки
+apply(List.empty[Int => Int])(List(1, 2, 3))  // Nil
+apply(List((x: Int) => x + 1))(List.empty)    // Nil
+```
+
+@:note(🔍 Показать решение)
+
+В реализации `unit` достаточно обернуть переданное значение в одноэлементный список `List(a)`. 
+Для `apply` используется алгоритм: 
+сначала мы проходим по каждой функции `aToB` из списка `fab`, 
+а затем для каждой функции применяем `map` ко всем значениям `fa`, преобразуя их с помощью этой функции. 
+Результатом будет список, содержащий результаты применения каждой функции к каждому значению. 
+Это и есть декартово произведение, где количество элементов результата равно `fab.length * fa.length`.
+
+```dotty
+given listApplicative: Applicative[List] with
+  def unit[A](a: => A): List[A] = List(a)
+
+  def apply[A, B](fab: List[A => B])(fa: List[A]): List[B] =
+    fab match
+      case f :: tail =>
+        fa.map(f) ++ apply(tail)(fa)
+      case Nil => Nil
+```
+
+@:@
+
+### Упражнение 2.5.4: Реализация Applicative для типа Either
+
+`Either[E, A]` представляет вычисление, которое может завершиться ошибкой типа `E` (ветка `Left`) 
+или успешным результатом типа `A` (ветка `Right`). 
+Реализуйте экземпляр `Applicative` для `Either[E, A]` с фиксированным типом ошибки `E`, следуя семантике "короткого замыкания":
+
+- `unit` должен поднимать значение в контекст `Either`
+- `apply` должен применять функцию из `Right` к значению из `Right`, возвращая `Right(f(a))`. 
+  Если хотя бы один из операндов — `Left`, результатом должен быть первый встреченный `Left` (ошибка прерывает вычисление)
 
 ```dotty
 given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
-  override def unit[A](a: => A): Either[E, A] = Right(a)
+  def unit[A](a: => A): Either[E, A] = ???
+  
+  def apply[A, B](fab: Either[E, A => B])(fa: Either[E, A]): Either[E, B] = ???
+```
 
-  override def apply[A, B](fab: Either[E, A => B])(fa: Either[E, A]): Either[E, B] =
+**Примеры:**
+
+```dotty
+import Applicative.given
+
+// unit — поднятие значения
+unit(42): Either[String, Int]         // Right(42)
+unit("Hello"): Either[String, String] // Right("Hello")
+unit(true): Either[String, Boolean]   // Right(true)
+
+// apply — применение функции в контексте
+val rightFunc: Either[String, Int => Int] = Right((x: Int) => x * 2)
+val rightValue: Either[String, Int] = Right(21)
+apply(rightFunc)(rightValue)       // Right(42)
+
+val leftFunc: Either[String, Int => Int] = Left("function error")
+val rightValue2: Either[String, Int] = Right(21)
+apply(leftFunc)(rightValue2)       // Left("function error")
+
+val rightFunc2: Either[String, Int => Int] = Right((x: Int) => x * 2)
+val leftValue: Either[String, Int] = Left("value error")
+apply(rightFunc2)(leftValue)       // Left("value error")
+
+val leftFunc2: Either[String, Int => Int] = Left("error1")
+val leftValue2: Either[String, Int] = Left("error2")
+apply(leftFunc2)(leftValue2)       // Left("error1") (первая ошибка)
+```
+
+@:note(🔍 Показать решение)
+
+В реализации `unit` достаточно обернуть переданное значение в `Right(a)`. 
+Для `apply` используется сопоставление с шаблоном по паре `(fab, fa)`. 
+В случае, когда оба аргумента являются `Right(fx)` и `Right(a)`, мы извлекаем функцию и значение, 
+применяем функцию к значению и возвращаем `Right(fx(a))`. 
+Если первый аргумент — `Left(l)`, возвращаем его, игнорируя второй аргумент. 
+Если первый аргумент — `Right`, но второй — `Left(l)`, возвращаем `Left(l)`. 
+Эта реализация соответствует семантике "короткого замыкания": первая встреченная ошибка немедленно возвращается, 
+а успешное вычисление продолжается только тогда, когда все компоненты являются `Right`. 
+
+```dotty
+given eitherApplicative[E]: Applicative[[x] =>> Either[E, x]] with
+  def unit[A](a: => A): Either[E, A] = Right(a)
+
+  def apply[A, B](fab: Either[E, A => B])(fa: Either[E, A]): Either[E, B] =
     (fab, fa) match
       case (Right(fx), Right(a)) => Right(fx(a))
       case (Left(l), _)          => Left(l)
       case (_, Left(l))          => Left(l)
 ```
 
-### Writer - функциональный журнал
+@:@
+
+### Упражнение 2.5.5: Реализация Applicative для типа Writer
+
+`Writer[W, A]` представляет вычисление, которое накапливает лог типа `W` (обычно моноид) и возвращает значение типа `A`. 
+Реализуйте экземпляр `Applicative` для `Writer[W, A]` с фиксированным типом лога `W`, следуя семантике накопления:
+
+- `unit` должен создавать `Writer` с пустым логом и переданным значением
+- `apply` должен последовательно выполнять два вычисления: сначала `fab` (получая функцию и промежуточный лог), 
+  затем `fa` (получая значение и финальный лог), после чего комбинировать логи и применять функцию к значению
 
 ```dotty
-case class Writer[W, A](run: () => (W, A))
-
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
-
-trait Monoid[A] extends Semigroup[A]:
-  def empty: A
-
 given writerApplicative[W](using monoid: Monoid[W]): Applicative[[x] =>> Writer[W, x]] with
-  override def unit[A](a: => A): Writer[W, A] =
+  def unit[A](a: => A): Writer[W, A] = ???
+    
+  def apply[A, B](fab: Writer[W, A => B])(fa: Writer[W, A]): Writer[W, B] = ???
+```
+
+**Примеры:**
+
+```dotty
+import Applicative.given
+import Monoid.given  // для String, List и других моноидов
+
+// Лог типа String (моноид с конкатенацией)
+val w1: Writer[String, Int] = unit(42)
+w1.run()  // ("", 42)
+
+val addOne: Writer[String, Int => Int] = Writer(() => ("Adding 1 ", (x: Int) => x + 1))
+val value: Writer[String, Int] = Writer(() => ("Value 5 ", 5))
+
+val result = apply(addOne)(value)
+result.run()  // ("Adding 1 Value 5 ", 6)
+
+// Лог типа List[String] (моноид с конкатенацией списков)
+val log1: Writer[List[String], Int] = Writer(() => (List("Step 1"), 10))
+val log2: Writer[List[String], Int => Int] = Writer(() => (List("Step 2: multiply"), (x: Int) => x * 2))
+
+val combined = apply(log2)(log1)
+combined.run()  // (List("Step 1", "Step 2: multiply"), 20)
+```
+
+@:note(🔍 Показать решение)
+
+В реализации `unit` создаётся `Writer`, который при выполнении возвращает пару из пустого лога (`monoid.empty`) 
+и переданного значения `a`. 
+В реализации `apply` мы сначала вызываем `fab.run()`, чтобы получить лог `w0` и функцию `aToB`. 
+Затем вызываем `fa.run()`, чтобы получить лог `w1` и значение `a`. 
+После этого комбинируем логи с помощью `monoid.combine(w0, w1)` и применяем функцию `aToB` к значению `a`. 
+Результат оборачивается в новый `Writer` с ленивым вычислением (`() =>`). 
+Важно, что порядок выполнения сначала `fab`, затем `fa` определяет порядок накопления логов: сначала логи из `fab`, затем из `fa`. 
+
+```dotty
+given writerApplicative[W](using monoid: Monoid[W]): Applicative[[x] =>> Writer[W, x]] with
+  def unit[A](a: => A): Writer[W, A] =
     Writer[W, A](() => (monoid.empty, a))
 
-  override def apply[A, B](fab: Writer[W, A => B])(fa: Writer[W, A]): Writer[W, B] =
+  def apply[A, B](fab: Writer[W, A => B])(fa: Writer[W, A]): Writer[W, B] =
     Writer { () =>
       val (w0, aToB) = fab.run()
       val (w1, a) = fa.run()
@@ -305,183 +485,307 @@ given writerApplicative[W](using monoid: Monoid[W]): Applicative[[x] =>> Writer[
     }
 ```
 
-### State - функциональное состояние
+@:@
+
+### Упражнение 2.5.6: Реализация Applicative для типа State
+
+`State[S, A]` представляет чистое функциональное вычисление, которое зависит от состояния и может его изменять. 
+Это функция из начального состояния `S` в пару `(новое состояние, значение типа A)`. 
+Реализуйте экземпляр `Applicative` для `State[S, A]` с фиксированным типом состояния `S`, 
+следуя семантике последовательного выполнения:
+
+- `unit` должен создавать `State`, который не изменяет переданное состояние и возвращает значение `a`
+- `apply` должен последовательно выполнять два вычисления: сначала `fab` (получая функцию и промежуточное состояние), 
+  затем `fa` на обновлённом состоянии (получая значение и финальное состояние), 
+  после чего применять функцию к значению и возвращать финальное состояние
+
+**Важно**: состояние должно передаваться через цепочку вычислений строго последовательно, как в конвейере.
 
 ```dotty
-case class State[S, +A](run: S => (S, A))
-
-given stateApplicative[S]: Applicative[[x] =>> State[S, x]] with
-  override def unit[A](a: => A): State[S, A] =
-    State[S, A](s => (s, a))
-
-  override def apply[A, B](fab: State[S, A => B])(fa: State[S, A]): State[S, B] =
-    State { s =>
-      val (s0, aToB) = fab.run(s)
-      val (s1, a) = fa.run(s0)
-      (s1, aToB(a))
-    }
+given stateApplicative[S]: Applicative[[X] =>> State[S, X]] with
+  def unit[A](a: => A): State[S, A] = ???
+  
+  def apply[A, B](fab: State[S, A => B])(
+      fa: State[S, A]
+  ): State[S, B] = ???
 ```
 
-### Nested
+**Примеры:**
 
 ```dotty
-final case class Nested[F[_], G[_], A](value: F[G[A]])
+import Applicative.given
 
-given nestedApplicative[F[_], G[_]](using
-    applF: Applicative[F],
-    applG: Applicative[G],
-    functorF: Functor[F]
-): Applicative[[X] =>> Nested[F, G, X]] with
-  override def unit[A](a: => A): Nested[F, G, A] = Nested(applF.unit(applG.unit(a)))
+// unit — вычисление, не меняющее состояние
+val st: State[Int, String] = unit("hello")
+st.run(5)  // (5, "hello")
 
-  override def apply[A, B](fab: Nested[F, G, A => B])(fa: Nested[F, G, A]): Nested[F, G, B] =
-    val curriedFuncs: G[A => B] => G[A] => G[B] = gaTob => ga => applG.apply(gaTob)(ga)
-    val fgaToB: F[G[A => B]] = fab.value
-    val fGaToGb: F[G[A] => G[B]] = functorF.map(fgaToB)(curriedFuncs)
-    val fga: F[G[A]] = fa.value
-    val fgb: F[G[B]] = applF.apply(fGaToGb)(fga)
-    Nested(fgb)
+// Базовые операции с состоянием
+val increment: State[Int, Int] = State(s => (s + 1, s))
+val decrement: State[Int, Int] = State(s => (s - 1, s))
+val getState: State[Int, Int] = State(s => (s, s))
+val setState: Int => State[Int, Unit] = (n: Int) => State(_ => (n, ()))
+
+// apply — последовательное применение
+val addOneFunc: State[Int, Int => Int] = unit((x: Int) => x + 1)
+val result1 = apply(addOneFunc)(getState).run(10)
+// (10, 11) — состояние не изменилось (10), значение = 10 + 1 = 11
+
+// Более сложная цепочка
+val transform: State[Int, Int => Int] = unit((x: Int) => x * 2)
+val result2 = apply(transform)(increment).run(5)
+// increment(5) -> (6, 5)
+// transform применяется к значению 5: 5 * 2 = 10
+// Результат: (6, 10)
 ```
 
-### IO
+@:note(🔍 Показать решение)
+
+В реализации `unit` создаётся `State`, который принимает состояние `s` и возвращает пару `(s, a)` — 
+состояние не изменяется, возвращается переданное значение `a`. 
+В реализации `apply` мы создаём новый `State`, который последовательно выполняет два вычисления: 
+сначала вызываем `fab.run(s)`, получая промежуточное состояние `s0` и функцию `aToB`. 
+Затем вызываем `fa.run(s0)` на обновлённом состоянии, получая финальное состояние `s1` и значение `a`. 
+После этого применяем функцию `aToB` к значению `a` и возвращаем пару `(s1, aToB(a))`. 
+Важно, что состояние передаётся строго последовательно: результат первого вычисления становится входом для второго. 
+Это позволяет компоновать вычисления с состоянием, сохраняя чистоту и предсказуемость. 
 
 ```dotty
-final case class IO[R](run: () => R)
+given stateApplicative[S]: Applicative[[X] =>> State[S, X]] with
+    def unit[A](a: => A): State[S, A] =
+      State[S, A](s => (s, a))
 
-given ioApplicative: Applicative[IO] with
-  override def unit[A](a: => A): IO[A] = IO(() => a)
-  override def apply[A, B](fab: IO[A => B])(fa: IO[A]): IO[B] = IO(() => fab.run()(fa.run()))
+    def apply[A, B](fab: State[S, A => B])(
+        fa: State[S, A]
+    ): State[S, B] =
+      State { s =>
+        val (s0, aToB) = fab.run(s)
+        val (s1, a)    = fa.run(s0)
+        (s1, aToB(a))
+      }
 ```
 
-### Законы
+@:@
 
-- Тождественность: `apply[A, A](unit(identity))(fa) == fa`
-- `unit(x).map(f) == unit(f(x))`
-- `fa.map(f) == apply(unit(f))(fa)`
-- Гомоморфизм: `apply(unit(f))(unit(x)) == unit(f(x))`
-- Обмен (interchange): `apply(fab)(unit(a)) == apply(unit((f: A => B) => f(a)))(fab)`
-- Тождественность слева (left identity): `unit(()).map2(fa)((_, a) => a) == fa`
-- Тождественность справа (right identity): `fa.map2(unit(()))((a, _) => a) == fa`
-- Ассоциативность (associativity): `fa.product(fb).product(fc) == fa.product(fb.product(fc)).map(assoc)`, где
-  `def assoc[A, B, C](p: (A, (B, C))): ((A, B), C) = p match { case (a, (b, c)) => ((a, b), c) }`
-- Естественность (naturality): `fa.map2(fb)((a, b) => (f(a), g(b))) == fa.map(f).product(fb.map(g))`
-- Композиция (composition): 
-  `apply(fbc)(apply(fab)(fa)) == apply(apply(apply(unit((g: B => C) => (f: A => B) => g compose f))(fbc))(fab))(fa)`
+### Упражнение 2.5.7: Композиция двух аппликативных функторов
 
+Важнейшее свойство аппликативных функторов: они замкнуты относительно композиции. 
+Если `F` и `G` — аппликативные функторы, то `F[G[A]]` также является аппликативным функтором. 
+Это позволяет комбинировать эффекты вложенных контекстов.
+
+В отличие от [монад](monad.md), аппликативные функторы всегда можно скомпоновать, и результат будет аппликативным функтором. 
+Это означает, что два последовательно зависимых аппликативных эффекта могут быть объединены в один без потери аппликативной структуры.
+Это называется композицией над `Applicative`.
+
+Реализуйте экземпляр `Applicative` для композиции `F[G[A]]`.
 
 ```dotty
-def checkApplyIdentity[F[_], A](fa: F[A])(using
-    ap: Applicative[F]
-): ValidatedNel[String, Unit] =
-  import ap.*
-  Either.cond[String, Unit](
-    apply[A, A](unit(identity))(fa) == fa,
-    (),
-    "Не соблюдается тождественность: apply(unit(identity))(fa) == fa"
-  ).toValidatedNel
+given compositeApplicative[F[_]: Applicative, G[_]: Applicative]
+    : Applicative[[X] =>> F[G[X]]] with
+  def unit[A](a: => A): F[G[A]] = ???
   
-def checkUnitMap[F[_], A, B](a: A, f: A => B)(using
-    ap: Applicative[F]
-): ValidatedNel[String, Unit] =
-  import ap.*
-  Either.cond[String, Unit](
-    unit(a).map(f) == unit(f(a)),
-    (),
-    "Не соблюдается закон: unit(x).map(f) == unit(f(x))"
-  ).toValidatedNel  
-  
-def checkApplyUnit[F[_], A, B](fa: F[A], f: A => B)(using
-    ap: Applicative[F]
-): ValidatedNel[String, Unit] =
-  import ap.*
-  Either.cond[String, Unit](
-    fa.map(f) == apply(unit(f))(fa),
-    (),
-    "Не соблюдается закон: fa.map(f) == apply(unit(f))(fa)"
-  ).toValidatedNel  
-  
-def checkHomomorphism[F[_], A, B](a: A, f: A => B)(using
-    ap: Applicative[F]
-): ValidatedNel[String, Unit] =
-  import ap.*
-  Either.cond[String, Unit](
-    apply(unit(f))(unit(a)) == unit(f(a)),
-    (),
-    "Не соблюдается гомоморфизм: apply(unit(f))(unit(x)) == unit(f(x))"
-  ).toValidatedNel
-
-def checkInterchange[F[_], A, B](a: A, fab: F[A => B])(using
-    ap: Applicative[F]
-): ValidatedNel[String, Unit] =
-  import ap.*
-  Either.cond[String, Unit](
-    apply(fab)(unit(a)) == apply(unit((f: A => B) => f(a)))(fab),
-    (),
-    "Не соблюдается обмен: apply(fab)(unit(a)) == apply(unit((f: A => B) => f(a)))(fab)"
-  ).toValidatedNel
-
-def checkLeftIdentity[F[_], A](fa: F[A])(using
-    ap: Applicative[F]
-): ValidatedNel[String, Unit] =
-  import ap.*
-  Either.cond[String, Unit](
-    unit(()).map2(fa)((_, a) => a) == fa,
-    (),
-    "Не соблюдается тождественность слева: unit(()).map2(fa)((_, a) => a) == fa"
-  ).toValidatedNel
-
-def checkRightIdentity[F[_], A](fa: F[A])(using
-    ap: Applicative[F]
-): ValidatedNel[String, Unit] =
-  import ap.*
-  Either.cond[String, Unit](
-    fa.map2(unit(()))((a, _) => a) == fa,
-    (),
-    "Не соблюдается тождественность справа: fa.map2(unit(()))((a, _) => a) == fa"
-  ).toValidatedNel  
-
-def checkAssociativity[F[_], A, B, C](
-    fa: F[A],
-    fb: F[B],
-    fc: F[C]
-)(using ap: Applicative[F]): ValidatedNel[String, Unit] =
-  import ap.*
-  def assoc(p: (A, (B, C))): ((A, B), C) = p match
-    case (a, (b, c)) => ((a, b), c)
-  Either.cond[String, Unit](
-    product(product(fa, fb), fc) == product(fa, product(fb, fc)).map(assoc),
-    (),
-    "Не соблюдается ассоциативность: product(product(fa, fb), fc) == product(fa, product(fb, fc)).map(assoc)"
-  ).toValidatedNel  
-  
-def checkNaturality[F[_], A, B, C](
-    fa: F[A],
-    fb: F[B],
-    f: A => B,
-    g: B => C
-)(using ap: Applicative[F]): ValidatedNel[String, Unit] =
-  import ap.*
-  Either.cond[String, Unit](
-    fa.map2(fb)((a, b) => (f(a), g(b))) == product(fa.map(f), fb.map(g)),
-    (),
-    "Не соблюдается естественность: fa.map2(fb)((a, b) => (f(a), g(b))) == fa.map(f).product(fb.map(g))"
-  ).toValidatedNel 
-  
-def checkApplicativeComposition[F[_], A, B, C](
-    fa: F[A],
-    fab: F[A => B],
-    fbc: F[B => C]
-)(using ap: Applicative[F]): ValidatedNel[String, Unit] =
-  import ap.*
-  Either.cond[String, Unit](
-    apply(fbc)(apply(fab)(fa)) ==
-      apply(apply(
-        apply(unit((g: B => C) => (f: A => B) => g compose f))(fbc)
-      )(fab))(fa),
-    (),
-    "Не соблюдается композиция: apply(fbc)(apply(fab)(fa)) == apply(apply(apply(unit((g: B => C) => (f: A => B) => g compose f))(fbc))(fab))(fa)"
-  ).toValidatedNel   
+  def apply[A, B](fab: F[G[A => B]])(fa: F[G[A]]): F[G[B]] = ???
 ```
+
+**Примеры:**
+
+```dotty
+import Applicative.given
+
+// Пример: композиция Option и List
+type OptionList[A] = List[Option[A]]
+
+// unit — создание вложенного значения
+unit(42): OptionList[Int]  // List(Some(42))
+
+// apply — комбинирует все возможные варианты
+val funcs: OptionList[Int => String] = List(Some((x: Int) => x.toString), None, Some((x: Int) => s"num:$x"))
+val values: OptionList[Int] = List(Some(1), Some(2), None)
+
+val result = apply(funcs)(values)
+// Результат: 
+// List(
+//   Some("1"), Some("2"), None,        // от Some(_.toString)
+//   None, None, None,                  // от None
+//   Some("num:1"), Some("num:2"), None // от Some("num:"+_)
+// )
+```
+
+@:note(🔍 Показать решение)
+
+Реализация композиции использует аппликативные операции внешнего функтора `F` и внутреннего `G`. 
+В `unit` мы сначала поднимаем значение `a` в контекст `G` с помощью `Applicative[G].unit(a)`, 
+а затем поднимаем результат в контекст `F` с помощью `Applicative[F].unit(...)`. 
+
+В `apply` мы получаем `fab: F[G[A => B]]` и `fa: F[G[A]]`. 
+Используя `Applicative[F].map`, мы преобразуем внутреннее `G[A => B]` в функцию `G[A] => G[B]` с помощью `Applicative[G].apply`. 
+В результате получаем `F[G[A] => G[B]]`. 
+Затем применяем это к `fa` с помощью `Applicative[F].apply`, получая `F[G[B]]`. 
+Таким образом, внешний слой `F` управляет композицией, а внутренний `G` отвечает за применение функций к значениям.
+
+```dotty
+given compositeApplicative[F[_]: Applicative, G[_]: Applicative]
+    : Applicative[[X] =>> F[G[X]]] with
+  override def unit[A](a: => A): F[G[A]] = 
+    Applicative[F].unit(Applicative[G].unit(a))
+
+  override def apply[A, B](fab: F[G[A => B]])(fa: F[G[A]]): F[G[B]] =
+    val applicativeF = Applicative[F]
+    val applicativeG = Applicative[G]
+    val tmp: F[G[A] => G[B]] = 
+      applicativeF.map(fab)(ga2b => applicativeG.apply(ga2b))
+    applicativeF.apply(tmp)(fa)
+```
+
+@:@
+
+### Упражнение 2.5.8: Композиция двух аппликативных функторов как пара (произведение)
+
+Важное свойство аппликативных функторов: они замкнуты относительно произведения (прямого произведения). 
+Если `F` и `G` являются аппликативными функторами, то пара `(F[A], G[A])` также является аппликативным функтором. 
+Это позволяет выполнять два независимых аппликативных эффекта одновременно и объединять их результаты в один продукт.
+
+В отличие от композиции (вложенности), произведение представляет собой **параллельную композицию** эффектов: 
+оба вычисления выполняются независимо, и их результаты собираются в кортеж. 
+Это особенно полезно, когда нужно совместить два разных контекста, 
+например, валидацию (`Either`) и логирование (`Writer`), 
+или опциональность (`Option`) и недетерминизм (`List`).
+
+Реализуйте экземпляр `Applicative` для произведения `(F[A], G[A])`.
+
+```dotty
+given tupleApplicative[F[_]: Applicative, G[_]: Applicative]
+    : Applicative[[X] =>> (F[X], G[X])] with
+  type FG[A] = (F[A], G[A])
+
+  def unit[A](a: => A): FG[A] = ???
+  
+  def apply[A, B](fab: FG[A => B])(fa: FG[A]): FG[B] = ???
+```
+
+**Примеры:**
+
+```dotty
+import Applicative.given
+
+// Пример 1: Произведение Option и List
+type OptionList[A] = (Option[A], List[A])
+
+// unit — создание пары из двух единичных контекстов
+unit(42): OptionList[Int]  // (Some(42), List(42))
+unit("hello"): OptionList[String]  // (Some("hello"), List("hello"))
+
+// apply — покомпонентное применение
+val fab: (Option[Int => String], List[Int => String]) = 
+  (Some((x: Int) => x.toString), List((x: Int) => x + 1, (x: Int) => x * 2))
+val fa: (Option[Int], List[Int]) = (Some(5), List(1, 2, 3))
+
+val result = apply(fab)(fa)
+// Результат: (Some("5"), List(2, 3, 4, 2, 4, 6))
+// Option часть: Some(5.toString) = Some("5")
+// List часть: декартово произведение: (1+1=2, 2+1=3, 3+1=4, 1*2=2, 2*2=4, 3*2=6)
+```
+
+@:note(🔍 Показать решение)
+
+Реализация произведения двух аппликативных функторов выполняется покомпонентно. 
+В методе `unit` мы создаём пару из результатов вызова `unit` для каждого функтора: `(Applicative[F].unit(a), Applicative[G].unit(a))`. 
+
+В методе `apply` мы получаем пару функций `fab = (ff: F[A => B], fg: G[A => B])` и пару значений `fa = (faF: F[A], faG: G[A])`. 
+Результатом будет пара, где первая компонента — результат применения `ff` к `faF` с помощью `Applicative[F].apply`, 
+а вторая компонента — результат применения `fg` к `faG` с помощью `Applicative[G].apply`. 
+Таким образом, оба вычисления выполняются независимо, и их результаты объединяются в кортеж. 
+Это демонстрирует, что аппликативные функторы замкнуты относительно произведения, что позволяет комбинировать независимые эффекты параллельно.
+
+```dotty
+given tupleApplicative[F[_]: Applicative, G[_]: Applicative]
+    : Applicative[[X] =>> (F[X], G[X])] with
+  type FG[A] = (F[A], G[A])
+
+  def unit[A](a: => A): FG[A] =
+    (Applicative[F].unit(a), Applicative[G].unit(a))
+
+  def apply[A, B](fab: FG[A => B])(fa: FG[A]): FG[B] =
+    (
+     Applicative[F].apply(fab._1)(fa._1), 
+     Applicative[G].apply(fab._2)(fa._2)
+    )
+```
+
+@:@
+
+Произведение (`(F[X], G[X])`) и композиция (`F[G[A]]`) позволяют комбинировать идиоматические (аппликативные) вычисления двумя разными способами;
+Обычно они называются параллельной и последовательной композицией соответственно.
+Тот факт, что можно составлять аппликативы, и они остаются аппликативными, очень полезен.
+
+### Упражнение 2.5.9: Эквивалентность определений Applicative — реализация `map` и `apply` через `map2`
+
+Аппликативный функтор может быть определён различными, но эквивалентными способами. 
+Обычно `Applicative` определяется через `unit` и `apply`, 
+но существует альтернативное определение через `unit` и `map2`. 
+Покажите эквивалентность этих подходов, реализовав `map` и `apply` через `unit` и `map2`.
+
+В данном упражнении предполагается, что `map2` уже реализован, и вы должны выразить `map` и `apply` через него.
+
+```dotty
+trait Applicative[F[_]] extends Apply[F], InvariantApplicative[F]:
+  /** Поднимает значение в контекст аппликативного функтора. */
+  def unit[A](a: => A): F[A]
+
+  /** Бинарное отображение — комбинирует два значения 
+    * в контексте с помощью бинарной функции. 
+    */
+  extension [A](fa: F[A])
+    def map2[B, C](fb: F[B])(f: (A, B) => C): F[C]
+
+  /** Упражнение 2.5.9: Реализация `map` через `unit` и `map2`. */
+  extension [A](fa: F[A])
+    def mapViaUnitAndMap2[B](f: A => B): F[B] =
+      ???
+
+  /** Упражнение 2.5.9: Реализация `map` через `unit` и `map2`. */
+  def applyViaUnitAndMap2[A, B](fab: F[A => B])(fa: F[A]): F[B] =
+    ???
+```
+
+**Примеры:**
+
+```dotty
+import Applicative.given
+
+// Для Option
+val opt = Some(5)
+val optMapped = opt.mapViaUnitAndMap2(_ * 3)  // Some(15)
+val optFunc = Some((x: Int) => x * 2)
+val optApplied = applyViaUnitAndMap2(optFunc)(opt)  // Some(10)
+```
+
+@:note(🔍 Показать решение)
+
+Для реализации `mapViaUnitAndMap2` мы используем `map2` с `unit(())` в качестве второго аргумента. 
+Бинарная функция `(a, _) => f(a)` игнорирует второй аргумент (единицу) и применяет `f` к первому аргументу. 
+Таким образом, `fa.map2(unit(()))((a, _) => f(a))` эффективно применяет `f` к значению внутри `fa`, 
+игнорируя пустой контекст `unit(())`. 
+Это работает, потому что `map2` комбинирует два контекста, 
+а `unit(())` представляет собой "пустой" эффект, который не влияет на результат.
+
+Для реализации `applyViaUnitAndMap2` мы используем `fab.map2(fa)((f, a) => f(a))`. 
+Здесь `fab` содержит функцию в контексте, `fa` содержит значение в контексте, 
+а бинарная функция `(f, a) => f(a)` просто применяет функцию к аргументу. 
+`map2` заботится о правильной комбинации эффектов обоих контекстов, 
+применяя функцию `f` к значению `a` внутри соответствующих контекстов. 
+Это демонстрирует, что `apply` может быть выражен через `map2`, 
+что подтверждает эквивалентность двух альтернативных определений аппликативного функтора.
+
+```dotty
+extension [A](fa: F[A])
+  def mapViaUnitAndMap2[B](f: A => B): F[B] =
+    fa.map2(unit(()))((a, _) => f(a))
+
+def applyViaUnitAndMap2[A, B](fab: F[A => B])(fa: F[A]): F[B] =
+  fab.map2(fa)((f, a) => f(a))
+```
+
+@:@
 
 ## Схема
 
@@ -532,8 +836,8 @@ import Scalaz.*
 
 // ... Все операции родителей
 
-1.point[List]                                         // List(1)
-1.η[List]                                             // List(1)
+1.point[List]  // List(1)
+1.η[List]      // List(1)
 ```
 
 ---

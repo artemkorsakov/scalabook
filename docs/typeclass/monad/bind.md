@@ -5,7 +5,7 @@ showNext = true
 nextPage = monad.html
 %}
 
-# Bind
+# Bind (FlatMap)
 
 В функциональном программировании, в частности в Scala, `bind` (или `flatMap`) — это операция, 
 которая используется для работы с монадическими типами данных. 
@@ -87,7 +87,10 @@ trait Bind[F[_]] extends Apply[F]:
 
     def bind[B](f: A => F[B]): F[B] = flatMap(f)
 
-  def join[A](ffa: F[F[A]]): F[A] = flatMap(ffa)(a => a)
+  extension [A](ffa: F[F[A]])
+    def flatten: F[A] = ffa.flatMap(identity)
+
+    def join: F[A] = flatten
 
   override def apply[A, B](fab: F[A => B])(fa: F[A]): F[B] =
     flatMap(fab)(x => fa.map(x))
@@ -96,66 +99,134 @@ trait Bind[F[_]] extends Apply[F]:
     flatMap(fa)(a => fb.map(b => f(a, b)))
 ```
 
-### "Обертка"
-
-```dotty
-type Id[A] = A
-object Id:
-  def apply[A](a: A): Id[A] = a
-
-given Bind[Id] with
-  extension [A](fa: Id[A])
-    override def map[B](f: A => B): Id[B] =
-      Id(f(fa))
-
-    override def flatMap[B](f: A => Id[B]): Id[B] =
-      f(fa)
-```
-
-### Option
-
-```dotty
-given Bind[Option] with
-  extension [A](fa: Option[A])
-    override def map[B](f: A => B): Option[B] =
-      fa match
-        case Some(a) => Some(f(a))
-        case None    => None
-
-    override def flatMap[B](f: A => Option[B]): Option[B] =
-      fa match
-        case Some(a) => f(a)
-        case None    => None
-```
-
 ### Законы
 
 - соответствие `apply` и `flatMap`: `apply(fab)(fa) == fab.flatMap(a2b => fa.map(a2b))`
 - ассоциативность на `flatMap`: `fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) }`
 
-```dotty
-def checkApplyFlatmap[F[_], A, B](fa: F[A], fab: F[A => B])(using
-    bind: Bind[F]
-): ValidatedNel[String, Unit] =
-  import bind.*
-  Either.cond[String, Unit](
-    apply(fab)(fa) == fab.flatMap(a2b => fa.map(a2b)),
-    (),
-    "Не соблюдается соответствие apply и flatMap: apply(fab)(fa) == fab.flatMap(a2b => fa.map(a2b))"
-  ).toValidatedNel
+## Упражнения
 
-def checkFlatmapAssociativity[F[_], A, B, C](
-    fa: F[A],
-    f: A => F[B],
-    g: B => F[C]
-)(using bind: Bind[F]): ValidatedNel[String, Unit] =
-  import bind.*
-  Either.cond[String, Unit](
-    fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) },
-    (),
-    "Не соблюдается ассоциативность на flatMap: fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) }"
-  ).toValidatedNel
+### Упражнение 2.6.1: Реализация Bind для типа Option.
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Реализуйте экземпляр `Bind` для типа `Option`:
+
+```dotty
+given optionBind: Bind[Option] with
+  extension [A](fa: Option[A])
+    override def flatMap[B](f: A => Option[B]): Option[B] = ???
+
+  extension [A](fa: Option[A])
+    override def map[B](f: A => B): Option[B] = ???
 ```
+
+**Примеры:**
+
+```dotty
+import Bind.given
+
+// flatMap
+Some(42).flatMap(x => Some(x * 2))  // Some(84)
+Some(42).flatMap(_ => None)         // None
+None.flatMap((x: Int) => Some(x))   // None
+
+// map через flatMap (автоматически)
+Some(5).map(_ * 3)                  // Some(15)
+None.map(_ * 3)                     // None
+```
+
+@:note(🔍 Показать решение)
+
+В реализации `flatMap` используется сопоставление с шаблоном по значению `fa`. 
+Если `fa` равно `Some(a)`, мы извлекаем значение `a` и применяем к нему функцию `f`, возвращая результат `f(a)`. 
+Если `fa` равно `None`, мы возвращаем `None` без вызова `f`. 
+Это соответствует семантике "короткого замыкания": 
+если вычисление уже завершилось с ошибкой (отсутствием значения), дальнейшие шаги не выполняются. 
+В реализации `map` также используется сопоставление с шаблоном: для `Some(a)` возвращаем `Some(f(a))`, для `None` — `None`. 
+
+```dotty
+given optionBind: Bind[Option] with
+  extension [A](fa: Option[A])
+    override def flatMap[B](f: A => Option[B]): Option[B] =
+      fa match
+        case Some(a) => f(a)
+        case None    => None
+
+  extension [A](fa: Option[A])
+    override def map[B](f: A => B): Option[B] =
+      fa match
+        case Some(a) => Some(f(a))
+        case None    => None
+```
+
+@:@
+
+### Упражнение 2.6.2: Реализация Bind для типа List.
+
+`Bind` для `List` позволяет последовательно выполнять вычисления, где каждая функция
+возвращает список, а результаты всех применений объединяются в один плоский список.
+Это фундаментальная операция для работы с недетерминированными вычислениями.
+
+Реализуйте экземпляр `Bind` для типа `List`:
+
+```dotty
+given listBind: Bind[List] with
+  extension [A](fa: List[A])
+    override def flatMap[B](f: A => List[B]): List[B] = ???
+
+  extension [A](fa: List[A])
+    override def map[B](f: A => B): List[B] = ???
+```
+
+**Примеры:**
+
+```dotty
+import Bind.given
+
+// flatMap — создание декартова произведения
+List(1, 2, 3).flatMap(x => List(x, x * 2))
+// Результат: List(1, 2, 2, 4, 3, 6)
+// Пояснение: для 1 -> [1,2], для 2 -> [2,4], для 3 -> [3,6], затем конкатенация
+
+List(1, 2, 3).flatMap(x => List.empty)
+// Результат: Nil
+
+// map
+List(1, 2, 3).map(_ * 2)  // List(2, 4, 6)
+```
+
+@:note(🔍 Показать решение)
+
+В реализации `flatMap` используется рекурсивное сопоставление с шаблоном. 
+Базовый случай — пустой список `Nil`, для которого возвращается `Nil`. 
+Рекурсивный случай — непустой список с головой `h` и хвостом `t`. 
+Сначала применяем функцию `f` к голове, получая список `f(h)`. 
+Затем рекурсивно применяем `flatMap` к хвосту `t`, получая результат `flatMap(t)`. 
+После этого объединяем эти два списка с помощью оператора конкатенации `++`. 
+Важно, что порядок применения сохраняется: сначала обрабатывается голова, затем хвост, 
+и результаты объединяются в правильном порядке. 
+В реализации `map` мы рекурсивно обходим список: 
+для непустого списка применяем функцию `f` к голове и рекурсивно обрабатываем хвост; для пустого возвращаем `Nil`. 
+
+```dotty
+given listBind: Bind[List] with
+  extension [A](fa: List[A])
+    override def flatMap[B](f: A => List[B]): List[B] =
+      fa match
+        case h :: t =>
+          f(h) ++ this.flatMap(t)(f)
+        case Nil => Nil
+
+  extension [A](fa: List[A])
+    override def map[B](f: A => B): List[B] =
+      fa match
+        case h :: t =>
+          f(h) :: this.map(t)(f)
+        case Nil => Nil
+```
+
+@:@
 
 ## Схема
 

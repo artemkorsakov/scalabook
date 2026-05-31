@@ -93,88 +93,22 @@ nextPage = plus.html
   помещаем его в контекст по умолчанию с помощью `unit` и затем передаем его функции с помощью `flatMap` (`A => F[B]`), 
   это то же самое, что просто взять значение и применить к нему функцию: `unit(a).flatMap(afb) == afb(a)`
 - Тождественность справа - второй закон гласит, что если у нас есть монадическое значение (`F[A]`), и мы используем `flatMap`, 
-  чтобы передать его для `unit` (`A => F[A]`), результатом будет исходное монадическое значение: `fa.flatMap(unit _) == fa`
+  чтобы передать его для `unit` (`a => unit(a)`), результатом будет исходное монадическое значение: `fa.flatMap(unit _) == fa`
 - Ассоциативность (наследуется от `Bind`): последний закон монад гласит, что когда у нас есть цепочка приложений 
   монадических функций с `flatMap`, не должно иметь значения, как они вложены: `fa.flatMap(f).flatMap(g) == fa.flatMap { a => f(a).flatMap(g) }`
-
 
 ## Код
 
 ```dotty
-trait Monad[F[_]] extends Applicative[F], Bind[F]:
-  extension [A](fa: F[A])
-    override def map[B](f: A => B): F[B] =
-      fa.flatMap(a => unit(f(a)))
+trait Monad[F[_]] extends Applicative[F], Bind[F]
 ```
 
-### Виды монад
+### Законы
 
-#### Monad с `flatMap` и `unit`
-
-Монада может быть определена с помощью `flatMap` и `unit`.
-В этом случае `map` и `map2` будут определяться так:
-
-```dotty
-trait Monad[F[_]] extends Functor[F]:
-  def unit[A](a: => A): F[A]
-
-  extension [A](fa: F[A])
-    def flatMap[B](f: A => F[B]): F[B]
-
-    def map[B](f: A => B): F[B] =
-      flatMap(a => unit(f(a)))
-
-    def map2[B, C](fb: F[B])(f: (A, B) => C): F[C] =
-      fa.flatMap(a => fb.map(b => f(a, b)))
-```
-
-#### Monad с `compose` и `unit`
-
-Монада может быть определена с помощью `compose` и `unit`.
-В этом случае `flatMap` (и через неё остальные операции) будет определяться так:
-
-```dotty
-trait Monad[F[_]] extends Functor[F]:
-  def unit[A](a: => A): F[A]
-
-  def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C]
-
-  extension [A](fa: F[A])
-    def flatMapViaCompose[B](f: A => F[B]): F[B] =
-      compose[Unit, A, B](_ => fa, f)(())
-```
-
-В этом случае монадические законы примут вид:
-
-- тождественность:
-    - `compose(f, unit) == f`
-    - `compose(unit, f) == f`
-- ассоциативность:
-    - `compose(compose(f, g), h) == compose(f, compose(g, h))`
-
-#### Monad с `map`, `join` и `unit`
-
-Монада может быть определена с помощью `map`, `join` (другое имя - `flatten`) и `unit`.
-В этом случае `flatMap` и `compose` могут быть определены так:
-
-```dotty
-trait Functor[F[_]]:
-  extension [A](fa: F[A]) 
-    def map[B](f: A => B): F[B]
-
-trait Monad[F[_]] extends Functor[F]:
-  def unit[A](a: => A): F[A]
-
-  extension[A] (ffa: F[F[A]])
-    def join: F[A]
-
-  extension [A](fa: F[A])
-    def flatMapViaJoinAndMap[B](f: A => F[B]): F[B] =
-      fa.map(f).join
- 
-  def composeViaJoinAndMap[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
-    a => f(a).map(g).join      
-```
+- Все законы [Applicative](applicative.md)
+- Все законы [Bind](bind.md)
+- Тождественность слева: `unit(a).flatMap(afb) == afb(a)`
+- Тождественность справа: `fa.flatMap(a => unit(a)) == fa`
 
 ### Комбинаторы монад
 
@@ -195,83 +129,474 @@ def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
   a => f(a).flatMap(g)  
 ```
 
-### "Обертка"
+## Упражнения
+
+### Упражнение 2.7.1: Реализация `map` и `map2` через `flatMap` и `unit`
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+В монаде все операции могут быть выражены через примитивные `unit` и `flatMap`.
+Реализуйте методы `map` и `map2` через `flatMap` и `unit`.
 
 ```dotty
-type Id[A] = A
-object Id:
-  def apply[A](a: A): Id[A] = a
+trait Monad[F[_]] extends Applicative[F], Bind[F]:
+  def unit[A](a: => A): F[A]
 
-given idMonad: Monad[Id] with
-  override def unit[A](a: => A): Id[A] = Id(a)
+  extension [A](fa: F[A])
+    def flatMap[B](f: A => F[B]): F[B]
+    
+    override def map[B](f: A => B): F[B] = ???
 
-  extension [A](fa: Id[A]) override def flatMap[B](f: A => Id[B]): Id[B] = f(fa)
+    override def map2[B, C](fb: F[B])(f: (A, B) => C): F[C] = ???
 ```
 
-### Option
+**Примеры:**
 
 ```dotty
-given optionMonad: Monad[Option] with
-  override def unit[A](a: => A): Option[A] = Some(a)
+import Monad.given
+
+// Для Option
+val opt = Some(5)
+opt.map(_ * 2)              // Some(10)
+opt.map2(Some(3))(_ + _)    // Some(8)
+
+// Для List
+val list = List(1, 2, 3)
+list.map(_ * 2)                         // List(2, 4, 6)
+list.map2(List(10, 20))(_ + _)          // List(11, 21, 12, 22)
+```
+
+@:note(🔍 Показать решение)
+
+В реализации `map` мы используем `flatMap`: извлекаем значение `a` из контекста `fa`
+с помощью `fa.flatMap`, затем поднимаем результат применения функции `f` обратно
+в контекст с помощью `unit(f(a))`. Это работает, потому что `flatMap` "разворачивает"
+контейнер, позволяет применить функцию к содержимому и затем "заворачивает" результат
+обратно. Для `map2` мы сначала извлекаем `a` из `fa` с помощью `flatMap`, а затем
+применяем `fb.map(b => f(a, b))` к полученному значению. Внутренний `map` применяет
+функцию `(a, b) => f(a, b)` к содержимому `fb` с фиксированным `a`, что даёт `F[C]`.
+
+```dotty
+trait Monad[F[_]] extends Applicative[F], Bind[F]:
+  def unit[A](a: => A): F[A]
+
+  extension [A](fa: F[A])
+    def flatMap[B](f: A => F[B]): F[B]
+    
+    override def map[B](f: A => B): F[B] =
+      fa.flatMap(a => unit(f(a)))
+
+    override def map2[B, C](fb: F[B])(f: (A, B) => C): F[C] =
+      fa.flatMap(a => fb.map(b => f(a, b)))      
+```
+
+@:@
+
+### Упражнение 2.7.2: Реализация flatMap через compose
+
+Монада может быть альтернативно определена с помощью `compose` (монадическая композиция)
+и `unit`, без явного `flatMap`. Операция `compose` (также известная как `fish` или `>=>`)
+композирует две функции, возвращающие монадические значения.
+
+Реализуйте `flatMap` через `compose` и `unit`.
+
+```dotty
+trait Monad[F[_]] extends Applicative[F], Bind[F]:
+  def unit[A](a: => A): F[A]
+
+  def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C]
+
+  extension [A](fa: F[A])
+    def flatMapViaCompose[B](f: A => F[B]): F[B] = ???
+```
+
+В этом случае монадические законы примут вид:
+
+- тождественность:
+    - `compose(f, unit) == f`
+    - `compose(unit, f) == f`
+- ассоциативность:
+    - `compose(compose(f, g), h) == compose(f, compose(g, h))`
+
+**Примеры:**
+
+```dotty
+import Monad.given
+
+val opt = Some(5)
+val f: Int => Option[Int] = x => Some(x * 2)
+opt.flatMapViaCompose(f)  // Some(10)
+
+val list = List(1, 2)
+val g: Int => List[Int] = x => List(x, x + 1)
+list.flatMapViaCompose(g) // List(1, 2, 2, 3)
+```
+
+@:note(🔍 Показать решение)
+
+Для реализации `flatMapViaCompose` мы используем `compose` с тремя типами: `Unit`, `A` и `B`.
+Первая функция `_ => fa` игнорирует свой аргумент типа `Unit` и всегда возвращает `fa`.
+Вторая функция — это `f: A => F[B]`. Композиция `compose(_ => fa, f)` даёт функцию
+`Unit => F[B]`. Применяя эту функцию к `()`, мы получаем `F[B]`. Такой трюк позволяет
+выразить `flatMap` через `compose`, показывая эквивалентность двух подходов к определению
+монады: через `flatMap` или через `compose`.
+
+```dotty
+trait Monad[F[_]] extends Applicative[F], Bind[F]:
+  def unit[A](a: => A): F[A]
+
+  def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C]
+
+  extension [A](fa: F[A])
+    def flatMapViaCompose[B](f: A => F[B]): F[B] =
+      compose[Unit, A, B](_ => fa, f)(())    
+```
+
+@:@
+
+### Упражнение 2.7.3: Реализация flatMap и compose через join и map
+
+Монада может быть определена через `unit` и `join` (`flatten`) вместо `flatMap`.
+`join: F[F[A]] => F[A]` "склеивает" два вложенных контекста в один.
+
+Реализуйте `flatMap` и `compose` через `map` и `join`. Этот подход демонстрирует,
+что монада — это функтор с возможностью "склеивания" вложенных слоёв.
+
+```dotty
+trait Monad[F[_]] extends Applicative[F], Bind[F]:
+  def unit[A](a: => A): F[A]
+
+  extension [A](ffa: F[F[A]])
+    def join: F[A]
+
+  extension [A](fa: F[A]) 
+    def map[B](f: A => B): F[B]
+    
+    def flatMapViaJoinAndMap[B](f: A => F[B]): F[B] = ???
+      
+  def composeViaJoinAndMap[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] = ???
+```
+
+**Примеры:**
+
+```dotty
+import Monad.given
+
+// Для Option
+val opt = Some(5)
+opt.flatMapViaJoinAndMap(x => Some(x * 2))  // Some(10)
+
+// Для List
+val list = List(1, 2)
+list.flatMapViaJoinAndMap(x => List(x, x + 1))  // List(1, 2, 2, 3)
+
+// compose через join и map
+val f: Int => Option[Int] = x => Some(x * 2)
+val g: Int => Option[String] = x => Some(x.toString)
+val composed = composeViaJoinAndMap(f, g)
+composed(5)  // Some("10")
+```
+
+@:note(🔍 Показать решение)
+
+В `flatMapViaJoinAndMap` мы сначала преобразуем `fa: F[A]` в `F[F[B]]` с помощью `map(f)`,
+где `f: A => F[B]`. Получаем вложенный контекст, который затем "склеиваем" вызовом `join`,
+превращая `F[F[B]]` в `F[B]`. В `composeViaJoinAndMap` мы применяем тот же принцип:
+сначала вычисляем `f(a)`, получая `F[B]`, затем применяем `map(g)` к результату,
+получая `F[F[C]]`, и наконец `join` склеивает слои в `F[C]`. 
+
+Это альтернативное
+определение монады через `join` часто используется в теории категорий, где `join`
+является естественным преобразованием.
+
+```dotty
+trait Monad[F[_]] extends Applicative[F], Bind[F]:
+  def unit[A](a: => A): F[A]
+
+  extension[A] (ffa: F[F[A]])
+    def join: F[A]
+    
+  extension [A](fa: F[A]) 
+    def map[B](f: A => B): F[B]
+    
+    def flatMapViaJoinAndMap[B](f: A => F[B]): F[B] =
+      fa.map(f).join  
+      
+  def composeViaJoinAndMap[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
+    a => f(a).map(g).join        
+```
+
+@:@
+
+### Упражнение 2.7.4: Реализация Monad для типа Option
+
+`Option[A]` — это простейшая монада, представляющая вычисления, которые могут завершиться
+неудачей (отсутствием значения). Реализуйте экземпляр `Monad` для `Option`, используя
+`Some` для `unit` и сопоставление с шаблоном для `flatMap`.
+
+```dotty
+given Monad[Option] with
+  override def unit[A](a: => A): Option[A] = ???
+
+  extension [A](fa: Option[A])
+    override def flatMap[B](f: A => Option[B]): Option[B] = ???
+```
+
+**Примеры:**
+
+```dotty
+import Monad.given
+
+// unit — создание успешного значения
+unit(42)                    
+// Some(42)
+
+// flatMap — последовательное применение
+Some(5).flatMap(x => Some(x * 2))   // Some(10)
+Some(5).flatMap(_ => None)          // None
+None.flatMap((x: Int) => Some(x))   // None
+```
+
+@:note(🔍 Показать решение)
+
+Реализация `unit` тривиальна: просто оборачиваем значение в `Some(a)`. Для `flatMap`
+используем сопоставление с шаблоном: если `fa` равно `Some(a)`, извлекаем значение `a` и
+применяем к нему функцию `f`, возвращая `f(a)`. Если `fa` равно `None`, возвращаем
+`None`. Такая реализация соответствует семантике "опциональных" вычислений:
+ошибка (`None`) прерывает цепочку, и последующие операции не выполняются.
+
+```dotty
+given Monad[Option] with
+  override def unit[A](a: => A): Option[A] =
+    Some(a)
 
   extension [A](fa: Option[A])
     override def flatMap[B](f: A => Option[B]): Option[B] =
       fa match
         case Some(a) => f(a)
-        case None    => None
+        case None    => None       
 ```
 
-### Последовательность
+@:@
+
+### Упражнение 2.7.5: Реализация Monad для типа List
+
+`List[A]` — это монада, представляющая недетерминированные вычисления (ноль,
+один или множество результатов). Реализуйте экземпляр `Monad` для `List`, используя
+`List(a)` для `unit` и рекурсивную конкатенацию для `flatMap`.
 
 ```dotty
-given listMonad: Monad[List] with
-  override def unit[A](a: => A): List[A] = List(a)
+given Monad[List] with
+  override def unit[A](a: => A): List[A] = ???
 
-  extension [A](fa: List[A]) override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
+  extension [A](fa: List[A])
+    override def flatMap[B](f: A => List[B]): List[B] = ???
 ```
 
-### Either
+**Примеры:**
+
+```dotty
+import Monad.given
+
+// unit — одноэлементный список
+unit(42)                    
+// List(42)
+
+// flatMap — декартово произведение
+List(1, 2).flatMap(x => List(x, x * 2))
+// Результат: List(1, 2, 2, 4)
+```
+
+@:note(🔍 Показать решение)
+
+Реализация `unit` создаёт одноэлементный список `List(a)`. Для `flatMap` используется
+рекурсивное сопоставление с шаблоном: для пустого списка `Nil` возвращаем `Nil` (база рекурсии);
+для непустого списка `h :: t` сначала применяем функцию `f` к голове `h`, получая список `f(h)`,
+затем рекурсивно применяем `flatMap` к хвосту `t` и объединяем результаты через `++`.
+Порядок важен: сначала обрабатывается голова, затем хвост, сохраняя порядок элементов.
+В результате для списка из `n` элементов, где каждая функция возвращает список из `m` элементов,
+результат будет содержать `n * m` элементов (декартово произведение).
+
+```dotty
+given Monad[List] with
+  override def unit[A](a: => A): List[A] =
+    List(a)
+
+  extension [A](fa: List[A])
+    override def flatMap[B](f: A => List[B]): List[B] =
+      fa match
+        case h :: t => f(h) ++ this.flatMap(t)(f)
+        case Nil    => Nil       
+```
+
+@:@
+
+### Упражнение 2.7.6: Реализация Monad для типа Either
+
+`Either[E, A]` — это монада, представляющая вычисления, которые могут завершиться
+ошибкой типа `E`. Реализуйте экземпляр `Monad` для `Either[E, A]` с фиксированным
+типом ошибки `E`.
 
 ```dotty
 given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
-  override def unit[A](a: => A): Either[E, A] = Right(a)
+  override def unit[A](a: => A): Either[E, A] = ???
+
+  extension [A](fa: Either[E, A])
+    override def flatMap[B](f: A => Either[E, B]): Either[E, B] = ???
+```
+
+**Примеры:**
+
+```dotty
+import Monad.given
+
+// unit — успешное значение
+unit(42): Either[String, Int]    
+// Right(42)
+
+// flatMap
+Right(5).flatMap(x => Right(x * 2))  // Right(10)
+Right(5).flatMap(_ => Left("error")) // Left("error")
+Left("err").flatMap(x => Right(x))   // Left("err")
+```
+
+@:note(🔍 Показать решение)
+
+Реализация `unit` оборачивает значение в `Right(a)`. Для `flatMap` используем
+сопоставление с шаблоном: для `Right(a)` извлекаем значение `a` и применяем функцию `f`,
+возвращая `f(a)`; для `Left(e)` возвращаем `Left(e)` без вызова `f`.
+Эта реализация обеспечивает семантику "короткого замыкания": как только встречается
+первая ошибка (`Left`), последующие вычисления пропускаются, и ошибка распространяется
+далее по цепочке. Это поведение аналогично исключениям, но выражено чистым
+функциональным способом.
+
+```dotty
+given eitherMonad[E]: Monad[[x] =>> Either[E, x]] with
+  override def unit[A](a: => A): Either[E, A] =
+    Right(a)
 
   extension [A](fa: Either[E, A])
     override def flatMap[B](f: A => Either[E, B]): Either[E, B] =
       fa match
         case Right(a) => f(a)
-        case Left(e)  => Left(e)
+        case Left(e)  => Left(e)       
 ```
 
-### Writer - функциональный журнал
+@:@
+
+### Упражнение 2.7.7: Реализация Monad для типа Writer
+
+`Writer[W, A]` — это монада, представляющая вычисления, которые накапливают
+лог (побочный вывод) типа `W`. Требуется, чтобы `W` был [моноидом](../monoid/monoid.md) 
+(имел `empty` и ассоциативную `combine`). Реализуйте экземпляр `Monad` для `Writer`.
 
 ```dotty
-case class Writer[W, A](run: () => (W, A))
+given writerMonad[W](using m: Monoid[W]): Monad[[x] =>> Writer[W, x]] with
+  override def unit[A](a: => A): Writer[W, A] = ???
 
-trait Semigroup[A]:
-  def combine(x: A, y: A): A
+  extension [A](fa: Writer[W, A])
+    override def flatMap[B](f: A => Writer[W, B]): Writer[W, B] = ???
+```
 
-trait Monoid[A] extends Semigroup[A]:
-  def empty: A
+**Примеры:**
 
-given writerMonad[W](using monoid: Monoid[W]): Monad[[x] =>> Writer[W, x]] with
+```dotty
+import Monad.given
+import ru.scalabook.typeclasses.monoid.Monoid.given
+
+// Для String как лога (моноид с конкатенацией)
+val w1 = Writer(() => ("Step 1: init ", 5))
+val w2 = Writer(() => ("Step 2: multiply ", (x: Int) => x * 2))
+
+val result = w1.flatMap(x => w2.map(f => f(x)))
+result.run()  // ("Step 1: init Step 2: multiply ", 10)
+
+// Для List[String] как лога
+given Monoid[List[String]] with
+  val empty: List[String] = Nil
+  def combine(a: List[String], b: List[String]): List[String] = a ++ b
+
+val logger = for
+  _ <- Writer(() => (List("Logged action 1"), ()))
+  x <- Writer(() => (List("Got value 42"), 42))
+  _ <- Writer(() => (List("Logged action 2"), ()))
+yield x
+
+logger.run()  // (List("Logged action 1", "Got value 42", "Logged action 2"), 42)
+```
+
+@:note(🔍 Показать решение)
+
+В реализации `unit` создаётся `Writer`, который при выполнении возвращает пару
+`(m.empty, a)` — пустой лог и переданное значение. Для `flatMap` мы создаём новый
+`Writer`, который при вызове `run()` сначала выполняет `fa.run()`, получая `(w1, a)`,
+затем выполняет `f(a).run()`, получая `(w2, b)`, и наконец возвращает `(m.combine(w1, w2), b)`.
+Ленивость сохраняется: `flatMap` не выполняет вычисления немедленно, а только
+при вызове `run()`. Важно, что порядок комбинирования логов соответствует порядку
+выполнения: сначала логи из `fa`, затем логи из `f(a)`. Это типичное поведение
+для монады `Writer`, где логи последовательно накапливаются.
+
+```dotty
+given writerMonad[W](using m: Monoid[W]): Monad[[x] =>> Writer[W, x]] with
   override def unit[A](a: => A): Writer[W, A] =
-    Writer[W, A](() => (monoid.empty, a))
+    Writer[W, A](() => (m.empty, a))
 
   extension [A](fa: Writer[W, A])
     override def flatMap[B](f: A => Writer[W, B]): Writer[W, B] =
       Writer[W, B] { () =>
         val (w1, a) = fa.run()
         val (w2, b) = f(a).run()
-        (monoid.combine(w1, w2), b)
-      }
+        (m.combine(w1, w2), b)
+      }       
 ```
 
-### State - функциональное состояние
+@:@
+
+### Упражнение 2.7.8: Реализация Monad для типа State
+
+`State[S, A]` — это монада, представляющая чистые функциональные вычисления
+с изменяемым состоянием. Реализуйте экземпляр `Monad` для `State`.
 
 ```dotty
-case class State[S, +A](run: S => (S, A))
+given stateMonad[S]: Monad[[x] =>> State[S, x]] with
+  override def unit[A](a: => A): State[S, A] = ???
 
+  extension [A](fa: State[S, A])
+    override def flatMap[B](f: A => State[S, B]): State[S, B] = ???
+```
+
+**Примеры:**
+
+```dotty
+import Monad.given
+
+// Базовые операции
+val increment: State[Int, Int] = State(s => (s + 1, s))
+val getState: State[Int, Int] = State(s => (s, s))
+val setState: Int => State[Int, Unit] = n => State(_ => (n, ()))
+
+// unit — состояние не меняется
+unit(42).run(5)  
+// (5, 42)
+
+// flatMap — передача состояния
+increment.flatMap(x => State(s => (s, x * 2))).run(5)
+// (6, 10)
+```
+
+@:note(🔍 Показать решение)
+
+В реализации `unit` создаётся `State`, который принимает состояние `s` и возвращает
+пару `(s, a)` — состояние не изменяется. 
+Для `flatMap` мы создаём новый `State`, который принимает начальное состояние `s`. 
+Сначала выполняем `fa.run(s)`, получая новое состояние `s1` и значение `a`. 
+Затем выполняем `f(a).run(s1)`, получая финальное состояние `s2` и значение `b`. 
+Результатом является пара `(s2, b)`.
+Состояние последовательно передаётся через цепочку вычислений, что позволяет
+реализовать эффект изменения состояния в чисто функциональном стиле.
+Эта монада — основа для многих функциональных подходов к управлению состоянием.
+
+```dotty
 given stateMonad[S]: Monad[[x] =>> State[S, x]] with
   override def unit[A](a: => A): State[S, A] =
     State[S, A](s => (s, a))
@@ -281,46 +606,10 @@ given stateMonad[S]: Monad[[x] =>> State[S, x]] with
       State[S, B] { s =>
         val (s1, a) = fa.run(s)
         f(a).run(s1)
-      }
+      }      
 ```
 
-### IO
-
-```dotty
-final case class IO[R](run: () => R)
-
-given ioMonad: Monad[IO] with
-  override def unit[A](a: => A): IO[A] = IO(() => a)
-
-  extension [A](fa: IO[A]) override def flatMap[B](f: A => IO[B]): IO[B] = f(fa.run())
-```
-
-### Законы
-
-- Тождественность слева: `unit(a).flatMap(afb) == afb(a)`
-- Тождественность справа: `fa.flatMap(a => unit(a)) == fa`
-
-```dotty
-def checkFlatmapLeftIdentity[F[_], A, B](a: A, afb: A => F[B])(using
-    monad: Monad[F]
-): ValidatedNel[String, Unit] =
-  import monad.*
-  Either.cond[String, Unit](
-    unit(a).flatMap(afb) == afb(a),
-    (),
-    "Не соблюдается тождественность слева: unit(a).flatMap(afb) == afb(a)"
-  ).toValidatedNel
-
-def checkFlatmapRightIdentity[F[_], A](fa: F[A])(using
-    monad: Monad[F]
-): ValidatedNel[String, Unit] =
-  import monad.*
-  Either.cond[String, Unit](
-    fa.flatMap(a => unit(a)) == fa,
-    (),
-    "Не соблюдается тождественность справа: fa.flatMap(a => unit(a)) == fa"
-  ).toValidatedNel
-```
+@:@
 
 ## Схема
 
@@ -368,16 +657,24 @@ import cats.Monad
 import cats.instances.option.*
 import cats.instances.list.*
 
-val opt1 = Monad[Option].pure(3)                                     // Some(3)
-val opt2 = Monad[Option].flatMap(opt1)(a => Some(a + 2))             // Some(5)
-val opt3 = Monad[Option].map(opt2)(a => 100 * a)                     // Some(500)
+val opt1 = Monad[Option].pure(3)                                     
+// Some(3)
+val opt2 = Monad[Option].flatMap(opt1)(a => Some(a + 2))             
+// Some(5)
+val opt3 = Monad[Option].map(opt2)(a => 100 * a)                     
+// Some(500)
 
-val list1 = Monad[List].pure(3)                                      // List(3)
-val list2 = Monad[List].flatMap(List(1, 2, 3))(a => List(a, a * 10)) // List(1, 10, 2, 20, 3, 30)
-val list3 = Monad[List].map(list2)(a => a + 123)                     // List(124, 133, 125, 143, 126, 153)
+val list1 = Monad[List].pure(3)                                      
+// List(3)
+val list2 = Monad[List].flatMap(List(1, 2, 3))(a => List(a, a * 10)) 
+// List(1, 10, 2, 20, 3, 30)
+val list3 = Monad[List].map(list2)(a => a + 123)                     
+// List(124, 133, 125, 143, 126, 153)
 
-1.pure[Option]                                                       // Some(1)
-1.pure[List]                                                         // List(1)
+1.pure[Option]                                                       
+// Some(1)
+1.pure[List]                                                         
+// List(1)
 ```
 
 ### Реализация в ScalaZ
@@ -388,9 +685,12 @@ import Scalaz.*
 
 // ... Все операции родителей
 
-for { n <- List(1, 2); ch <- List('a', 'b') } yield (n, ch)     // List((1,a), (1,b), (2,a), (2,b))
-(for { a <- (_: Int) * 2; b <- (_: Int) + 10 } yield a + b)(3)  // 19
-List(1, 2) filterM { x => List(true, false) }                   // List(List(1, 2), List(1), List(2), List())
+for { n <- List(1, 2); ch <- List('a', 'b') } yield (n, ch)     
+// List((1,a), (1,b), (2,a), (2,b))
+(for { a <- (_: Int) * 2; b <- (_: Int) + 10 } yield a + b)(3)  
+// 19
+List(1, 2) filterM { x => List(true, false) }                   
+// List(List(1, 2), List(1), List(2), List())
 ```
 
 ---

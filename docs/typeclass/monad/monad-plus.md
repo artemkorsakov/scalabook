@@ -29,8 +29,6 @@ nextPage = is-empty.html
   `empty` представляет нейтральный элемент для операции комбинирования. 
   Например, для списков это пустой список `[]`, для `Option` — `None`.
 
-**Где применяется `MonadPlus`?**
-
 `MonadPlus` используется в функциональном программировании для:
 
 - **Обработки возможного отсутствия значений** (например, `Option`, `Either`).
@@ -98,25 +96,9 @@ trait MonadPlus[F[_]] extends Monad[F], ApplicativePlus[F]:
 
 `MonadPlus` позволяет определить операцию `filter`, позволяющую фильтровать по предикату элементы монады.
 
-А также операцию `unite`, позволяющую "схлопывать" `F[T[A]]` при наличии `Foldable[T]`.
+А также операцию `unite`, позволяющую "схлопывать" `F[T[A]]` при наличии [Foldable](foldable.md).
 Например, список `List(Some(785727510), Some(0), Some(1), None, None, Some(1))` "схлопывается" до
 `List(785727510, 0, 1, 1)`.
-
-### Связанный список
-
-```dotty
-given MonadPlus[List] with
-  override def unit[A](a: => A): List[A] = List(a)
-
-  override def apply[A, B](fab: List[A => B])(fa: List[A]): List[B] =
-    fab.flatMap { aToB => fa.map(aToB) }
-
-  override def plus[A](fa1: List[A], fa2: => List[A]): List[A] = fa1 ++ fa2
-
-  override def empty[A]: List[A] = List.empty[A]
-
-  extension [A](fa: List[A]) override def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
-```
 
 ### Законы
 
@@ -124,37 +106,77 @@ given MonadPlus[List] with
 - Закон сохранения нейтрального элемента при `flatMap`: `empty[A].flatMap(_ => fa) == empty[A]`.
 - Закон замыкания нейтрального элемента: `fa.flatMap(_ => empty[A]) == empty[A]`.
 
+## Упражнения
+
+### Упражнение 2.8.1: Реализация MonadPlus для типа List
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+`MonadPlus` расширяет `Monad` дополнительными операциями `plus` (альтернатива)
+и `empty` (нейтральный элемент). Это абстракция для монад, поддерживающих
+"сложение" (выбор альтернативы) и имеющих "пустое" значение.
+
+`MonadPlus` часто используется для представления вычислений, которые могут
+завершиться неудачей с возможностью выбора альтернативы (например, поиск
+в пространстве состояний, парсинг с возвратом, недетерминированные вычисления).
+
+Реализуйте экземпляр `MonadPlus` для типа `List`:
+
 ```dotty
-def checkEmptyIsAPolymorphicValue[F[_], A](fa: F[A])(using
-    mp: MonadPlus[F]
-): ValidatedNel[String, Unit] =
-  import mp.*
-  Either.cond[String, Unit](
-    empty[A].map(_ => fa) == empty[A],
-    (),
-    "Не соблюдается Закон сохранения нейтрального элемента при `map`: empty[A].map(_ => fa) == empty[A]"
-  ).toValidatedNel
+given MonadPlus[List] with
+  override def unit[A](a: => A): List[A] = ???
 
-def checkShortCircuitsRight[F[_], A](fa: F[A])(using
-    mp: MonadPlus[F]
-): ValidatedNel[String, Unit] =
-  import mp.*
-  Either.cond[String, Unit](
-    empty[A].flatMap(_ => fa) == empty[A],
-    (),
-    "Не соблюдается Закон сохранения нейтрального элемента при `flatMap`: empty[A].flatMap(_ => fa) == empty[A]"
-  ).toValidatedNel
+  extension [A](fa: List[A])
+    override def flatMap[B](f: A => List[B]): List[B] = ???
 
-def checkShortCircuitsThroughout[F[_], A](fa: F[A])(using
-    mp: MonadPlus[F]
-): ValidatedNel[String, Unit] =
-  import mp.*
-  Either.cond[String, Unit](
-    fa.flatMap(_ => empty[A]) == empty[A],
-    (),
-    "Не соблюдается Закон замыкания нейтрального элемента: fa.flatMap(_ => empty[A]) == empty[A]"
-  ).toValidatedNel
+  override def plus[A](fa1: List[A], fa2: => List[A]): List[A] = ???
+
+  override def empty[A]: List[A] = ???
 ```
+
+**Примеры:**
+
+```dotty
+import MonadPlus.given
+
+// Базовые операции
+empty[Int]                   // List()
+plus(List(1, 2), List(3, 4)) // List(1, 2, 3, 4)
+
+// plus с empty
+plus(empty[Int], List(1, 2)) // List(1, 2)
+plus(List(1, 2), empty[Int]) // List(1, 2)
+```
+
+@:note(🔍 Показать решение)
+
+Для `List` реализация `MonadPlus` естественна и интуитивна. `unit` создаёт одноэлементный список `List(a)`. 
+`flatMap` рекурсивно применяет функцию к каждому элементу и конкатенирует результаты (как в предыдущих упражнениях).
+`plus` — это просто конкатенация списков через оператор `++`. 
+`empty` — это пустой список `List.empty[A]`. 
+Эти операции удовлетворяют всем законам `MonadPlus`: конкатенация ассоциативна, пустой список является нейтральным
+элементом, и `empty.flatMap(f)` даёт `empty` (так как в пустом списке
+нет элементов, к которым можно применить `f`). 
+Такая реализация делает `List` монадой с поддержкой альтернатив и отката, 
+что полезно для парсинга, поиска решений и недетерминированных алгоритмов.
+
+```dotty
+given MonadPlus[List] with
+  override def unit[A](a: => A): List[A] =
+    List(a)
+
+  extension [A](fa: List[A])
+    override def flatMap[B](f: A => List[B]): List[B] =
+      fa match
+        case h :: t => f(h) ++ this.flatMap(t)(f)
+        case Nil    => Nil
+
+  override def plus[A](fa1: List[A], fa2: => List[A]): List[A] = fa1 ++ fa2
+
+  override def empty[A]: List[A] = List.empty[A]    
+```
+
+@:@
 
 ## Схема
 
@@ -219,7 +241,6 @@ import Scalaz.*
 List(1, 2, 3) filter {_ > 2}                     // List(3)
 (1 |-> 50) filter { x => x.shows contains '7' }  // [7,17,27,37,47]
 ```
-
 
 ---
 

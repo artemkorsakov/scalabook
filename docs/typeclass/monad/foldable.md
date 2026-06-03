@@ -128,35 +128,283 @@ trait Foldable[F[_]]:
 
   extension [A](as: F[A])
     def foldRight[B](acc: B)(f: (A, B) => B): B =
-      foldMap(f.curried)(using endoMonoid[B])(acc)
+      ??? // Упражнение 2.9.1: Реализация `foldRight` через `foldMap`.
 
     def foldLeft[B](acc: B)(f: (B, A) => B): B =
-      foldMap(a => b => f(b, a))(using dual(endoMonoid[B]))(acc)
+      ??? // Упражнение 2.9.2: Реализация `foldLeft` через `foldMap`.
 
     def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
-      foldRight(mb.empty)((a, b) => mb.combine(f(a), b))
+      ??? // Упражнение 2.9.3: Реализация `foldMap` через `foldRight`.
 
     def combineAll(using ma: Monoid[A]): A =
-      foldLeft(ma.empty)(ma.combine)
+      ??? // Упражнение 2.9.4: Реализация `combineAll` через `foldLeft`.
     
     def toList: List[A] =
-      fa.foldRight(List.empty[A])(_ :: _)  
+      ??? // Упражнение 2.9.5: Реализация `toList` через `foldRight`.
 ```
 
-### "Обертка"
+## Упражнения
+
+### Упражнение 2.9.1: Реализация `foldRight` через `foldMap`.
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+`foldRight` — это правая свертка структуры данных. 
+Она применяет бинарную операцию `f` к элементам справа налево, начиная с начального значения `init`.
+
+Реализуйте `foldRight` через `foldMap`, используя тот факт, что функции `B => B` 
+образуют [моноид (эндоморфизмы)](../monoid/monoid.md), 
+а операция `f.curried` - функция, которая преобразует каждый элемент `A` в функцию `B => B`.
+
+Подсказка: `endoMonoid[B]` даёт моноид для функций `B => B` с операцией композиции `andThen`, 
+а `foldMap` комбинирует эти функции.
 
 ```dotty
-type Id[A] = A
-object Id:
-  def apply[A](a: A): Id[A] = a
-
-given Foldable[Id] with
-  extension [A](fa: Id[A])
-    override def foldRight[B](init: B)(f: (A, B) => B): B =
-      f(fa, init)
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def foldRight[B](init: B)(f: (A, B) => B): B =
+      ???
 ```
 
-### Option
+**Примеры:**
+
+```dotty
+val list = List(1, 2, 3, 4)
+
+// Сумма элементов
+Foldable[List].foldRight(list)(0)(_ + _)     
+// 10
+
+// Разность (правоассоциативная)
+Foldable[List].foldRight(list)(0)(_ - _)     
+// (1 - (2 - (3 - (4 - 0)))) = -2
+
+// Конкатенация строк
+Foldable[List].foldRight(List("a", "b", "c"))("")(_ + _) 
+// "abc"
+```
+
+@:note(🔍 Показать решение)
+
+Функция `f.curried` имеет тип `A => (B => B)`, то есть преобразует каждый элемент `A` в эндоморфизм `B => B`. 
+Эти эндоморфизмы образуют моноид `endoMonoid[B]` с операцией композиции `combine = (g, h) => g.andThen(h)`. 
+`foldMap` комбинирует все эндоморфизмы в один, который затем применяется к `init`. 
+Важно, что порядок композиции в `foldRight` — от последнего элемента к первому — соответствует правой свёртке.
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def foldRight[B](init: B)(f: (A, B) => B): B =
+      fa.foldMap(f.curried)(using endoMonoid[B])(init)  
+```
+
+@:@
+
+### Упражнение 2.9.2: Реализация `foldLeft` через `foldMap`.
+
+`foldLeft` — это левая свертка структуры данных. 
+Она применяет бинарную операцию `f` к элементам слева направо, начиная с начального значения `acc`.
+
+Реализуйте `foldLeft` через `foldMap`, используя двойственный моноид эндоморфизмов. 
+Подсказка: используйте `Monoid.dual(endoMonoid[B])`, чтобы изменить порядок композиции на противоположный.
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def foldLeft[B](acc: B)(f: (B, A) => B): B =
+      ???
+```
+
+**Примеры:**
+
+```dotty
+val list = List(1, 2, 3, 4)
+
+// Сумма элементов
+Foldable[List].foldLeft(list)(0)(_ + _)     // 10
+
+// Разность (левоассоциативная)
+Foldable[List].foldLeft(list)(0)(_ - _)     // (((0 - 1) - 2) - 3) - 4 = -10
+
+// Конкатенация строк
+Foldable[List].foldLeft(List("a", "b", "c"))("")(_ + _) // "abc"
+```
+
+@:note(🔍 Показать решение)
+
+Функция `a => b => f(b, a)` преобразует каждый элемент `A` в эндоморфизм `B => B`. 
+В обычном моноиде `endoMonoid[B]` композиция идёт слева направо, что соответствует правой свёртке. 
+Чтобы получить левую свёртку, нужно использовать `Monoid.dual`, который переворачивает порядок композиции. 
+В результате последовательное применение эндоморфизмов будет происходить в порядке обхода элементов слева направо.
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def foldLeft[B](acc: B)(f: (B, A) => B): B =
+      fa.foldMap(a => b => f(b, a))(using Monoid.dual(endoMonoid[B]))(acc)  
+```
+
+@:@
+
+### Упражнение 2.9.3: Реализация `foldMap` через `foldRight`.
+
+`foldMap` отображает каждый элемент структуры в моноид `B` с помощью функции `f`, 
+а затем комбинирует все результаты с помощью операции моноида.
+
+Реализуйте `foldMap` через `foldRight`. 
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
+      ???
+```
+
+**Примеры:**
+
+```dotty
+val list = List(1, 2, 3, 4)
+
+// Сумма элементов
+Foldable[List].foldMap(list)(identity)        // 10
+
+// Преобразование в строки с конкатенацией
+Foldable[List].foldMap(list)(_.toString)      // "1234"
+
+// С учётом моноида Option
+Foldable[List].foldMap(List(Some(1), None, Some(3)))(identity) // None
+```
+
+@:note(🔍 Показать решение)
+
+`foldRight` применяется к структуре данных, начиная с пустого элемента моноида `mb.empty`. 
+Для каждого элемента `a` мы вычисляем `f(a)`, а затем комбинируем его с текущим аккумулятором с помощью `mb.combine`. 
+Порядок комбинирования справа налево соответствует `foldRight`, что согласуется с определением `foldMap` через правую свертку.
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def foldMap[B](f: A => B)(using mb: Monoid[B]): B =
+      fa.foldRight(mb.empty)((a, b) => mb.combine(f(a), b))  
+```
+
+@:@
+
+### Упражнение 2.9.4: Реализация `combineAll` через `foldLeft`.
+
+`combineAll` комбинирует все элементы структуры, используя операцию моноида для типа `A`. 
+Это полезно, когда сами элементы образуют моноид.
+
+Реализуйте `combineAll` через `foldLeft`.
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def combineAll(using ma: Monoid[A]): A =
+      ???
+```
+
+**Примеры:**
+
+```dotty
+val list = List(1, 2, 3, 4)
+val opt = Some(5)
+val none = Option.empty[Int]
+
+Foldable[List].combineAll(list)   // 10
+Foldable[Option].combineAll(opt)  // 5
+Foldable[Option].combineAll(none) // 0
+```
+
+@:note(🔍 Показать решение)
+
+`foldLeft` применяется к структуре данных, начиная с пустого элемента моноида `ma.empty`. 
+Для каждого элемента `a` выполняется `ma.combine(acc, a)`, что последовательно комбинирует все элементы слева направо. 
+Результатом является комбинация всех элементов структуры в соответствии с законами моноида.
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def combineAll(using ma: Monoid[A]): A =
+      fa.foldLeft(ma.empty)(ma.combine)
+```
+
+@:@
+
+### Упражнение 2.9.5: Реализация `toList` через `foldRight`.
+
+`toList` преобразует структуру данных в список, сохраняя порядок элементов.
+
+Реализуйте `toList` через `foldRight`. 
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def toList: List[A] =
+      ???
+```
+
+**Примеры:**
+
+```dotty
+Foldable[Option].toList(Some(5))        // List(5)
+Foldable[Option].toList(None)           // Nil
+Foldable[List].toList(Set(1, 2, 3))     // List(1, 2, 3)
+Foldable[[X] =>> (X, X)].toList((1, 2)) // List(1, 2)
+```
+
+@:note(🔍 Показать решение)
+
+`foldRight` применяется к структуре данных, начиная с пустого списка `List.empty[A]`. 
+Для каждого элемента `a` выполняется операция `a :: acc`, которая добавляет элемент в начало списка. 
+Поскольку `foldRight` обрабатывает элементы справа налево, 
+порядок элементов в итоговом списке будет соответствовать исходному порядку обхода.
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def toList: List[A] =
+      fa.foldRight(List.empty[A])(_ :: _)
+```
+
+@:@
+
+### Упражнение 2.9.6: Реализация Foldable для типа Option.
+
+Реализуйте экземпляр `Foldable` для `Option`.
+
+```dotty
+given Foldable[Option] with
+  extension [A](as: Option[A])
+    override def foldRight[B](acc: B)(f: (A, B) => B): B = ???
+    override def foldLeft[B](acc: B)(f: (B, A) => B): B = ???
+    override def foldMap[B](f: A => B)(using mb: Monoid[B]): B = ???
+```
+
+**Примеры:**
+
+```dotty
+Foldable[Option].foldRight(Some(5))(0)(_ + _)   // 5
+Foldable[Option].foldRight(None)(0)(_ + _)      // 0
+
+Foldable[Option].foldLeft(Some(5))(0)(_ + _)    // 5
+Foldable[Option].foldLeft(None)(0)(_ + _)       // 0
+
+Foldable[Option].foldMap(Some(5))(_.toString)   // "5"
+Foldable[Option].foldMap(None)(_.toString)      // ""
+```
+
+@:note(🔍 Показать решение)
+
+Для `None` все свертки возвращают начальное значение аккумулятора (или пустой элемент моноида), так как элементов нет. 
+
+Для `Some(a)`:
+
+- `foldRight` применяет `f(a, acc)`
+- `foldLeft` применяет `f(acc, a)`
+- `foldMap` возвращает `f(a)`
+
+Эти реализации соответствуют поведению `Option` как контейнера, который может содержать ноль или один элемент.
 
 ```dotty
 given Foldable[Option] with
@@ -175,38 +423,154 @@ given Foldable[Option] with
         case Some(a) => f(a)
 ```
 
-### Последовательность
+@:@
+
+### Упражнение 2.9.7: Реализация Foldable для типа List.
+
+Реализуйте экземпляр `Foldable` для `List`.
 
 ```dotty
 given Foldable[List] with
-  extension[A] (as: List[A])
-    override def foldRight[B](acc: B)(f: (A, B) => B) =
-      as.foldRight(acc)(f)
-    override def foldLeft[B](acc: B)(f: (B, A) => B) =
-      as.foldLeft(acc)(f)
-    override def toList: List[A] = as
+  extension [A](as: List[A])
+    override def foldRight[B](acc: B)(f: (A, B) => B) = ???
+    override def foldLeft[B](acc: B)(f: (B, A) => B) = ???
+    override def toList: List[A] = ???
 ```
 
-### Кортеж от двух и более элементов
+**Примеры:**
+
+```dotty
+Foldable[List].foldRight(List(1, 2, 3, 4))(0)(_ + _)  // 10
+Foldable[List].foldRight(List(1, 2, 3, 4))(0)(_ - _)  // -2
+
+Foldable[List].foldLeft(List(1, 2, 3, 4))(0)(_ + _)   // 10
+Foldable[List].foldLeft(List(1, 2, 3, 4))(0)(_ - _)   // -10
+
+Foldable[List].foldMap(List(1, 2, 3, 4))(_.toString)  // "1234"
+Foldable[List].combineAll(List(1, 2, 3, 4))           // 10
+Foldable[List].toList(List(1, 2, 3, 4))               // List(1, 2, 3, 4)
+```
+
+@:note(🔍 Показать решение)
+
+Эта реализация `Foldable[List]` использует рекурсивные определения для обхода списка: 
+`foldRight` рекурсивно проходит до конца списка и сворачивает элементы справа налево, 
+применяя функцию `f` к голове `h` и результату свертки хвоста `t` (начиная с `acc` для пустого списка); 
+`foldLeft` также рекурсивно проходит список, но накапливает результат слева направо, 
+обновляя аккумулятор на каждом шаге как `f(acc, h)`, а затем продолжает с хвостом; 
+`toList` просто возвращает сам список, поскольку он уже является требуемым представлением. 
+
+```dotty
+given Foldable[List] with
+  extension [A](as: List[A])
+    override def foldRight[B](acc: B)(f: (A, B) => B) =
+      as match
+        case Nil    => acc
+        case h :: t =>
+          f(h, this.foldRight(t)(acc)(f))
+
+    override def foldLeft[B](acc: B)(f: (B, A) => B) =
+      as match
+        case Nil => acc 
+        case h :: t =>
+          this.foldLeft(t)(f(acc, h))(f)
+        
+    override def toList: List[A] = 
+      as
+```
+
+@:@
+
+### Упражнение 2.9.8: Реализация Foldable для кортежей.
+
+Кортежи фиксированной длины могут рассматриваться как контейнеры с известным количеством элементов. 
+Реализуйте экземпляры `Foldable` для пары `(X, X)` и тройки `(X, X, X)`.
+
+Правая свертка должна обрабатывать элементы справа налево: сначала последний элемент, затем предпоследний и т.д.
+
+```dotty
+given tuple2Foldable: Foldable[[X] =>> (X, X)] with
+  extension [A](fa: (A, A))
+    override def foldRight[B](init: B)(f: (A, B) => B): B = ???
+
+given tuple3Foldable: Foldable[[X] =>> (X, X, X)] with
+  extension [A](fa: (A, A, A))
+    override def foldRight[B](init: B)(f: (A, B) => B): B = ???
+```
+
+**Примеры:**
+
+```dotty
+val pair = (1, 2)
+val triple = (1, 2, 3)
+
+// Пары
+Foldable[[X] =>> (X, X)].foldRight(pair)(0)(_ + _)   // 1 + 2 = 3
+Foldable[[X] =>> (X, X)].foldRight(pair)(0)(_ - _)   // 1 - 2 = -1
+
+// Тройки
+Foldable[[X] =>> (X, X, X)].foldRight(triple)(0)(_ + _) // 1 + 2 + 3 = 6
+Foldable[[X] =>> (X, X, X)].foldRight(triple)(0)(_ - _) // 1 - (2 - (3 - 0)) = 1 - (2 - 3) = 2
+```
+
+@:note(🔍 Показать решение)
+
+Для пары `(a0, a1)` правая свертка сначала применяет `f` к правому элементу `a1` и начальному значению `init`, 
+получая промежуточный результат, а затем применяет `f` к левому элементу `a0` и этому промежуточному результату. 
+Для тройки `(a0, a1, a2)` процесс аналогичен: сначала обрабатывается `a2`, затем `a1`, затем `a0`. 
+Такой порядок обеспечивает правильную правую ассоциативность.
 
 ```dotty
 given tuple2Foldable: Foldable[[X] =>> (X, X)] with
   extension [A](fa: (A, A))
     override def foldRight[B](init: B)(f: (A, B) => B): B =
       val (a0, a1) = fa
-      val b = f(a1, init)
+      val b        = f(a1, init)
       f(a0, b)
 
 given tuple3Foldable: Foldable[[X] =>> (X, X, X)] with
   extension [A](fa: (A, A, A))
     override def foldRight[B](init: B)(f: (A, B) => B): B =
       val (a0, a1, a2) = fa
-      val b0 = f(a2, init)
-      val b1 = f(a1, b0)
+      val b0           = f(a2, init)
+      val b1           = f(a1, b0)
       f(a0, b1)
 ```
 
-### Either
+@:@
+
+### Упражнение 2.9.9: Реализация Foldable для типа Either.
+
+`Either[E, A]` может содержать либо значение в правой ветке (`Right`), либо ошибку в левой (`Left`). 
+При свертке мы игнорируем левую ветку, так как она не содержит значений типа `A`.
+
+Реализуйте экземпляр `Foldable` для `Either[E, A]` с фиксированным типом ошибки `E`.
+
+```dotty
+given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
+  extension [A](fa: Either[E, A])
+    override def foldRight[B](init: B)(f: (A, B) => B): B = ???
+```
+
+**Примеры:**
+
+```dotty
+val right: Either[String, Int] = Right(5)
+val left: Either[String, Int] = Left("error")
+
+Foldable[[x] =>> Either[String, x]].foldRight(right)(0)(_ + _)  // 5
+Foldable[[x] =>> Either[String, x]].foldRight(left)(0)(_ + _)   // 0
+
+Foldable[[x] =>> Either[String, x]].foldMap(right)(_.toString)  // "5"
+Foldable[[x] =>> Either[String, x]].foldMap(left)(_.toString)   // ""
+```
+
+@:note(🔍 Показать решение)
+
+Для `Either[E, A]` свертка имеет смысл только для правой ветки `Right(a)`, которая содержит значение типа `A`. 
+Левая ветка `Left(e)` не содержит значений и при свертке просто возвращает начальное значение аккумулятора. 
+Это согласуется с поведением `Option`: `Right` аналогичен `Some`, а `Left` — `None`. 
+Такая реализация позволяет использовать `Either` в контекстах, где требуется обход структуры, игнорируя ветку с ошибкой.
 
 ```dotty
 given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
@@ -217,30 +581,163 @@ given eitherFoldable[E]: Foldable[[x] =>> Either[E, x]] with
         case Left(_)  => init
 ```
 
-### Законы
+@:@
 
-- `foldLeft` соответствует `foldMap`: `fa.foldMap(Vector(_)) == fa.foldLeft(Vector.empty[A])(_ :+ _)`
-- `foldRight` соответствует `foldMap`: `fa.foldMap(Vector(_)) == fa.foldRight(Vector.empty[A])(_ +: _)`
+### Упражнение 2.9.10: Реализация обобщённой свертки через опциональный аккумулятор.
+
+`foldOpt` — это обобщённая форма свертки, которая представляет состояние аккумулятора как `Option[(B, A)]`. 
+Это позволяет выразить как левую, так и правую свертки через единый механизм. 
+Функция `f` преобразует текущее состояние в новое значение аккумулятора: 
+`None` означает начальное состояние (аккумулятор ещё не содержит значений), 
+а `Some((b, a))` представляет промежуточное состояние, 
+где `b` — текущий аккумулятор, а `a` — последний обработанный элемент.
+
+Реализуйте метод `foldOpt`, используя хвостовую рекурсию для эффективного обхода.
 
 ```dotty
-def checkFoldLeftMatchesFoldMap[F[_]: Foldable, A](fa: F[A])(using
-    Monoid[Vector[A]]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    fa.foldMap(Vector(_)) == fa.foldLeft(Vector.empty[A])(_ :+ _),
-    (),
-    "`foldLeft` не соответствует `foldMap`, не соблюдается: `fa.foldMap(Vector(_)) == fa.foldLeft(Vector.empty[A])(_ :+ _)`"
-  ).toValidatedNel
-
-def checkFoldRightMatchesFoldMap[F[_]: Foldable, A](fa: F[A])(using
-    Monoid[Vector[A]]
-): ValidatedNel[String, Unit] =
-  Either.cond[String, Unit](
-    fa.foldMap(Vector(_)) == fa.foldRight(Vector.empty[A])(_ +: _),
-    (),
-    "`foldRight` соответствует `foldMap`, не соблюдается: `fa.foldMap(Vector(_)) == fa.foldRight(Vector.empty[A])(_ +: _)`"
-  ).toValidatedNel
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def foldOpt[B](f: Option[(B, A)] => B): B =
+      ???
 ```
+
+**Примеры:**
+
+```dotty
+val right: Either[String, Int] = Right(5)
+val left: Either[String, Int] = Left("error")
+val list = List(1, 2, 3, 4)
+
+// Сумма элементов
+right.foldOpt[Int] {
+  case None          => 0
+  case Some((acc, a)) => acc + a
+} // 5
+
+left.foldOpt[Int] {
+  case None          => 0
+  case Some((acc, a)) => acc + a
+} // 0
+
+// Левая свертка (аккумулятор слева)
+list.foldOpt[Int] {
+  case None          => 0
+  case Some((acc, a)) => acc - a
+} // (((0 - 1) - 2) - 3) - 4 = -10
+```
+
+@:note(🔍 Показать решение)
+
+Реализация использует вспомогательную хвостовую рекурсивную функцию `loop`, 
+которая обходит список элементов (полученный через `fa.toList`). Начальное состояние: `loop(fa.toList, f(None))`. 
+На каждом шаге для головы списка `h` и текущего аккумулятора `acc` вызывается `f(Some((acc, h)))`, 
+и результат передаётся в следующий рекурсивный вызов с хвостом списка. 
+Когда список пуст, возвращается текущий аккумулятор `acc`.
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def foldOpt[B](f: Option[(B, A)] => B): B =
+      @annotation.tailrec
+      def loop(rest: List[A], acc: B): B =
+        rest match
+          case Nil    => acc
+          case h :: t => loop(t, f(Some((acc, h))))
+
+      loop(fa.toList, f(None))
+```
+
+@:@
+
+### Упражнение 2.9.11: Реализация `foldOpt` через стандартную свертку `foldLeft`.
+
+Покажите эквивалентность `foldOpt` и `foldLeft`. 
+Используя уже определённый метод `foldLeft`, выразите `foldOpt` как свёртку.
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def foldOptViaFold[B](f: Option[(B, A)] => B): B =
+      ???
+```
+
+**Примеры:**
+
+```dotty
+val list = List(1, 2, 3, 4)
+
+// Эквивалентность с foldLeft
+list.foldLeft(0)(_ + _) == list.foldOptViaFold[Int] {
+  case None          => 0
+  case Some((acc, a)) => acc + a
+} // true (оба дают 10)
+```
+
+@:note(🔍 Показать решение)
+
+`foldLeft` применяет бинарную операцию к аккумулятору и каждому элементу слева направо. 
+В `foldOptViaFold` начальным аккумулятором является `f(None)`, 
+а на каждом шаге мы применяем функцию обновления `(b, a) => f(Some((b, a)))`. 
+Это в точности соответствует определению `foldOpt`, но выражается через уже существующий метод `foldLeft`. 
+Такая реализация короче и использует уже определённые возможности `Foldable`.
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def foldOptViaFold[B](f: Option[(B, A)] => B): B =
+      foldLeft[B](f(None))((b, a) => f(Some((b, a))))
+```
+
+@:@
+
+### Упражнение 2.9.12: Реализация стандартной свертки через `foldOpt`.
+
+Покажите обратную эквивалентность: любую стандартную свертку можно выразить через `foldOpt`. 
+Это демонстрирует, что `foldOpt` является более общим примитивом, чем `foldLeft` или `foldRight`.
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def foldViaFoldOpt[B](init: B)(f: (B, A) => B): B =
+      ???
+```
+
+**Примеры:**
+
+```dotty
+val right: Either[String, Int] = Right(5)
+val left: Either[String, Int] = Left("error")
+val list = List(1, 2, 3, 4)
+
+// Левая свертка через foldViaFoldOpt
+right.foldViaFoldOpt(0)(_ + _)   // 5
+left.foldViaFoldOpt(0)(_ + _)    // 0
+list.foldViaFoldOpt(0)(_ + _)    // 10
+list.foldViaFoldOpt(0)(_ - _)    // -10
+
+// Эквивалентность с foldLeft
+list.foldLeft(0)(_ + _) == list.foldViaFoldOpt(0)(_ + _) // true
+```
+
+@:note(🔍 Показать решение)
+
+Мы создаём функцию `g: Option[(B, A)] => B`, которая преобразует опциональное состояние в значение аккумулятора: 
+для `Some((b, a))` возвращает `f(b, a)`, а для `None` — начальное значение `init`. 
+Затем просто вызываем `foldOpt(g)`. Это показывает, что `foldOpt` является более общим примитивом: 
+любую стандартную свертку можно выразить через неё, 
+просто преобразовав бинарную операцию в функцию над опциональным состоянием.
+
+```dotty
+trait Foldable[F[_]]:
+  extension [A](fa: F[A])
+    def foldViaFoldOpt[B](init: B)(f: (B, A) => B): B =
+      val g: Option[(B, A)] => B =
+        case Some((b, a)) => f(b, a)
+        case None         => init
+      foldOpt[B](g)
+```
+
+@:@
 
 ## Схема
 

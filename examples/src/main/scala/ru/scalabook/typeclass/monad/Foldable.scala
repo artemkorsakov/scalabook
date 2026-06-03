@@ -21,6 +21,26 @@ trait Foldable[F[_]]:
     def toList: List[A] =
       fa.foldRight(List.empty[A])(_ :: _)
 
+    def foldOpt[B](f: Option[(B, A)] => B): B =
+      @annotation.tailrec
+      def loop(rest: List[A], acc: B): B =
+        rest match
+          case Nil    => acc
+          case h :: t => loop(t, f(Some((acc, h))))
+
+      loop(fa.toList, f(None))
+
+    def foldOptViaFold[B](f: Option[(B, A)] => B): B =
+      foldLeft[B](f(None))((b, a) => f(Some((b, a))))
+
+    def foldViaFoldOpt[B](init: B)(f: (B, A) => B): B =
+      val g: Option[(B, A)] => B =
+        case Some((b, a)) => f(b, a)
+        case None         => init
+      foldOpt[B](g)
+  end extension
+end Foldable
+
 object Foldable:
   def apply[F[_]: Foldable]: Foldable[F] = summon[Foldable[F]]
 

@@ -35,21 +35,6 @@ nextPage = divide.html
     - Если у вас есть предикат для типа `A` (`F[A]`), и вы хотите применить его к типу `B`, 
       то можете использовать `contramap`, предоставив функцию `B => A`.
 
-**Краткие примеры**
-
-- **Кодировщик JSON**:
-    - У вас есть кодировщик для типа `Person` (`JsonEncoder[Person]`).
-    - Вы хотите закодировать тип `Employee`, который можно преобразовать в `Person` с помощью функции `Employee => Person`.
-    - С помощью `contramap` вы создаёте кодировщик для `Employee`.
-- **Валидатор формы**:
-    - У вас есть валидатор для типа `Email` (`Validator[Email]`).
-    - Вы хотите валидировать тип `User`, который содержит поле `Email`, используя функцию `User => Email`.
-    - С помощью `contramap` вы создаёте валидатор для `User`.
-- **Предикат для фильтрации**:
-    - У вас есть предикат для проверки, является ли число положительным (`Predicate[Int]`).
-    - Вы хотите применить этот предикат к типу `Double`, используя функцию `Double => Int` (например, округление).
-    - С помощью `contramap` вы создаёте предикат для `Double`.
-
 Контравариантные функторы полезны в ситуациях, где требуется адаптация существующих обработчиков
 (например, кодировщиков, валидаторов, предикатов) для работы с другими типами.
 Они часто используются в библиотеках для функционального программирования, таких как **Cats** или **Scalaz**.
@@ -83,27 +68,164 @@ trait ContravariantFunctor[F[_]] extends InvariantFunctor[F]:
 
   extension [A](fa: F[A]) override def xmap[B](f: A => B, g: B => A): F[B] = cmap(fa)(g)
 
-  /** Композиция ковариантного и контравариантного функторов ковариантна */
-  def compose[G[_]: ContravariantFunctor]: Functor[[X] =>> F[G[X]]] =
+  /** Композиция двух контравариантных функторов ковариантна */
+  def compose[G[_]: ContravariantFunctor as cfu]: Functor[[X] =>> F[G[X]]] =
     new Functor[[X] =>> F[G[X]]]:
-      private val g = summon[ContravariantFunctor[G]]
-      extension [A](as: F[G[A]]) def map[B](f: A => B): F[G[B]] = cmap(as)(gb => g.cmap(gb)(f))
+      extension [A](as: F[G[A]])
+        def map[B](f: A => B): F[G[B]] =
+          cmap(as)(gb => cfu.cmap(gb)(f))
 
   /** Композиция контравариантного и ковариантного функторов контравариантна */
-  def icompose[G[_]: Functor]: ContravariantFunctor[[X] =>> F[G[X]]] =
+  def icompose[G[_]: Functor as fu]: ContravariantFunctor[[X] =>> F[G[X]]] =
     new ContravariantFunctor[[X] =>> F[G[X]]]:
-      private val g = summon[Functor[G]]
-      def cmap[A, B](fa: F[G[B]])(f: A => B): F[G[A]] = self.cmap(fa)(g.lift(f))
+      def cmap[A, B](fa: F[G[B]])(f: A => B): F[G[A]] =
+        self.cmap(fa)(fu.lift(f))
 
   /** Произведение двух контравариантных функторов контравариантно */
-  def product[G[_]: ContravariantFunctor]: ContravariantFunctor[[X] =>> (F[X], G[X])] =
+  def product[G[_]: ContravariantFunctor as cfu]
+      : ContravariantFunctor[[X] =>> (F[X], G[X])] =
     new ContravariantFunctor[[X] =>> (F[X], G[X])]:
-      private val g = summon[ContravariantFunctor[G]]
       def cmap[A, B](fa: (F[B], G[B]))(f: A => B): (F[A], G[A]) =
-        (self.contramap(fa._1)(f), g.contramap(fa._2)(f))
+        (self.contramap(fa._1)(f), cfu.contramap(fa._2)(f))
 ```
 
-### Унарная функция
+### Композиции
+
+#### Композиция двух контравариантных функторов
+
+```dotty
+def compose[G[_]: ContravariantFunctor]: Functor[[X] =>> F[G[X]]]
+```
+
+**Почему это работает**:
+
+- Внешний функтор `F` — контравариантный (преобразует входные типы назад)
+- Внутренний функтор `G` — тоже контравариантный
+
+**Результат**: Композиция двух контравариантных функторов даёт **ковариантный** функтор! 
+Это может показаться неожиданным, но вот логика:
+
+1. Нам нужно преобразовать `F[G[A]]` в `F[G[B]]` с помощью функции `A => B`
+2. Поскольку `F` контравариантен, чтобы из `F[G[A]]` получить `F[G[B]]`, нам нужна функция из `G[B]` в `G[A]`
+3. Поскольку `G` контравариантен, мы можем получить `G[A]` из `G[B]` с помощью функции `A => B`
+
+В коде:
+```dotty
+extension [A](as: F[G[A]])
+  def map[B](f: A => B): F[G[B]] =
+    cmap(as)(gb => cfu.cmap(gb)(f))
+```
+
+**Шаг за шагом**:
+
+1. `as` имеет тип `F[G[A]]`
+2. Нам нужно получить `F[G[B]]`
+3. Используем `cmap` на `as`: `cmap(as)(fun)`
+4. Функция `fun` должна преобразовывать `G[B]` в `G[A]`
+5. Используем внутренний `cfu.cmap(gb)(f)` где:
+    - `gb` это `G[B]`
+    - `f: A => B`
+    - Так как `G` контравариантен, `cmap` даёт `G[A]` из `G[B]`!
+
+Ключевое наблюдение:
+
+- Контравариантный функтор переворачивает стрелки: `A => B` становится `F[B] => F[A]`
+- Два переворота возвращают исходное направление!
+
+#### Композиция контравариантного и ковариантного = контравариантный
+
+```dotty
+def icompose[G[_]: Functor]: ContravariantFunctor[[X] =>> F[G[X]]]
+```
+
+**Почему это работает**:
+
+- Внешний `F` — контравариантный
+- Внутренний `G` — ковариантный (обычный функтор)
+
+**Результат**: Композиция контравариантного и ковариантного даёт **контравариантный** функтор.
+
+```dotty
+def cmap[A, B](fa: F[G[B]])(f: A => B): F[G[A]] =
+  self.cmap(fa)(fu.lift(f))
+```
+
+**Шаг за шагом**:
+
+1. `fa` имеет тип `F[G[B]]`
+2. Нам нужно получить `F[G[A]]`
+3. Используем `self.cmap(fa)(fun)`
+4. Функция `fun` должна преобразовывать `G[A]` в `G[B]`
+5. Используем `fu.lift(f)`, который поднимает `f: A => B` в `G[A] => G[B]` (так как `G` — функтор)
+
+#### Произведение двух контравариантных функторов
+
+```dotty
+def product[G[_]: ContravariantFunctor]: ContravariantFunctor[[X] =>> (F[X], G[X])]
+```
+
+**Почему это работает**: Произведение двух контравариантных функторов остаётся контравариантным.
+
+```dotty
+def cmap[A, B](fa: (F[B], G[B]))(f: A => B): (F[A], G[A]) =
+  (self.contramap(fa._1)(f), cfu.contramap(fa._2)(f))
+```
+
+**Шаг за шагом**:
+
+1. Вход: пара `(F[B], G[B])` и функция `f: A => B`
+2. Нужно получить: пару `(F[A], G[A])`
+3. Для первого компонента используем `self.contramap(fa._1)(f)`
+4. Для второго используем `cfu.contramap(fa._2)(f)`
+5. Возвращаем пару результатов
+
+### Важные закономерности
+
+| Композиция  | Тип первого  | Тип второго  | Результат            |
+|-------------|--------------|--------------|----------------------|
+| `compose`   | `F` (контра) | `G` (контра) | **Ковариантный**     |
+| `icompose`  | `F` (контра) | `G` (ковари) | **Контравариантный** |
+| `product`   | `F` (контра) | `G` (контра) | **Контравариантный** |
+
+### Законы
+
+- Тождественность (identity): `cmap(fa)(id) == fa`.
+- Композиция (composition): `cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))`.
+
+## Упражнения
+
+### Упражнение 2.11.1: Реализация контравариантного функтора для функции.
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Контравариантный функтор для типа `Function1` (функция от `X` к `R`) позволяет преобразовывать входной тип функции. 
+
+Реализуйте экземпляр `ContravariantFunctor` для типа `Function1[X, R]` с фиксированным возвращаемым типом `R`. 
+
+```dotty
+given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X, R]] with
+  def cmap[A, B](function: B => R)(f: A => B): A => R = ???
+```
+
+**Примеры:**
+
+```dotty
+val boolToString: Boolean => String = (b: Boolean) => if b then "true" else "false"
+val intToBool: Int => Boolean = (x: Int) => x > 0
+
+val positiveToString = 
+  summon[ContravariantFunctor[[X] =>> X => String]]
+    .cmap(boolToString)(intToBool)
+
+positiveToString(5)   // "true"
+positiveToString(-3)  // "false"
+```
+
+@:note(🔍 Показать решение)
+
+Реализация тривиальна: чтобы получить функцию `A => R`, мы применяем функцию `f: A => B` к аргументу `a`, получая `B`, 
+а затем применяем исходную функцию `function: B => R` к результату. Это стандартная композиция функций.
+Это ключевое свойство `Function1` — он контравариантен по входному типу.
 
 ```dotty
 given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X, R]] with
@@ -111,47 +233,29 @@ given functionContravariantFunctor[R]: ContravariantFunctor[[X] =>> Function1[X,
     a => function(f(a))
 ```
 
-### Предикат
-
-Частным случаем предыдущего примера является предикат:
+Частным случаем предыдущего примера является предикат — функция, возвращающая `Boolean`:
 
 ```dotty
-trait Predicate[A] extends Function1[A, Boolean]  
-  
-given ContravariantFunctor[Predicate] with
-  def cmap[A, B](b: Predicate[B])(f: A => B): Predicate[A] =
-    a => b(f(a))
+opaque type Predicate = [X] =>> X => Boolean
+
+given predicateContravariantFunctor: ContravariantFunctor[Predicate] with
+  def cmap[A, B](predicate: Predicate[B])(f: A => B): Predicate[A] =
+    a => predicate(f(a))
 ```
 
-### Законы
-
-- Тождественность (identity): `cmap(fa)(id) == fa`.
-- Композиция (composition): `cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))`.
+Или отображение значений (Show):
 
 ```dotty
-def checkContravariantFunctorIdentity[F[_], A](fa: F[A])(using
-    cf: ContravariantFunctor[F]
-): ValidatedNel[String, Unit] =
-  import cf.*
-  Either.cond[String, Unit](
-    cmap[A, A](fa)(identity) == fa,
-    (),
-    "Не соблюдается Тождественность контравариантного функтора: cmap(fa)(id) == fa"
-  ).toValidatedNel
+opaque type ShowX = [X] =>> X => String
+object ShowX:
+  def apply[X](f: X => String): ShowX[X] = f
 
-def checkContravariantFunctorComposition[F[_], A, B, C](fc: F[C])(
-    using
-    cf: ContravariantFunctor[F],
-    f: A => B,
-    g: B => C
-): ValidatedNel[String, Unit] =
-  import cf.*
-  Either.cond[String, Unit](
-    cmap(cmap(fc)(g))(f) == cmap(fc)(g compose f),
-    (),
-    "Не соблюдается Композиция контравариантного функтора: cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))"
-  ).toValidatedNel
+given showContravariantFunctor: ContravariantFunctor[ShowX] with
+  def cmap[A, B](show: ShowX[B])(f: A => B): ShowX[A] =
+    a => show(f(a))
 ```
+
+@:@
 
 ## Схема
 

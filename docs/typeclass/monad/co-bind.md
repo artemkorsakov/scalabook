@@ -14,8 +14,6 @@ nextPage = co-monads.html
 
 `CoBind` реализует противоположные для [`Bind`](bind.md) операции.
 
-**Определение**
-
 `CoBind` определяется для типа `F[_]` и предоставляет метод: `coflatMap: (F[A], F[A] => B) => F[B]`
 
 - Он принимает:
@@ -28,17 +26,6 @@ nextPage = co-monads.html
 или с контекстами, которые сохраняют структуру.
 
 **Примеры использования**
-
-- **Работа с бесконечными структурами данных**:
-    - Например, для работы с бесконечными потоками или бесконечными списками, 
-      где требуется применять функции ко всей структуре.
-- **Обработка данных в контексте**:
-    - Например, для работы с двумерными структурами данных, такими как таблицы или матрицы, 
-      где требуется применять функции ко всей структуре.
-- **Анализ данных**:
-    - Например, для анализа временных рядов, где требуется учитывать окрестности значений.
-
-**Краткие примеры**
 
 - **Бесконечные потоки**:
     - У вас есть бесконечный поток чисел (`LazyList[Int]`).
@@ -90,21 +77,56 @@ trait CoBind[F[_]] extends Functor[F]:
     final def cojoin: F[F[A]] = fa.cobind(fa => fa)
 ```
 
-### "Обертка"
+## Упражнения
+
+### Упражнение 2.14.1: Реализация CoBind для типа Env (контекст с окружением)
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Реализуйте экземпляр `CoBind` для типа `Env[A, R]` с фиксированным типом окружения `R`.
 
 ```dotty
-type Id[A] = A
-object Id:
-  def apply[A](a: A): Id[A] = a
+import ru.scalabook.typeclasses.CoBind
 
-given CoBind[Id] with
-  extension [A](as: Id[A])
-    override def map[B](f: A => B): Id[B] = Id(f(as))
+final case class Env[A, R](a: A, r: R)
 
-    override def cobind[B](f: Id[A] => B): Id[B] = Id(f(as))
+given envCoBind[R]: CoBind[[X] =>> Env[X, R]] with
+  extension [A](as: Env[A, R])
+    override def map[B](f: A => B): Env[B, R] = ???
+    override def cobind[B](f: Env[A, R] => B): Env[B, R] = ???
 ```
 
-### Переменные окружения
+**Примеры:**
+
+```dotty
+import CoBind.given
+
+// Создаём Env со значением и окружением
+val env = Env(42, "config")
+
+// Пример 1: map преобразует значение
+env.map(_ * 2)        // Env(84, "config")
+env.map(_.toString)   // Env("42", "config")
+env.map(_ % 10)       // Env(2, "config")
+
+// Пример 2: cobind применяет функцию ко всему Env
+val extractValue: Env[Int, String] => String = (e: Env[Int, String]) => s"value: ${e.a}"
+val newEnv = env.cobind(extractValue)  // Env("value: 42", "config")
+
+// Пример 3: cobind с функцией, использующей окружение
+val useEnv: Env[Int, String] => String = (e: Env[Int, String]) => s"${e.r}: ${e.a}"
+env.cobind(useEnv)  // Env("config: 42", "config")
+```
+
+@:note(🔍 Показать решение)
+
+Реализация `map` извлекает значение `a` и окружение `r` из `Env`, применяет функцию `f` к значению `a` 
+и создаёт новый `Env` с преобразованным значением и исходным окружением. 
+Реализация `cobind` извлекает окружение `r` из исходного `Env`, 
+применяет функцию `f` ко всему исходному `Env` (получая значение типа `B`), 
+и создаёт новый `Env` с этим значением и исходным окружением. 
+Ключевая особенность `cobind` в том, что он сохраняет окружение неизменным, 
+позволяя создавать новые контексты на основе анализа текущего контекста.
 
 ```dotty
 final case class Env[A, R](a: A, r: R)
@@ -112,33 +134,13 @@ final case class Env[A, R](a: A, r: R)
 given envCoBind[R]: CoBind[[X] =>> Env[X, R]] with
   extension [A](as: Env[A, R])
     override def map[B](f: A => B): Env[B, R] =
-      val Env(a, r) = as
-      Env(f(a), r)
+      Env(f(as.a), as.r)
 
     override def cobind[B](f: Env[A, R] => B): Env[B, R] =
-      val Env(_, r) = as
-      Env(f(as), r)
+      Env(f(as), as.r)
 ```
 
-### Законы
-
-- **Закон ассоциативности**:
-  `fa.coflatMap(f).coflatMap(g) == fa.coflatMap(x => g(x.coflatMap(f)))`
-
-```dotty
-def checkCobindAssociativity[F[_], A, B, C](
-    fa: F[A],
-    fab: F[A] => B,
-    fbc: F[B] => C
-)(using cob: CoBind[F]): ValidatedNel[String, Unit] =
-  import cob.*
-
-  Either.cond[String, Unit](
-    fa.cobind(fab).cobind(fbc) == fa.cobind(x => fbc(x.cobind(fab))),
-    (),
-    "Не соблюдается ассоциативность CoBind: fa.cobind(fab).cobind(fbc) == fa.cobind(x => fbc(x.cobind(fab)))"
-  ).toValidatedNel
-```
+@:@
 
 ## Схема
 

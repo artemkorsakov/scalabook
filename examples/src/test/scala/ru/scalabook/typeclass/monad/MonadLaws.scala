@@ -1,9 +1,8 @@
 package ru.scalabook.typeclass.monad
 
-import cats.Id
 import cats.data.ValidatedNel
 import cats.syntax.either.*
-import ru.scalabook.typeclass.common.{Applicator, BasicLaws, Runner1}
+import ru.scalabook.typeclass.common.{BasicLaws, Runner1}
 import ru.scalabook.typeclass.monoid.Monoid
 
 object MonadLaws extends BasicLaws:
@@ -50,130 +49,11 @@ object MonadLaws extends BasicLaws:
     checkFunctorLaw[F, A, B, C](fa) combine
       checkCobindAssociativity[F, A, B, C](fa, fab, fbc)
 
-  def checkDivisibleLaw[F[_]: Divisible: Applicator, A, B, C](
-      fa1: F[A],
-      fa2: F[A],
-      fa3: F[A],
-      fc: F[C],
-      a: A
-  )(using f: A => B, g: B => C): ValidatedNel[String, Unit] =
-    checkDivideLaw[F, A, B, C](fa1, fa2, fa3, fc, a) combine
-      checkDivisibleRightIdentity[F, A](fa1, a) combine
-      checkDivisibleLeftIdentity[F, A](fa1, a)
-
-  def checkDivideLaw[F[_]: Divide: Applicator, A, B, C](
-      fa1: F[A],
-      fa2: F[A],
-      fa3: F[A],
-      fc: F[C],
-      a: A
-  )(using f: A => B, g: B => C): ValidatedNel[String, Unit] =
-    checkContravariantFunctorLaw[F, A, B, C](fa1, fc, a) combine
-      checkDivideComposition[F, A](fa1, fa2, fa3, a)
-
-  def checkContravariantFunctorLaw[
-      F[_]: ContravariantFunctor: Applicator,
-      A,
-      B,
-      C
-  ](
-      fa: F[A],
-      fc: F[C],
-      a: A
-  )(using f: A => B, g: B => C): ValidatedNel[String, Unit] =
-    checkContravariantFunctorIdentity[F, A](fa, a) combine
-      checkContravariantFunctorComposition[F, A, B, C](fc, a)
-
-  def checkTraverseLaw[F[_], G[_], H[_], A, B, C](fa: F[A], fga: F[G[A]])(using
-      trF: Traverse[F],
-      apG: Applicative[G],
-      apH: Applicative[H],
-      m: Monoid[Vector[A]],
-      f: A => B,
-      fReverse: B => A,
-      g: B => C,
-      gReverse: C => B
-  ): ValidatedNel[String, Unit] =
-    checkFunctorLaw[F, A, B, C](fa) combine
-      checkFoldableLaw[F, A](fa) combine
-      checkTraverseId[F, A, B](fa) combine
-      checkTraverseConsistent[F, G, H, A, B, C](fa) combine
-      checkTraverseUnit[F, G, A](fa) combine
-      checkTraverseCombine[F, G, H, A, B](fa) combine
-      checkTraverseSequence[F, G, A](fga)
-
   def checkFoldableLaw[F[_]: Foldable, A](fa: F[A])(using
       Monoid[Vector[A]]
   ): ValidatedNel[String, Unit] =
     checkFoldLeftMatchesFoldMap(fa) combine
       checkFoldRightMatchesFoldMap(fa)
-
-  def checkIsEmptyLawLaw[F[_]: IsEmpty, A](
-      f1: F[A],
-      f2: F[A],
-      f3: F[A]
-  ): ValidatedNel[String, Unit] =
-    checkPlusEmptyLaw(f1, f2, f3) combine
-      checkIsEmptyEmpty combine
-      checkIsEmptyPair(f1, f2)
-
-  def checkMonadPlusLaw[F[_]: Runner1, A, B, C](
-      a: A,
-      b: B,
-      c: C,
-      f1: F[A],
-      f2: F[A],
-      f3: F[A]
-  )(using
-      mp: MonadPlus[F],
-      f: A => B,
-      fReverse: B => A,
-      g: B => C,
-      gReverse: C => B
-  ): ValidatedNel[String, Unit] =
-    checkMonadLaw[F, A, B, C](a, b, c) combine
-      checkApplicativePlusLaw[F, A, B, C](a, b, c, f1, f2, f3) combine
-      checkEmptyIsAPolymorphicValue[F, A](f1) combine
-      checkShortCircuitsRight[F, A](f1) combine
-      checkShortCircuitsThroughout[F, A](f1)
-  end checkMonadPlusLaw
-
-  def checkApplicativePlusLaw[F[_]: ApplicativePlus: Runner1, A, B, C](
-      a: A,
-      b: B,
-      c: C,
-      f1: F[A],
-      f2: F[A],
-      f3: F[A]
-  )(using
-      f: A => B,
-      fReverse: B => A,
-      g: B => C,
-      gReverse: C => B
-  ): ValidatedNel[String, Unit] =
-    checkApplicativeLaw[F, A, B, C](a, b, c) combine
-      checkPlusEmptyLaw[F, A](f1, f2, f3)
-
-  def checkMonoidLaw[A: Monoid](
-      x: A,
-      y: A,
-      z: A
-  ): ValidatedNel[String, Unit] =
-    checkAssociativity(x, y, z)
-      .combine(checkIdentity(x))
-
-  def checkPlusEmptyLaw[F[_], A](f1: F[A], f2: F[A], f3: F[A])(using
-      pl: PlusEmpty[F]
-  ): ValidatedNel[String, Unit] =
-    checkPlusLaw(f1, f2, f3) combine
-      checkPlusEmptyIdentity(f1) combine
-      checkMonoidLaw(f1, f2, f3)(using pl.monoid)
-
-  def checkPlusLaw[F[_], A](f1: F[A], f2: F[A], f3: F[A])(using
-      pl: Plus[F]
-  ): ValidatedNel[String, Unit] =
-    checkPlusAssociativity(f1, f2, f3) combine
-      super.checkAssociativity(f1, f2, f3)(using pl.semigroup)
 
   def checkMonadLaw[F[_]: Runner1, A, B, C](a: A, b: B, c: C)(using
       monad: Monad[F],
@@ -192,24 +72,6 @@ object MonadLaws extends BasicLaws:
       checkFlatmapAssociativity[F, A, B, C](fa, afb, bfc) combine
       checkFlatmapLeftIdentity[F, A, B](a, afb) combine
       checkFlatmapRightIdentity[F, A](fa)
-
-  def checkBindLaw[F[_]: Bind: Runner1, A, B, C](
-      fa: F[A],
-      fb: F[B],
-      fc: F[C],
-      fab: F[A => B],
-      fbc: F[B => C],
-      afb: A => F[B],
-      bfc: B => F[C]
-  )(using
-      f: A => B,
-      fReverse: B => A,
-      g: B => C,
-      gReverse: C => B
-  ): ValidatedNel[String, Unit] =
-    checkApplyLaw[F, A, B, C](fa, fb, fc, fab, fbc) combine
-      checkApplyFlatmap[F, A, B](fa, fab) combine
-      checkFlatmapAssociativity[F, A, B, C](fa, afb, bfc)
 
   def checkApplicativeLaw[F[_]: Runner1, A, B, C](a: A, b: B, c: C)(using
       appl: Applicative[F],
@@ -283,16 +145,6 @@ object MonadLaws extends BasicLaws:
       checkMapIdentityLaw[F, A](fa) combine
       checkMapCompositionLaw[F, A, B, C](fa)
 
-  def checkInvariantApplicativeLaw[F[_]: InvariantApplicative, A, B, C](
-      fa: F[A]
-  )(using
-      f: A => B,
-      fReverse: B => A,
-      g: B => C,
-      gReverse: C => B
-  ): ValidatedNel[String, Unit] =
-    checkInvariantFunctorLaw[F, A, B, C](fa)
-
   def checkInvariantFunctorLaw[F[_]: InvariantFunctor, A, B, C](fa: F[A])(using
       f: A => B,
       fReverse: B => A,
@@ -338,148 +190,6 @@ object MonadLaws extends BasicLaws:
       "Не соблюдается ассоциативность CoBind: fa.cobind(fab).cobind(fbc) == fa.cobind(x => fbc(x.cobind(fab)))"
     ).toValidatedNel
 
-  private def checkDivisibleRightIdentity[F[_], A](fa: F[A], a: A)(using
-      div: Divisible[F],
-      app: Applicator[F]
-  ): ValidatedNel[String, Unit] =
-    import app.*
-    import div.*
-    def delta: A => (A, A) = a => (a, a)
-
-    Either.cond[String, Unit](
-      run(a)(divide(fa, conquer)(delta)) == run(a)(fa),
-      (),
-      "Не соблюдается Тождественность справа: divide(fa, conquer)(delta) == fa, где delta: A => (A, A) = a => (a, a)"
-    ).toValidatedNel
-
-  private def checkDivisibleLeftIdentity[F[_], A](fa: F[A], a: A)(using
-      div: Divisible[F],
-      app: Applicator[F]
-  ): ValidatedNel[String, Unit] =
-    import app.*
-    import div.*
-    def delta: A => (A, A) = a => (a, a)
-
-    Either.cond[String, Unit](
-      run(a)(divide(conquer, fa)(delta)) == run(a)(fa),
-      (),
-      "Не соблюдается Тождественность слева: divide(conquer, fa)(delta) == fa, где delta: A => (A, A) = a => (a, a)"
-    ).toValidatedNel
-
-  private def checkDivideComposition[F[_], A](
-      fa1: F[A],
-      fa2: F[A],
-      fa3: F[A],
-      a: A
-  )(using div: Divide[F], app: Applicator[F]): ValidatedNel[String, Unit] =
-    import app.*
-    import div.*
-    def delta: A => (A, A) = a => (a, a)
-
-    Either.cond[String, Unit](
-      run(a)(divide(divide(fa1, fa2)(delta), fa3)(delta)) ==
-        run(a)(divide(fa1, divide(fa2, fa3)(delta))(delta)),
-      (),
-      "Не соблюдается Композиция Divide: divide(divide(fa1, fa2)(delta), fa3)(delta) == divide(fa1, divide(fa2, fa3)(delta))(delta), где delta: A => (A, A) = a => (a, a)"
-    ).toValidatedNel
-  end checkDivideComposition
-
-  private def checkContravariantFunctorIdentity[F[_], A](fa: F[A], a: A)(using
-      cf: ContravariantFunctor[F],
-      ap: Applicator[F]
-  ): ValidatedNel[String, Unit] =
-    import ap.*
-    import cf.*
-    Either.cond[String, Unit](
-      run(a)(cmap[A, A](fa)(identity)) == run(a)(fa),
-      (),
-      "Не соблюдается Тождественность контравариантного функтора: cmap(fa)(id) == fa"
-    ).toValidatedNel
-
-  private def checkContravariantFunctorComposition[F[_], A, B, C](
-      fc: F[C],
-      a: A
-  )(
-      using
-      cf: ContravariantFunctor[F],
-      ap: Applicator[F],
-      f: A => B,
-      g: B => C
-  ): ValidatedNel[String, Unit] =
-    import ap.*
-    import cf.*
-    Either.cond[String, Unit](
-      run(a)(cmap(cmap(fc)(g))(f)) == run(a)(cmap(fc)(g compose f)),
-      (),
-      "Не соблюдается Композиция контравариантного функтора: cmap(cmap(fc)(g))(f) == cmap(fc)(g(f(_)))"
-    ).toValidatedNel
-
-  private def checkTraverseId[F[_], A, B](fa: F[A])(using
-      trF: Traverse[F],
-      f: A => B
-  ): ValidatedNel[String, Unit] =
-    check(
-      trF.traverse(fa)(a => Id(f(a))) == fa.map(f),
-      "Обход Id эквивалентен `Functor#map`"
-    )
-
-  private def checkTraverseConsistent[F[_], G[_], H[_], A, B, C](fa: F[A])(using
-      trF: Traverse[F],
-      apG: Applicative[G],
-      apH: Applicative[H],
-      f: A => B,
-      g: B => C
-  ): ValidatedNel[String, Unit] =
-    val a2GB: A => G[B] = a => apG.unit(f(a))
-    val b2HC: B => H[C] = b => apH.unit(g(b))
-
-    val optFb: G[F[B]]         = trF.traverse(fa)(a2GB)
-    val optListFc1: G[H[F[C]]] =
-      apG.map(optFb)(fb => trF.traverse(fb)(b2HC))
-    val optListFc2: G[H[F[C]]] =
-      trF.traverse[A](fa)[[X] =>> G[H[X]], C](a =>
-        apG.map(apG.unit(f(a)))(b2HC)
-      )
-    check(
-      optListFc1 == optListFc2,
-      "Два последовательно зависимых эффекта могут быть объединены в один, их композицию"
-    )
-  end checkTraverseConsistent
-
-  private def checkTraverseSequence[F[_], G[_], A](fga: F[G[A]])(using
-      trF: Traverse[F],
-      apG: Applicative[G]
-  ): ValidatedNel[String, Unit] =
-    check(
-      trF.traverse[G[A]](fga)(identity) == trF.sequence(fga),
-      "Не соблюдается закон согласованности с sequence: sequence(fga) == traverse(fga)(identity)"
-    )
-
-  private def checkTraverseUnit[F[_], G[_], A](fa: F[A])(using
-      trF: Traverse[F],
-      apG: Applicative[G]
-  ): ValidatedNel[String, Unit] =
-    check(
-      trF.traverse[A](fa)[G, A](a => apG.unit(a)) == apG.unit[F[A]](fa),
-      "Обход с помощью функции unit аналогичен прямому применению функции unit"
-    )
-
-  private def checkTraverseCombine[F[_], G[_], H[_], A, B](fa: F[A])(using
-      trF: Traverse[F],
-      apG: Applicative[G],
-      apH: Applicative[H],
-      f: A => B
-  ): ValidatedNel[String, Unit] =
-    val a2GB: A => G[B] = a => apG.unit(f(a))
-    val a2HB: A => H[B] = a => apH.unit(f(a))
-    type GH[D] = (G[D], H[D])
-    val t1: GH[F[B]] = (trF.traverse(fa)(a2GB), trF.traverse(fa)(a2HB))
-    val t2: GH[F[B]] = trF.traverse[A](fa)[GH, B](a => (a2GB(a), a2HB(a)))
-    check(
-      t1 == t2,
-      "Два независимых эффекта могут быть объединены в один эффект, их произведение"
-    )
-
   private def checkFoldLeftMatchesFoldMap[F[_]: Foldable, A](fa: F[A])(using
       Monoid[Vector[A]]
   ): ValidatedNel[String, Unit] =
@@ -496,57 +206,6 @@ object MonadLaws extends BasicLaws:
       fa.foldMap(Vector(_)) == fa.foldRight(Vector.empty[A])(_ +: _),
       (),
       "`foldRight` соответствует `foldMap`, не соблюдается: `fa.foldMap(Vector(_)) == fa.foldRight(Vector.empty[A])(_ +: _)`"
-    ).toValidatedNel
-
-  private def checkIsEmptyEmpty[F[_], A](using
-      is: IsEmpty[F]
-  ): ValidatedNel[String, Unit] =
-    import is.*
-    Either.cond[String, Unit](
-      isEmpty(empty[A]),
-      (),
-      "\"Пустое\" значение всегда должно быть распознано как \"пустое\": isEmpty(empty[A])"
-    ).toValidatedNel
-
-  private def checkIsEmptyPair[F[_], A](fa1: F[A], fa2: F[A])(using
-      is: IsEmpty[F]
-  ): ValidatedNel[String, Unit] =
-    import is.*
-    Either.cond[String, Unit](
-      (isEmpty(fa1) && isEmpty(fa2)) == isEmpty(plus(fa1, fa2)),
-      (),
-      "Результат комбинирования двух значений является \"пустым\" только тогда, когда оба значения \"пусты\": " +
-        "(isEmpty(fa1) && isEmpty(fa2)) == isEmpty(plus(fa1, fa2))"
-    ).toValidatedNel
-
-  private def checkEmptyIsAPolymorphicValue[F[_], A](fa: F[A])(using
-      mp: MonadPlus[F]
-  ): ValidatedNel[String, Unit] =
-    import mp.*
-    Either.cond[String, Unit](
-      empty[A].map(_ => fa) == empty[A],
-      (),
-      "Не соблюдается Закон сохранения нейтрального элемента при `map`: empty[A].map(_ => fa) == empty[A]"
-    ).toValidatedNel
-
-  private def checkShortCircuitsRight[F[_], A](fa: F[A])(using
-      mp: MonadPlus[F]
-  ): ValidatedNel[String, Unit] =
-    import mp.*
-    Either.cond[String, Unit](
-      empty[A].flatMap(_ => fa) == empty[A],
-      (),
-      "Не соблюдается Закон сохранения нейтрального элемента при `flatMap`: empty[A].flatMap(_ => fa) == empty[A]"
-    ).toValidatedNel
-
-  private def checkShortCircuitsThroughout[F[_], A](fa: F[A])(using
-      mp: MonadPlus[F]
-  ): ValidatedNel[String, Unit] =
-    import mp.*
-    Either.cond[String, Unit](
-      fa.flatMap(_ => empty[A]) == empty[A],
-      (),
-      "Не соблюдается Закон замыкания нейтрального элемента: fa.flatMap(_ => empty[A]) == empty[A]"
     ).toValidatedNel
 
   private def checkFlatmapLeftIdentity[F[_], A, B](a: A, afb: A => F[B])(using

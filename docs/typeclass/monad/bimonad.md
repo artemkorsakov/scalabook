@@ -23,26 +23,11 @@ nextPage = monad-transformer.html
 - **Анализ данных**:
     - Например, для анализа временных рядов, где требуется учитывать как текущие значения, так и их контекст.
 
-**Краткие примеры**
-
-- **Бесконечные потоки**:
-    - У вас есть бесконечный поток чисел (`LazyList[Int]`).
-    - С помощью `extract` вы можете извлечь текущее значение из потока.
-    - С помощью `flatMap` вы можете создать новый поток, где каждое значение является результатом последовательных вычислений.
-- **Таблицы данных**:
-    - У вас есть таблица данных (`Table[A]`), где каждая ячейка зависит от соседних ячеек.
-    - С помощью `extract` вы можете извлечь значение из конкретной ячейки.
-    - С помощью `flatMap` вы можете создать новую таблицу, где каждая ячейка является результатом последовательных преобразований.
-- **Временные ряды**:
-    - У вас есть временной ряд (`TimeSeries[A]`), где каждое значение зависит от предыдущих и следующих значений.
-    - С помощью `extract` вы можете извлечь текущее значение из ряда.
-    - С помощью `flatMap` вы можете создать новый временной ряд, где каждое значение является результатом последовательных вычислений.
-
 > `Bimonad` отличается от других классов типов **Bi**,
 > таких как [Bifunctor](../bifunctor/bifunctor.md), [Bifoldable](../bifunctor/bifoldable.md)
 > или [Bitraverse](../bifunctor/bitraverse.md), где префикс описывает `F[_, _]`.
 > `Bimonad` — это `F[_]`, а префикс **Bi** здесь имеет другое значение: это и монада, и комонада.
-> Имейте в виду, что бимонада имеет свои собственные дополнительные законы,
+> Бимонада имеет свои собственные дополнительные законы,
 > поэтому то, что является одновременно монадическим и комонадным, необязательно может быть законной бимонадой.
 
 ## Формальное определение
@@ -90,44 +75,136 @@ nextPage = monad-transformer.html
 trait Bimonad[F[_]] extends Monad[F], CoMonad[F]
 ```
 
-### "Обертка"
+## Упражнения
+
+### Упражнение 2.16.1: Реализация Bimonad для NonEmptyList
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+`NonEmptyList` (непустой список) — классический пример бимонады.
+Почему именно `NonEmptyList`, а не обычный `List`? 
+Потому что:
+
+- Для комонады нужна операция `coUnit` — извлечение значения из контекста
+- У обычного списка нет гарантированного первого элемента (он может быть пустым)
+- `NonEmptyList` всегда имеет хотя бы один элемент, поэтому `coUnit` всегда может вернуть `head`
+
+**Структура `NonEmptyList[A]`**:
+
+- `head: A` — первый элемент (всегда присутствует)
+- `tail: List[A]` — хвост списка (может быть пустым)
+
+**Операции, которые нужно реализовать**:
+
+1. **`unit` (из монады)** — поднимает значение в контекст
+2. **`coUnit` (из комонады)** — извлекает значение из контекста
+3. **`flatMap` (из монады)** — последовательное преобразование
+4. **`cobind` (из комонады)** — расширение контекста
+5. **`map` (наследуется)** — преобразование всех элементов
+   - Реализуется через `flatMap` и `unit` (или через `cobind` и `coUnit`)
+
+Реализуйте экземпляр `Bimonad` для `NonEmptyList`. 
 
 ```dotty
-type Id[A] = A
-object Id:
-  def apply[A](a: A): Id[A] = a
+import ru.scalabook.typeclasses.Bimonad
 
-given Bimonad[Id] with
-  def unit[A](a: => A): Id[A] = Id(a)
+case class NonEmptyList[A](head: A, tail: List[A]):
+  def toList: List[A] = head :: tail
+  def ++(than: NonEmptyList[A]): NonEmptyList[A] =
+    NonEmptyList(head = head, tail = tail ++ than.toList)
 
-  def coUnit[A](fa: Id[A]): A = fa
+// TODO: Реализуйте given экземпляр Bimonad для NonEmptyList
+given Bimonad[NonEmptyList] with
+  override def unit[A](a: => A): NonEmptyList[A] = ???
+  override def coUnit[A](fa: NonEmptyList[A]): A = ???
 
-  extension [A](as: Id[A])
-    override def map[B](f: A => B): Id[B] = Id(f(as))
-
-    def flatMap[B](f: A => Id[B]): Id[B] = f(as)
-
-    def cobind[B](f: Id[A] => B): Id[B] = Id(f(as))
+  extension [A](fa: NonEmptyList[A])
+    override def flatMap[B](f: A => NonEmptyList[B]): NonEmptyList[B] = ???
+    override def cobind[B](f: NonEmptyList[A] => B): NonEmptyList[B] = ???
 ```
 
-### Непустой список
+**Примеры:**
+
+```dotty
+import Bimonad.given
+
+val nel = NonEmptyList(1, List(2, 3, 4))
+
+// unit — создание одноэлементного списка
+unit(42)  // NonEmptyList(42, Nil)
+
+// flatMap — последовательное преобразование
+val doubled = nel.flatMap(x => NonEmptyList(x, List(x * 2)))
+// NonEmptyList(1, List(2, 2, 4, 3, 6, 4, 8))
+// Пошагово:
+// 1 → [1,2]
+// 2 → [2,4]
+// 3 → [3,6]
+// 4 → [4,8]
+// Результат: [1,2,2,4,3,6,4,8]
+
+// coUnit — извлечение головы
+coUnit(nel)  // 1
+
+// cobind — сумма каждого суффикса
+val sums = nel.cobind(_.toList.sum)
+// NonEmptyList(10, List(9, 7, 4))
+// Суффиксы и их суммы:
+// [1,2,3,4] → 10
+// [2,3,4]   → 9
+// [3,4]     → 7
+// [4]       → 4
+```
+
+@:note(🔍 Показать решение)
+
+**`unit`** создаёт одноэлементный список: `NonEmptyList(a, Nil)`.
+
+**`coUnit`** извлекает голову: `fa.head`.
+
+**`flatMap`** использует рекурсию: для списка из одного элемента применяем `f` к голове; 
+для списка из нескольких элементов применяем `f` к голове 
+и рекурсивно обрабатываем хвост, затем конкатенируем результаты через `++`. 
+Важно, что результат всегда будет непустым, так как `f(head)` возвращает `NonEmptyList[B]`.
+
+**`cobind`** использует хвостовую рекурсию для обхода всех непустых суффиксов:
+
+1. Функция `loop` принимает текущий суффикс `nel` и аккумулятор `acc`
+2. На каждом шаге применяет `f` к текущему `nel` и добавляет результат в аккумулятор
+3. Если хвост пуст — переворачивает аккумулятор и создаёт `NonEmptyList` из первого элемента и остальных
+4. Если хвост непуст — рекурсивно вызывает `loop` с новым суффиксом `NonEmptyList(h, t)`
 
 ```dotty
 given Bimonad[NonEmptyList] with
-  def unit[A](a: => A): NonEmptyList[A] = NonEmptyList(a, List.empty)
+  override def unit[A](a: => A): NonEmptyList[A] = NonEmptyList(a, Nil)
 
-  def coUnit[A](fa: NonEmptyList[A]): A = fa.head
+  override def coUnit[A](fa: NonEmptyList[A]): A = fa.head
 
   extension [A](fa: NonEmptyList[A])
-    def flatMap[B](f: A => NonEmptyList[B]): NonEmptyList[B] =
+    override def flatMap[B](f: A => NonEmptyList[B]): NonEmptyList[B] =
       fa match
-        case NonEmptyList(head, Nil) => f(head)
+        case NonEmptyList(head, Nil)       => f(head)
         case NonEmptyList(head, h :: tail) =>
           f(head) ++ NonEmptyList(h, tail).flatMap(f)
 
-    def cobind[B](f: NonEmptyList[A] => B): NonEmptyList[B] =
-      NonEmptyList(f(fa), Nil)
+    override def cobind[B](f: NonEmptyList[A] => B): NonEmptyList[B] =
+      @annotation.tailrec
+      def loop(nel: NonEmptyList[A], acc: List[B]): NonEmptyList[B] =
+        val newAcc = f(nel) :: acc
+        nel.tail match
+          case Nil =>
+            val newList = newAcc.reverse
+            // Вызывать head безопасно, потому что мы знаем, что newAcc не пустой
+            NonEmptyList(newList.head, newList.tail)
+          case h :: t =>
+            loop(NonEmptyList(h, t), newAcc)
+
+      loop(fa, Nil)
+  end extension
+end given
 ```
+
+@:@
 
 ## Схема
 

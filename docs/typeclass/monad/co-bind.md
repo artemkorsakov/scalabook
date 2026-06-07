@@ -79,21 +79,35 @@ trait CoBind[F[_]] extends Functor[F]:
 
 ## Упражнения
 
-### Упражнение 2.14.1: Реализация CoBind для типа Env (контекст с окружением)
+### Упражнение 2.14.1: Реализация CoBind (комонады) для NonEmptyList
 
 > [Репозиторий с упражнениями и инструкцией по выполнению][sample]
 
-Реализуйте экземпляр `CoBind` для типа `Env[A, R]` с фиксированным типом окружения `R`.
+`NonEmptyList` (непустой список) — классический пример комонады. 
+Каждый непустой список можно представить как:
+
+- `head`: первый элемент (всегда присутствует)
+- `tail`: хвост списка (может быть пустым)
+
+Операции `CoBind`:
+
+- `map`: преобразует каждый элемент списка, сохраняя структуру
+- `cobind`: применяет функцию `f` к каждому непустому суффиксу (хвосту) списка, создавая новый непустой список из результатов
+
+Реализуйте экземпляр `CoBind` для `NonEmptyList`. 
 
 ```dotty
 import ru.scalabook.typeclasses.CoBind
 
-final case class Env[A, R](a: A, r: R)
+case class NonEmptyList[A](head: A, tail: List[A]):
+  def toList: List[A] = head :: tail
+  def ++(than: NonEmptyList[A]): NonEmptyList[A] =
+    NonEmptyList(head = head, tail = tail ++ than.toList)
 
-given envCoBind[R]: CoBind[[X] =>> Env[X, R]] with
-  extension [A](as: Env[A, R])
-    override def map[B](f: A => B): Env[B, R] = ???
-    override def cobind[B](f: Env[A, R] => B): Env[B, R] = ???
+given CoBind[NonEmptyList] with
+  extension [A](fa: NonEmptyList[A])
+    override def map[B](f: A => B): NonEmptyList[B] = ???
+    override def cobind[B](f: NonEmptyList[A] => B): NonEmptyList[B] = ???
 ```
 
 **Примеры:**
@@ -101,43 +115,71 @@ given envCoBind[R]: CoBind[[X] =>> Env[X, R]] with
 ```dotty
 import CoBind.given
 
-// Создаём Env со значением и окружением
-val env = Env(42, "config")
+val nel = NonEmptyList(1, List(2, 3, 4))
 
-// Пример 1: map преобразует значение
-env.map(_ * 2)        // Env(84, "config")
-env.map(_.toString)   // Env("42", "config")
-env.map(_ % 10)       // Env(2, "config")
+// map — преобразование всех элементов
+nel.map(_ * 2)  
+// NonEmptyList(2, List(4, 6, 8))
 
-// Пример 2: cobind применяет функцию ко всему Env
-val extractValue: Env[Int, String] => String = (e: Env[Int, String]) => s"value: ${e.a}"
-val newEnv = env.cobind(extractValue)  // Env("value: 42", "config")
+nel.map(_.toString)  
+// NonEmptyList("1", List("2", "3", "4"))
 
-// Пример 3: cobind с функцией, использующей окружение
-val useEnv: Env[Int, String] => String = (e: Env[Int, String]) => s"${e.r}: ${e.a}"
-env.cobind(useEnv)  // Env("config: 42", "config")
+// cobind — сумма каждого суффикса
+val sumSuffixes = nel.cobind(_.toList.sum)
+// NonEmptyList(10, List(9, 7, 4))
+// Пояснение: 
+// - суффикс [1,2,3,4] → 1+2+3+4=10
+// - суффикс [2,3,4] → 2+3+4=9
+// - суффикс [3,4] → 3+4=7
+// - суффикс [4] → 4
+
+// cobind — произведение каждого суффикса
+val productSuffixes = nel.cobind(_.toList.product)
+// NonEmptyList(24, List(24, 12, 4))
+// 1*2*3*4=24, 2*3*4=24, 3*4=12, 4=4
+
+// cobind с преобразованием в строку
+val describe = nel.cobind(nel => s"[${nel.toList.mkString(",")}]")
+// NonEmptyList("[1,2,3,4]", List("[2,3,4]", "[3,4]", "[4]"))
 ```
 
 @:note(🔍 Показать решение)
 
-Реализация `map` извлекает значение `a` и окружение `r` из `Env`, применяет функцию `f` к значению `a` 
-и создаёт новый `Env` с преобразованным значением и исходным окружением. 
-Реализация `cobind` извлекает окружение `r` из исходного `Env`, 
-применяет функцию `f` ко всему исходному `Env` (получая значение типа `B`), 
-и создаёт новый `Env` с этим значением и исходным окружением. 
-Ключевая особенность `cobind` в том, что он сохраняет окружение неизменным, 
-позволяя создавать новые контексты на основе анализа текущего контекста.
+В реализации `map` используется рекурсивный обход списка: для пустого хвоста применяем функцию только к голове; 
+для непустого хвоста применяем функцию к голове и рекурсивно к хвосту, 
+затем конструируем новый список через `NonEmptyList(f(head), tail.map(f).toList)`.
+
+В `cobind` используется хвостовая рекурсия с аккумулятором `acc: List[B]`. 
+На каждом шаге:
+
+- Применяем `f` к текущему `nel`, добавляем результат в аккумулятор.
+- Если хвост пуст — возвращаем список из накопленных результатов в обратном порядке,
+  т.к. каждый текущий результат добавлялся в начало списка;
+  вызов `newList.head` безопасен, т.к. мы точно знаем, что там есть хотя бы `f(nel)`.
+- Если хвост непуст — рекурсивно вызываем `loop` с новым `NonEmptyList(h, t)`.
 
 ```dotty
-final case class Env[A, R](a: A, r: R)
+given CoBind[NonEmptyList] with
+  extension [A](fa: NonEmptyList[A])
+    override def map[B](f: A => B): NonEmptyList[B] =
+      fa match
+        case NonEmptyList(head, Nil)       => NonEmptyList(f(head), Nil)
+        case NonEmptyList(head, h :: tail) =>
+          NonEmptyList(f(head), NonEmptyList(h, tail).map(f).toList)
 
-given envCoBind[R]: CoBind[[X] =>> Env[X, R]] with
-  extension [A](as: Env[A, R])
-    override def map[B](f: A => B): Env[B, R] =
-      Env(f(as.a), as.r)
+    override def cobind[B](f: NonEmptyList[A] => B): NonEmptyList[B] =
+      @annotation.tailrec
+      def loop(nel: NonEmptyList[A], acc: List[B]): NonEmptyList[B] =
+        val newAcc = f(nel) :: acc
+        nel.tail match
+          case Nil =>
+            val newList = newAcc.reverse
+            NonEmptyList(newList.head, newList.tail)
+          case h :: t =>
+            loop(NonEmptyList(h, t), newAcc)
 
-    override def cobind[B](f: Env[A, R] => B): Env[B, R] =
-      Env(f(as), as.r)
+      loop(fa, Nil)
+  end extension
 ```
 
 @:@

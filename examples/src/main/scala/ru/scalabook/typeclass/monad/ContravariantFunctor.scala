@@ -32,24 +32,5 @@ trait ContravariantFunctor[F[_]] extends InvariantFunctor[F]:
 end ContravariantFunctor
 
 object ContravariantFunctor:
-  def apply[F[_]: ContravariantFunctor]: ContravariantFunctor[F] =
+  inline def apply[F[_]: ContravariantFunctor]: ContravariantFunctor[F] =
     summon[ContravariantFunctor[F]]
-
-  opaque type Predicate = [X] =>> X => Boolean
-  opaque type ShowX     = [X] =>> X => String
-  object ShowX:
-    def apply[X](f: X => String): ShowX[X] = f
-
-  given predicateContravariantFunctor: ContravariantFunctor[Predicate] with
-    def cmap[A, B](predicate: Predicate[B])(f: A => B): Predicate[A] =
-      a => predicate(f(a))
-
-  given showContravariantFunctor: ContravariantFunctor[ShowX] with
-    def cmap[A, B](show: ShowX[B])(f: A => B): ShowX[A] =
-      a => show(f(a))
-
-  given functionContravariantFunctor[R]
-      : ContravariantFunctor[[X] =>> Function1[X, R]] with
-    def cmap[A, B](function: B => R)(f: A => B): A => R =
-      a => function(f(a))
-end ContravariantFunctor

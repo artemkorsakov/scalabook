@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = bifoldable.html
 showNext = true
-nextPage = ../equal.html
+nextPage = ../arrow.html
 %}
 
 # Bitraverse

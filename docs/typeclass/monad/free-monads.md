@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = monad-transformer.html
 showNext = true
-nextPage = ../arrow.html
+nextPage = monad-throw.html
 %}
 
 # Свободная монада

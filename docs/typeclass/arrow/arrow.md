@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = strong.html
 showNext = true
-nextPage = ../bifunctor.html
+nextPage = ../equal.html
 %}
 
 # Arrow

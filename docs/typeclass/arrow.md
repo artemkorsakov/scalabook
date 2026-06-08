@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = monad/free-monads.html
+prevPage = bifunctor/bitraverse.html
 showNext = true
 nextPage = arrow/compose.html
 %}

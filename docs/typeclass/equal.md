@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = bifunctor/bitraverse.html
+prevPage = arrow/arrow.html
 showNext = true
 nextPage = equal/equal.html
 %}

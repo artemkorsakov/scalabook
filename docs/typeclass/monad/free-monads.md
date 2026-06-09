@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = monad-transformer.html
 showNext = true
-nextPage = monad-throw.html
+nextPage = applicative-error.html
 %}
 
 # Свободная монада

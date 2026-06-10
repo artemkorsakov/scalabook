@@ -138,8 +138,11 @@ Rational(2, 6) =!= Rational(3, 6) // true
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Cats](https://typelevel.org/cats/typeclasses/eq.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Eq.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Equal.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Equal.html)
 - [Spire home page](https://typelevel.org/spire/)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

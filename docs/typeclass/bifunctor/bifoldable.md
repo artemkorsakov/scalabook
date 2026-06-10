@@ -83,17 +83,6 @@ trait Bifoldable[F[_, _]]:
       fa.bifoldMap[C => C](a => c => f(c, a))(b => c => g(c, b))(using dual(endoMonoid[C]))(z)
 ```
 
-### Either
-
-```dotty
-given eitherBifoldable: Bifoldable[Either] with
-  extension [A, B](fa: Either[A, B])
-    def bifoldMap[M](f: A => M)(g: B => M)(using ma: Monoid[M]): M =
-      fa match
-        case Right(value) => g(value)
-        case Left(value)  => f(value)
-```
-
 ### Связь с другими классами типов
 
 **Bifoldable** тесно связан с **Foldable**, который работает с типами, имеющими один параметр. 
@@ -151,6 +140,41 @@ def uFoldable: Foldable[[X] =>> F[X, X]] =
     - Метод `foldMap` применяет функцию `f: A => B` к обоим параметрам одновременно, используя метод `bifoldMap` из `Bifoldable`.
 - **Пример**: Если `F` — это `Tuple2[A, A]`, то `uFoldable` позволяет свернуть оба элемента кортежа одновременно.
 
+## Упражнения
+
+### Упражнение 3.2.1: Реализация Bifoldable для Either.
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Реализуйте экземпляр `Bifoldable` для `Either`:
+
+```dotty
+???
+```
+
+**Примеры:**
+
+```dotty
+???
+```
+
+@:note(🔍 Показать решение)
+
+???
+
+```dotty
+given eitherBifoldable: Bifoldable[Either] with
+  extension [A, B](fa: Either[A, B])
+    def bifoldMap[M](f: A => M)(g: B => M)(using ma: Monoid[M]): M =
+      fa match
+        case Right(value) => g(value)
+        case Left(value)  => f(value)
+```
+
+@:@
+
+
+
 ## Схема
 
 ```mermaid
@@ -166,4 +190,7 @@ classDiagram
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bifoldable.html)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

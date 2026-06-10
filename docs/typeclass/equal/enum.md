@@ -156,5 +156,8 @@ Enum[Int].max  // Some(2147483647)
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Enum.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Enum.html)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

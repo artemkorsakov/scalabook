@@ -182,8 +182,11 @@ Order.max(Rational(1, 2), Rational(1, 3))        // 1/2
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Cats API](https://www.javadoc.io/doc/org.typelevel/cats-docs_3/latest/cats/kernel/Order.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Order.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Order.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Order.html)
 - [Spire home page](https://typelevel.org/spire/)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

@@ -153,6 +153,9 @@ import Scalaz.*
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Herding Cats](http://eed3si9n.com/herding-cats/Arrow.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Split.html)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

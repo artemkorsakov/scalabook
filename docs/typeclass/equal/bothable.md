@@ -155,5 +155,8 @@ classDiagram
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Algebird, Predecessible](https://twitter.github.io/algebird/typeclasses/predecessible.html)
 - [Algebird, Successible](https://twitter.github.io/algebird/typeclasses/successible.html)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

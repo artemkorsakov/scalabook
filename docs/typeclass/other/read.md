@@ -77,4 +77,7 @@ summon[Read[Int]].read("abc")
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Read.html)
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

@@ -21,3 +21,7 @@ nextPage = other/show.html
 ---
 
 **Ссылки:**
+
+- [Ссылка на репозиторий с упражнениями][sample]
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

@@ -63,110 +63,187 @@ nextPage = bifoldable.html
   `bimap(bimap(fab)(f1, g1))(f2, g2) == bimap(fab)(f2.compose(f1), g2.compose(g1))`.
   Последовательное применение `bimap` эквивалентно одному применению с композицией функций.
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Bifunctor[F[_, _]]:
-  def bimap[A, B, C, D](fab: F[A, B])(f: A => C, g: B => D): F[C, D]
+  extension [A, B](fab: F[A, B])
+    /** `map` over both type parameters. */
+    def bimap[C, D](f: A => C, g: B => D): F[C, D]
 
-  def leftMap[A, B, C](fab: F[A, B])(f: A => C): F[C, B] =
-    bimap(fab)(f, identity)
+    def leftMap[C](f: A => C): F[C, B] =
+      fab.bimap(f, identity)
 
-  def rightMap[A, B, D](fab: F[A, B])(g: B => D): F[A, D] =
-    bimap(fab)(identity, g)
+    def rightMap[D](g: B => D): F[A, D] =
+      fab.bimap(identity, g)
 
   def umap[A, B](faa: F[A, A])(f: A => B): F[B, B] =
-    bimap(faa)(f, f)
-```
-
-### Either
-
-```dotty
-given Bifunctor[Either] with
-  override def bimap[A, B, C, D](fab: Either[A, B])(f: A => C, g: B => D): Either[C, D] =
-    fab match
-      case Right(value) => Right(g(value))
-      case Left(value)  => Left(f(value))
-```
-
-### Writer - функциональный журнал
-
-```dotty
-case class Writer[W, A](run: () => (W, A))
-
-given Bifunctor[Writer] with
-  override def bimap[A, B, C, D](fab: Writer[A, B])(f: A => C, g: B => D): Writer[C, D] =
-    Writer { () =>
-      val (a, b) = fab.run()
-      (f(a), g(b))
-    }
+    bimap(faa)(f, f) 
 ```
 
 ### Связь с другими классами типов
 
-Бифунктор (`Bifunctor`) тесно связан с [функтором](../monad/functor.md) (`Functor`), 
-так как он расширяет идею функтора на типы с двумя параметрами. 
-В то время как функтор работает с типами, имеющими один параметр (например, `F[A]`), 
+Бифунктор (`Bifunctor`) тесно связан с [функтором](../monad/functor.md) (`Functor`),
+так как он расширяет идею функтора на типы с двумя параметрами.
+В то время как функтор работает с типами, имеющими один параметр (например, `F[A]`),
 бифунктор работает с типами, имеющими два параметра (например, `F[A, B]`).
 
 Предположим, у нас есть тип `Either[A, B]` и бифунктор для него:
 
 - `leftFunctor` позволяет работать с левой частью (`A`), например, преобразовывать `Either[String, Int]` в `Either[Int, Int]`.
 - `rightFunctor` позволяет работать с правой частью (`B`), например, преобразовывать `Either[String, Int]` в `Either[String, String]`.
-- `uFunctor` позволяет работать с обоими частями одновременно, если они одного типа, 
+- `uFunctor` позволяет работать с обоими частями одновременно, если они одного типа,
   например, преобразовывать `Either[Int, Int]` в `Either[String, String]`.
 
 #### **`leftFunctor`**
 
 ```dotty
-def leftFunctor[R]: Functor[[X] =>> F[X, R]] =
-  new Functor[[X] =>> F[X, R]]:
-    extension [A](fax: F[A, R]) override def map[B](f: A => B): F[B, R] = leftMap(fax)(f)
+def leftFunctor[R]: Functor[[X] =>> F[X, R]] = new:
+  extension [A](fax: F[A, R])
+    override def map[B](f: A => B): F[B, R] =
+      leftMap(fax)(f)
 ```
 
 - **Цель**: Создать функтор для первого параметра типа `F[A, R]`, где второй параметр (`R`) фиксирован.
 - **Как это работает**:
-    - `leftFunctor` возвращает функтор для типа `[X] =>> F[X, R]`, где `R` фиксирован.
-    - Метод `map` применяет функцию `f: A => B` только к первому параметру (`A`), используя метод `leftMap` бифунктора.
+  - `leftFunctor` возвращает функтор для типа `[X] =>> F[X, R]`, где `R` фиксирован.
+  - Метод `map` применяет функцию `f: A => B` только к первому параметру (`A`), используя метод `leftMap` бифунктора.
 - **Пример**: Если `F` — это `Either[A, R]`, то `leftFunctor` позволяет применять функцию к левой части (`A`), оставляя правую часть (`R`) неизменной.
 
 #### **`rightFunctor`**
 
 ```dotty
-  def rightFunctor[L]: Functor[[X] =>> F[L, X]] =
-    new Functor[[X] =>> F[L, X]]:
-      extension [A](fax: F[L, A]) override def map[B](f: A => B): F[L, B] = rightMap(fax)(f)
+def rightFunctor[L]: Functor[[X] =>> F[L, X]] = new:
+  extension [A](fax: F[L, A])
+    override def map[B](f: A => B): F[L, B] =
+      rightMap(fax)(f)
 ```
 
 - **Цель**: Создать функтор для второго параметра типа `F[L, A]`, где первый параметр (`L`) фиксирован.
 - **Как это работает**:
-    - `rightFunctor` возвращает функтор для типа `[X] =>> F[L, X]`, где `L` фиксирован.
-    - Метод `map` применяет функцию `f: A => B` только ко второму параметру (`A`), используя метод `rightMap` бифунктора.
+  - `rightFunctor` возвращает функтор для типа `[X] =>> F[L, X]`, где `L` фиксирован.
+  - Метод `map` применяет функцию `f: A => B` только ко второму параметру (`A`), используя метод `rightMap` бифунктора.
 - **Пример**: Если `F` — это `Either[L, A]`, то `rightFunctor` позволяет применять функцию к правой части (`A`), оставляя левую часть (`L`) неизменной.
 
 #### **`uFunctor`**
 
 ```dotty
-  def uFunctor: Functor[[X] =>> F[X, X]] =
-    new Functor[[X] =>> F[X, X]]:
-      extension [A](fax: F[A, A]) override def map[B](f: A => B): F[B, B] = umap(fax)(f)
+def uFunctor: Functor[[X] =>> F[X, X]] = new:
+  extension [A](fax: F[A, A])
+    override def map[B](f: A => B): F[B, B] =
+      umap(fax)(f)
 ```
 
 - **Цель**: Создать функтор для типа `F[X, X]`, где оба параметра имеют одинаковый тип.
 - **Как это работает**:
-    - `uFunctor` возвращает функтор для типа `[X] =>> F[X, X]`.
-    - Метод `map` применяет функцию `f: A => B` к обоим параметрам одновременно, используя метод `umap` бифунктора.
+  - `uFunctor` возвращает функтор для типа `[X] =>> F[X, X]`.
+  - Метод `map` применяет функцию `f: A => B` к обоим параметрам одновременно, используя метод `umap` бифунктора.
 - **Пример**: Если `F` — это `Tuple2[A, A]`, то `uFunctor` позволяет преобразовать оба элемента кортежа одновременно.
+
+## Упражнения
+
+### Упражнение 3.1.1: Реализация бифунктора для Either.
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Реализуйте экземпляр `Bifunctor` для `Either`:
+
+```dotty
+given Bifunctor[Either] with
+  extension [A, B](fab: Either[A, B])
+    override def bimap[C, D](f: A => C, g: B => D): Either[C, D] =
+      ???
+```
+
+**Примеры:**
+
+```dotty
+import Bifunctor.given
+
+val right: Either[String, Int] = Right(42)
+val left: Either[String, Int] = Left("error")
+
+// Преобразование обеих веток
+right.bimap(_.length, _ * 2)  // Right(84)
+left.bimap(_.length, _ * 2)   // Left(5) — длина строки "error"
+```
+
+@:note(🔍 Показать решение)
+
+Реализация использует сопоставление с шаблоном для определения варианта `Either`. 
+Если `fab` — это `Right(value)`, мы применяем функцию `g` к `value` и возвращаем `Right(g(value))`. 
+Если `fab` — это `Left(value)`, мы применяем функцию `f` к `value` и возвращаем `Left(f(value))`. 
+Это позволяет преобразовывать оба типа независимо, сохраняя структуру `Either`.
+
+```dotty
+given Bifunctor[Either] with
+  extension [A, B](fab: Either[A, B])
+    override def bimap[C, D](f: A => C, g: B => D): Either[C, D] =
+      fab match
+        case Right(value) => Right(g(value))
+        case Left(value)  => Left(f(value))
+```
+
+@:@
+
+### Упражнение 3.1.2: Реализация бифунктора для Writer.
+
+`Writer[W, A]` — это тип, представляющий вычисление, которое накапливает лог типа `W` и возвращает значение типа `A`. 
+
+Структура: `Writer[W, A]` — это ленивое вычисление `() => (W, A)`, которое при вызове возвращает пару (лог, значение).
+
+Реализуйте экземпляр `Bifunctor` для `Writer`.
+
+```dotty
+case class Writer[W, A](run: () => (W, A))
+
+given Bifunctor[Writer] with
+  extension [A, B](fab: Writer[A, B])
+    override def bimap[C, D](f: A => C, g: B => D): Writer[C, D] =
+      ???
+```
+
+**Примеры:**
+
+```dotty
+import Bifunctor.given
+import Monoid.given
+
+val writer = Writer(() => ("log", 42))
+
+// Преобразование обоих параметров
+writer.bimap(_.length, _ * 2).run()  // (3, 84)
+```
+
+@:note(🔍 Показать решение)
+
+Реализация сначала выполняет ленивое вычисление `fab.run()`, получая пару `(a, b)`. 
+Затем применяет функцию `f` к логу `a` и функцию `g` к значению `b`, получая `(f(a), g(b))`. 
+Результат оборачивается в новый `Writer`, который сохраняет ленивость вычислений — 
+новое вычисление будет выполнено только при вызове `run()`. 
+Важно, что порядок преобразования не влияет на семантику, так как `Writer` не имеет зависимостей между логом и значением.
+
+```dotty
+given Bifunctor[Writer] with
+  extension [A, B](fab: Writer[A, B])
+    override def bimap[C, D](f: A => C, g: B => D): Writer[C, D] =
+      Writer { () =>
+        val (a, b) = fab.run()
+        (f(a), g(b))
+      }
+```
+
+@:@
 
 ## Схема
 
 ```mermaid
 classDiagram
-        class Bifunctor~F[_, _]~{
-            +bimap[A, B, C, D](fab: F[A, B])(f: A => C, g: B => D) F[C, D]
-            +leftMap[A, B, C](fab: F[A, B])(f: A => C) F[C, B]
-            +rightMap[A, B, D](fab: F[A, B])(g: B => D) F[A, D] 
-        }
+    class Bifunctor~F[_, _]~{
+        +bimap[A, B, C, D](fab: F[A, B])(f: A => C, g: B => D) F[C, D]
+        +leftMap[A, B, C](fab: F[A, B])(f: A => C) F[C, B]
+        +rightMap[A, B, D](fab: F[A, B])(g: B => D) F[A, D] 
+    }
 ```
 
 ## Реализация в библиотеках
@@ -252,6 +329,7 @@ Bifunctor[Tuple2].umap((2,3))(_ * 3)
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями][sample]
 - Category Theory for Programmers - Bartosz Milewski:
     - [Теория категорий для программистов](https://henrychern.wordpress.com/2022/09/15/%d1%82%d0%b5%d0%be%d1%80%d0%b8%d1%8f-%d0%ba%d0%b0%d1%82%d0%b5%d0%b3%d0%be%d1%80%d0%b8%d0%b9-%d0%b4%d0%bb%d1%8f-%d0%bf%d1%80%d0%be%d0%b3%d1%80%d0%b0%d0%bc%d0%bc%d0%b8%d1%81%d1%82%d0%be%d0%b2/)
     - [Category Theory for Programmers, Functoriality](https://bartoszmilewski.com/2015/02/03/functoriality/)
@@ -260,4 +338,5 @@ Bifunctor[Tuple2].umap((2,3))(_ * 3)
 - The Dao of Functional Programming - Bartosz Milewski:
     - [Дао функционального программирования, глава 6.1](https://henrychern.wordpress.com/2022/09/23/milewski-%d0%b4%d0%b0%d0%be-%d1%84%d1%83%d0%bd%d0%ba%d1%86%d0%b8%d0%be%d0%bd%d0%b0%d0%bb%d1%8c%d0%bd%d0%be%d0%b3%d0%be-%d0%bf%d1%80%d0%be%d0%b3%d1%80%d0%b0%d0%bc%d0%bc%d0%b8%d1%80%d0%be%d0%b2%d0%b0/)
     - [The Dao of Functional Programming, 6.1](https://github.com/BartoszMilewski/Publications/blob/master/TheDaoOfFP/DaoFP.pdf)
- 
+
+[sample]: https://gitverse.ru/scalabook/typeclasses

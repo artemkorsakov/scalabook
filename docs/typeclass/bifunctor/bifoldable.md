@@ -66,7 +66,7 @@ nextPage = bitraverse.html
 - **Закон нейтрального элемента**:
   Для `bifoldMap` результат свертки с нейтральным элементом моноида должен быть нейтральным элементом.
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Bifoldable[F[_, _]]:
@@ -146,34 +146,48 @@ def uFoldable: Foldable[[X] =>> F[X, X]] =
 
 > [Репозиторий с упражнениями и инструкцией по выполнению][sample]
 
-Реализуйте экземпляр `Bifoldable` для `Either`:
+Реализуйте экземпляр `Bifoldable` для `Either`.
 
 ```dotty
-???
+given eitherBifoldable: Bifoldable[Either] with
+  extension [A, B](fab: Either[A, B])
+    def bifoldMap[M](f: A => M)(g: B => M)(using ma: Monoid[M]): M = ???
 ```
 
 **Примеры:**
 
 ```dotty
-???
+import Bifoldable.given
+import Monoid.given
+
+val right: Either[String, Int] = Right(42)
+val left: Either[String, Int] = Left("error")
+
+// Свёртка с преобразованием в Int (моноид сложения)
+right.bifoldMap(_.length)(identity)  // 42
+left.bifoldMap(_.length)(identity)   // 5 — длина строки "error"
 ```
 
 @:note(🔍 Показать решение)
 
-???
+Реализация `bifoldMap` для `Either` проста: используем сопоставление с шаблоном для определения варианта. 
+Если `fab` — это `Right(value)`, применяем функцию `g` к `value` и возвращаем результат. 
+Если `fab` — это `Left(value)`, применяем функцию `f` к `value` и возвращаем результат. 
+Параметр `ma: Monoid[M]` необходим для соответствия сигнатуре `Bifoldable`, 
+хотя для `Either` он не используется (так как у нас только одно значение). 
+Это нормально, потому что законы Bifoldable требуют наличия моноида для типов-контейнеров, 
+которые могут содержать несколько значений.
 
 ```dotty
 given eitherBifoldable: Bifoldable[Either] with
-  extension [A, B](fa: Either[A, B])
+  extension [A, B](fab: Either[A, B])
     def bifoldMap[M](f: A => M)(g: B => M)(using ma: Monoid[M]): M =
-      fa match
+      fab match
         case Right(value) => g(value)
         case Left(value)  => f(value)
 ```
 
 @:@
-
-
 
 ## Схема
 

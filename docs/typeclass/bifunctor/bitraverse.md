@@ -67,7 +67,8 @@ nextPage = ../arrow.html
 - **Закон композиции**:
     - Последовательное применение `bitraverse` с двумя эффектами должно быть эквивалентно одному применению с композицией эффектов.
     ```dotty
-    bitraverse(bitraverse(fab)(f1, g1))(f2, g2) == bitraverse(fab)(a => f2(f1(a)), b => g2(g1(b)))
+    fab.bitraverse(f1, g1).flatMap(inner => inner.bitraverse(f2, g2)) == 
+    fab.bitraverse(a => f1(a).flatMap(f2), b => g1(b).flatMap(g2))
     ```
 
 ## Код

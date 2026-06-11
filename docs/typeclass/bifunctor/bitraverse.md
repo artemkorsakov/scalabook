@@ -70,7 +70,7 @@ nextPage = ../arrow.html
     bitraverse(bitraverse(fab)(f1, g1))(f2, g2) == bitraverse(fab)(a => f2(f1(a)), b => g2(g1(b)))
     ```
 
-## Определение в виде кода на Scala
+## Код
 
 ```dotty
 trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:
@@ -88,17 +88,6 @@ trait Bitraverse[F[_, _]] extends Bifunctor[F] with Bifoldable[F]:
   def bisequence[G[_]: Applicative, A, B](x: F[G[A], G[B]]): G[F[A, B]] = x.bitraverse(fa => fa, fb => fb)
 ```
 
-### Either
-
-```dotty
-given Bitraverse[Either] with
-  extension [A, B](fab: Either[A, B])
-    override def bitraverse[G[_]: Applicative, C, D](f: A => G[C], g: B => G[D]): G[Either[C, D]] =
-      fab match
-        case Right(value) => g(value).map(d => Right(d))
-        case Left(value)  => f(value).map(c => Left(c))
-```
-
 ### Связь с другими классами типов
 
 **Bitraverse** — это класс типов, который обобщает концепцию **Traverse** для типов, имеющих два параметра. 
@@ -113,8 +102,8 @@ given Bitraverse[Either] with
 def leftTraverse[R]: Traverse[[X] =>> F[X, R]] =
   new Traverse[[X] =>> F[X, R]]:
     extension [A](fab: F[A, R])
-      override def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[B, R]] =
-        fab.bitraverse(f, summon[Applicative[G]].unit)
+      override def traverse[G[_]: Applicative as g, B](f: A => G[B]): G[F[B, R]] =
+        fab.bitraverse(f, g.unit)
 ```
 
 - **Цель**: Создать `Traverse` для первого параметра типа `F[A, R]`, где второй параметр (`R`) фиксирован.
@@ -130,8 +119,8 @@ def leftTraverse[R]: Traverse[[X] =>> F[X, R]] =
 def rightTraverse[L]: Traverse[[X] =>> F[L, X]] =
   new Traverse[[X] =>> F[L, X]]:
     extension [A](fab: F[L, A])
-      override def traverse[G[_]: Applicative, B](f: A => G[B]): G[F[L, B]] =
-        fab.bitraverse(summon[Applicative[G]].unit, f)
+      override def traverse[G[_]: Applicative as g, B](f: A => G[B]): G[F[L, B]] =
+        fab.bitraverse(g.unit, f)
 ```
 
 - **Цель**: Создать `Traverse` для второго параметра типа `F[L, A]`, где первый параметр (`L`) фиксирован.
@@ -156,6 +145,69 @@ def uTraverse: Traverse[[X] =>> F[X, X]] =
     - `uTraverse` возвращает `Traverse` для типа `[X] =>> F[X, X]`.
     - Метод `traverse` применяет функцию `f: A => G[B]` к обоим параметрам одновременно, используя метод `bitraverse` из `Bitraverse`.
 - **Пример**: Если `F` — это `Tuple2[A, A]`, то `uTraverse` позволяет применить эффект к обоим элементам кортежа одновременно.
+
+## Упражнения
+
+### Упражнение 3.3.1: Реализация Bitraverse для Either.
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Реализуйте экземпляр `Bitraverse` для `Either`.
+
+```dotty
+given Bitraverse[Either] with
+  extension [A, B](fab: Either[A, B])
+    override def bitraverse[G[_]: Applicative, C, D](
+        f: A => G[C],
+        g: B => G[D]
+    ): G[Either[C, D]] = ???
+```
+
+**Примеры:**
+
+```dotty
+import Bitraverse.given
+import Applicative.given
+
+val right: Either[String, Int] = Right(42)
+val left: Either[String, Int] = Left("error")
+
+// bitraverse с Option как эффектом
+right.bitraverse(s => Some(s.length), i => Some(i * 2))
+// Some(Right(84))
+
+left.bitraverse(s => Some(s.length), i => Some(i * 2))
+// Some(Left(5)) — длина строки "error"
+
+// bitraverse с List как эффектом (декартово произведение)
+right.bitraverse(s => List(s), i => List(i, i * 2))
+// List(Right(42), Right(84))
+
+left.bitraverse(s => List(s, s + s), i => List(i))
+// List(Left("error"), Left("errorerror"))
+```
+
+@:note(🔍 Показать решение)
+
+Реализация `bitraverse` для `Either` использует сопоставление с шаблоном для определения варианта. 
+Если `fab` — это `Right(value)`, мы применяем функцию `g` к `value`, получая `G[D]`. 
+Затем с помощью `map` (доступного из `Applicative[G]`) преобразуем результат в `Right(d)`, получая `G[Either[C, D]]`. 
+Если `fab` — это `Left(value)`, мы аналогично применяем `f(value)`, получая `G[C]`, и оборачиваем результат в `Left(c)`. 
+Важно, что эффект `G` сохраняется, а структура `Either` (левый или правый вариант) остаётся неизменной.
+
+```dotty
+given Bitraverse[Either] with
+  extension [A, B](fab: Either[A, B])
+    override def bitraverse[G[_]: Applicative, C, D](
+        f: A => G[C],
+        g: B => G[D]
+    ): G[Either[C, D]] =
+      fab match
+        case Right(value) => g(value).map(d => Right(d))
+        case Left(value)  => f(value).map(c => Left(c))
+```
+
+@:@
 
 ## Схема
 

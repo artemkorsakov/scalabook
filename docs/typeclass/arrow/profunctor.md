@@ -19,24 +19,6 @@ nextPage = strong.html
 - **`lmap`** (или **`mapfst`**): Преобразует только входные данные.
 - **`rmap`** (или **`mapsnd`**): Преобразует только выходные данные.
 
-**Где применяется `Profunctor`?**
-
-- **Оптики (Lens, Prism, Iso)**:
-    - `Profunctor` используется в библиотеках для работы с оптиками (например, Monocle), где нужно преобразовывать входные и выходные данные.
-    - Пример: Lens, которая позволяет читать и изменять поля в структурах данных.
-- **Функциональные pipeline**:
-    - `Profunctor` позволяет строить pipeline, где входные и выходные данные могут быть преобразованы независимо.
-    - Пример: обработка данных, где входные данные фильтруются, а выходные — преобразуются.
-- **Реактивные системы**:
-    - В реактивных системах `Profunctor` может использоваться для преобразования входных событий и выходных реакций.
-    - Пример: обработка событий, где входные события фильтруются, а выходные реакции преобразуются.
-- **Работа с функциями**:
-    - `Profunctor` может быть использован для преобразования функций, где входные и выходные типы изменяются.
-    - Пример: преобразование функции `A => B` в функцию `C => D` с помощью двух функций `C => A` и `B => D`.
-- **Тестирование**:
-    - `Profunctor` может быть использован для преобразования тестовых данных и результатов.
-    - Пример: тестирование API, где входные запросы преобразуются, а выходные ответы проверяются.
-
 **Краткие примеры**
 
 - **Оптики (Lens)**:
@@ -96,15 +78,6 @@ trait Profunctor[=>:[_, _]]:
   - \\(g: B \to D\\) — ковариантное преобразование выходных данных.
 - Результат — новый профунктор \\(P\[C, D\]\\).
 
-### Функция от одной переменной
-
-```dotty
-given Profunctor[Function1] with
-  override def mapfst[A, B, C](fab: A => B)(f: C => A): C => B = f andThen fab
-
-  override def mapsnd[A, B, C](fab: A => B)(f: B => C): A => C = fab andThen f
-```
-
 ### Связь с другими классами типов
 
 `Profunctor` позволяет реализовать [InvariantFunctor](../monad/invariant-functor.md),
@@ -131,6 +104,70 @@ trait Profunctor[=>:[_, _]]:
     new ContravariantFunctor[[X] =>> =>:[X, C]]:
       override def cmap[A, B](fa: B =>: C)(f: A => B): A =>: C = mapfst(fa)(f)
 ```
+
+## Упражнения
+
+### Упражнение 4.4.1: Реализация Profunctor для Function1 (обычные функции)
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Реализуйте экземпляр `Profunctor` для `Function1`, определив:
+- `mapfst` — преобразование входа через композицию слева
+- `mapsnd` — преобразование выхода через композицию справа
+
+```dotty
+given Profunctor[Function1] with
+  override def mapfst[A, B, C](fab: A => B)(f: C => A): C => B = ???
+  override def mapsnd[A, B, C](fab: A => B)(f: B => C): A => C = ???
+```
+
+**Примеры:**
+
+```dotty
+import Profunctor.given
+
+// Базовые функции
+val len: String => Int = _.length        // String -> Int
+val inc: Int => Int = _ + 1              // Int -> Int
+val toString: Int => String = _.toString // Int -> String
+val parseInt: String => Int = _.toInt    // String -> Int
+val mul2: Int => Int = _ * 2             // Int -> Int
+
+// mapfst — преобразование входа (контравариантное)
+// len принимает String, хотим получить функцию Int => Int
+val lenOfStringFromInt = mapfst(len)(toString)
+lenOfStringFromInt(42)  // len(toString(42)) = len("42") = 2
+
+val incAfterParse = mapfst(inc)(parseInt)
+incAfterParse("10")  // inc(parseInt("10")) = inc(10) = 11
+
+// mapsnd — преобразование выхода (ковариантное)
+// inc возвращает Int, хотим получить String
+val incAndToString = mapsnd(inc)(toString)
+incAndToString(5)  // toString(inc(5)) = toString(6) = "6"
+
+val lenAndMul2 = mapsnd(len)(mul2)
+lenAndMul2("hello")  // mul2(len("hello")) = mul2(5) = 10
+```
+
+@:note(🔍 Показать решение)
+
+Реализация `mapfst` использует композицию `f andThen fab`: 
+сначала применяется `f: C => A`, преобразуя вход от `C` к `A`, затем исходная функция `fab: A => B`. 
+Это контравариантное отображение, потому что направление стрелки входного типа переворачивается. 
+Реализация `mapsnd` использует композицию `fab andThen f`: 
+сначала применяется исходная функция `fab: A => B`, затем `f: B => C` преобразует выход. 
+Это ковариантное отображение, потому что направление стрелки выходного типа сохраняется. 
+Метод `dimap` комбинирует обе операции и уже реализован в трейте `Profunctor` через `mapfst` и `mapsnd`.
+
+```dotty
+given Profunctor[Function1] with
+  override def mapfst[A, B, C](fab: A => B)(f: C => A): C => B = f andThen fab
+
+  override def mapsnd[A, B, C](fab: A => B)(f: B => C): A => C = fab andThen f
+```
+
+@:@
 
 ## Схема
 

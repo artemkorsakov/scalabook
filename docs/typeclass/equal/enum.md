@@ -69,6 +69,57 @@ trait Enum[A] extends Order[A], Bothable[A]:
   def max: Option[A]
 ```
 
+### День недели
+
+Пример реализации класса типов `Enum` для дня недели:
+
+```dotty
+object Enum:
+  enum DayOfWeek(val i: Int):
+    case Monday    extends DayOfWeek(1)
+    case Tuesday   extends DayOfWeek(2)
+    case Wednesday extends DayOfWeek(3)
+    case Thursday  extends DayOfWeek(4)
+    case Friday    extends DayOfWeek(5)
+    case Saturday  extends DayOfWeek(6)
+    case Sunday    extends DayOfWeek(7)
+
+  given Enum[DayOfWeek] with
+    override def min: Option[DayOfWeek] =
+      Some(DayOfWeek.Monday)
+
+    override def max: Option[DayOfWeek] =
+      Some(DayOfWeek.Sunday)
+
+    override def order(x: DayOfWeek, y: DayOfWeek): Ordering =
+      if x.i < y.i then Ordering.LT
+      else if x.i == y.i then Ordering.EQ
+      else Ordering.GT
+
+    override def prev(a: DayOfWeek): Option[DayOfWeek] =
+      a match
+        case DayOfWeek.Monday    => None
+        case DayOfWeek.Tuesday   => Some(DayOfWeek.Monday)
+        case DayOfWeek.Wednesday => Some(DayOfWeek.Tuesday)
+        case DayOfWeek.Thursday  => Some(DayOfWeek.Wednesday)
+        case DayOfWeek.Friday    => Some(DayOfWeek.Thursday)
+        case DayOfWeek.Saturday  => Some(DayOfWeek.Friday)
+        case DayOfWeek.Sunday    => Some(DayOfWeek.Saturday)
+
+    override def next(a: DayOfWeek): Option[DayOfWeek] =
+      a match
+        case DayOfWeek.Monday    => Some(DayOfWeek.Tuesday)
+        case DayOfWeek.Tuesday   => Some(DayOfWeek.Wednesday)
+        case DayOfWeek.Wednesday => Some(DayOfWeek.Thursday)
+        case DayOfWeek.Thursday  => Some(DayOfWeek.Friday)
+        case DayOfWeek.Friday    => Some(DayOfWeek.Saturday)
+        case DayOfWeek.Saturday  => Some(DayOfWeek.Sunday)
+        case DayOfWeek.Sunday    => None
+
+  end given
+end Enum
+```
+
 ## Схема
 
 ```mermaid

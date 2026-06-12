@@ -17,24 +17,6 @@ nextPage = arrow.html
 которая позволяет профунктору работать с первым элементом пары, оставляя второй элемент без изменений. 
 Аналогично, операция `second` (или `&&&`) работает со вторым элементом пары.
 
-**Где применяется `Strong`?**
-
-- **Оптики (Lens, Prism, Iso)**:
-    - `Strong` используется в библиотеках для работы с оптиками (например, Monocle), где нужно работать с полями структур данных.
-    - Пример: Lens, которая позволяет читать и изменять поля в структурах данных.
-- **Функциональные pipeline**:
-    - `Strong` позволяет строить pipeline, где данные могут быть частично обработаны, а остальные части остаются неизменными.
-    - Пример: обработка данных, где одно поле кортежа преобразуется, а другое остаётся без изменений.
-- **Реактивные системы**:
-    - В реактивных системах `Strong` может использоваться для обработки событий, где часть данных изменяется, а другая часть остаётся неизменной.
-    - Пример: обработка событий, где одно поле события фильтруется, а другое остаётся без изменений.
-- **Работа с кортежами**:
-    - `Strong` полезен для работы с кортежами, где нужно преобразовать только один элемент пары.
-    - Пример: преобразование кортежа `(Int, String)` в кортеж `(Boolean, String)` с помощью функции `Int => Boolean`.
-- **Тестирование**:
-    - `Strong` может быть использован для частичного преобразования тестовых данных.
-    - Пример: тестирование API, где часть запроса изменяется, а остальная часть остаётся без изменений.
-
 **Краткие примеры**
 
 - **Оптики (Lens)**:
@@ -97,7 +79,77 @@ trait Strong[=>:[_, _]] extends Profunctor[=>:]:
 - Метод `first` принимает профунктор \\(P\[A, B\]\\) и возвращает новый профунктор \\(P\[(A, C), (B, C)\]\\).
 - Метод `second` принимает профунктор \\(P\[A, B\]\\) и возвращает новый профунктор \\(P\[(C, A), (C, B)\]\\).
 
-### Функция от одной переменной
+## Упражнения
+
+### Упражнение 4.5.1: Реализация Strong для Function1 (обычные функции)
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Реализуйте экземпляр `Strong` для `Function1`, определив:
+
+- `mapfst` — контравариантное отображение входа (из `Profunctor`)
+- `mapsnd` — ковариантное отображение выхода (из `Profunctor`)
+- `first` — применение функции к первому элементу пары
+- `second` — применение функции ко второму элементу пары
+
+```dotty
+given Strong[Function1] with
+  override def mapfst[A, B, C](fab: A => B)(f: C => A): C => B = ???
+  override def mapsnd[A, B, C](fab: A => B)(f: B => C): A => C = ???
+  override def first[A, B, C](fa: A => B): ((A, C)) => (B, C) = ???
+  override def second[A, B, C](fa: A => B): ((C, A)) => (C, B) = ???
+```
+
+**Примеры:**
+
+```dotty
+import Strong.given
+
+// Базовые функции
+val inc: Int => Int = _ + 1
+val mul2: Int => Int = _ * 2
+val toString: Int => String = _.toString
+val length: String => Int = _.length
+
+// first — применение к первому элементу пары
+val firstInc = first(inc)
+firstInc(5, "hello")   // (6, "hello")
+firstInc(10, "world")  // (11, "world")
+
+val firstToString = first(toString)
+firstToString(42, true)  // ("42", true)
+
+// second — применение ко второму элементу пары
+val secondInc = second(inc)
+secondInc("hello", 5)   // ("hello", 6)
+secondInc("world", 10)  // ("world", 11)
+
+val secondLength = second(length)
+secondLength(42, "hello")  // (42, 5)
+
+// Композиция first с Profunctor операциями
+val transformed = mapsnd(first(inc))(toString)
+transformed(5, "x")  // (toString(inc(5)), "x") = ("6", "x")
+
+// Вложенные first
+val nestedFirst = first(first(inc))
+nestedFirst((5, "hello"), true)  // ((6, "hello"), true)
+
+// Вложенные second
+val nestedSecond = second(second(inc))
+nestedSecond(true, ("hello", 5))  // (true, ("hello", 6))
+
+// Комбинация first и second
+val firstThenSecond = second(first(inc))
+firstThenSecond("hello", (5, true))  // ("hello", (6, true))
+```
+
+@:note(🔍 Показать решение)
+
+Реализация `mapfst` использует композицию `f andThen fab` — сначала преобразуем вход, затем применяем функцию. 
+`mapsnd` использует `fab andThen f` — сначала применяем функцию, затем преобразуем выход. 
+`first` принимает пару `(a, c)` и возвращает `(fa(a), c)` — исходная функция применяется к первому элементу, второй остаётся неизменным. 
+`second` принимает пару `(c, a)` и возвращает `(c, fa(a))` — исходная функция применяется ко второму элементу, первый остаётся неизменным. 
 
 ```dotty
 given Strong[Function1] with
@@ -105,10 +157,14 @@ given Strong[Function1] with
 
   override def mapsnd[A, B, C](fab: A => B)(f: B => C): A => C = fab andThen f
 
-  override def first[A, B, C](fa: A => B): ((A, C)) => (B, C) = (a, c) => (fa(a), c)
+  override def first[A, B, C](fa: A => B): ((A, C)) => (B, C) = (a, c) =>
+    (fa(a), c)
 
-  override def second[A, B, C](fa: A => B): ((C, A)) => (C, B) = (c, a) => (c, fa(a))
+  override def second[A, B, C](fa: A => B): ((C, A)) => (C, B) = (c, a) =>
+    (c, fa(a))
 ```
+
+@:@
 
 ## Схема
 

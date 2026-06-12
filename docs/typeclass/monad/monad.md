@@ -711,6 +711,7 @@ List(1, 2) filterM { x => List(true, false) }
 - [Monads are Elephants Part 2](https://james-iry.blogspot.com/2007/10/monads-are-elephants-part-2.html)
 - [Monads are Elephants Part 3](https://james-iry.blogspot.com/2007/10/monads-are-elephants-part-3.html)
 - [Monads are Elephants Part 4](https://james-iry.blogspot.com/2007/11/monads-are-elephants-part-4.html)
+- [Monads in Scala](https://www.baeldung.com/scala/monads)
 - [ObserveFunctorMonad](https://blog.tmorris.net/posts/observefunctormonad/index.html)
 - [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics/#monads)
 - [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#sec:monads)

@@ -60,6 +60,7 @@ nextPage = monoid.html
 - [Классы типов в Spire][spire]
 - [Scala Type-class Hierarchy - Tony Morris](https://blog.tmorris.net/posts/scala-type-class-hierarchy/index.html)
 - [Type Classes vs Records of Functions](https://www.inner-product.com/posts/type-classes-vs-records-of-functions/)
+- [Type Classes in Scala - Baeldung](https://www.baeldung.com/scala/type-classes)
 
 [algebird]: https://twitter.github.io/algebird/typeclasses.html
 [cats]: https://github.com/tpolecat/cats-infographic

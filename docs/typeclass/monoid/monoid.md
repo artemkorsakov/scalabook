@@ -626,6 +626,7 @@ Monoid.isEmpty(Monoid.empty[Int]) // true
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monoid.html#Monoid)
 - [Leveraging Monoids for More Powerful Summarization](https://www.inner-product.com/posts/leveraging-monoids/)
+- [Monoids and Semigroups in Scala](https://www.baeldung.com/scala/monoids-semigroups)
 - [Of Algebirds, Monoids, Monads, and other Bestiary for Large-Scale Data Analytics](https://www.michael-noll.com/blog/2013/12/02/twitter-algebird-monoid-monad-for-large-scala-data-analytics/#monoids)
 - [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#definition-of-a-monoid)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monoid.html)

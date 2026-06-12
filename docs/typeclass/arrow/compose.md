@@ -32,21 +32,6 @@ nextPage = category.html
     - `Compose` может быть использован для создания цепочек тестовых операций.
     - Пример: тестирование API, где каждый запрос композируется с проверкой результата.
 
-**Краткие примеры**
-
-- **Обработка данных**:
-    - Есть три функции: `parseData`, `validateData`, `transformData`.
-    - С помощью `Compose` можно создать одну функцию, которая сначала парсит данные, затем валидирует их и, наконец, преобразует.
-- **Работа с эффектами**:
-    - Есть две функции: `fetchUser` (возвращает `Option[User]`) и `getUserDetails` (принимает `User` и возвращает `Option[UserDetails]`).
-    - С помощью `Compose` можно создать функцию, которая сначала получает пользователя, а затем его детализацию.
-- **DSL для бизнес-логики**:
-    - Есть операции: `checkInventory`, `calculatePrice`, `applyDiscount`.
-    - С помощью `Compose` можно создать pipeline, который сначала проверяет наличие товара, затем рассчитывает цену и, наконец, применяет скидку.
-- **Тестирование**:
-    - Есть функции: `sendRequest`, `checkStatusCode`, `validateResponse`.
-    - С помощью `Compose` можно создать тест, который отправляет запрос, проверяет статус код и валидирует ответ.
-
 ## Формальное определение
 
 Пусть \\(C\\) — это категория, где:
@@ -106,22 +91,14 @@ nextPage = category.html
 
 ```dotty
 trait Compose[=>:[_, _]]:
-  self =>
-
   /** Ассоциативный `=>:` бинарный оператор. */
   def compose[A, B, C](f: B =>: C, g: A =>: B): A =>: C
 ```
 
 Здесь:
+
 - `=>:[_, _]` — это тип, представляющий морфизм (например, функция `A => B`).
 - Метод `compose` принимает два морфизма \\(f: B \to C\\) и \\(g: A \to B\\) и возвращает их композицию \\(f \circ g: A \to C\\).
-
-### Функция от одной переменной
-
-```dotty
-given Compose[Function1] with
-  override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f
-```
 
 ### Связь с другими классами типов
 
@@ -145,6 +122,55 @@ trait Compose[=>:[_, _]]:
 
   def semigroup[A]: Semigroup[A =>: A] = new ComposeSemigroup[A] {}
 ```
+
+## Упражнения
+
+### Упражнение 4.1.1: Реализация Compose для Function1 (обычные функции)
+
+> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
+
+Реализуйте экземпляр `Compose` для `Function1`, используя встроенную композицию функций.
+
+```dotty
+given Compose[Function1] with
+  override def compose[A, B, C](f: B => C, g: A => B): A => C = ???
+```
+
+**Примеры:**
+
+```dotty
+import Compose.given
+
+// Базовые функции
+val add1: Int => Int = x => x + 1
+val mul2: Int => Int = x => x * 2
+val toString: Int => String = _.toString
+val length: String => Int = _.length
+
+// Композиция add1 и mul2
+val composed1 = compose(mul2, add1)  // сначала add1, потом mul2
+composed1(5)  // (5 + 1) * 2 = 12
+
+// Композиция toString и length
+val composed2 = compose(length, toString)  // сначала toString, потом length
+composed2(42)  // длина строки "42" = 2
+```
+
+@:note(🔍 Показать решение)
+
+Реализация тривиальна: в Scala уже есть встроенный метод `andThen` для функций, 
+который делает именно то, что нужно — сначала применяет `g`, затем `f`. 
+Обратите внимание на порядок: `compose(f, g)` должна возвращать `g andThen f`, 
+то есть функцию, которая сначала выполняет `g`, а потом `f`. 
+Это стандартное определение композиции в математике: (f ∘ g)(x) = f(g(x)). 
+Альтернативно можно использовать `f compose g` (хотя в Scala `compose` определён с обратным порядком аргументов).
+
+```dotty
+given Compose[Function1] with
+  override def compose[A, B, C](f: B => C, g: A => B): A => C = g andThen f
+```
+
+@:@
 
 ## Схема
 

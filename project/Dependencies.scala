@@ -4,18 +4,10 @@ import sbt.*
 object Dependencies {
   val Scala = "3.8.3"
 
-  object algebra {
-    private val version       = "2.13.0"
-
-    val core = "org.typelevel" %% "algebra" % version
-  }
-
   object cats {
     private val version       = "2.13.0"
 
     val core    = "org.typelevel" %% "cats-core"    % version
-    val free    = "org.typelevel" %% "cats-free"    % version
-    val kernel  = "org.typelevel" %% "cats-kernel"  % version
     val testkit = "org.typelevel" %% "cats-testkit" % version
   }
 
@@ -57,23 +49,6 @@ object Dependencies {
     val slf4j = "org.typelevel" %% "log4cats-slf4j" % version
   }
 
-  // https://github.com/erikvanoosten/metrics-scala/blob/master/docs/Manual.md
-  object metrics {
-    val dropwizardCore = "io.dropwizard.metrics" % "metrics-core"    % "4.2.39"
-    val metrics4Scala  = "nl.grons"              %% "metrics4-scala" % "4.3.7"
-  }
-
-  object scalaz {
-    private val version = "7.3.8"
-
-    val core       = "org.scalaz" %% "scalaz-core"               % version
-    val scalacheck = "org.scalaz" %% "scalaz-scalacheck-binding" % version
-  }
-
-  object spire {
-    val core = "org.typelevel" %% "spire"  % "0.18.0"
-  }
-
   object sttp {
     val client = "com.softwaremill.sttp.client4" %% "core" % "4.0.25"
     val model  = "com.softwaremill.sttp.model" %% "core" % "1.7.17"
@@ -88,16 +63,12 @@ object Dependencies {
 
   val exampleLibs: Seq[ModuleID] =
     Seq(
-      algebra.core,
       cats.core,
-      cats.kernel,
       catsEffect.core,
       catsEffect.kernel,
       catsEffect.std,
       log4cats.core,
-      log4cats.slf4j,
-      scalaz.core,
-      spire.core
+      log4cats.slf4j
     )
 
   val exampleTestLibs: Seq[ModuleID] =
@@ -106,18 +77,9 @@ object Dependencies {
       catsEffect.kernel,
       iron.cats,
       iron.scalacheck,
-      scalaz.scalacheck,
       weaver.cats,
       weaver.scalacheck
     ).map(_ % Test)
-
-  val benchLibs: Seq[ModuleID] =
-    Seq(
-      cats.core,
-      metrics.dropwizardCore,
-      metrics.metrics4Scala,
-      spire.core,
-    )
 
   val siteLibs: Seq[ModuleID] =
     Seq(

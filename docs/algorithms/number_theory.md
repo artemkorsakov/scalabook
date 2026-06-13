@@ -38,18 +38,27 @@ gcd(4851, 3003)
 Это полезно для решения диофантовых уравнений.
 
 ```dotty
-def extendedGcd(a: Long, b: Long): (Long, Long, Long) =
-    if b == 0 then
-      (a, 1, 0)
+def generalizedEuclideanAlgorithm(m: Long,n: Long): (Long, Long, Long) =
+  @annotation.tailrec
+  def loop(
+      aa: Long,
+      b: Long,
+      a: Long,
+      bb: Long,
+      c: Long,
+      d: Long
+  ): (Long, Long, Long) =
+    val r = c % d
+    if r == 0 then (d, a, b)
     else
-      val  (gcd, x1, y1) = extendedGcd(b, a % b)
-      val x = y1
-      val y = x1 - (a / b) * y1
-      (gcd, x, y)
+      val q = c / d
+      loop(aa = a, b = bb - q * b, a = aa - q * a, bb = b, c = d, d = r)
 
-extendedGcd(17, 5)
-// (1,-2,7)   
-// -2*17 + 7*5 = 1
+  loop(aa = 1, b = 1, a = 0, bb = 0, c = m, d = n)
+end generalizedEuclideanAlgorithm
+
+generalizedEuclideanAlgorithm(1769, 551)
+// (d = 29, a = 5, b = -16)   
 ```
 
 ### Алгоритм факторизации
@@ -72,12 +81,6 @@ extendedGcd(17, 5)
 [Китайская теорема об остатках][china] позволяет решать системы линейных сравнений с различными модулями. 
 Алгоритм используется для нахождения единственного решения в пределах произведения модулей.
 
-## Заключение
-
-Алгоритмы, основанные на теории чисел, играют ключевую роль в различных областях математики и информатики. 
-Они позволяют решать задачи, связанные с делимостью, простотой чисел, факторизацией и многими другими аспектами, 
-что делает их незаменимыми в криптографии, численных методах и теории чисел.
-
 ---
 
 **Ссылки:**
@@ -88,7 +91,7 @@ extendedGcd(17, 5)
 - [Китайская теорема об остатках][china]
 - [Функция делителей][divisorfunc]
 
-[china]: https://ru.wikipedia.org/wiki/%D0%9A%D0%B8%D1%82%D0%B0%D0%B9%D1%81%D0%BA%D0%B0%D1%8F_%D1%82%D0%B5%D0%BE%D1%80%D0%B5%D0%BC%D0%B0_%D0%BE%D0%B1_%D0%BE%D1%81%D1%82%D0%B0%D1%82%D0%BA%D0%B0%D1%85 
-[miller]: https://ru.wikipedia.org/wiki/%D0%A2%D0%B5%D1%81%D1%82_%D0%9C%D0%B8%D0%BB%D0%BB%D0%B5%D1%80%D0%B0_%E2%80%94_%D0%A0%D0%B0%D0%B1%D0%B8%D0%BD%D0%B0
+[china]: https://ru.wikipedia.org/wiki/%D0%9A%D0%B8%D1%82%D0%B0%D0%B9%D1%81%D0%BA%D0%B0%D1%8F_%D1%82%D0%B5%D0%BE%D1%80%D0%B5%D0%BC%D0%B0_%D0%BE%D0%B1_%D0%BE%D1%81%D1%82%D0%B0%D1%82%D0%BA%D0%B0%D1%85
 [divisorfunc]: https://ru.wikipedia.org/wiki/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F_%D0%B4%D0%B5%D0%BB%D0%B8%D1%82%D0%B5%D0%BB%D0%B5%D0%B9
+[miller]: https://ru.wikipedia.org/wiki/%D0%A2%D0%B5%D1%81%D1%82_%D0%9C%D0%B8%D0%BB%D0%BB%D0%B5%D1%80%D0%B0_%E2%80%94_%D0%A0%D0%B0%D0%B1%D0%B8%D0%BD%D0%B0
 [sample]: https://gitverse.ru/scalabook/algorithms

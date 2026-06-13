@@ -7,8 +7,6 @@ nextPage = primes.html
 
 # Численные алгоритмы
 
-> Для снятия метрик использовалась библиотека [Metrics-Scala](https://github.com/erikvanoosten/metrics-scala/blob/master/docs/Manual.md).
-
 ## Алгоритм Евклида
 
 > Даны два целых положительных числа `m` и `n`. 
@@ -50,23 +48,6 @@ final def gcd(a: Long, b: Long): Long =
   
 gcd(4851, 3003)
 // 231
-```
-
-**Метрики:**
-
-Вычисление НОД всех пар первых 10000 чисел, начиная с миллиона, 
-с помощью алгоритма Евклида занимает примерно 5,5 секунд. 
-
-```dotty
-val limit = 10_000
-val start = 1_000_000
-val end   = start + limit
-(start until end).foreach: i =>
-  (i + 1 to end).foreach: j =>
-    gcdByEuclideanAlgorithm(j, i)
-
-// Число тестовых запусков = 10
-// Среднее время = 5,485 секунд
 ```
 
 ## Алгоритм вычисления НОД на основе четности чисел
@@ -115,40 +96,28 @@ val end   = start + limit
 **Код:**
 
 ```dotty
-def gcdBasedOnParityOfNumbers(a: Long, b: Long): Long =
+@tailrec
+def gcdBasedOnParityOfNumbers(a: Long, b: Long, k: Long = 1): Long =
   val u = math.abs(a)
   val v = math.abs(b)
-  if u == v then u
-  else if u == 0 then v
-  else if v == 0 then u
+  if u == v then u * k
+  else if u == 0 then v * k
+  else if v == 0 then u * k
   else
     (~u & 1, ~v & 1) match
-      case (1, 1) => gcdBasedOnParityOfNumbers(u >> 1, v >> 1) << 1
-      case (1, 0) => gcdBasedOnParityOfNumbers(u >> 1, v)
-      case (0, 1) => gcdBasedOnParityOfNumbers(u, v >> 1)
-      case (_, _) =>
-        if u > v then gcdBasedOnParityOfNumbers((u - v) >> 1, v)
-        else gcdBasedOnParityOfNumbers((v - u) >> 1, u)
+      case (1, 1) =>
+        gcdBasedOnParityOfNumbers(a = u >> 1, b = v >> 1, k = k << 1)
+      case (1, 0) =>
+        gcdBasedOnParityOfNumbers(a = u >> 1, b = v, k = k)
+      case (0, 1) =>
+        gcdBasedOnParityOfNumbers(a = u, b = v >> 1, k = k)
+      case (_, _) if u > v =>
+        gcdBasedOnParityOfNumbers(a = (u - v) >> 1, b = v, k = k)
+      case _ =>
+        gcdBasedOnParityOfNumbers(a = (v - u) >> 1, b = u, k = k)
   
 gcdBasedOnParityOfNumbers(4851, 3003)  
 // 231
-```
-
-**Метрики:**
-
-Вычисление НОД всех пар первых 10000 чисел, начиная с миллиона,
-с помощью алгоритма на основе четности чисел занимает примерно 13,5 секунды.
-
-```dotty
-val limit = 10_000
-val start = 1_000_000
-val end   = start + limit
-(start until end).foreach: i =>
-  (i + 1 to end).foreach: j =>
-    gcdBasedOnParityOfNumbers(j, i)
-      
-// Число тестовых запусков = 5
-// Среднее время = 13,468 секунд  
 ```
 
 ## Обобщенный алгоритм Евклида
@@ -215,21 +184,6 @@ generalizedEuclideanAlgorithm(1769, 551)
 // (d = 29, a = 5, b = -16)    
 ```
 
-**Метрики:**
-
-Вычисление обобщенного алгоритма Евклида всех пар первых 10000 чисел, начиная с 2, 
-занимает примерно 17 секунд.
-
-```dotty
-val limit = 10_000
-(2 until limit).foreach: i =>
-  (i + 1 to limit).foreach: j =>
-    generalizedEuclideanAlgorithm(j, i)
-      
-// Число тестовых запусков = 5
-// Среднее время = 16,874 секунд
-```
-
 ## Обратное по модулю число
 
 > [Обратное по модулю целого `m`](https://ru.wikipedia.org/wiki/%D0%9E%D0%B1%D1%80%D0%B0%D1%82%D0%BD%D0%BE%D0%B5_%D0%BF%D0%BE_%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D1%8E_%D1%87%D0%B8%D1%81%D0%BB%D0%BE) — 
@@ -255,20 +209,6 @@ def gcdInverse(m: Long, n: Long): Option[Long] =
   if d == 1 then Some((a % n + n) % n) else None
 
 gcdInverse(7, 26) // Some(15)
-```
-
-**Метрики:**
-
-Метрики аналогичны метрикам Обобщенного алгоритма Евклида.
-
-```dotty
-val limit = 10_000
-(2 until limit).foreach: i =>
-  (i + 1 to limit).foreach: j =>
-    gcdInverse(j, i)
-
-// Число тестовых запусков = 5
-// Среднее время = 18,834 секунд
 ```
 
 ## Наименьшее общее кратное
@@ -382,20 +322,6 @@ solution(Array(707, 527), Array(0, 5))
 // 258762, потому что 258762 % 707 = 0, 258762 % 527 = 5   
 ```
 
-**Метрики:**
-
-Решение задачи для достаточно больших чисел вычисляется меньше 100 миллисекунд.
-
-```dotty
-ChineseRemainderTheorem.solution(
-  Array(1504170715041707L, 4503599627370517L),
-  Array(0L, 8912517754604L)
-)
-
-// Число тестовых запусков = 5
-// Среднее время = 32,764 миллисекунд  
-```
-
 ## Возведение числа в степень
 
 > Дано число `a` и целое число `n`. Найдите `a` в степени `n`
@@ -463,19 +389,6 @@ def power(a: Long, n: Long): Long =
 power(2, 17) // 131072  
 ```
 
-**Метрики:**
-
-Поочередное возведение первых 100 чисел в степени от 1 до 10 занимает несколько миллисекунд.
-
-```dotty
-(1 to 100).foreach: i =>
-  (1 to 10).foreach: j =>
-    power(j, i)
-
-// Число тестовых запусков = 10
-// Среднее время = 7,605 миллисекунд
-```
-
 ## Нахождение корня
 
 > Дано число `x`. Требуется найти такое число `y`, что `y * y = x`.
@@ -515,6 +428,7 @@ power(2, 17) // 131072
 _Exercise 1.7_ из [SICP][sicp]:
 
 ```dotty
+/** Нахождения квадратного корня */
 def sqrt(x: Double): Double =
   val delta: Double = 1e-5
 
@@ -523,6 +437,7 @@ def sqrt(x: Double): Double =
 
   def improve(guess: Double): Double = (guess + x / guess) / 2
 
+  @tailrec
   def sqrtIter(guess: Double): Double =
     if isGoodEnough(guess) then guess
     else sqrtIter(improve(guess))
@@ -531,18 +446,6 @@ def sqrt(x: Double): Double =
 
 sqrt(2)
 // 1.4142156862745097
-```
-
-**Метрики:**
-
-Вычисление квадратного корня первых миллиона чисел занимает меньше секунды.
-
-```dotty
-(1 to 1_000_000).foreach: i =>
-  sqrt(i)
-
-// Число тестовых запусков = 10
-// Среднее время = 68,382 миллисекунд
 ```
 
 ## Нахождение кубического корня
@@ -603,18 +506,6 @@ cubeRootOf(2)
 // 1.2599210500177698
 ```
 
-**Метрики:**
-
-Результаты аналогичны метрикам вычисления квадратного корня, т.к. алгоритмы основаны на общем методе Ньютона.
-
-```dotty
-(1 to 1_000_000).foreach: i =>
-  cubeRootOf(i)
-
-// Число тестовых запусков = 10
-// Среднее время = 194,439 миллисекунд  
-```
-
 ## Сумма первых натуральных чисел
 
 ### Сумма первых натуральных чисел до заданного
@@ -656,19 +547,6 @@ sumToGiven(1000000)
 // 500000500000L
 ```
 
-**Метрики:**
-
-Вычисление суммы от 1 до заданного числа для первого миллиона чисел занимает меньше секунды.
-Результаты аналогичны тому, как если бы мы просто прошлись по коллекции в миллион элементов и ничего не делали.
-
-```dotty
-(1 to 1_000_000).foreach: i =>
-  sumToGiven(i)
-
-// Число тестовых запусков = 10
-// Среднее время = 28,051 миллисекунд
-```
-
 ### Сумма квадратов первых натуральных чисел до заданного
 
 > Дано число n. Найти сумму квадратов чисел от 1 до n.
@@ -701,19 +579,6 @@ def sumOfSquaresTo(n: Long): Long = n * (n + 1) * (2 * n + 1) / 6
 
 sumOfSquaresTo(1000) 
 // 333833500L
-```
-
-**Метрики:**
-
-Вычисление суммы квадратов от 1 до заданного числа для первого миллиона чисел занимает меньше секунды.
-Результаты аналогичны тому, как если бы мы просто прошлись по коллекции в миллион элементов и ничего не делали.
-
-```dotty
-(1 to 1_000_000).foreach: i =>
-  sumOfSquaresTo(i)
-
-// Число тестовых запусков = 10
-// Среднее время = 38,941 миллисекунд    
 ```
 
 ### Сумма кубов первых натуральных чисел до заданного
@@ -750,19 +615,6 @@ def sumOfCubesTo(n: Long): Long =
   
 sumOfCubesTo(1000) 
 // 250500250000L  
-```
-
-**Метрики:**
-
-Вычисление суммы кубов от 1 до заданного числа для первого миллиона чисел занимает 2 секунды.
-Результаты аналогичны тому, как если бы мы просто прошлись по коллекции в миллион элементов и ничего не делали.
-
-```dotty
-(1 to 1_000_000).foreach: i =>
-  sumOfCubesTo(i)  
-
-// Число тестовых запусков = 10
-// Среднее время = 1179,137 миллисекунд
 ```
 
 ## Рандомизация данных - Линейный конгруэнтный генератор

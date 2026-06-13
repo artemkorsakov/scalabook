@@ -21,7 +21,7 @@ ThisBuild / scalacOptions ++=
   )
 
 lazy val root = (project in file("."))
-  .aggregate(examples, bench, site)
+  .aggregate(examples, site)
   .settings(
     name           := "scalabook",
     publish / skip := true
@@ -34,14 +34,6 @@ lazy val examples = (project in file("examples"))
     libraryDependencies ++= exampleLibs,
     libraryDependencies ++= exampleTestLibs,
     Test / parallelExecution := false
-  )
-
-lazy val bench = (project in file("bench"))
-  .settings(name := "scalabook-bench")
-  .dependsOn(examples)
-  .settings(
-    coverageEnabled := true,
-    libraryDependencies ++= benchLibs
   )
 
 lazy val site = project

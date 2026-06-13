@@ -101,16 +101,16 @@ nextPage = number_theory.html
 
 ```mermaid
 stateDiagram
-  state "Шаг 0: В слове есть a и b?" as Step0
-  state "Шаг 1: Добавить c с левого края" as Step1
-  state "Шаг 2: Заменить все a на b" as Step2
-  state "Шаг 3: Заменить все c на a" as Step3
-  state "Шаг 4: Ещё остались b?" as Step4
+  state "Шаг 0: В слове есть 'a' и 'b'?" as Step0
+  state "Шаг 1: Добавить 'c' с левого края" as Step1
+  state "Шаг 2: Заменить все 'a' на 'b'" as Step2
+  state "Шаг 3: Заменить все 'c' на 'a'" as Step3
+  state "Шаг 4: Ещё остались 'b'?" as Step4
 
   [*] --> Step0
-  Step0 --> Step1: Удалить одно a и одно b
+  Step0 --> Step1: Удалить одно 'a' и одно 'b'
   Step1 --> Step0
-  Step0 --> Step2: В слове нет либо a, либо b 
+  Step0 --> Step2: В слове нет либо 'a', либо 'b'
   Step2 --> Step3
   Step3 --> Step4
   Step4 --> Step0: Да

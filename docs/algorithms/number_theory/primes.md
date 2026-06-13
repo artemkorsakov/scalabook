@@ -1222,6 +1222,7 @@ isSquareFree(100) // false: 100 = 2^2 * 5^2
 
 **Ссылки:**
 
+- [Исходный код][sample]
 - [Решето Эратосфена][sieve]
 - [Род Стивенс - Алгоритмы. Теория и практическое применение. Глава 2. Численные алгоритмы](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854/)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://idp.springer.com/authorize?response_type=cookie&client_id=springerlink&redirect_uri=https%3A%2F%2Flink.springer.com%2Fbook%2F10.1007%2F978-3-030-12561-5)
@@ -1232,3 +1233,4 @@ isSquareFree(100) // false: 100 = 2^2 * 5^2
 [sicp]: https://web.mit.edu/6.001/6.037/sicp.pdf
 [sieve]: https://ru.wikipedia.org/wiki/%D0%A0%D0%B5%D1%88%D0%B5%D1%82%D0%BE_%D0%AD%D1%80%D0%B0%D1%82%D0%BE%D1%81%D1%84%D0%B5%D0%BD%D0%B0
 [euler]: https://ru.wikipedia.org/wiki/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F_%D0%AD%D0%B9%D0%BB%D0%B5%D1%80%D0%B0
+[sample]: https://gitverse.ru/scalabook/algorithms

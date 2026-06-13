@@ -219,6 +219,7 @@ polynomialCoefficients(3, Array(1, 683, 44287))
 
 **Ссылки:**
 
+- [Исходный код][sample]
 - [Квадратное уравнение - Wiki][square]
 - [Уравнение Пелля - Wiki][pell]
 - [Метод «чакравала» - Wiki][chakravala]
@@ -229,3 +230,4 @@ polynomialCoefficients(3, Array(1, 683, 44287))
 [pell]: https://ru.wikipedia.org/wiki/%D0%A3%D1%80%D0%B0%D0%B2%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5_%D0%9F%D0%B5%D0%BB%D0%BB%D1%8F
 [chakravala]: https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D1%82%D0%BE%D0%B4_%C2%AB%D1%87%D0%B0%D0%BA%D1%80%D0%B0%D0%B2%D0%B0%D0%BB%D0%B0%C2%BB
 [poly]: https://ru.wikipedia.org/wiki/%D0%9C%D0%BD%D0%BE%D0%B3%D0%BE%D1%87%D0%BB%D0%B5%D0%BD
+[sample]: https://gitverse.ru/scalabook/algorithms

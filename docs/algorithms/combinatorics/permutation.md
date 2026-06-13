@@ -191,5 +191,8 @@ constructByMethod2((1 to 4_999).toVector)
 
 **Ссылки:**
 
+- [Исходный код][sample]
 - [The Art of Computer Programming - Donald E. Knuth, section 1.2.5](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 - [The Art of Computer Programming - Donald E. Knuth, section 1.2.11.2](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
+
+[sample]: https://gitverse.ru/scalabook/algorithms

@@ -27,18 +27,9 @@ object Dependencies {
     val std    = "org.typelevel" %% "cats-effect-std"    % version
   }
 
-  object fs2 {
-    private val version = "3.13.0"
-
-    val core = "co.fs2" %% "fs2-core" % version
-  }
-
   object http4s {
     private val version = "0.23.34"
 
-    val blaze  = "org.http4s" %% "http4s-blaze-server" % "0.23.17"
-    val core   = "org.http4s" %% "http4s-core"         % version
-    val dsl    = "org.http4s" %% "http4s-dsl"          % version
     val server = "org.http4s" %% "http4s-server"       % version
   }
 
@@ -66,31 +57,16 @@ object Dependencies {
     val slf4j = "org.typelevel" %% "log4cats-slf4j" % version
   }
 
-  object logback {
-    private val version = "1.5.32"
-
-    val logback = "ch.qos.logback" % "logback-classic" % version
-  }
-
   // https://github.com/erikvanoosten/metrics-scala/blob/master/docs/Manual.md
   object metrics {
-    val dropwizardCore = "io.dropwizard.metrics" % "metrics-core"    % "4.2.38"
+    val dropwizardCore = "io.dropwizard.metrics" % "metrics-core"    % "4.2.39"
     val metrics4Scala  = "nl.grons"              %% "metrics4-scala" % "4.3.7"
-  }
-
-  object refined {
-    private val version = "0.11.3"
-
-    val core = "eu.timepit" %% "refined"      % version
-    val cats = "eu.timepit" %% "refined-cats" % version
   }
 
   object scalaz {
     private val version = "7.3.8"
 
     val core       = "org.scalaz" %% "scalaz-core"               % version
-    val effect     = "org.scalaz" %% "scalaz-effect"             % version
-    val iteratee   = "org.scalaz" %% "scalaz-iteratee"           % version
     val scalacheck = "org.scalaz" %% "scalaz-scalacheck-binding" % version
   }
 
@@ -99,7 +75,7 @@ object Dependencies {
   }
 
   object sttp {
-    val client = "com.softwaremill.sttp.client4" %% "core" % "4.0.23"
+    val client = "com.softwaremill.sttp.client4" %% "core" % "4.0.25"
     val model  = "com.softwaremill.sttp.model" %% "core" % "1.7.17"
   }
 

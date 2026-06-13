@@ -325,7 +325,9 @@ List("a", "b", "c").xsubsets
 
 **Ссылки:**
 
+- [Исходный код][sample]
 - [The Art of Computer Programming - Donald E. Knuth, section 1.2.6](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 - [Combinatorial Algorithms in Scala - kostyukov.net][kostyukov]
 
 [kostyukov]: https://kostyukov.net/posts/combinatorial-algorithms-in-scala/
+[sample]: https://gitverse.ru/scalabook/algorithms

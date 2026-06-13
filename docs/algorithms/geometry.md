@@ -120,5 +120,8 @@ Triangle((-175, 41), (-421, -714), (574, -645)).getPointOnTriangleType((-175, 41
 
 **Ссылки:**
 
+- [Исходный код][sample]
 - [Треугольник - Wiki](https://ru.wikipedia.org/wiki/%D0%A2%D1%80%D0%B5%D1%83%D0%B3%D0%BE%D0%BB%D1%8C%D0%BD%D0%B8%D0%BA)
 - [Никлаус Вирт - Алгоритмы + Структуры данных = Программы](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs)
+
+[sample]: https://gitverse.ru/scalabook/algorithms

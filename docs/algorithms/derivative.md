@@ -437,7 +437,9 @@ def makeProduct(exp1: Expression, exp2: Expression): Expression =
 
 **Ссылки:**
 
+- [Исходный код][sample]
 - [Abelson Harold, Sussman Gerald Jay, Sussman Julie - Structure and Interpretation of Computer Programs][SICP]
 - [Eli Bendersky's solution](https://eli.thegreenplace.net/tag/sicp)
 
 [SICP]: https://web.mit.edu/6.001/6.037/sicp.pdf
+[sample]: https://gitverse.ru/scalabook/algorithms

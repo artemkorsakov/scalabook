@@ -901,9 +901,11 @@ tetranacci(1_000_000)
 
 **Ссылки:**
 
+- [Исходный код][sample]
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Memo.html)
 - [SICP: Абельсон Х., Сассман Д. - Структура и интерпретация компьютерных программ][sicp]
 - [Scalacaster](https://github.com/vkostyukov/scalacaster)
 - [The Art of Computer Programming - Donald E. Knuth, section 1.2.8](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 
 [sicp]: https://web.mit.edu/6.001/6.037/sicp.pdf
+[sample]: https://gitverse.ru/scalabook/algorithms

@@ -354,6 +354,8 @@ def successiveMerge(trees: List[HuffmanTree]): Option[HuffmanTree] =
 
 **Ссылки:**
 
+- [Исходный код][sample]
 - [Abelson Harold, Sussman Gerald Jay, Sussman Julie - Structure and Interpretation of Computer Programs][SICP]
 
 [SICP]: https://web.mit.edu/6.001/6.037/sicp.pdf
+[sample]: https://gitverse.ru/scalabook/algorithms

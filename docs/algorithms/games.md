@@ -1300,4 +1300,7 @@ end queens
 
 **Ссылки:**
 
+- [Исходный код][sample]
 - [Darts - Project Euler](https://projecteuler.net/problem=109)
+
+[sample]: https://gitverse.ru/scalabook/algorithms

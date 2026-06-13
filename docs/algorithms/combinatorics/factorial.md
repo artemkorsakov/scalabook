@@ -210,8 +210,10 @@ primes.take(limit).toList.foreach: p =>
 
 **Ссылки:**
 
+- [Исходный код][sample]
 - [The Art of Computer Programming - Donald E. Knuth, section 1.2.5](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 - [The Art of Computer Programming - Donald E. Knuth, section 1.2.11.2](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 - [Combinatorial Algorithms in Scala - kostyukov.net][kostyukov]
 
 [kostyukov]: https://kostyukov.net/posts/combinatorial-algorithms-in-scala/
+[sample]: https://gitverse.ru/scalabook/algorithms

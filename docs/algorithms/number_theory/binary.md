@@ -309,6 +309,7 @@ println((1 to 1000000).count(isPalindrome))
 
 **Ссылки:**
 
+- [Исходный код][sample]
 - [Род Стивенс - Алгоритмы. Теория и практическое применение. Глава 2. Численные алгоритмы](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854/)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://idp.springer.com/authorize?response_type=cookie&client_id=springerlink&redirect_uri=https%3A%2F%2Flink.springer.com%2Fbook%2F10.1007%2F978-3-030-12561-5)
 - [SICP: Абельсон Х., Сассман Д. - Структура и интерпретация компьютерных программ][sicp]
@@ -316,3 +317,4 @@ println((1 to 1000000).count(isPalindrome))
 - [The Art of Computer Programming - Donald E. Knuth](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 
 [sicp]: https://web.mit.edu/6.001/6.037/sicp.pdf
+[sample]: https://gitverse.ru/scalabook/algorithms

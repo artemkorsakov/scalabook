@@ -278,9 +278,10 @@ stateDiagram
 
 **Ссылки:**
 
-- [Исходный код](https://gitverse.ru/artemkorsakov/scalabook/content/master/examples/src/main/scala/ru/scalabook/algorithms)
+- [Исходный код][sample]
 - [Тесты](https://gitverse.ru/artemkorsakov/scalabook/content/master/examples/src/test/scala/ru/scalabook/algorithms)
 - [The Art of Computer Programming - Donald E. Knuth][TAOCP]
 - [Марков А.А., Нагорный Н.М. - Теория алгорифмов](https://www.ozon.ru/product/teoriya-algorifmov-markov-andrey-andreevich-nagornyy-nikolay-makarovich-1799472833/)
 
 [TAOCP]: https://www-cs-faculty.stanford.edu/~knuth/taocp.html
+[sample]: https://gitverse.ru/scalabook/algorithms

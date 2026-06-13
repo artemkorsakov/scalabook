@@ -455,6 +455,9 @@ quickSort(unsortedList)
 
 **Ссылки:**
 
+- [Исходный код][sample]
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://idp.springer.com/authorize?response_type=cookie&client_id=springerlink&redirect_uri=https%3A%2F%2Flink.springer.com%2Fbook%2F10.1007%2F978-3-030-12561-5)
 - [Scalacaster](https://github.com/vkostyukov/scalacaster/tree/master)
 - [Никлаус Вирт - Алгоритмы + Структуры данных = Программы](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs)
+
+[sample]: https://gitverse.ru/scalabook/algorithms

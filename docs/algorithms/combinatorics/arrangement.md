@@ -187,6 +187,8 @@ List("a", "b", "c").xpermutations
 
 **Ссылки:**
 
+- [Исходный код][sample]
 - [Combinatorial Algorithms in Scala - kostyukov.net][kostyukov]
 
 [kostyukov]: https://kostyukov.net/posts/combinatorial-algorithms-in-scala/
+[sample]: https://gitverse.ru/scalabook/algorithms

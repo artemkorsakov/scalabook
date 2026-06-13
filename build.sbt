@@ -32,8 +32,7 @@ lazy val examples = (project in file("examples"))
   .settings(
     coverageEnabled := true,
     libraryDependencies ++= exampleLibs,
-    libraryDependencies ++= exampleTestLibs,
-    Test / parallelExecution := false
+    libraryDependencies ++= exampleTestLibs
   )
 
 lazy val site = project

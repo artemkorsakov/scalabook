@@ -73,7 +73,7 @@ nextPage = sort.html
 > Алгоритм основан на хвостовой рекурсии, что позволяет избежать переполнения стека при больших значениях `n`.
 
 ```dotty
-def iterativeFib(n: Int): BigInt =
+def fib(n: Int): BigInt =
   @tailrec
   def loop(a: BigInt, b: BigInt, count: Int): BigInt =
     if count == 0 then b
@@ -81,7 +81,7 @@ def iterativeFib(n: Int): BigInt =
 
   if n == 0 then BigInt(0) else loop(BigInt(0), BigInt(1), n - 1)
 
-iterativeFib(100)
+fib(100)
 // 354224848179261915075  
 ```
 

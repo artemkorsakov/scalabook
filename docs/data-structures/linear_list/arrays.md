@@ -41,6 +41,9 @@ vowels.length
 
 **Ссылки:**
 
+- [Исходный код][source]
 - [Род Стивенс - Алгоритмы. Теория и практическое применение. Глава 4. Массивы](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854/)
 - [Donald E. Knuth - The Art of Computer Programming, section 2.2.6](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://idp.springer.com/authorize?response_type=cookie&client_id=springerlink&redirect_uri=https%3A%2F%2Flink.springer.com%2Fbook%2F10.1007%2F978-3-030-12561-5)
+
+[source]: https://gitverse.ru/scalabook/algorithms

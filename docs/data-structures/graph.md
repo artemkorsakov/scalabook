@@ -166,4 +166,7 @@ _Цепью Эйлера_ (_Eulerian circuit_) в ориентированном
 
 **Ссылки:**
 
+- [Исходный код][source]
 - [Donald E. Knuth - The Art of Computer Programming, section 2.3.4.1 - 2.3.4.2](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
+
+[source]: https://gitverse.ru/scalabook/algorithms

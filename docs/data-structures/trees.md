@@ -54,6 +54,9 @@ _узлы дерева при условии исключения корня о�
 
 **Ссылки:**
 
+- [Исходный код][source]
 - [Donald E. Knuth - The Art of Computer Programming, section 2.3](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://idp.springer.com/authorize?response_type=cookie&client_id=springerlink&redirect_uri=https%3A%2F%2Flink.springer.com%2Fbook%2F10.1007%2F978-3-030-12561-5)
 - [Scalacaster - trees](https://github.com/vkostyukov/scalacaster/tree/master/src/tree)
+
+[source]: https://gitverse.ru/scalabook/algorithms

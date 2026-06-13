@@ -28,5 +28,6 @@ nextPage = linear_list.html
 
 **Ссылки:**
 
-- [Исходный код](https://gitverse.ru/artemkorsakov/scalabook/content/master/examples/src/main/scala/ru/scalabook/algorithms)
-- [Тесты](https://gitverse.ru/artemkorsakov/scalabook/content/master/examples/src/test/scala/ru/scalabook/algorithms)
+- [Исходный код][source]
+
+[source]: https://gitverse.ru/scalabook/algorithms

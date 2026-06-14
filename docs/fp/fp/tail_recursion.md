@@ -517,6 +517,7 @@ def reverseTailRec[A](list: List[A]): List[A] =
 - [Functional Programming in Scala, Second Edition, Chapter 1-2 by Michael Pilquist, Rúnar Bjarnason, and Paul Chiusano](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Introduction to Functional Programming - Bird, Wadler](https://archive.org/details/introductiontofu0000bird/mode/2up)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fp-what-is-fp.html)
+- [Tail Recursive Functions in Scala](https://alexn.org/blog/2021/01/26/tail-recursive-functions-in-scala/)
 - [Tail Recursion in Scala - Baeldung](https://www.baeldung.com/scala/tail-recursion)
 
 [sample]: https://gitverse.ru/scalabook/fp

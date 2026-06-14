@@ -66,10 +66,6 @@ _(раздел пока пуст)_
 | [**An Interview Process That Works For Me**](https://blog.colinbreck.com/an-interview-process-that-works-for-me/)                                                                      | 🇬🇧 EN | 2023   | 💼 Карьера • 🎯 Собеседования               |
 | [**Bad software examples - how much can poor code hurt you?**](https://softwaremill.com/bad-software-examples-how-much-can-poor-code-hurt-you/)                                        | 🇬🇧 EN | 2023   | 🚧 Антипаттерны • 🐛 Баги                   |
 | [**Beating the Averages**](https://paulgraham.com/avg.html)                                                                                                                            | 🇬🇧 EN | 2001   | 🕰️ История • 🚀 Продуктивность             |
-| [**Functional Programming Isn't the Answer**](https://degoes.net/articles/fp-is-not-the-answer)                                                                                        | 🇬🇧 EN | 2014   | ⚖️ ФП vs ООП                                |
-| [**I hate NULL**](https://alexn.org/blog/2010/05/25/i-hate-null/)                                                                                                                      | 🇬🇧 EN | 2010   | λ Функциональное программирование           |
-| [**Making something out of nothing (or, why None is better than NaN and NULL)**](https://blog.janestreet.com/making-something-out-of-nothing-or-why-none-is-better-than-nan-and-null/) | 🇬🇧 EN | 2010   | λ Функциональное программирование • 🚫 NULL |
-| [**Maybe in Java**](https://blog.tmorris.net/posts/maybe-in-java/index.html)                                                                                                           | 🇬🇧 EN | 2006   | λ Функциональное программирование           |
 | [**Painless Software Schedules**](https://www.joelonsoftware.com/2000/03/29/painless-software-schedules/)                                                                              | 🇬🇧 EN | 2000   | ⏱️ Тайм-менеджмент • 🏗️ Управление         |
 | [**Principles of Automated Testing**](https://www.lihaoyi.com/post/PrinciplesofAutomatedTesting.html)                                                                                  | 🇬🇧 EN | 2017   | 🧪 Тестирование                             |
 | [**Reading postmortems**](https://danluu.com/postmortem-lessons/)                                                                                                                      | 🇬🇧 EN | 2015   | 📊 Аналитика • 🛠️ Best Practices           |
@@ -86,9 +82,7 @@ _(раздел пока пуст)_
 - В алфавитном порядке внутри категорий
 @:@
 
-| Название                                                                                                                                      | 🌐 Язык | 📅 Год | 💬 Комментарий                    |
-|-----------------------------------------------------------------------------------------------------------------------------------------------| :-----: | ------ |-----------------------------------|
-| [**"Clean" Code, Horrible Performance**](https://www.youtube.com/watch?v=tD5NrevFtbU)                                                         |  🇬🇧 EN  | 2023   | 🧹 Рефакторинг кода               |
-| [**Business benefits of FP**](https://www.youtube.com/watch?v=EcGZdzECmIk)                                                                    |  🇬🇧 EN  | 2020   | λ Функциональное программирование |
-| [**Null References: The Billion Dollar Mistake**](https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/) |  🇬🇧 EN  | 2009   | λ Функциональное программирование |
-| [**Some History of Functional Programming Languages**](https://www.youtube.com/watch?v=QVwm9jlBTik)                                           |  🇬🇧 EN  | 2017   | 🕰️ История ФП                    |
+| Название                                                                                            | 🌐 Язык  | 📅 Год  | 💬 Комментарий      |
+|-----------------------------------------------------------------------------------------------------|:--------:|---------|---------------------|
+| [**"Clean" Code, Horrible Performance**](https://www.youtube.com/watch?v=tD5NrevFtbU)               | 🇬🇧 EN  | 2023    | 🧹 Рефакторинг кода |
+| [**Some History of Functional Programming Languages**](https://www.youtube.com/watch?v=QVwm9jlBTik) | 🇬🇧 EN  | 2017    | 🕰️ История ФП      |

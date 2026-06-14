@@ -58,9 +58,22 @@ nextPage = monoid.html
 - [Классы типов в Algebird][algebird]
 - [Классы типов в Cats][cats]
 - [Классы типов в Spire][spire]
+- [Category Theory Resources](https://github.com/prathyvsh/category-theory-resources)
+- [Deriving Typeclass Instances](https://xebia.com/blog/automatically-deriving-typeclass-instances-in-scala-3/)
+- [Deriving Type Class Instances](https://typelevel.org/blog/2013/06/24/deriving-instances-1.html)
+- [Infinity Category Theory](https://www.scientificamerican.com/article/infinity-category-theory-offers-a-birds-eye-view-of-mathematics1)
+- [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes/)
 - [Scala Type-class Hierarchy - Tony Morris](https://blog.tmorris.net/posts/scala-type-class-hierarchy/index.html)
+- [Subtype type classes don't work](https://typelevel.org/blog/2016/09/30/subtype-typeclasses.html)
+- [The Power of Type-classes with Scala implicit defs](https://blog.tmorris.net/posts/the-power-of-type-classes-with-scala-implicit-defs/index.html)
+- [The Typeclass Pattern](https://www.youtube.com/watch?v=yYo0gANYViE)
+- [Type Classes](https://typelevel.org/cats/typeclasses.html)
 - [Type Classes vs Records of Functions](https://www.inner-product.com/posts/type-classes-vs-records-of-functions/)
 - [Type Classes in Scala - Baeldung](https://www.baeldung.com/scala/type-classes)
+- [Typeclasses in Scala](https://www.youtube.com/watch?v=sVMES4RZF-8)
+- [Typeclasses in Scala 3](https://www.youtube.com/watch?app=desktop&v=co4LSvVoX-s)
+- [Why are Type Classes Useful in Scala?](https://blog.rockthejvm.com/why-are-typeclasses-useful/)
+- [Why Type Classes are Useful](https://www.youtube.com/watch?v=bupBZKJT0EA)
 
 [algebird]: https://twitter.github.io/algebird/typeclasses.html
 [cats]: https://github.com/tpolecat/cats-infographic

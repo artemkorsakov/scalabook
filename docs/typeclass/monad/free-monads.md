@@ -474,6 +474,7 @@ Free[F, A] =
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Free+Monad.html)
 - [Monadic IO: Laziness Makes You Free](https://noelwelsh.com/posts/monadic-io-laziness-makes-you-free/)
 - [Stackless Scala](../../translations/trampolining.md)
+- [Stackless Scala With Free Monads - Runar Oli Bjarnason](https://blog.higher-order.com/assets/trampolines.pdf)
 - [Why free monads matter](https://www.haskellforall.com/2012/06/you-could-have-invented-free-monads.html)
 
 [sample]: https://gitverse.ru/scalabook/typeclasses

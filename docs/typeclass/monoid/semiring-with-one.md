@@ -75,7 +75,13 @@ classDiagram
 
 ## Реализация в библиотеках
 
-### Реализация в Spire
+### [Реализация в Spire](../../libs/spire.md)
+
+`Rig[A]` обеспечивает `+`, `zero`, `*` и `one`.
+`Rig[A]` расширяет `Semiring[A]` и `MultiplicativeMonoid[A]`.
+
+- `zero`: аддитивное тождество
+- `one`: мультипликативное тождество (такой элемент, что для любого `x` из множества `x * one = x`)
 
 ```dotty
 import spire.algebra.Rig

@@ -50,7 +50,9 @@ classDiagram
 
 ## Реализация в библиотеках
 
-### Реализация в Spire
+### [Реализация в Spire](../../libs/spire.md)
+
+`CMonoid[A]` - моноид, который коммутативен.
 
 ```dotty
 import spire.algebra.CMonoid

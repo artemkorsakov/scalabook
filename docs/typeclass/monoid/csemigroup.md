@@ -44,7 +44,7 @@ classDiagram
 
 ## Реализация в библиотеках
 
-### Реализация в Spire
+### [Реализация в Spire](../../libs/spire.md)
 
 ```dotty
 import spire.algebra.CSemigroup

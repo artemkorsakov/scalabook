@@ -209,7 +209,11 @@ import cats.syntax.all.*
 1 |+| 1.inverse() // 0
 ```
 
-### Реализация в Spire
+### [Реализация в Spire](../../libs/spire.md)
+
+`Group` - моноид, который также имеет обратную операцию (`inverse` или `|-|`). `Group` расширяет `Monoid`.
+
+- `inverse`: унарный оператор
 
 ```dotty
 import spire.algebra.Group

@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = ../spire.html
 showNext = true
-nextPage = eq.html
+nextPage = other.html
 %}
 
 # Руководство пользователя
@@ -37,7 +37,7 @@ import spire.implicits.* // экземпляры и синтаксис всех 
 
 ```dotty
 def usingSymbols[A: Ring](x: A, y: A): A           = x + y
-def usingNames[A](x: A, y: A)(using r: Ring[A]): A = r.plus(x, y)
+def usingNames[A: Ring as r](x: A, y: A): A = r.plus(x, y)
 ```
 
 Некоторые методы (например, `sqrt`) не имеют соответствующих символов. 
@@ -93,8 +93,8 @@ object Demo:
 
 ```dotty
 object Demo2:
-  def double[A](x: A)(using ev: Ring[A]): A = ev.plus(x, x)
-  def triple[A](x: A)(using ev: Ring[A]): A = ev.times(x, ev.fromInt(3))
+  def double[A: Ring as ev](x: A): A = ev.plus(x, x)
+  def triple[A: Ring as ev](x: A): A = ev.times(x, ev.fromInt(3))
   println((double(3)(IntAlgebra), triple(4)(IntAlgebra)))
 ```
 
@@ -413,7 +413,7 @@ def circle(a: Real): Real = sqrt(cos(a).pow(2) + sin(a).pow(2))
 ```
 
 Имейте в виду, что вычисление корней не является абсолютно точным. 
-Дополнительные сведения см. в разделе ["Классы иррациональных и трансцендентальных типов"](rings.md).
+Дополнительные сведения см. в разделе ["Иррациональные и трансцендентальные классы типов"](../../typeclass/monoid/field.md).
 
 Одним из интересных последствий построения вычислимых действительных чисел является то, 
 что прерывистые операции (такие как проверка знаков, сравнение и равенство) не могут быть выполнены точно. 

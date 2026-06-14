@@ -142,7 +142,10 @@ classDiagram
 
 ## Реализация в библиотеках
 
-### Реализация в Spire
+### [Реализация в Spire](../../libs/spire.md)
+
+`CRing[A]` обеспечивает коммутативный `+`, `zero`, `-`, коммутативный `*` и `one`.
+`CRing[A]` расширяет `Ring[A]` и `MultiplicativeCMonoid[A]`.
 
 ```dotty
 import spire.algebra.CRing

@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = index.html
 showNext = true
-nextPage = baker.html
+nextPage = spire.html
 %}
 
 # Уточняющие типы в Scala

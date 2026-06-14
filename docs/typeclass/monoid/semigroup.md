@@ -187,7 +187,11 @@ import cats.implicits.*
 ("hello", 123) |+| ("world", 321)           // ("helloworld",444)
 ```
 
-### Реализация в Spire
+### [Реализация в Spire](../../libs/spire.md)
+
+`Semigroup`:
+
+- `op` (`|+|`): ассоциативная бинарная операция
 
 ```dotty
 import spire.algebra.Semigroup

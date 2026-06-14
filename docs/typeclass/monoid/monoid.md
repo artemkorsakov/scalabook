@@ -603,7 +603,12 @@ Monoid[Int].combine(1, Monoid[Int].empty)   // 1
 "Hi " |+| "there" |+| Monoid[String].empty  // Hi there
 ```
 
-### Реализация в Spire
+### [Реализация в Spire](../../libs/spire.md)
+
+`Monoid` - полугруппа, которая также имеет единичный элемент `id`. `Monoid` расширяет `Semigroup`.
+
+- `id`: единичный элемент моноида
+- `isId`: проверка на равенство единичного элемента (вместе с `Eq`)
 
 ```dotty
 import spire.algebra.Monoid

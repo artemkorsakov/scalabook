@@ -79,7 +79,10 @@ classDiagram
 
 ## Реализация в библиотеках
 
-### Реализация в Spire
+### [Реализация в Spire](../../libs/spire.md)
+
+`CRing[A]` обеспечивает коммутативный `+`, `zero`, `-`, коммутативный `*` и `one`.
+`CRing[A]` расширяет `Ring[A]` и `MultiplicativeCMonoid[A]`.
 
 ```dotty
 import spire.algebra.CRing
@@ -97,6 +100,8 @@ CRing.minus(Rational(1, 2), Rational(1, 3))
 // val res4: spire.math.Rational = 1/6
 CRing.zero[Rational]
 // val res5: spire.math.Rational = 0
+CRing.one[Rational]
+// val res6: spire.math.Rational = 1
 ```
 
 ---

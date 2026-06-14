@@ -81,7 +81,10 @@ classDiagram
 
 ## Реализация в библиотеках
 
-### Реализация в Spire
+### [Реализация в Spire](../../libs/spire.md)
+
+`Ring[A]` обеспечивает коммутативные `+`, `zero`, `-`, `*` и `one`.
+`Ring[A]` расширяет `Rig[A]` и `Rng[A]`.
 
 ```dotty
 import spire.algebra.Ring

@@ -147,7 +147,14 @@ classDiagram
 
 ## Реализация в библиотеках
 
-### Реализация в Spire
+### [Реализация в Spire](../../libs/spire.md)
+
+`Semiring[A]` обеспечивает `+`, `zero` и `*`.
+`Semiring[A]` расширяет `AdditiveCommutativeMonoid[A]` и `MultiplicativeSemigroup[A]`.
+
+- `plus` (`+`): сложение
+- `times` (`*`): умножение
+- `pow` (`**`): возведения в степень (интегральная экспонента)
 
 ```dotty
 import spire.algebra.Semiring

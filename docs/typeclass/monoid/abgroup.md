@@ -172,7 +172,9 @@ classDiagram
 
 ## Реализация в библиотеках
 
-### Реализация в Spire
+### [Реализация в Spire](../../libs/spire.md)
+
+`AbGroup[A]` - "абелева группа", группа, которая является коммутативной.
 
 ```dotty
 import spire.algebra.AbGroup

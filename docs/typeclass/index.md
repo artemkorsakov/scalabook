@@ -58,6 +58,7 @@ nextPage = monoid.html
 - [Классы типов в Algebird][algebird]
 - [Классы типов в Cats][cats]
 - [Классы типов в Spire][spire]
+- [Cats: Type Classes](https://typelevel.org/cats/typeclasses.html)
 - [Category Theory Resources](https://github.com/prathyvsh/category-theory-resources)
 - [Deriving Typeclass Instances](https://xebia.com/blog/automatically-deriving-typeclass-instances-in-scala-3/)
 - [Deriving Type Class Instances](https://typelevel.org/blog/2013/06/24/deriving-instances-1.html)

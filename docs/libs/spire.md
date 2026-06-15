@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = cats.html
+prevPage = cats/algebra.html
 showNext = true
 nextPage = spire/user_guide.html
 %}

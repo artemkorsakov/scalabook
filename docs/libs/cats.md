@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = refined.html
 showNext = true
-nextPage = spire.html
+nextPage = cats/algebra.html
 %}
 
 # Cats

@@ -7,8 +7,13 @@ object Dependencies {
   object cats {
     private val version       = "2.13.0"
 
-    val core    = "org.typelevel" %% "cats-core"    % version
-    val testkit = "org.typelevel" %% "cats-testkit" % version
+    val algebra   = "org.typelevel" %% "algebra"        % version
+    val alleycats = "org.typelevel" %% "alleycats-core" % version
+    val core      = "org.typelevel" %% "cats-core"      % version
+    val free      = "org.typelevel" %% "cats-free"      % version
+    val kernel    = "org.typelevel" %% "cats-kernel"    % version
+    val laws      = "org.typelevel" %% "cats-laws"      % version
+    val testkit   = "org.typelevel" %% "cats-testkit"   % version
   }
 
   object catsEffect {
@@ -63,6 +68,7 @@ object Dependencies {
 
   val exampleLibs: Seq[ModuleID] =
     Seq(
+      cats.alleycats,
       cats.core,
       catsEffect.core,
       catsEffect.kernel,
@@ -73,6 +79,7 @@ object Dependencies {
 
   val exampleTestLibs: Seq[ModuleID] =
     Seq(
+      cats.laws,
       cats.testkit,
       catsEffect.kernel,
       iron.cats,

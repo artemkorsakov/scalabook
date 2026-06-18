@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = cats/symbol_mean.html
+prevPage = cats/glossary.html
 showNext = true
 nextPage = spire/user_guide.html
 %}

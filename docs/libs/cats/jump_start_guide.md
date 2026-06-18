@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = alleycats.html
 showNext = true
-nextPage = symbol_mean.html
+nextPage = glossary.html
 %}
 
 # Быстрый старт

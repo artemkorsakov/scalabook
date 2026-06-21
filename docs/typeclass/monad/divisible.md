@@ -134,7 +134,7 @@ given functionDivisible[R: Monoid]: Divisible[[X] =>> Function1[X, R]] with
 ```mermaid
 classDiagram
     class InvariantFunctor~A~{
-        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+        +imap[B](fa: F[A], f: A => B, g: B => A) F[B]
     } 
     class InvariantApplicative~A~{
         +xunit0[A](a: => A) F[A]

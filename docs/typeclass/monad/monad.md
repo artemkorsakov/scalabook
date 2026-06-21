@@ -616,7 +616,7 @@ given stateMonad[S]: Monad[[x] =>> State[S, x]] with
 ```mermaid
 classDiagram
     class InvariantFunctor~A~{
-        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+        +imap[B](fa: F[A], f: A => B, g: B => A) F[B]
     }
     class Semigroupal~A~{
         +product[A, B](fa: F[A], fb: F[B]) F[Tuple2[A, B]]

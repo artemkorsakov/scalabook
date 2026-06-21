@@ -62,7 +62,7 @@ trait Functor[F[_]] extends InvariantFunctor[F]:
   extension [A](fa: F[A])
     def map[B](f: A => B): F[B]
 
-    override def xmap[B](f: A => B, g: B => A): F[B] = fa.map(f)
+    override def imap[B](f: A => B, g: B => A): F[B] = fa.map(f)
 
   def lift[A, B](f: A => B): F[A] => F[B] = _.map(f)
 
@@ -514,7 +514,7 @@ Nested(Some(List(1, 2))).map(_ + 10)
 ```mermaid
 classDiagram
     class InvariantFunctor~A~{
-        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+        +imap[B](fa: F[A], f: A => B, g: B => A) F[B]
     }
     class Functor~A~{
         +map[B](fa: F[A], f: A => B) F[B]

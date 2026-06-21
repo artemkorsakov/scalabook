@@ -141,7 +141,7 @@ given functionDivide[R: Monoid]: Divide[[X] =>> Function1[X, R]] with
 ```mermaid
 classDiagram
     class InvariantFunctor~A~{
-        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+        +imap[B](fa: F[A], f: A => B, g: B => A) F[B]
     } 
     class ContravariantFunctor~A~{
         +contramap[A, B](b: F[B])(f: A => B) F[A]

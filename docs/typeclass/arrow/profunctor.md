@@ -95,7 +95,7 @@ trait Profunctor[=>:[_, _]]:
   def invariantFunctor: InvariantFunctor[[X] =>> X =>: X] =
     new InvariantFunctor[[X] =>> X =>: X]:
       extension [A](fa: A =>: A)
-        override def xmap[B](f: A => B, g: B => A): B =>: B = mapsnd(mapfst(fa)(g))(f)
+        override def imap[B](f: A => B, g: B => A): B =>: B = mapsnd(mapfst(fa)(g))(f)
 
   def covariantInstance[C]: Functor[[X] =>> =>:[C, X]] =
     new SndCovariant[C] {}

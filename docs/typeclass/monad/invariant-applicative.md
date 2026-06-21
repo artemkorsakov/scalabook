@@ -22,29 +22,29 @@ nextPage = semigroupal.html
 ```dotty
 trait InvariantFunctor[F[_]]:
   extension [A](fa: F[A])
-    def xmap[B](f: A => B, g: B => A): F[B]
+    def imap[B](f: A => B, g: B => A): F[B]
 
 trait InvariantApplicative[F[_]] extends InvariantFunctor[F]:
   def xunit0[A](a: => A): F[A]
 
   extension [A](fa: => F[A])
     def xunit1[B](f: A => B, g: B => A): F[B] =
-      fa.xmap(f, g)
+      fa.imap(f, g)
 ```
 
 1. **Базовые операции**:
-    - `xmap` (инвариантное отображение) — преобразует `F[A]` в `F[B]` с помощью пары обратных функций
+    - `imap` (инвариантное отображение) — преобразует `F[A]` в `F[B]` с помощью пары обратных функций
     - `xunit0` — помещает значение в минимальный контекст `F` (аналог `pure` в обычном `Applicative`)
 
 2. **Производные операции**:
-    - `xunit1` — комбинация `xunit0` и `xmap` для создания значения в контексте с преобразованием
+    - `xunit1` — комбинация `xunit0` и `imap` для создания значения в контексте с преобразованием
 
 ### Законы
 
-1. Закон тождественности для `xmap`: `fa.xmap(identity, identity) == fa`
-2. Закон композиции для `xmap`:
-   `fa.xmap(f1, g1).xmap(f2, g2) == fa.xmap(f1 andThen f2, g2 andThen g1)`
-3. Закон единицы для `xunit0`: `xunit0(a).xmap(f, g) == xunit0(f(a))`
+1. Закон тождественности для `imap`: `fa.imap(identity, identity) == fa`
+2. Закон композиции для `imap`:
+   `fa.imap(f1, g1).imap(f2, g2) == fa.imap(f1 andThen f2, g2 andThen g1)`
+3. Закон единицы для `xunit0`: `xunit0(a).imap(f, g) == xunit0(f(a))`
 
 ## Когда использовать
 
@@ -60,7 +60,7 @@ trait InvariantApplicative[F[_]] extends InvariantFunctor[F]:
 ```mermaid
 classDiagram
     class InvariantFunctor~A~{
-        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+        +imap[B](fa: F[A], f: A => B, g: B => A) F[B]
     }  
     class InvariantApplicative~A~{
         +xunit0[A](a: => A) F[A]

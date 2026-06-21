@@ -66,7 +66,7 @@ trait ContravariantFunctor[F[_]] extends InvariantFunctor[F]:
 
   def contramap[A, B](b: F[B])(f: A => B): F[A] = cmap(b)(f)
 
-  extension [A](fa: F[A]) override def xmap[B](f: A => B, g: B => A): F[B] = cmap(fa)(g)
+  extension [A](fa: F[A]) override def imap[B](f: A => B, g: B => A): F[B] = cmap(fa)(g)
 
   /** Композиция двух контравариантных функторов ковариантна */
   def compose[G[_]: ContravariantFunctor as cfu]: Functor[[X] =>> F[G[X]]] =
@@ -262,7 +262,7 @@ given showContravariantFunctor: ContravariantFunctor[ShowX] with
 ```mermaid
 classDiagram
     class InvariantFunctor~A~{
-        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+        +imap[B](fa: F[A], f: A => B, g: B => A) F[B]
     } 
     class ContravariantFunctor~A~{
         +contramap[A, B](b: F[B])(f: A => B) F[A]

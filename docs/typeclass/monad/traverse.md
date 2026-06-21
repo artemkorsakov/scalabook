@@ -622,7 +622,7 @@ given mapTraverse[K]: Traverse[[X] =>> Map[K, X]] with
 ```mermaid
 classDiagram
     class InvariantFunctor~A~{
-        +xmap[B](fa: F[A], f: A => B, g: B => A) F[B]
+        +imap[B](fa: F[A], f: A => B, g: B => A) F[B]
     }
     class Functor~A~{
         +map[B](fa: F[A], f: A => B) F[B]

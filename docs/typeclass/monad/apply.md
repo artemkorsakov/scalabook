@@ -288,6 +288,7 @@ Apply[List].lift2 {(_: Int) * (_: Int)} (List(1, 2), List(3, 4)) // List(3, 4, 6
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
+- [Cats](https://typelevel.org/cats/typeclasses/applicative.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Apply.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Applicative.html)
 - [Scala with Cats](https://scalawithcats.com/dist/scala-with-cats.html#apply-and-applicative)

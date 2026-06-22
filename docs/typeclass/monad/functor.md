@@ -528,14 +528,28 @@ classDiagram
 
 ```dotty
 import cats.*
-import cats.implicits.*
+import cats.data.Nested
+import cats.syntax.all.*
 
 val list1 = List(1, 2, 3)
-val list2 = Functor[List].map(list1)(_ * 2)  // List(2, 4, 6)
+val list2 = Functor[List].map(list1)(_ * 2) 
+// List(2, 4, 6)
 
-val func = (x: Int) => x + 1
+val func       = (x: Int) => x + 1
 val liftedFunc = Functor[Option].lift(func)
-liftedFunc(Option(1))                        // Some(2)
+liftedFunc(Option(1))
+// Some(2)
+
+val listOption                        = List(Some(1), None, Some(2))
+val nested: Nested[List, Option, Int] = Nested(listOption)
+// nested: Nested[List, Option, Int] = Nested(
+//   value = List(Some(value = 1), None, Some(value = 2))
+// )
+
+nested.map(_ + 1)
+// res2: Nested[List, Option, Int] = Nested(
+//   value = List(Some(value = 2), None, Some(value = 3))
+// )
 ```
 
 ---

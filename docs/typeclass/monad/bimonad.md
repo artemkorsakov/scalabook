@@ -77,7 +77,7 @@ trait Bimonad[F[_]] extends Monad[F], CoMonad[F]
 
 ## Упражнения
 
-### Упражнение 2.16.1: Реализация Bimonad для NonEmptyList
+### Упражнение 2.18.1: Реализация Bimonad для NonEmptyList
 
 > [Репозиторий с упражнениями и инструкцией по выполнению][sample]
 

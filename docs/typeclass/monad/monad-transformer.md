@@ -64,7 +64,7 @@ trait MonadTransformer[T[_[_], _], M[_]: Monad as mMonad](using
 
 ## Упражнения
 
-### Упражнение 2.17.1: Реализация Monad для OptionT (трансформер монады Option)
+### Упражнение 2.19.1: Реализация Monad для OptionT (трансформер монады Option)
 
 > [Репозиторий с упражнениями и инструкцией по выполнению][sample]
 
@@ -151,7 +151,7 @@ with
 
 @:@
 
-### Упражнение 2.17.2: Реализация MonadTransformer для OptionT
+### Упражнение 2.19.2: Реализация MonadTransformer для OptionT
 
 `MonadTransformer` — это класс типов для трансформеров монад, 
 который предоставляет операцию `lift` для поднятия вычислений из внутренней монады `M` в трансформер `T[M, *]`.
@@ -201,7 +201,7 @@ given optionTMonadTransformer[M[_]: Monad]: MonadTransformer[OptionT, M] with
 
 @:@
 
-### Упражнение 2.17.3: Реализация Monad для WriterT (трансформер монады Writer)
+### Упражнение 2.19.3: Реализация Monad для WriterT (трансформер монады Writer)
 
 `WriterT[M, W, A]` — это монадный трансформер, который добавляет эффект `Writer` (накопление лога типа `W`) 
 к внутренней монаде `M`. Требуется, чтобы `W` был моноидом.
@@ -269,7 +269,7 @@ given writerTMonad[M[_]: Monad as outerMonad, W: Monoid as outerMonoid]
 
 @:@
 
-### Упражнение 2.17.4: Реализация MonadTransformer для WriterT
+### Упражнение 2.19.4: Реализация MonadTransformer для WriterT
 
 Для `WriterT` операция `lift` поднимает значение `M[A]` в `WriterT[M, W, A]`.
 
@@ -304,7 +304,7 @@ given writerTMonadTransformer[M[_]: Monad, W: Monoid as outerMonoid]
 
 @:@
 
-### Упражнение 2.17.5: Реализация Monad для StateT (трансформер монады State)
+### Упражнение 2.19.5: Реализация Monad для StateT (трансформер монады State)
 
 `StateT[M, S, A]` — это монадный трансформер, который добавляет эффект `State` (изменяемое состояние типа `S`) 
 к внутренней монаде `M`.
@@ -372,7 +372,7 @@ given stateTMonad[M[_]: Monad as outerMonad, S]
 
 @:@
 
-### Упражнение 2.17.6: Реализация MonadTransformer для StateT
+### Упражнение 2.19.6: Реализация MonadTransformer для StateT
 
 Для `StateT` операция `lift` поднимает значение `M[A]` в `StateT[M, S, A]`, 
 создавая вычисление, которое не изменяет состояние и возвращает исходное значение.

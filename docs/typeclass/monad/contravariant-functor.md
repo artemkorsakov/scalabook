@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = traverse.html
+prevPage = non-empty-traverse.html
 showNext = true
 nextPage = divide.html
 %}

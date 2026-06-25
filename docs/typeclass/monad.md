@@ -265,7 +265,7 @@ println(s"Final state: $finalState, Value: $value")
 title: Группа монад
 ---
 classDiagram
-    direction LR
+    direction TB
     class InvariantFunctor~A~{
         +imap[B](fa: F[A], f: A => B, g: B => A) F[B]
     }
@@ -324,6 +324,19 @@ classDiagram
     }
     Functor <|-- Traverse
     Foldable <|-- Traverse
+
+    class Reducible~A~{
+      +reduceLeftTo[A, B](fa: F[A])(f: A => B)(g: (B, A) => B) B
+      +reduceRightTo[A, B](fa: F[A])(f: A => B)(g: (A, B) => B) B
+    }
+    Foldable <|-- Reducible
+    class NonEmptyTraverse~A~{
+      +nonEmptyTraverse[G[_]: Apply, A, B](fa: F[A])(f: A => G[B]) G[F[B]]
+      +nonEmptySequence[G[_]: Apply, A](fga: F[G[A]]) G[F[A]]
+    }
+    Reducible <|-- NonEmptyTraverse
+    Traverse <|-- NonEmptyTraverse
+  
     class ContravariantFunctor~A~{
         +contramap[A, B](b: F[B])(f: A => B) F[A]
     }

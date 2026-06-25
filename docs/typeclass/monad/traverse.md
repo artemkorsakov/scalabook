@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = foldable.html
 showNext = true
-nextPage = contravariant-functor.html
+nextPage = reducible.html
 %}
 
 # Traverse

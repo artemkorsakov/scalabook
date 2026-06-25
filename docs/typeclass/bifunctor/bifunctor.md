@@ -248,6 +248,36 @@ classDiagram
 
 ## Реализация в библиотеках
 
+### Реализация в Cats
+
+```dotty
+import cats.*
+import cats.syntax.all.*
+import java.time.*
+
+case class DomainError(message: String)
+
+def dateTimeFromUser: Either[Throwable, ZonedDateTime] =
+  Right(ZonedDateTime.now()) // Example definition
+dateTimeFromUser.bimap(
+  error => DomainError(error.getMessage),
+  dateTime => dateTime.toEpochSecond
+)
+// res0: Either[DomainError, Long] = Right(value = 1782369583L)
+
+def calculateContributionPerMonth(balance: Int, lifetime: Int) = balance /
+  lifetime
+
+val result: List[Int] =
+  records.map(record =>
+    record.bimap(
+      cents => cents / 100,
+      years => 12 * years
+    )
+  ).map(calculateContributionPerMonth.tupled)
+// result: List[Int] = List(125, 160, 412, 0, 12)
+```
+
 ### Реализация в ScalaZ
 
 ```dotty
@@ -333,6 +363,7 @@ Bifunctor[Tuple2].umap((2,3))(_ * 3)
 - Category Theory for Programmers - Bartosz Milewski:
     - [Теория категорий для программистов](https://henrychern.wordpress.com/2022/09/15/%d1%82%d0%b5%d0%be%d1%80%d0%b8%d1%8f-%d0%ba%d0%b0%d1%82%d0%b5%d0%b3%d0%be%d1%80%d0%b8%d0%b9-%d0%b4%d0%bb%d1%8f-%d0%bf%d1%80%d0%be%d0%b3%d1%80%d0%b0%d0%bc%d0%bc%d0%b8%d1%81%d1%82%d0%be%d0%b2/)
     - [Category Theory for Programmers, Functoriality](https://bartoszmilewski.com/2015/02/03/functoriality/)
+- [Cats](https://typelevel.org/cats/typeclasses/bifunctor.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/datatype-generic-programming.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bifunctor.html)
 - The Dao of Functional Programming - Bartosz Milewski:

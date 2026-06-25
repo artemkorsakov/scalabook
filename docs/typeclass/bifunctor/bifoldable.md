@@ -200,11 +200,86 @@ classDiagram
         }
 ```
 
+## Реализация в библиотеках
+
+### Реализация в Cats
+
+Предположим, что существует несколько путей ввода и системных запросов, 
+которые в итоге приводят либо к результату `Either[Exception, *]`, 
+либо к результату `Validated[Exception, *]`.
+Требуется отслеживать количество ошибок и сохранять содержимое действительных запросов.
+
+Сначала добавим неявные переменные:
+
+```dotty
+import cats.*
+import cats.data.*
+import cats.syntax.all.*
+```
+
+Затем определим класс сводки, способный хранить эту информацию:
+
+```dotty
+case class Report(entries: Chain[String], errors: Int):
+  def withEntries(entry: String): Report =
+    this.copy(entries = entries :+ entry)
+
+  def withError: Report =
+    this.copy(errors = errors + 1)
+```
+
+`Bifoldable` полезен для получения сводного значения из типов данных `F[_,_]`:
+
+```dotty
+def update[F[_, _]: Bifoldable](current: Report)(result: F[Exception, String])
+    : Report =
+  result.bifoldLeft(current)(
+    (acc, _) => acc.withError,
+    (acc, user) => acc.withEntries(user)
+  )
+```
+
+Вот системный ввод:
+
+```dotty
+val validated =
+  List(
+    Validated.valid[Exception, String]("valid request 1"),
+    Validated.valid[Exception, String]("valid request 2"),
+    Validated.invalid[
+      Exception,
+      String
+    ](new RuntimeException("Not a valid request"))
+  )
+
+val attempted =
+  List(
+    Either.right[Exception, String]("valid request 1"),
+    Either.right[Exception, String]("valid request 2"),
+    Either.left[Exception, String](new RuntimeException("Not a valid request"))
+  )
+```
+
+и свернуть каждое значение в аккумулятор:
+
+```dotty
+val empty = Report(Chain.empty, 0)
+
+validated
+  .foldl(empty)((acc, validation) => update(acc)(validation))
+// Report(Chain(valid request 1, valid request 2),1)
+
+attempted
+  .foldl(empty)((acc, attempt) => update(acc)(attempt))
+// Report(Chain(valid request 1, valid request 2),1)
+```
+
 ---
 
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
+- [Cats](https://typelevel.org/cats/typeclasses/bifoldable.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Bifoldable.html)
 
 [sample]: https://gitverse.ru/scalabook/typeclasses

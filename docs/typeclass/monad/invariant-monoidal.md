@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = monad-error.html
 showNext = true
-nextPage = ../bifunctor.html
+nextPage = contravariant-monoidal.html
 %}
 
 # Invariant Monoidal

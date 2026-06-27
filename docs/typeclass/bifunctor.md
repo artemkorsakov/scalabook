@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = monad/contravariant-monoidal.html
+prevPage = monad/alternative.html
 showNext = true
 nextPage = bifunctor/bifunctor.html
 %}

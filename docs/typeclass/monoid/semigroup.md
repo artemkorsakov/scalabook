@@ -249,6 +249,13 @@ Semigroup.combineN(3, 5)          // 15
 
 ## SemigroupK в библиотеке Cats (Полугруппа для конструкторов типов)
 
+```dotty
+trait SemigroupK[F[_]]:
+  def combineK[A](x: F[A], y: F[A]): F[A]
+
+  def algebra[A]: Semigroup[F[A]] = combineK(_, _)
+```
+
 `SemigroupK` имеет структуру, очень похожую на `Semigroup`, но с одним важным отличием: 
 `SemigroupK` работает с **конструкторами типов**, принимающими ровно один аргумент. 
 Если `Semigroup` оперирует полностью определёнными типами (например, `Int`, `List[Int]` или `Option[Int]`), 

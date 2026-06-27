@@ -260,107 +260,316 @@ println(s"Final state: $finalState, Value: $value")
 
 ## Схема группы
 
+### 1. Базовые функторные структуры (ядро)
+
 ```mermaid
 ---
-title: Группа монад
+title: "Базовые функторы"
 ---
 classDiagram
     direction TB
     class InvariantFunctor~A~{
         +imap[B](fa: F[A], f: A => B, g: B => A) F[B]
-    }
-    class Semigroupal~A~{
-        +product[A, B](fa: F[A], fb: F[B]) F[Tuple2[A, B]]
+        %% Инвариантное отображение (сохраняет структуру в обоих направлениях)
     }
     class Functor~A~{
         +map[B](fa: F[A], f: A => B) F[B]
+        %% Прямое отображение (ковariantное)
     }
-    InvariantFunctor <|-- Functor    
-    class InvariantApplicative~A~{
-        +xunit0[A](a: => A) F[A]
+    class ContravariantFunctor~A~{
+        +contramap[B](fb: F[B], f: A => B) F[A]
+        %% Обратное отображение (контрвариантное)
     }
-    InvariantFunctor <|-- InvariantApplicative   
+    
+    InvariantFunctor <|-- Functor
+    InvariantFunctor <|-- ContravariantFunctor
+    
+    note for InvariantFunctor "Самый общий функтор"
+    note for Functor "map сохраняет направление"
+    note for ContravariantFunctor "contramap меняет направление"
+```
+
+### 2. Структуры с умножением
+
+```mermaid
+---
+title: "Структуры с комбинированием"
+---
+classDiagram
+    direction TB
+    class Semigroupal~A~{
+        +product[A,B](fa: F[A], fb: F[B]) F[(A,B)]
+        %% Комбинирует два значения в пару
+    }
     class Apply~A~{
-        +apply[A, B](fab: F[A => B])(fa: F[A]) F[B]
+        +apply[A,B](fab: F[A=>B])(fa: F[A]) F[B]
+        %% Применяет функцию в контексте
     }
+    
+    class Divide~A~{
+        +divide[A,B,C](fa: F[A], fb: F[B])(f: C => (A,B)) F[C]
+        %% Контрвариантное комбинирование
+    }
+    
     Functor <|-- Apply
     Semigroupal <|-- Apply
+    ContravariantFunctor <|-- Divide
+    
+    note for Apply "Функтор с аппликативным применением"
+    note for Divide "Контрвариантный аналог Apply"
+```
+
+### 3. Инвариантные структуры
+
+```mermaid
+---
+title: "Инвариантные структуры"
+---
+classDiagram
+    direction TB
+    class InvariantApplicative~A~{
+        +xunit0[A](a: => A) F[A]
+        %% Поднимает значение в контекст
+    }
+    
+    class Divisible~A~{
+        +conquer[A]: F[A]
+        %% Нейтральный элемент для Divide
+    }
+    
+    InvariantFunctor <|-- InvariantApplicative
+    Divide <|-- Divisible
+    InvariantApplicative <|-- Divisible
+    
+    note for Divisible "Контрвариантный аналог Applicative"
+```
+
+### 4. Аппликативные структуры
+
+```mermaid
+---
+title: "Applicative и его варианты"
+---
+classDiagram
+    direction TB
     class Applicative~A~{
         +unit[A](a: => A) F[A]
+        %% Поднимает значение в контекст
     }
+    
     Apply <|-- Applicative
     InvariantApplicative <|-- Applicative
-    class Bind~A~{
-        +flatMap[B](fa: F[A], f: A => F[B]) F[B]
+    
+    class ApplicativePlus~A~{
+        %% Applicative с возможностью выбора
     }
-    Apply <|-- Bind
-    class Monad~A~
-    Applicative <|-- Monad
-    Bind <|-- Monad
+    
     class Plus~A~{
         +plus[A](fa1: F[A], fa2: => F[A]) F[A]
+        %% Операция объединения/выбора
     }
+    
     class PlusEmpty~A~{
         +empty[A]: F[A]
+        %% Пустой/нейтральный элемент
     }
-    Plus <|-- PlusEmpty
-    class ApplicativePlus~A~
+    
     Applicative <|-- ApplicativePlus
+    Plus <|-- PlusEmpty
     PlusEmpty <|-- ApplicativePlus
-    class MonadPlus~A~
-    Monad <|-- MonadPlus
-    ApplicativePlus <|-- MonadPlus
+    
     class IsEmpty~A~{
         +isEmpty[A](fa: F[A]) Boolean
+        %% Проверка на пустоту
     }
+    
     PlusEmpty <|-- IsEmpty
-    class Foldable~A~{
-        +foldRight[B](fa: F[A])(acc: B)(f: (A, B) => B) B 
-        +foldLeft[B](fa: F[A])(acc: B)(f: (B, A) => B) B
+    
+    note for Applicative "Функтор с unit + apply"
+    note for PlusEmpty "Моноид для контекстов"
+```
+
+### 5. Монадные структуры (ядро)
+
+```mermaid
+---
+title: "Монады и связки"
+---
+classDiagram
+    direction TB
+    class Bind~A~{
+        +flatMap[B](fa: F[A], f: A => F[B]) F[B]
+        %% Связывание вычислений
     }
+    
+    class Monad~A~{
+        %% Комбинация Applicative + Bind
+    }
+    
+    Apply <|-- Bind
+    Applicative <|-- Monad
+    Bind <|-- Monad
+    
+    class MonadPlus~A~{
+        %% Monad с возможностью выбора
+    }
+    
+    Monad <|-- MonadPlus
+    ApplicativePlus <|-- MonadPlus
+    
+    note for Bind "Основа для монад"
+    note for Monad "Самая мощная структура"
+    note for MonadPlus "Монада с альтернативами"
+```
+
+### 6. Кодвуальные структуры
+
+```mermaid
+---
+title: "Кодвуальные структуры"
+---
+classDiagram
+    direction TB
+    class CoBind~A~{
+        +cobind[B](fa: F[A], f: F[A] => B) F[B]
+        %% Двойник flatMap
+    }
+    
+    class CoMonad~A~{
+        +coUnit[A](fa: F[A]) A
+        %% Извлечение значения из контекста
+    }
+    
+    Functor <|-- CoBind
+    CoBind <|-- CoMonad
+    
+    class Bimonad~A~{
+        %% Комбинация Monad и Comonad
+    }
+    
+    Monad <|-- Bimonad
+    CoMonad <|-- Bimonad
+    
+    note for CoBind "flatMap наоборот"
+    note for CoMonad "Двойник монады"
+    note for Bimonad "Редкая структура"
+```
+
+### 7. Структуры для работы с коллекциями
+
+```mermaid
+---
+title: "Обход и свёртка"
+---
+classDiagram
+    direction TB
+    
+    class Foldable~A~{
+        +foldRight[B](fa: F[A])(acc: B)(f: (A,B)=>B) B
+        +foldLeft[B](fa: F[A])(acc: B)(f: (B,A)=>B) B
+        %% Свёртка коллекции
+    }
+    
     class Traverse~A~{
         +traverse[G[_]: Applicative, B](fa: F[A])(f: A => G[B]) G[F[B]]
         +sequence[G[_]: Applicative, A](fga: F[G[A]]) G[F[A]]
+        %% Обход с эффектами
     }
+    
     Functor <|-- Traverse
     Foldable <|-- Traverse
-
+    
     class Reducible~A~{
-      +reduceLeftTo[A, B](fa: F[A])(f: A => B)(g: (B, A) => B) B
-      +reduceRightTo[A, B](fa: F[A])(f: A => B)(g: (A, B) => B) B
+        +reduceLeftTo[A,B](fa: F[A])(f: A=>B)(g: (B,A)=>B) B
+        +reduceRightTo[A,B](fa: F[A])(f: A=>B)(g: (A,B)=>B) B
+        %% Свёртка без начального значения
     }
-    Foldable <|-- Reducible
+    
     class NonEmptyTraverse~A~{
-      +nonEmptyTraverse[G[_]: Apply, A, B](fa: F[A])(f: A => G[B]) G[F[B]]
-      +nonEmptySequence[G[_]: Apply, A](fga: F[G[A]]) G[F[A]]
+        +nonEmptyTraverse[G[_]: Apply, A, B](fa: F[A])(f: A=>G[B]) G[F[B]]
+        +nonEmptySequence[G[_]: Apply, A](fga: F[G[A]]) G[F[A]]
+        %% Обход непустых коллекций
     }
+    
+    Foldable <|-- Reducible
     Reducible <|-- NonEmptyTraverse
     Traverse <|-- NonEmptyTraverse
-  
-    class ContravariantFunctor~A~{
-        +contramap[A, B](b: F[B])(f: A => B) F[A]
+    
+    note for Foldable "Умеет сворачивать"
+    note for Traverse "Умеет обходить с эффектами"
+    note for NonEmptyTraverse "Для непустых структур"
+```
+
+### Полная иерархия (общая картина)
+
+**Типы структур:**
+- **Функторы** - отображение значений с сохранением контекста
+- **Аппликативы** - применение функций внутри контекста
+- **Монады** - связывание вычислений с зависимостью от предыдущих результатов
+- **Кодвуальные** - двойственные структуры (работают "наоборот")
+- **Обходные** - работа с коллекциями и эффектами
+
+**Основные отношения:**
+- Стрелка `-->` означает наследование (подтип является расширением надтипа)
+- Наследование всегда добавляет новую функциональность
+
+```mermaid
+---
+title: "Полная иерархия группы монад"
+---
+classDiagram
+    direction TB
+    
+    InvariantFunctor --> Functor
+    InvariantFunctor --> ContravariantFunctor
+    Functor --> Apply
+    Semigroupal --> Apply
+    ContravariantFunctor --> Divide
+    Apply --> Applicative
+    InvariantApplicative --> Applicative
+    Divide --> Divisible
+    InvariantApplicative --> Divisible
+    Apply --> Bind
+    Applicative --> Monad
+    Bind --> Monad
+    Monad --> MonadPlus
+    ApplicativePlus --> MonadPlus
+    Functor --> CoBind
+    CoBind --> CoMonad
+    Monad --> Bimonad
+    CoMonad --> Bimonad
+    Functor --> Traverse
+    Foldable --> Traverse
+    Traverse --> NonEmptyTraverse
+    Foldable --> Reducible
+    Reducible --> NonEmptyTraverse
+    
+    class InvariantFunctor {
+        <<abstract>>
+        +imap
     }
-    InvariantFunctor <|-- ContravariantFunctor
-    class Divide~A~{
-        +divide[A, B, C](fa: => F[A], fb: => F[B])(f: C => (A, B)) F[C]
+    class Functor {
+        +map
     }
-    ContravariantFunctor <|-- Divide
-    class Divisible~A~{
-        +conquer[A]: F[A]
+    class ContravariantFunctor {
+        +contramap
     }
-    Divide <|-- Divisible
-    InvariantApplicative <|-- Divisible
-    class CoBind~A~{
-        +cobind[B](fa: F[A], f: F[A] => B) F[B]
+    class Apply {
+        +apply
     }
-    Functor <|-- CoBind
-    class CoMonad~A~{
-        +coUnit[A](fa: F[A]) A
+    class Applicative {
+        +unit
     }
-    CoBind <|-- CoMonad
-    class Bimonad~A~
-    Monad <|-- Bimonad
-    CoMonad <|-- Bimonad
+    class Monad {
+        <<interface>>
+    }
+    
+    note for InvariantFunctor "Основа всех функторов"
+    note for Functor "Прямое отображение"
+    note for ContravariantFunctor "Обратное отображение"
+    note for Apply "Применение в контексте"
+    note for Applicative "Подъём значений"
+    note for Monad "Последовательные вычисления"
 ```
 
 **Ссылки:**

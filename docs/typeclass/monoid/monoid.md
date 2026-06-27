@@ -775,6 +775,24 @@ Monoid.isEmpty(Monoid.empty[Int]) // true
 
 ## Универсальный моноид для конструкторов типов
 
+```dotty
+trait MonoidK[F[_]] extends SemigroupK[F]:
+  self =>
+
+  def empty[A]: F[A]
+
+  def isEmpty[A](a: F[A])(using ev: Equal[F[A]]): Boolean =
+    ev.equal(a, empty)
+
+  override def algebra[A]: Monoid[F[A]] =
+    new Monoid[F[A]]:
+      def empty: F[A] =
+        self.empty
+
+      def combine(x: F[A], y: F[A]): F[A] =
+        self.combineK(x, y)
+```
+
 `MonoidK` — это **универсальный моноид**, который работает с конструкторами типов, 
 принимающими один аргумент (т.е. с типами вида `* -> *`). 
 Если `Monoid[A]` — это моноид для конкретного типа `A`, то `MonoidK[F]` — это моноид для **конструктора типа** `F`, 

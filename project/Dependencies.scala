@@ -68,7 +68,6 @@ object Dependencies {
 
   val exampleLibs: Seq[ModuleID] =
     Seq(
-      cats.alleycats,
       cats.core,
       catsEffect.core,
       catsEffect.kernel,

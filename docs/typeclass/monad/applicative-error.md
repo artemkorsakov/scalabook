@@ -220,5 +220,6 @@ val attempted = ae.attempt(error)
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
+- [Cats](https://typelevel.org/cats/typeclasses/applicativemonaderror.html)
 
 [sample]: https://gitverse.ru/scalabook/typeclasses

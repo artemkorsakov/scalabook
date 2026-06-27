@@ -183,11 +183,37 @@ classDiagram
     CoBind <|-- CoMonad
 ```
 
+## Реализация в библиотеках
+
+### Реализация в Cats
+
+```dotty
+import cats.*
+import cats.data.*
+import cats.syntax.all.*
+import cats.instances.list.*
+
+NonEmptyList.of(1, 2, 3).extract
+// res0: Int = 1
+
+NonEmptyList.of(1, 2, 3, 4, 5).coflatMap(identity)
+// res1: NonEmptyList[NonEmptyList[Int]] = NonEmptyList(
+//   head = NonEmptyList(head = 1, tail = List(2, 3, 4, 5)),
+//   tail = List(
+//     NonEmptyList(head = 2, tail = List(3, 4, 5)),
+//     NonEmptyList(head = 3, tail = List(4, 5)),
+//     NonEmptyList(head = 4, tail = List(5)),
+//     NonEmptyList(head = 5, tail = List())
+//   )
+// )
+```
+
 ---
 
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
+- [Cats](https://typelevel.org/cats/typeclasses/comonad.html)
 - [Life Is A Comonad](https://eli-jordan.github.io/2018/02/16/life-is-a-comonad/)
 - [Scalaz API](https://javadoc.io/static/org.scalaz/scalaz-core_3/7.3.6/scalaz/Comonad.html)
 

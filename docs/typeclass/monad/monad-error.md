@@ -184,5 +184,6 @@ val redeemed = me.redeemWith(success)(
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
+- [Cats](https://typelevel.org/cats/typeclasses/applicativemonaderror.html)
 
 [sample]: https://gitverse.ru/scalabook/typeclasses

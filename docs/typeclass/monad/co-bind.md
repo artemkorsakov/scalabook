@@ -201,11 +201,32 @@ classDiagram
     Functor <|-- CoBind
 ```
 
+## Реализация в библиотеках
+
+### Реализация в Cats
+
+```dotty
+import cats.*
+import cats.data.*
+import cats.syntax.all.*
+import cats.instances.list.*
+
+List(1, 2, 3, 4, 5).coflatMap(identity)
+// res2: List[List[Int]] = List(
+//   List(1, 2, 3, 4, 5),
+//   List(2, 3, 4, 5),
+//   List(3, 4, 5),
+//   List(4, 5),
+//   List(5)
+// )
+```
+
 ---
 
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
+- [Cats](https://typelevel.org/cats/typeclasses/comonad.html)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Cobind.html)
 
 [sample]: https://gitverse.ru/scalabook/typeclasses

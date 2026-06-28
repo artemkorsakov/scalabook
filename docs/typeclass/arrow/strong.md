@@ -166,6 +166,130 @@ given Strong[Function1] with
 
 @:@
 
+### Упражнение 4.5.2: Реализация экземпляра Strong для Kleisli на основе Functor
+
+В этом упражнении вам предстоит реализовать экземпляр класса типов `Strong` для типа `Kleisli[F, A, B]`, 
+используя возможность отображения через `Functor[F]`.
+
+```dotty
+given kleisliStrong[F[_]: Functor]: Strong[[A, B] =>> Kleisli[F, A, B]] with
+  override def mapfst[A, B, C](fab: Kleisli[F, A, B])(f: C => A)
+      : Kleisli[F, C, B] =
+    ???
+
+  override def mapsnd[A, B, C](fab: Kleisli[F, A, B])(f: B => C)
+      : Kleisli[F, A, C] =
+    ???
+
+  override def first[A, B, C](fa: Kleisli[F, A, B])
+      : Kleisli[F, (A, C), (B, C)] =
+    ???
+
+  override def second[A, B, C](fa: Kleisli[F, A, B])
+      : Kleisli[F, (C, A), (C, B)] =
+    ???
+```
+
+@:note(🔍 Показать решение)
+
+Решение использует `Functor[F]` для получения доступа к `map`, который позволяет преобразовывать значения внутри контекста `F`. 
+Для `first` создается новая стрелка, которая принимает пару `(a, c)`, применяет исходную стрелку `fa` к `a`, 
+получая `F[B]`, а затем с помощью `map` добавляет неизменный `c` к результату, получая `F[(B, C)]`. 
+`second` работает аналогично, но применяет стрелку ко второму элементу пары, сохраняя первый неизменным. 
+Операции `mapfst` и `mapsnd` наследуются от `Profunctor` и реализуются стандартным образом для `Kleisli`.
+
+```dotty
+given kleisliStrong[F[_]: Functor]: Strong[[A, B] =>> Kleisli[F, A, B]] with
+  override def mapfst[A, B, C](fab: Kleisli[F, A, B])(f: C => A)
+      : Kleisli[F, C, B] =
+    Kleisli[F, C, B](c => fab.run(f(c)))
+
+  override def mapsnd[A, B, C](fab: Kleisli[F, A, B])(f: B => C)
+      : Kleisli[F, A, C] =
+    Kleisli[F, A, C](a => fab.run(a).map(f))
+
+  override def first[A, B, C](fa: Kleisli[F, A, B])
+      : Kleisli[F, (A, C), (B, C)] =
+    Kleisli[F, (A, C), (B, C)]((a, c) =>
+      fa.run(a).map(b => (b, c))
+    )
+
+  override def second[A, B, C](fa: Kleisli[F, A, B])
+      : Kleisli[F, (C, A), (C, B)] =
+    Kleisli[F, (C, A), (C, B)]((c, a) =>
+      fa.run(a).map(b => (c, b))
+    )
+```
+
+@:@
+
+### Упражнение 4.5.3: Реализация экземпляра Strong для Cokleisli на основе CoMonad
+
+В этом упражнении вам предстоит реализовать экземпляр класса типов `Strong` для типа `Cokleisli[F, A, B]`, 
+используя комонадические возможности `CoMonad[F]`.
+
+```dotty
+given cokleisliStrong[F[_]: CoMonad]: Strong[[A, B] =>> Cokleisli[F, A, B]]
+with
+  override def mapfst[A, B, C](fab: Cokleisli[F, A, B])(f: C => A)
+      : Cokleisli[F, C, B] =
+    ???
+
+  override def mapsnd[A, B, C](fab: Cokleisli[F, A, B])(f: B => C)
+      : Cokleisli[F, A, C] =
+    ???
+
+  override def first[A, B, C](fa: Cokleisli[F, A, B])
+      : Cokleisli[F, (A, C), (B, C)] =
+    ???
+
+  override def second[A, B, C](fa: Cokleisli[F, A, B])
+      : Cokleisli[F, (C, A), (C, B)] =
+    ???
+end cokleisliStrong
+```
+
+@:note(🔍 Показать решение)
+
+Решение использует `CoMonad[F]` для получения доступа к `coPure` (также известному как `extract`), 
+который извлекает значение из контекста `F`. 
+Для `first` создается новая стрелка, которая принимает контекст `fac: F[(A, C)]`. 
+С помощью `map(_._1)` извлекается `F[A]`, к которому применяется исходная стрелка `fa`, давая `B`. 
+Одновременно с помощью `coPure` из `fac` извлекается значение `C`. Результатом является пара `(B, C)`. 
+`second` работает аналогично, но извлекает второй элемент пары с помощью `map(_._2)`. 
+Операции `mapfst` и `mapsnd` наследуются от `Profunctor` и реализуются стандартным образом для `Cokleisli`.
+
+```dotty
+given cokleisliStrong[F[_]: CoMonad]: Strong[[A, B] =>> Cokleisli[F, A, B]]
+with
+  override def mapfst[A, B, C](fab: Cokleisli[F, A, B])(f: C => A)
+      : Cokleisli[F, C, B] =
+    Cokleisli[F, C, B](fc => fab.run(fc.map(f)))
+
+  override def mapsnd[A, B, C](fab: Cokleisli[F, A, B])(f: B => C)
+      : Cokleisli[F, A, C] =
+    Cokleisli[F, A, C](fa => f(fab.run(fa)))
+
+  override def first[A, B, C](fa: Cokleisli[F, A, B])
+      : Cokleisli[F, (A, C), (B, C)] =
+    Cokleisli[F, (A, C), (B, C)](fac =>
+      val b      = fa.run(fac.map(_._1))
+      val (_, c) = CoMonad[F].coPure(fac)
+      (b, c)
+    )
+
+  override def second[A, B, C](fa: Cokleisli[F, A, B])
+      : Cokleisli[F, (C, A), (C, B)] =
+    Cokleisli[F, (C, A), (C, B)](fca =>
+      val b      = fa.run(fca.map(_._2))
+      val (c, _) = CoMonad[F].coPure(fca)
+      (c, b)
+    )
+end cokleisliStrong
+```
+
+@:@
+
 ## Схема
 
 ```mermaid

@@ -221,6 +221,121 @@ given Arrow[Function1] with
 
 @:@
 
+### Упражнение 4.6.2: Реализация экземпляра Arrow для Kleisli на основе Monad
+
+В этом упражнении вам предстоит реализовать экземпляр класса типов `Arrow` для типа `Kleisli[F, A, B]`, 
+используя монадические возможности `Monad[F]`.
+
+```dotty
+given kleisliArrow[F[_]: Monad]: Arrow[[A, B] =>> Kleisli[F, A, B]] with
+  override def arr[A, B](f: A => B): Kleisli[F, A, B] =
+    ???
+
+  override def id[A]: Kleisli[F, A, A] =
+    ???
+
+  override def compose[A, B, C](
+      f: Kleisli[F, B, C],
+      g: Kleisli[F, A, B]
+  ): Kleisli[F, A, C] =
+    ???
+
+  override def first[A, B, C](fa: Kleisli[F, A, B])
+      : Kleisli[F, (A, C), (B, C)] =
+    ???
+```
+
+@:note(🔍 Показать решение)
+
+Решение использует `Monad[F]` для получения доступа к `unit` (также известному как `pure`), 
+который помещает значение в контекст `F`. 
+Для `arr` создается стрелка, которая применяет функцию `f` к входному значению `a`, 
+а затем помещает результат в контекст с помощью `unit`. 
+`id` создает стрелку, которая просто помещает входное значение в контекст. 
+`compose` использует `flatMap` для последовательного выполнения вычислений. 
+`first` применяет стрелку к первому элементу пары, используя `map` для сохранения второго элемента в контексте.
+
+```dotty
+given kleisliArrow[F[_]: Monad]: Arrow[[A, B] =>> Kleisli[F, A, B]] with
+  override def arr[A, B](f: A => B): Kleisli[F, A, B] =
+    Kleisli[F, A, B](a => Monad[F].unit(f(a)))
+
+  override def id[A]: Kleisli[F, A, A] =
+    Kleisli[F, A, A](Monad[F].unit)
+
+  override def compose[A, B, C](
+      f: Kleisli[F, B, C],
+      g: Kleisli[F, A, B]
+  ): Kleisli[F, A, C] =
+    Kleisli[F, A, C](a => g.run(a).flatMap(b => f.run(b)))
+
+  override def first[A, B, C](fa: Kleisli[F, A, B])
+      : Kleisli[F, (A, C), (B, C)] =
+    Kleisli[F, (A, C), (B, C)]((a, c) =>
+      fa.run(a).map(b => (b, c))
+    )
+```
+
+@:@
+
+### Упражнение 4.6.3: Реализация экземпляра Arrow для Cokleisli на основе CoMonad
+
+В этом упражнении вам предстоит реализовать экземпляр класса типов `Arrow` для типа `Cokleisli[F, A, B]`, 
+используя комонадические возможности `CoMonad[F]`.
+
+```dotty
+given cokleisliArrow[F[_]: CoMonad]: Arrow[[A, B] =>> Cokleisli[F, A, B]] with
+  override def arr[A, B](f: A => B): Cokleisli[F, A, B] =
+    ???
+
+  override def id[A]: Cokleisli[F, A, A] =
+    ???
+
+  override def compose[A, B, C](
+      f: Cokleisli[F, B, C],
+      g: Cokleisli[F, A, B]
+  ): Cokleisli[F, A, C] =
+    ???
+
+  override def first[A, B, C](fa: Cokleisli[F, A, B])
+      : Cokleisli[F, (A, C), (B, C)] =
+    ???
+```
+
+@:note(🔍 Показать решение)
+
+Решение использует `CoMonad[F]` для получения доступа к `coUnit` (также известному как `extract`), 
+который извлекает значение из контекста `F`. 
+Для `arr` создается стрелка, которая с помощью `coUnit` извлекает `A` из контекста `F[A]`, применяет функцию `f`, и возвращает результат. 
+`id` создает стрелку, которая просто извлекает значение из контекста с помощью `coUnit`. 
+`compose` использует `cobind` для расширения контекста. 
+`first` применяет стрелку к первому элементу пары, используя `map` для извлечения `A` и `coPure` для получения `C`.
+
+```dotty
+given cokleisliArrow[F[_]: CoMonad]: Arrow[[A, B] =>> Cokleisli[F, A, B]] with
+  override def arr[A, B](f: A => B): Cokleisli[F, A, B] =
+    Cokleisli[F, A, B](fa => f(CoMonad[F].coUnit(fa)))
+
+  override def id[A]: Cokleisli[F, A, A] =
+    Cokleisli[F, A, A](CoMonad[F].coUnit)
+
+  override def compose[A, B, C](
+      f: Cokleisli[F, B, C],
+      g: Cokleisli[F, A, B]
+  ): Cokleisli[F, A, C] =
+    Cokleisli[F, A, C](fa => f.run(fa.cobind(g.run)))
+
+  override def first[A, B, C](fa: Cokleisli[F, A, B])
+      : Cokleisli[F, (A, C), (B, C)] =
+    Cokleisli[F, (A, C), (B, C)](fac =>
+      val b      = fa.run(fac.map(_._1))
+      val (_, c) = CoMonad[F].coPure(fac)
+      (b, c)
+    )
+```
+
+@:@
+
 ## Схема
 
 ```mermaid

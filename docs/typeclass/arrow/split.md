@@ -129,6 +129,103 @@ given Split[Function1] with
 
 @:@
 
+### Упражнение 4.3.2: Реализация экземпляра Split для Kleisli на основе Bind
+
+В этом упражнении вам предстоит реализовать экземпляр класса типов `Split` для типа `Kleisli[F, A, B]`, 
+используя возможности связывания вычислений через `Bind[F]`.
+
+```dotty
+given kleisliSplit[F[_]: Bind]: Split[[A, B] =>> Kleisli[F, A, B]] with
+  override def compose[A, B, C](
+      f: Kleisli[F, B, C],
+      g: Kleisli[F, A, B]
+  ): Kleisli[F, A, C] =
+    ???
+
+  override def split[A, B, C, D](
+      f: Kleisli[F, A, B],
+      g: Kleisli[F, C, D]
+  ): Kleisli[F, (A, C), (B, D)] =
+    ???
+```
+
+@:note(🔍 Показать решение)
+
+Решение использует `Bind[F]` для получения доступа к `apply2`, 
+который позволяет параллельно выполнить два вычисления в контексте `F` и объединить их результаты в кортеж. 
+Для двух стрелок `f` и `g` операция `split` создает новую стрелку, которая принимает пару `(a, c)`, 
+применяет `f.run(a)` и `g.run(c)` параллельно, а затем с помощью `apply2` объединяет результаты `(b, d)`. 
+Операция `compose` реализуется стандартным образом через `flatMap`, как и в экземпляре `Compose` для `Kleisli`.
+
+```dotty
+given kleisliSplit[F[_]: Bind]: Split[[A, B] =>> Kleisli[F, A, B]] with
+  override def compose[A, B, C](
+      f: Kleisli[F, B, C],
+      g: Kleisli[F, A, B]
+  ): Kleisli[F, A, C] =
+    Kleisli[F, A, C](a => g.run(a).flatMap(b => f.run(b)))
+
+  override def split[A, B, C, D](
+      f: Kleisli[F, A, B],
+      g: Kleisli[F, C, D]
+  ): Kleisli[F, (A, C), (B, D)] =
+    Kleisli[F, (A, C), (B, D)]((a, c) =>
+      Bind[F].apply2(f.run(a), g.run(c))((b, d) => (b, d))
+    )
+```
+
+@:@
+
+### Упражнение 4.3.3: Реализация экземпляра Split для Cokleisli на основе CoBind
+
+В этом упражнении вам предстоит реализовать экземпляр класса типов `Split` для типа `Cokleisli[F, A, B]`, 
+используя возможности расширения контекста через `CoBind[F]`.
+
+```dotty
+given cokleisliSplit[F[_]: CoBind]: Split[[A, B] =>> Cokleisli[F, A, B]] with
+  override def compose[A, B, C](
+      f: Cokleisli[F, B, C],
+      g: Cokleisli[F, A, B]
+  ): Cokleisli[F, A, C] =
+    ???
+
+  override def split[A, B, C, D](
+      f: Cokleisli[F, A, B],
+      g: Cokleisli[F, C, D]
+  ): Cokleisli[F, (A, C), (B, D)] =
+    ???
+```
+
+@:note(🔍 Показать решение)
+
+Решение использует `CoBind[F]` для получения доступа к `map`, который позволяет преобразовывать значения внутри контекста `F`. 
+Для двух стрелок `f` и `g` операция `split` создает новую стрелку, которая принимает контекст `fac: F[(A, C)]`. 
+С помощью `CoBind[F].map` извлекаются левая часть `fa: F[A]` (проекция на первый элемент) 
+и правая часть `fc: F[C]` (проекция на второй элемент). 
+Затем `f.run(fa)` и `g.run(fc)` применяются к полученным контекстам, а результаты объединяются в пару `(B, D)`. 
+Операция `compose` реализуется стандартным образом через `cobind`, как и в экземпляре `Compose` для `Cokleisli`.
+
+```dotty
+given cokleisliSplit[F[_]: CoBind]: Split[[A, B] =>> Cokleisli[F, A, B]] with
+  override def compose[A, B, C](
+      f: Cokleisli[F, B, C],
+      g: Cokleisli[F, A, B]
+  ): Cokleisli[F, A, C] =
+    Cokleisli[F, A, C](fa => f.run(fa.cobind(g.run)))
+
+  override def split[A, B, C, D](
+      f: Cokleisli[F, A, B],
+      g: Cokleisli[F, C, D]
+  ): Cokleisli[F, (A, C), (B, D)] =
+    Cokleisli[F, (A, C), (B, D)] { fac =>
+      val fa = CoBind[F].map(fac)((a, _) => a)
+      val fc = CoBind[F].map(fac)((_, c) => c)
+      (f.run(fa), g.run(fc))
+    }
+```
+
+@:@
+
 ## Схема
 
 ```mermaid

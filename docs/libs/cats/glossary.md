@@ -340,7 +340,7 @@ nextPage = ../spire.html
 
 ### Alternative (Альтернатива)
 
-`Alternative` объединяет `Applicative` и `MonoidK`.
+[`Alternative`](../../typeclass/monad/alternative.md) объединяет `Applicative` и `MonoidK`.
 
 | Тип                          | Имя метода         | Ограничения                                                      |
 |:-----------------------------|:-------------------|:-----------------------------------------------------------------|
@@ -353,7 +353,7 @@ nextPage = ../spire.html
 
 ### NonEmptyAlternative (Непустая альтернатива)
 
-`NonEmptyAlternative` расширяет `Alternative`, добавляя операции для непустых коллекций.
+[`NonEmptyAlternative`](../../typeclass/monad/alternative.md) расширяет `Alternative`, добавляя операции для непустых коллекций.
 
 | Тип                 | Имя метода |
 |:--------------------|:-----------|

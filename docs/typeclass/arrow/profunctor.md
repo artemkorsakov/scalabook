@@ -169,6 +169,86 @@ given Profunctor[Function1] with
 
 @:@
 
+### Упражнение 4.4.2: Реализация экземпляра Profunctor для Kleisli на основе Functor
+
+В этом упражнении вам предстоит реализовать экземпляр класса типов `Profunctor` для типа `Kleisli[F, A, B]`, 
+используя возможность отображения через `Functor[F]`.
+
+```dotty
+given kleisliProfunctor[F[_]: Functor]
+    : Profunctor[[A, B] =>> Kleisli[F, A, B]]
+with
+  override def mapfst[A, B, C](fab: Kleisli[F, A, B])(f: C => A)
+      : Kleisli[F, C, B] =
+    ???
+
+  override def mapsnd[A, B, C](fab: Kleisli[F, A, B])(f: B => C)
+      : Kleisli[F, A, C] =
+    ???
+```
+
+@:note(🔍 Показать решение)
+
+Решение использует `Functor[F]` для получения доступа к `map`, который позволяет преобразовывать значения внутри контекста `F`. 
+Для `mapfst` создается новая стрелка, которая сначала применяет функцию `f: C => A` к входному значению `c`, 
+затем передает результат в исходную стрелку `fab`. 
+Для `mapsnd` создается новая стрелка, которая применяет исходную стрелку `fab` к значению `a`,
+получая `F[B]`, а затем с помощью `map` преобразует результат с помощью функции `f: B => C`.
+
+```dotty
+given kleisliProfunctor[F[_]: Functor]
+    : Profunctor[[A, B] =>> Kleisli[F, A, B]]
+with
+  override def mapfst[A, B, C](fab: Kleisli[F, A, B])(f: C => A)
+      : Kleisli[F, C, B] =
+    Kleisli[F, C, B](c => fab.run(f(c)))
+
+  override def mapsnd[A, B, C](fab: Kleisli[F, A, B])(f: B => C)
+      : Kleisli[F, A, C] =
+    Kleisli[F, A, C](a => fab.run(a).map(f))
+```
+
+@:@
+
+### Упражнение 4.4.3: Реализация экземпляра Profunctor для Cokleisli на основе Functor
+
+В этом упражнении вам предстоит реализовать экземпляр класса типов `Profunctor` для типа `Cokleisli[F, A, B]`, 
+используя возможность отображения через `Functor[F]`.
+
+```dotty
+given cokleisliProfunctor[F[_]: Functor]
+    : Profunctor[[A, B] =>> Cokleisli[F, A, B]] with
+  override def mapfst[A, B, C](fab: Cokleisli[F, A, B])(f: C => A)
+      : Cokleisli[F, C, B] =
+    ???
+
+  override def mapsnd[A, B, C](fab: Cokleisli[F, A, B])(f: B => C)
+      : Cokleisli[F, A, C] =
+    ???
+```
+
+@:note(🔍 Показать решение)
+
+Решение использует `Functor[F]` для получения доступа к `map`, который позволяет преобразовывать значения внутри контекста `F`. 
+Для `mapfst` создается новая стрелка, которая сначала применяет `map(f)` к входному контексту `F[C]`, преобразуя его в `F[A]`, 
+а затем передает результат в исходную стрелку `fab`. 
+Для `mapsnd` создается новая стрелка, которая применяет исходную стрелку `fab` к контексту `F[A]`, 
+получая `B`, а затем применяет функцию `f: B => C` к результату.
+
+```dotty
+given cokleisliProfunctor[F[_]: Functor]
+    : Profunctor[[A, B] =>> Cokleisli[F, A, B]] with
+  override def mapfst[A, B, C](fab: Cokleisli[F, A, B])(f: C => A)
+      : Cokleisli[F, C, B] =
+    Cokleisli[F, C, B](fc => fab.run(fc.map(f)))
+
+  override def mapsnd[A, B, C](fab: Cokleisli[F, A, B])(f: B => C)
+      : Cokleisli[F, A, C] =
+    Cokleisli[F, A, C](fa => f(fab.run(fa)))
+```
+
+@:@
+
 ## Схема
 
 ```mermaid

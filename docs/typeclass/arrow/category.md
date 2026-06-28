@@ -185,6 +185,86 @@ given Category[Function1] with
 
 @:@
 
+### Упражнение 4.2.2: Реализация экземпляра Category для Kleisli на основе Monad
+
+В этом упражнении вам предстоит реализовать экземпляр класса типов `Category` для типа `Kleisli[F, A, B]`, 
+используя монадические возможности `Monad[F]`.
+
+```dotty
+given kleisliCategory[F[_]: Monad]: Category[[A, B] =>> Kleisli[F, A, B]]
+with
+  def compose[A, B, C](
+      f: Kleisli[F, B, C],
+      g: Kleisli[F, A, B]
+  ): Kleisli[F, A, C] =
+    ???
+
+  def id[A]: Kleisli[F, A, A] =
+    ???
+```
+
+@:note(🔍 Показать решение)
+
+Решение использует `Monad[F]` для получения доступа к `unit` (также известному как `pure`), 
+который помещает значение в контекст `F`. 
+Для тождественной стрелки мы возвращаем `Kleisli`, который принимает значение `A` и возвращает `F[A]` с помощью `Monad[F].unit`. 
+Операция `compose` использует `flatMap` из монады для последовательного выполнения вычислений, как и в экземпляре `Compose` для `Kleisli`.
+
+```dotty
+given kleisliCategory[F[_]: Monad]: Category[[A, B] =>> Kleisli[F, A, B]]
+with
+  def compose[A, B, C](
+      f: Kleisli[F, B, C],
+      g: Kleisli[F, A, B]
+  ): Kleisli[F, A, C] =
+    Kleisli[F, A, C](a => g.run(a).flatMap(b => f.run(b)))
+
+  def id[A]: Kleisli[F, A, A] =
+    Kleisli[F, A, A](Monad[F].unit)
+```
+
+@:@
+
+### Упражнение 4.2.3: Реализация экземпляра Category для Cokleisli на основе CoMonad
+
+В этом упражнении вам предстоит реализовать экземпляр класса типов `Category` для типа `Cokleisli[F, A, B]`, 
+используя комонадические возможности `CoMonad[F]`.
+
+```dotty
+given cokleisliCategory[F[_]: CoMonad]: Category[[A, B] =>> Cokleisli[F, A, B]]
+with
+  def compose[A, B, C](
+      f: Cokleisli[F, B, C],
+      g: Cokleisli[F, A, B]
+  ): Cokleisli[F, A, C] =
+    ???
+
+  def id[A]: Cokleisli[F, A, A] =
+    ???
+```
+
+@:note(🔍 Показать решение)
+
+Решение использует `CoMonad[F]` для получения доступа к `coUnit` (также известному как `extract`), 
+который извлекает значение из контекста `F[A]`. 
+Для тождественной стрелки мы возвращаем `Cokleisli`, который принимает `F[A]` и возвращает `A` с помощью `CoMonad[F].coUnit`. 
+Операция `compose` использует `cobind` для расширения контекста, как и в экземпляре `Compose` для `Cokleisli`.
+
+```dotty
+given cokleisliCategory[F[_]: CoMonad]: Category[[A, B] =>> Cokleisli[F, A, B]]
+with
+  def compose[A, B, C](
+      f: Cokleisli[F, B, C],
+      g: Cokleisli[F, A, B]
+  ): Cokleisli[F, A, C] =
+    Cokleisli[F, A, C](fa => f.run(fa.cobind(g.run)))
+
+  def id[A]: Cokleisli[F, A, A] =
+    Cokleisli[F, A, A](CoMonad[F].coUnit)
+```
+
+@:@
+
 ## Схема
 
 ```mermaid

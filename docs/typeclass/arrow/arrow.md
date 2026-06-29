@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = strong.html
 showNext = true
-nextPage = ../equal.html
+nextPage = choice.html
 %}
 
 # Arrow
@@ -344,7 +344,7 @@ classDiagram
         +compose[A, B, C](f: B =>: C, g: A =>: B) A =>: C
     }
     class Category~ =>: ~{
-        id[A]: A =>: A    
+        +id[A]: A =>: A    
     }
     Compose <|-- Category 
     class Split~ =>: ~{
@@ -362,7 +362,7 @@ classDiagram
     }
     Profunctor <|-- Strong 
     class Arrow~ =>: ~{
-        arr[A, B](f: A => B) A =>: B
+        +arr[A, B](f: A => B) A =>: B
     }
     Category <|-- Arrow 
     Split <|-- Arrow

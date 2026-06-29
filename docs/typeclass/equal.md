@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = arrow/arrow.html
+prevPage = arrow/arrow-choice.html
 showNext = true
 nextPage = equal/equal.html
 %}

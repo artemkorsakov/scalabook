@@ -273,7 +273,7 @@ classDiagram
         +compose[A, B, C](f: B =>: C, g: A =>: B) A =>: C
     }
     class Category~ =>: ~{
-        id[A]: A =>: A    
+        +id[A]: A =>: A    
     }
     Compose <|-- Category 
 ```

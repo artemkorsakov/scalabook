@@ -56,7 +56,7 @@ classDiagram
         +compose[A, B, C](f: B =>: C, g: A =>: B) A =>: C
     }
     class Category~ =>: ~{
-        id[A]: A =>: A    
+        +id[A]: A =>: A    
     }
     Compose <|-- Category 
     class Split~ =>: ~{
@@ -74,11 +74,20 @@ classDiagram
     }
     Profunctor <|-- Strong 
     class Arrow~ =>: ~{
-        arr[A, B](f: A => B) A =>: B
+        +arr[A, B](f: A => B) A =>: B
     }
     Category <|-- Arrow 
     Split <|-- Arrow
     Strong <|-- Arrow
+    class Choice~ =>: ~{
+        +choice[A, B, C](fac: A =>: C, fbc: B =>: C) Either[A, B] =>: C
+    }
+    Category <|-- Choice
+    class ArrowChoice~ =>: ~{
+        +choose[A, B, C, D](f: A =>: C)(g: B =>: D) Either[A, B] =>: Either[C, D]
+    }
+    Choice <|-- ArrowChoice
+    Arrow <|-- ArrowChoice
 ```
 
 ---

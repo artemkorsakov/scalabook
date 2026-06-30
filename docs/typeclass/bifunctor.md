@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = monad/alternative.html
+prevPage = monad/parallel.html
 showNext = true
 nextPage = bifunctor/bifunctor.html
 %}

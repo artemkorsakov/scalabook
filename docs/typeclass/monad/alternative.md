@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = contravariant-monoidal.html
 showNext = true
-nextPage = ../bifunctor.html
+nextPage = parallel.html
 %}
 
 # Alternative

@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = cats/glossary.html
+prevPage = cats/laws-testing.html
 showNext = true
 nextPage = spire/user_guide.html
 %}

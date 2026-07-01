@@ -63,6 +63,7 @@ object Dependencies {
     private val version = "0.8.4"
 
     val cats       = "com.disneystreaming" %% "weaver-cats"       % version
+    val discipline = "com.disneystreaming" %% "weaver-discipline" % version
     val scalacheck = "com.disneystreaming" %% "weaver-scalacheck" % version
   }
 
@@ -84,6 +85,7 @@ object Dependencies {
       iron.cats,
       iron.scalacheck,
       weaver.cats,
+      weaver.discipline,
       weaver.scalacheck
     ).map(_ % Test)
 

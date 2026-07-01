@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = jump_start_guide.html
 showNext = true
-nextPage = ../spire.html
+nextPage = laws-testing.html
 %}
 
 # Глоссарий

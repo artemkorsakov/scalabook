@@ -108,7 +108,10 @@ classDiagram
     }
     Semigroup <|-- Monoid
     class CommutativeSemigroup~A~
-    Semigroup <|-- CommutativeSemigroup  
+    Semigroup <|-- CommutativeSemigroup
+    class Semilattice~A~
+    CommutativeSemigroup <|-- Semilattice
+    IdempotentSemigroup <|-- Semilattice
     class IdempotentMonoid~A~
     IdempotentSemigroup <|-- IdempotentMonoid
     Monoid <|-- IdempotentMonoid
@@ -119,6 +122,10 @@ classDiagram
     class CommutativeMonoid~A~
     Monoid <|-- CommutativeMonoid
     CommutativeSemigroup <|-- CommutativeMonoid
+    class BoundedSemilattice~A~
+    CommutativeMonoid <|-- BoundedSemilattice
+    IdempotentMonoid <|-- BoundedSemilattice
+    Semilattice <|-- BoundedSemilattice
     class AbelianGroup~A~
     Group <|-- AbelianGroup
     CommutativeMonoid <|-- AbelianGroup

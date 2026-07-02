@@ -22,7 +22,12 @@ _IdempotentMonoid_ — это [моноид](monoid.md),
 ## Код
 
 ```dotty
-trait IdempotentMonoid[A] extends Monoid[A], Band[A]
+trait IdempotentMonoid[A] extends Monoid[A], Band[A]:
+  override def combineN(a: A, n: Int): Either[String, A] =
+    if n < 0 then
+      Left("Repeated combining for monoids must have n >= 0")
+    else if n == 0 then Right(empty)
+    else Right(a) // combine(a, a) == a
 ```
 
 ### Множества

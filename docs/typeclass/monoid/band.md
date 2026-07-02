@@ -60,7 +60,11 @@ _Band_ — это [полугруппа](semigroup.md), которая такж�
 ## Код
 
 ```dotty
-trait Band[A] extends Semigroup[A]
+trait Band[A] extends Semigroup[A]:
+  override def combineN(a: A, n: Int): Either[String, A] =
+    if n <= 0 then
+      Left("Repeated combining for semigroups must have n > 0")
+    else Right(a) // combine(a, a) == a
 ```
 
 ### Законы

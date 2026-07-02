@@ -71,6 +71,9 @@ nextPage = band.html
 trait Group[A] extends Monoid[A]:
   extension (a: A) 
     def inverse: A
+    
+  /** Удалить `b` из `a`. */
+  def remove(a: A, b: A): A = combine(a, inverse(b))  
 ```
 
 ### Законы групп

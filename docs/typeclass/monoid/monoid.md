@@ -77,6 +77,13 @@ nextPage = group.html
 ```dotty
 trait Monoid[A] extends Semigroup[A]:
   def empty: A
+  
+  override def combineN(a: A, n: Int): Either[String, A] =
+    if n < 0 then
+      Left("Repeated combining for monoids must have n >= 0")
+    else if n == 0 then
+      Right(empty)
+    else super.combineN(a, n)
 ```
 
 Для операции сложения встречаются наименования, перечисленные в [полугруппе](semigroup.md):

@@ -189,11 +189,11 @@ val result        = sumLeft |+| sumRight
 Для степени элемента справедливы соотношения \\(a^{n + m} = a^{m}+a^{n}, (a^{m})^{n} = a^{mn}, \forall n,m \in \mathbb{N}\\).
 
 ```dotty
-def combineN(a: A, n: Int): A =
+def combineN(a: A, n: Int): Either[String, A] =
   if n <= 0 then
-    throw new IllegalArgumentException(
-      "Repeated combining for semigroups must have n > 0"
-    )
+    Left("Repeated combining for semigroups must have n > 0")
+  else if n == 1 then
+    Right(a)
   else
     @tailrec
     def loop(b: A, k: Int, extra: A): A =
@@ -202,7 +202,7 @@ def combineN(a: A, n: Int): A =
         val x = if (k & 1) == 1 then combine(b, extra) else extra
         loop(combine(b, b), k >>> 1, x)
 
-    if n == 1 then a else loop(a, n - 1, a)
+    Right(loop(a, n - 1, a))
 ```
 
 ## Схема

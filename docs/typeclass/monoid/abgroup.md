@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = cmonoid.html
+prevPage = bounded-semilattice.html
 showNext = true
 nextPage = semiring.html
 %}

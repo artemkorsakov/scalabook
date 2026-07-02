@@ -1,8 +1,8 @@
 {%
 showPrev = true
-prevPage = csemigroup.html
+prevPage = semilattice.html
 showNext = true
-nextPage = abgroup.html
+nextPage = bounded-semilattice.html
 %}
 
 # Коммутативный моноид

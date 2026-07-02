@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = idempotent-monoid.html
 showNext = true
-nextPage = cmonoid.html
+nextPage = semilattice.html
 %}
 
 # Коммутативная полугруппа

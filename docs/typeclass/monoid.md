@@ -139,9 +139,9 @@ classDiagram
     class IdempotentSemiring~A~
     IdempotentMonoid <|-- IdempotentSemiring
     Semiring <|-- IdempotentSemiring
-    class Ring~A~
-    AbelianGroup <|-- Ring
-    Semiring <|-- Ring
+    class Rng~A~
+    AbelianGroup <|-- Rng
+    Semiring <|-- Rng
     class CommutativeSemiring~A~
     Semiring <|-- CommutativeSemiring
     class Rig~A~{
@@ -149,10 +149,10 @@ classDiagram
     }
     Semiring <|-- Rig
     class CommutativeRing~A~
-    Ring <|-- CommutativeRing
+    Rng <|-- CommutativeRing
     CommutativeSemiring <|-- CommutativeRing
     class RingWithUnity~A~
-    Ring <|-- RingWithUnity
+    Rng <|-- RingWithUnity
     Rig <|-- RingWithUnity
     class CommutativeRingWithUnity~A~
     CommutativeRing <|-- CommutativeRingWithUnity

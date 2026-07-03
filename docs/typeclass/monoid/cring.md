@@ -30,7 +30,7 @@ nextPage = cring-with-one.html
 ## Код
 
 ```dotty
-trait CRing[A] extends Ring[A], CSemiring[A]
+trait CRing[A] extends Rng[A], CSemiring[A]
 ```
 
 ### Законы
@@ -67,13 +67,13 @@ classDiagram
     }
     MultiplicativeSemigroup <|-- Semiring
     Semigroup .. MultiplicativeSemigroup
-    class Ring~A~
-    AbelianGroup <|-- Ring
-    Semiring <|-- Ring
+    class Rng~A~
+    AbelianGroup <|-- Rng
+    Semiring <|-- Rng
     class CommutativeSemiring~A~
     Semiring <|-- CommutativeSemiring
     class CommutativeRing~A~
-    Ring <|-- CommutativeRing
+    Rng <|-- CommutativeRing
     CommutativeSemiring <|-- CommutativeRing
 ```
 

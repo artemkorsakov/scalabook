@@ -5,11 +5,15 @@ showNext = true
 nextPage = cring.html
 %}
 
-# Кольцо с единицей
+# Кольцо
 
-Кольцо с единицей - это [кольцо](rng.md), которое имеет [мультипликативную единицу](rig.md).
+**Кольцо** — это одна из ключевых алгебраических структур в математике, которая обобщает понятие чисел и операций над ними.
+Кольцо определяется как множество, на котором заданы две бинарные операции (обычно называемые сложением и умножением),
+удовлетворяющие определённым аксиомам.
 
-Для кольца с единицей должны соблюдаться все законы кольца:
+Кольцо - это [кольцо без единицы](rng.md), которое имеет [мультипликативную единицу](rig.md).
+
+Для кольца должны соблюдаться следующие законы:
 
 - _Замыкание сложения_ (_closure_): для \\(\forall x, y \in R\\) выполняется \\(x + y \in R\\).
 - _Ассоциативность сложения_ (_associativity_): для \\(\forall x, y, z \in R\\) выполняется \\((x + y) + z = x + (y + z)\\).
@@ -22,15 +26,12 @@ nextPage = cring.html
 - _Ассоциативность умножения_ (_associativity_): для \\(\forall x, y, z \in R\\) выполняется \\((x \* y) \* z = x \* (y \* z)\\).
 - _Дистрибутивность_ (_distributivus_, _распределительный закон_):
   для \\(\forall x, y, z \in R\\) выполняется \\(x \* (y + z) = x \* y + x \* z\\) и \\((x + y) \* z = x \* z + y \* z\\).
-
-, а также закон тождественности по умножению:
-
 - _Существование единичного элемента_: \\(\exists 1 \in R \quad \forall x \in R \quad x \* 1 = 1 \* x = x\\)
 
 ## Код
 
 ```dotty
-trait RingWithUnity[A] extends Ring[A], Rig[A]
+trait RingWithUnity[A] extends Rng[A], Rig[A]
 ```
 
 ### Законы
@@ -67,15 +68,15 @@ classDiagram
     }
     MultiplicativeSemigroup <|-- Semiring
     Semigroup .. MultiplicativeSemigroup
-    class Ring~A~
-    AbelianGroup <|-- Ring
-    Semiring <|-- Ring
+    class Rng~A~
+    AbelianGroup <|-- Rng
+    Semiring <|-- Rng
     class Rig~A~{
         +one() A
     }
     Semiring <|-- Rig
     class RingWithUnity~A~
-    Ring <|-- RingWithUnity
+    Rng <|-- RingWithUnity
     Rig <|-- RingWithUnity
 ```
 

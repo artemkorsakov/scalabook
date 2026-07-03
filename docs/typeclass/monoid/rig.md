@@ -30,7 +30,7 @@ nextPage = csemiring.html
 ## Код
 
 ```dotty
-trait SemiringWithUnity[A] extends Semiring[A]:
+trait Rig[A] extends Semiring[A]:
   def one: A
 ```
 
@@ -67,10 +67,10 @@ classDiagram
     }
     MultiplicativeSemigroup <|-- Semiring
     Semigroup .. MultiplicativeSemigroup
-    class SemiringWithUnity~A~{
+    class Rig~A~{
         +one() A
     }
-    Semiring <|-- SemiringWithUnity
+    Semiring <|-- Rig
 ```
 
 ## Реализация в библиотеках

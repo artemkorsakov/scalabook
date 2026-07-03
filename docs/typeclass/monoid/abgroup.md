@@ -56,7 +56,7 @@ nextPage = semiring.html
 
 ## Формальное определение
 
-`AbGroup[A]` - "абелева группа", [группа](group.md), которая является [коммутативной](cmonoid.md).
+`AbelianGroup[A]` - "абелева группа", [группа](group.md), которая является [коммутативной](cmonoid.md).
 
 Помимо законов группы:
 
@@ -73,7 +73,7 @@ nextPage = semiring.html
 ## Код
 
 ```dotty
-trait AbGroup[A] extends Group[A], CMonoid[A]
+trait AbelianGroup[A] extends Group[A], CMonoid[A]
 ```
 
 ### Законы
@@ -109,7 +109,7 @@ trait AbGroup[A] extends Group[A], CMonoid[A]
 Заполните пропущенные части (`???`):
 
 ```dotty
-given AbGroup[Int] with
+given AbelianGroup[Int] with
   val empty: Int = ???
 
   def combine(x: Int, y: Int): Int = ???
@@ -121,7 +121,7 @@ given AbGroup[Int] with
 @:note(🔍 Показать решение)
 
 ```dotty
-given AbGroup[Int] with
+given AbelianGroup[Int] with
   val empty = 0
 
   def combine(x: Int, y: Int): Int = x + y
@@ -133,13 +133,13 @@ given AbGroup[Int] with
 **Примеры вызовов**:
 
 ```dotty
-AbGroup[Int].combine(5, 3)
+AbelianGroup[Int].combine(5, 3)
 // 8
-AbGroup[Int].combine(3, 5)
+AbelianGroup[Int].combine(3, 5)
 // 8
-AbGroup[Int].empty
+AbelianGroup[Int].empty
 // 0
-AbGroup[Int].inverse(5)
+AbelianGroup[Int].inverse(5)
 // -5
 ```
 

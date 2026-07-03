@@ -128,11 +128,11 @@ Algebra позволяет выразить это требование в ко�
 - [**Semiring**](../../typeclass/monoid/semiring.md): Полукольцо. 
   Умеет складывать и умножать, но нет вычитания (`negate`) и нет обязательной единицы (`1`).  
   *Пример: натуральные числа (без нуля?).*
-- [**Rng**](../../typeclass/monoid/ring.md) (Ring without 'i' - identity): Кольцо без единицы (пропущена буква 'i' в слове Ring).  
+- [**Rng**](../../typeclass/monoid/rng.md) (Ring without 'i' - identity): Кольцо без единицы (пропущена буква 'i' в слове Ring).  
   *Пример: чётные целые числа (умножение есть, единицы '1' нет).*
-- [**Rig**](../../typeclass/monoid/ring.md) (Ring without 'n' - negative): Кольцо без «негатива» (нет вычитания, но есть умножение и 1).  
+- [**Rig**](../../typeclass/monoid/rig.md) (Ring without 'n' - negative): Кольцо без «негатива» (нет вычитания, но есть умножение и 1).  
   *Пример: натуральные числа с 0 и 1.*
-- [**CommutativeRig**](../../typeclass/monoid/ring.md): Коммутативное Rig (умножение не зависит от порядка).
+- [**CommutativeRig**](../../typeclass/monoid/rng.md): Коммутативное Rig (умножение не зависит от порядка).
 - [**Ring**](../../typeclass/monoid/ring-with-one.md): Полноценное кольцо: есть сложение, вычитание, умножение и единица.  
   *Пример: целые числа (`Int`).*
 - [**CommutativeRing**](../../typeclass/monoid/cring-with-one.md): Коммутативное кольцо.  

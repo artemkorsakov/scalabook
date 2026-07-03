@@ -250,16 +250,16 @@ classDiagram
     Semiring <|-- Ring
     class CommutativeSemiring~A~
     Semiring <|-- CommutativeSemiring
-    class SemiringWithUnity~A~{
+    class Rig~A~{
         +one() A
     }
-    Semiring <|-- SemiringWithUnity
+    Semiring <|-- Rig
     class CommutativeRing~A~
     Ring <|-- CommutativeRing
     CommutativeSemiring <|-- CommutativeRing
     class RingWithUnity~A~
     Ring <|-- RingWithUnity
-    SemiringWithUnity <|-- RingWithUnity
+    Rig <|-- RingWithUnity
     class CommutativeRingWithUnity~A~
     CommutativeRing <|-- CommutativeRingWithUnity
     RingWithUnity <|-- CommutativeRingWithUnity

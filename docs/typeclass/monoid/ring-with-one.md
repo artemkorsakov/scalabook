@@ -7,7 +7,7 @@ nextPage = cring.html
 
 # Кольцо с единицей
 
-Кольцо с единицей - это [кольцо](ring.md), которое имеет [мультипликативную единицу](semiring-with-one.md).
+Кольцо с единицей - это [кольцо](rng.md), которое имеет [мультипликативную единицу](rig.md).
 
 Для кольца с единицей должны соблюдаться все законы кольца:
 
@@ -30,12 +30,12 @@ nextPage = cring.html
 ## Код
 
 ```dotty
-trait RingWithUnity[A] extends Ring[A], SemiringWithUnity[A]
+trait RingWithUnity[A] extends Ring[A], Rig[A]
 ```
 
 ### Законы
 
-Законы наследуются от [законов кольца](ring.md) и [полукольца с единицей](semiring-with-one.md).
+Законы наследуются от [законов кольца](rng.md) и [полукольца с единицей](rig.md).
 
 ## Схема
 
@@ -70,13 +70,13 @@ classDiagram
     class Ring~A~
     AbelianGroup <|-- Ring
     Semiring <|-- Ring
-    class SemiringWithUnity~A~{
+    class Rig~A~{
         +one() A
     }
-    Semiring <|-- SemiringWithUnity
+    Semiring <|-- Rig
     class RingWithUnity~A~
     Ring <|-- RingWithUnity
-    SemiringWithUnity <|-- RingWithUnity
+    Rig <|-- RingWithUnity
 ```
 
 ## Реализация в библиотеках

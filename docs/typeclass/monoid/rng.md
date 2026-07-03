@@ -36,7 +36,7 @@ nextPage = ring-with-one.html
 ## Код
 
 ```dotty
-trait Ring[A] extends AbGroup[A], Semiring[A]
+trait Ring[A] extends AbelianGroup[A], Semiring[A]
 ```
 
 ### Законы

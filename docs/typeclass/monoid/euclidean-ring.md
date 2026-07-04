@@ -7,7 +7,7 @@ nextPage = field.html
 
 # Евклидово кольцо
 
-**Евклидово кольцо** — это [коммутативное кольцо с единицей](cring-with-one.md), в котором определена функция, называемая **евклидовой нормой**, 
+**Евклидово кольцо** — это [коммутативное кольцо с единицей](cring.md), в котором определена функция, называемая **евклидовой нормой**, 
 позволяющая обобщить алгоритм Евклида для нахождения [наибольшего общего делителя (НОД)](gcdring.md). 
 Евклидовы кольца являются важным классом алгебраических структур, обобщающих свойства целых чисел и многочленов.
 
@@ -254,20 +254,20 @@ classDiagram
         +one() A
     }
     Semiring <|-- Rig
+    class CommutativeRng~A~
+    Rng <|-- CommutativeRng
+    CommutativeSemiring <|-- CommutativeRng
+    class Ring~A~
+    Rng <|-- Ring
+    Rig <|-- Ring
     class CommutativeRing~A~
-    Rng <|-- CommutativeRing
-    CommutativeSemiring <|-- CommutativeRing
-    class RingWithUnity~A~
-    Rng <|-- RingWithUnity
-    Rig <|-- RingWithUnity
-    class CommutativeRingWithUnity~A~
-    CommutativeRing <|-- CommutativeRingWithUnity
-    RingWithUnity <|-- CommutativeRingWithUnity
+    CommutativeRng <|-- CommutativeRing
+    Ring <|-- CommutativeRing
     class GCDRing~A~{
         +gcd(x: A, y: A) A
         +lcm(x: A, y: A) A
     }
-    CommutativeRingWithUnity <|-- GCDRing
+    CommutativeRing <|-- GCDRing
     class EuclideanRing~A~{
         +quot(x: A, y: A) A
         +mod(x: A, y: A) A

@@ -148,20 +148,20 @@ classDiagram
         +one() A
     }
     Semiring <|-- Rig
+    class CommutativeRng~A~
+    Rng <|-- CommutativeRng
+    CommutativeSemiring <|-- CommutativeRng
+    class Ring~A~
+    Rng <|-- Ring
+    Rig <|-- Ring
     class CommutativeRing~A~
-    Rng <|-- CommutativeRing
-    CommutativeSemiring <|-- CommutativeRing
-    class RingWithUnity~A~
-    Rng <|-- RingWithUnity
-    Rig <|-- RingWithUnity
-    class CommutativeRingWithUnity~A~
-    CommutativeRing <|-- CommutativeRingWithUnity
-    RingWithUnity <|-- CommutativeRingWithUnity
+    CommutativeRng <|-- CommutativeRing
+    Ring <|-- CommutativeRing
     class GCDRing~A~{
         +gcd(x: A, y: A) A
         +lcm(x: A, y: A) A
     }
-    CommutativeRingWithUnity <|-- GCDRing
+    CommutativeRing <|-- GCDRing
     class EuclideanRing~A~{
         +quot(x: A, y: A) A
         +mod(x: A, y: A) A

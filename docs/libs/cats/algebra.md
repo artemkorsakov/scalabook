@@ -132,10 +132,11 @@ Algebra позволяет выразить это требование в ко�
   *Пример: чётные целые числа (умножение есть, единицы '1' нет).*
 - [**Rig**](../../typeclass/monoid/rig.md) (Ring without 'n' - negative): Кольцо без «негатива» (нет вычитания, но есть умножение и 1).  
   *Пример: натуральные числа с 0 и 1.*
-- [**CommutativeRig**](../../typeclass/monoid/rng.md): Коммутативное Rig (умножение не зависит от порядка).
-- [**Ring**](../../typeclass/monoid/ring-with-one.md): Полноценное кольцо: есть сложение, вычитание, умножение и единица.  
+- [**CommutativeSemiring**](../../typeclass/monoid/csemiring.md): Коммутативное полукольцо (умножение не зависит от порядка).
+- [**CommutativeRig**](../../typeclass/monoid/rig.md): Коммутативное Rig (умножение не зависит от порядка).
+- [**Ring**](../../typeclass/monoid/ring.md): Полноценное кольцо: есть сложение, вычитание, умножение и единица.  
   *Пример: целые числа (`Int`).*
-- [**CommutativeRing**](../../typeclass/monoid/cring-with-one.md): Коммутативное кольцо.  
+- [**CommutativeRing**](../../typeclass/monoid/cring.md): Коммутативное кольцо.  
   *Пример: целые числа (3*4 = 4*3).*
 - [**Semifield**](../../typeclass/monoid/field.md): Полуполе: есть умножение, единица и обратное (деление), но нет вычитания.
 - [**CommutativeSemifield**](../../typeclass/monoid/field.md): Коммутативное полуполе.
@@ -147,7 +148,7 @@ Algebra позволяет выразить это требование в ко�
 | **Semiring**                          |                            |                                |                                      |                   |
 | **Rng** (Ring without 'i' - identity) | ✓                          |                                |                                      |                   |
 | **Rig** (Ring without 'n' - negative) |                            | ✓                              |                                      |                   |
-| CommutativeSemiring                   |                            |                                |                                      | ✓                 |
+| **CommutativeSemiring**               |                            |                                |                                      | ✓                 |
 | **CommutativeRig**                    |                            | ✓                              |                                      | ✓                 |
 | **Ring**                              | ✓                          | ✓                              |                                      |                   |
 | **CommutativeRing**                   | ✓                          | ✓                              |                                      | ✓                 |

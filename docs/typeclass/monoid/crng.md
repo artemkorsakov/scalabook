@@ -1,15 +1,15 @@
 {%
 showPrev = true
-prevPage = cring.html
+prevPage = ring.html
 showNext = true
-nextPage = gcdring.html
+nextPage = cring.html
 %}
 
-# Коммутативное кольцо с единицей
+# Коммутативное кольцо без единицы
 
-Коммутативное кольцо с единицей объединяет в себе [коммутативное кольцо](cring.md) и [кольцо с единицей](ring-with-one.md).
+Коммутативное кольцо - [кольцо без единицы](rng.md), коммутативное относительно умножения.
 
-Для коммутативного кольца с единицей должны соблюдаться следующие законы:
+Для коммутативного кольца должны соблюдаться все законы кольца:
 
 - _Замыкание сложения_ (_closure_): для \\(\forall x, y \in R\\) выполняется \\(x + y \in R\\).
 - _Ассоциативность сложения_ (_associativity_): для \\(\forall x, y, z \in R\\) выполняется \\((x + y) + z = x + (y + z)\\).
@@ -20,75 +20,22 @@ nextPage = gcdring.html
 - _Коммутативность сложения_ (_commutative_): для \\(\forall x, y \in R\\) выполняется \\(x + y = y + x\\).
 - _Замыкание умножения_ (_closure_): для \\(\forall x, y \in R\\) выполняется \\(x \* y \in R\\).
 - _Ассоциативность умножения_ (_associativity_): для \\(\forall x, y, z \in R\\) выполняется \\((x \* y) \* z = x \* (y \* z)\\).
-- _Существование единичного элемента_: \\(\exists 1 \in R \quad \forall x \in R \quad x \* 1 = 1 \* x = x\\)
-- _Коммутативность умножения_: для \\(\forall x, y \in R\\) выполняется \\(x \* y = y \* x\\).
 - _Дистрибутивность_ (_distributivus_, _распределительный закон_):
   для \\(\forall x, y, z \in R\\) выполняется \\(x \* (y + z) = x \* y + x \* z\\) и \\((x + y) \* z = x \* z + y \* z\\).
+
+, а также закон коммутативности умножения:
+
+- _Коммутативность умножения_: для \\(\forall x, y \in R\\) выполняется \\(x * y = y * x\\).
 
 ## Код
 
 ```dotty
-trait CRingWithUnity[A] extends CRing[A], RingWithUnity[A]
+trait CommutativeRng[A] extends Rng[A], CSemiring[A]
 ```
 
 ### Законы
 
-Законы наследуются от [законов коммутативного кольца](cring.md) и [кольца с единицей](ring-with-one.md).
-
-## Упражнения
-
-### Упражнение 1.6.1: Реализация коммутативного кольца с единицей для целых чисел.
-
-> [Репозиторий с упражнениями и инструкцией по выполнению][sample]
-
-Заполните пропущенные части (`???`):
-
-```dotty
-given CRingWithUnity[Int] with
-  val empty: Int = ???
-
-  val one: Int = ???
-
-  def combine(x: Int, y: Int): Int = ???
-
-  def times(x: Int, y: Int): Int = ???
-
-  extension (a: Int)
-    def inverse: Int = ???
-```
-
-@:note(🔍 Показать решение)
-
-```dotty
-given CRingWithUnity[Int] with
-  val empty: Int = 0
-
-  val one: Int = 1
-
-  def combine(x: Int, y: Int): Int = x + y
-
-  def times(x: Int, y: Int): Int = x * y
-
-  extension (a: Int)
-    def inverse: Int = -a
-```
-
-**Примеры вызовов**:
-
-```dotty
-CRingWithUnity[Int].combine(5, 3)
-// 8
-CRingWithUnity[Int].empty
-// 0
-CRingWithUnity[Int].inverse(5)
-// -5
-CRingWithUnity[Int].times(5, 3)
-// 15
-CRingWithUnity[Int].one
-// 1
-```
-
-@:@
+Законы наследуются от [законов кольца](rng.md) и [коммутативного полукольца](csemiring.md).
 
 ## Схема
 
@@ -125,19 +72,9 @@ classDiagram
     Semiring <|-- Rng
     class CommutativeSemiring~A~
     Semiring <|-- CommutativeSemiring
-    class Rig~A~{
-        +one() A
-    }
-    Semiring <|-- Rig
-    class CommutativeRing~A~
-    Rng <|-- CommutativeRing
-    CommutativeSemiring <|-- CommutativeRing
-    class RingWithUnity~A~
-    Rng <|-- RingWithUnity
-    Rig <|-- RingWithUnity
-    class CommutativeRingWithUnity~A~
-    CommutativeRing <|-- CommutativeRingWithUnity
-    RingWithUnity <|-- CommutativeRingWithUnity
+    class CommutativeRng~A~
+    Rng <|-- CommutativeRng
+    CommutativeSemiring <|-- CommutativeRng
 ```
 
 ## Реализация в библиотеках
@@ -174,5 +111,6 @@ CRing.one[Rational]
 - [Ссылка на репозиторий с упражнениями][sample]
 - [Spire home page](https://typelevel.org/spire/)
 - [Spire User's Guide](https://typelevel.org/spire/guide.html)
+- [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BC%D0%BC%D1%83%D1%82%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D0%BE%D0%B5_%D0%BA%D0%BE%D0%BB%D1%8C%D1%86%D0%BE)
 
 [sample]: https://gitverse.ru/scalabook/typeclasses

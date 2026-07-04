@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = semiring-with-one.html
+prevPage = rig.html
 showNext = true
 nextPage = isemiring.html
 %}

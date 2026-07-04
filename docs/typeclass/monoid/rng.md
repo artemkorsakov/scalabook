@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = isemiring.html
 showNext = true
-nextPage = ring-with-one.html
+nextPage = ring.html
 %}
 
 # Кольцо без единицы

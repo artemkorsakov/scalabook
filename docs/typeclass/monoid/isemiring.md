@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = csemiring.html
 showNext = true
-nextPage = ring.html
+nextPage = rng.html
 %}
 
 #  Идемпотентное полукольцо

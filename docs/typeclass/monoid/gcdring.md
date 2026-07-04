@@ -1,13 +1,13 @@
 {%
 showPrev = true
-prevPage = cring-with-one.html
+prevPage = cring.html
 showNext = true
 nextPage = euclidean-ring.html
 %}
 
 # Кольца НОД
 
-**Кольца НОД** (кольца с наибольшим общим делителем) — это [коммутативные кольца с единицей](cring-with-one.md), 
+**Кольца НОД** (кольца с наибольшим общим делителем) — это [коммутативные кольца с единицей](cring.md), 
 в которых для любых двух элементов существует наибольший общий делитель (НОД). 
 Эти кольца являются важным классом алгебраических структур, обобщающих свойства целых чисел.
 
@@ -58,7 +58,7 @@ nextPage = euclidean-ring.html
 
 ## Формальное определение
 
-Кольца НОД - [коммутативное кольцо с единицей](cring-with-one.md)
+Кольца НОД - [коммутативное кольцо с единицей](cring.md)
 с добавлением наибольшего общего делителя и наименьшего общего кратного.
 
 Кольца НОД поддерживают следующие операции:
@@ -93,7 +93,7 @@ nextPage = euclidean-ring.html
 ## Код
 
 ```dotty
-trait GCDRing[A] extends CRingWithUnity[A]:
+trait GCDRing[A] extends CommutativeRing[A]:
   def gcd(x: A, y: A): A
 
   def lcm(x: A, y: A): A
@@ -101,7 +101,7 @@ trait GCDRing[A] extends CRingWithUnity[A]:
 
 ### Законы
 
-Законы наследуются от [коммутативного кольца с единицей](cring-with-one.md):
+Законы наследуются от [коммутативного кольца с единицей](cring.md):
 
 - _Замыкание сложения_ (_closure_): для \\(\forall x, y \in R\\) выполняется \\(x + y \in R\\).
 - _Ассоциативность сложения_ (_associativity_): для \\(\forall x, y, z \in R\\) выполняется \\((x + y) + z = x + (y + z)\\).
@@ -250,20 +250,20 @@ classDiagram
         +one() A
     }
     Semiring <|-- Rig
+    class CommutativeRng~A~
+    Rng <|-- CommutativeRng
+    CommutativeSemiring <|-- CommutativeRng
+    class Ring~A~
+    Rng <|-- Ring
+    Rig <|-- Ring
     class CommutativeRing~A~
-    Rng <|-- CommutativeRing
-    CommutativeSemiring <|-- CommutativeRing
-    class RingWithUnity~A~
-    Rng <|-- RingWithUnity
-    Rig <|-- RingWithUnity
-    class CommutativeRingWithUnity~A~
-    CommutativeRing <|-- CommutativeRingWithUnity
-    RingWithUnity <|-- CommutativeRingWithUnity
+    CommutativeRng <|-- CommutativeRing
+    Ring <|-- CommutativeRing
     class GCDRing~A~{
         +gcd(x: A, y: A) A
         +lcm(x: A, y: A) A
     }
-    CommutativeRingWithUnity <|-- GCDRing
+    CommutativeRing <|-- GCDRing
 ```
 
 ## Реализация в библиотеках

@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = abgroup.html
 showNext = true
-nextPage = semiring-with-one.html
+nextPage = rig.html
 %}
 
 # Полукольцо

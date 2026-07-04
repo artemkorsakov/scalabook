@@ -1,8 +1,8 @@
 {%
 showPrev = true
-prevPage = ring.html
+prevPage = rng.html
 showNext = true
-nextPage = cring.html
+nextPage = crng.html
 %}
 
 # Кольцо
@@ -31,7 +31,7 @@ nextPage = cring.html
 ## Код
 
 ```dotty
-trait RingWithUnity[A] extends Rng[A], Rig[A]
+trait Ring[A] extends Rng[A], Rig[A]
 ```
 
 ### Законы
@@ -75,9 +75,9 @@ classDiagram
         +one() A
     }
     Semiring <|-- Rig
-    class RingWithUnity~A~
-    Rng <|-- RingWithUnity
-    Rig <|-- RingWithUnity
+    class Ring~A~
+    Rng <|-- Ring
+    Rig <|-- Ring
 ```
 
 ## Реализация в библиотеках
@@ -114,5 +114,6 @@ Ring.one[Rational]
 - [Ссылка на репозиторий с упражнениями][sample]
 - [Spire home page](https://typelevel.org/spire/)
 - [Spire User's Guide](https://typelevel.org/spire/guide.html)
+- [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BB%D1%8C%D1%86%D0%BE_(%D0%BC%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B0))
 
 [sample]: https://gitverse.ru/scalabook/typeclasses

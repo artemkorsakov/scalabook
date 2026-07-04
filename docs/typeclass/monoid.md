@@ -190,6 +190,179 @@ classDiagram
     CommutativeRing <|-- BoolRing
 ```
 
+И детальнее:
+
+```mermaid
+---
+title: Группа Поля
+---
+classDiagram
+    class Semigroup~A~{
+        +combine(x: A, y: A) A
+    }
+    class Monoid~A~{
+        +empty() A
+    }
+    Semigroup <|-- Monoid
+    class CommutativeSemigroup~A~
+    Semigroup <|-- CommutativeSemigroup
+    class Group~A~{
+        +inverse(x: A) A
+    }
+    Monoid <|-- Group
+    class CommutativeMonoid~A~
+    Monoid <|-- CommutativeMonoid
+    CommutativeSemigroup <|-- CommutativeMonoid
+    class AbelianGroup~A~
+    Group <|-- AbelianGroup
+    CommutativeMonoid <|-- AbelianGroup
+    class Semiring~A~
+    CommutativeMonoid <|-- Semiring
+    class MultiplicativeSemigroup~A~{
+        +times(x: A, y: A) A
+    }
+    MultiplicativeSemigroup <|-- Semiring
+    Semigroup .. MultiplicativeSemigroup
+    class Rng~A~
+    AbelianGroup <|-- Rng
+    Semiring <|-- Rng
+    class CommutativeSemiring~A~
+    Semiring <|-- CommutativeSemiring
+    class Rig~A~{
+        +one() A
+    }
+    Semiring <|-- Rig
+    class CommutativeRng~A~
+    Rng <|-- CommutativeRng
+    CommutativeSemiring <|-- CommutativeRng
+    class CommutativeRig~A~
+    Rig <|-- CommutativeRig
+    CommutativeSemiring <|-- CommutativeRig
+    class Ring~A~
+    Rng <|-- Ring
+    Rig <|-- Ring
+    class CommutativeRing~A~
+    Ring <|-- CommutativeRing
+    CommutativeRig <|-- CommutativeRing
+    CommutativeRng <|-- CommutativeRing
+    class GCDRing~A~{
+        +gcd(x: A, y: A) A
+        +lcm(x: A, y: A) A
+    }
+    CommutativeRing <|-- GCDRing
+    class EuclideanRing~A~{
+        +quot(x: A, y: A) A
+        +mod(x: A, y: A) A
+    }
+    GCDRing <|-- EuclideanRing
+    class Semifield~A~{
+        +reciprocal(x: A) A
+        +div(x: A, y: A) A
+    }
+    Rig <|-- Semifield
+    class CommutativeSemifield~A~
+    Semifield <|-- CommutativeSemifield
+    CommutativeRig <|-- CommutativeSemifield
+    class Field~A~
+    EuclideanRing <|-- Field
+    CommutativeSemifield <|-- Field
+```
+
+```mermaid
+---
+title: Группа идемпотентного полукольца
+---
+classDiagram
+    class Semigroup~A~{
+        +combine(x: A, y: A) A
+    }
+    class IdempotentSemigroup~A~
+    Semigroup <|-- IdempotentSemigroup    
+    class Monoid~A~{
+        +empty() A
+    }
+    Semigroup <|-- Monoid
+    class CommutativeSemigroup~A~
+    Semigroup <|-- CommutativeSemigroup  
+    class IdempotentMonoid~A~
+    IdempotentSemigroup <|-- IdempotentMonoid
+    Monoid <|-- IdempotentMonoid
+    class CommutativeMonoid~A~
+    Monoid <|-- CommutativeMonoid
+    CommutativeSemigroup <|-- CommutativeMonoid
+    class Semiring~A~
+    CommutativeMonoid <|-- Semiring
+    class MultiplicativeSemigroup~A~{
+        +times(x: A, y: A) A
+    }
+    MultiplicativeSemigroup <|-- Semiring
+    Semigroup .. MultiplicativeSemigroup
+    class IdempotentSemiring~A~
+    IdempotentMonoid <|-- IdempotentSemiring
+    Semiring <|-- IdempotentSemiring
+```
+
+```mermaid
+---
+title: Группа булевой алгебры
+---
+classDiagram
+    class Semigroup~A~{
+        +combine(x: A, y: A) A
+    }
+    class Monoid~A~{
+        +empty() A
+    }
+    Semigroup <|-- Monoid
+    class CommutativeSemigroup~A~
+    Semigroup <|-- CommutativeSemigroup
+    class Group~A~{
+        +inverse(x: A) A
+    }
+    Monoid <|-- Group
+    class CommutativeMonoid~A~
+    Monoid <|-- CommutativeMonoid
+    CommutativeSemigroup <|-- CommutativeMonoid
+    class AbelianGroup~A~
+    Group <|-- AbelianGroup
+    CommutativeMonoid <|-- AbelianGroup
+    class Semiring~A~
+    CommutativeMonoid <|-- Semiring
+    class MultiplicativeSemigroup~A~{
+        +times(x: A, y: A) A
+    }
+    MultiplicativeSemigroup <|-- Semiring
+    Semigroup .. MultiplicativeSemigroup
+    class Rng~A~
+    AbelianGroup <|-- Rng
+    Semiring <|-- Rng
+    class CommutativeSemiring~A~
+    Semiring <|-- CommutativeSemiring
+    class Rig~A~{
+        +one() A
+    }
+    Semiring <|-- Rig
+    class CommutativeRng~A~
+    Rng <|-- CommutativeRng
+    CommutativeSemiring <|-- CommutativeRng
+    class CommutativeRig~A~
+    Rig <|-- CommutativeRig
+    CommutativeSemiring <|-- CommutativeRig
+    class Ring~A~
+    Rng <|-- Ring
+    Rig <|-- Ring
+    class CommutativeRing~A~
+    Ring <|-- CommutativeRing
+    CommutativeRig <|-- CommutativeRing
+    CommutativeRng <|-- CommutativeRing
+
+    class BoolRng~A~
+    CommutativeRng <|-- BoolRng
+    class BoolRing~A~
+    BoolRng <|-- BoolRing
+    CommutativeRing <|-- BoolRing
+```
+
 ---
 
 **Ссылки:**

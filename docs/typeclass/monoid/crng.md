@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = ring.html
 showNext = true
-nextPage = cring.html
+nextPage = crig.html
 %}
 
 # Коммутативное кольцо без единицы

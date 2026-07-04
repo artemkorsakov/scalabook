@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = crng.html
+prevPage = crig.html
 showNext = true
 nextPage = gcdring.html
 %}
@@ -28,7 +28,7 @@ nextPage = gcdring.html
 ## Код
 
 ```dotty
-trait CommutativeRing[A] extends CommutativeRng[A], Ring[A]
+trait CommutativeRing[A] extends Ring[A], CommutativeRng[A], CommutativeRig[A]
 ```
 
 ### Законы
@@ -132,12 +132,16 @@ classDiagram
     class CommutativeRng~A~
     Rng <|-- CommutativeRng
     CommutativeSemiring <|-- CommutativeRng
+    class CommutativeRig~A~
+    Rig <|-- CommutativeRig
+    CommutativeSemiring <|-- CommutativeRig
     class Ring~A~
     Rng <|-- Ring
     Rig <|-- Ring
     class CommutativeRing~A~
-    CommutativeRng <|-- CommutativeRing
     Ring <|-- CommutativeRing
+    CommutativeRig <|-- CommutativeRing
+    CommutativeRng <|-- CommutativeRing
 ```
 
 ## Реализация в библиотеках

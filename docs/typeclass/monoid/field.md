@@ -258,12 +258,16 @@ classDiagram
     class CommutativeRng~A~
     Rng <|-- CommutativeRng
     CommutativeSemiring <|-- CommutativeRng
+    class CommutativeRig~A~
+    Rig <|-- CommutativeRig
+    CommutativeSemiring <|-- CommutativeRig
     class Ring~A~
     Rng <|-- Ring
     Rig <|-- Ring
     class CommutativeRing~A~
-    CommutativeRng <|-- CommutativeRing
     Ring <|-- CommutativeRing
+    CommutativeRig <|-- CommutativeRing
+    CommutativeRng <|-- CommutativeRing
     class GCDRing~A~{
         +gcd(x: A, y: A) A
         +lcm(x: A, y: A) A

@@ -70,6 +70,7 @@ object Dependencies {
   val exampleLibs: Seq[ModuleID] =
     Seq(
       cats.core,
+      cats.kernel,
       catsEffect.core,
       catsEffect.kernel,
       catsEffect.std,

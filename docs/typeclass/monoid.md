@@ -365,7 +365,7 @@ classDiagram
 
 ```mermaid
 ---
-title: Решёткоподобные структуры
+title: Группа полурешетки
 ---
 classDiagram
     class Semigroup~A~{

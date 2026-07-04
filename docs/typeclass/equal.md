@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = arrow/arrow-choice.html
+prevPage = lattice/bool.html
 showNext = true
 nextPage = equal/equal.html
 %}

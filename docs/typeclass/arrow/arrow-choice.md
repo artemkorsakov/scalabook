@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = choice.html
 showNext = true
-nextPage = ../equal.html
+nextPage = ../lattice.html
 %}
 
 # Arrow Choice

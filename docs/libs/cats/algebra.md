@@ -185,18 +185,21 @@ Algebra позволяет выразить это требование в ко�
 
 ### Таблица решёткоподобных структур
 
-- **JoinSemilattice**: Полурешётка объединения (умеет только `join`).
-- **MeetSemilattice**: Полурешётка пересечения (умеет только `meet`).
-- **BoundedJoinSemilattice**: Полурешётка объединения с нулём (нижней границей).
-- **BoundedMeetSemilattice**: Полурешётка пересечения с единицей (верхней границей).
-- **Lattice**: Полная решётка (есть и встреча, и объединение).
-- **DistributiveLattice**: Дистрибутивная решётка.  
+- [**JoinSemilattice**](../../typeclass/lattice/join-semilattice.md): Полурешётка объединения (умеет только `join`).
+- [**MeetSemilattice**](../../typeclass/lattice/meet-semilattice.md): Полурешётка пересечения (умеет только `meet`).
+- [**BoundedJoinSemilattice**](../../typeclass/lattice/bounded-join-semilattice.md): Полурешётка объединения с нулём (нижней границей).
+- [**BoundedMeetSemilattice**](../../typeclass/lattice/bounded-meet-semilattice.md): Полурешётка пересечения с единицей (верхней границей).
+- [**Lattice**](../../typeclass/lattice/lattice.md): Полная решётка (есть и встреча, и объединение).
+- [**DistributiveLattice**](../../typeclass/lattice/distributive-lattice.md): Дистрибутивная решётка.  
   *Пример: множества с `∩` и `∪`.*
-- **BoundedLattice**: Решётка с границами (есть и 0, и 1).
-- **BoundedDistributiveLattice**: Дистрибутивная решётка с границами.
-- **Heyting**: **Алгебра Гейтинга**. Решётка с импликацией.  
+- [**BoundedLattice**](../../typeclass/lattice/bounded-lattice.md): Решётка с границами (есть и 0, и 1).
+- [**BoundedDistributiveLattice**](../../typeclass/lattice/bounded-distributive-lattice.md): Дистрибутивная решётка с границами.
+- [**Logic**](../../typeclass/lattice/logic.md): **Общая логика**.
+- [**DeMorgan**](../../typeclass/lattice/de-morgan.md): **Алгебра Де Моргана**.
+- [**Heyting**](../../typeclass/lattice/heyting.md): **Алгебра Гейтинга**. Решётка с импликацией.  
   *Пример: логика без закона исключённого третьего.*
-- **Bool**: **Булева алгебра**. Классическая логика с законом исключённого третьего (`a || !a == true`).  
+- [**GenBool**](../../typeclass/lattice/gen-bool.md): **Общая Булева алгебра**.
+- [**Bool**](../../typeclass/lattice/bool.md): **Булева алгебра**. Классическая логика с законом исключённого третьего (`a || !a == true`).  
   *Пример: `true/false`, битовые маски.*
 
 | Имя                            | Есть `join` (ИЛИ)? | Есть `meet` (И)? | Есть `zero`? | Есть `one`? | Дистрибутивна? | Есть `imp`? | Исключает середину? |

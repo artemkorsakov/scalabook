@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = cring.html
+prevPage = csemifield.html
 showNext = true
 nextPage = euclidean-ring.html
 %}

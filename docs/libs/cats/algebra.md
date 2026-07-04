@@ -138,8 +138,8 @@ Algebra позволяет выразить это требование в ко�
   *Пример: целые числа (`Int`).*
 - [**CommutativeRing**](../../typeclass/monoid/cring.md): Коммутативное кольцо.  
   *Пример: целые числа (3*4 = 4*3).*
-- [**Semifield**](../../typeclass/monoid/field.md): Полуполе: есть умножение, единица и обратное (деление), но нет вычитания.
-- [**CommutativeSemifield**](../../typeclass/monoid/field.md): Коммутативное полуполе.
+- [**Semifield**](../../typeclass/monoid/semifield.md): Полуполе: есть умножение, единица и обратное (деление), но нет вычитания.
+- [**CommutativeSemifield**](../../typeclass/monoid/csemifield.md): Коммутативное полуполе.
 - [**Field**](../../typeclass/monoid/field.md): **Поле**. Есть всё: сложение, вычитание, умножение, деление (кроме деления на ноль).  
   *Пример: рациональные числа, вещественные числа (Double с осторожностью).*
 
@@ -149,6 +149,7 @@ Algebra позволяет выразить это требование в ко�
 | **Rng** (Ring without 'i' - identity) | ✓                          |                                |                                      |                   |
 | **Rig** (Ring without 'n' - negative) |                            | ✓                              |                                      |                   |
 | **CommutativeSemiring**               |                            |                                |                                      | ✓                 |
+| **CommutativeRng**                    | ✓                          |                                |                                      | ✓                 |
 | **CommutativeRig**                    |                            | ✓                              |                                      | ✓                 |
 | **Ring**                              | ✓                          | ✓                              |                                      |                   |
 | **CommutativeRing**                   | ✓                          | ✓                              |                                      | ✓                 |

@@ -171,11 +171,17 @@ classDiagram
         +mod(x: A, y: A) A
     }
     GCDRing <|-- EuclideanRing
-    class Field~A~{
+    class Semifield~A~{
         +reciprocal(x: A) A
         +div(x: A, y: A) A
     }
+    Rig <|-- Semifield
+    class CommutativeSemifield~A~
+    Semifield <|-- CommutativeSemifield
+    CommutativeRig <|-- CommutativeSemifield
+    class Field~A~
     EuclideanRing <|-- Field
+    CommutativeSemifield <|-- Field
 ```
 
 ---

@@ -7,8 +7,8 @@ nextPage = ../monad.html
 
 # Поле
 
-**Поле** — это алгебраическая структура, которая является [коммутативным кольцом с единицей](cring.md), 
-в котором каждый ненулевой элемент имеет обратный относительно умножения. 
+**Поле** — это алгебраическая структура, которая является [Евклидовым кольцом](euclidean-ring.md)
+и [коммутативным полуполем](csemifield.md). 
 Поля являются одной из ключевых структур в математике, обобщающих свойства чисел и операций над ними.
 
 **Определение поля**
@@ -93,22 +93,12 @@ _Поле_ — алгебра над множеством \\(\mathbf{F}\\),
 ## Код
 
 ```dotty
-trait Field[A] extends EuclideanRing[A]:
-  extension (a: A) def reciprocal: A
-
-  def div(x: A, y: A): A = times(x, y.reciprocal)
+trait Field[A] extends EuclideanRing[A], CommutativeSemifield[A]
 ```
 
 ### Законы
 
-Законы наследуются от [Евклидова кольца](euclidean-ring.md).
-
-Кроме того:
-
-- **Закон существования обратного по умножению числа**:
-  Утверждение гласит, что для любого числа \\(x\\) (кроме нуля) должно существовать обратное число \\(x^{-1}\\) 
-  (или \\(\text{reciprocal}\\)), такое что их произведение равно единице. 
-  `x == fi.empty || fi.times(x, x.reciprocal) == fi.one`
+Законы наследуются от [Евклидова кольца](euclidean-ring.md) и [коммутативного полуполя](csemifield.md).
 
 ## Упражнения
 
@@ -278,11 +268,17 @@ classDiagram
         +mod(x: A, y: A) A
     }
     GCDRing <|-- EuclideanRing
-    class Field~A~{
-        +reciprocal(x: A) A
-        +div(x: A, y: A) A
+    class Semifield~A~{
+      +reciprocal(x: A) A
+      +div(x: A, y: A) A
     }
+    Rig <|-- Semifield
+    class CommutativeSemifield~A~
+    Semifield <|-- CommutativeSemifield
+    CommutativeRig <|-- CommutativeSemifield
+    class Field~A~
     EuclideanRing <|-- Field
+    CommutativeSemifield <|-- Field
 ```
 
 ## Реализация в библиотеках

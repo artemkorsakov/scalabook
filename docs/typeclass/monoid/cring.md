@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = crig.html
 showNext = true
-nextPage = gcdring.html
+nextPage = semifield.html
 %}
 
 # Коммутативное кольцо

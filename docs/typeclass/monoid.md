@@ -194,7 +194,7 @@ classDiagram
 
 ```mermaid
 ---
-title: Группа Поля
+title: Группа поля
 ---
 classDiagram
     class Semigroup~A~{
@@ -270,7 +270,7 @@ classDiagram
 
 ```mermaid
 ---
-title: Группа идемпотентного полукольца
+title: Идемпотентность по сложению
 ---
 classDiagram
     class Semigroup~A~{
@@ -304,7 +304,7 @@ classDiagram
 
 ```mermaid
 ---
-title: Группа булевой алгебры
+title: Идемпотентность по умножению (Кольцо Буля)
 ---
 classDiagram
     class Semigroup~A~{
@@ -361,6 +361,37 @@ classDiagram
     class BoolRing~A~
     BoolRng <|-- BoolRing
     CommutativeRing <|-- BoolRing
+```
+
+```mermaid
+---
+title: Решёткоподобные структуры
+---
+classDiagram
+    class Semigroup~A~{
+        +combine(x: A, y: A) A
+    }  
+    class Monoid~A~{
+        +empty() A
+    }
+    Semigroup <|-- Monoid
+    class CommutativeSemigroup~A~
+    Semigroup <|-- CommutativeSemigroup  
+    class CommutativeMonoid~A~
+    Monoid <|-- CommutativeMonoid
+    CommutativeSemigroup <|-- CommutativeMonoid
+    class IdempotentSemigroup~A~
+    Semigroup <|-- IdempotentSemigroup
+    class IdempotentMonoid~A~
+    Monoid <|-- IdempotentMonoid
+    IdempotentSemigroup <|-- IdempotentMonoid
+    class Semilattice~A~
+    CommutativeSemigroup <|-- Semilattice
+    IdempotentSemigroup <|-- Semilattice
+    class BoundedSemilattice~A~
+    CommutativeMonoid <|-- BoundedSemilattice
+    IdempotentMonoid <|-- BoundedSemilattice
+    Semilattice <|-- BoundedSemilattice
 ```
 
 ---

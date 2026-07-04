@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = boolean-algebra.html
+prevPage = bool-ring.html
 showNext = true
 nextPage = csemifield.html
 %}

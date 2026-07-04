@@ -106,6 +106,43 @@ classDiagram
 
 ## Реализация в библиотеках
 
+### Реализация в Cats
+
+```dotty
+import algebra.Order
+import algebra.ring.{AdditiveCommutativeMonoid, Signed}
+import algebra.ring.Signed.*
+
+given Signed[Int] with
+  def signum(a: Int): Int = a
+
+  def abs(a: Int): Int = math.abs(a)
+
+  def additiveCommutativeMonoid: AdditiveCommutativeMonoid[Int] =
+    new AdditiveCommutativeMonoid[Int]:
+      override def plus(x: Int, y: Int): Int = x + y
+
+      override def zero: Int = 0
+
+  def order: Order[Int] = Order.by(identity)
+
+sign(10)               // Positive
+sign(0)                // Zero
+sign(-10)              // Negative
+signum(10)             // 1
+signum(0)              // 0
+signum(-10)            // -1
+abs(10)                // 10
+abs(0)                 // 0
+abs(-10)               // 10
+isSignPositive(10)     // true
+isSignZero(0)          // true
+isSignNegative(-10)    // true
+isSignNonPositive(10)  // false
+isSignNonZero(0)       // false
+isSignNonNegative(-10) // false
+```
+
 ### [Реализация в Spire](../../libs/spire.md)
 
 Общее упорядочивание, инвариантное к сдвигу, фиксируется классом типов `Signed[A]` -

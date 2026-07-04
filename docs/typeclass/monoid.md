@@ -182,6 +182,12 @@ classDiagram
     class Field~A~
     EuclideanRing <|-- Field
     CommutativeSemifield <|-- Field
+
+    class BoolRng~A~
+    CommutativeRng <|-- BoolRng
+    class BoolRing~A~
+    BoolRng <|-- BoolRing
+    CommutativeRing <|-- BoolRing
 ```
 
 ---

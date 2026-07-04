@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = crig.html
 showNext = true
-nextPage = semifield.html
+nextPage = boolean-algebra.html
 %}
 
 # Коммутативное кольцо

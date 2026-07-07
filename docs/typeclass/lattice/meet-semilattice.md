@@ -33,12 +33,6 @@ trait MeetSemilattice[A]:
     * для двух элементов.
     */
   def meet(lhs: A, rhs: A): A
-
-  /** Проверяет, является ли один элемент "меньше или равен" другому
-    * в смысле порядка, индуцированного операцией meet.
-    */
-  def leq(a: A, b: A)(using Eq[A]): Boolean =
-    Eq[A].eqv(meet(a, b), a)
 ```
 
 ## Примеры
@@ -68,10 +62,8 @@ trait MeetSemilattice[A]:
 ```mermaid
 classDiagram
     class MeetSemilattice~A~ {
-        +meet(lhs: A, rhs: A): A
+        +meet(lhs: A, rhs: A) A
     }
-
-    note for MeetSemilattice "Аксиомы:\n• Идемпотентность\n• Коммутативность\n• Ассоциативность"
 ```
 
 ## Реализация в библиотеках

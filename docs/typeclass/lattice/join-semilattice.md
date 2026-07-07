@@ -33,12 +33,6 @@ trait JoinSemilattice[A]:
     * для двух элементов.
     */
   def join(lhs: A, rhs: A): A
-
-  /** Проверяет, является ли один элемент "меньше или равен" другому
-    * в смысле порядка, индуцированного операцией join.
-    */
-  def leq(a: A, b: A)(using Equal[A]): Boolean =
-    Equal[A].equal(join(a, b), b)
 ```
 
 ## Примеры
@@ -70,8 +64,6 @@ classDiagram
     class JoinSemilattice~A~ {
         +join(lhs: A, rhs: A) A
     }
-
-    note for JoinSemilattice "Аксиомы:\n• Идемпотентность\n• Коммутативность\n• Ассоциативность"
 ```
 
 ## Реализация в библиотеках

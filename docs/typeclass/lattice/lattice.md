@@ -109,7 +109,7 @@ classDiagram
         +meet(lhs: A, rhs: A) A
     }
     class Lattice~A~ {
-        +dual(): Lattice~A~
+        +dual() Lattice~A~
     }
 
     JoinSemilattice <|-- Lattice

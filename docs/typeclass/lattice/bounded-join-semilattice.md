@@ -71,8 +71,8 @@ classDiagram
         +join(lhs: A, rhs: A) A
     }
     class BoundedJoinSemilattice~A~ {
-        +zero A
-        +isZero(a: A)(using Eq[A]) Boolean
+        +zero: A
+        +isZero(a: A)(using Equal[A]) Boolean
     }
 
     JoinSemilattice <|-- BoundedJoinSemilattice
@@ -81,8 +81,6 @@ classDiagram
 ## Реализация в библиотеках
 
 ### Реализация в Cats
-
-В Cats `BoundedJoinSemilattice` представлена типажом `BoundedSemilattice`:
 
 ```dotty
 import cats.*

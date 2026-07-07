@@ -89,8 +89,6 @@ classDiagram
 
 ### Реализация в Cats
 
-В Cats дистрибутивная решётка представлена типажом `DistributiveLattice`:
-
 ```dotty
 import algebra.lattice.Lattice
 import cats.*

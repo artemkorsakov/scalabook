@@ -120,8 +120,6 @@ classDiagram
 
 ### Реализация в Cats
 
-В Cats решётка представлена типажом `Lattice`:
-
 ```dotty
 import algebra.lattice.Lattice
 import cats.*

@@ -5,7 +5,7 @@ showNext = true
 nextPage = meet-semilattice.html
 %}
 
-# Полурешётка объединения (JoinSemilattice)
+# Полурешётка объединения
 
 ## Формальное определение
 

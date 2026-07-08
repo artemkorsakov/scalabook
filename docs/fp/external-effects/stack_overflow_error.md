@@ -815,6 +815,7 @@ def isOdd(n: Int): TailRec[Boolean] =
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
+- [Эффект трамплина в Scala. WTF?!](https://vkvideo.ru/video-211972724_456239234)
 - [Functional Programming in Scala, Second Edition, Chapter 13](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 
 [sample]: https://gitverse.ru/scalabook/fp

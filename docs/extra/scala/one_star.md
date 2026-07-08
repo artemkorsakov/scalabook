@@ -147,24 +147,25 @@ nextPage = two_stars.html
 - В алфавитном порядке внутри категорий
 @:@
 
-| Название                                                                                                                    | 📺 Версия  | 🌐 Язык  | 📅 Год  | 💬 Комментарий               |
-|-----------------------------------------------------------------------------------------------------------------------------|:----------:|:--------:|---------|------------------------------|
-| [**Scala: Война Эффектов (ZIO vs Cats Effect)**](https://www.youtube.com/watch?v=jRVvj_2yWkE)                               |  Scala 3   | 🇷🇺 RU  | 2021    | Олег Нижников                |
-| [**10+ Scala Concepts You Need to Know**](https://www.youtube.com/watch?v=nI57LUpjGrk)                                      |  Scala 3   | 🇬🇧 EN  | 2023    | DevInsideYou                 |
-| [**A Tour of Scala 3**](https://www.youtube.com/watch?v=_Rnrx2lo9cw)                                                        |  Scala 3   | 🇬🇧 EN  | 2023    | Martin Odersky               |
-| [**Property-Based Testing**](https://www.youtube.com/watch?v=FS_VJOQfogc)                                                   |  Scala 3   | 🇬🇧 EN  | 2023    |                              |
-| [**Scala 3**](https://www.youtube.com/watch?v=orTmm6OMaLw&list=PLmtsMNDRU0BwsVUbhsH2HMqDMPNhQ0HPc)                          |  Scala 3   | 🇬🇧 EN  | 2020    | Rock the JVM (плейлист)      |
-| [**Scala Beyond 3.0**](https://www.youtube.com/watch?v=NXTjnowBx-c)                                                         |  Scala 3   | 🇬🇧 EN  | 2021    | Martin Odersky               |
-| [**Scala Tips**](https://www.youtube.com/playlist?list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)                                  |  Scala 3   | 🇬🇧 EN  | 2023    | Rock the JVM (плейлист)      |
-| [**Scala's Role in PL Ecosystem**](https://www.youtube.com/watch?v=7mTNZeiIK7E)                                             |  Scala 3   | 🇬🇧 EN  | 2023    | Martin Odersky               |
-| [**The Best Scala Libraries I Use in Every Project**](https://www.youtube.com/watch?v=ZymD5NuOwdA)                          |  Scala 3   | 🇬🇧 EN  | 2023    | DevInsideYou                 |
-| [**Basics of Object-Orientation**](https://www.youtube.com/watch?v=ILk_WBYsqec&list=PLF6CAC63C615DB881)                     |  Scala 2   | 🇬🇧 EN  | 2013    | Mark Lewis (плейлист)        |
-| [**Data Juggling**](https://www.youtube.com/watch?v=ezz0BpEHEQY&list=PLJGDHERh23x9Wzcbc7j9ZDl03tKQF5QDN&index=1)            |  Scala 2   | 🇬🇧 EN  | 2020    | DevInsideYou (плейлист)      |
-| [**Intro to Programming with Scala**](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF)  |  Scala 2   | 🇬🇧 EN  | 2015    | (плейлист)                   |
-| [**Language-Agnostic Tips**](https://www.youtube.com/watch?v=0wmcCdoExbM&list=PLmtsMNDRU0ByxKWa4h2LMn9oXyeDEJbnC)           |  Scala 2   | 🇬🇧 EN  | 2021    | Rock the JVM (плейлист)      |
-| [**Scala at Light Speed**](https://www.youtube.com/playlist?list=PLmtsMNDRU0BxryRX4wiwrTZ661xcp6VPM)                        |  Scala 2   | 🇬🇧 EN  | 2020    | Rock the JVM (плейлист)      |
-| [**Scala Collections**](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE)                           |  Scala 2   | 🇬🇧 EN  | 2020    | DevInsideYou (плейлист)      |
-| [**Scala Variables**](https://www.youtube.com/watch?v=dhe1T_ttPTI&list=PLmtsMNDRU0By6XxGZIcynXYi5RaZtaZC1)                  |  Scala 2   | 🇬🇧 EN  | 2020    | Rock the JVM (плейлист)      |
-| [**Scala: Your First PL**](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                        |  Scala 2   | 🇬🇧 EN  | 2022    | DevInsideYou (плейлист)      |
-| [**Type-Level Programming**](https://www.youtube.com/watch?v=qwUYqv6lKtQ&list=PLmtsMNDRU0ByOQoz6lnihh6CtMrErNax7)           |  Scala 2   | 🇬🇧 EN  | 2021    | Rock the JVM (плейлист)      |
-| [**Vivisecting the Veil of Variance**](https://www.youtube.com/watch?v=dPbbqrhm-WY)                                         |  Scala 2   | 🇬🇧 EN  | 2023    |                              |
+| Название                                                                                                                   | 📺 Версия | 🌐 Язык  | 📅 Год | 💬 Комментарий          |
+|----------------------------------------------------------------------------------------------------------------------------|:---------:|:--------:|--------|-------------------------|
+| [**Scala: Война Эффектов (ZIO vs Cats Effect)**](https://www.youtube.com/watch?v=jRVvj_2yWkE)                              |  Scala 3  | 🇷🇺 RU  | 2021   | Олег Нижников           |
+| [**Декомпозиция в Scala 3**](https://vkvideo.ru/video-211972724_456239235)                                                 |  Scala 3  | 🇷🇺 RU  | 2023   |                         |
+| [**10+ Scala Concepts You Need to Know**](https://www.youtube.com/watch?v=nI57LUpjGrk)                                     |  Scala 3  | 🇬🇧 EN  | 2023   | DevInsideYou            |
+| [**A Tour of Scala 3**](https://www.youtube.com/watch?v=_Rnrx2lo9cw)                                                       |  Scala 3  | 🇬🇧 EN  | 2023   | Martin Odersky          |
+| [**Property-Based Testing**](https://www.youtube.com/watch?v=FS_VJOQfogc)                                                  |  Scala 3  | 🇬🇧 EN  | 2023   |                         |
+| [**Scala 3**](https://www.youtube.com/watch?v=orTmm6OMaLw&list=PLmtsMNDRU0BwsVUbhsH2HMqDMPNhQ0HPc)                         |  Scala 3  | 🇬🇧 EN  | 2020   | Rock the JVM (плейлист) |
+| [**Scala Beyond 3.0**](https://www.youtube.com/watch?v=NXTjnowBx-c)                                                        |  Scala 3  | 🇬🇧 EN  | 2021   | Martin Odersky          |
+| [**Scala Tips**](https://www.youtube.com/playlist?list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)                                 |  Scala 3  | 🇬🇧 EN  | 2023   | Rock the JVM (плейлист) |
+| [**Scala's Role in PL Ecosystem**](https://www.youtube.com/watch?v=7mTNZeiIK7E)                                            |  Scala 3  | 🇬🇧 EN  | 2023   | Martin Odersky          |
+| [**The Best Scala Libraries I Use in Every Project**](https://www.youtube.com/watch?v=ZymD5NuOwdA)                         |  Scala 3  | 🇬🇧 EN  | 2023   | DevInsideYou            |
+| [**Basics of Object-Orientation**](https://www.youtube.com/watch?v=ILk_WBYsqec&list=PLF6CAC63C615DB881)                    |  Scala 2  | 🇬🇧 EN  | 2013   | Mark Lewis (плейлист)   |
+| [**Data Juggling**](https://www.youtube.com/watch?v=ezz0BpEHEQY&list=PLJGDHERh23x9Wzcbc7j9ZDl03tKQF5QDN&index=1)           |  Scala 2  | 🇬🇧 EN  | 2020   | DevInsideYou (плейлист) |
+| [**Intro to Programming with Scala**](https://www.youtube.com/watch?v=V-wKBH-gUeo&list=PLLMXbkbDbVt9z5dcm7uRgG3Fhw3u9LKoF) |  Scala 2  | 🇬🇧 EN  | 2015   | (плейлист)              |
+| [**Language-Agnostic Tips**](https://www.youtube.com/watch?v=0wmcCdoExbM&list=PLmtsMNDRU0ByxKWa4h2LMn9oXyeDEJbnC)          |  Scala 2  | 🇬🇧 EN  | 2021   | Rock the JVM (плейлист) |
+| [**Scala at Light Speed**](https://www.youtube.com/playlist?list=PLmtsMNDRU0BxryRX4wiwrTZ661xcp6VPM)                       |  Scala 2  | 🇬🇧 EN  | 2020   | Rock the JVM (плейлист) |
+| [**Scala Collections**](https://www.youtube.com/playlist?list=PLJGDHERh23x-4bTASKbtwhhAuP6rYQJqE)                          |  Scala 2  | 🇬🇧 EN  | 2020   | DevInsideYou (плейлист) |
+| [**Scala Variables**](https://www.youtube.com/watch?v=dhe1T_ttPTI&list=PLmtsMNDRU0By6XxGZIcynXYi5RaZtaZC1)                 |  Scala 2  | 🇬🇧 EN  | 2020   | Rock the JVM (плейлист) |
+| [**Scala: Your First PL**](https://www.youtube.com/playlist?list=PLJGDHERh23x-YBJ8LmYU_IGBFflvsKfLu)                       |  Scala 2  | 🇬🇧 EN  | 2022   | DevInsideYou (плейлист) |
+| [**Type-Level Programming**](https://www.youtube.com/watch?v=qwUYqv6lKtQ&list=PLmtsMNDRU0ByOQoz6lnihh6CtMrErNax7)          |  Scala 2  | 🇬🇧 EN  | 2021   | Rock the JVM (плейлист) |
+| [**Vivisecting the Veil of Variance**](https://www.youtube.com/watch?v=dPbbqrhm-WY)                                        |  Scala 2  | 🇬🇧 EN  | 2023   |                         |

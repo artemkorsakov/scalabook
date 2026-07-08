@@ -146,8 +146,6 @@ classDiagram
 
 ### Реализация в Cats
 
-В библиотеке Cats алгебра Гейтинга представлена типажом `Heyting`:
-
 ```dotty
 import algebra.lattice.Heyting
 import cats.*

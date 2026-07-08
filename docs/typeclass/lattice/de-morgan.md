@@ -124,8 +124,6 @@ classDiagram
 
 ### Реализация в Cats
 
-В библиотеке Cats алгебра Де Моргана представлена типажом `DeMorgan`:
-
 ```dotty
 import algebra.lattice.DeMorgan
 import cats.*

@@ -56,27 +56,72 @@ classDiagram
   class JoinSemilattice~A~ {
     +join(lhs: A, rhs: A) A
   }
-  class MeetSemilattice~A~ {
-    +meet(lhs: A, rhs: A) A
-  }
-  class Lattice~A~ {
-    +dual() Lattice~A~
-  }
-  class DistributiveLattice~A~
   class BoundedJoinSemilattice~A~ {
     +zero: A
     +isZero(a: A)(using Equal[A]) Boolean
+  }
+  class MeetSemilattice~A~ {
+    +meet(lhs: A, rhs: A) A
   }
   class BoundedMeetSemilattice~A~ {
     +one: A
     +isOne(a: A)(using Equal[A]) Boolean
   }
+  class Lattice~A~ {
+    +dual() Lattice~A~
+  }
+  class DistributiveLattice~A~
+  class BoundedLattice~A~
+  class BoundedDistributiveLattice~A~
+  class Logic~A~ {
+    +and(a: A, b: A) A
+    +or(a: A, b: A) A
+    +not(a: A) A
+    +xor(a: A, b: A) A
+    +nand(a: A, b: A) A
+    +nor(a: A, b: A) A
+    +nxor(a: A, b: A) A
+  }
+  class DeMorgan~A~ {
+    +imp(a: A, b: A) A
+  }
+  class Heyting~A~ {
+    +and(a: A, b: A) A
+    +or(a: A, b: A) A
+    +imp(a: A, b: A) A
+    +complement(a: A) A
+    +xor(a: A, b: A) A
+    +nand(a: A, b: A) A
+    +nor(a: A, b: A) A
+    +nxor(a: A, b: A) A
+  }
+  class GenBool~A~ {
+    +and(a: A, b: A) A
+    +or(a: A, b: A) A
+    +zero: A
+    +without(a: A, b: A) A
+    +xor(a: A, b: A) A
+  }
+  class Bool~A~
 
   JoinSemilattice <|-- Lattice
-  MeetSemilattice <|-- Lattice
-  Lattice <|-- DistributiveLattice
   JoinSemilattice <|-- BoundedJoinSemilattice
+  MeetSemilattice <|-- Lattice
   MeetSemilattice <|-- BoundedMeetSemilattice
+  BoundedJoinSemilattice <|-- BoundedLattice
+  BoundedMeetSemilattice <|-- BoundedLattice
+  Lattice <|-- BoundedLattice
+  BoundedLattice <|-- BoundedDistributiveLattice
+  Lattice <|-- DistributiveLattice
+  DistributiveLattice <|-- BoundedDistributiveLattice
+  BoundedDistributiveLattice <|-- Logic
+  Logic <|-- DeMorgan
+  BoundedDistributiveLattice <|-- Heyting
+  BoundedJoinSemilattice <|-- GenBool
+  DistributiveLattice <|-- GenBool
+  DeMorgan <|-- Bool
+  Heyting <|-- Bool
+  GenBool <|-- Bool
 ```
 
 ---

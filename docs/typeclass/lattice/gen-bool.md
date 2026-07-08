@@ -174,8 +174,6 @@ given genBoolSet[A]: GenBool[Set[A]] with
 
 ### Реализация в Cats
 
-В библиотеке Cats обобщённая булева алгебра представлена типажом `GenBool`:
-
 ```dotty
 import algebra.lattice.GenBool
 import cats.*

@@ -111,9 +111,13 @@ classDiagram
     class BoundedLattice~A~
     class BoundedDistributiveLattice~A~
     class Logic~A~ {
-        +and(a: A, b: A) A
-        +or(a: A, b: A) A
-        +not(a: A) A
+       +and(a: A, b: A) A
+       +or(a: A, b: A) A
+       +not(a: A) A
+       +xor(a: A, b: A) A
+       +nand(a: A, b: A) A
+       +nor(a: A, b: A) A
+       +nxor(a: A, b: A) A
     }
 
     JoinSemilattice <|-- Lattice

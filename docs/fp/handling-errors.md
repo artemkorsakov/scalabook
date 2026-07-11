@@ -881,11 +881,711 @@ def createUserDetailed(
 
 @:@
 
+## Ior: Инклюзивная обработка ошибок и предупреждений
+
+### Введение в инклюзивные логические отношения
+
+В функциональном программировании часто возникает необходимость передавать не только успешные результаты или ошибки, 
+но и **предупреждения** (warnings) — важную информацию, которая не является критичной, но может быть полезной для вызывающего кода. 
+Стандартный тип `Either` (исключающее ИЛИ) не позволяет одновременно вернуть и результат, 
+и дополнительную информацию об ошибке — он представляет только **один из двух вариантов**.
+
+Тип `Ior` (сокращение от "inclusive-or" — инклюзивное ИЛИ) решает эту проблему, 
+позволяя хранить **либо** значение типа `A`, **либо** значение типа `B`, **либо оба значения одновременно**.
+
+### Тип Ior: концепция и определение
+
+`Ior` — это алгебраический тип данных, представляющий инклюзивное отношение между двумя типами:
+
+```dotty
+enum Ior[+A, +B]:
+  case Left(value: A)          // Только значение типа A
+  case Right(value: B)         // Только значение типа B
+  case Both(left: A, right: B) // Одновременно A и B
+```
+
+Ключевые особенности:
+
+- Три конструктора: `Left`, `Right` и `Both`
+- Ковариантность по обоим параметрам типа (`+A`, `+B`)
+- **Правостороннее смещение** (right-biased): операции `map` и `flatMap` работают с правой стороной (тип `B`)
+- Аналогия с `Either`, но с дополнительной возможностью хранить оба значения
+
+| Характеристика  | Either                           | Ior                                              |
+|-----------------|----------------------------------|--------------------------------------------------|
+| Варианты        | `Left(error)` или `Right(value)` | `Left(a)`, `Right(b)` или `Both(a, b)`           |
+| Семантика       | Исключающее ИЛИ (либо A, либо B) | Инклюзивное ИЛИ (либо A, либо B, либо оба)       |
+| Хранение ошибки | Только ошибка                    | Ошибка или предупреждение + результат            |
+| Информативность | Ограниченная                     | Расширенная (возможность передавать доп. данные) |
+
+### Практическое применение Ior
+
+В дальнейшем будет использоваться реализация Ior из библиотеки [cats-effect](../cats-effect/index.md).
+
+#### Создание значений Ior
+
+```dotty
+import cats.data.*
+
+// Создание через фабричные методы:
+val right = Ior.right[String, Int](3)
+// Right(3) - успешный результат
+val left = Ior.left[String, Int]("Error")
+// Left("Error") - только ошибка
+val both = Ior.both("Warning", 3)
+// Both("Warning", 3) - предупреждение + результат
+
+// Создание через синтаксис (требует импорта):
+import cats.syntax.all.*
+
+val rightSyntax = 3.rightIor      // Ior.right(3)
+val leftSyntax  = "Error".leftIor // Ior.left("Error")
+```
+
+#### Пример 1: Валидация с накоплением предупреждений
+
+Классический пример использования `Ior` — валидация данных, 
+когда мы хотим накапливать **предупреждения** (некритичные замечания), 
+но останавливаемся только на **критических ошибках**:
+
+```dotty
+import cats.syntax.all.*
+import cats.data.{NonEmptyChain as Nec, Ior}
+
+// Тип для накопления ошибок/предупреждений
+type Failures = Nec[String]
+
+case class Username(value: String) extends AnyVal
+case class Password(value: String) extends AnyVal
+case class User(name: Username, pw: Password)
+
+def validateUsername(u: String): Failures Ior Username =
+  if u.isEmpty then
+    // Критическая ошибка - только Left
+    Nec.one("Имя пользователя не может быть пустым").leftIor
+  else if u.contains(".") then
+    // Предупреждение + успешный результат
+    Ior.both(Nec.one("Использование точки в имени устарело"), Username(u))
+  else
+    // Успех без предупреждений
+    Username(u).rightIor
+
+def validatePassword(p: String): Failures Ior Password =
+  if p.length < 8 then
+    // Критическая ошибка
+    Nec.one("Пароль слишком короткий").leftIor
+  else if p.length < 10 then
+    // Предупреждение + успешный результат
+    Ior.both(Nec.one("Пароль должен быть длиннее"), Password(p))
+  else
+    Password(p).rightIor
+
+def validateUser(name: String, password: String): Failures Ior User =
+  (validateUsername(name), validatePassword(password)).mapN(User.apply)
+```
+
+#### Пример 2: Обработка результатов валидации
+
+```dotty
+validateUser("John", "password12")
+// Right(User(Username("John"), Password("password12"))) - успех без предупреждений
+
+validateUser("john.doe", "password")
+// Both(
+//   Chain(Использование точки в имени устарело, Пароль должен быть длиннее),
+//   User(Username(john.doe),Password(password))
+// )
+
+validateUser("jane", "short")
+// Left(Ошибка: пароль слишком короткий)
+```
+
+#### Извлечение значений
+
+Для извлечения данных из `Ior` используется метод `fold`, который принимает три функции — по одной для каждого случая:
+
+```dotty
+validateUser("john.doe", "password").fold(
+  // Только ошибки
+  errorNec => s"Ошибка: ${errorNec.head}",
+  // Только успех
+  user => s"Успех: $user",
+  // Предупреждения + успех
+  (warnings, user) =>
+    s"Предупреждение: ${user.name.value}; Следующие предупреждения обнаружены: ${warnings.head}"
+)
+// "Предупреждение: john.doe; Следующие предупреждения обнаружены: Использование точки в имени устарело"
+
+validateUser("John", "password12").fold(
+  errorNec => s"Ошибка: ${errorNec.head}",
+  user => s"Успех: $user",
+  (warnings, user) =>
+    s"Предупреждение: ${user.name.value}; Следующие предупреждения обнаружены: ${warnings.head}"
+)
+// "Успех: User(Username(John),Password(password12))"
+```
+
+### Использование с NonEmptyChain
+
+Для `Ior` существует специализированный псевдоним с `NonEmptyChain` для накопления ошибок на левой стороне:
+
+```dotty
+import cats.data.NonEmptyChain
+
+type IorNec[B, A] = Ior[NonEmptyChain[B], A]
+```
+
+Это позволяет удобно накапливать несколько ошибок или предупреждений:
+
+```dotty
+import cats.syntax.all.*
+import cats.data.{ IorNec, NonEmptyChain}
+
+val left: IorNec[String, Int] = Ior.fromEither("Ошибка".leftNec[Int])
+// Ior.left(NonEmptyChain("Ошибка"))
+```
+
+### Преобразования
+
+`Ior` поддерживает преобразование в другие типы данных. Важно: **все преобразования отбрасывают левое значение, если присутствует Both**:
+
+```dotty
+// Both превращается в Either.Right, теряя предупреждение
+Ior.both("Предупреждение", 42).toEither
+// Right(42)
+
+// Right превращается в Either.Right
+Ior.right[String, Int](42).toEither
+// Right(42)
+
+// Left превращается в Either.Left
+Ior.left[String, Int]("Ошибка").toEither
+// Left("Ошибка")
+```
+
+### Рекомендации по использованию
+
+#### 1. Когда использовать Ior
+
+- **Валидация с предупреждениями**: когда нужно вернуть и результат, и нефатальные замечания
+- **Системы с накоплением ошибок**: когда ошибки накапливаются, но не останавливают вычисления
+- **Логирование**: когда нужно вернуть результат вместе с диагностической информацией
+- **API с предупреждениями**: когда спецификация API позволяет возвращать предупреждения
+
+#### 2. Когда использовать Either
+
+- **Критические ошибки**: когда ошибка останавливает дальнейшие вычисления
+- **Исключительные ситуации**: когда нужна только ошибка или только результат
+- **Простая обработка ошибок**: когда информация о предупреждениях не требуется
+
+### Сравнение с Option и Either
+
+| Характеристика                           | Option                 | Either             | Ior                          |
+|------------------------------------------|------------------------|--------------------|------------------------------|
+| Варианты                                 | `Some`/`None`          | `Left`/`Right`     | `Left`/`Right`/`Both`        |
+| Информация об ошибке                     | Нет                    | Да                 | Да (включая предупреждения)  |
+| Одновременный результат и предупреждение | Нет                    | Нет                | Да (`Both`)                  |
+| Семантика                                | Есть/нет               | Либо `А`, либо `B` | Либо `А`, либо `B`, либо оба |
+| Применение                               | Отсутствующее значение | Ошибка             | Ошибка + предупреждение      |
+| Накопление ошибок                        | Нет                    | Нет                | Да (с `Semigroup`)           |
+
+### Заключение
+
+`Ior` — это мощный инструмент для сценариев, где недостаточно простого `Either`. 
+Он позволяет явно передавать как ошибки, так и предупреждения, сохраняя при этом возможность работать с успешными результатами. 
+Это делает его идеальным выбором для:
+
+- API, возвращающих предупреждения вместе с данными
+- Валидации с частичным успехом
+- Систем, где предупреждения не должны останавливать выполнение
+
+## Validated: Накопление ошибок при валидации
+
+### Введение в проблему накопления ошибок
+
+Представьте, что вы заполняете веб-форму для регистрации аккаунта. Вы вводите имя пользователя и пароль и отправляете форму. 
+В ответ приходит сообщение, что имя пользователя не может содержать дефисы. Вы исправляете и отправляете снова. 
+Теперь сообщение, что не могут быть специальные символы. Снова исправляете и отправляете. 
+Пароль должен содержать хотя бы одну заглавную букву. Исправляете, отправляете. Пароль должен содержать хотя бы одну цифру.
+
+Было бы гораздо удобнее получать **все ошибки одновременно**. 
+Проверка имени на дефисы может выполняться независимо от проверки на специальные символы, 
+равно как и проверка пароля на различные требования. 
+Некорректно заполненное поле в конфигурации может проверяться отдельно от другого поля.
+
+Именно для таких сценариев существует тип `Validated`.
+
+### Тип Validated: концепция и определение
+
+`Validated` — это алгебраический тип данных, представляющий результат вычисления, 
+который может быть либо успешным (`Valid`), либо содержать ошибку (`Invalid`). 
+В отличие от `Either`, `Validated` предназначен для **накопления ошибок** при помощи `Applicative` и **не является монадой**.
+
+#### Структура типа
+
+```dotty
+sealed abstract class Validated[+E, +A] extends Product with Serializable
+
+final case class Valid[+A](a: A)   extends Validated[Nothing, A]
+final case class Invalid[+E](e: E) extends Validated[E, Nothing]
+```
+
+#### Сравнение с Either
+
+| Характеристика | Either                     | Validated                        |
+|----------------|----------------------------|----------------------------------|
+| Семантика      | Первая ошибка (fail-fast)  | Все ошибки (error-accumulation)  |
+| Монада         | Да (есть `flatMap`)        | Нет (только `Applicative`)       |
+| Композиция     | For-comprehension          | `mapN`, `tupleN`                 |
+| Тип ошибки     | Одна ошибка                | Множество ошибок (с `Semigroup`) |
+| Применение     | Последовательная валидация | Параллельная валидация           |
+
+### Первый подход: Fail-fast с Either
+
+Рассмотрим пример валидации регистрационной формы с использованием `Either`. Наша модель данных:
+
+```dotty
+final case class RegistrationData(
+    username: String,
+    password: String,
+    firstName: String,
+    lastName: String,
+    age: Int
+)
+```
+
+Модель ошибок:
+
+```dotty
+sealed trait DomainValidation:
+  def errorMessage: String
+
+case object UsernameHasSpecialCharacters extends DomainValidation:
+  def errorMessage: String =
+    "Имя пользователя не может содержать специальные символы."
+
+case object PasswordDoesNotMeetCriteria extends DomainValidation:
+  def errorMessage: String =
+    "Пароль должен содержать минимум 10 символов, включая заглавную и строчную буквы, цифру и специальный символ."
+
+case object FirstNameHasSpecialCharacters extends DomainValidation:
+  def errorMessage: String =
+    "Имя не может содержать пробелы, цифры или специальные символы."
+
+case object LastNameHasSpecialCharacters extends DomainValidation:
+  def errorMessage: String =
+    "Фамилия не может содержать пробелы, цифры или специальные символы."
+
+case object AgeIsInvalid extends DomainValidation:
+  def errorMessage: String = "Возраст должен быть от 18 до 75 лет."
+```
+
+Реализация валидатора с `Either`:
+
+```dotty
+import cats.syntax.all.*
+
+sealed trait FormValidator:
+  def validateUserName(userName: String): Either[DomainValidation, String] =
+    Either.cond(
+      userName.matches("^[a-zA-Z0-9]+$"),
+      userName,
+      UsernameHasSpecialCharacters
+    )
+
+  def validatePassword(password: String): Either[DomainValidation, String] =
+    Either.cond(
+      password.matches(
+        "(?=^.{10,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$"
+      ),
+      password,
+      PasswordDoesNotMeetCriteria
+    )
+
+  def validateFirstName(firstName: String): Either[DomainValidation, String] =
+    Either.cond(
+      firstName.matches("^[a-zA-Z]+$"),
+      firstName,
+      FirstNameHasSpecialCharacters
+    )
+
+  def validateLastName(lastName: String): Either[DomainValidation, String] =
+    Either.cond(
+      lastName.matches("^[a-zA-Z]+$"),
+      lastName,
+      LastNameHasSpecialCharacters
+    )
+
+  def validateAge(age: Int): Either[DomainValidation, Int] =
+    Either.cond(
+      age >= 18 && age <= 75,
+      age,
+      AgeIsInvalid
+    )
+
+  def validateForm(
+      username: String,
+      password: String,
+      firstName: String,
+      lastName: String,
+      age: Int
+  ): Either[DomainValidation, RegistrationData] =
+    for
+      validatedUserName  <- validateUserName(username)
+      validatedPassword  <- validatePassword(password)
+      validatedFirstName <- validateFirstName(firstName)
+      validatedLastName  <- validateLastName(lastName)
+      validatedAge       <- validateAge(age)
+    yield RegistrationData(
+      validatedUserName,
+      validatedPassword,
+      validatedFirstName,
+      validatedLastName,
+      validatedAge
+    )
+end FormValidator
+
+object FormValidator extends FormValidator
+```
+
+Проблема: for-comprehension **прерывается на первой ошибке** (fail-fast). 
+Если несколько полей невалидны, мы увидим только первую ошибку:
+
+```dotty
+FormValidator.validateForm(
+  username = "fakeUs3rname",
+  password = "password",
+  firstName = "John",
+  lastName = "Doe",
+  age = 15
+)
+// Left(UsernameHasSpecialCharacters) - только первая ошибка!
+```
+
+### Встреча с Validated и Applicative
+
+Для накопления всех ошибок мы используем `Validated` с `NonEmptyChain`:
+
+```dotty
+import cats.data.*
+import cats.data.Validated.*
+import cats.syntax.all.*
+
+sealed trait FormValidatorNec:
+  type ValidationResult[A] = ValidatedNec[DomainValidation, A]
+
+  private def validateUserName(userName: String): ValidationResult[String] =
+    if userName.matches("^[a-zA-Z0-9]+$") then userName.validNec
+    else UsernameHasSpecialCharacters.invalidNec
+
+  private def validatePassword(password: String): ValidationResult[String] =
+    if password.matches(
+        "(?=^.{10,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$"
+      )
+    then password.validNec
+    else PasswordDoesNotMeetCriteria.invalidNec
+
+  private def validateFirstName(firstName: String): ValidationResult[String] =
+    if firstName.matches("^[a-zA-Z]+$") then firstName.validNec
+    else FirstNameHasSpecialCharacters.invalidNec
+
+  private def validateLastName(lastName: String): ValidationResult[String] =
+    if lastName.matches("^[a-zA-Z]+$") then lastName.validNec
+    else LastNameHasSpecialCharacters.invalidNec
+
+  private def validateAge(age: Int): ValidationResult[Int] =
+    if age >= 18 && age <= 75 then age.validNec
+    else AgeIsInvalid.invalidNec
+
+  def validateForm(
+      username: String,
+      password: String,
+      firstName: String,
+      lastName: String,
+      age: Int
+  ): ValidationResult[RegistrationData] =
+    (
+      validateUserName(username),
+      validatePassword(password),
+      validateFirstName(firstName),
+      validateLastName(lastName),
+      validateAge(age)
+    ).mapN(RegistrationData.apply)
+end FormValidatorNec
+
+object FormValidatorNec extends FormValidatorNec
+```
+
+#### Ключевые изменения
+
+1. **`ValidatedNec[DomainValidation, A]`** — псевдоним для `Validated[NonEmptyChain[DomainValidation], A]`
+2. **`.validNec` и `.invalidNec`** — комбинаторы для подъёма в `ValidatedNec`
+3. **`.mapN(...)`** — applicative синтаксис для накопления ошибок
+4. **`NonEmptyChain`** — структура данных, гарантирующая наличие хотя бы одного элемента
+
+#### Результат работы
+
+```dotty
+// Успешная валидация
+FormValidatorNec.validateForm(
+  username = "Joe",
+  password = "Passw0r$1234",
+  firstName = "John",
+  lastName = "Doe",
+  age = 21
+)
+// Valid(RegistrationData(Joe,Passw0r$1234,John,Doe,21))
+
+// Валидация с ошибками - ВСЕ ошибки собраны!
+FormValidatorNec.validateForm(
+  username = "Joe%%%",
+  password = "password",
+  firstName = "John",
+  lastName = "Doe",
+  age = 21
+)
+// Invalid(Chain(UsernameHasSpecialCharacters, PasswordDoesNotMeetCriteria))
+```
+
+### Накопление ошибок: Semigroup
+
+`Validated` накапливает ошибки с помощью [`Semigroup`](../typeclass/monoid/semigroup.md). 
+`NonEmptyChain` по умолчанию имеет экземпляр `Semigroup`, объединяющий две цепочки:
+
+```dotty
+NonEmptyChain.one[DomainValidation](UsernameHasSpecialCharacters) |+|
+NonEmptyChain[DomainValidation](FirstNameHasSpecialCharacters, LastNameHasSpecialCharacters)
+```
+
+Вы можете определить собственный способ комбинирования ошибок, предоставив свою реализацию `Semigroup`.
+
+### Преобразования: Validated ↔ Either
+
+#### Из Either в Validated
+
+```dotty
+FormValidator.validateUserName("Joe%%%").toValidatedNec
+// Invalid(NonEmptyChain(UsernameHasSpecialCharacters))
+```
+
+#### Из Validated в Either
+
+```dotty
+FormValidatorNec.validateForm(
+  username = "Joe",
+  password = "Passw0r$1234",
+  firstName = "John",
+  lastName = "Doe",
+  age = 21
+).toEither
+// Right(RegistrationData(Joe,Passw0r$1234,John,Doe,21))
+
+FormValidatorNec.validateForm(
+  username = "Joe123#",
+  password = "password",
+  firstName = "John",
+  lastName = "Doe",
+  age = 5
+).toEither
+// Left(Chain(UsernameHasSpecialCharacters, PasswordDoesNotMeetCriteria, AgeIsInvalid))
+```
+
+### Практический пример: Парсинг конфигурации
+
+Рассмотрим более сложный пример — парсинг конфигурационного файла:
+
+```dotty
+import cats.data.*
+import cats.syntax.all.*
+import cats.Semigroup
+
+// Класс типов Read для парсинга значений
+trait Read[A]:
+  def read(s: String): Option[A]
+
+object Read:
+  def apply[A: Read as r]: Read[A] = r
+
+  given Read[String] =
+    (s: String) => Some(s).filter(_.nonEmpty)
+
+  given Read[Int] =
+    (s: String) =>
+      if s.matches("-?[0-9]+") then Some(s.toInt)
+      else None
+
+// Модель ошибок
+sealed abstract class ConfigError
+final case class MissingConfig(field: String) extends ConfigError
+final case class ParseError(field: String)    extends ConfigError
+
+// Конфигурация
+case class Config(map: Map[String, String]):
+  def parse[A: Read](key: String): Validated[ConfigError, A] =
+    map.get(key) match
+      case None        => Validated.Invalid(MissingConfig(key))
+      case Some(value) =>
+        Read[A].read(value) match
+          case None    => Validated.Invalid(ParseError(key))
+          case Some(a) => Validated.Valid(a)
+```
+
+#### Параллельная валидация
+
+```dotty
+import cats.data.*
+import cats.syntax.all.*
+import Read.given
+
+case class ConnectionParams(url: String, port: Int)
+
+val config = Config(Map(("endpoint", ""), ("port", "not an int")))
+
+given Semigroup[NonEmptyChain[ConfigError]] =
+  SemigroupK[NonEmptyChain].algebra[ConfigError]
+
+// Собираем все ошибки
+val result = (
+  config.parse[String]("endpoint").toValidatedNec,
+  config.parse[Int]("port").toValidatedNec
+).mapN(ConnectionParams.apply)
+// Invalid(Chain(ParseError(endpoint), ParseError(port)))
+```
+
+### Почему Validated не является монадой?
+
+Если бы `Validated` был монадой, он имел бы метод `flatMap`. 
+Однако `flatMap` подразумевает последовательную (fail-fast) обработку, 
+что противоречит основной цели `Validated` — накоплению ошибок.
+
+```dotty
+import cats.Monad
+
+// Попытка создать Monad для Validated (не работает правильно)
+given validatedMonad[E]: Monad[[A] =>> Validated[E, A]] =
+  new Monad[[A] =>> Validated[E, A]]:
+    def flatMap[A, B](fa: Validated[E, A])(f: A => Validated[E, B])
+        : Validated[E, B] =
+      fa match
+        case Validated.Valid(a)       => f(a)
+        case i @ Validated.Invalid(_) => i
+
+    def pure[A](x: A): Validated[E, A] = Validated.Valid(x)
+
+    @annotation.tailrec
+    def tailRecM[A, B](a: A)(f: A => Validated[E, Either[A, B]])
+        : Validated[E, B] =
+      f(a) match
+        case Validated.Valid(Right(b)) => Validated.Valid(b)
+        case Validated.Valid(Left(a))  => tailRecM(a)(f)
+        case i @ Validated.Invalid(_)  => i
+        
+given validatedApplicative[E: Semigroup as semi]
+    : Applicative[[A] =>> Validated[E, A]] =
+  new Applicative[[A] =>> Validated[E, A]]:
+    def pure[A](x: A): Validated[E, A] =
+      Validated.valid(x)
+
+    def ap[A, B](ff: Validated[E, A => B])(fa: Validated[E, A])
+        : Validated[E, B] =
+      (ff, fa) match
+        case (Validated.Valid(f), Validated.Valid(a)) =>
+          Validated.Valid(f(a))
+        case (i @ Validated.Invalid(_), Validated.Valid(_)) => i
+        case (Validated.Valid(_), i @ Validated.Invalid(_)) => i
+        case (Validated.Invalid(e1), Validated.Invalid(e2)) =>
+          Validated.Invalid(semi.combine(e1, e2))        
+```
+
+Согласно [законам монады](../typeclass/monad/monad.md) должно выполняться следующее:
+
+```dotty
+fab.ap(fa) <-> fab.flatMap(f => fa.map(f))
+```
+
+Проблема: Закон выше не выполняется, `flatMap` и `ap` (applicative) становятся **неконсистентными**:
+
+```dotty
+val fab = Validated.invalidNec[String, Int => Double]("Ошибка 1")
+val fa  = Validated.invalidNec[String, Int]("Ошибка 2")
+
+// При использовании Monad (fail-fast)
+val monad = validatedMonad[NonEmptyChain[String]]
+monad.ap(fab)(fa)
+// Invalid(Ошибка 1) - первая ошибка
+monad.flatMap(fab)(f => fa.map(f))
+// Invalid(Ошибка 1) - первая ошибка
+
+// При использовании Applicative (накопление)
+val applicative = validatedApplicative[NonEmptyChain[String]]
+applicative.ap(fab)(fa)
+// Invalid(Ошибка 1, Ошибка 2) - обе ошибки
+```
+
+**Вывод**: `Validated` не может быть монадой, так как это нарушило бы законы `FlatMap`.
+
+### Validated vs Either: когда что использовать
+
+| Сценарий                                              | Рекомендация            |
+|-------------------------------------------------------|-------------------------|
+| Нужно накопить все ошибки                             | Используйте `Validated` |
+| Нужна последовательная валидация (зависимые проверки) | Используйте `Either`    |
+| Работа в for-comprehension                            | Используйте `Either`    |
+| Параллельная проверка независимых полей               | Используйте `Validated` |
+| API, требующее все ошибки сразу                       | Используйте `Validated` |
+| Первая ошибка останавливает процесс                   | Используйте `Either`    |
+
+### Последовательная валидация внутри Validated
+
+Иногда внутри накопительной валидации требуется последовательная проверка. `Validated` предоставляет методы:
+
+#### `andThen` (аналог flatMap)
+
+```dotty
+def positive(field: String, i: Int): Validated[ConfigError, Int] =
+  if i >= 0 then Validated.Valid(i)
+  else Validated.Invalid(ParseError(field))
+
+val houseNumber = config.parse[Int]("house_number").andThen { n =>
+  positive("house_number", n)
+}
+// Invalid(MissingConfig(house_number))
+```
+
+#### `withEither` (временное преобразование)
+
+```dotty
+def positiveEither(field: String, i: Int): Either[ConfigError, Int] =
+  if i >= 0 then Right(i)
+  else Left(ParseError(field))
+
+val houseNumber = config.parse[Int]("house_number").withEither {
+  (either: Either[ConfigError, Int]) =>
+    either.flatMap { i =>
+      positiveEither("house_number", i)
+    }
+}
+// Invalid(MissingConfig(house_number))
+```
+
+### Заключение
+
+`Validated` — это мощный инструмент для сценариев, требующих накопления ошибок. 
+В отличие от `Either`, он не является монадой, но предоставляет богатые возможности для параллельной валидации через `Applicative`. 
+Его использование особенно оправдано при:
+
+- Валидации форм с множеством полей
+- Парсинге конфигурации
+- Проверке входных данных API
+- Любых сценариях, где важно сообщить пользователю обо всех проблемах сразу
+
 ---
 
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
+- [Cats: Ior](https://typelevel.org/cats/datatypes/ior.html)
+- [Cats: Validated](https://typelevel.org/cats/datatypes/validated.html)
 - [Functional Programming in Scala, Second Edition, Chapter 4](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [I hate NULL and all its variants!](https://alexn.org/blog/2010/05/25/i-hate-null/)
 - [Making something out of nothing (or, why None is better than NaN and NULL)](https://blog.janestreet.com/making-something-out-of-nothing-or-why-none-is-better-than-nan-and-null/)

@@ -465,6 +465,8 @@ Free[F, A] =
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
+- [Cats: Free Applicative](https://typelevel.org/cats/datatypes/freeapplicative.html)
+- [Cats: Free Monad](https://typelevel.org/cats/datatypes/freemonad.html)
 - [Deriving the Free Monad](https://noelwelsh.com/posts/deriving-the-free-monad/)
 - [Free Monads Are Simple](https://underscore.io/blog/posts/2015/04/14/free-monads-are-simple.html)
 - [Free Monad in Scala](https://www.youtube.com/watch?v=lzlCjgRWPDU&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)

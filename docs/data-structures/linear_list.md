@@ -31,6 +31,9 @@ nextPage = linear_list/lists.html
 **Ссылки:**
 
 - [Исходный код][source]
+- [Cats: Chain](https://typelevel.org/cats/datatypes/chain.html)
+- [Cats: NonEmptyList](https://typelevel.org/cats/datatypes/nel.html)
+- [Cats: OneAnd](https://typelevel.org/cats/datatypes/oneand.html)
 - [Donald E. Knuth - The Art of Computer Programming, section 2.2.1](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 
 [source]: https://gitverse.ru/scalabook/algorithms

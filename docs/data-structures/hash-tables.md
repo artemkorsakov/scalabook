@@ -1,6 +1,8 @@
 {%
 showPrev = true
 prevPage = graph.html
+showNext = true
+nextPage = other.html
 %}
 
 # Хеш-таблицы

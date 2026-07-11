@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = id.html
 showNext = true
-nextPage = const.html
+nextPage = eval.html
 %}
 
 # Const: Тип-константа

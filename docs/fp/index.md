@@ -189,6 +189,8 @@ factorial(10)   // 3628800
 - [In Defense of OOFP](https://alexn.org/blog/2018/02/12/in-defense-oofp/)
 - [Introduction to Functional Programming - Bird, Wadler](https://archive.org/details/introductiontofu0000bird/mode/2up)
 - [Martians vs Monads: Null Considered Harmful](https://james-iry.blogspot.com/2007/08/martians-vs-monads-null-considered.html)
+- [Noumenal Null](https://apocalisp.wordpress.com/2008/05/03/null-vs-pure-reason/)
+- [Objects, Identity, and Concept-formation](https://blog.higher-order.com/blog/2008/12/04/no-such-thing/)
 - [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes/)
 - [Scala Exceptions - Try, try..catch and a caveat](https://yadukrishnan.live/scala-exceptions-try-trycatch-and-a-caveat)
 - [Scala Functional Programming Tutorial - Baeldung](https://www.baeldung.com/scala/functional-programming-series)

@@ -287,6 +287,7 @@ graph LR
 **Ссылки:**
 
 - [Ссылка на репозиторий с упражнениями][sample]
+- [A Proper Constant Function in Scala](https://apocalisp.wordpress.com/2010/04/21/a-proper-constant-function-in-scala/)
 - [Cats](https://typelevel.org/cats/datatypes/const.html)
 - [Julien Truffaut - Lens implementation - Part 1](https://functional-wizardry.blogspot.com/2014/02/lens-implementation-part-1.html)
 

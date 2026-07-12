@@ -40,7 +40,8 @@ trait Choice[=>:[_, _]] extends Category[=>:]:
 
 ### HttpRoutes как Kleisli
 
-В Http4s тип `HttpRoutes[F]` определен как `Kleisli` (стрелка, представляющая вычисление с эффектом в контексте `F`):
+В Http4s тип `HttpRoutes[F]` определен как [`Kleisli`](../../data-structures/other/kleisli.md) 
+(стрелка, представляющая вычисление с эффектом в контексте `F`):
 
 ```dotty
 type HttpRoutes[F[_]] = Kleisli[[A] =>> OptionT[F, A], Request[F], Response[F]]

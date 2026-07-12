@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = const.html
 showNext = true
-nextPage = eval.html
+nextPage = kleisli.html
 %}
 
 # Eval: Управление синхронными вычислениями

@@ -297,6 +297,7 @@ import Scalaz.*
 - [Cats](https://typelevel.org/cats/typeclasses/arrow.html)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Arrow.html)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Arrow.html)
+- [On Monoids](https://apocalisp.wordpress.com/2010/06/14/on-monoids/)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Category.html)
 
 [sample]: https://gitverse.ru/scalabook/typeclasses

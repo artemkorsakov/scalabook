@@ -525,5 +525,6 @@ nextPage = laws-testing.html
 **Ссылки:**
 
 - [Cats home page][home]
+- [Higher-Rank Polymorphism in Scala](https://apocalisp.wordpress.com/2010/07/02/higher-rank-polymorphism-in-scala/)
 
 [home]: https://typelevel.org/cats/

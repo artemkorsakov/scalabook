@@ -794,6 +794,7 @@ def tailRecM[A, B](a: A)(f: A => F[Either[A, B]]): F[B]
 - [Herding Cats](http://eed3si9n.com/herding-cats/Monad.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)
 - [Learning Scalaz](http://eed3si9n.com/learning-scalaz/Monad.html)
+- [Monads are Dominoes](https://apocalisp.wordpress.com/2011/07/01/monads-are-dominoes/)
 - [Monads are fractals](https://eed3si9n.com/monads-are-fractals/)
 - [Monads are Elephants Part 1](https://james-iry.blogspot.com/2007/09/monads-are-elephants-part-1.html)
 - [Monads are Elephants Part 2](https://james-iry.blogspot.com/2007/10/monads-are-elephants-part-2.html)

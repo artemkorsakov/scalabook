@@ -757,5 +757,7 @@ def timesTwo(x: Int): Int =
 
 - [Ссылка на репозиторий с упражнениями][sample]
 - [Functional Programming in Scala, Second Edition, Chapter 14](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
+- [Towards an Effect System in Scala, Part 1: ST Monad](https://apocalisp.wordpress.com/2011/03/20/towards-an-effect-system-in-scala-part-1/)
+- [Towards an Effect System in Scala, Part 2: IO Monad](https://apocalisp.wordpress.com/2011/12/19/towards-an-effect-system-in-scala-part-2-io-monad/)
 
 [sample]: https://gitverse.ru/scalabook/fp

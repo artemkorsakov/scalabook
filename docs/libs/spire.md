@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = cats/laws-testing.html
+prevPage = fs2/ecosystem.html
 showNext = true
 nextPage = spire/user_guide.html
 %}

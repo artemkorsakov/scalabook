@@ -24,6 +24,15 @@ object Dependencies {
     val std    = "org.typelevel" %% "cats-effect-std"    % version
   }
 
+  object fs2 {
+    private val version = "3.13.0"
+
+    val core     = "co.fs2" %% "fs2-core"             % version
+    val io       = "co.fs2" %% "fs2-io"               % version
+    val reactive = "co.fs2" %% "fs2-reactive-streams" % version
+    val scodec   = "co.fs2" %% "fs2-scodec"           % version
+  }
+
   object http4s {
     private val version = "0.23.34"
 
@@ -74,6 +83,10 @@ object Dependencies {
       catsEffect.core,
       catsEffect.kernel,
       catsEffect.std,
+      fs2.core,
+      fs2.io,
+      fs2.reactive,
+      fs2.scodec,
       log4cats.core,
       log4cats.slf4j
     )

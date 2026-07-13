@@ -174,6 +174,7 @@ factorial(10)   // 3628800
 - [Харрисон - Введение в функциональное программирование](https://funprog-ru.github.io/)
 - [A Beginner-Friendly Tour through Functional Programming in Scala](https://degoes.net/articles/easy-monads)
 - [A bite of functional programming (in Scala)](https://scalac.io/blog/functional-programming-in-scala/)
+- [A Critique of Impure Reason](https://blog.higher-order.com/blog/2009/04/27/a-critique-of-impure-reason/)
 - [Business benefits of functional programming and how to make it work for your company](https://www.youtube.com/watch?v=EcGZdzECmIk)
 - [Error Handling in FP](https://gvolpe.com/blog/error-handling-scala3/)
 - [FP vs. OO List Processing](https://blog.cleancoder.com/uncle-bob/2018/12/17/FPvsOO-List-processing.html)

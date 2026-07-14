@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = fs2/ecosystem.html
+prevPage = fs2/scodec.html
 showNext = true
 nextPage = spire/user_guide.html
 %}

@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = timeseries.html
 showNext = true
-nextPage = faq.html
+nextPage = ../spire.html
 %}
 
 # Scodec

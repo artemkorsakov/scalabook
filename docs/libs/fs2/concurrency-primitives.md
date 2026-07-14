@@ -8,7 +8,8 @@ nextPage = io.html
 # Примитивы параллелизма
 
 В пакете [`fs2.concurrent`](https://github.com/typelevel/fs2/tree/main/core/shared/src/main/scala/fs2/concurrent) 
-вы найдёте несколько полезных примитивов параллелизма, построенных на основе примитивов, определённых в библиотеке `cats-effect`. 
+вы найдёте несколько полезных примитивов параллелизма, построенных на основе примитивов, 
+определённых в библиотеке [`cats-effect`](../../cats-effect/index.md). 
 Среди них:
 
 - `Topic[F, A]` — реализует паттерн издатель-подписчик (publish-subscribe) с возможностью многократной подписки на один и тот же поток сообщений.
@@ -17,7 +18,8 @@ nextPage = io.html
 - `Signal[F, A]` — представляет собой изменяемое значение, которое можно читать и обновлять, 
   а также подписываться на его изменения, что позволяет использовать его как механизм сигнализации между потоками.
 
-Кроме того, `Stream` предоставляет функции для взаимодействия с очередями (`Queue`) из библиотеки `cats-effect`, 
+Кроме того, `Stream` предоставляет функции для взаимодействия [с очередями (`Queue`)](../../cats-effect/std/queue.md)
+из библиотеки `cats-effect`, 
 что позволяет легко интегрировать их в потоковые вычисления.
 
 ## Простые примеры (Simple Examples)
@@ -164,8 +166,8 @@ SignallingRef[IO, Boolean](false).flatMap { signal =>
 FS2 предоставляет удобные методы для интеграции очередей в потоковую обработку.
 
 В следующем примере `Stream.fromQueueNoneTerminated` используется для создания потока из `cats.effect.std.Queue`. 
-Этот фрагмент возвращает `List(1, 2, 3)`: поток выдаст первые три значения, к
-оторые возвращает очередь (`Some(1)`, `Some(2)`, `Some(3)`), и будет прерван после того, как очередь вернёт `None` — 
+Этот фрагмент возвращает `List(1, 2, 3)`: поток выдаст первые три значения, 
+которые возвращает очередь (`Some(1)`, `Some(2)`, `Some(3)`), и будет прерван после того, как очередь вернёт `None` — 
 этот сигнал интерпретируется как маркер завершения потока.
 
 ```dotty
@@ -245,7 +247,8 @@ class Buffering[F[_]: {Concurrent, Console}](
       Stream.repeatEval(q1.take).foreach(q2.offer),
 
       // Поток-потребитель: забирает элементы из q2 и выводит их
-      // Примечание: .map не подойдёт здесь, так как мы пытаемся применить побочный эффект к чистому значению.
+      // Примечание: .map здесь не подойдёт, так как мы пытаемся 
+      // применить побочный эффект к чистому значению.
       // Используйте .foreach вместо .map для выполнения эффектов.
       Stream.repeatEval(q2.take).foreach(n =>
         Console[F].println(s"Извлекаем $n из очереди #2")
@@ -254,7 +257,6 @@ class Buffering[F[_]: {Concurrent, Console}](
 end Buffering
 
 object Fifo extends IOApp.Simple:
-
   def run: IO[Unit] =
     val stream =
       for
@@ -322,7 +324,8 @@ class EventService[F[_]](
     console: Console[F]
 ):
 
-  // Издатель: публикует 15 текстовых событий, затем одно Quit, затем продолжает публиковать
+  // Издатель: публикует 15 текстовых событий, затем одно Quit, 
+  // затем продолжает публиковать
   def startPublisher: Stream[F, Unit] =
     // Генерируем текстовые события каждую секунду с текущим временем
     val textEvents =
@@ -340,7 +343,8 @@ class EventService[F[_]](
       .through(eventsTopic.publish)
       .interruptWhen(interrupter)
 
-  // Создаём 3 подписчиков, запускающихся в разное время, и объединяем их для параллельного выполнения
+  // Создаём 3 подписчиков, запускающихся в разное время, 
+  // и объединяем их для параллельного выполнения
   def startSubscribers: Stream[F, Unit] =
     // Функция обработки событий для конкретного подписчика
     def processEvent(subscriberNumber: Int): Pipe[F, Event, Nothing] =
@@ -360,14 +364,13 @@ class EventService[F[_]](
 
     // Три подписчика запускаются с разными задержками
     Stream(
-      events.through(processEvent(1)), // подписчик #1 — сразу
-      events.delayBy(
-        5.second
-      ).through(processEvent(2)), // подписчик #2 — через 5 секунд
-      events.delayBy(
-        10.second
-      ).through(processEvent(3)) // подписчик #3 — через 10 секунд
-    ).parJoin(3)                 // запускаем всех параллельно
+      // подписчик #1 — сразу
+      events.through(processEvent(1)), 
+      // подписчик #2 — через 5 секунд
+      events.delayBy(5.second).through(processEvent(2)), 
+      // подписчик #3 — через 10 секунд
+      events.delayBy(10.second).through(processEvent(3)) 
+    ).parJoin(3) // запускаем всех параллельно
   end startSubscribers
 end EventService
 
@@ -375,15 +378,16 @@ object PubSub extends IOApp.Simple:
 
   val program =
     for
-      topic  <- Stream.eval(Topic[IO, Event]) // создаём топик
-      signal <- Stream.eval(SignallingRef[
-        IO,
-        Boolean
-      ](false)) // создаём сигнал прерывания
-      service = new EventService[IO](topic, signal) // создаём сервис
+      // создаём топик
+      topic  <- Stream.eval(Topic[IO, Event]) 
+      // создаём сигнал прерывания
+      signal <- Stream.eval(SignallingRef[IO, Boolean](false)) 
+      // создаём сервис
+      service = new EventService[IO](topic, signal) 
+      // запускаем издателя и подписчиков параллельно
       _ <- service.startPublisher.concurrently(
         service.startSubscribers
-      ) // запускаем издателя и подписчиков параллельно
+      ) 
     yield ()
 
   def run: IO[Unit] = program.compile.drain

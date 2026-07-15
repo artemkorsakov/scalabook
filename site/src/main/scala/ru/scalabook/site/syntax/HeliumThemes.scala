@@ -66,15 +66,15 @@ object HeliumThemes:
         homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
         navLinks = Seq(
           ButtonLink.internal(Root / "fp/index.md", "Функ. программирование"),
-          ButtonLink.internal(Root / "practice/index.md", "Практикум"),
+          ButtonLink.internal(Root / "typeclass/index.md", "Классы типов"),
           ButtonLink.internal(Root / "algorithms/index.md", "Алгоритмы"),
           ButtonLink.internal(
             Root / "data-structures/index.md",
             "Структуры данных"
           ),
-          ButtonLink.internal(Root / "typeclass/index.md", "Классы типов"),
           ButtonLink.internal(Root / "cats-effect/index.md", "Cats effect"),
           ButtonLink.internal(Root / "libs/index.md", "Инструментарий"),
+          ButtonLink.internal(Root / "practice/index.md", "Практикум"),
           ButtonLink.internal(Root / "translations/index.md", "Переводы"),
           ButtonLink.internal(Root / "extra/index.md", "Ресурсы")
         )

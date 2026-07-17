@@ -41,3 +41,32 @@ lazy val site = project
     coverageEnabled := true,
     libraryDependencies ++= siteLibs
   )
+
+
+import sbtwelcome._
+
+logo :=
+  raw"""
+       |Welcome to
+       |
+       |    _____           _       _                 _
+       |  / ____|         | |     | |               | |
+       | | (___   ___ __ _| | __ _| |__   ___   ___ | | __
+       |  \___ \ / __/ _` | |/ _` | '_ \ / _ \ / _ \| |/ /
+       |  ____) | (_| (_| | | (_| | |_) | (_) | (_) |   <
+       | |_____/ \___\__,_|_|\__,_|_.__/ \___/ \___/|_|\_\
+       |
+       |
+       |Version ${version.value}
+   """.stripMargin
+
+logoColor := scala.Console.MAGENTA
+
+usefulTasks := Seq(
+  UsefulTask("com", "Compile main and test sources"),
+  UsefulTask("dep", "Show available dependency updates"),
+  UsefulTask("site", "Generate static site from project sources"),
+  UsefulTask("checkLinks", "Validate all links in the generated site"),
+  UsefulTask("prePush", "Pre-commit quality gate: compile, test, format, check dependencies"),
+  UsefulTask("fullCheck", "Full validation: compile, test, fmtcheck, check dependencies (CI-ready)")
+)

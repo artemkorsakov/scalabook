@@ -83,10 +83,6 @@ object Dependencies {
       catsEffect.core,
       catsEffect.kernel,
       catsEffect.std,
-      fs2.core,
-      fs2.io,
-      fs2.reactive,
-      fs2.scodec,
       log4cats.core,
       log4cats.slf4j
     )

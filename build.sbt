@@ -42,7 +42,6 @@ lazy val site = project
     libraryDependencies ++= siteLibs
   )
 
-
 import sbtwelcome._
 
 logo :=
@@ -67,6 +66,12 @@ usefulTasks := Seq(
   UsefulTask("dep", "Show available dependency updates"),
   UsefulTask("site", "Generate static site from project sources"),
   UsefulTask("checkLinks", "Validate all links in the generated site"),
-  UsefulTask("prePush", "Pre-commit quality gate: compile, test, format, check dependencies"),
-  UsefulTask("fullCheck", "Full validation: compile, test, fmtcheck, check dependencies (CI-ready)")
+  UsefulTask(
+    "prePush",
+    "Pre-commit quality gate: compile, test, format, check dependencies"
+  ),
+  UsefulTask(
+    "fullCheck",
+    "Full validation: compile, test, fmtcheck, check dependencies (CI-ready)"
+  )
 )

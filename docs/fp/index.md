@@ -193,6 +193,8 @@ factorial(10)   // 3628800
 - [Noumenal Null](https://apocalisp.wordpress.com/2008/05/03/null-vs-pure-reason/)
 - [Objects, Identity, and Concept-formation](https://blog.higher-order.com/blog/2008/12/04/no-such-thing/)
 - [On Scala, Functional Programming and Type-Classes](https://alexn.org/blog/2012/11/02/scala-functional-programming-type-classes/)
+- [Phantom types - Make illegal states unrepresentable](https://blog.rhetoricalmusings.com/posts/phantom-types)
+    - [Phantom types - Part 2](https://blog.rhetoricalmusings.com/posts/phantom-types-2/) 
 - [Scala Exceptions - Try, try..catch and a caveat](https://yadukrishnan.live/scala-exceptions-try-trycatch-and-a-caveat)
 - [Scala Functional Programming Tutorial - Baeldung](https://www.baeldung.com/scala/functional-programming-series)
 - [Scala's isInstanceOf is an Anti-Pattern - Alexandru Nedelcu](https://alexn.org/blog/2019/08/11/isinstanceof-anti-pattern/)

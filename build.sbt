@@ -30,7 +30,6 @@ lazy val root = (project in file("."))
 lazy val examples = (project in file("examples"))
   .settings(name := "scalabook-examples")
   .settings(
-    coverageEnabled := true,
     libraryDependencies ++= exampleLibs,
     libraryDependencies ++= exampleTestLibs
   )
@@ -38,7 +37,6 @@ lazy val examples = (project in file("examples"))
 lazy val site = project
   .in(file("site"))
   .settings(
-    coverageEnabled := true,
     libraryDependencies ++= siteLibs
   )
 

@@ -16,8 +16,8 @@ nextPage = db/sql_generation.html
 
 Приложение оперирует четырьмя основными сущностями (доменными типами), которые должны быть персистентными:
 
-1. **Пользовательские типы задач (User Types)** — это кастомные категории или шаблоны задач, 
-   которые создают сами пользователи для классификации своей учебной деятельности (например, "Ведение блога", "Разработка игры").
+1. **Пользовательские типы задач (Task Types)** — это кастомные категории или шаблоны задач, 
+   которые создают сами пользователи для классификации своей учебной деятельности (например, "Книга", "Упражнения").
 2. **Разделы (Sections)** — логические группы или категории, предназначенные для структурирования и организации задач 
    (например, "Scala", "Машинное обучение", "Алгоритмы").
 3. **Цели (Goals)** — целевые состояния или метрики, которых пользователь планирует достичь 
@@ -84,26 +84,26 @@ nextPage = db/sql_generation.html
 Начнем с создания алгебры для работы с пользовательскими типами задач.
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/services/UserTypeService.scala
-private[services] trait UserTypeService[F[_]: Monad]:
+// pdp/src/main/scala/ru/scalabook/pdp/services/TaskTypeService.scala
+private[services] trait TaskTypeService[F[_]: Monad]:
 
-  /** Создаёт новый пользовательский тип задачи. */
-  def create(newItem: CreateUserType): F[UserTypeId]
+  /** Создаёт новый тип задачи. */
+  def create(newItem: CreateTaskType): F[TaskTypeId]
 
-  /** Получает пользовательский тип задачи по его идентификатору. */
-  def get(id: UserTypeId): F[Option[UserType]]
+  /** Получает тип задачи по её идентификатору. */
+  def get(id: TaskTypeId): F[Option[TaskType]]
 
-  /** Получает список всех пользовательских типов задач. */
-  def getByUser(userId: UserId): F[Vector[UserType]]
+  /** Получает список всех типов задач. */
+  def getByUser(userId: UserId): F[Vector[TaskType]]
 
-  /** Обновляет существующий пользовательский тип задачи. */
-  def update(userType: UserType): F[Boolean]
+  /** Обновляет существующий тип задачи. */
+  def update(taskType: TaskType): F[Boolean]
 
-  /** Обновляет список пользовательских типов задач. */
-  def updateAll(userTypes: NonEmptyVector[UserType]): F[Boolean]
+  /** Обновляет список типов задач. */
+  def updateAll(taskTypes: NonEmptyVector[TaskType]): F[Boolean]
 
-  /** Удаляет пользовательский тип задачи по его идентификатору. */
-  def delete(id: UserTypeId): F[Boolean]  
+  /** Удаляет тип задачи по идентификатору. */
+  def delete(id: TaskTypeId): F[Boolean]  
 ```
 
 ### Семантика возвращаемых типов в контексте эффектов
@@ -113,10 +113,10 @@ private[services] trait UserTypeService[F[_]: Monad]:
   Это позволяет алгебре быть независимой от конкретной runtime-библиотеки (Cats Effect, ZIO, Monix).
 - **`F[_]: Monad`** — тип `F` является [монадой](../typeclass/monad/monad.md). В данном случае это означает, 
   что мы можем использовать `F` в [for-comprehension](../fp/for-comprehension.md).
-- **`F[UserTypeId]`** — операция, которая в процессе выполнения (`F`) произведет побочный эффект (запись в БД) и вернет результат — `UserTypeId`.
-- **`F[Option[UserType]]`** — операция чтения, которая может завершиться успешно, найдя сущность (`Some[UserType]`), 
+- **`F[TaskTypeId]`** — операция, которая в процессе выполнения (`F`) произведет побочный эффект (запись в БД) и вернет результат — `TaskTypeId`.
+- **`F[Option[TaskType]]`** — операция чтения, которая может завершиться успешно, найдя сущность (`Some[TaskType]`), 
   или вернуть `None`, если сущность с таким ID не существует.
-- **`F[Vector[UserType]]`** — операция чтения, всегда возвращающая коллекцию. 
+- **`F[Vector[TaskType]]`** — операция чтения, всегда возвращающая коллекцию. 
   Коллекция может быть пустой, если в БД еще нет записей, удовлетворяющих запросу.
 - **`F[Boolean]`** — операция, которая выполняется ради своего побочного эффекта (обновление, удаление). 
   `Boolean` служит сигналом успешного завершения.
@@ -130,121 +130,60 @@ private[services] trait UserTypeService[F[_]: Monad]:
 Согласно паттерну [Tagless Final][tagless], такая логика описывается в виде **программы** (program) — функции, 
 которая принимает экземпляры необходимых алгебр (через параметры типа или контекст) 
 и, используя их, описывает последовательность действий. 
-Таким образом, `UserTypeService` остается простым и стабильным репозиторием, 
+Таким образом, `TaskTypeService` остается простым и стабильным репозиторием, 
 а вся сложная логика поднимается на уровень программы, которую мы рассмотрим в разделе ["Жизненный цикл задач"](lifecycle.md).
 
 ### Остальные алгебры
 
-Алгебры `SectionService` и `GoalService` проектируются по аналогичной с `UserTypeService` схеме, 
+Алгебры `SectionService`, `GoalService` и `TaskService` проектируются по аналогичной с `TaskTypeService` схеме, 
 отличаясь лишь типами моделей (`Section`, `SectionId`, `Goal`, `GoalId`). 
 Их реализации можно найти в [исходном коде проекта](https://gitverse.ru/scalabook/pdp/content/master/pdp/src/main/scala/ru/scalabook/pdp/services).
 
-Для сущности `Task` возникает нюанс. 
+Создание сущности требует новой модели.
 Операция `create` не может принимать готовую `Task`, так как у новой задачи еще нет присвоенного идентификатора (`id`). 
-Поэтому мы определяем отдельную иерархию типов `CreateTask`, которая повторяет структуру `Task`, но без поля `id`.
+Поэтому мы определяем отдельную иерархию типов `CreateTask` (`CreateTaskType`, `CreateSection`, `CreateGoal`), 
+которая повторяет основные структуры (например, `Task`), но без поля `id`.
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/services/TaskService.scala
+// pdp/src/main/scala/ru/scalabook/pdp/services/TaskService.scala  
 private[services] trait TaskService[F[_]: Monad]:
 
-  // Принимает объект для создания, возвращает сгенерированный TaskId.
+  /** Создаёт новую задачу. */
   def create(task: CreateTask): F[TaskId]
 
-  // Для получения нужен и id, и taskType, чтобы однозначно идентифицировать запись.
-  def get(id: TaskId, taskType: TaskType): F[Option[Task]]
+  /** Получает задачу по её идентификатору. */
+  def get(id: TaskId): F[Option[Task]]
 
-  // Получает список всех задач пользователя.
+  /** Получает список всех задач. */
   def getByUser(userId: UserId): F[Vector[Task]]
 
-  // Обновляет существующую задачу.
-  def update(task: Task): F[Boolean] 
+  /** Обновляет существующую задачу. */
+  def update(task: Task): F[Boolean]
 
-  // Удаляет задачу по её идентификатору и типу.
-  def delete(id: TaskId, taskType: TaskType): F[Boolean]
+  /** Удаляет задачу по её идентификатору. */
+  def delete(id: TaskId): F[Boolean]
 ```
 
-Тип `CreateTask` и его варианты (для книг, статей и т.д.) являются точными копиями соответствующих `*Task` типов, но без поля `id`. 
-[Ссылка на полное определение.](https://gitverse.ru/scalabook/pdp/content/master/pdp/src/main/scala/ru/scalabook/pdp/model/CreateTask.scala)
+Тип `CreateTask` и аналогичные являются точными копиями соответствующих типов, но без поля `id`. 
+[Ссылка на полное определение.](https://gitverse.ru/scalabook/pdp/content/master/pdp/src/main/scala/ru/scalabook/pdp/models/CreateTask.scala)
 
 ```dotty
-sealed trait CreateTask:
-  val name: TaskName
-  val userId: UserId
-  val taskType: TaskType
-  val status: Status
-  val sectionId: SectionId
-  val goalId: GoalId
-  val ordinal: TaskOrdinal
-  val startDate: Option[LocalDate]
-  val endDate: Option[LocalDate]
-  val information: String
-  val plan: List[TaskStep]
-
-final case class CreateBookTask(
+final case class CreateTask(
     name: TaskName,
     userId: UserId,
+    taskTypeId: TaskTypeId,
     status: Status,
     sectionId: SectionId,
     goalId: GoalId,
-    ordinal: TaskOrdinal,
+    ordinal: Ordinal,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
     information: String,
-    plan: List[TaskStep],
-    authors: Authors,
-    pages: Pages
-) extends CreateTask:
-  // Тип задачи фиксирован для каждого case class.
-  val taskType: TaskType = TaskType.Book
-
-// ... аналогично для CreateArticleTask, CreateCourseTask и других
+    plan: Plan,
+    duration: FiniteDuration,
+    timeSpent: FiniteDuration
+)
 ```
-
-#### Обоснование двух параллельных иерархий
-
-Возникает резонный вопрос: _Почему бы не использовать одну иерархию типов для задач, сделав поле `id` опциональным, 
-вместо создания двух почти идентичных иерархий (`CreateTask` и `Task`)?_
-
-```mermaid
-graph TD
-    subgraph "Иерархия для создания"
-        CreateTask["CreateTask (sealed trait)"]
-        CreateBookTask[CreateBookTask]
-        CreateArticleTask[CreateArticleTask]
-        CreatePodcastTask[CreatePodcastTask]
-    end
-
-    subgraph "Иерархия для хранения"
-        Task["Task (sealed trait)"]
-        BookTask[BookTask]
-        ArticleTask[ArticleTask]
-        PodcastTask[PodcastTask]
-    end
-
-    CreateTask --> CreateBookTask
-    CreateTask --> CreateArticleTask
-    CreateTask --> CreatePodcastTask
-
-    Task --> BookTask
-    Task --> ArticleTask
-    Task --> PodcastTask
-
-    CreateBookTask -- ".toTask(id)" ----> BookTask
-    CreateArticleTask -- ".toTask(id)" ----> ArticleTask
-    CreatePodcastTask -- ".toTask(id)" ----> PodcastTask
-```
-
-Основная причина — **требования библиотеки для автоматической генерации SQL-запросов**, которую мы разберем в следующем разделе. 
-Эта библиотека полагается на макросы, которые для корректной работы требуют, 
-чтобы модели данных были реализованы как `case class`, наследующие от `Product`.
-
-В Scala `case class` не может наследоваться от другого `case class`. 
-Следовательно, мы не можем создать общий `case class Task` с опциональным `id`, 
-от которого будут наследоваться `case class BookTask` и другие. 
-Наличие двух отдельных, но структурно похожих иерархий (`case class CreateBookTask` и `case class BookTask`) 
-является практическим решением, позволяющим сохранить преимущества `case class` 
-(неизменяемость, автоматические методы, паттерн-матчинг) 
-как для операций создания, так и для чтения.
 
 ## Реализация интерпретаторов: заглушки
 
@@ -260,31 +199,31 @@ graph TD
 и отладить всю цепочку вызовов от контроллеров до сервисов, не заботясь о миграциях базы данных и подключении.
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/services/mock/MockUserTypeService.scala
+// pdp/src/main/scala/ru/scalabook/pdp/services/mock/MockTaskTypeService.scala
 /**
- * Мок-реализация UserTypeService, использующая иммутабельную Map в памяти
+ * Мок-реализация TaskTypeService, использующая иммутабельную Map в памяти
  * для хранения состояния, защищенного с помощью Ref из Cats Effect.
  *
- * @param userTypes Ref, содержащий текущее состояние хранилища (Map из ID в UserType).
+ * @param userTypes Ref, содержащий текущее состояние хранилища (Map из ID в TaskType).
  * @param nextId Ref-счетчик для генерации новых уникальных ID.
  */
-private[services] class MockUserTypeService[F[_]: Monad](
-    userTypes: Ref[F, Map[UserTypeId, UserType]],
-    nextId: Ref[F, UserTypeId]
-) extends UserTypeService[F]: // Интерпретируем алгебру в конкретном эффекте F
+private[services] class MockTaskTypeService[F[_]: Monad](
+    taskTypes: Ref[F, Map[TaskTypeId, TaskType]],
+    nextId: Ref[F, TaskTypeId]
+) extends TaskTypeService[F]: // Интерпретируем алгебру в конкретном эффекте F
 
   /**
    * Создает новый тип задачи.
    * Атомарно: 1) берет следующий ID, 2) инкрементирует счетчик, 3) сохраняет запись.
    */
-  def create(newItem: CreateUserType): F[UserTypeId] =
+  def create(newItem: CreateTaskType): F[UserTypeId] =
     for
       // Получаем текущий ID и увеличиваем счетчик для следующего вызова.
       // applyUnsafe здесь безопасен, так как мы знаем, 
       // что id.value + 1 - положительное число.
-      id <- nextId.getAndUpdate(id => UserTypeId.applyUnsafe(id.value + 1))
-      // Создаем объект UserType и сохраняем его в Map.      
-      userType = UserType(
+      id <- nextId.getAndUpdate(id => TaskTypeId.applyUnsafe(id.value + 1))
+      // Создаем объект TaskType и сохраняем его в Map.      
+      taskType = TaskType(
         id = id,
         name = newItem.name,
         userId = newItem.userId,
@@ -292,50 +231,48 @@ private[services] class MockUserTypeService[F[_]: Monad](
         ordinal = newItem.ordinal
       )
       // Используем метод update для сохранения.      
-      _ <- update(userType)
+      _ <- update(taskType)
     yield id // Возвращаем ID, под которым был сохранен тип.
        
   /** Извлекает тип по ID. Возвращает None, если ключ не найден. */
-  def get(id: UserTypeId): F[Option[UserType]] =
-    userTypes.get.map(_.get(id)) // Читаем Map и выполняем lookup.
+  def get(id: TaskTypeId): F[Option[TaskType]] =
+    taskTypes.get.map(_.get(id)) // Читаем Map и выполняем lookup.
 
   /** Извлекает все значения для заданного пользователя, 
     * преобразуя значения Map в Vector. 
     */
-  def getByUser(userId: UserId): F[Vector[UserType]] =
-    userTypes.get.map(_.values.filter(_.userId == userId).toVector)
+  def getByUser(userId: UserId): F[Vector[TaskType]] =
+    taskTypes.get.map(_.values.filter(_.userId == userId).toVector)
 
   /** Обновляет (или добавляет) запись в Map. */
-  def update(userType: UserType): F[Boolean] =
-    userTypes.update(_ + (userType.id -> userType)).as(true)
+  def update(taskType: TaskType): F[Boolean] =
+    taskTypes.update(_ + (taskType.id -> taskType)).as(true)
 
   /** Обновляет все переданные записи в Map. */
-  def updateAll(items: NonEmptyVector[UserType]): F[Boolean] =
-    userTypes.update(_ ++ items.toVector.map(t => t.id -> t)).as(true)
+  def updateAll(items: NonEmptyVector[TaskType]): F[Boolean] =
+    taskTypes.update(_ ++ items.toVector.map(t => t.id -> t)).as(true)
     
   /** Удаляет запись по ID. Если ID не существует, операция не имеет эффекта. */
-  def delete(id: UserTypeId): F[Boolean] =
-    userTypes.update(_ - id).as(true)
-
-end MockUserTypeService
+  def delete(id: TaskTypeId): F[Boolean] =
+    taskTypes.update(_ - id).as(true)
 
 /** Сопутствующий объект, предоставляющий безопасный конструктор Resource 
   * для создания сервиса. 
   */
-object MockUserTypeService:
+object MockTaskTypeService:
   /**
-   * Фабричный метод, возвращающий Resource[F, UserTypeService[F]].
+   * Фабричный метод, возвращающий Resource[F, TaskTypeService[F]].
    * Гарантирует, что состояние (Ref) будет корректно инициализировано.
    * Resource управляет жизненным циклом, хотя для Ref это не критично.
    */
-  def make[F[_]: Sync]: Resource[F, UserTypeService[F]] =
+  def make[F[_]: Sync]: Resource[F, TaskTypeService[F]] =
     Resource.eval: // Создаем ресурс из чистого эффекта (eval).
       for
         // Инициализируем хранилище пустой Map.
-        types <- Ref[F].of(Map.empty[UserTypeId, UserType])
+        types <- Ref[F].of(Map.empty[TaskTypeId, TaskType])
         // Инициализируем счетчик ID значением 0 (первый ID будет 0).
-        id    <- Ref[F].of(UserTypeId(0))
-      yield new MockUserTypeService(types, id) // Возвращаем новый экземпляр сервиса.     
+        id    <- Ref[F].of(TaskTypeId(0))
+      yield new MockTaskTypeService(types, id) // Возвращаем новый экземпляр сервиса.    
 ```
 
 ---

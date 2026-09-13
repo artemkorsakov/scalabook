@@ -44,19 +44,12 @@ SBT (Scala Build Tool) — это стандартный инструмент д
    Если папка `project` уже существует, просто создайте в ней файл.
 2. Добавьте в этот файл следующие строки:
    ```dotty
-   // Линтер и автоисправление кода Scala (статический анализ)
    addSbtPlugin("ch.epfl.scala"           % "sbt-scalafix"              % "0.14.8")
-   // Проверка явного указания всех зависимостей в build.sbt
    addSbtPlugin("com.github.cb372"        % "sbt-explicit-dependencies" % "0.3.1")
-   // Приветственное сообщение при запуске sbt
    addSbtPlugin("com.github.reibitto"     % "sbt-welcome"               % "0.6.0")
-   // Упаковка приложения в native-форматы (Docker, deb, rpm, exe и др.)
    addSbtPlugin("com.github.sbt"          % "sbt-native-packager"       % "1.11.7")
-   // Проверка и обновление зависимостей до новых версий
    addSbtPlugin("org.jmotor.sbt"          % "sbt-dependency-updates"    % "1.2.9")
-   // Компиляция Twirl-шаблонов (HTML, XML, текстовые шаблоны)
    addSbtPlugin("org.playframework.twirl" % "sbt-twirl"                 % "2.0.9")
-   // Автоформатирование кода Scala по единому стилю
    addSbtPlugin("org.scalameta"           % "sbt-scalafmt"              % "2.6.1")
    ```
 
@@ -153,16 +146,13 @@ SBT (Scala Build Tool) — это стандартный инструмент д
   ```text
   Welcome to
   
-    _____                                _   _____                 _                                  _     _____  _
-   |  __ \                              | | |  __ \               | |                                | |   |  __ \| |
-   | |__) |__ _ __ ___  ___  _ __   __ _| | | |  | | _____   _____| | ___  _ __  _ __ ___   ___ _ __ | |_  | |__) | | __ _ _ __
-   |  ___/ _ \ '__/ __|/ _ \| '_ \ / _` | | | |  | |/ _ \ \ / / _ \ |/ _ \| '_ \| '_ ` _ \ / _ \ '_ \| __| |  ___/| |/ _` | '_ \
-   | |  |  __/ |  \__ \ (_) | | | | (_| | | | |__| |  __/\ V /  __/ | (_) | |_) | | | | | |  __/ | | | |_  | |    | | (_| | | | |
-   |_|   \___|_|  |___/\___/|_| |_|\__,_|_| |_____/ \___| \_/ \___|_|\___/| .__/|_| |_| |_|\___|_| |_|\__| |_|    |_|\__,_|_| |_|
-                                                                          | |
-                                                                          |_|
-  
-  
+    _____    _____    _____  
+   |  __ \  |  __ \  |  __ \
+   | |__) | | |  | | | |__) |
+   |  ___/  | |  | | |  ___/
+   | |      | |__| | | |    
+   |_|      |_____/  |_|    
+                                                                  
   Version 0.0.1-SNAPSHOT
      
   Useful sbt tasks:
@@ -196,28 +186,24 @@ SBT (Scala Build Tool) — это стандартный инструмент д
 2.  Добавьте в файл следующие алиасы:
 
     ```dotty
-    // "com" - Компиляция основного и тестового кода
-    addCommandAlias("com", "compile; Test / compile")
-
+    // "allCompile" - Компиляция основного и тестового кода
+    addCommandAlias("allCompile", "compile; Test / compile")
     // "fix" - Применение всех исправлений и форматирования
     addCommandAlias("fix", "scalafmtSbt; scalafmtAll; scalafixAll")
-
     // "prePush" - Полная проверка перед тем, как закоммитить код
     addCommandAlias(
       "prePush",
-      "clean; com; test; fix; undeclaredCompileDependencies; unusedCompileDependencies"
+      "clean; allCompile; test; fix; undeclaredCompileDependencies; unusedCompileDependencies"
     )
-
     // "fullCheck" - Полная проверка + поиск обновлений для библиотек
     addCommandAlias("fullCheck", "prePush; dependencyUpdates")
     ```
 
 **Как использовать:**
 
-- Вместо ручного запуска компиляции просто введите в SBT: `sbt com`.
 - Перед тем как сделать `git push`, выполните `sbt prePush`. Эта команда:
     1. `clean` — очистит предыдущие артефакты сборки.
-    2. `com` — скомпилирует основной и тестовый код.
+    2. `allCompile` — скомпилирует основной и тестовый код.
     3. `test` — запустит все тесты.
     4. `fix` — отформатирует код и применит исправления Scalafix.
     5. `undeclaredCompileDependencies` и `unusedCompileDependencies` — проверит корректность объявленных зависимостей.
@@ -236,11 +222,11 @@ SBT (Scala Build Tool) — это стандартный инструмент д
 
     object Dependencies {
       // Версия Scala для проекта
-      val Scala = "3.7.3" // Укажите актуальную
+      val Scala = "3.9.0" // Укажите актуальную
 
       object cats {
         private val version       = "2.13.0"
-        private val effectVersion = "3.7-4972921"
+        private val effectVersion = "3.7.1"
       
         val core         = "org.typelevel" %% "cats-core"          % version
         val effect       = "org.typelevel" %% "cats-effect"        % effectVersion
@@ -248,10 +234,10 @@ SBT (Scala Build Tool) — это стандартный инструмент д
       }
 
       object weaver {
-        private val version = "0.8.4"
-
-        // Фреймворк для тестирования, хорошо интегрирующийся с Cats Effect
-        val cats = "com.disneystreaming" %% "weaver-cats" % version
+        private val version = "0.13.0"
+      
+        val cats       = "org.typelevel" %% "weaver-cats"       % version
+        val scalacheck = "org.typelevel" %% "weaver-scalacheck" % version
       }
 
       // Список библиотек для основного кода
@@ -275,21 +261,34 @@ SBT (Scala Build Tool) — это стандартный инструмент д
     ```dotty
     // Импортируем зависимости
     import Dependencies.*
-
+    
     lazy val pdp = (project in file("pdp"))
-      // Имя проекта
-      .settings(name := "PersonalDevelopmentPlan") 
+      // Плагины для генерации фронта и docker image
+      .enablePlugins(
+        DockerPlugin,
+        JavaAppPackaging,
+        SbtTwirl
+      )
       .settings(
-        // Добавляем зависимости из нашего объекта
+        name := "pdp-backend",
+        publish / skip := true,
         libraryDependencies ++= pdpLibs,
         libraryDependencies ++= testLibs
       )
+      // Настройки docker image
+      .settings(
+        Docker / packageName := "personal-development-plan",
+        dockerExposedPorts ++= Seq(8080),
+        dockerUpdateLatest := true
+      )
+      .settings(
+        run / fork := true
+      )
     
     lazy val root = (project in file("."))
-      // Сборка всех модулей
       .aggregate(pdp)
       .settings(
-        name := "root",
+        name := "pdp-root",
         publish / skip := true
       )
     ```
@@ -322,25 +321,68 @@ ThisBuild / scalacOptions ++=
     "-explain",
     // Превращает неиспользуемые импорты в ошибки
     "-Wunused:imports",
+    // Игнорирует ложноположительные сообщения об ошибка в шаблонах Twirl
+    "-Wconf:src=.*/views/html/.*:silent",
     // Предупреждает о местах, где компилятор делал предположения о типах
     "-unchecked",
-    // Превращает все предупреждения (warnings) в ошибки!
     // Не даст скомпилировать код с предупреждениями.
-    "-Xfatal-warnings",
+    "-Werror",
     // Предупреждает об использовании экспериментальных features языка
     "-feature",
     // Предупреждает, если значимый результат выражения (не `Unit`) игнорируется
     "-Wnonunit-statement"
   )
   
-// Версия Scala берется из Dependencies.scala  
-ThisBuild / scalaVersion := Scala
-
-// Версия проекта (чаще всего выносят в отдельный файл version.sbt)
-ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / scalaVersion      := Scala
+ThisBuild / semanticdbEnabled := true
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 ```
 
-## Шаг 6: Финальная проверка работоспособности
+## Шаг 6: Настройка приветственного экрана sbt-welcome
+
+Добавьте в ваш build.sbt следующую конфигурацию:
+
+```dotty
+import sbtwelcome.*
+
+logo :=
+  raw"""
+       |Welcome to
+       |
+       |  _____   _____    _____
+       | |  __ \ |  __ \  |  __ \
+       | | |__) || |  | | | |__) |
+       | |  ___/ | |  | | |  ___/
+       | | |     | |__| | | |
+       | |_|     |_____/  |_|
+       |
+       |Version ${version.value}
+   """.stripMargin
+
+logoColor := scala.Console.MAGENTA
+
+usefulTasks := Seq(
+  UsefulTask("pdp/run", "Start backend server"),
+  UsefulTask("allCompile", "Compile main and test sources"),
+  UsefulTask(
+    "prePush",
+    "Full pre-commit quality gate: compile, test, format, check dependencies"
+  ),
+  UsefulTask(
+    "fullCheck",
+    "Comprehensive project validation: prePush + dependency updates check"
+  )
+)
+```
+
+Как это работает:
+
+- `logo` — задаёт ASCII-арт или текстовый логотип, который будет отображаться при старте SBT. 
+- `logoColor` — задаёт цвет логотипа в консоли. Доступные цвета: `scala.Console.RED`, `GREEN`, `YELLOW`, `BLUE`, `MAGENTA`, `CYAN`, `WHITE` и другие.
+- `usefulTasks` — список команд, которые отображаются на приветственном экране с описанием. 
+  Это помогает новым разработчикам быстро узнать, какие команды доступны в проекте.
+
+## Шаг 7: Финальная проверка работоспособности
 
 После настройки всех инструментов и конфигураций необходимо убедиться, 
 что проект корректно собирается и проходит все проверки.
@@ -356,7 +398,7 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 В терминале, в корневой папке проекта, выполните команду:
 
 ```dotty
-sbt fullCheck
+sbt prePush
 ```
 
 Эта команда, которую мы определили ранее, выполнит полный цикл проверки:
@@ -368,7 +410,9 @@ sbt fullCheck
 5. **`undeclaredCompileDependencies`** — проверка на скрытые зависимости
 6. **`unusedCompileDependencies`** — поиск неиспользуемых зависимостей 
    (пока игнорируем предупреждение о неиспользуемых библиотеках, т.к. ещё не написан код)
-7. **`dependencyUpdates`** — проверка доступных обновлений библиотек
+
+> Предупреждения о неиспользуемых библиотеках пока можно игнорировать, 
+> потому что ещё не было написано ни строчки кода, поэтому нет используемых библиотек.
 
 Проект полностью готов к началу разработки.
 
@@ -379,7 +423,7 @@ sbt fullCheck
 - **Автоматизация:** Форматирование и рефакторинг кода происходят по команде
 - **Качество кода:** Строгие настройки компилятора и линтеры помогают избегать ошибок
 - **Структура:** Зависимости и настройки аккуратно организованы
-- **Функциональный стек:** В основе проекта лежат мощные и популярные библиотеки, такие как Cats Effect
+- **Функциональный стек:** В основе проекта лежат такие библиотеки, как Cats Effect
 
 Теперь можно сосредоточиться на написании кода, а инструменты позаботятся о его качестве.
 

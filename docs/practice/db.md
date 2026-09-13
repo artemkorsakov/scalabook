@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = task_types/localization.html
+prevPage = task_types/statuses.html
 showNext = true
 nextPage = db/sql_generation.html
 %}

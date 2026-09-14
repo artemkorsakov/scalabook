@@ -23,7 +23,7 @@ Health check (проверка работоспособности) позвол�
 ### Модель данных для статуса приложения
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/model/AppStatus.scala
+// pdp/src/main/scala/ru/scalabook/pdp/models/AppStatus.scala
 /** Комплексный статус приложения, объединяющий состояние всех зависимостей
   *
   * @param redis

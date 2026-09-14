@@ -1,11 +1,103 @@
 {%
 showPrev = true
-prevPage = sql_generation.html
+prevPage = ../db.html
 showNext = true
 nextPage = db_test.html
 %}
 
 # Практическая реализация CRUD-операций
+
+## Работа с PostgreSQL через библиотеку Doobie
+
+После проектирования алгебр и создания мок-реализаций наступает этап разработки продакшен-реализаций,
+которые будут взаимодействовать с реальной системой хранения данных. 
+Мы будем использовать **PostgreSQL** — зрелую,
+надежную и полнофункциональную реляционную систему управления базами данных (СУБД).
+
+> 💡 **Примечание о переносимости**: Описанные ниже архитектурные принципы и подходы к работе с данными
+> являются универсальными и применимы к большинству реляционных баз данных (MySQL, Oracle, SQL Server и др.).
+> Технические отличия будут заключаться в основном в синтаксисе SQL-диалектов,
+> особенностях драйверов и настройках подключения к конкретной СУБД.
+
+### Выбор библиотеки для доступа к данным: Doobie
+
+Для реализации взаимодействия с PostgreSQL будем использовать библиотеку [Doobie](https://typelevel.org/doobie/index.html).
+
+Doobie — это чисто функциональная JDBC-слой библиотека для работы с реляционными базами данных.
+Ее ключевые преимущества:
+
+- **Строго функциональный подход**: Полная интеграция с экосистемой Cats Effect, использование `IO`
+  и других абстрактных эффектов для описания всех операций с побочными эффектами (ввод-вывод, работа с сетью).
+  Это обеспечивает предсказуемость, тестируемость и композируемость кода.
+- **Типобезопасность на уровне компиляции**: Многие распространенные ошибки
+  (несоответствие типов между Scala и SQL, опечатки в именах колонок, неверное количество параметров)
+  выявляются на этапе компиляции, а не во время выполнения, что значительно повышает надежность приложения.
+- **Высокая композируемость**: Запросы в Doobie построены на базе примитивов,
+  которые можно комбинировать с помощью монадических операций (`map`, `flatMap`) и аппликативных функторов.
+  Это позволяет строить сложные, динамические SQL-запросы из простых, повторно используемых компонентов.
+- **Прозрачность и контролируемость**: Библиотека предоставляет удобные инструменты для логирования запросов и их выполнения.
+
+Для начала работы с Doobie необходимо добавить соответствующие зависимости в конфигурацию сборки проекта (файл `project/Dependencies.scala`).
+
+Структура зависимостей для модуля, работающего с базой данных:
+
+```dotty
+// Файл: project/Dependencies.scala
+object Dependencies {
+  object doobie {
+    // Рекомендуется использовать актуальную стабильную версию.
+    private val version = "1.0.0-RC13"
+    val core            = "org.typelevel" %% "doobie-core"     % version
+    val free            = "org.typelevel" %% "doobie-free"     % version
+    val hikari          = "org.typelevel" %% "doobie-hikari"   % version
+    val postgres        = "org.typelevel" %% "doobie-postgres" % version
+  }
+
+  object iron {
+    ...
+    val doobie          = "io.github.iltotore" %% "iron-doobie"     % version
+  }
+
+  object log4cats {
+    private val version = "2.8.0"
+    val core            = "org.typelevel" %% "log4cats-core"   % version
+    val slf4j           = "org.typelevel" %% "log4cats-slf4j"  % version
+    val logback         = "ch.qos.logback" % "logback-classic" % "1.6.3"
+  }
+
+  // ... другие блоки зависимостей ...
+
+  // Корневой список библиотек для основного модуля приложения (pdp)
+  val pdpLibs: Seq[ModuleID] =
+    Seq(
+      ...
+      doobie.core,
+      doobie.free,
+      doobie.hikari,
+      doobie.postgres,
+      iron.cats,
+      iron.circe,
+      iron.core,
+      iron.doobie,
+      iron.pureconfig,
+      log4cats.core,
+      log4cats.logback,
+      log4cats.slf4j,
+    )
+}
+```
+
+### Следующие шаги после настройки зависимостей
+
+После успешного подключения необходимых библиотек мы можем приступить к реализации следующих ключевых задач:
+
+1. **Создание интерпретаторов алгебр для PostgreSQL**: Реализация трейтов `TaskTypeService[F[_]]`, `TaskService[F[_]]`
+   и других с использованием Doobie's `ConnectionIO` или `Transactor[F]`.
+2. **Настройка подключения к базе данных**: Конфигурация пула соединений (`HikariCP` или аналоги),
+   создание `Transactor` — объекта, который преобразует программы Doobie (`ConnectionIO`) в целевой эффект `F[_]` (например, `IO`).
+3. **Реализация CRUD-операций**: Написание или генерация SQL-запросов
+   для операций `insert`, `select`, `update`, `delete` для каждой из наших сущностей,
+   используя компиляторы запросов Doobie (`Update`, `Query`).
 
 ## Создание и поддержка структуры базы данных
 
@@ -43,10 +135,22 @@ nextPage = db_test.html
   *   {{{Transactor[F]}}} - абстракция Doobie для выполнения запросов в
   *   контексте F.
   */
-private[pdp] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
-  xa: Transactor[F]
+private[pdp] class PostgreSQLMigrationService[F[_]: {MonadCancelThrow, Logger}](
+    xa: Transactor[F]
 ):
   import PostgreSQLMigrationService.*
+
+  def migrate(): F[Boolean] =
+    checkExistFK
+      .query[Boolean]
+      .option
+      .transact(xa)
+      .flatMap:
+        case Some(v) if v =>
+          Logger[F].info("No migration required").as(true)
+        case _ =>
+          Logger[F].info("Database initialization") *>
+            initialize()
 
   /** Основной метод инициализации базы данных. Выполняет последовательность
     * DDL-запросов для создания всей необходимой структуры. Все операции
@@ -58,118 +162,138 @@ private[pdp] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
   def initialize(): F[Boolean] =
     val program =
       for
-        // 1. Создание таблиц для базовых сущностей
-        _ <- generateCreateTableFor[UserType].update.run
-        _ <- generateCreateTableFor[Section].update.run
-        _ <- generateCreateTableFor[Goal].update.run
-
-        // 2. Создание пользовательского типа ENUM для статуса задачи
-        _ <- generateCreateEnumType[Status].update.run
-
-        // 3. Создание таблиц для различных типов задач
-        _ <- generateCreateTableFor[BookTask].update.run
-        _ <- addSectionFKToTable[BookTask]().update.run
-        _ <- addGoalFKToTable[BookTask]().update.run
-
-        _ <- generateCreateTableFor[ArticleTask].update.run
-        _ <- addSectionFKToTable[ArticleTask]().update.run
-        _ <- addGoalFKToTable[ArticleTask]().update.run
-
-        _ <- generateCreateTableFor[PodcastTask].update.run
-        _ <- addSectionFKToTable[PodcastTask]().update.run
-        _ <- addGoalFKToTable[PodcastTask]().update.run
-
-        _ <- generateCreateTableFor[VideoTask].update.run
-        _ <- addSectionFKToTable[VideoTask]().update.run
-        _ <- addGoalFKToTable[VideoTask]().update.run
-
-        _ <- generateCreateTableFor[CourseTask].update.run
-        _ <- addSectionFKToTable[CourseTask]().update.run
-        _ <- addGoalFKToTable[CourseTask]().update.run
-
-        _ <- generateCreateTableFor[UserTask].update.run
-        _ <- addSectionFKToTable[UserTask]().update.run
-        _ <- addGoalFKToTable[UserTask]().update.run
-
-        // 4. Установка дополнительных внешних ключей
-        _ <- userTypeFK.update.run
+        _ <- createUsersTable.update.run
+        _ <- createTaskTypesTable.update.run
+        _ <- addUsersFKToTable("task_types").update.run
+        _ <- createSectionsTable.update.run
+        _ <- addUsersFKToTable("sections").update.run
+        _ <- createGoalsTable.update.run
+        _ <- addUsersFKToTable("goals").update.run
+        _ <- createStatusEnum.update.run
+        _ <- createTasksTable.update.run
+        _ <- addSectionFKToTable("tasks").update.run
+        _ <- addGoalFKToTable("tasks").update.run
+        _ <- addUsersFKToTable("tasks").update.run
+        _ <- taskTypeFK.update.run
+        _ <- createCompletedTasksTable.update.run
+        _ <- addSectionFKToTable("completed_tasks").update.run
+        _ <- addGoalFKToTable("completed_tasks").update.run
+        _ <- addUsersFKToTable("completed_tasks").update.run
       yield true
-    // Преобразование программы ConnectionIO в F с использованием Transactor
     program.transact(xa)
   end initialize
 
 end PostgreSQLMigrationService
 
-/** Сопутствующий объект, содержащий вспомогательные запросы и константы.
-  */
-private[services] object PostgreSQLMigrationService:
-  /** Запрос для установки внешнего ключа между таблицей user_tasks и
-    * user_types. UserTask содержит ссылку на пользовательский тип задачи.
-    */
-  private val userTypeFK =
-    sql"""ALTER TABLE user_tasks
-            ADD CONSTRAINT fk_user_types
-            FOREIGN KEY (user_type_id) REFERENCES user_types(id);"""
+private[pdp] object PostgreSQLMigrationService:
+  /** Запрос для проверки, была ли уже миграция */
+  private val checkExistFK: Fragment =
+    sql"""SELECT EXISTS (
+           SELECT 1
+           FROM information_schema.tables
+           WHERE table_schema = 'public'
+           AND table_name = 'users'
+       );"""
 
-  /** Генерирует запрос для добавления внешнего ключа на таблицу разделов
-    * (sections). Использует контекстный параметр TableSchema[T] для получения
-    * имени таблицы.
-    *
-    * @tparam T
-    *   Тип задачи, для которой добавляется внешний ключ.
-    * @return
-    *   Fragment с SQL-запросом ALTER TABLE.
-    */
-  private def addSectionFKToTable[T: TableSchema as schema](): Fragment =
+  private val createUsersTable: Fragment =
+    sql"""CREATE TABLE IF NOT EXISTS users (
+         id UUID DEFAULT gen_random_uuid() PRIMARY KEY, 
+         name VARCHAR(255) NOT NULL, 
+         password VARCHAR(255) NOT NULL
+         );"""
+
+  private val createTaskTypesTable: Fragment =
+    sql"""CREATE TABLE IF NOT EXISTS task_types (
+         id SERIAL PRIMARY KEY, 
+         name VARCHAR(255) NOT NULL, 
+         user_id UUID NOT NULL, 
+         displayed BOOLEAN NOT NULL DEFAULT TRUE, 
+         ordinal INT NOT NULL DEFAULT 1000
+         );"""
+
+  private val createSectionsTable: Fragment =
+    sql"""CREATE TABLE IF NOT EXISTS sections (
+         id SERIAL PRIMARY KEY, 
+         name VARCHAR(255) NOT NULL, 
+         user_id UUID NOT NULL, 
+         displayed BOOLEAN NOT NULL DEFAULT TRUE, 
+         ordinal INT NOT NULL DEFAULT 1000
+         );"""
+
+  private val createGoalsTable: Fragment =
+    sql"""CREATE TABLE IF NOT EXISTS goals (
+         id SERIAL PRIMARY KEY, 
+         name VARCHAR(255) NOT NULL, 
+         user_id UUID NOT NULL, 
+         displayed BOOLEAN NOT NULL DEFAULT TRUE, 
+         ordinal INT NOT NULL DEFAULT 1000
+         );"""
+
+  private val createStatusEnum: Fragment =
+    sql"""CREATE TYPE StatusEnum AS ENUM
+         ('InProgress', 'Planned', 'KnowledgeBase', 'Completed');"""
+
+  private val createTasksTable: Fragment =
+    sql"""CREATE TABLE IF NOT EXISTS tasks (
+         id UUID DEFAULT gen_random_uuid() PRIMARY KEY, 
+         name VARCHAR(255) NOT NULL, 
+         user_id UUID NOT NULL, 
+         task_type_id INT NOT NULL, 
+         status StatusEnum NOT NULL, 
+         section_id INT NOT NULL, 
+         goal_id INT NOT NULL, 
+         ordinal INT NOT NULL, 
+         start_date DATE, 
+         end_date DATE, 
+         information TEXT, 
+         plan VARCHAR[], 
+         duration BIGINT NOT NULL, 
+         time_spent BIGINT);"""
+
+  private val createCompletedTasksTable: Fragment =
+    sql"""CREATE TABLE IF NOT EXISTS completed_tasks (
+         id SERIAL PRIMARY KEY, 
+         task_id UUID NOT NULL, 
+         task_type_id INT NOT NULL, 
+         name VARCHAR(255) NOT NULL, 
+         user_id UUID NOT NULL, 
+         section_id INT NOT NULL, 
+         goal_id INT NOT NULL, 
+         duration BIGINT NOT NULL, 
+         rating INT NOT NULL, 
+         review TEXT, 
+         start_date DATE, 
+         end_date DATE);"""
+
+  private val taskTypeFK =
+    sql"""ALTER TABLE tasks
+            ADD CONSTRAINT fk_task_types
+            FOREIGN KEY (task_type_id) REFERENCES task_types(id);"""
+
+  private def addSectionFKToTable(tableName: String): Fragment =
     Fragment.const(
-      s"""ALTER TABLE "${schema.tableName}"
+      s"""ALTER TABLE "$tableName"
             ADD CONSTRAINT fk_section
             FOREIGN KEY (section_id) REFERENCES sections(id);"""
     )
 
-  /** Генерирует запрос для добавления внешнего ключа на таблицу целей (goals).
-    */
-  private def addGoalFKToTable[T: TableSchema as schema](): Fragment =
+  private def addGoalFKToTable(tableName: String): Fragment =
     Fragment.const(
-      s"""ALTER TABLE "${schema.tableName}"
+      s"""ALTER TABLE "$tableName"
             ADD CONSTRAINT fk_goal
             FOREIGN KEY (goal_id) REFERENCES goals(id);"""
+    )
+
+  private def addUsersFKToTable(tableName: String): Fragment =
+    Fragment.const(
+      s"""ALTER TABLE "$tableName"
+            ADD CONSTRAINT fk_users
+            FOREIGN KEY (user_id) REFERENCES users(id);"""
     )
 end PostgreSQLMigrationService
 ```
 
-### Архитектурные решения и их обоснование
-
-#### 1. **Выбор плоской структуры таблиц**
-
-Мы сознательно отказались от следующих альтернативных подходов:
-
-- **EAV (Entity-Attribute-Value)**: Одна таблица для всех типов задач с колонками `entity_id`, `attribute`, `value`. 
-  Приводит к сложным запросам и проблемам с производительностью.
-- **Единая таблица с JSON-полями**: Хранение специфичных атрибутов (авторы, длительность) в JSONB. 
-  Упрощает схему, но усложняет запросы и валидацию.
-
-**Наше решение**: Отдельная таблица для каждого конкретного типа задачи (`books`, `articles`, `podcasts` и т.д.).
-
-**Преимущества:**
-
-- **Производительность**: Простые SELECT/INSERT/UPDATE запросы, эффективное использование индексов.
-- **Типобезопасность**: Каждая таблица имеет строго типизированную схему, соответствующую доменному типу.
-- **Ясность и простота**: Структура БД непосредственно отражает доменную модель, что упрощает понимание и отладку.
-- **Возможности оптимизации**: Возможность создать специализированные индексы для каждого типа задач.
-
-#### 2. **Использование внешних ключей для обеспечения ссылочной целостности**
-
-Внешние ключи (`FOREIGN KEY`) — не просто техническая деталь, а важный инструмент проектирования:
-
-- **Гарантии целостности**: PostgreSQL предотвращает:
-    - Создание задачи с несуществующим `section_id` или `goal_id`.
-    - Удаление раздела, на который ссылаются задачи (по умолчанию), если не используется `ON DELETE CASCADE`.
-- **Семантическая ясность**: Явно декларирует отношения между сущностями в схеме БД.
-- **Возможность каскадных операций**: При необходимости можно настроить `ON DELETE CASCADE` 
-  для автоматического удаления зависимых задач.
-
-#### 3. **Критическая важность порядка выполнения операций**
+### Важность порядка выполнения операций
 
 Последовательность выполнения DDL-запросов строго регламентирована:
 
@@ -177,40 +301,27 @@ end PostgreSQLMigrationService
 graph TD
     A[Начало миграции] --> B[Создать таблицы<br/>базовых сущностей]
     B --> C[Создать ENUM-типы]
-    C --> D[Создать таблицы задач]
+    C --> D[Создать таблицу задач]
     D --> E[Добавить внешние ключи]
     E --> F[Завершение]
 
     subgraph "Базовые сущности"
-        B1[UserTypes]
+        B1[TaskTypes]
         B2[Sections]
         B3[Goals]
-    end
-
-    subgraph "Типы задач"
-        D1[BookTask]
-        D2[ArticleTask]
-        D3[PodcastTask]
-        D4[...]
     end
 
     B --> B1
     B --> B2
     B --> B3
-    D --> D1
-    D --> D2
-    D --> D3
-    D --> D4
 ```
 
 **Логика порядка:**
 
-1. **Сначала базовые таблицы**: `user_types`, `sections`, `goals` создаются первыми, так как на них ссылаются другие таблицы.
+1. **Сначала базовые таблицы**: `task_types`, `sections`, `goals` создаются первыми, так как на них ссылаются другие таблицы.
 2. **Затем пользовательские типы**: ENUM `StatusEnum` должен существовать до создания таблиц задач, которые его используют.
 3. **Таблицы задач**: Создаются после того, как все типы и базовые таблицы готовы.
 4. **Внешние ключи в конце**: Устанавливаются после создания всех таблиц, на которые они ссылаются.
-
-Нарушение этого порядка приведет к ошибкам выполнения SQL.
 
 ## Реализация конкретных сервисов работы с PostgreSQL
 
@@ -219,8 +330,8 @@ graph TD
 Принцип **"Program to an interface, not an implementation"** является фундаментальным 
 в объектно-ориентированном и функциональном программировании. В нашем контексте это означает:
 
-- **Абстрактный уровень**: Трейт `UserTypeService[F[_]]` определяет **что** нужно сделать (контракт).
-- **Конкретный уровень**: Класс `PostgreSQLUserTypeService` определяет **как** это сделать для PostgreSQL (реализация).
+- **Абстрактный уровень**: Трейт `TaskTypeService[F[_]]` определяет **что** нужно сделать (контракт).
+- **Конкретный уровень**: Класс `PostgreSQLTaskTypeService` определяет **как** это сделать для PostgreSQL (реализация).
 
 Такое разделение обеспечивает несколько ключевых преимуществ:
 
@@ -230,123 +341,115 @@ graph TD
 - **Соблюдение принципа инверсии зависимостей**: Высокоуровневые модули (бизнес-логика) зависят от абстракций, 
   а не от деталей низкоуровневых модулей (работы с БД).
 
-### Структура и реализация PostgreSQLUserTypeService
+### Структура и реализация PostgreSQLTaskTypeService
 
-Класс `PostgreSQLUserTypeService` является конкретной реализацией алгебры `UserTypeService[F]`, использующей PostgreSQL в качестве бэкенда.
+Класс `PostgreSQLTaskTypeService` является конкретной реализацией алгебры `TaskTypeService[F]`, использующей PostgreSQL в качестве бэкенда.
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLUserTypeService.scala
-/** Конкретная реализация UserTypeService для PostgreSQL. Наследует абстрактный
-  * интерфейс UserTypeService[F] и предоставляет реализацию всех его методов с
-  * использованием Doobie и сгенерированного SQL.
-  *
-  * @param xa
-  *   Transactor[[x] =>> F[x], Unit] - Doobie Transactor для выполнения
-  *   запросов.
-  */
-private[pdp] class PostgreSQLUserTypeService[F[_]: MonadCancelThrow](
+// pdp/src/main/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLTaskTypeService.scala
+private[pdp] class PostgreSQLTaskTypeService[F[_]: MonadCancelThrow](
     xa: Transactor[F]
-) extends UserTypeService[F]:
+) extends TaskTypeService[F]:
 
-  /** Создает новый пользовательский тип задачи. Использует макрос
-    * generateInsertReturningId для генерации параметризованного INSERT-запроса.
+  /** Создает новый тип задачи.
     *
     * @param newItem
     *   Новый тип задачи.
     * @return
-    *   {{{F[UserTypeId]}}} - эффект, который при выполнении вернет ID созданной
+    *   {{{F[TaskTypeId]}}} - эффект, который при выполнении вернет ID созданной
     *   записи.
     */
-  def create(newItem: CreateUserType): F[UserTypeId] =
-    generateInsertReturningId[UserType, CreateUserType, UserTypeId](newItem)
-      .query[UserTypeId] // Указываем, что запрос возвращает UserTypeId
+  def create(newItem: CreateTaskType): F[TaskTypeId] =
+    sql"""INSERT INTO task_types (name, user_id, displayed, ordinal) 
+          VALUES (${newItem.name}, ${newItem.userId}, ${newItem.displayed}, ${newItem.ordinal}) 
+          RETURNING id"""
+      .query[TaskTypeId] // Указываем, что запрос возвращает TaskTypeId
       .unique            // Ожидаем ровно одну запись (возвращаемый ID)
       .transact(xa)      // Выполняем в контексте транзакции
 
-  /** Получает пользовательский тип задачи по его ID.
+  /** Получает тип задачи по его ID.
     *
     * @param id
     *   Идентификатор типа задачи.
     * @return
-    *   {{{F[Option[UserType]]}}} - эффект, возвращающий опциональный результат.
+    *   {{{F[Option[TaskType]]}}} - эффект, возвращающий Optional результат.
     */
-  def get(id: UserTypeId): F[Option[UserType]] =
-    generateSelectById[UserType, UserTypeId](id)
-      .query[UserType] // Указываем тип результата - UserType
+  def get(id: TaskTypeId): F[Option[TaskType]] =
+    sql"""SELECT id, name, user_id, displayed, ordinal FROM task_types WHERE id = $id"""
+      .query[TaskType] // Указываем тип результата 
       .option          // Может вернуть 0 или 1 запись
       .transact(xa)
-
-  /** Получает все пользовательские типы задач.
+      
+  /** Получает все типы задач.
     *
     * @return
-    *   {{{F[Vector[UserType]]}}} - эффект, возвращающий список всех типов.
+    *   {{{F[Vector[TaskType]]}}} - эффект, возвращающий список всех типов.
     */
-  def getByUser(userId: UserId): F[Vector[UserType]] =
-    generateSelectByField[UserType, UserId](userId, "user_id")
-      .query[UserType] // Селект всех полей
+  def getByUser(userId: UserId): F[Vector[TaskType]] =
+    sql"""SELECT id, name, user_id, displayed, ordinal FROM task_types WHERE user_id = $userId"""
+      .query[TaskType] // Селект всех полей
       .to[Vector]      // Преобразуем поток результатов в Vector
-      .transact(xa)    
+      .transact(xa)  
 
-  /** Обновляет существующий пользовательский тип задачи.
+  /** Обновляет существующий тип задачи.
     *
-    * @param userType
-    *   Объект UserType с обновленными данными (должен содержать существующий
+    * @param taskType
+    *   Объект TaskType с обновленными данными (должен содержать существующий
     *   ID).
     * @return
     *   {{{F[Boolean]}}} - эффект, подтверждающий выполнение операции.
     */
-  def update(userType: UserType): F[Boolean] =
-    generateUpdateById[UserType, UserTypeId](userType)
+  def update(taskType: TaskType): F[Boolean] =
+    getUpdateFragment(taskType)
       .update        // Указываем, что это update-запрос
       .run           // Выполняем
       .transact(xa)
       .map(_ > 0)    // Преобразуем F[Int] в F[Boolean]
-
-  /** Пакетно обновляет несколько пользовательских типов задач. 
-    * Этот метод используется, например, при массовом изменении порядка (reordering)
-    * типов, когда необходимо обновить ordinal для списка элементов.
-    * 
-    * Реализация последовательно выполняет UPDATE-запросы для каждого элемента списка
-    * в рамках единой транзакции. Для оптимизации можно было бы использовать 
-    * batch-запрос, но текущая реализация обеспечивает простоту и надежность.
-    *
-    * @param userTypes
-    *   NonEmptyVector[UserType] - гарантированно непустой список типов для обновления.
-    * @return
-    *   {{{F[Boolean]}}} - эффект, подтверждающий выполнение всех операций обновления.
-    */
-  def updateAll(userTypes: NonEmptyVector[UserType]): F[Boolean] =
-    def toConn: UserType => ConnectionIO[Int] =
-      generateUpdateById[UserType, UserTypeId](_).update.run
-    
+      
+  def updateAll(taskTypes: NonEmptyVector[TaskType]): F[Boolean] =
     // Сворачиваем хвост списка, начиная с первого элемента.
     // Используем оператор *> (sequencing) для последовательного выполнения запросов
     // с игнорированием промежуточных результатов (важен только побочный эффект).
-    userTypes.tail.foldLeft(toConn(userTypes.head)) { case (acc, userType) =>
-      acc *> toConn(userType)
+    taskTypes.tail.foldLeft(getUpdateFragment(taskTypes.head).update.run) {
+      case (acc, taskType) =>
+        acc *> getUpdateFragment(taskType).update.run
     }
-      .transact(xa)  // Выполняем всю последовательность в одной транзакции
-      .map(_ > 0)              
-    
-  /** Удаляет пользовательский тип задачи по ID.
+      .transact(xa) // Выполняем всю последовательность в одной транзакции
+      .map(_ > 0)
+
+  /** Удаляет тип задачи по ID.
     *
     * @param id
     *   Идентификатор типа задачи для удаления.
     * @return
-    *   F[Boolean] - эффект, подтверждающий выполнение операции.
+    *   {{{F[Boolean]}}} - эффект, подтверждающий выполнение операции.
     */
-  def delete(id: UserTypeId): F[Boolean] =
-    generateDeleteById[UserType, UserTypeId](id)
-      .update
-      .run
-      .transact(xa)
-      .map(_ > 0)
-end PostgreSQLUserTypeService
+  def delete(id: TaskTypeId): F[Boolean] =
+    sql"""DELETE FROM task_types WHERE id = $id"""
+      .update.run.transact(xa).map(_ > 0)
+
+  private def getUpdateFragment(taskType: TaskType): Fragment =
+    sql"""UPDATE task_types 
+         SET name = ${taskType.name}, user_id = ${taskType.userId}, displayed = ${taskType.displayed}, ordinal = ${taskType.ordinal} 
+         WHERE id = ${taskType.id}"""
+end PostgreSQLTaskTypeService
+```
+
+При этом для `UserId`, т.к. это непрозрачный тип, необходимо явно определить [`Meta[UserId]`](https://typelevel.org/doobie/docs/12-Custom-Mappings.html):
+
+```dotty
+import org.typelevel.doobie.*
+import org.typelevel.doobie.postgres.*
+import org.typelevel.doobie.postgres.implicits.*
+
+object UserId:
+  given Meta[UserId] =
+    Meta[UUID].imap[UserId](UserId(_))(identity)
 ```
 
 ### Принцип минимального и точного соответствия контракту
 
-Важнейший аспект реализации — строгое соблюдение контракта, определенного в интерфейсе `UserTypeService`.
+Важнейший аспект реализации — строгое соблюдение контракта, определенного в интерфейсе `TaskTypeService`.
 
 #### Что означает "реализовывать только необходимые методы"?
 
@@ -396,13 +499,13 @@ class PostgreSQLTaskService extends TaskService[IO]:
 #### Что происходит при вызове `.query[UserType]`?
 
 ```dotty
-generateSelectById[UserType, UserTypeId](id)
+sql"""SELECT id, name, user_id, displayed, ordinal FROM task_types WHERE id = $id"""
   .query[UserType]  // "Магическое" преобразование!
   .option
   .transact(xa)
 ```
 
-1. **Doobie ищет неявный `Get[UserType]`**: Метод `query[T]` требует наличия в неявной области видимости 
+1. **Doobie ищет неявный `Get[TaskType]`**: Метод `query[T]` требует наличия в неявной области видимости 
    экземпляра типа `Get[T]` — класса типов Doobie, который знает, как преобразовать строку результата SQL в объект типа `T`.
 
 2. **Импорт `iron.doobie.given` решает проблему**:
@@ -412,10 +515,10 @@ generateSelectById[UserType, UserTypeId](id)
    ```
 
    Этот импорт предоставляет автоматические экземпляры `Get` и `Put` для уточненных типов, 
-   таких как `UserTypeName`, `UserTypeId` и составных case class, содержащих такие поля.
+   таких как `TypeTypeName`, `TypeTypeId` и составных case class, содержащих такие поля.
 
-3. **Автоматическая деривация**: Для case class'ов, таких как `UserType`, 
-   Doobie может автоматически сгенерировать `Get[UserType]`, 
+3. **Автоматическая деривация**: Для case class'ов, таких как `TypeType`, 
+   Doobie может автоматически сгенерировать `Get[TypeType]`, 
    если для всех его полей существуют соответствующие экземпляры `Get`.
 
 ### Правила корректного использования неявных параметров
@@ -428,7 +531,7 @@ generateSelectById[UserType, UserTypeId](id)
 // 1. Использование неявных параметров для передачи бизнес-данных
 def processOrder()(using order: Order): IO[Unit] =  
   // ❌ АНТИПАТТЕРН!
-  // Где взять order? Кто его должен установить? Код становится неявным.
+  // Где взять order? Кто его должен установить?
 
 // 2. Изменение поведения через неявные параметры
 def calculatePrice(using discountCalculator: DiscountCalculator): Money =  
@@ -459,118 +562,18 @@ def businessOperation(input: Input)(using logger: Logger): IO[Output] =  // ✅ 
 
 ### Интеграция с другими сервисами: Sections и Goals
 
-Реализация сервисов для `Section` и `Goal` следует точно такой же схеме, что и для `UserType`. 
+Реализация сервисов для `Section` и `Goal` следует точно такой же схеме, что и для `TypeType`. 
 Различия минимальны и касаются только:
 
-1. **Типов доменных моделей**: Вместо `UserType` используются `Section` и `Goal`.
-2. **Типов идентификаторов**: `SectionId` и `GoalId` вместо `UserTypeId`.
-3. **Типов параметров создания**: `CreateSection` и `CreateGoal` вместо `CreateUserType`.
-
-Структура кода остается идентичной, демонстрируя преимущества нашего подхода:
-
-- **Повторное использование шаблона**: Однажды разработанный паттерн применяется ко всем сущностям.
-- **Согласованность**: Все сервисы выглядят и работают одинаково, что упрощает понимание системы.
-- **Масштабируемость**: Добавление новой сущности требует минимальных усилий — в основном, это копирование шаблона с заменой типов.
+1. **Типов доменных моделей**: Вместо `TypeType` используются `Section` и `Goal`.
+2. **Типов идентификаторов**: `SectionId` и `GoalId` вместо `TypeTypeId`.
+3. **Типов параметров создания**: `CreateSection` и `CreateGoal` вместо `CreateTypeType`.
 
 Ссылка на полные реализации: 
 [PostgreSQLSectionService](https://gitverse.ru/scalabook/pdp/content/master/pdp/src/main/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLSectionService.scala) 
 и [PostgreSQLGoalService](https://gitverse.ru/scalabook/pdp/content/master/pdp/src/main/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLGoalService.scala).
 
-## Реализация CRUD-операций для системы задач (Tasks)
-
-В системе управления задачами мы сталкиваемся с фундаментальной проектной задачей: 
-необходимо хранить множество различных типов задач, каждый из которых обладает уникальными атрибутами и структурой данных. 
-Это классическая проблема представления полиморфных данных в реляционной базе данных.
-
-### Проблематика разнородных структур данных
-
-Наша доменная модель включает шесть различных типов задач, каждый со своей специфической структурой:
-
-- **BookTask** (Книги): Содержит атрибуты, специфичные для книг — авторы (`authors`), количество страниц (`pages`).
-- **ArticleTask** (Статьи): Включает URL-ссылку на статью (`link`), предполагаемое время чтения (`duration`).
-- **PodcastTask** (Подкасты): Характеризуется длительностью эпизодов (`episode_duration`), количеством эпизодов (`episodes`).
-- **VideoTask** (Видео): Содержит информацию о платформе (`platform` — YouTube, Vimeo), длительность видео (`duration`), ссылку на видео.
-- **CourseTask** (Курсы): Включает данные о платформе курса (`platform` — Coursera, Udemy), ссылку на курс.
-- **UserTask** (Пользовательские задачи): Представляет общие задачи с продолжительностью (`duration`).
-
-Каждый тип задачи имеет как **общие атрибуты** (наследуемые от базового типа `Task` — имя, статус, сроки), 
-так и **специфические атрибуты**, уникальные для данного типа.
-
-### Выбранная стратегия: Table per Concrete Class (TPCC)
-
-Для решения проблемы полиморфного хранения мы применяем стратегию ["Table per Concrete Class" (TPCC)](https://docs.oracle.com/cd/E19798-01/821-1841/bnbqu/index.html), 
-также известную как "Concrete Table Inheritance". 
-В этой стратегии каждая конкретная реализация задачи хранится в своей собственной таблице.
-
-```sql
--- Пример структуры БД при TPCC подходе
-CREATE TABLE books (id UUID, name VARCHAR, user_id UUID, status StatusEnum, ..., authors VARCHAR, pages INT);
-CREATE TABLE articles (id UUID, name VARCHAR, user_id UUID, status StatusEnum, ..., link TEXT, duration BIGINT);
-CREATE TABLE podcasts (id UUID, name VARCHAR, user_id UUID, status StatusEnum, ..., episodes INT, episode_duration BIGINT);
--- ... и так для каждого типа задач
-```
-
-#### Преимущества подхода TPCC:
-
-1. **Оптимальная производительность**:
-
-    - Отсутствуют колонки с `NULL` значениями для нерелевантных атрибутов 
-      (в таблице `books` нет колонки `link`, в таблице `articles` нет колонки `pages`).
-    - Уменьшается размер строк, что повышает эффективность кэширования и скорость чтения.
-    - Упрощенные индексы — можно индексировать только релевантные для типа колонки.
-
-2. **Максимальная типобезопасность на уровне БД**:
-
-    - Каждая таблица имеет строгую схему, соответствующую конкретному типу задачи.
-    - Ограничения `NOT NULL` применяются только к действительно обязательным полям.
-    - Внешние ключи и проверочные ограничения могут быть специфичными для каждого типа.
-
-3. **Прозрачность и понятность структуры**:
-
-    - Схема базы данных напрямую отражает доменную модель.
-    - Разработчикам и администраторам БД интуитивно понятно, где и какие данные хранятся.
-    - Упрощается написание аналитических запросов и отчетов.
-
-4. **Эффективное использование специфичных для типа индексов**:
-
-    - Для `books` можно создать индекс по `authors`.
-    - Для `videos` можно создать индекс по `platform`.
-    - Для `courses` можно создать составной индекс по `platform` и `progress`.
-
-#### Альтернативные подходы и их недостатки:
-
-- **Единая таблица со всеми полями (Single Table Inheritance)**:
-
-  ```sql
-  CREATE TABLE tasks (
-      id UUID, name VARCHAR, user_id UUID, task_type VARCHAR,
-      authors VARCHAR, pages INT, link TEXT, duration BIGINT,
-      platform VARCHAR, episodes INT, episode_duration BIGINT
-      -- большинство полей будут NULL в большинстве записей
-  );
-  ```
-
-  **Проблемы**: Раздутая таблица, много `NULL` значений, сложные индексы.
-
-- **Общая таблица + расширения (Class Table Inheritance)**:
-
-  ```sql
-  CREATE TABLE tasks (id UUID, name VARCHAR, task_type VARCHAR);
-  CREATE TABLE book_details (task_id UUID, authors VARCHAR, pages INT);
-  CREATE TABLE article_details (task_id UUID, link TEXT, duration BIGINT);
-  ```
-
-  **Проблемы**: Необходимость join-ов для получения полных данных, сложность поддержки целостности.
-
-- **Хранение специфичных данных в JSONB**:
-  ```sql
-  CREATE TABLE tasks (id UUID, name VARCHAR, task_type VARCHAR, specific_data JSONB);
-  ```
-  **Проблемы**: Потеря типобезопасности, сложность валидации, ограниченные возможности индексации.
-
 ## Реализация специальных преобразований типов для работы с Doobie
-
-### Проблема соответствия типов Scala и SQL
 
 Doobie, как библиотека для типобезопасной работы с БД, 
 требует явного определения преобразований между типами Scala и соответствующими SQL-типами. 
@@ -580,7 +583,7 @@ Doobie, как библиотека для типобезопасной рабо
 Типы, требующие специального внимания в нашем проекте:
 
 1. **Перечисления (enum)**: `Status` — пользовательский enum, не имеющий прямого аналога в SQL.
-2. **Коллекции**: `Vector[TaskStep]` — список пользовательских типов, которые должны храниться как массив в PostgreSQL.
+2. **План выполнения**: `Plan(steps: List[PlanStep])` — список шагов, которые должны храниться как массив в PostgreSQL.
 3. **Опциональные значения**: `Option[LocalDate]` — дата, которая может отсутствовать, требует особой обработки NULL.
 4. **Специализированные типы измерений**: `FiniteDuration` — представление длительности, которое эффективнее хранить как число.
 
@@ -597,8 +600,6 @@ object Status:
   /** Ручное определение преобразования между типом Status и строковым
     * представлением в БД. Doobie требует наличия экземпляра Meta[Status] для
     * работы с этим типом в запросах.
-    *
-    * Методология: Используем преобразование через String как промежуточный тип.
     */
   given Meta[Status] = Meta[String].timap(Status.valueOf)(_.toString)
 ```
@@ -609,8 +610,6 @@ object Status:
 - `.timap(f)(g)` — метод, создающий двунаправленное преобразование:
     - `f: String => Status` — функция чтения из БД (строка → enum)
     - `g: Status => String` — функция записи в БД (enum → строка)
-
-**Оценка безопасности подхода:**
 
 Данное решение безопасно при следующих условиях:
 
@@ -623,7 +622,6 @@ object Status:
 Изменение перечисления требует скоординированных действий:
 
 ```dotty
-// Пример опасного изменения:
 enum Status:
   case InProgress, Planned, KnowledgeBase
   // Добавление нового статуса - безопасно
@@ -634,43 +632,54 @@ enum Status:
   // Требует миграции данных, т.к. в БД остается InProgress!
 ```
 
-#### 2. Преобразование для уточненного типа `TaskStep`
+Аналогично определяется преобразование для запечатанного типа:
 
 ```dotty
-type TaskStep = TaskStep.T
+object Task:
+  opaque type TaskId = UUID
 
-object TaskStep
-    extends RefinedType[String, MinLength[2] & MaxLength[200] & Trimmed]:
+  object TaskId:
+    def apply(uuid: UUID): TaskId = uuid
 
-  /** Преобразование для списка шагов задач. PostgreSQL хранит массивы строк
-    * как Array[String], а мы используем List[TaskStep].
-    */
-  given Meta[List[TaskStep]] =
-    Meta[Array[String]].timap(
-      // Преобразование из БД в Scala: Array[String] -> List[TaskStep]
-      _.map(TaskStep.applyUnsafe).toList
-    )(
-      // Преобразование из Scala в БД: List[TaskStep] -> Array[String]
-      _.map(_.toString).toArray
-    )
+  given Meta[TaskId] =
+    Meta[UUID].imap[TaskId](TaskId(_))(identity)
 ```
 
-**Особенности реализации:**
+#### 2. Преобразование для `Plan`
 
-- **Использование `applyUnsafe`**: Поскольку данные приходят из нашей же БД, мы можем предположить,
-  что они уже прошли валидацию при вставке. Валидация выполняется при создании объектов `TaskStep` на уровне приложения.
-- **Преобразование коллекций**: Doobie требует отдельного экземпляра `Meta` для `List[TaskStep]`, а не только для `TaskStep`.
-- **Эффективность работы с массивами**: PostgreSQL эффективно работает с массивами, 
-  что позволяет хранить списки шагов без создания дополнительных таблиц связей.
+```dotty
+object Plan:
+  given Meta[Plan] =
+    unliftedStringArrayType.imap(array =>
+      Plan(array.flatMap(step => decode[PlanStep](step).toOption).toList)
+    )(plan =>
+      plan.steps.map(step => step.asJson.noSpaces).toArray
+    )
+    
+final case class PlanStep(
+    number: StepNumber,
+    step: StepName,
+    completed: Boolean
+) derives Decoder, Encoder    
+```
+
+`Plan` хранит список шагов `PlanStep`, но в базе данных нет отдельной таблицы для них — 
+вместо этого используется колонка типа `VARCHAR[]` (массив строк). 
+Каждый шаг сериализуется в JSON-строку через `PlanStep.asJson.noSpaces`, а сам план сохраняется как массив таких строк. 
+Это позволяет хранить сложную вложенную структуру в одной колонке без дополнительных таблиц и JOIN-ов, 
+а формат JSON делает данные читаемыми и расширяемыми.
+
+При чтении из базы Doobie применяет `unliftedStringArrayType.imap`: 
+массив строк из БД десериализуется обратно в `List[PlanStep]` через `decode[PlanStep]`. 
+Оператор `imap` (invariant map) описывает двустороннее преобразование — из `Array[String]` в `Plan` и обратно, 
+что позволяет `Meta[Plan]` автоматически использоваться в запросах `sql"..."` без ручного парсинга. 
+Важно отметить, что при десериализации ошибки парсинга `decode[PlanStep]` молча игнорируются через `.toOption` — 
+некорректные шаги просто пропускаются, что делает чтение устойчивым к повреждённым данным.
 
 #### 3. Преобразования для `Option[LocalDate]` и `FiniteDuration`
 
 ```dotty
-// Файл: pdp/src/main/scala/ru/scalabook/pdp/model/src.scala
-package ru.scalabook.pdp.model
-
-// ... остальная часть модели
-
+// Файл: pdp/src/main/scala/ru/scalabook/pdp/models/src.scala
 /** Преобразование для опциональной даты. Option[LocalDate] соответствует
   * nullable колонке DATE в PostgreSQL.
   */
@@ -692,17 +701,14 @@ given Meta[FiniteDuration] =
   )(
     // В БД: FiniteDuration -> Long
     _.toMinutes
-  )   
+  )
 ```
 
 **Обоснование выбранных представлений:**
 
 - **`Option[LocalDate]`**: Использование `null` в БД для представления отсутствующего значения — это идиоматичный подход в SQL, 
   который эффективно поддерживается индексами и запросами.
-- **`FiniteDuration` как `Long`**: Хранение длительности в минутах как целого числа:
-    - Исключает проблемы с точностью чисел с плавающей точкой.
-    - Позволяет эффективно выполнять арифметические операции в SQL.
-    - Упрощает индексирование и сортировку по длительности.
+- **`FiniteDuration` как `Long`**: Хранение длительности в минутах как целого числа.
     - Большая точность (секунды, миллисекунды) для продолжительности задач не требуется.
 
 ## Принципы организации неявных экземпляров
@@ -762,8 +768,9 @@ import DatabaseTypeConversions.given
 
 #### Опасность сиротствующих экземпляров (Orphan Instances)
 
-[Сиротствующий экземпляр](https://pjrt.medium.com/orphan-instances-in-scala-322caa78e382) — это given instance, который объявлен вне сопутствующего объекта типа данных 
-и вне сопутствующего объекта класса типов. Такие экземпляры создают серьезные проблемы в поддержке кода.
+[Сиротствующий экземпляр](https://pjrt.medium.com/orphan-instances-in-scala-322caa78e382) — это given instance, 
+который объявлен вне сопутствующего объекта типа данных и вне сопутствующего объекта класса типов. 
+Такие экземпляры создают серьезные проблемы в поддержке кода.
 
 ##### ❌ Пример опасного размещения:
 
@@ -818,250 +825,110 @@ given Meta[Status] =
 
 ## Реализация сервиса работы с задачами
 
-### Операция создания задачи (Create)
+Класс `PostgreSQLTaskService` — это реализация трейта `TaskService[F]`, 
+которая работает с таблицей `tasks` в PostgreSQL через библиотеку **Doobie**. 
 
-Реализация метода `create` демонстрирует обработку полиморфизма через сопоставление с шаблоном (pattern matching):
+### Разбор каждого метода
+
+#### `create(task: CreateTask): F[TaskId]`
 
 ```dotty
-/** Создает новую задачу в базе данных. Определяет конкретный тип задачи и
-  * вызывает соответствующий сгенерированный SQL.
-  *
-  * @param task
-  *   Данные для создания задачи (абстрактный CreateTask).
-  * @return
-  *   IO[TaskId] - эффект, возвращающий идентификатор созданной задачи.
-  */
-def create(task: CreateTask): IO[TaskId] =
-  task match
-    case book: CreateBookTask =>
-      // Для книг: используем макрос для BookTask
-      generateInsertReturningId[BookTask, CreateBookTask, TaskId](book)
-        .query[TaskId]
-        .unique
-        .transact(xa)
-
-    case article: CreateArticleTask =>
-      // Для статей: используем макрос для ArticleTask
-      generateInsertReturningId[ArticleTask, CreateArticleTask, TaskId](article)
-        .query[TaskId]
-        .unique
-        .transact(xa)
-
-    case podcast: CreatePodcastTask =>
-      // Для подкастов: аналогично
-      generateInsertReturningId[PodcastTask, CreatePodcastTask, TaskId](podcast)
-        .query[TaskId]
-        .unique
-        .transact(xa)
-
-    case video: CreateVideoTask =>
-      generateInsertReturningId[VideoTask, CreateVideoTask, TaskId](video)
-        .query[TaskId]
-        .unique
-        .transact(xa)
-
-    case course: CreateCourseTask =>
-      generateInsertReturningId[CourseTask, CreateCourseTask, TaskId](course)
-        .query[TaskId]
-        .unique
-        .transact(xa)
-
-    case userTask: CreateUserTask =>
-      // Пользовательские задачи хранятся отдельно
-      generateInsertReturningId[UserTask, CreateUserTask, TaskId](userTask)
-        .query[TaskId]
-        .unique
-        .transact(xa)
+def create(task: CreateTask): F[TaskId] =
+  sql"""INSERT INTO tasks (name, user_id, task_type_id, status, section_id, goal_id, ordinal, start_date, end_date, information, plan, duration, time_spent)
+       VALUES (${task.name}, ${task.userId}, ${task.taskTypeId}, ${task.status}::StatusEnum, ${task.sectionId}, ${task.goalId}, ${task.ordinal}, ${task.startDate}, ${task.endDate}, ${task.information}, ${task.plan}, ${task.duration}, ${task.timeSpent})
+       RETURNING id"""
+    .query[TaskId]
+    .unique
+    .transact(xa)
 ```
 
-**Ключевые аспекты реализации:**
+**Что происходит:**
 
-1. **Определение типа во время выполнения**: Хотя на вход приходит абстрактный `CreateTask`, 
-   сопоставление с шаблоном позволяет определить конкретный тип и вызвать соответствующий метод.
-2. **Использование сгенерированного SQL**: Для каждого типа вызывается специализированный макрос, 
-   который генерирует корректный INSERT-запрос с учетом специфичных полей.
-3. **Возврат сгенерированного идентификатора**: Все варианты возвращают `TaskId`, 
-   который генерируется базой данных (через `DEFAULT gen_random_uuid()`).
+- Выполняется `INSERT` со всеми полями задачи. Значения передаются через `${...}` — Doobie сам экранирует их 
+  и подставляет как параметры prepared statement, что защищает от SQL-инъекций.
+- **`${task.status}::StatusEnum`** — явное приведение к PostgreSQL-типу `StatusEnum`. 
+  Это необходимо, потому что статус в Scala — это `enum`/`sealed trait`, а в базе — пользовательский тип. 
+  Без каста PostgreSQL может не понять, как преобразовать строку в enum.
+- **`RETURNING id`** — PostgreSQL возвращает сгенерированный `UUID` новой записи прямо из запроса. 
+  Это позволяет избежать второго запроса для получения ID.
+- **`.query[TaskId].unique`** — Doobie ожидает ровно одну строку в ответ (`.unique`), иначе бросит ошибку. 
+  Читает единственное значение как `TaskId`.
+- **`.transact(xa)`** — выполняет запрос в транзакции на указанном `Transactor`.
 
-### Операция получения одной задачи по идентификатору (Read One)
+**Возвращает:** `F[TaskId]` — идентификатор созданной задачи.
+
+#### `get(id: TaskId): F[Option[Task]]`
 
 ```dotty
-/** Получает конкретную задачу по ее идентификатору и типу. Тип задачи
-  * необходим для определения, в какой таблице искать.
-  *
-  * @param id
-  *   Уникальный идентификатор задачи (TaskId).
-  * @param taskType
-  *   Тип задачи, определяющий таблицу для поиска.
-  * @return
-  *   IO[Option[Task]] - эффект, возвращающий Optional задачу.
-  */
-def get(id: TaskId, taskType: TaskType): IO[Option[Task]] =
-  taskType match
-    case Book =>
-      // Поиск в таблице books
-      generateSelectById[BookTask, TaskId](id)
-        .query[BookTask].option.transact(xa)
-
-    case Article =>
-      // Поиск в таблице articles
-      generateSelectById[ArticleTask, TaskId](id)
-        .query[ArticleTask].option.transact(xa)
-
-    case Podcast =>
-      generateSelectById[PodcastTask, TaskId](id)
-        .query[PodcastTask].option.transact(xa)
-
-    case Video =>
-      generateSelectById[VideoTask, TaskId](id)
-        .query[VideoTask].option.transact(xa)
-
-    case Course =>
-      generateSelectById[CourseTask, TaskId](id)
-        .query[CourseTask].option.transact(xa)
-
-    case Other =>
-      // Все остальные типы считаем пользовательскими задачами
-      generateSelectById[UserTask, TaskId](id)
-        .query[UserTask].option.transact(xa)
+def get(id: TaskId): F[Option[Task]] =
+  sql"""SELECT id, name, user_id, task_type_id, status, section_id, goal_id, ordinal, start_date, end_date, information, plan, duration, time_spent FROM tasks WHERE id = $id"""
+    .query[Task]
+    .option
+    .transact(xa)
 ```
 
-### Операция получения всех задач (Read All)
+**Что происходит:**
+
+- `SELECT` по первичному ключу. Все поля перечислены явно — это хорошая практика, чтобы не зависеть от порядка колонок в таблице.
+- **`.query[Task].option`** — Doobie пытается прочитать результат как `Task`. Если строк нет, возвращается `None`; если есть — `Some(task)`.
+- Метод **не бросает исключение** при отсутствии задачи — это важно для корректной обработки в HTTP-слое (например, чтобы вернуть 404).
+
+**Возвращает:** `F[Option[Task]]` — `None`, если задача не найдена.
+
+#### `getByUser(userId: UserId): F[Vector[Task]]`
 
 ```dotty
-/** Получает все задачи всех типов из базы данных. Выполняет параллельные
-  * запросы к каждой таблице и объединяет результаты.
-  *
-  * @return
-  *   IO[Vector[Task]] - эффект, возвращающий вектор всех задач.
-  */
-def getByUser(userId: UserId): IO[Vector[Task]] =
-  (
-    generateSelectByField[BookTask, UserId](
-      userId,
-      "user_id"
-    ).query[BookTask].to[Vector].transact(xa),
-    generateSelectByField[ArticleTask, UserId](
-      userId,
-      "user_id"
-    ).query[ArticleTask].to[Vector].transact(xa),
-    generateSelectByField[PodcastTask, UserId](
-      userId,
-      "user_id"
-    ).query[PodcastTask].to[Vector].transact(xa),
-    generateSelectByField[VideoTask, UserId](
-      userId,
-      "user_id"
-    ).query[VideoTask].to[Vector].transact(xa),
-    generateSelectByField[CourseTask, UserId](
-      userId,
-      "user_id"
-    ).query[CourseTask].to[Vector].transact(xa),
-    generateSelectByField[UserTask, UserId](
-      userId,
-      "user_id"
-    ).query[UserTask].to[Vector].transact(xa)
-  ).mapN { // mapN объединяет результаты всех параллельных вычислений
-    case (books, articles, podcasts, videos, courses, userTasks) =>
-      books ++ articles ++ podcasts ++ videos ++ courses ++ userTasks
-  }  
+def getByUser(userId: UserId): F[Vector[Task]] =
+  sql"""SELECT id, name, user_id, task_type_id, status, section_id, goal_id, ordinal, start_date, end_date, information, plan, duration, time_spent FROM tasks WHERE user_id = $userId"""
+    .query[Task].to[Vector].transact(xa)
 ```
 
-### Операция обновления задачи (Update)
+**Что происходит:**
+
+- `SELECT` всех задач конкретного пользователя.
+- **`.to[Vector]`** — собирает все строки результата в `Vector[Task]`. Doobie поддерживает `List`, `Vector`, `Set` и другие коллекции.
+- Возвращает **пустой `Vector`**, если у пользователя нет задач (а не `None` — это удобно для отображения списка).
+
+**Возвращает:** `F[Vector[Task]]` — список задач пользователя.
+
+#### `update(task: Task): F[Boolean]`
 
 ```dotty
-/** Обновляет существующую задачу в базе данных. Определяет конкретный тип
-  * задачи и вызывает соответствующий сгенерированный SQL запрос UPDATE.
-  *
-  * @param task
-  *   Объект задачи с обновленными данными. Должен содержать существующий ID.
-  * @return
-  *   F[Boolean] - эффект, подтверждающий успешное выполнение операции
-  *   обновления.
-  */
 def update(task: Task): F[Boolean] =
-  task match
-    case book: BookTask =>
-      // Обновление книги: генерация UPDATE запроса для таблицы books
-      generateUpdateById[BookTask, TaskId](book)
-        .update.run.transact(xa).map(_ > 0)
-
-    case article: ArticleTask =>
-      // Обновление статьи: генерация UPDATE запроса для таблицы articles
-      generateUpdateById[ArticleTask, TaskId](article)
-        .update.run.transact(xa).map(_ > 0)
-
-    case podcast: PodcastTask =>
-      // Обновление подкаста: генерация UPDATE запроса для таблицы podcasts
-      generateUpdateById[PodcastTask, TaskId](podcast)
-        .update.run.transact(xa).map(_ > 0)
-
-    case video: VideoTask =>
-      // Обновление видео: генерация UPDATE запроса для таблицы videos
-      generateUpdateById[VideoTask, TaskId](video)
-        .update.run.transact(xa).map(_ > 0)
-
-    case course: CourseTask =>
-      // Обновление курса: генерация UPDATE запроса для таблицы courses
-      generateUpdateById[CourseTask, TaskId](course)
-        .update.run.transact(xa).map(_ > 0)
-
-    case userTask: UserTask =>
-      // Обновление пользовательской задачи: генерация UPDATE запроса для таблицы user_tasks
-      generateUpdateById[UserTask, TaskId](userTask)
-        .update.run.transact(xa).map(_ > 0)
+  sql"""UPDATE tasks
+       SET name = ${task.name}, user_id = ${task.userId}, task_type_id = ${task.taskTypeId}, status = ${task.status}::StatusEnum,
+       section_id = ${task.sectionId}, goal_id = ${task.goalId}, ordinal = ${task.ordinal},
+       start_date = ${task.startDate}, end_date = ${task.endDate}, information = ${task.information},
+       plan = ${task.plan}, duration = ${task.duration}, time_spent = ${task.timeSpent} WHERE id = ${task.id}"""
+    .update.run.transact(xa).map(_ > 0)
 ```
 
-### Операция удаления задачи (Delete)
+**Что происходит:**
+
+- `UPDATE` всех полей задачи по её `id`.
+- **`.update.run`** — выполняет запрос как `Update0`, который возвращает количество затронутых строк (`Int`).
+- **`.map(_ > 0)`** — преобразует число в `Boolean`: `true`, если строка была обновлена, `false` — если задача с таким `id` не найдена.
+- Обратите внимание на `::StatusEnum` — то же приведение, что и в `create`.
+
+**Возвращает:** `F[Boolean]` — `true`, если запись существовала и была обновлена.
+
+#### `delete(id: TaskId): F[Boolean]`
 
 ```dotty
-/** Удаляет задачу по идентификатору и типу.
-  *
-  * @param id
-  *   Идентификатор задачи для удаления.
-  * @param taskType
-  *   Тип задачи, определяющий таблицу.
-  * @return
-  *   F[Boolean] - эффект, подтверждающий выполнение.
-  */
-def delete(id: TaskId, taskType: TaskType): F[Boolean] =
-  taskType match
-    case Book =>
-      generateDeleteById[BookTask, TaskId](id)
-        .update.run.transact(xa).map(_ > 0)
-
-    case Article =>
-      generateDeleteById[ArticleTask, TaskId](id)
-        .update.run.transact(xa).map(_ > 0)
-
-    case Podcast =>
-      generateDeleteById[PodcastTask, TaskId](id)
-        .update.run.transact(xa).map(_ > 0)
-
-    case Video =>
-      generateDeleteById[VideoTask, TaskId](id)
-        .update.run.transact(xa).map(_ > 0)
-
-    case Course =>
-      generateDeleteById[CourseTask, TaskId](id)
-        .update.run.transact(xa).map(_ > 0)
-
-    case Other =>
-      generateDeleteById[UserTask, TaskId](id)
-        .update.run.transact(xa).map(_ > 0)
+def delete(id: TaskId): F[Boolean] =
+  sql"""DELETE FROM tasks WHERE id = $id"""
+    .update.run.transact(xa).map(_ > 0)
 ```
 
-## Заключение
+**Что происходит:**
 
-Реализация CRUD-операций для системы задач демонстрирует несколько важных архитектурных принципов:
+- `DELETE` по `id`. Аналогично `update`, возвращает количество затронутых строк.
+- **`.map(_ > 0)`** — `true`, если что-то удалили; `false`, если задачи не было.
 
-1. **Стратегический выбор модели хранения**: TPCC обеспечивает оптимальный баланс между производительностью и типобезопасностью.
-2. **Тщательная работа с типами**: Правильные преобразования между Scala-типами и SQL — основа надежности системы.
-3. **Организация кода**: Правильное размещение given instances предотвращает множество проблем в будущем.
-4. **Эффективность операций**: Параллельное выполнение запросов и точное указание типов повышают производительность.
+**Возвращает:** `F[Boolean]` — `true`, если запись была удалена.
 
-Эта реализация обеспечивает прочный фундамент для системы управления задачами, 
-который может масштабироваться и эволюционировать вместе с требованиями проекта.
+Такой сервис — типичный пример **репозитория** в гексагональной архитектуре: он изолирует работу с БД от бизнес-логики, 
+что упрощает тестирование (можно подменить на in-memory реализацию) и замену хранилища (например, на MongoDB или Cassandra).
 
 ---
 

@@ -45,7 +45,7 @@ nextPage = ../authorization.html
 Модель `CompletedTask` инкапсулирует все данные, необходимые для долгосрочного хранения информации о выполненных задачах.
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/model/CompletedTask.scala
+// pdp/src/main/scala/ru/scalabook/pdp/models/CompletedTask.scala
 package ru.scalabook.pdp.model
 
 /** Модель выполненной задачи, представляющая собой неизменяемый снимок состояния

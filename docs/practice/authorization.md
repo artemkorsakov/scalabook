@@ -36,7 +36,7 @@ nextPage = authorization/create.html
 ### Классы данных
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/model/User.scala
+// pdp/src/main/scala/ru/scalabook/pdp/models/User.scala
 
 // Модель для регистрации нового пользователя
 // Содержит имя пользователя и уже зашифрованный пароль

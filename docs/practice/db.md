@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = task_types/statuses.html
 showNext = true
-nextPage = db/sql_generation.html
+nextPage = db/db_crud.html
 %}
 
 # Архитектура уровня работы с данными

@@ -25,10 +25,10 @@ nextPage = lifecycle/complete.html
 
 ```dotty
 final case class SettingsService[F[_]: MonadThrow](
-    typeService: UserTypeService[F],   // Сервис работы с типами задач
-    sectionService: SectionService[F], // Сервис работы с разделами
-    goalService: GoalService[F],       // Сервис работы с целями
-    taskService: TaskService[F]        // Сервис задач
+    taskTypeService: TaskTypeService[F], // Сервис работы с типами задач
+    sectionService: SectionService[F],   // Сервис работы с разделами
+    goalService: GoalService[F],         // Сервис работы с целями
+    taskService: TaskService[F]          // Сервис задач
 )
 ```
 
@@ -53,14 +53,14 @@ final case class SettingsService[F[_]: MonadThrow](
 Операция создания гарантирует уникальность имени типа в пределах системы, предотвращая дублирование.
 
 ```dotty
-def createTaskType(name: UserTypeName): F[UserTypeId] =
-  createItem[UserType, UserTypeName, UserTypeId](
-    getAll = typeService.getByUser(newItem.userId),
+def createTaskType(newItem: CreateTaskType): F[TaskTypeId] =
+  createItem[TaskType, TaskTypeName, TaskTypeId](
+    getAll = taskTypeService.getByUser(newItem.userId),
     getName = _.name,
     name = newItem.name,
-    create = typeService.create(newItem)
+    create = taskTypeService.create(newItem)
   )
-      
+
 private def createItem[A, B, C](
     getAll: F[Vector[A]],
     getName: A => B,
@@ -74,15 +74,15 @@ private def createItem[A, B, C](
           s"An item with name '$name' already exists"
         )
       )
-    else create 
+    else create    
 ```
 
 **Принцип работы:**
 
 1. Запрашиваем полный список существующих типов заданного пользователя через `getByUser`.
-2. Проверяем, не существует ли уже тип с запрошенным именем (`items.exists(getName(_) == name)`).
+2. Проверяем, существует ли уже тип с запрошенным именем (`items.exists(getName(_) == name)`).
 3. Если дубликат найден, операция прерывается с ошибкой `IllegalArgumentException`.
-4. Если имя уникально, делегирует создание в `typeService.create`, который возвращает идентификатор нового типа (`UserTypeId`).
+4. Если имя уникально, делегирует создание в `typeService.create`, который возвращает идентификатор нового типа (`TaskTypeId`).
 
 **Обобщенная приватная логика `createItem`:**
 Для избежания дублирования кода, общая логика проверки уникальности и создания вынесена в параметризованный метод `createItem`. 
@@ -97,14 +97,14 @@ private def createItem[A, B, C](
 2. Новое имя сущности не должно конфликтовать с именами других сущностей (кроме себя самой).
 
 ```dotty
-def updateTaskType(userType: UserType): F[Boolean] =
-  updateItem[UserType, UserTypeId, UserTypeName](
-    getAll = typeService.getByUser(userType.userId),
-    updated = userType,
+def updateTaskType(taskType: TaskType): F[Boolean] =
+  updateItem[TaskType, TaskTypeId, TaskTypeName](
+    getAll = taskTypeService.getByUser(taskType.userId),
+    updated = taskType,
     getId = _.id,
     getName = _.name,
-    update = typeService.update
-  )
+    update = taskTypeService.update
+  )  
   
 private def updateItem[A, B, C](
     getAll: F[Vector[A]],
@@ -127,7 +127,7 @@ private def updateItem[A, B, C](
           s"Can't update! Task type with name '$newName' already exists"
         )
       )
-    else update(updated)  
+    else update(updated)    
 ```
 
 **Логика валидации в `updateItem`:**
@@ -143,13 +143,16 @@ private def updateItem[A, B, C](
 На вход принимается вектор идентификаторов в желаемом порядке.
 
 ```dotty
-def reorderTaskTypes(ids: NonEmptyVector[UserTypeId], userId: UserId): F[Boolean] =
-  reorderItems[UserType, UserTypeId](
-    getAll = typeService.getByUser(userId),
+def reorderTaskTypes(
+    ids: NonEmptyVector[TaskTypeId],
+    userId: UserId
+): F[Boolean] =
+  reorderItems[TaskType, TaskTypeId](
+    getAll = taskTypeService.getByUser(userId),
     ids = ids,
     getId = _.id,
     update = item => ordinal => item.copy(ordinal = ordinal),
-    updateAll = typeService.updateAll
+    updateAll = taskTypeService.updateAll
   )
   
 private def reorderItems[A, B](
@@ -162,7 +165,9 @@ private def reorderItems[A, B](
   getAll.flatMap: items =>
     NonEmptyVector.fromVector(items) match
       case None =>
-        MonadThrow[F].raiseError(new IllegalArgumentException("Items list is empty"))
+        MonadThrow[F].raiseError(
+          new IllegalArgumentException("Items list is empty")
+        )
       case Some(neItems) =>
         val notFoundIds = ids.filterNot(id => neItems.exists(getId(_) == id))
         if notFoundIds.nonEmpty then
@@ -196,7 +201,7 @@ private def reorderItems[A, B](
 Наиболее простая операция, которая делегируется соответствующему специализированному сервису.
 
 ```dotty
-def getTaskTypes(userId: UserId): F[Vector[UserType]] = typeService.getByUser(userId)
+def getTaskTypes(userId: UserId): F[Vector[TaskType]] = typeService.getByUser(userId)
 ```
 
 Аналогичные методы `getGoals` и `getSections` будут обращаться к `goalService.getByUser(userId)` 
@@ -204,13 +209,13 @@ def getTaskTypes(userId: UserId): F[Vector[UserType]] = typeService.getByUser(us
 
 ## Удаление сущностей: обеспечение целостности данных
 
-Операция удаления сущностей (таких как разделы, цели или пользовательские типы задач) 
+Операция удаления сущностей (таких как разделы, цели или типы задач) 
 является критической с точки зрения целостности данных. 
 Прежде чем удалить какую-либо сущность, необходимо убедиться, 
 что она не используется в других частях системы — в частности, что не существует задач, 
 которые ссылаются на эту сущность через внешние ключи. 
 
-Для каждого типа сущности (раздел, цель, пользовательский тип) создается отдельный метод в `TaskService`, 
+Для каждого типа сущности (раздел, цель, тип задач) создается отдельный метод в `TaskService`, 
 который проверяет, используется ли эта сущность хотя бы в одной задаче любого типа.
 
 ```dotty
@@ -224,7 +229,7 @@ trait TaskService[F[_]: Monad]:
   def existsGoal(id: GoalId, userId: UserId): F[Boolean]
 
   /** Проверяет существование задачи с заданным типом пользовательских задач. */
-  def existsUserType(id: UserTypeId, userId: UserId): F[Boolean]
+  def existsTaskType(id: TaskTypeId, userId: UserId): F[Boolean]
 ```
 
 И реализация: 
@@ -236,43 +241,25 @@ private[pdp] class PostgreSQLTaskService[F[_]: MonadCancelThrow](
   ...
   
   def existsSection(id: SectionId, userId: UserId): F[Boolean] =
-    (
-      getExistsFragment[BookTask](Task.sectionIdColumn, id.value, userId),
-      getExistsFragment[ArticleTask](Task.sectionIdColumn, id.value, userId),
-      getExistsFragment[PodcastTask](Task.sectionIdColumn, id.value, userId),
-      getExistsFragment[VideoTask](Task.sectionIdColumn, id.value, userId),
-      getExistsFragment[CourseTask](Task.sectionIdColumn, id.value, userId),
-      getExistsFragment[UserTask](Task.sectionIdColumn, id.value, userId)
-    ).mapN(_ || _ || _ || _ || _ || _)
-
-  def existsGoal(id: GoalId, userId: UserId): F[Boolean] =
-    (
-      getExistsFragment[BookTask](Task.goalIdColumn, id.value, userId),
-      getExistsFragment[ArticleTask](Task.goalIdColumn, id.value, userId),
-      getExistsFragment[PodcastTask](Task.goalIdColumn, id.value, userId),
-      getExistsFragment[VideoTask](Task.goalIdColumn, id.value, userId),
-      getExistsFragment[CourseTask](Task.goalIdColumn, id.value, userId),
-      getExistsFragment[UserTask](Task.goalIdColumn, id.value, userId)
-    ).mapN(_ || _ || _ || _ || _ || _)
-
-  def existsUserType(id: UserTypeId, userId: UserId): F[Boolean] =
-    getExistsFragment[UserTask](UserTask.userTypeIdColumn, id.value, userId)
-
-  private def getExistsFragment[A: TableSchema as schema](
-      col: ColumnDefinition,
-      id: Int,
-      userId: UserId
-  ): F[Boolean] =
-    val sqlFragment =
-      Fragment.const(
-        s"""SELECT 1 FROM ${schema.tableName.value} WHERE ${col.name.value} = $id AND user_id = '$userId' LIMIT 1;"""
-      )
-
-    sqlFragment
+    sql"""SELECT 1 FROM tasks WHERE section_id = $id AND user_id = $userId LIMIT 1;"""
       .query[Int]        // Запрос возвращает столбец со значением 1 при наличии записи
       .option            // Преобразует результат в Option[Int] (Some(1) или None)
       .transact(xa)      // Выполняет запрос в контексте транзакции
       .map(_.isDefined)  // Преобразует Option в Boolean: true, если запись найдена
+
+  def existsGoal(id: GoalId, userId: UserId): F[Boolean] =
+    sql"""SELECT 1 FROM tasks WHERE goal_id = $id AND user_id = $userId LIMIT 1;"""
+      .query[Int]
+      .option
+      .transact(xa)
+      .map(_.isDefined)
+
+  def existsTaskType(id: TaskTypeId, userId: UserId): F[Boolean] =
+    sql"""SELECT 1 FROM tasks WHERE task_type_id = $id AND user_id = $userId LIMIT 1;"""
+      .query[Int]
+      .option
+      .transact(xa)
+      .map(_.isDefined)
 ```
 
 #### Интеграция проверок в операции удаления
@@ -281,18 +268,18 @@ private[pdp] class PostgreSQLTaskService[F[_]: MonadCancelThrow](
 что обеспечивает безопасное удаление только тех сущностей, которые не используются.
 
 ```dotty
-def deleteTaskType(id: UserTypeId, userId: UserId): F[Boolean] =
+def deleteTaskType(id: TaskTypeId, userId: UserId): F[Boolean] =
   // Сначала проверяем наличие зависимостей
-  taskService.existsUserType(id, userId).ifM(
-    // Если existsUserType вернул true (тип используется) → вызываем ошибку
+  taskService.existsTaskType(id, userId).ifM(
+    // Если existsTaskType вернул true (тип используется) → вызываем ошибку
     MonadThrow[F].raiseError(
       new IllegalArgumentException(
-        s"Невозможно удалить тип задачи с ID $id: тип используется в одной или нескольких задачах"
+        s"Невозможно удалить тип задачи с ID $id: тип используется в задачах"
       )
     ),
-    // Если existsUserType вернул false (тип не используется) → выполняем удаление
-    typeService.delete(id)
-  )  
+    // Если existsTaskType вернул false (тип не используется) → выполняем удаление
+    taskTypeService.delete(id)
+  )
 ```
 
 Аналогичная логика применяется для удаления разделов и целей.
@@ -315,12 +302,10 @@ def deleteTaskType(id: UserTypeId, userId: UserId): F[Boolean] =
 что позволяет гибко планировать и структурировать работу. 
 Каждый статус накладывает определенные требования к полноте заполнения данных:
 
-- **База знаний**: Требуется заполнение всех базовых полей (название, описание, тип, раздел, цель), 
-  но **не требуется** план выполнения и даты. Это идеальный статус для идей и намерений, которые еще не детализированы.
-- **Запланировано**: Необходимо заполнить **все поля, включая подробный план выполнения**, 
-  но **без указания дат начала и окончания**. Задача полностью готова к переходу в активную фазу.
-- **В работе**: Требуется **полное заполнение всех полей** задачи, включая план выполнения, 
-  дату начала и планируемую дату завершения. Это статус для активной, текущей работы.
+- **База знаний** и **Запланировано**: Требуется заполнение всех базовых полей (название, описание, тип задачи, раздел, цель), 
+  но **не требуется** план выполнения и даты. 
+- **В работе**: Требуется **полное заполнение всех полей** задачи, включая дату начала и планируемую дату завершения, 
+  кроме плана выполнения - для него будет отдельная страница в UI.
 
 ### Реализация операции создания
 
@@ -328,11 +313,11 @@ def deleteTaskType(id: UserTypeId, userId: UserId): F[Boolean] =
 
 ```dotty
 final case class TaskLifecycleService[F[_]: MonadThrow](
-    typeService: UserTypeService[F],   // Для проверки пользовательских типов
-    sectionService: SectionService[F], // Для проверки раздела
-    goalService: GoalService[F],       // Для проверки цели
-    taskService: TaskService[F],       // Для непосредственного сохранения задачи
-    historyService: HistoryService[F]  // Для хранения истории задач
+    taskTypeService: TaskTypeService[F], // Для проверки пользовательских типов
+    sectionService: SectionService[F],   // Для проверки раздела
+    goalService: GoalService[F],         // Для проверки цели
+    taskService: TaskService[F],         // Для непосредственного сохранения задачи
+    historyService: HistoryService[F]    // Для хранения истории задач
 ):
   def create(task: CreateTask): F[TaskId] =
     // 1. Сбор и валидация всех зависимых сущностей
@@ -340,9 +325,8 @@ final case class TaskLifecycleService[F[_]: MonadThrow](
       userId = task.userId,
       sectionId = task.sectionId,
       goalId = task.goalId,
-      maybeUserTypeId = task.maybeUserTypeId,
+      taskTypeId = task.taskTypeId,
       status = task.status,
-      plan = task.plan,
       startDate = task.startDate,
       endDate = task.endDate
     ).flatMap:
@@ -353,59 +337,40 @@ final case class TaskLifecycleService[F[_]: MonadThrow](
         MonadThrow[F].raiseError(
           new IllegalArgumentException(errors.toList.mkString(", "))
         )
-  
+
   private def validateTask(
       userId: UserId,
       sectionId: SectionId,
       goalId: GoalId,
-      maybeUserTypeId: Option[UserTypeId],
+      taskTypeId: TaskTypeId,
       status: Status,
-      plan: List[TaskStep],
       startDate: Option[LocalDate],
       endDate: Option[LocalDate]
   ) =
     for
       sectionOpt  <- sectionService.get(sectionId)
       goalOpt     <- goalService.get(goalId)
-      userTypeVal <-
-        maybeUserTypeId match
-          case Some(userTypeId) =>
-            // Проверка для пользовательского типа
-            validateUserTaskType(userTypeId, userId)
-          case None =>
-            MonadThrow[F].pure(Validated.valid(()))
+      taskTypeOpt <- taskTypeService.get(taskTypeId)
     yield (
       // Преобразование Option в Validated с ошибкой
       sectionOpt
         .filter(_.userId == userId)
-        .toValidNel(s"Section with id ${sectionId} not found"),
+        .toValidNel(s"Section with id '$sectionId' not found"),
       goalOpt
         .filter(_.userId == userId)
-        .toValidNel(s"Goal with id ${goalId} not found"),
-      userTypeVal,
+        .toValidNel(s"Goal with id '$goalId' not found"),
+      taskTypeOpt
+        .filter(_.userId == userId)
+        .toValidNel(s"User type with id '$taskTypeId' not found"),
       // Валидация статуса
       validateStatus(
         status = status,
-        plan = plan,
         startDate = startDate,
         endDate = endDate
       )
     )
       // Комбинирование результатов: успех, только если все Valid
       .mapN { (_, _, _, _) => () }
-
-  // Приватный метод для валидации пользовательского типа задачи.
-  private def validateUserTaskType(
-      id: UserTypeId,
-      userId: UserId
-  ): F[ValidatedNel[String, Unit]] =
-    taskTypeService
-      .get(id)
-      .map:
-        case Some(userType) if userType.userId == userId =>
-          Validated.valid(()) // Тип существует
-        case _ =>
-          Validated.invalidNel(s"User type with id '$id' not found")   
 end TaskLifecycleService
 
 // Сопутствующий объект, содержит чистые функции валидации, зависящие только от статуса.
@@ -413,28 +378,16 @@ object TaskLifecycleService:
   // Основная функция валидации статуса. Определяет, какие дополнительные проверки нужны. 
   private[services] def validateStatus(
       status: Status,
-      plan: List[TaskStep],
       startDate: Option[LocalDate],
       endDate: Option[LocalDate]
   )
       : ValidatedNel[String, Unit] =
     status match
-      // Для статуса "В работе" и "Завершено" обязательны И план, И корректные даты
+      // Для статуса "В работе" и "Завершено" обязательны корректные даты
       case Status.InProgress | Status.Completed =>
-        (
-          validatePlan(plan),
-          validateDates(startDate = startDate, endDate = endDate)
-        ).mapN((_, _) => ())
-      // Для "Запланировано" обязателен только план
-      case Status.Planned       => validatePlan(plan)
-      // Для "Базы знаний" дополнительных проверок нет
-      case Status.KnowledgeBase => Validated.valid(())
-
-  // Проверка наличия плана выполнения (непустого списка шагов).
-  private[services] def validatePlan(plan: List[TaskStep])
-      : ValidatedNel[String, Unit] =
-    if plan.isEmpty then Validated.invalidNel("Plan is empty")
-    else Validated.valid(())
+        validateDates(startDate = startDate, endDate = endDate)
+      case Status.Planned | Status.KnowledgeBase =>
+        Validated.valid(())
 
   // Проверка корректности дат: обе даты должны быть указаны, 
   // а дата окончания — быть после даты начала.
@@ -444,25 +397,36 @@ object TaskLifecycleService:
   )
       : ValidatedNel[String, Unit] =
     (startDate, endDate) match
-      case (Some(start), Some(end)) if end.isAfter(start) => Validated.valid(())
-      case (Some(start), Some(end))                       =>
-        Validated.invalidNel(s"Start date $start is after end date $end")
-      case _ =>
-        Validated.invalidNel("Start or end date is empty")        
-end TaskLifecycleService
+      case (Some(start), Some(end)) if end.isBefore(start) =>
+        Validated.invalidNel(
+          s"Ошибка: дата начала $start позже даты окончания $end"
+        )
+      case (Some(start), Some(end)) => Validated.valid(())
+      case _                        =>
+        Validated.invalidNel(
+          "Даты начала и окончания обязательны для заполнения"
+        )
 ```
 
 Обновление задачи происходит аналогично, но с добавлением проверки на существование задачи:
 
 ```dotty
 def update(task: Task): F[Boolean] =
-  get(task.id, task.taskType, task.userId).flatMap:
+  getByUser(task.id, task.userId).flatMap:
     case Some(_) =>
       validateTask(
         ...
       ).flatMap:
-        case Validated.Valid(_) =>
+        // При обновлении план выполнения обязателен для всех статусов, кроме "База знаний"
+        case Validated.Valid(_)
+            if task.status == KnowledgeBase || task.plan.steps.nonEmpty =>
           taskService.update(task)
+        case Validated.Valid(_) =>
+          MonadThrow[F].raiseError(
+            new IllegalArgumentException(
+              "Для задач в статусе \"В работе\" и \"Запланировано\" план выполнения обязателен!"
+            )
+          )
         case Validated.Invalid(errors) =>
           MonadThrow[F].raiseError(
             new IllegalArgumentException(errors.toList.mkString(", "))
@@ -470,10 +434,6 @@ def update(task: Task): F[Boolean] =
     case None => MonadThrow[F].raiseError(
         new IllegalArgumentException(s"Task with id '${task.id}' not found")
       )
-      
-def get(id: TaskId, taskType: TaskType, userId: UserId): F[Option[Task]] =
-  taskService.get(id, taskType).map: task =>
-    task.filter(_.userId == userId)      
 ```
 
 ## Постановка задачи в очередь
@@ -489,31 +449,27 @@ def get(id: TaskId, taskType: TaskType, userId: UserId): F[Option[Task]] =
 ```dotty
 def enqueue(
     id: TaskId,
-    taskType: TaskType,
     userId: UserId,
     ordinal: Ordinal,
-    plan: NonEmptyVector[TaskStep] // Непустой список шагов — гарантия на уровне типов
 ): F[Boolean] =
   // 1. Находим задачу, строго проверяя её текущий статус
-  findTask(id, taskType, userId, Status.KnowledgeBase).flatMap: task =>
+    findTask(id, userId, Status.KnowledgeBase).flatMap: task =>
     // 2. Создаем обновленную версию: меняем статус и привязываем план
-    val updated = task.copy(
-      status = Status.Planned,
-      ordinal = ordinal,
-      plan = plan.toVector
-    )
+      val updated = task.copy(
+        status = Status.Planned,
+        ordinal = ordinal
+      )
     // 3. Сохраняем изменения
     taskService.update(updated) 
-        
+
 // Вспомогательная функция для безопасного поиска задачи 
 // с предварительной валидацией статуса.  
 private def findTask(
     id: TaskId,
-    taskType: TaskType,
     userId: UserId,
     status: Status
 ): F[Task] =
-  get(id, taskType, userId).flatMap:
+  getByUser(id, userId).flatMap:
     case Some(task) if task.status == status =>
       MonadThrow[F].pure(task) // Задача найдена и имеет ожидаемый статус
     case Some(_) =>
@@ -527,7 +483,7 @@ private def findTask(
       // Задача не найдена (ошибка данных)
       MonadThrow[F].raiseError(
         new IllegalArgumentException(s"Task with id '$id' not found")
-      )     
+      )
 ```
 
 ## Начало работы над задачей

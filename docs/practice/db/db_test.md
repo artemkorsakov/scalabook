@@ -105,7 +105,7 @@ package ru.scalabook.pdp.services.postgresql
 object SharedResources extends GlobalResource:
   // Контейнер для сервисов
   final case class TasksServices(
-      userTypeService: PostgreSQLUserTypeService[IO],
+      taskTypeService: PostgreSQLTaskTypeService[IO],
       sectionService: PostgreSQLSectionService[IO],
       goalService: PostgreSQLGoalService[IO],
       taskService: PostgreSQLTaskService[IO]
@@ -134,14 +134,14 @@ object SharedResources extends GlobalResource:
       // 3. Выполнение миграций базы данных (создание схемы, таблиц, индексов).
       _ <- Resource.eval(migration(transactor))
       // 4. Создание экземпляров сервисов, инъектированных созданным Transactor'ом.
-      userTypeService = new PostgreSQLUserTypeService[IO](transactor)
+      taskTypeService = new PostgreSQLTaskTypeService[IO](transactor)
       sectionService  = new PostgreSQLSectionService[IO](transactor)
       goalService     = new PostgreSQLGoalService[IO](transactor)
       taskService     = new PostgreSQLTaskService[IO](transactor)
       // 5. Регистрация каждого сервиса в глобальном хранилище.
       _ <- global.putR(
         TasksServices(
-          userTypeService,
+          taskTypeService,
           sectionService,
           goalService,
           taskService
@@ -190,40 +190,40 @@ end SharedResources
 Тестовый класс наследуется от `IOSuite` и использует механизм общих ресурсов (shared resources).
 
 ```dotty
-// pdp/src/test/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLUserTypeServiceSuite.scala
+// pdp/src/test/scala/ru/scalabook/pdp/services/postgresql/PostgreSQLTaskTypeServiceSuite.scala
 package ru.scalabook.pdp.services.postgresql
 
 ...
 
-// Класс тестового набора для PostgreSQLUserTypeService.
+// Класс тестового набора для PostgreSQLTaskTypeService.
 // Параметр `global: GlobalRead` предоставляется Weaver 
 // и дает доступ к ранее зарегистрированным общим ресурсам.
-class PostgreSQLUserTypeServiceSuite(global: GlobalRead) extends IOSuite:
+class PostgreSQLTaskTypeServiceSuite(global: GlobalRead) extends IOSuite:
   // Тип Res определяет, какой именно ресурс будет использоваться 
   // всеми тестами этого набора.
-  override type Res = PostgreSQLUserTypeService[IO]
+  override type Res = PostgreSQLTaskTypeService[IO]
 
   // Метод, который Weaver использует для получения общего ресурса.
   // Ресурс инициализируется один раз (перед первым тестом) и используется повторно.
   override def sharedResource: Resource[IO, Res] =
-    global.getOrFailR[TasksServices](TasksServiceKey).map(_.userTypeService)
+    global.getOrFailR[TasksServices](TasksServiceKey).map(_.taskTypeService)
 
   // Пример теста на создание сущности.
   // Каждый тест - это функция, которая получает экземпляр `service` (общий ресурс).
   test("PostgreSQLTaskService.create"): service =>
-    val newType = CreateUserType(
-      name = UserTypeName("Check create"),
+    val newType = CreateTaskType(
+      name = TaskTypeName("Check create"),
       userId = UserId(UUID.randomUUID())
     )
     for
       // Выполнение операции создания и получение сгенерированного ID.
       id            <- service.create(newType)
       // Попытка получения только что созданной сущности по ID.
-      maybeUserType <- service.get(id)
+      maybeTaskType <- service.get(id)
     // Комбинатор `yield` возвращает assertion (проверку).
     yield 
       // `whenSuccess` - безопасное извлечение Option
-      whenSuccess(maybeUserType): actual => 
+      whenSuccess(maybeTaskType): actual => 
         // Проверка корректности сохраненных данных.
         expect.all(
           actual.id == id,                       // ID должен совпадать
@@ -235,7 +235,7 @@ class PostgreSQLUserTypeServiceSuite(global: GlobalRead) extends IOSuite:
 
   // Тест на обработку случая, когда сущность не найдена.
   test("PostgreSQLTaskService.get - not found"): service =>
-    val nonExistentId = UserTypeId(9999) // Заведомо несуществующий ID
+    val nonExistentId = TaskTypeId(9999) // Заведомо несуществующий ID
     service.get(nonExistentId).map: result =>
       // Ожидается, что результат будет `None`.
       expect(result.isEmpty)
@@ -243,13 +243,13 @@ class PostgreSQLUserTypeServiceSuite(global: GlobalRead) extends IOSuite:
   // Тест на получение всех сущностей.
   test("PostgreSQLTaskService.getByUser"): service =>
     val firstUserId = UserId(UUID.randomUUID())
-    val opensource  = CreateUserType(
-      name = UserTypeName("Open Source"),
+    val opensource  = CreateTaskType(
+      name = TaskTypeName("Open Source"),
       userId = firstUserId
     )
     val secondUserId = UserId(UUID.randomUUID())
-    val myBlog       = CreateUserType(
-      name = UserTypeName("Мой блог"),
+    val myBlog       = CreateTaskType(
+      name = TaskTypeName("Мой блог"),
       userId = secondUserId
     )
     for
@@ -270,15 +270,15 @@ class PostgreSQLUserTypeServiceSuite(global: GlobalRead) extends IOSuite:
   // Тест на обновление существующей сущности.
   test("PostgreSQLTaskService.update"): service =>
     val userId    = UserId(UUID.randomUUID())
-    val exercises = CreateUserType(
-      name = UserTypeName("Exercises"),
+    val exercises = CreateTaskType(
+      name = TaskTypeName("Exercises"),
       userId = userId
     )
-    val newName = UserTypeName("Exercises (updated)")
+    val newName = TaskTypeName("Exercises (updated)")
     for
       id <- service.create(exercises)
       // Новая версия сущности с тем же ID
-      updated = UserType(
+      updated = TaskType(
         id = id,
         name = newName,
         userId = UserId(UUID.randomUUID()),
@@ -298,8 +298,8 @@ class PostgreSQLUserTypeServiceSuite(global: GlobalRead) extends IOSuite:
 
   // Тест на удаление сущности.
   test("PostgreSQLTaskService.delete"): service =>
-    val newType = CreateUserType(
-      name = UserTypeName("Deprecated"),
+    val newType = CreateTaskType(
+      name = TaskTypeName("Deprecated"),
       userId = UserId(UUID.randomUUID())
     )
     for
@@ -326,13 +326,13 @@ class PostgreSQLUserTypeServiceSuite(global: GlobalRead) extends IOSuite:
      `Transactor` Doobie - основная абстракция для выполнения запросов.
    - Выполняются миграции базы данных (DDL-скрипты), которые создают необходимые таблицы, индексы 
      и, возможно, заполняют справочные данные.
-   - Создаются экземпляры всех сервисов (`PostgreSQLUserTypeService`, `PostgreSQLSectionService` и т.д.), 
+   - Создаются экземпляры всех сервисов (`PostgreSQLTaskTypeService`, `PostgreSQLSectionService` и т.д.), 
      которым инъектируется общий `Transactor`.
    - Созданные сервисы регистрируются в глобальном хранилище Weaver под уникальными ключами.
 
 2. **Фаза выполнения каждого тестового набора (suite)**:
-   - При создании экземпляра тестового класса (например, `PostgreSQLUserTypeServiceSuite`) 
-     Weaver через метод `sharedResource` извлекает из глобального хранилища соответствующий сервис (`PostgreSQLUserTypeService`).
+   - При создании экземпляра тестового класса (например, `PostgreSQLTaskTypeServiceSuite`) 
+     Weaver через метод `sharedResource` извлекает из глобального хранилища соответствующий сервис (`PostgreSQLTaskTypeService`).
    - Этот экземпляр сервиса предоставляется каждому тесту в наборе как параметр функции-теста.
    - Тест выполняет бизнес-операции (create, get, update, delete) через сервис, 
      который, в свою очередь, выполняет реальные SQL-запросы к PostgreSQL в контейнере.

@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = task_types/tasks.html
 showNext = true
-nextPage = db/db_crud.html
+nextPage = db/db_migration.html
 %}
 
 # Архитектура уровня работы с данными

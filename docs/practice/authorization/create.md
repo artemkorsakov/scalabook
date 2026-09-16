@@ -55,22 +55,19 @@ def newUser(username: UserName, password: Password): F[JwtToken] =
         // 3.1 Получаем зашифрованный пароль
         encryptedPassword <- encryptedPasswordF
 
-        // 3.2 Создаём объект для регистрации
-        newUser = UserRegistration(username, encryptedPassword)
+        // 3.2 Сохраняем пользователя в БД и получаем ID
+        userId <- usersService.create(username, encryptedPassword)
 
-        // 3.3 Сохраняем пользователя в БД и получаем ID
-        userId <- usersService.create(newUser)
-
-        // 3.4 Генерируем JWT токен для новой сессии
+        // 3.3 Генерируем JWT токен для новой сессии
         token <- tokens.create
 
-        // 3.5 Подготавливаем публичные данные пользователя для Redis
+        // 3.4 Подготавливаем публичные данные пользователя для Redis
         user = UserInfo(userId, username).asJson.noSpaces
 
-        // 3.6 Сохраняем связку токен -> данные пользователя
+        // 3.5 Сохраняем связку токен -> данные пользователя
         _ <- redis.setEx(token.value, user, tokenExpiration)
 
-        // 3.7 Сохраняем обратную связку username -> текущий токен
+        // 3.6 Сохраняем обратную связку username -> текущий токен
         _ <- redis.setEx(username.show, token.value, tokenExpiration)
       yield token       
 ```

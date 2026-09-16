@@ -36,28 +36,14 @@ nextPage = authorization/create.html
 ### Классы данных
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/models/User.scala
-
-// Модель для регистрации нового пользователя
-// Содержит имя пользователя и уже зашифрованный пароль
-final case class UserRegistration(
-    username: UserName,
-    passwordHash: EncryptedPassword
-)
-
-// Модель для входа в систему
-// Содержит имя пользователя и пароль в открытом виде для проверки
-final case class LoginRequest(
-    username: UserName,
-    password: Password
-)
-
+// pdp/src/main/scala/ru/scalabook/pdp/models/UserInfo.scala
 // Публичная информация о пользователе (без чувствительных данных)
 final case class UserInfo(
     id: UserId,
     username: UserName
-)
+) derives Decoder, Encoder
 
+// pdp/src/main/scala/ru/scalabook/pdp/models/User.scala
 // Полная модель пользователя в системе
 // Хранит все данные, включая хеш пароля
 final case class User(
@@ -71,7 +57,7 @@ final case class User(
 
 Для обеспечения целостности данных на уровне типов используются уточненные типы с чёткими ограничениями:
 
-- `UserID`: непрозрачный тип, содержащий значение типа `java.util.UUID`
+- `UserId`: непрозрачный тип, содержащий значение типа `java.util.UUID`
 - `UserName`: строка от 2 до 20 символов, обрезанная от пробелов
 - `Password`: сырой пароль от 8 до 100 символов, обрезанный от пробелов
 - `EncryptedPassword`: зашифрованный пароль (хеш)
@@ -95,29 +81,6 @@ object User:
       extends RefinedType[String, Not[Empty] & Trimmed]
 ``` 
 
-### Маппинг на таблицу базы данных
-
-Модель `User` имеет декларативное описание маппинга на таблицу БД:
-
-```dotty
-given TableSchema[User] with
-  def tableName: TableName = TableName("users")
-
-  def columns: Columns =
-    Columns(
-      // Первичный ключ с авто-генерацией UUID
-      ColumnDefinition(ColumnName.Id, ColumnType.UUID)
-        .asPK()
-        .default(ColumnDefault.UUID),
-      // Имя пользователя - обязательное поле
-      ColumnDefinition(ColumnName("name"), ColumnType.Varchar)
-        .asNotNull(),
-      // Хеш пароля - обязательное поле
-      ColumnDefinition(ColumnName("password"), ColumnType.Varchar)
-        .asNotNull()
-    )   
-```
-
 ## Сервис хранения данных пользователей
 
 ### Абстрактный интерфейс
@@ -126,45 +89,19 @@ given TableSchema[User] with
 
 ```dotty
 trait UsersService[F[_]]:
-  /** Создание нового пользователя
-    *
-    * @param newUser
-    *   данные для регистрации с зашифрованным паролем
-    * @return
-    *   UUID созданного пользователя
-    */
-  def create(newUser: UserRegistration): F[UserId]
+  /** Создание нового пользователя */
+  def create(username: UserName, passwordHash: EncryptedPassword): F[UserId]
 
-  /** Получение пользователя по идентификатору
-    *
-    * @param id
-    *   UUID пользователя
-    * @return
-    *   пользователь, если найден
-    */
+  /** Получение пользователя по идентификатору */
   def get(id: UserId): F[Option[User]]
 
-  /** Поиск пользователя по имени
-    *
-    * @param username
-    *   имя пользователя
-    * @return
-    *   пользователь, если найден
-    */
+  /** Поиск пользователя по имени */
   def find(username: UserName): F[Option[User]]
 
-  /** Обновление данных пользователя
-    *
-    * @param user
-    *   обновлённая модель пользователя
-    */
+  /** Обновление данных пользователя */
   def update(user: User): F[Boolean]
 
-  /** Удаление пользователя
-    *
-    * @param id
-    *   UUID пользователя для удаления
-    */
+  /** Удаление пользователя */
   def delete(id: UserId): F[Boolean]
 end UsersService
 ```
@@ -175,15 +112,14 @@ end UsersService
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/mock/MockUsersService.scala
-
 private[services] class MockUsersService[F[_]: Sync](
     users: Ref[F, Map[UserId, User]]
 ) extends UsersService[F]:
-  def create(newUser: UserRegistration): F[UserId] =
+  def create(username: UserName, passwordHash: EncryptedPassword): F[UserId] =
     for
       uuid <- GenUUID[F].make
       id   = UserId(uuid)
-      user = User(id, newUser.username, newUser.passwordHash)
+      user = User(id, username, passwordHash)
       _ <- users.update(_ + (id -> user))
     yield id
 
@@ -209,21 +145,23 @@ object MockUsersService:
 
 ### Реализация для PostgreSQL
 
-Продуктовая реализация использует Doobie для работы с базой данных и макросы для генерации типовых SQL-запросов:
+Продуктовая реализация использует Doobie для работы с базой данных:
 
 ```dotty
 private[pdp] class PostgreSQLUsersService[F[_]: MonadCancelThrow](
     xa: Transactor[F]
 ) extends UsersService[F]:
 
-  def create(newUser: UserRegistration): F[UserId] =
-    generateInsertReturningId[User, UserRegistration, Int](newUser)
+  def create(username: UserName, passwordHash: EncryptedPassword): F[UserId] =
+    sql"""INSERT INTO users (name, password) 
+          VALUES ($username, $passwordHash) 
+          RETURNING id"""
       .query[UserId]
       .unique
       .transact(xa)
 
   def get(id: UserId): F[Option[User]] =
-    generateSelectById[User, UserId](id)
+    sql"""SELECT id, name, password FROM users WHERE id = $id"""
       .query[User].option.transact(xa)
 
   def find(username: UserName): F[Option[User]] =
@@ -233,11 +171,11 @@ private[pdp] class PostgreSQLUsersService[F[_]: MonadCancelThrow](
       .transact(xa)
 
   def update(user: User): F[Boolean] =
-    generateUpdateById[User, UserId](user)
+    sql"""UPDATE users SET name = ${user.username}, password = ${user.passwordHash} WHERE id = ${user.id}"""
       .update.run.transact(xa).map(_ > 0)
 
   def delete(id: UserId): F[Boolean] =
-    generateDeleteById[User, UserId](id)
+    sql"""DELETE FROM users WHERE id = $id"""
       .update.run.transact(xa).map(_ > 0)
 ```
 
@@ -262,56 +200,20 @@ private[pdp] class PostgreSQLUsersService[F[_]: MonadCancelThrow](
 
 ```dotty
 trait AuthService[F[_]]:
-  /** Регистрация нового пользователя
-    *
-    * @param username
-    *   выбранное имя пользователя
-    * @param password
-    *   пароль в открытом виде (будет зашифрован)
-    * @return
-    *   JWT токен для аутентификации
-    * @throws UserNameInUse
-    *   если пользователь с таким именем уже существует
-    */
+  /** Регистрация нового пользователя */
   def newUser(username: UserName, password: Password): F[JwtToken]
 
-  /** Вход существующего пользователя в систему
-    *
-    * @param username
-    *   имя пользователя
-    * @param password
-    *   пароль для проверки
-    * @return
-    *   JWT токен для аутентификации
-    * @throws UserNotFound
-    *   если пользователь не найден
-    * @throws InvalidPassword
-    *   если пароль неверен
-    */
+  /** Вход существующего пользователя в систему */
   def login(username: UserName, password: Password): F[JwtToken]
 
-  /** Выход пользователя из системы (инвалидация токена)
-    *
-    * @param token
-    *   JWT токен для аннулирования
-    * @param username
-    *   имя пользователя для дополнительной проверки
-    */
+  /** Выход пользователя из системы (инвалидация токена) */
   def logout(token: JwtToken, username: UserName): F[Boolean]
 
 /** Сервис для валидации пользователей по JWT токенам Используется в middleware
   * для аутентификации запросов
   */
 trait UsersAuthService[F[_], A]:
-  /** Поиск пользователя по JWT токену
-    *
-    * @param token
-    *   JWT токен из запроса
-    * @param claim
-    *   декодированные данные из токена
-    * @return
-    *   Optional с данными пользователя, если токен валиден
-    */
+  /** Поиск пользователя по JWT токену */
   def findUser(token: JwtToken)(claim: JwtClaim): F[Option[A]]
 ```
 

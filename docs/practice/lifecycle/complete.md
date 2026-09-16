@@ -46,14 +46,12 @@ nextPage = ../authorization.html
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/models/CompletedTask.scala
-package ru.scalabook.pdp.model
-
 /** Модель выполненной задачи, представляющая собой неизменяемый снимок состояния
   * задачи на момент её завершения. 
   */
 final case class CompletedTask(
     taskId: TaskId,
-    taskType: TaskType,
+    taskTypeId: TaskTypeId,
     name: TaskName,
     userId: UserId,
     sectionId: SectionId,
@@ -88,66 +86,6 @@ object CompletedTask:
     */
   type Review = Review.T
   object Review extends RefinedType[String, MinLength[1] & Trimmed]
-
-  /** Неявная реализация TableSchema для типа CompletedTask. Описывает, как
-    * сущность CompletedTask должна быть отображена в таблицу БД.
-    */
-  given TableSchema[CompletedTask] with
-    def tableName: TableName = TableName("completed_tasks")
-
-    def columns: Columns =
-      Columns(
-        ColumnDefinition(
-          ColumnName.Id,
-          ColumnType.Serial
-        ).asPK(), // Автоинкрементный первичный ключ для таблицы истории
-        ColumnDefinition(
-          ColumnName("task_id"),
-          ColumnType.UUID
-        ).asNotNull(), // Ссылка на оригинальную задачу
-        ColumnDefinition(
-          ColumnName("task_type"),
-          ColumnType.Varchar
-        ).asNotNull(), // Тип задачи для фильтрации в отчетах
-        ColumnDefinition(
-          ColumnName("name"),
-          ColumnType.Varchar
-        ).asNotNull(), // Название задачи
-        ColumnDefinition(
-          ColumnName("user_id"),
-          ColumnType.UUID
-        ).asNotNull(), // Идентификатор пользователя
-        ColumnDefinition(
-          ColumnName("section_id"),
-          ColumnType.Int
-        ).asNotNull(), // Внешний ключ на таблицу разделов
-        ColumnDefinition(
-          ColumnName("goal_id"),
-          ColumnType.Int
-        ).asNotNull(), // Внешний ключ на таблицу целей
-        ColumnDefinition(
-          ColumnName("duration"),
-          ColumnType.BigInt
-        ).asNotNull(), // Длительность
-        ColumnDefinition(
-          ColumnName("rating"),
-          ColumnType.Int
-        ).asNotNull(), // Числовая оценка 1-5
-        ColumnDefinition(
-          ColumnName("review"),
-          ColumnType.Text
-        ), // Текстовое поле для развернутого отзыва
-        ColumnDefinition(
-          ColumnName("start_date"),
-          ColumnType.Date
-        ), // Дата начала выполнения
-        ColumnDefinition(
-          ColumnName("end_date"),
-          ColumnType.Date
-        ) // Фактическая дата завершения
-      )
-  end given
-end CompletedTask
 ```
 
 ## Сервис работы с историей задач
@@ -188,17 +126,19 @@ private[pdp] class PostgreSQLHistoryService[F[_]: MonadCancelThrow](
 ) extends HistoryService[F]:
 
   def create(task: CompletedTask): F[Int] =
-    generateInsertReturningId[CompletedTask, CompletedTask, Int](task)
-      .query[Int]    // Запрос возвращает ID вставленной записи
-      .unique        // Ожидаем ровно один результат
-      .transact(xa)  // Выполняем в транзакционном контексте
+    sql"""INSERT INTO completed_tasks (task_id, task_type_id, name, user_id, section_id, goal_id, duration, rating, review, start_date, end_date) 
+         VALUES (${task.taskId}, ${task.taskTypeId}, ${task.name}, ${task.userId}, ${task.sectionId}, ${task.goalId}, ${task.duration}, ${task.rating}, ${task.review}, ${task.startDate}, ${task.endDate}) 
+         RETURNING id"""
+      .query[Int]   // Запрос возвращает ID вставленной записи
+      .unique       // Ожидаем ровно один результат
+      .transact(xa) // Выполняем в транзакционном контексте
 
   def getByUser(userId: UserId): F[Vector[CompletedTask]] =
-    fr"""SELECT task_id, task_type, name, user_id, section_id, goal_id, duration, rating, review, start_date, end_date 
+    fr"""SELECT task_id, task_type_id, name, user_id, section_id, goal_id, duration, rating, review, start_date, end_date 
          FROM completed_tasks WHERE user_id = $userId"""
-      .query[CompletedTask]  // Используем автоматический маппинг через Meta
-      .to[Vector]            // Преобразуем поток результатов в список
-      .transact(xa)          // Выполняем запрос          
+      .query[CompletedTask] // Используем автоматический маппинг через Meta
+      .to[Vector]           // Преобразуем поток результатов в список
+      .transact(xa)         // Выполняем запрос
 ```
 
 ### Интеграция HistoryService в жизненный цикл задач
@@ -208,7 +148,7 @@ private[pdp] class PostgreSQLHistoryService[F[_]: MonadCancelThrow](
 
 ```dotty
 final case class TaskLifecycleService[F[_]: MonadThrow](
-    typeService: UserTypeService[F],
+    taskTypeService: TaskTypeService[F],
     sectionService: SectionService[F],
     goalService: GoalService[F],
     taskService: TaskService[F],
@@ -223,27 +163,9 @@ final case class TaskLifecycleService[F[_]: MonadThrow](
 ```dotty
 /** Завершает задачу, находящуюся в статусе "В работе", сохраняя её результаты
   * в истории и обновляя статус на "Завершено".
-  *
-  * @param id
-  *   UUID идентификатор задачи.
-  * @param taskType
-  *   Тип задачи (для валидации и поиска в правильной таблице).
-  * @param rating
-  *   Оценка задачи пользователем.
-  * @param review
-  *   Текстовый отзыв о выполнении задачи.
-  * @param endDate
-  *   Фактическая дата завершения задачи.
-  * @param duration
-  *   Реальная продолжительность выполнения.
-  * @return
-  *   F[Boolean] - эффект, представляющий успешное завершение операции.
-  * @throws IllegalArgumentException
-  *   если задача не найдена или находится не в статусе "В работе".
   */
 def complete(
     id: TaskId,
-    taskType: TaskType,
     userId: UserId,
     rating: Rating,
     review: Review,
@@ -251,18 +173,18 @@ def complete(
     duration: FiniteDuration
 ): F[Boolean] =
   for
-    // 1. Находим и валидируем задачу
-    task <- findTask(id, taskType, userId, Status.InProgress)
+    // Находим и валидируем задачу
+    task <- findTask(id, userId, Status.InProgress)
     
     // Если дата начала отсутствует или больше даты окончания,
     // то она устанавливается равной дате окончания
     startDate = task.startDate.filter(_.isBefore(endDate)).getOrElse(endDate)
     
-    // 2. Создаем снимок завершенной задачи для истории
+    // Создаем снимок завершенной задачи для истории
     completedTask =
       CompletedTask(
         taskId = task.id,
-        taskType = task.taskType,
+        taskTypeId = task.taskTypeId,
         name = task.name,
         userId = task.userId,
         sectionId = task.sectionId,
@@ -274,10 +196,10 @@ def complete(
         endDate = endDate
       )
       
-    // 3. Сохраняем задачу в историю (независимая операция)  
+    // Сохраняем задачу в историю (независимая операция)
     _ <- historyService.create(completedTask)
     
-    // 4. Обновляем статус исходной задачи на "Завершено"
+    // Обновляем статус исходной задачи на "Завершено"
     updated = task.copy(
       status = Status.Completed,
       startDate = completedTask.startDate.some,
@@ -302,11 +224,27 @@ private[pdp] class PostgreSQLMigrationService[F[_]: MonadCancelThrow](
     val program =
       for
         ...
-        _ <- generateCreateTableFor[CompletedTask].update.run
-        _ <- addSectionFKToTable[CompletedTask]().update.run
-        _ <- addGoalFKToTable[CompletedTask]().update.run
+        _ <- createCompletedTasksTable.update.run
+        _ <- addSectionFKToTable("completed_tasks").update.run
+        _ <- addGoalFKToTable("completed_tasks").update.run
+        _ <- addUsersFKToTable("completed_tasks").update.run
       yield true
     program.transact(xa)
+    
+  private val createCompletedTasksTable: Fragment =
+    sql"""CREATE TABLE IF NOT EXISTS completed_tasks (
+         id SERIAL PRIMARY KEY, 
+         task_id UUID NOT NULL, 
+         task_type_id INT NOT NULL, 
+         name VARCHAR(255) NOT NULL, 
+         user_id UUID NOT NULL, 
+         section_id INT NOT NULL, 
+         goal_id INT NOT NULL, 
+         duration BIGINT NOT NULL, 
+         rating INT NOT NULL, 
+         review TEXT, 
+         start_date DATE, 
+         end_date DATE);"""  
 ```
 
 Этот подход к завершению задач обеспечивает не только корректное изменение статуса, 

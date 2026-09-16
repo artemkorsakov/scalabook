@@ -1,0 +1,432 @@
+{%
+showPrev = true
+prevPage = ../lifecycle.html 
+showNext = true
+nextPage = complete.html
+%}
+
+# Сервис цикла задач
+
+## Создание задачи
+
+Процесс создания задачи является фундаментальной операцией в системе управления персональным развитием. 
+Ключевой особенностью является возможность инициализации задачи сразу в одном из трех возможных статусов, 
+что позволяет гибко планировать и структурировать работу. 
+Каждый статус накладывает определенные требования к полноте заполнения данных:
+
+- **База знаний** и **Запланировано**: Требуется заполнение всех базовых полей (название, описание, тип задачи, раздел, цель), 
+  но **не требуется** план выполнения и даты. 
+- **В работе**: Требуется **полное заполнение всех полей** задачи, включая дату начала и планируемую дату завершения, 
+  кроме плана выполнения.
+
+План выполнения заполняется при редактировании задачи, т.к. он появляется уже после формулирования основных параметров задачи. 
+
+### Реализация операции создания
+
+Сервис жизненного цикла задач (`TaskLifecycleService`) агрегирует все необходимые сервисы для валидации и сохранения задачи.
+
+```dotty
+final case class TaskLifecycleService[F[_]: MonadThrow](
+    taskTypeService: TaskTypeService[F], // Для проверки пользовательских типов
+    sectionService: SectionService[F],   // Для проверки раздела
+    goalService: GoalService[F],         // Для проверки цели
+    taskService: TaskService[F],         // Для непосредственного сохранения задачи
+    historyService: HistoryService[F]    // Для хранения истории задач
+):
+  def create(task: CreateTask): F[TaskId] =
+    // 1. Сбор и валидация всех зависимых сущностей
+    validateTask(
+      userId = task.userId,
+      sectionId = task.sectionId,
+      goalId = task.goalId,
+      taskTypeId = task.taskTypeId,
+      status = task.status,
+      startDate = task.startDate,
+      endDate = task.endDate
+    ).flatMap:
+      // Вся валидация пройдена → создаем задачу
+      case Validated.Valid(_)        => taskService.create(task)
+      case Validated.Invalid(errors) =>
+      // Накопленные ошибки объединяются и выбрасываются как исключение  
+        MonadThrow[F].raiseError(
+          new IllegalArgumentException(errors.toList.mkString(", "))
+        )
+
+  private def validateTask(
+      userId: UserId,
+      sectionId: SectionId,
+      goalId: GoalId,
+      taskTypeId: TaskTypeId,
+      status: Status,
+      startDate: Option[LocalDate],
+      endDate: Option[LocalDate]
+  ) =
+    for
+      sectionOpt  <- sectionService.get(sectionId)
+      goalOpt     <- goalService.get(goalId)
+      taskTypeOpt <- taskTypeService.get(taskTypeId)
+    yield (
+      // Преобразование Option в Validated с ошибкой
+      sectionOpt
+        .filter(_.userId == userId)
+        .toValidNel(s"Section with id '$sectionId' not found"),
+      goalOpt
+        .filter(_.userId == userId)
+        .toValidNel(s"Goal with id '$goalId' not found"),
+      taskTypeOpt
+        .filter(_.userId == userId)
+        .toValidNel(s"User type with id '$taskTypeId' not found"),
+      // Валидация статуса
+      validateStatus(
+        status = status,
+        startDate = startDate,
+        endDate = endDate
+      )
+    )
+      // Комбинирование результатов: успех, только если все Valid
+      .mapN { (_, _, _, _) => () }
+end TaskLifecycleService
+
+// Сопутствующий объект, содержит чистые функции валидации, зависящие только от статуса.
+object TaskLifecycleService:
+  // Основная функция валидации статуса. Определяет, какие дополнительные проверки нужны. 
+  private[services] def validateStatus(
+      status: Status,
+      startDate: Option[LocalDate],
+      endDate: Option[LocalDate]
+  )
+      : ValidatedNel[String, Unit] =
+    status match
+      // Для статуса "В работе" и "Завершено" обязательны корректные даты
+      case Status.InProgress | Status.Completed =>
+        validateDates(startDate = startDate, endDate = endDate)
+      case Status.Planned | Status.KnowledgeBase =>
+        Validated.valid(())
+
+  // Проверка корректности дат: обе даты должны быть указаны, 
+  // а дата окончания — быть после даты начала.
+  private[services] def validateDates(
+      startDate: Option[LocalDate],
+      endDate: Option[LocalDate]
+  )
+      : ValidatedNel[String, Unit] =
+    (startDate, endDate) match
+      case (Some(start), Some(end)) if end.isBefore(start) =>
+        Validated.invalidNel(
+          s"Ошибка: дата начала $start позже даты окончания $end"
+        )
+      case (Some(start), Some(end)) => Validated.valid(())
+      case _                        =>
+        Validated.invalidNel(
+          "Даты начала и окончания обязательны для заполнения"
+        )
+```
+
+Обновление задачи происходит аналогично, но с добавлением проверки на существование задачи:
+
+```dotty
+def update(task: Task): F[Boolean] =
+  getByUser(task.id, task.userId).flatMap:
+    case Some(_) =>
+      validateTask(
+        ...
+      ).flatMap:
+        // При обновлении план выполнения обязателен для всех статусов, кроме "База знаний"
+        case Validated.Valid(_)
+            if task.status == KnowledgeBase || task.plan.steps.nonEmpty =>
+          taskService.update(task)
+        case Validated.Valid(_) =>
+          MonadThrow[F].raiseError(
+            new IllegalArgumentException(
+              "Для задач в статусе \"В работе\" и \"Запланировано\" план выполнения обязателен!"
+            )
+          )
+        case Validated.Invalid(errors) =>
+          MonadThrow[F].raiseError(
+            new IllegalArgumentException(errors.toList.mkString(", "))
+          )
+    case None => MonadThrow[F].raiseError(
+        new IllegalArgumentException(s"Task with id '${task.id}' not found")
+      )
+```
+
+## Постановка задачи в очередь
+
+Эта операция переводит задачу из стадии идеи ("База знаний") в стадию готового к выполнению плана ("Запланировано"). 
+Ключевые действия:
+
+1. **Смена статуса** с `KnowledgeBase` на `Planned`.
+2. **Обязательное предоставление плана выполнения** — задача не может быть запланирована без детального плана.
+3. **Назначение порядкового номера**: Система может предлагать первые свободные порядковые номера среди задач того же типа, 
+   чтобы облегчить пользователю организацию очереди.
+
+```dotty
+def enqueue(
+    id: TaskId,
+    userId: UserId,
+    ordinal: Ordinal,
+): F[Boolean] =
+  // 1. Находим задачу, строго проверяя её текущий статус
+    findTask(id, userId, Status.KnowledgeBase).flatMap: task =>
+    // 2. Создаем обновленную версию: меняем статус и привязываем план
+      val updated = task.copy(
+        status = Status.Planned,
+        ordinal = ordinal
+      )
+    // 3. Сохраняем изменения
+    taskService.update(updated) 
+
+// Вспомогательная функция для безопасного поиска задачи 
+// с предварительной валидацией статуса.  
+private def findTask(
+    id: TaskId,
+    userId: UserId,
+    status: Status
+): F[Task] =
+  getByUser(id, userId).flatMap:
+    case Some(task) if task.status == status =>
+      MonadThrow[F].pure(task) // Задача найдена и имеет ожидаемый статус
+    case Some(_) =>
+      // Задача найдена, но в неправильном статусе (ошибка бизнес-логики)
+      MonadThrow[F].raiseError(
+        new IllegalArgumentException(
+          s"Task with id '$id' is not in '$status' state"
+        )
+      )
+    case None =>
+      // Задача не найдена (ошибка данных)
+      MonadThrow[F].raiseError(
+        new IllegalArgumentException(s"Task with id '$id' not found")
+      )
+```
+
+## Начало работы над задачей
+
+Операция переводит задачу в активное состояние. При этом необходимо:
+
+1.  **Установить дату начала работы** (может подставляться текущая дата по умолчанию).
+2.  **Установить планируемую дату завершения**, которая должна быть логически корректной (после даты начала).
+
+```dotty
+def start(
+    id: TaskId,
+    userId: UserId,
+    startDate: LocalDate,
+    endDate: LocalDate
+): F[Boolean] =
+  // Предварительная проверка логики дат на уровне сервиса
+  if endDate.isBefore(startDate) then
+    MonadThrow[F].raiseError(
+      new IllegalArgumentException(
+        s"End date $endDate is before start date $startDate"
+      )
+    )
+  else
+    // Поиск задачи в статусе "Запланировано"  
+    findTask(id, userId, Status.Planned).flatMap: task =>
+      val updated = task.copy(
+        status = Status.InProgress,
+        startDate = startDate.some, // Фиксация даты начала
+        endDate = endDate.some      // Фиксация дедлайна
+      )
+      taskService.update(updated)
+```
+
+## Откладывание задачи
+
+Данная операция позволяет временно снять задачу с активного выполнения, не отменяя её полностью. 
+Это полезно при смене приоритетов или возникновении блокировок.
+
+1.  **Смена статуса** с `InProgress` обратно на `Planned`.
+2.  **Очистка дат**: Даты начала и окончания обнуляются, так как при повторном взятии в работу они будут другими.
+
+```dotty
+def defer(id: TaskId, userId: UserId): F[Boolean] =
+  findTask(id, userId, Status.InProgress).flatMap: task =>
+    val updated = task.copy(
+      status = Status.Planned,
+      startDate = none,
+      endDate = none
+    )
+    taskService.update(updated)
+```
+
+## Получение задачи
+
+???
+
+```dotty
+final case class TaskCard(
+    id: TaskId,
+    name: TaskName,
+    taskType: String,
+    status: Status,
+    section: String,
+    goal: String,
+    ordinal: Ordinal,
+    startDate: Option[LocalDate],
+    endDate: Option[LocalDate],
+    information: String,
+    plan: List[PlanRowCard],
+    completedCount: Int,
+    count: Int,
+    progress: Double,
+    duration: FiniteDuration,
+    durationDesc: String,
+    timeSpent: FiniteDuration,
+    timeSpentDesc: String,
+    remainingTimeDesc: String
+)
+```
+
+???
+
+```dotty
+def get(id: TaskId, userId: UserId): F[Option[TaskCard]] =
+  for
+    types     <- taskTypeService.getByUser(userId)
+    sections  <- sectionService.getByUser(userId)
+    goals     <- goalService.getByUser(userId)
+    maybeTask <- getByUser(id, userId)
+  yield maybeTask.map: task =>
+    val typesMap    = types.map(t => (t.id, t.name)).toMap
+    val sectionsMap = sections.map(t => (t.id, t.name)).toMap
+    val goalsMap    = goals.map(t => (t.id, t.name)).toMap
+
+    TaskCard(
+      id = task.id,
+      name = task.name,
+      taskType = typesMap.get(task.taskTypeId).map(_.value).getOrElse("—"),
+      status = task.status,
+      section = sectionsMap.get(task.sectionId).map(_.value).getOrElse("—"),
+      goal = goalsMap.get(task.goalId).map(_.value).getOrElse("—"),
+      ordinal = task.ordinal,
+      startDate = task.startDate,
+      endDate = task.endDate,
+      information = task.information,
+      plan = task.plan.steps.map(row =>
+        PlanRowCard(
+          number = row.number.value,
+          step = row.step.value,
+          completed = row.completed
+        )
+      ),
+      completedCount = task.plan.steps.count(_.completed),
+      count = task.plan.steps.length,
+      progress = math.round(task.plan.progress * 10000.0) / 100.0,
+      duration = task.duration,
+      durationDesc = toDurationDescription(task.duration),
+      timeSpent = task.timeSpent,
+      timeSpentDesc = toDurationDescription(task.timeSpent),
+      remainingTimeDesc =
+        toDurationDescription(task.duration.minus(task.timeSpent))
+    )
+```
+
+## Получение списка задач
+
+???
+
+```dotty
+final case class TableTaskCard(
+    id: TaskId,
+    name: TaskName,
+    taskType: String,
+    status: Status,
+    section: String,
+    goal: String,
+    ordinal: Ordinal,
+    startDate: Option[LocalDate],
+    endDate: Option[LocalDate],
+    progress: Double,
+    duration: String
+)
+```
+
+???
+
+```dotty
+def getAll(
+    userId: UserId,
+    maybeStatus: Option[Status],
+    maybeTaskType: Option[TaskTypeId],
+    maybeSectionId: Option[SectionId]
+): F[(Vector[TableTaskCard], Vector[TaskType], Vector[Section])] =
+  for
+    types    <- taskTypeService.getByUser(userId)
+    sections <- sectionService.getByUser(userId)
+    goals    <- goalService.getByUser(userId)
+    tasks    <- taskService.getAll(
+      userId = userId,
+      maybeStatus = maybeStatus,
+      maybeTaskType = maybeTaskType,
+      maybeSectionId = maybeSectionId
+    )
+  yield
+    val existedTypeIds    = tasks.map(_.taskTypeId).toSet
+    val existedSectionIds = tasks.map(_.sectionId).toSet
+
+    val typesMap    = types.map(t => (t.id, t.name)).toMap
+    val sectionsMap = sections.map(t => (t.id, t.name)).toMap
+    val goalsMap    = goals.map(t => (t.id, t.name)).toMap
+
+    val cardTasks = tasks.map: task =>
+      TableTaskCard(
+        id = task.id,
+        name = task.name,
+        taskType = typesMap.get(task.taskTypeId).map(_.value).getOrElse("—"),
+        status = task.status,
+        section = sectionsMap.get(task.sectionId).map(_.value).getOrElse("—"),
+        goal = goalsMap.get(task.goalId).map(_.value).getOrElse("—"),
+        ordinal = task.ordinal,
+        startDate = task.startDate,
+        endDate = task.endDate,
+        progress = task.progress,
+        duration = toDurationDescription(task.duration)
+      )
+
+    (cardTasks, types, sections)
+```
+
+## Увеличение затраченного времени
+
+???
+
+```dotty
+def addTimeSpent(
+    id: TaskId,
+    userId: UserId,
+    timeSpent: Int
+): F[Boolean] =
+  getByUser(id, userId).flatMap:
+    case Some(task) =>
+      val updated = task.copy(
+        timeSpent =
+          task.timeSpent.plus(FiniteDuration(timeSpent, TimeUnit.MINUTES))
+      )
+      taskService.update(updated)
+    case None =>
+      MonadThrow[F].pure(false)
+```
+
+## Удаление задачи
+
+Важная и необратимая операция. 
+Сервис жизненного цикла делегирует её напрямую в `TaskService`, который отвечает за постоянное хранение. 
+
+```dotty
+def delete(id: TaskId, userId: UserId): F[Boolean] =
+  getByUser(id, userId).flatMap:
+    case Some(_) => taskService.delete(id)
+    case None    => MonadThrow[F].pure(false)
+```
+
+---
+
+**Ссылки:**
+
+- [Персональный план развития][plugin]
+- [Репозиторий с исходниками][repo]
+
+[repo]: https://gitverse.ru/scalabook/pdp
+[plugin]: https://artemkorsakov.github.io/personal-development-plan/ru/

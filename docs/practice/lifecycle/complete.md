@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = ../lifecycle.html
+prevPage = service.html
 showNext = true
 nextPage = ../authorization.html
 %}

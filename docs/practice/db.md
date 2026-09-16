@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = task_types/statuses.html
+prevPage = task_types/tasks.html
 showNext = true
 nextPage = db/db_crud.html
 %}

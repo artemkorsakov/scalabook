@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = ../authorization.html
 showNext = true
-nextPage = ../api.html
+nextPage = ../health_check.html
 %}
 
 # Реализация сервиса авторизации

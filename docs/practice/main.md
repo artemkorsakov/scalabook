@@ -1,13 +1,13 @@
 {%
 showPrev = true
-prevPage = api/tasks_routes.html
+prevPage = health_check.html
 showNext = true
-nextPage = sources.html
+nextPage = ui_authorization.html
 %}
 
 # Запуск сервера
 
-В этом разделе мы завершим сборку нашего приложения, объединив все ранее созданные компоненты в единое работающее целое. 
+В этом разделе мы завершим сборку приложения, объединив все ранее созданные компоненты в единое работающее целое. 
 Мы настроим конфигурацию, создадим модули сервисов и HTTP API, определим управление ресурсами и, наконец, запустим сервер.
 
 ## Конфигурация приложения
@@ -78,7 +78,6 @@ given secretReader[A: {ConfigReader, Show}]: ConfigReader[Secret[A]] =
 /** `Config` — корневой объект конфигурации. */
 final case class Config(
     httpServerConfig: HttpServerConfig,
-    localization: LocalizationConfig, // из раздела "Локализация"
     postgresql: PostgreSQLConfig,
     redis: RedisConfig,
     token: TokenConfig
@@ -94,15 +93,8 @@ final case class Config(
 ```conf
 # Конфигурация HTTP-сервера
 http-server-config = {
-  host = "0.0.0.0"  
-  port = 8080
-}
-
-# Конфигурация локализации (была подробно описана в предыдущих разделах)
-localization = {
-  languages = [
-    # ... содержимое, как в примере локализации
-  ]
+  host = "127.0.0.1"
+  port = 8081
 }
 
 # Конфигурация подключения к PostgreSQL
@@ -135,7 +127,7 @@ token {
 
 Для поддержания чистоты архитектуры и следования принципу единственной ответственности, 
 мы группируем связанную функциональность в отдельные модули. 
-Наше приложение будет состоять из трех основных модулей: `Security`, `Services` и `HttpApi`.
+Наше приложение будет состоять из основных модулей: `Security` и `Services`.
 
 ### Модуль `Security`
 
@@ -219,7 +211,7 @@ object Services:
       HealthCheck.make[F](PostgreSQLHealthCheck.make[F](transactor), redis)
 
     // 2. Создание низкоуровневых сервисов для работы с БД
-    val typeService    = new PostgreSQLUserTypeService[F](transactor)
+    val typeService    = new PostgreSQLTaskTypeService[F](transactor)
     val sectionService = new PostgreSQLSectionService[F](transactor)
     val goalService    = new PostgreSQLGoalService[F](transactor)
     val taskService    = new PostgreSQLTaskService[F](transactor)
@@ -249,98 +241,10 @@ object Services:
     ) {}
 ```
 
-Обратите внимание, что все конкретные реализации сервисов (например, `PostgreSQLUserTypeService`) 
+Обратите внимание, что все конкретные реализации сервисов (например, `PostgreSQLTaskTypeService`) 
 создаются и используются внутри модуля. 
 Внешний мир взаимодействует только с высокоуровневыми интерфейсами (`SettingsService`, `TaskLifecycleService`), 
 которые уже содержат в себе бизнес-логику.
-
-## Сборка HTTP API
-
-Модуль `HttpApi` — это завершающий этап сборки. 
-Он принимает готовые модули `Services` и `Security` и комбинирует их, 
-создавая полный набор HTTP-маршрутов, обернутых в необходимые промежуточные обработчики (middleware).
-
-```dotty
-sealed trait HttpApi[F[_]: {Async, Logger}] private (
-    services: Services[F],
-    security: Security[F]
-):
-  // Промежуточный слой для JWT-аутентификации.
-  // Он проверяет JWT в запросе и, если он валиден, находит пользователя.
-  private val usersMiddleware =
-    JwtAuthMiddleware[F, UserInfo](
-      security.userJwtAuth,
-      security.usersAuth.findUser
-    )
-
-  // ----- Определение всех маршрутов -----
-  // Маршруты, не требующие аутентификации (открытые)
-  private val loginRoutes   = LoginRoutes[F](security.auth).routes
-  private val userRoutes    = UserRoutes[F](security.auth).routes
-  private val healthRoutes  = HealthRoutes[F](services.healthCheck).routes
-
-  // Маршруты, требующие аутентификации (защищенные)
-  private val logoutRoutes  = LogoutRoutes[F](security.auth).routes(usersMiddleware)
-  private val userTypeRoutes =
-    UserTypeRoutes[F](services.settingsService).routes(usersMiddleware)
-  private val sectionRoutes =
-    SectionRoutes[F](services.settingsService).routes(usersMiddleware)
-  private val goalRoutes =
-    GoalRoutes[F](services.settingsService).routes(usersMiddleware)
-  private val taskRoutes =
-    TaskRoutes[F](services.taskLifecycleService).routes(usersMiddleware)
-
-  // Объединение всех маршрутов в один
-  private val openRoutes: HttpRoutes[F] =
-    healthRoutes <+> loginRoutes <+> logoutRoutes <+> userRoutes <+>
-      userTypeRoutes <+> sectionRoutes <+> goalRoutes <+> taskRoutes
-
-  // Группировка всех маршрутов под префиксом версии API
-  private val routes: HttpRoutes[F] = Router(
-    Version.v1 -> openRoutes
-  )
-
-  // ----- Промежуточные обработчики (Middleware) -----
-  // Стек middleware применяется снизу вверх (последний в композиции - самый внешний)
-  private val middleware: HttpRoutes[F] => HttpRoutes[F] =
-    // 1. Убирает завершающий слэш, если он есть
-    val slash: HttpRoutes[F] => HttpRoutes[F] = AutoSlash(_)
-
-    // 2. Настройка CORS: разрешаем запросы с любых источников
-    val policy: HttpRoutes[F] => HttpRoutes[F] =
-      routes => CORS.policy
-          .withAllowOriginAll
-          .withAllowCredentials(false)
-          .apply(routes)
-
-    // 3. Устанавливаем таймаут для всех запросов в 60 секунд
-    val timeout: HttpRoutes[F] => HttpRoutes[F] = Timeout(60.seconds)(_)
-
-    slash andThen policy andThen timeout
-
-  // Логгеры для входящих и исходящих запросов и ответов
-  private val loggers: HttpApp[F] => HttpApp[F] =
-    val reqLogger: HttpApp[F] => HttpApp[F] =
-      RequestLogger.httpApp(true, true)(_)
-    val resLogger: HttpApp[F] => HttpApp[F] =
-      ResponseLogger.httpApp(true, true)(_)
-
-    reqLogger andThen resLogger
-
-  // Финальное приложение: логгеры -> middleware -> маршруты -> обработка 404
-  val httpApp: HttpApp[F] = loggers(middleware(routes).orNotFound)
-
-end HttpApi
-
-object HttpApi:
-  def make[F[_]: {Async, Logger}](
-      services: Services[F],
-      security: Security[F]
-  ): HttpApi[F] =
-    new HttpApi[F](services, security) {}
-```
-
-Этот модуль служит "клеем", который собирает все части приложения в единый, готовый к запуску HTTP-сервис.
 
 ## Управление ресурсами
 
@@ -420,79 +324,56 @@ object AppResources:
   end make
 ```
 
-### Запуск HTTP-сервера как ресурса
-
-Сам HTTP-сервер также является ресурсом. 
-Мы создадим класс типов `MkHttpServer`, который будет отвечать за создание сервера (в нашем случае на базе Ember).
-
-```dotty
-trait MkHttpServer[F[_]]:
-  def newEmber(cfg: HttpServerConfig, httpApp: HttpApp[F]): Resource[F, Server]
-
-object MkHttpServer:
-  def apply[F[_]: MkHttpServer]: MkHttpServer[F] = summon
-
-  // Реализация для F с необходимыми классами типов
-  given forAsyncLogger[F[_]: {Async, Logger, Network}]: MkHttpServer[F] =
-    new MkHttpServer[F]:
-      def newEmber(
-          cfg: HttpServerConfig,
-          httpApp: HttpApp[F]
-      ): Resource[F, Server] =
-        EmberServerBuilder
-          .default[F]
-          .withHost(cfg.host)
-          .withPort(cfg.port)
-          .withHttpApp(httpApp)
-          .build
-          .evalTap(showEmberBanner[F])
-
-  // Вывод красивого баннера с адресом сервера
-  private def showEmberBanner[F[_]: Logger](s: Server): F[Unit] =
-    Logger[F].info(
-      s"\n${Banner.mkString("\n")}\nHTTP Server started at ${s.address}"
-    )
-end MkHttpServer
-```
-
 ## Точка входа (Main)
 
-Теперь, когда у нас есть все строительные блоки, мы можем собрать их вместе в главном объекте приложения. 
-Мы унаследуем `IOApp.Simple`, что даст нам точку входа с предварительно настроенным `IO` и управлением ресурсами.
+Теперь, когда у нас есть все строительные блоки, мы можем собрать их вместе в главном объекте приложения.
 
 ```dotty
+// pdp/src/main/scala/ru/scalabook/pdp/Main.scala
 object Main extends IOApp.Simple:
-
-  // Создаем логгер для всего приложения
   given Logger[IO] = Slf4jLogger.getLogger[IO]
 
   override def run: IO[Unit] =
-    // 1. Загружаем конфигурацию
-    ConfigSource.default.load[Config] match
-      case Left(errors) =>
-        IO.raiseError(
-          new IllegalArgumentException(
-            s"Invalid config: ${errors.prettyPrint()}"
-          )
-        )
-      case Right(config) =>
-        Logger[IO].info(s"Loaded config $config") >>
-          // 2. Создаем ресурсы приложения (PostgreSQL, Redis)
-          AppResources.make[IO](config)
-            .evalMap { resources => // После создания ресурсов, создаем модули
-              val services = Services.make[IO](resources.transactor, resources.redis)
+    readConfig().flatMap: config =>
+      AppResources.make[IO](config)
+        .evalMap { resources =>
+          val services: Services[IO] =
+            Services.make[IO](resources.transactor, resources.redis)
 
-              Security.make[IO](
-                config,
-                resources.transactor,
-                resources.redis
-              ).map: security =>
-                HttpApi.make[IO](services, security).httpApp
-            }
-            .flatMap: httpApp => // После создания HttpApp, запускаем сервер
-              MkHttpServer[IO].newEmber(config.httpServerConfig, httpApp)
-            .useForever // Запускаем сервер и держим его включенным вечно
-end Main
+          Security.make[IO](
+            config,
+            resources.transactor,
+            resources.redis
+          ).map: security =>
+            makeApplication(services, security)
+        }
+        .flatMap: application =>
+          ServerBuilder(
+            config.httpServerConfig.port,
+            config.httpServerConfig.host,
+            application
+          )
+            .build
+            .server
+        .useForever
+
+  private def readConfig(): IO[Config] =
+    IO.fromEither(
+      ConfigSource.default.load[Config].left.map(errors =>
+        new IllegalArgumentException(s"Invalid config: ${errors.prettyPrint()}")
+      )
+    )
+
+  private def makeApplication(
+      services: Services[IO],
+      security: Security[IO]
+  ): Application =
+    val healthHandler =
+      HealthHandler(services.healthCheck)
+
+    healthHandler.handler
+      .orElse(assets)
+      .orElse(Application.notFound)
 ```
 
 ### Разбор работы `Main`
@@ -504,10 +385,9 @@ end Main
    Этот ресурс включает в себя транзактор для PostgreSQL и клиент для Redis. 
    На этом этапе также происходят проверка подключения к базам данных и запуск миграций.
 3. **Сборка модулей**: Метод `evalMap` на `Resource` позволяет нам получить доступ к созданным ресурсам 
-   и, используя их, построить наши модули `Services` и `Security`, а затем и `HttpApi`. 
+   и, используя их, построить наши модули `Services` и `Security`. 
    `evalMap` гарантирует, что это произойдет после успешного создания ресурсов, но до того, как ресурсы будут освобождены.
-4. **Запуск сервера**: `flatMap` позволяет перейти от `Resource[IO, HttpApp[IO]]` к `Resource[IO, Server]`, используя `MkHttpServer`. 
-   Сервер запускается с настроенным `httpApp`.
+4. **Запуск сервера**: `flatMap` создает сервис, используя `Application`. 
 5. **Ожидание**: `useForever` — это удобный метод, который эквивалентен `.use(_ => IO.never)`. 
    Он запускает сервер и переводит основную программу в бесконечное ожидание, не давая ей завершиться. 
    Сервер будет работать до тех пор, пока процесс не будет остановлен извне.
@@ -540,20 +420,14 @@ graph TD
         G --> M[Users Auth Service]
     end
 
-    subgraph HttpApi
-        F --> N[HttpApi Module]
+    subgraph Application
+        F --> N[Application]
         G --> N
         N --> O[Routes]
-        N --> P[Middleware]
-        N --> Q[Loggers]
+        N --> P[Handlers]
     end
 
-    subgraph Server
-        Q --> R[HttpApp]
-        R --> S[Ember Server]
-    end
-
-    S --> T[Running Application]
+    N --> T[Running Application]
 ```
 
 ## Резюме
@@ -561,11 +435,36 @@ graph TD
 Мы завершили создание нашего приложения:
 
 - **Типобезопасная конфигурация** с использованием PureConfig и Iron помогает предотвратить ошибки на ранних этапах.
-- **Модульная архитектура** (`Security`, `Services`, `HttpApi`) позволяет четко разделить ответственность и упрощает тестирование и поддержку.
+- **Модульная архитектура** (`Security`, `Services`) позволяет четко разделить ответственность и упрощает тестирование и поддержку.
 - **Управление ресурсами** через `Resource` из Cats Effect гарантирует, что все подключения к внешним системам будут корректно созданы и освобождены.
 - **Композиция** всех частей в `Main` демонстрирует, как простые, изолированные компоненты собираются в сложную, но надежную систему.
 
 Теперь у нас есть полностью функциональное приложение, готовое к развертыванию. 
+
+
+
+
+## Запуск и проверка
+
+Можно запустить приложение в sbt-консоли: `pdp/run`.
+
+И открыть в браузере адрес `http://localhost:8081/health_check`:
+
+В ответ вы получите JSON с текущим состоянием зависимостей:
+
+```json
+{
+  "redis": "Okay",
+  "postgres": "Okay"
+}
+```
+
+### Что дальше
+
+Мы настроили минимальный работающий HTTP-сервер с одним эндпоинтом `/health_check`.
+Дальше шаг за шагом будем добавлять новые эндпоинты: регистрацию, логин, работу с задачами,
+настройки пользователя. Каждый новый эндпоинт будет оформлен как отдельный `Handler`,
+зарегистрирован в `Main` через `orElse` и покрыт тестами.
 
 ---
 

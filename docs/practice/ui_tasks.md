@@ -1,6 +1,6 @@
 {%
 showPrev = true
-prevPage = authorization/create.html
+prevPage = ui_settings/ui_settings_task_type.html
 showNext = true
 nextPage = api/users_routes.html
 %}

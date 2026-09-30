@@ -2,7 +2,7 @@ import sbt.*
 
 // @formatter:off
 object Dependencies {
-  val Scala = "3.8.3"
+  val Scala = "3.9.0"
 
   object cats {
     private val version       = "2.13.0"
@@ -17,7 +17,7 @@ object Dependencies {
   }
 
   object catsEffect {
-    private val version = "3.7.0"
+    private val version = "3.7.1"
 
     val core   = "org.typelevel" %% "cats-effect"        % version
     val kernel = "org.typelevel" %% "cats-effect-kernel" % version
@@ -25,7 +25,7 @@ object Dependencies {
   }
 
   object fs2 {
-    private val version = "3.13.0"
+    private val version = "3.14.0"
 
     val core     = "co.fs2" %% "fs2-core"             % version
     val io       = "co.fs2" %% "fs2-io"               % version
@@ -34,13 +34,13 @@ object Dependencies {
   }
 
   object http4s {
-    private val version = "0.23.34"
+    private val version = "0.23.38"
 
     val server = "org.http4s" %% "http4s-server"       % version
   }
 
   object iron {
-    private val version = "3.3.1"
+    private val version = "3.3.2"
 
     val cats       = "io.github.iltotore" %% "iron-cats"       % version
     val core       = "io.github.iltotore" %% "iron"            % version
@@ -64,8 +64,8 @@ object Dependencies {
   }
 
   object sttp {
-    val client = "com.softwaremill.sttp.client4" %% "core" % "4.0.25"
-    val model  = "com.softwaremill.sttp.model" %% "core" % "1.7.17"
+    val client = "com.softwaremill.sttp.client4" %% "core" % "4.0.27"
+    val model  = "com.softwaremill.sttp.model" %% "core" % "1.8.2"
   }
 
   object weaver {

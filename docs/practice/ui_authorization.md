@@ -49,7 +49,7 @@ final case class InitialHandler(
     taskLifecycleService: TaskLifecycleService[IO]
 )(using Logger[IO]):
   private val defaultPage =
-    View.base("План развития", View.login(None)).toString
+    View.base("План развития", View.login(none)).toString
 
   val handler: Handler =
     Routes.index.handleIO: (cookie: Cookie) =>
@@ -326,7 +326,7 @@ object Views:
 Если что-то пошло не так — пользователь видит страницу логина:
 
 ```dotty
-View.base("План развития", View.login(None)).toString
+View.base("План развития", View.login(none)).toString
 ```
 
 ![Login page](images/login.png)

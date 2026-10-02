@@ -1,6 +1,8 @@
 {%
 showPrev = true
 prevPage = ui_task_actions.html
+showNext = true
+nextPage = ../ci_cd.html
 %}
 
 # Таймер в задаче

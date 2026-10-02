@@ -93,13 +93,13 @@ final case class Config(
 ```conf
 # Конфигурация HTTP-сервера
 http-server-config = {
-  host = "127.0.0.1"
-  port = 8081
+  host = "0.0.0.0"
+  port = 8080
 }
 
 # Конфигурация подключения к PostgreSQL
 postgresql = {
-  host = "localhost"
+  host = "postgres"
   port = 5432
   user = "postgres"
   password = "my-password"
@@ -109,7 +109,7 @@ postgresql = {
 
 # Конфигурация подключения к Redis
 redis = {
-  uri = "redis://localhost"
+  uri = "redis://redis"
 }
 
 # Конфигурация JWT-токенов

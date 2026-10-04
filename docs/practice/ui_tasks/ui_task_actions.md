@@ -84,8 +84,10 @@ final case class CompleteTaskHandler(
                     rating = rating,
                     review = review,
                     endDate = endDate,
-                    duration =
-                      FiniteDuration(request.duration, TimeUnit.MINUTES)
+                    duration = FiniteDuration(
+                      request.durationValue,
+                      request.durationUnit
+                    )
                   ).map(_ => HomeView.some)
                 }.valueOr(errors =>
                   getViewTask(
@@ -151,109 +153,120 @@ final case class CompileTaskRequest(
     rating: Int,
     review: String,
     endDate: Option[LocalDate],
-    duration: Int
+    durationValue: Long,
+    durationUnit: TimeUnit
 ) derives FormCodec
 ```
 
 **Поля:**
 
-| Поле       | Назначение                              |
-| ---------- | --------------------------------------- |
-| `token`    | JWT-токен из скрытого поля формы        |
-| `rating`   | Оценка от 1 до 5                        |
-| `review`   | Отзыв о выполненной работе              |
-| `endDate`  | Фактическая дата окончания              |
-| `duration` | Фактическая продолжительность в минутах |
+| Поле                    | Назначение                              |
+| ----------------------- | --------------------------------------- |
+| `token`                 | JWT-токен из скрытого поля формы        |
+| `rating`                | Оценка от 1 до 5                        |
+| `review`                | Отзыв о выполненной работе              |
+| `endDate`               | Фактическая дата окончания              |
+| `durationdurationValue` | Значение фактической продолжительности  |
+| `durationUnit`          | Единица измерения продолжительности     |
 
 ### Модальное окно «Завершение задачи»
 
 ```html
+<!-- Модальное окно для завершения задачи -->
 <div id="completeModal" class="modal-overlay" style="display: none;">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Завершение задачи</h3>
-      <button class="modal-close-btn" onclick="closeModal('completeModal')">
-        ×
-      </button>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Завершение задачи</h3>
+            <button class="modal-close-btn" onclick="closeModal('completeModal')">×</button>
+        </div>
+        <div class="modal-body">
+            <p class="modal-hint">Заполните информацию о завершении задачи <strong>@task.name.value</strong></p>
+
+            <form id="completeForm"
+                  hx-put="/task/@task.id/complete"
+                  hx-target="#app"
+                  hx-swap="outerHTML"
+                  hx-on::after-request="if(event.detail.xhr.status === 200) closeModal('completeModal')"
+            >
+                <input type="hidden" name="token" value="@token" />
+
+                <div class="form-group">
+                    <label for="ratingInput">Оценка (от 1 до 5):</label>
+                    <div class="rating-container">
+                        <div class="rating-stars">
+                            <span class="star" data-value="1" onclick="setRating(1)">☆</span>
+                            <span class="star" data-value="2" onclick="setRating(2)">☆</span>
+                            <span class="star" data-value="3" onclick="setRating(3)">☆</span>
+                            <span class="star" data-value="4" onclick="setRating(4)">☆</span>
+                            <span class="star" data-value="5" onclick="setRating(5)">☆</span>
+                        </div>
+                        <input
+                                id="ratingInput"
+                                name="rating"
+                                type="number"
+                                class="form-input rating-input"
+                                placeholder="Оценка 1-5"
+                                value="5"
+                                min="1"
+                                max="5"
+                                required
+                        />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reviewInput">Отзыв о выполненной работе:</label>
+                    <textarea
+                            id="reviewInput"
+                            name="review"
+                            class="form-textarea"
+                            rows="10"
+                            placeholder="Опишите, что было сделано, с какими сложностями столкнулись..."
+                            required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="completeEndDateInput">Фактическая дата окончания:</label>
+                    <input
+                            id="completeEndDateInput"
+                            name="endDate"
+                            type="date"
+                            class="form-input"
+                            value="@{LocalDate.now().format(DateTimeFormatter.ISO_DATE)}"
+                            required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="completeDurationValue">Фактическая продолжительность:</label>
+                    <div class="duration-group">
+                        <input
+                                id="completeDurationValue"
+                                name="durationValue"
+                                type="number"
+                                min="1"
+                                class="form-input duration-input"
+                                placeholder="Значение"
+                                value="@task.duration.length"
+                                required
+                        />
+                        <select id="completeDurationUnit" name="durationUnit" class="form-select duration-select" required>
+                            <option value="" disabled selected>Выберите единицу...</option>
+                            <option value="minutes" @if(task.duration.unit == TimeUnit.MINUTES){selected}>в минутах</option>
+                            <option value="hours" @if(task.duration.unit == TimeUnit.HOURS){selected}>в часах</option>
+                            <option value="days" @if(task.duration.unit == TimeUnit.DAYS){selected}>в днях</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="save-btn">Завершить задачу</button>
+                    <button type="button" class="cancel-btn" onclick="closeModal('completeModal')">Отмена</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="modal-body">
-      <p class="modal-hint">
-        Заполните информацию о завершении задачи
-        <strong>@task.name.value</strong>
-      </p>
-      <form
-        id="completeForm"
-        hx-put="/task/@task.id/complete"
-        hx-target="#app"
-        hx-swap="outerHTML"
-      >
-        <input type="hidden" name="token" value="@token" />
-
-        <div class="form-group">
-          <label for="ratingInput">Оценка (от 1 до 5):</label>
-          <div class="rating-container">
-            <div class="rating-stars">
-              <span class="star" data-value="1" onclick="setRating(1)">☆</span>
-              ...
-            </div>
-            <input
-              id="ratingInput"
-              name="rating"
-              type="number"
-              class="form-input rating-input"
-              value="5"
-            />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="reviewInput">Отзыв о выполненной работе:</label>
-          <textarea
-            id="reviewInput"
-            name="review"
-            class="form-textarea"
-            rows="10"
-            placeholder="Опишите, что было сделано..."
-          ></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="completeEndDateInput">Фактическая дата окончания:</label>
-          <input
-            id="completeEndDateInput"
-            name="endDate"
-            type="date"
-            class="form-input"
-            value="@{LocalDate.now().format(DateTimeFormatter.ISO_DATE)}"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="completeDurationInput"
-            >Фактическая продолжительность (в минутах):</label
-          >
-          <input
-            id="completeDurationInput"
-            name="duration"
-            type="number"
-            class="form-input"
-            value="@task.duration.toMinutes"
-          />
-        </div>
-
-        <div class="modal-actions">
-          <button type="submit" class="save-btn">Завершить задачу</button>
-          <button
-            type="button"
-            class="cancel-btn"
-            onclick="closeModal('completeModal')"
-          >
-            Отмена
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
 </div>
 ```
 

@@ -901,7 +901,7 @@ end EditTaskHandler
 
 ## Модель `EditTaskRequest`
 
-`EditTaskRequest` — DTO для формы редактирования. Отличается от `NewTaskRequest`
+`EditTaskRequest` — DTO для формы редактирования. Отличается от `CreateTaskRequest`
 наличием `timeSpent*` полей и структурой `plan`.
 
 ### Определение
@@ -932,9 +932,9 @@ final case class PlanStepRequest(
 )
 ```
 
-**Отличия от `NewTaskRequest`:**
+**Отличия от `CreateTaskRequest`:**
 
-| Поле         | `NewTaskRequest` | `EditTaskRequest`        |
+| Поле         | `CreateTaskRequest` | `EditTaskRequest`        |
 | ------------ | ---------------- | ------------------------ |
 | `status`     | —                | Есть (для валидации дат) |
 | `plan`       | —                | `List[PlanStepRequest]`  |

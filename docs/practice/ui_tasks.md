@@ -83,7 +83,7 @@ def getViewCreateTaskModal(
     userId: UserId,
     token: JwtToken,
     tab: String,
-    errorRequest: Option[NewTaskRequest],
+    errorRequest: Option[CreateTaskRequest],
     errorMessage: Option[String]
 ): IO[String] =
   for
@@ -93,7 +93,7 @@ def getViewCreateTaskModal(
   yield View.createTask(
     isOpen = isOpen,
     req = errorRequest.getOrElse(
-      NewTaskRequest.empty(token = token.value, tab = tab)
+      CreateTaskRequest.empty(token = token.value, tab = tab)
     ),
     taskTypes = taskTypes,
     sections = sections,
@@ -109,10 +109,10 @@ def getViewCreateTaskModal(
   - `sections` — разделы пользователя.
   - `goals` — цели пользователя.
 
-2. **Формирование `NewTaskRequest`:**
+2. **Формирование `CreateTaskRequest`:**
   - Если есть `errorRequest` (пользователь уже заполнял форму, но получил ошибку) —
     используем его.
-  - Иначе — создаём «пустой» запрос через `NewTaskRequest.empty(token, tab)`.
+  - Иначе — создаём «пустой» запрос через `CreateTaskRequest.empty(token, tab)`.
     Это гарантирует, что форма будет заполнена значениями по умолчанию:
     `ordinal = 1000`, `durationValue = 30`, `durationUnit = MINUTES`,
     а `startDate` и `endDate` — `None`.
@@ -124,9 +124,9 @@ def getViewCreateTaskModal(
 сервер возвращает ту же форму с **сохранёнными значениями** и сообщением об ошибке.
 Так пользователю не нужно вводить всё заново.
 
-## Модель `NewTaskRequest`
+## Модель `CreateTaskRequest`
 
-`NewTaskRequest` — это DTO (Data Transfer Object), в который десериализуется тело
+`CreateTaskRequest` — это DTO (Data Transfer Object), в который десериализуется тело
 формы. Он отличается от доменного `CreateTask` тем, что содержит **только те поля,
 которые приходят с формы**, и использует простые типы (`Int`, `Long`, `String`),
 а не уточнённые (`TaskId`, `Ordinal`, `FiniteDuration`).
@@ -134,7 +134,7 @@ def getViewCreateTaskModal(
 ### Определение
 
 ```dotty
-final case class NewTaskRequest(
+final case class CreateTaskRequest(
     token: String,
     tab: String,
     name: String,
@@ -173,7 +173,7 @@ final case class NewTaskRequest(
 Пользователь вводит число и выбирает единицу измерения. 
 Только на уровне `CreateTask.parse` эти два поля объединяются в `FiniteDuration`.
 
-### `FormCodec[NewTaskRequest]`
+### `FormCodec[CreateTaskRequest]`
 
 `FormCodec` — это тип Krop для двустороннего преобразования между `UrlForm` и Scala-объектом. 
 Он определяет два метода: `decode` (из формы в объект) и `encode` (из объекта в форму).
@@ -194,7 +194,7 @@ decode = { (urlForm: UrlForm) =>
     urlForm.parseLocalDate("endDate").toValidatedNec,
     urlForm.parseLong("durationValue").toValidatedNec,
     urlForm.parseTimeUnit("durationUnit").toValidatedNec
-  ).mapN { (...) => NewTaskRequest(...) }
+  ).mapN { (...) => CreateTaskRequest(...) }
     .toEither.leftMap(_.toChain)
 }
 ```
@@ -205,7 +205,7 @@ decode = { (urlForm: UrlForm) =>
    а не останавливают процесс на первой. Это удобно: пользователь видит сразу
    все проблемы, а не правит форму по одной.
 
-2. **`mapN`** — объединяет результаты. Если все поля валидны — создаётся `NewTaskRequest`.
+2. **`mapN`** — объединяет результаты. Если все поля валидны — создаётся `CreateTaskRequest`.
    Если хотя бы одно невалидно — аккумулированные ошибки сохраняются.
 
 3. **`.toEither.leftMap(_.toChain)`** — Krop ожидает `Either[Chain[String], A]`,
@@ -220,7 +220,7 @@ decode = { (urlForm: UrlForm) =>
 **Кодирование (объект → форма):**
 
 ```dotty
-encode = { (request: NewTaskRequest) =>
+encode = { (request: CreateTaskRequest) =>
   UrlForm(
     Map(
       "token"      -> Chain(request.token),
@@ -241,7 +241,7 @@ encode = { (request: NewTaskRequest) =>
 ### Метод `empty`
 
 ```dotty
-def empty(token: String, tab: String): NewTaskRequest = NewTaskRequest(
+def empty(token: String, tab: String): CreateTaskRequest = CreateTaskRequest(
   token = token,
   tab = tab,
   name = "",
@@ -526,7 +526,7 @@ final case class CreateTaskHandler(
     taskLifecycleService: TaskLifecycleService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
-    Routes.taskCreate.handleIO: (request: NewTaskRequest) =>
+    Routes.taskCreate.handleIO: (request: CreateTaskRequest) =>
       val create: ((UserInfo, JwtToken)) => IO[String] =
         (user, jwtToken) =>
           CreateTask.parse(request, user.id) match
@@ -570,8 +570,8 @@ end CreateTaskHandler
 
 **Пошаговый разбор:**
 
-1. **`handleIO: (request: NewTaskRequest) => ...`** — обработчик принимает
-   `NewTaskRequest`, который был десериализован из формы через `FormCodec`.
+1. **`handleIO: (request: CreateTaskRequest) => ...`** — обработчик принимает
+   `CreateTaskRequest`, который был десериализован из формы через `FormCodec`.
 
 2. **`CreateTask.parse(request, user.id)`** — валидация и преобразование запроса
    в доменный объект `CreateTask`. Возвращает `ValidatedNec[String, CreateTask]`:
@@ -605,7 +605,7 @@ end CreateTaskHandler
 ```dotty
 object CreateTask:
   def parse(
-      request: NewTaskRequest,
+      request: CreateTaskRequest,
       userId: UserId
   ): ValidatedNec[String, CreateTask] =
     (

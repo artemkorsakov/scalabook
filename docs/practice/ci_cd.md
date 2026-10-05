@@ -1,6 +1,8 @@
 {%
 showPrev = true
 prevPage = ui_tasks/ui_task_timer.html
+showNext = true
+nextPage = ordinal.html
 %}
 
 # Добавление Docker-образа

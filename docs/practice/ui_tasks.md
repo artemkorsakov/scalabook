@@ -51,17 +51,15 @@ final case class CreateTaskModalHandler(
     Routes.getTaskCreate.handleIO:
       (tab: String, authorization: Authorization) =>
         handleUserIO: (user, token) =>
-          getViewCreateTaskModal(
-            isOpen = true,
+          getViewEmptyCreateTaskModal(
             settingsService = settingsService,
             userId = user.id,
-            token = token,
-            tab = tab,
-            errorRequest = none,
-            errorMessage = none
+            request = CreateTaskRequest.empty(
+              token = token.value,
+              tab = tab
+            )
           )
         .apply(authorization)
-end CreateTaskModalHandler
 ```
 
 **Пошаговый разбор:**
@@ -69,21 +67,30 @@ end CreateTaskModalHandler
 1. **`handleUserIO: (user, token) => ...`** — стандартная проверка токена через
    `AuthorizationHandler`. После успешной проверки получаем `user` и `token`.
 
-2. **`getViewCreateTaskModal(...)`** — формирует HTML модального окна, передавая:
-  - `isOpen = true` — окно открыто (для ветвления в шаблоне).
-  - `errorRequest = none` — нет данных из предыдущей неудачной попытки.
-  - `errorMessage = none` — нет сообщения об ошибке.
+2. **`getViewEmptyCreateTaskModal(...)`** — формирует HTML модального окна, передавая:
+  - `request` — значение полей модального окна по умолчанию.
 
 ### Формирование модального окна
 
 ```dotty
-def getViewCreateTaskModal(
+def getViewEmptyCreateTaskModal(
+    settingsService: SettingsService[IO],
+    userId: UserId,
+    request: CreateTaskRequest
+): IO[String] =
+  getViewCreateTaskModal(
+    settingsService = settingsService,
+    isOpen = true,
+    userId = userId,
+    request = request,
+    errorMessage = none
+  )
+
+private def getViewCreateTaskModal(
     settingsService: SettingsService[IO],
     isOpen: Boolean,
     userId: UserId,
-    token: JwtToken,
-    tab: String,
-    errorRequest: Option[CreateTaskRequest],
+    request: CreateTaskRequest,
     errorMessage: Option[String]
 ): IO[String] =
   for
@@ -92,9 +99,7 @@ def getViewCreateTaskModal(
     goals     <- settingsService.getGoals(userId)
   yield View.createTask(
     isOpen = isOpen,
-    req = errorRequest.getOrElse(
-      CreateTaskRequest.empty(token = token.value, tab = tab)
-    ),
+    req = request,
     taskTypes = taskTypes,
     sections = sections,
     goals = goals,
@@ -110,19 +115,7 @@ def getViewCreateTaskModal(
   - `goals` — цели пользователя.
 
 2. **Формирование `CreateTaskRequest`:**
-  - Если есть `errorRequest` (пользователь уже заполнял форму, но получил ошибку) —
-    используем его.
-  - Иначе — создаём «пустой» запрос через `CreateTaskRequest.empty(token, tab)`.
-    Это гарантирует, что форма будет заполнена значениями по умолчанию:
-    `ordinal = 1000`, `durationValue = 30`, `durationUnit = MINUTES`,
-    а `startDate` и `endDate` — `None`.
-
-**Почему `errorRequest` опционален?**
-
-Когда пользователь впервые открывает форму — все поля пустые (или со значениями
-по умолчанию). Но если он отправил форму с ошибкой (например, забыл указать название),
-сервер возвращает ту же форму с **сохранёнными значениями** и сообщением об ошибке.
-Так пользователю не нужно вводить всё заново.
+  - `request` - значение предзаполненных полей
 
 ## Модель `CreateTaskRequest`
 
@@ -172,71 +165,6 @@ final case class CreateTaskRequest(
 Потому что форма содержит **два** `<input>`/`<select>` для продолжительности.
 Пользователь вводит число и выбирает единицу измерения. 
 Только на уровне `CreateTask.parse` эти два поля объединяются в `FiniteDuration`.
-
-### `FormCodec[CreateTaskRequest]`
-
-`FormCodec` — это тип Krop для двустороннего преобразования между `UrlForm` и Scala-объектом. 
-Он определяет два метода: `decode` (из формы в объект) и `encode` (из объекта в форму).
-
-**Декодирование (форма → объект):**
-
-```dotty
-decode = { (urlForm: UrlForm) =>
-  (
-    urlForm.getValue("token").toValidatedNec,
-    urlForm.getValue("tab").toValidatedNec,
-    urlForm.getValue("name").toValidatedNec,
-    urlForm.parseInt("taskTypeId").toValidatedNec,
-    urlForm.parseInt("sectionId").toValidatedNec,
-    urlForm.parseInt("goalId").toValidatedNec,
-    urlForm.parseInt("ordinal").toValidatedNec,
-    urlForm.parseLocalDate("startDate").toValidatedNec,
-    urlForm.parseLocalDate("endDate").toValidatedNec,
-    urlForm.parseLong("durationValue").toValidatedNec,
-    urlForm.parseTimeUnit("durationUnit").toValidatedNec
-  ).mapN { (...) => CreateTaskRequest(...) }
-    .toEither.leftMap(_.toChain)
-}
-```
-
-**Ключевые детали:**
-
-1. **`ValidatedNec`** — каждое поле валидируется независимо, ошибки **аккумулируются**,
-   а не останавливают процесс на первой. Это удобно: пользователь видит сразу
-   все проблемы, а не правит форму по одной.
-
-2. **`mapN`** — объединяет результаты. Если все поля валидны — создаётся `CreateTaskRequest`.
-   Если хотя бы одно невалидно — аккумулированные ошибки сохраняются.
-
-3. **`.toEither.leftMap(_.toChain)`** — Krop ожидает `Either[Chain[String], A]`,
-   а мы работаем с `ValidatedNec`. Преобразование стандартное: `Validated` → `Either`,
-   `NonEmptyChain` → `Chain`.
-
-4. **`urlForm.getValue("information")`** — здесь используется другой подход:
-   поле `information` не проверяется на пустоту, потому что оно опционально.
-   Вместо `getValue` используется `getFirstOrElse("information", "")`,
-   что даёт пустую строку, если поля нет.
-
-**Кодирование (объект → форма):**
-
-```dotty
-encode = { (request: CreateTaskRequest) =>
-  UrlForm(
-    Map(
-      "token"      -> Chain(request.token),
-      "tab"        -> Chain(request.tab),
-      "name"       -> Chain(request.name),
-      ...
-      "durationValue" -> Chain(request.durationValue.toString),
-      "durationUnit"  -> Chain(request.durationUnit.toString.toLowerCase)
-    )
-  )
-}
-```
-
-Используется реже — например, при формировании формы из существующего объекта.
-Обратите внимание: `durationUnit` кодируется в нижнем регистре (`minutes`, `hours`,
-`days`), чтобы совпадать со значениями `<option>` в HTML.
 
 ### Метод `empty`
 
@@ -534,38 +462,28 @@ final case class CreateTaskHandler(
               taskLifecycleService
                 .create(task)
                 .flatMap: _ =>
-                  getViewCreateTaskModal(
-                    isOpen = false,
+                  getViewAfterCreateTask(
                     settingsService = settingsService,
                     userId = user.id,
                     token = jwtToken,
-                    tab = request.tab,
-                    errorRequest = none,
-                    errorMessage = none
+                    tab = request.tab
                   )
                 .recoverWith:
                   case ex: IllegalArgumentException =>
-                    getViewCreateTaskModal(
-                      isOpen = true,
+                    getViewCreateTaskModalWithError(
                       settingsService = settingsService,
                       userId = user.id,
-                      token = jwtToken,
-                      tab = request.tab,
-                      errorRequest = request.some,
-                      errorMessage = ex.getMessage.some
+                      errorRequest = request,
+                      errorMessage = ex.getMessage
                     )
             case Validated.Invalid(errors) =>
-              getViewCreateTaskModal(
-                isOpen = true,
+              getViewCreateTaskModalWithError(
                 settingsService = settingsService,
                 userId = user.id,
-                token = jwtToken,
-                tab = request.tab,
-                errorRequest = request.some,
-                errorMessage = errors.toChain.toVector.mkString("; ").some
+                errorRequest = request,
+                errorMessage = errors.toChain.toVector.mkString("; ")
               )
       handleUserIOByToken(create)(request.token)
-end CreateTaskHandler
 ```
 
 **Пошаговый разбор:**
@@ -582,10 +500,10 @@ end CreateTaskHandler
     - Вызываем `taskLifecycleService.create(task)` — это метод, который выполняет
       **дополнительную валидацию** (проверка существования типа, раздела, цели,
       проверка дат для статуса) и сохраняет задачу в БД.
-    - **Успех** → возвращаем `getViewCreateTaskModal(isOpen = false, ...)`. Это
+    - **Успех** → возвращаем `getViewAfterCreateTask`. Это
       «закрытое» модальное окно с кнопкой «Обновить список задач».
     - **Ошибка** (`IllegalArgumentException`) → возвращаем то же модальное окно
-      с сохранёнными данными и сообщением об ошибке.
+      с сохранёнными данными и сообщением об ошибке (`getViewCreateTaskModalWithError`).
 
 4. **Ветка `Invalid`:** возвращаем модальное окно с ошибками валидации, объединёнными
    через `"; "`.
@@ -593,6 +511,43 @@ end CreateTaskHandler
 5. **`handleUserIOByToken(create)(request.token)`** — извлекает токен из тела
    запроса (не из заголовка!), проверяет его через middleware и передаёт
    `(user, jwtToken)` в лямбду `create`.
+
+`getViewAfterCreateTask` и `getViewCreateTaskModalWithError` используют тот же `getViewCreateTaskModal`,
+что и при открытии модального окна:
+
+```dotty
+def getViewAfterCreateTask(
+    settingsService: SettingsService[IO],
+    userId: UserId,
+    token: JwtToken,
+    tab: String
+): IO[String] =
+  getViewCreateTaskModal(
+    settingsService = settingsService,
+    isOpen = false,
+    userId = userId,
+    request =
+      CreateTaskRequest.empty(
+        token = token.value,
+        tab = tab
+      ),
+    errorMessage = none
+  )
+
+def getViewCreateTaskModalWithError(
+    settingsService: SettingsService[IO],
+    userId: UserId,
+    errorRequest: CreateTaskRequest,
+    errorMessage: String
+): IO[String] =
+  getViewCreateTaskModal(
+    settingsService = settingsService,
+    isOpen = true,
+    userId = userId,
+    request = errorRequest,
+    errorMessage = errorMessage.some
+  )
+```
 
 **Почему валидация двухуровневая?**
 

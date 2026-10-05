@@ -95,8 +95,7 @@ def getViewTask(
     )
     maybeTask <- taskLifecycleService.get(taskId, userId)
   yield maybeTask.map: card =>
-    val sameTypeTasks     = plannedTasks.filter(_.taskType == card.taskType)
-    val availableOrdinals = getAvailableOrdinals(sameTypeTasks)
+    val availableOrdinals = getAvailableOrdinals(plannedTasks)
     View.task(
       task = card,
       token = jwtToken.value,
@@ -115,30 +114,25 @@ def getViewTask(
    возвращает `Option[TaskCard]`. Если задача не найдена или не принадлежит
    пользователю — будет `None`.
 
-3. **Формирование `availableOrdinals`** — из запланированных задач выбираем те,
-   у которых **тот же тип**, что и у текущей. Это нужно, чтобы порядковые номера
-   были уникальны **внутри типа**: две задачи разных типов могут иметь одинаковый
-   порядок.
-
-4. **Рендер шаблона** — `View.task(...)` возвращает `HtmlFormat.Appendable`,
+3**Рендер шаблона** — `View.task(...)` возвращает `HtmlFormat.Appendable`,
    обёрнутый в `Option` (если задача найдена).
 
 ## Вычисление доступных порядковых номеров
 
 ```dotty
-private def getAvailableOrdinals(plannedTasks: Vector[TableTaskCard])
+def getAvailableOrdinals(plannedTasks: Vector[TableTaskCard])
     : Vector[OrdinalCard] =
   val top = 5
 
-  val topFive: Vector[(Ordinal, String)] =
-    plannedTasks.sortBy(_.ordinal).take(top).map: task =>
+  val orderingTasks: Vector[(Ordinal, String)] =
+    plannedTasks.sortBy(_.ordinal).map: task =>
       (task.ordinal, task.name.value)
 
-  val start = topFive.headOption.map(_._1.value + 1).getOrElse(1)
-  (start until (start + 2 * top))
-    .filterNot(i => topFive.exists(_._1.value == i))
+  val start = orderingTasks.headOption.map(_._1.value + 1).getOrElse(1)
+  (start to (start + orderingTasks.length + top))
+    .filterNot(i => orderingTasks.exists(_._1.value == i))
     .map: i =>
-      val name = topFive.takeWhile(
+      val name = orderingTasks.takeWhile(
         _._1.value <= i
       ).lastOption.map(_._2).getOrElse("-")
       OrdinalCard(i, name)
@@ -148,46 +142,6 @@ private def getAvailableOrdinals(plannedTasks: Vector[TableTaskCard])
 
 **Задача:** предложить пользователю **5 свободных порядковых номеров**, которые
 можно использовать для новой задачи или для перестановки.
-
-**Алгоритм:**
-
-1. **`topFive`** — первые 5 задач, отсортированных по порядку. Каждая представлена
-   парой `(ordinal, name)`. Если запланированных задач меньше 5 — берём все.
-2. **`start`** — начальное значение для перебора свободных номеров. Если есть
-   задачи — начинаем с `(ordinal первой задачи) + 1`. Если задач нет — начинаем с `1`.
-3. **`(start until (start + 2 * top))`** — диапазон потенциальных номеров.
-   Берём вдвое больше, чем нужно, чтобы после фильтрации осталось минимум 5 (взяли 10, из них 5 отфильтровали).
-4. **`.filterNot(i => topFive.exists(_._1.value == i))`** — исключаем номера,
-   которые уже заняты (совпадают с ordinal из `topFive`).
-5. **Для каждого свободного номера `i`** находим задачу, **после которой** он
-   должен идти: `topFive.takeWhile(_._1.value <= i).lastOption`. Например, если
-   свободен номер `3`, а задачи имеют порядки `[1, 2, 5, 7]`, то номер `3` идёт
-   после задачи с порядком `2`.
-6. **`.take(top).toVector`** — берём первые 5 результатов.
-
-**Пример:**
-
-Пусть запланированные задачи имеют порядки `[1, 2, 5, 7]` и названия `["A", "B", "C", "D"]`.
-
-- `topFive = [(1, "A"), (2, "B"), (5, "C"), (7, "D")]`
-- `start = 2` (первая задача + 1)
-    - Диапазон: `2..11`
-- Свободные номера: `[3, 4, 6, 8, 9]` (исключаем `2`, `5`, `7`)
-    - Для `3`: задачи с ordinal ≤ 3 — `[A, B]`, последняя `B` → после B
-    - Для `4`: то же самое → после B
-    - Для `6`: задачи с ordinal ≤ 6 — `[A, B, C]`, последняя `C` → после C
-    - Для `8`: задачи с ordinal ≤ 8 — `[A, B, C, D]`, последняя `D` → после D
-    - Для `9`: то же → после D
-
-**Результат:**
-
-```dotty
-OrdinalCard(3, "B")  // Свободный порядок 3 после задачи "B"
-OrdinalCard(4, "B")
-OrdinalCard(6, "C")
-OrdinalCard(8, "D")
-OrdinalCard(9, "D")
-```
 
 Эта информация показывается [в модальном окне «В очередь»](ui_task_actions.md) — пользователь видит,
 какие порядковые номера свободны и после какой задачи они окажутся.

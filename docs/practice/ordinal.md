@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = ci_cd.html
 showNext = true
-nextPage = ordinal.html
+nextPage = sources.html
 %}
 
 # Выравнивание порядка

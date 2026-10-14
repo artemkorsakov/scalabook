@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = ordinal.html
 showNext = true
-nextPage = sources.html
+nextPage = goals.html
 %}
 
 # Источники задач

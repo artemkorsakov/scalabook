@@ -13,7 +13,8 @@ nextPage = foundation/fibers.html
 
 ### **Асинхронность** (asynchronous)
 
-Монада `IO` позволяет захватывать и контролировать асинхронные эффекты, управляемые обратными вызовами (callback), 
+[Монада](../typeclass/monad/monad.md) `IO` позволяет захватывать 
+и контролировать асинхронные эффекты, управляемые обратными вызовами (callback), 
 за чистым синхронным интерфейсом. 
 Хотя внешне она похожа на `Future`, `IO` выводит эту концепцию на новый уровень, 
 давая полный контроль над семантикой и поведением вычислений. 
@@ -208,6 +209,7 @@ Cats Effect предлагает выразительный и безопасн�
 
 **Ссылки:**
 
+- [Ссылка на репозиторий с упражнениями](https://gitverse.ru/scalabook/cats-effect)
 - [Cats effect documentation][doc]
 - [«Выстрелить и забыть» в Cats Effect](https://habr.com/ru/company/otus/blog/589297/)
 - [A practical guide to error handling in Scala Cats and Cats Effect](https://softwaremill.com/practical-guide-to-error-handling-in-scala-cats-and-cats-effect/)

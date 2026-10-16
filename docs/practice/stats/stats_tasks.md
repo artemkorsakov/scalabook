@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = ../goals.html
 showNext = true
-nextPage = stats_tasks.html
+nextPage = history.html
 %}
 
 # Статистика по задачам

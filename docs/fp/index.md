@@ -172,6 +172,7 @@ factorial(10)   // 3628800
 - [Функциональное программирование: в Java и C# слишком много церемоний](https://habr.com/ru/companies/jugru/articles/328042/)
 - [Функциональное программирование: то, что вам (наверно) рассказывали. Если вы слушали](https://habr.com/ru/articles/492460/)
 - [Харрисон - Введение в функциональное программирование](https://funprog-ru.github.io/)
+- [Шпаргалка по функциональному программированию](https://habr.com/ru/companies/yandex/articles/547786/)
 - [A Beginner-Friendly Tour through Functional Programming in Scala](https://degoes.net/articles/easy-monads)
 - [A bite of functional programming (in Scala)](https://scalac.io/blog/functional-programming-in-scala/)
 - [A Critique of Impure Reason](https://blog.higher-order.com/blog/2009/04/27/a-critique-of-impure-reason/)

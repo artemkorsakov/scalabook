@@ -110,7 +110,7 @@ object PlanStep:
       
   type StepName = StepName.T
   object StepName
-      extends RefinedType[String, MinLength[2] & MaxLength[300] & Trimmed]
+      extends RefinedType[String, MinLength[2] & Trimmed]
 ```
 
 ## Разбор каждого поля

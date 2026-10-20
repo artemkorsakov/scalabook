@@ -445,11 +445,9 @@ end Crypto
 
 **Ссылки:**
 
-- [Персональный план развития][plugin]
 - [Репозиторий с исходниками][repo]
 - [Gabriel Volpe - Practical FP in Scala][pfp]
 
 [repo]: https://gitverse.ru/scalabook/pdp
-[plugin]: https://artemkorsakov.github.io/personal-development-plan/ru/
 [pfp]: https://leanpub.com/pfp-scala
 [redis4cats]: https://github.com/profunktor/redis4cats

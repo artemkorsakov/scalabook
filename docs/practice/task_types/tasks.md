@@ -95,7 +95,8 @@ object PlanStep:
         (list1, list2) match
           case (h1 :: t1, h2 :: t2) if h1 == h2 => loop(t1, t2)
           case (h1 :: t1, h2 :: t2)             => h1 < h2
-          case _                                => list1.isEmpty
+          case _                                =>
+            list1.isEmpty && list2.nonEmpty
 
       Ordering.fromLessThan { case (step1, step2) =>
         loop(
@@ -441,8 +442,6 @@ pureTest("StepNumber.next should return next number with the given level"):
 
 **Ссылки:**
 
-- [Персональный план развития][plugin]
 - [Репозиторий с исходниками][repo]
 
 [repo]: https://gitverse.ru/scalabook/pdp
-[plugin]: https://artemkorsakov.github.io/personal-development-plan/ru/

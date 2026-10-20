@@ -365,11 +365,9 @@ class PostgreSQLTaskTypeServiceSuite(global: GlobalRead) extends IOSuite:
 
 **Ссылки:**
 
-- [Персональный план развития][plugin]
 - [Репозиторий с исходниками][repo]
 - [Полный список тестов][tests]
 
 [repo]: https://gitverse.ru/scalabook/pdp
-[plugin]: https://artemkorsakov.github.io/personal-development-plan/ru/
 [tests]: https://gitverse.ru/scalabook/pdp/content/master/pdp/src/test/scala/ru/scalabook/pdp/services/postgresql
 [weaver]: https://typelevel.org/weaver-test/

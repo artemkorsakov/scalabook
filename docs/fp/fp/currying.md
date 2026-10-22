@@ -297,6 +297,7 @@ def uncurry3[A, B, C, D](f: A => B => C => D): (A, B, C) => D =
 - [Functional Programming by Alexander Alvin](https://alvinalexander.com/photos/functional-programming-simplied-free-pdf-preview/)
 - [Functional Programming in Scala, Second Edition, Chapter 1-2 by Michael Pilquist, Rúnar Bjarnason, and Paul Chiusano](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Introduction to Functional Programming - Bird, Wadler](https://archive.org/details/introductiontofu0000bird/mode/2up)
+- [Mastering Currying in Scala: A Functional Programming Powerhouse](https://iamsarathchandra.medium.com/mastering-currying-in-scala-a-functional-programming-powerhouse-ce88a3edf3ce)
 - [Scala3 book](https://docs.scala-lang.org/scala3/book/fp-what-is-fp.html)
 
 [sample]: https://gitverse.ru/scalabook/fp

@@ -64,7 +64,9 @@ final case class GoalsStats(
     else (completedDuration.toMinutes * 10000 / allDuration.toMinutes) / 100.00
 
   lazy val status: GoalStatus =
-    if completed == 0 then Planned
+    if completed == 0 &&
+      remainingTasks.headOption.forall(_.status != InProgress)
+    then Planned
     else if remaining > 0 then Current
     else Achieved
 ```
@@ -111,15 +113,18 @@ final case class GoalsStats(
 **Вычисление `status`:**
 
 ```dotty
-if completed == 0 then Planned
-else if remaining > 0 then Current
-else Achieved
+lazy val status: GoalStatus =
+  if completed == 0 &&
+    remainingTasks.headOption.forall(_.status != InProgress)
+  then Planned
+  else if remaining > 0 then Current
+  else Achieved
 ```
 
 Три статуса цели:
 
-- **`Planned`** — ни одна задача не выполнена. Цель ждёт своего часа.
-- **`Current`** — часть задач выполнена, но остались другие. Цель в работе.
+- **`Planned`** — ни одна задача не выполнена, нет задач в работе. Цель ждёт своего часа.
+- **`Current`** — есть невыполненные задачи. Цель в работе.
 - **`Achieved`** — все задачи выполнены. Цель достигнута.
 
 ### `GoalsStats.calculate` — построение статистики

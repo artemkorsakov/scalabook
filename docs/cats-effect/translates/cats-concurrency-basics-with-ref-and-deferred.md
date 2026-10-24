@@ -1,8 +1,6 @@
 {%
 showPrev = true
 prevPage = concurrency-with-cats-effect.html
-showNext = true
-nextPage = introduction-to-programming-with-zio-functional-effects.html
 %}
 
 # Основы параллелизма Cats с Ref и Deferred

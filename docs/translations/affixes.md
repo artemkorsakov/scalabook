@@ -2,7 +2,7 @@
 showPrev = true
 prevPage = trampolining.html
 showNext = true
-nextPage = concurrency-with-cats-effect.html
+nextPage = introduction-to-programming-with-zio-functional-effects.html
 %}
 
 # Значение аффиксов Scala

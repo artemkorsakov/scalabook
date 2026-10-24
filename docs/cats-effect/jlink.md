@@ -1,6 +1,8 @@
 {%
 showPrev = true
 prevPage = scala-native.html
+showNext = true
+nextPage = translates.html
 %}
 
 # Jlink Image

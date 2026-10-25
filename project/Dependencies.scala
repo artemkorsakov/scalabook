@@ -40,7 +40,7 @@ object Dependencies {
   }
 
   object iron {
-    private val version = "3.3.2"
+    private val version = "3.4.1"
 
     val cats       = "io.github.iltotore" %% "iron-cats"       % version
     val core       = "io.github.iltotore" %% "iron"            % version
@@ -63,9 +63,13 @@ object Dependencies {
     val slf4j = "org.typelevel" %% "log4cats-slf4j" % version
   }
 
+  object reactify {
+    val reactify = "com.outr" %% "reactify" % "4.2.0"
+  }
+
   object sttp {
-    val client = "com.softwaremill.sttp.client4" %% "core" % "4.0.27"
-    val model  = "com.softwaremill.sttp.model" %% "core" % "1.8.2"
+    val client = "com.softwaremill.sttp.client4" %% "core" % "4.1.0"
+    val model  = "com.softwaremill.sttp.model" %% "core" % "1.9.0"
   }
 
   object weaver {
@@ -84,7 +88,8 @@ object Dependencies {
       catsEffect.kernel,
       catsEffect.std,
       log4cats.core,
-      log4cats.slf4j
+      log4cats.slf4j,
+      reactify.reactify
     )
 
   val exampleTestLibs: Seq[ModuleID] =

@@ -54,46 +54,14 @@ final case class PeriodicTask(
 
 ```dotty
 object PeriodicTask:
-  opaque type PeriodicTaskId = UUID
-
-  object PeriodicTaskId:
-    def apply(uuid: UUID): PeriodicTaskId = uuid
-
-    def parse(uuid: String): Validated[String, PeriodicTaskId] =
-      Try(UUID.fromString(uuid)).toValidated.leftMap(_.getMessage)
+  type PeriodicTaskId = PeriodicTaskId.T
+  object PeriodicTaskId extends RefinedType[String, ValidUUID]
 ```
 
 **Разбор:**
 
-- **`opaque type PeriodicTaskId = UUID`** — непрозрачный тип над `UUID`. 
+- **`PeriodicTaskId`** — непрозрачный тип над `UUID`. 
   Защищает от случайной путаницы: `PeriodicTaskId` и `UserId` — оба `UUID`, но несовместимы на уровне компилятора.
-- **`apply`** — конструктор из `UUID`.
-- **`parse`** — парсинг строки в `PeriodicTaskId`. Возвращает `Validated[String, PeriodicTaskId]`:
-    - **`Valid(id)`** — строка корректна.
-    - **`Invalid(error)`** — строка не является UUID. Сообщение содержит причину (например, «Invalid UUID string»).
-
-**Почему `opaque type`, а не `case class`?** Opaque type не создаёт дополнительный объект в куче — в рантайме это тот же `UUID`. 
-Это экономит память и ускоряет сравнение. При этом на уровне компилятора — полная типовая безопасность.
-
-### Сериализация `PeriodicTaskId`
-
-```dotty
-given encoder: Encoder[PeriodicTaskId] =
-  Encoder[UUID].contramap(identity)
-
-given decoder: Decoder[PeriodicTaskId] =
-  Decoder[UUID].map(PeriodicTaskId.apply)
-
-given Meta[PeriodicTaskId] =
-  Meta[UUID].imap[PeriodicTaskId](PeriodicTaskId(_))(identity)
-```
-
-**Разбор:**
-
-- **`Encoder`** — превращает `PeriodicTaskId` в JSON-строку (`UUID.toString`). `contramap(identity)` 
-  означает «взять `Encoder[UUID]` и применить к `PeriodicTaskId`», потому что в рантайме они идентичны.
-- **`Decoder`** — превращает JSON-строку в `PeriodicTaskId`. `map(PeriodicTaskId.apply)` — после декодирования `UUID` оборачивает его в `PeriodicTaskId`.
-- **`Meta`** — для Doobie (JDBC). `imap` — двустороннее преобразование: `UUID → PeriodicTaskId` и `PeriodicTaskId → UUID`.
 
 ## DTO `CreatePeriodicTask`
 
@@ -882,15 +850,15 @@ final case class OpenPeriodicTaskHandler(
         case Some(token) =>
           val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
             (user, jwtToken) =>
-              PeriodicTaskId.parse(uuid) match
-                case Validated.Valid(periodicTaskId) =>
+              PeriodicTaskId.either(uuid) match
+                case Right(periodicTaskId) =>
                   service.get(periodicTaskId, user.id).map {
                     _.map { periodicTask =>
                       val html = View.periodicTask(task = periodicTask, errorMessage = none)
                       View.base("План развития", html).toString
                     }
                   }
-                case Validated.Invalid(error) =>
+                case Left(error) =>
                   Logger[IO].error(error).as(none)
           handleUserIOByTokenOpt(run)(token)
             .map(_.getOrElse(NotFoundView))
@@ -924,14 +892,14 @@ final case class EditFormPeriodicTaskHandler(
     Routes.editFormPeriodicTask.handleIO:
       (uuid: String, authorization: Authorization) =>
         handleUserIOOpt: (user, jwtToken) =>
-          PeriodicTaskId.parse(uuid) match
-            case Validated.Valid(taskId) =>
+          PeriodicTaskId.either(uuid) match
+            case Right(taskId) =>
               service.get(taskId, user.id).map {
                 _.map { task =>
                   View.editPeriodicTask(task = task, token = jwtToken.value, errorMessage = none).toString
                 }
               }
-            case Validated.Invalid(error) =>
+            case Left(error) =>
               Logger[IO].error(error).as(none)
         .apply(authorization)
 end EditFormPeriodicTaskHandler
@@ -952,7 +920,7 @@ final case class EditPeriodicTaskHandler(
         val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
           (user, jwtToken) =>
             (
-              PeriodicTaskId.parse(uuid).toValidatedNec,
+              PeriodicTaskId.either(uuid).toValidatedNec,
               request.plan.traverse(PlanStep.parse)
             ).mapN { case (periodicTaskId, steps) =>
               val run: IO[Option[String]] =
@@ -1000,13 +968,13 @@ final case class CompleteStepPeriodicTaskHandler(
     Routes.completePlanStepPeriodicTask.handleIO:
       (uuid: String, number: String, authorization: Authorization) =>
         handleUserIOOpt { (user, jwtToken) =>
-          PeriodicTaskId.parse(uuid) match
-            case Validated.Valid(periodicTaskId) =>
+          PeriodicTaskId.either(uuid) match
+            case Right(periodicTaskId) =>
               for
                 _ <- service.completeStep(periodicTaskId, user.id, number)
                 maybeTask <- service.get(periodicTaskId, user.id)
               yield maybeTask.map(task => View.periodicTask(task, none).toString)
-            case Validated.Invalid(error) =>
+            case Left(error) =>
               Logger[IO].error(error).as(none)
         }(authorization)
 end CompleteStepPeriodicTaskHandler
@@ -1031,10 +999,10 @@ final case class CompletePeriodicTaskHandler(
     Routes.completeFormPeriodicTask.handleIO:
       (uuid: String, authorization: Authorization) =>
         handleUserIOOpt: (user, token) =>
-          PeriodicTaskId.parse(uuid) match
-            case Validated.Valid(periodicTaskId) =>
+          PeriodicTaskId.either(uuid) match
+            case Right(periodicTaskId) =>
               service.complete(id = periodicTaskId, userId = user.id).map(_ => HomeView.some)
-            case Validated.Invalid(error) =>
+            case Left(error) =>
               Logger[IO].error(error).as(none)
         .apply(authorization)
 end CompletePeriodicTaskHandler
@@ -1060,10 +1028,10 @@ final case class DeletePeriodicTaskHandler(
     Routes.deletePeriodicTask.handleIO:
       (uuid: String, authorization: Authorization) =>
         handleUserIOOpt: (user, token) =>
-          PeriodicTaskId.parse(uuid) match
-            case Validated.Valid(periodicTaskId) =>
+          PeriodicTaskId.either(uuid) match
+            case Right(periodicTaskId) =>
               service.delete(id = periodicTaskId, userId = user.id).map(_ => HomeView.some)
-            case Validated.Invalid(error) =>
+            case Left(error) =>
               Logger[IO].error(error).as(none)
         .apply(authorization)
 end DeletePeriodicTaskHandler

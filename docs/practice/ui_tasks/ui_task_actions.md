@@ -67,8 +67,8 @@ final case class CompleteTaskHandler(
       (uuid: String, request: CompileTaskRequest) =>
         val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
           (user, jwtToken) =>
-            TaskId.parse(uuid) match
-              case Validated.Valid(taskId) =>
+            TaskId.either(uuid) match
+              case Right(taskId) =>
                 (
                   Rating.values
                     .find(_.r == request.rating)
@@ -98,7 +98,7 @@ final case class CompleteTaskHandler(
                     errorMessage = errors.mkString_(";").some
                   ).map(_.map(_.toString))
                 )
-              case Validated.Invalid(error) =>
+              case Left(error) =>
                 Logger[IO].error(error).as(none)
         handleUserIOByTokenOpt(run)(request.token)
 end CompleteTaskHandler
@@ -323,8 +323,8 @@ final case class DeferTaskHandler(
     Routes.deferFormTask.handleIO:
       (uuid: String, authorization: Authorization) =>
         handleUserIOOpt: (user, jwtToken) =>
-          TaskId.parse(uuid) match
-            case Validated.Valid(taskId) =>
+          TaskId.either(uuid) match
+            case Right(taskId) =>
               for
                 _ <- taskLifecycleService.defer(
                   id = taskId,
@@ -338,7 +338,7 @@ final case class DeferTaskHandler(
                   errorMessage = none
                 )
               yield maybeView.map(_.toString)
-            case Validated.Invalid(error) =>
+            case Left(error) =>
               Logger[IO].error(error).as(none)
         .apply(authorization)
 end DeferTaskHandler
@@ -405,8 +405,8 @@ final case class StartTaskHandler(
     Routes.startFormTask.handleIO: (uuid: String, request: StartTaskRequest) =>
       val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
         (user, jwtToken) =>
-          TaskId.parse(uuid) match
-            case Validated.Valid(taskId) =>
+          TaskId.either(uuid) match
+            case Right(taskId) =>
               (
                 request.startDate.toValidNec("Не заполнена дата начала"),
                 request.endDate.toValidNec("Не заполнена дата окончания")
@@ -424,7 +424,7 @@ final case class StartTaskHandler(
                 getViewTask(..., errorMessage = errors.mkString_(";").some)
                   .map(_.map(_.toString))
               )
-            case Validated.Invalid(error) =>
+            case Left(error) =>
               Logger[IO].error(error).as(none)
       handleUserIOByTokenOpt(run)(request.token)
 end StartTaskHandler
@@ -552,8 +552,8 @@ final case class QueueTaskHandler(
     Routes.queueFormTask.handleIO: (uuid: String, request: QueueTaskRequest) =>
       val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
         (user, jwtToken) =>
-          TaskId.parse(uuid) match
-            case Validated.Valid(taskId) =>
+          TaskId.either(uuid) match
+            case Right(taskId) =>
               Ordinal.either(request.ordinal) match
                 case Right(ordinal) =>
                   for
@@ -567,7 +567,7 @@ final case class QueueTaskHandler(
                 case Left(error) =>
                   getViewTask(..., errorMessage = error.some)
                     .map(_.map(_.toString))
-            case Validated.Invalid(error) =>
+            case Left(error) =>
               Logger[IO].error(error).as(none)
       handleUserIOByTokenOpt(run)(request.token)
 end QueueTaskHandler
@@ -710,14 +710,14 @@ final case class DeleteTaskHandler(
   val handler: Handler =
     Routes.deleteTask.handleIO: (uuid: String, authorization: Authorization) =>
       handleUserIOOpt: (user, token) =>
-        TaskId.parse(uuid) match
-          case Validated.Valid(taskId) =>
+        TaskId.either(uuid) match
+          case Right(taskId) =>
             taskLifecycleService
               .delete(
                 id = taskId,
                 userId = user.id
               ).map(_ => HomeView.some)
-          case Validated.Invalid(error) =>
+          case Left(error) =>
             Logger[IO].error(error).as(none)
       .apply(authorization)
 end DeleteTaskHandler

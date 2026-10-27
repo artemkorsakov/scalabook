@@ -28,8 +28,8 @@ final case class OpenTaskHandler(
         case Some(token) =>
           val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
             (user, jwtToken) =>
-              TaskId.parse(uuid) match
-                case Validated.Valid(taskId) =>
+              TaskId.either(uuid) match
+                case Right(taskId) =>
                   getViewTask(
                     taskLifecycleService = taskLifecycleService,
                     userId = user.id,
@@ -39,7 +39,7 @@ final case class OpenTaskHandler(
                   ).map(_.map(html =>
                     View.base("План развития", html).toString
                   ))
-                case Validated.Invalid(error) =>
+                case Left(error) =>
                   Logger[IO].error(error).as(none)
           handleUserIOByTokenOpt(run)(token)
             .map(_.getOrElse(View.base("План развития", NotFoundView).toString))

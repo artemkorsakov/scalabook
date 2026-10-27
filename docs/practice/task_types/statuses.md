@@ -165,12 +165,17 @@ object TaskType:
       
 // pdp/src/main/scala/ru/scalabook/pdp/models/User.scala      
 object User:
-  opaque type UserId = UUID
-
-  object UserId:
-    def apply(uuid: UUID): UserId = uuid 
+  type UserId = UserId.T
+  object UserId extends PdpUUID
     
 // pdp/src/main/scala/ru/scalabook/pdp/models/src.scala
+trait PdpUUID extends RefinedType[String, ValidUUID]:
+  inline def apply(uuid: UUID): T = applyUnsafe(uuid.toString)
+
+  given Meta[T]  = Meta[UUID].imap[T](apply)(id => UUID.fromString(id.value))
+  given Write[T] = Write.Single[T](given_Meta_T.put)
+  given Read[T]  = Read.Single[T](given_Meta_T.get)
+  
 type Ordinal = Ordinal.T
 object Ordinal extends RefinedType[Int, Positive]:
   val Max: T = Ordinal(1000)

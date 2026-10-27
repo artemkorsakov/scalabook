@@ -49,8 +49,8 @@ final case class EditFormTaskHandler(
     Routes.editFormTask.handleIO:
       (uuid: String, authorization: Authorization) =>
         handleUserIOOpt: (user, jwtToken) =>
-          TaskId.parse(uuid) match
-            case Validated.Valid(taskId) =>
+          TaskId.either(uuid) match
+            case Right(taskId) =>
               getViewEditTaskModal(
                 settingsService = settingsService,
                 taskLifecycleService = taskLifecycleService,
@@ -59,7 +59,7 @@ final case class EditFormTaskHandler(
                 jwtToken = jwtToken,
                 errorMessage = none
               )
-            case Validated.Invalid(error) =>
+            case Left(error) =>
               Logger[IO].error(error).as(none)
         .apply(authorization)
 end EditFormTaskHandler
@@ -846,7 +846,7 @@ end EditTaskHandler
           taskId: String
       ): ValidatedNec[String, Task] =
         (
-          TaskId.parse(taskId).toValidatedNec,
+          TaskId.either(taskId).toValidatedNec,
           TaskName.either(request.name).toValidatedNec,
           TaskTypeId.either(request.taskTypeId).toValidatedNec,
           Status.find(

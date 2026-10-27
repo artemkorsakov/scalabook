@@ -49,12 +49,8 @@ final case class Task(
 )
 
 object Task:
-  opaque type TaskId = UUID
-  object TaskId:
-    def apply(uuid: UUID): TaskId = uuid
-    
-    def parse(uuid: String): Validated[String, TaskId] =
-      Try(UUID.fromString(uuid)).toValidated.leftMap(_.getMessage)
+  type TaskId = TaskId.T
+  object TaskId extends PdpUUID
 
   type TaskName = TaskName.T
   object TaskName

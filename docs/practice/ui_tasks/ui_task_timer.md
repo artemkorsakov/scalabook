@@ -69,7 +69,7 @@ final case class AddTimeSpentHandler(
         val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
           (user, jwtToken) =>
             (
-              TaskId.parse(uuid).toValidatedNec,
+              TaskId.either(uuid).toValidatedNec,
               request.timeSpent.refineEither[Positive].toValidatedNec
             ).mapN { case (taskId, timeSpent) =>
               for

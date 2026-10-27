@@ -57,16 +57,15 @@ final case class User(
 
 Для обеспечения целостности данных на уровне типов используются уточненные типы с чёткими ограничениями:
 
-- `UserId`: непрозрачный тип, содержащий значение типа `java.util.UUID`
+- `UserId`: непрозрачный уточненный тип
 - `UserName`: строка от 2 до 20 символов, обрезанная от пробелов
 - `Password`: сырой пароль от 8 до 100 символов, обрезанный от пробелов
 - `EncryptedPassword`: зашифрованный пароль (хеш)
 
 ```dotty
 object User:
-  opaque type UserId = UUID
-  object UserId:
-    def apply(uuid: UUID): UserId = uuid
+  type UserId = UserId.T
+  object UserId extends PdpUUID
 
   type UserName = UserName.T
   object UserName

@@ -66,19 +66,6 @@ enum Status:
   // Требует миграции данных, т.к. в БД остается InProgress!
 ```
 
-Аналогично определяется преобразование для запечатанного типа:
-
-```dotty
-object Task:
-  opaque type TaskId = UUID
-
-  object TaskId:
-    def apply(uuid: UUID): TaskId = uuid
-
-  given Meta[TaskId] =
-    Meta[UUID].imap[TaskId](TaskId(_))(identity)
-```
-
 #### 2. Преобразование для `Plan`
 
 ```dotty

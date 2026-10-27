@@ -55,12 +55,12 @@ final case class PeriodicTask(
 ```dotty
 object PeriodicTask:
   type PeriodicTaskId = PeriodicTaskId.T
-  object PeriodicTaskId extends RefinedType[String, ValidUUID]
+  object PeriodicTaskId extends PdpUUID
 ```
 
 **Разбор:**
 
-- **`PeriodicTaskId`** — непрозрачный тип над `UUID`. 
+- **`PeriodicTaskId`** — уточняющий тип над `UUID`. 
   Защищает от случайной путаницы: `PeriodicTaskId` и `UserId` — оба `UUID`, но несовместимы на уровне компилятора.
 
 ## DTO `CreatePeriodicTask`
@@ -166,7 +166,7 @@ def create(newItem: CreatePeriodicTask): F[PeriodicTaskId] =
 
 ```dotty
 def get(id: PeriodicTaskId): F[Option[PeriodicTask]] =
-  sql"""SELECT id, user_id, periodic_type, date, plan, completed FROM periodic_tasks WHERE id = $id"""
+  sql"""SELECT id, user_id, periodic_type, date, plan, completed FROM periodic_tasks WHERE id = ${id.toUUID}"""
     .query[PeriodicTask]
     .option
     .transact(xa)
@@ -200,7 +200,7 @@ def getByUser(userId: UserId): F[Vector[PeriodicTask]] =
 def update(item: PeriodicTask): F[Boolean] =
   sql"""UPDATE periodic_tasks
        SET user_id = ${item.userId}, periodic_type = ${item.periodicType}::PeriodicTypeEnum, date = ${item.date}, plan = ${item.plan}, completed = ${item.completed}
-       WHERE id = ${item.id}"""
+       WHERE id = ${item.id.toUUID}"""
     .update
     .run
     .transact(xa)
@@ -213,7 +213,7 @@ def update(item: PeriodicTask): F[Boolean] =
 
 ```dotty
 def delete(id: PeriodicTaskId): F[Boolean] =
-  sql"""DELETE FROM periodic_tasks WHERE id = $id"""
+  sql"""DELETE FROM periodic_tasks WHERE id = ${id.toUUID}"""
     .update.run.transact(xa).map(_ > 0)
 ```
 

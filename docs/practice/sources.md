@@ -167,7 +167,8 @@ final case class SettingsService[F[_]: MonadThrow](
     sectionService: SectionService[F],
     goalService: GoalService[F],
     taskService: TaskService[F],
-    sourcesService: SourcesService[F]
+    sourcesService: SourcesService[F],
+    periodicStepService: PeriodicStepService[F]
 ):
 
   def createTaskType(newItem: CreateTaskType): F[TaskTypeId] =
@@ -200,8 +201,11 @@ def deleteTaskType(id: TaskTypeId, userId: UserId): F[Boolean] =
         s"Невозможно удалить тип задачи с ID $id: тип используется в задачах"
       )
     ),
-    sourcesService.delete(id, userId).flatMap: _ =>
-      taskTypeService.delete(id)
+    taskTypeService.get(id).flatMap:
+      case Some(item) if item.userId == userId =>
+        sourcesService.delete(id, userId) *>
+          taskTypeService.delete(id)
+      case _ => false.pure[F]
   )
 ```
 
@@ -209,7 +213,9 @@ def deleteTaskType(id: TaskTypeId, userId: UserId): F[Boolean] =
 
 1. **`taskService.existsTaskType(id, userId)`** — проверяем, есть ли задачи с этим типом.
 2. **Если есть** — выбрасываем `IllegalArgumentException` с понятным сообщением. Это защита от «осиротевших» задач.
-3. **Если нет** — сначала удаляем источник (`sourcesService.delete`), потом сам тип (`taskTypeService.delete`).
+3. **Если нет** — загружаем тип задачи через `taskTypeService.get(id)`:
+   - Если тип существует **и** принадлежит пользователю — удаляем источник (`sourcesService.delete`), затем сам тип (`taskTypeService.delete`).
+   - Иначе — возвращаем `false`.
 
 **Почему сначала источник, потом тип?** Если бы мы сначала удалили тип, а потом источник, 
 между двумя операциями оставался бы «висячий» источник с несуществующим `task_type_id`. 
@@ -217,7 +223,7 @@ def deleteTaskType(id: TaskTypeId, userId: UserId): F[Boolean] =
 ## Сервис `DashboardService`
 
 `DashboardService` — это отдельный сервис для операций, связанных с дашбордом (главной страницей). 
-Он инкапсулирует работу с источниками, с периодическим задачами и с произвольными заметками пользователя:
+Он инкапсулирует работу с источниками задач:
 
 ```dotty
 final case class DashboardService[F[_]: MonadThrow](
@@ -280,7 +286,7 @@ onclick="switchTab('sources')"
 ### Модель карточки
 
 ```dotty
-final case class TaskTypeCard(
+final case class TableTaskTypeCard(
     id: TaskTypeId,
     name: TaskTypeName
 )
@@ -366,13 +372,12 @@ final case class OpenSourceHandler(
                 case Left(error) =>
                   Logger[IO].error(error).as(none)
           handleUserIOByTokenOpt(run)(token)
-            .map(_.getOrElse(View.base("План развития", NotFoundView).toString))
+            .map(_.getOrElse(NotFoundView))
 
         case None =>
           Logger[IO].error(
             "В cookies не найден токен пользователя"
-          ).as(View.base("План развития", NotFoundView).toString)
-end OpenSourceHandler
+          ).as(NotFoundView)
 ```
 
 **Пошаговый разбор:**
@@ -383,6 +388,8 @@ end OpenSourceHandler
 4. **`(maybeTaskType, maybeSource).mapN`** — если обе сущности найдены, собираем `SourceCard` и рендерим `View.source`. 
    Если хотя бы одна не найдена — `None`, и пользователь увидит 404.
 5. **`handleUserIOByTokenOpt`** — мягкая проверка токена: невалидный токен не роняет приложение, а приводит к 404.
+
+`NotFoundView` — готовая строка HTML, объединяющая `View.base("План развития", ...)` и `View.notFound()`. Используется повторно во всех хэндлерах дашборда.
 
 ## Страница источника
 

@@ -45,20 +45,40 @@ val getTaskCreate = Route(
 ```dotty
 final case class CreateTaskModalHandler(
     middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO]
+    settingsService: SettingsService[IO],
+    taskLifecycleService: TaskLifecycleService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.getTaskCreate.handleIO:
       (tab: String, authorization: Authorization) =>
         handleUserIO: (user, token) =>
-          getViewEmptyCreateTaskModal(
-            settingsService = settingsService,
-            userId = user.id,
-            request = CreateTaskRequest.empty(
+          val ordinalIO: IO[Ordinal] =
+            TaskStatus.find(tab) match
+              case Some(status)
+                  if status == TaskStatus.InProgress ||
+                    status == TaskStatus.Planned =>
+                taskLifecycleService.taskService
+                  .getAll(
+                    userId = user.id,
+                    maybeStatus = status.some,
+                    maybeTaskType = none,
+                    maybeSectionId = none
+                  )
+                  .map(_.map(_.ordinal.next).maxOption.getOrElse(Ordinal.Min))
+              case _ => Ordinal.Max.pure[IO]
+
+          ordinalIO.flatMap: ordinal =>
+            val request = CreateTaskRequest.empty(
               token = token.value,
-              tab = tab
+              tab = tab,
+              ordinal = ordinal.value
             )
-          )
+
+            getViewEmptyCreateTaskModal(
+              settingsService = settingsService,
+              userId = user.id,
+              request = request
+            )
         .apply(authorization)
 ```
 
@@ -67,7 +87,16 @@ final case class CreateTaskModalHandler(
 1. **`handleUserIO: (user, token) => ...`** — стандартная проверка токена через
    `AuthorizationHandler`. После успешной проверки получаем `user` и `token`.
 
-2. **`getViewEmptyCreateTaskModal(...)`** — формирует HTML модального окна, передавая:
+2. **Вычисление порядкового номера (`ordinalIO`)** — динамически определяется
+   для вкладок «В работе» и «Запланировано»: берётся максимальный `ordinal`
+   среди существующих задач этого статуса и инкрементируется через `ordinal.next`
+   (или `Ordinal.Min`, если задач ещё нет). Для «Базы знаний» используется
+   `Ordinal.Max` — новые задачи попадают в конец.
+
+3. **`CreateTaskRequest.empty(token, tab, ordinal.value)`** — формирует пустой
+   запрос с уже вычисленным порядковым номером.
+
+4. **`getViewEmptyCreateTaskModal(...)`** — формирует HTML модального окна, передавая:
   - `request` — значение полей модального окна по умолчанию.
 
 ### Формирование модального окна
@@ -135,30 +164,32 @@ final case class CreateTaskRequest(
     sectionId: Int,
     goalId: Int,
     ordinal: Int,
+    ordinalShift: Option[String],
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
     information: String,
     durationValue: Long,
     durationUnit: TimeUnit
-)
+) derives FormCodec
 ```
 
 **Поля:**
 
-| Поле            | Назначение                                                                       |
-| --------------- | -------------------------------------------------------------------------------- |
-| `token`         | JWT-токен из скрытого поля формы                                                 |
-| `tab`           | Вкладка, с которой создаётся задача (`in-progress`, `planned`, `knowledge-base`) |
-| `name`          | Название задачи                                                                  |
-| `taskTypeId`    | ID типа задачи                                                                   |
-| `sectionId`     | ID раздела                                                                       |
-| `goalId`        | ID цели                                                                          |
-| `ordinal`       | Порядковый номер                                                                 |
-| `startDate`     | Дата начала (опционально)                                                        |
-| `endDate`       | Дата окончания (опционально)                                                     |
-| `information`   | Описание                                                                         |
-| `durationValue` | Числовое значение продолжительности                                              |
-| `durationUnit`  | Единица измерения (`MINUTES`, `HOURS`, `DAYS`)                                   |
+| Поле             | Назначение                                                                       |
+| ---------------- | -------------------------------------------------------------------------------- |
+| `token`          | JWT-токен из скрытого поля формы                                                 |
+| `tab`            | Вкладка, с которой создаётся задача (`in-progress`, `planned`, `knowledge-base`) |
+| `name`           | Название задачи                                                                  |
+| `taskTypeId`     | ID типа задачи                                                                   |
+| `sectionId`      | ID раздела                                                                       |
+| `goalId`         | ID цели                                                                          |
+| `ordinal`        | Порядковый номер                                                                 |
+| `ordinalShift`   | Флаг сдвига порядковых номеров (`"on"`, если чекбокс отмечен)                    |
+| `startDate`      | Дата начала (опционально)                                                        |
+| `endDate`        | Дата окончания (опционально)                                                     |
+| `information`    | Описание                                                                         |
+| `durationValue`  | Числовое значение продолжительности                                              |
+| `durationUnit`   | Единица измерения (`MINUTES`, `HOURS`, `DAYS`)                                   |
 
 **Почему `durationValue` и `durationUnit` — отдельные поля?**
 
@@ -169,25 +200,29 @@ final case class CreateTaskRequest(
 ### Метод `empty`
 
 ```dotty
-def empty(token: String, tab: String): CreateTaskRequest = CreateTaskRequest(
-  token = token,
-  tab = tab,
-  name = "",
-  taskTypeId = 0,
-  sectionId = 0,
-  goalId = 0,
-  ordinal = 1000,
-  startDate = none,
-  endDate = none,
-  information = "",
-  durationValue = 30,
-  durationUnit = TimeUnit.MINUTES
-)
+def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
+  CreateTaskRequest(
+    token = token,
+    tab = tab,
+    name = "",
+    taskTypeId = 0,
+    sectionId = 0,
+    goalId = 0,
+    ordinal = ordinal,
+    ordinalShift = none,
+    startDate = none,
+    endDate = none,
+    information = "",
+    durationValue = 30,
+    durationUnit = TimeUnit.MINUTES
+  )
 ```
 
 Возвращает «пустой» запрос со значениями по умолчанию. 
 Используется при первом открытии формы, когда `errorRequest` отсутствует. 
-Значение `ordinal = 1000` специально большое — новые задачи попадают в конец списка.
+Порядковый номер (`ordinal`) не фиксирован, а вычисляется в `CreateTaskModalHandler`:
+для вкладок «В работе» и «Запланировано» — это следующий номер после последнего,
+а для «Базы знаний» — `Ordinal.Max`, чтобы новая задача попала в конец списка.
 
 ## Шаблон `createTask.scala.html`
 
@@ -459,15 +494,29 @@ final case class CreateTaskHandler(
         (user, jwtToken) =>
           CreateTask.parse(request, user.id) match
             case Validated.Valid(task) =>
-              taskLifecycleService
-                .create(task)
-                .flatMap: _ =>
-                  getViewAfterCreateTask(
-                    settingsService = settingsService,
+              val runReorderTasks: IO[Boolean] =
+                if request.ordinalShift.contains("on") then
+                  taskLifecycleService.reorderTasks(
                     userId = user.id,
-                    token = jwtToken,
-                    tab = request.tab
+                    ordinal = task.ordinal,
+                    status = task.status
                   )
+                else IO(true)
+
+              val run: IO[String] =
+                for
+                  _    <- runReorderTasks
+                  _    <- taskLifecycleService.create(task)
+                  view <-
+                    getViewAfterCreateTask(
+                      settingsService = settingsService,
+                      userId = user.id,
+                      token = jwtToken,
+                      tab = request.tab
+                    )
+                yield view
+
+              run
                 .recoverWith:
                   case ex: IllegalArgumentException =>
                     getViewCreateTaskModalWithError(
@@ -493,17 +542,21 @@ final case class CreateTaskHandler(
 
 2. **`CreateTask.parse(request, user.id)`** — валидация и преобразование запроса
    в доменный объект `CreateTask`. Возвращает `ValidatedNec[String, CreateTask]`:
-    - **`Valid`** — все поля корректны, задача готова к созданию.
-    - **`Invalid`** — есть ошибки валидации (пустое имя, отрицательный ordinal и т.д.).
+   - **`Valid`** — все поля корректны, задача готова к созданию.
+   - **`Invalid`** — есть ошибки валидации (пустое имя, отрицательный ordinal и т.д.).
 
 3. **Ветка `Valid`:**
-    - Вызываем `taskLifecycleService.create(task)` — это метод, который выполняет
-      **дополнительную валидацию** (проверка существования типа, раздела, цели,
-      проверка дат для статуса) и сохраняет задачу в БД.
-    - **Успех** → возвращаем `getViewAfterCreateTask`. Это
-      «закрытое» модальное окно с кнопкой «Обновить список задач».
-    - **Ошибка** (`IllegalArgumentException`) → возвращаем то же модальное окно
-      с сохранёнными данными и сообщением об ошибке (`getViewCreateTaskModalWithError`).
+   - **`runReorderTasks`** — если в форме был отмечен чекбокс сдвига
+     (`request.ordinalShift.contains("on")`), вызывается
+     `taskLifecycleService.reorderTasks`, который сдвигает порядковые номера
+     существующих задач, освобождая место под новую. Иначе — `IO(true)` (без сдвига).
+   - `taskLifecycleService.create(task)` — метод, который выполняет
+     **дополнительную валидацию** (проверка существования типа, раздела, цели,
+     проверка дат для статуса) и сохраняет задачу в БД.
+   - **Успех** → возвращаем `getViewAfterCreateTask`. Это
+     «закрытое» модальное окно с кнопкой «Обновить список задач».
+   - **Ошибка** (`IllegalArgumentException`) → возвращаем то же модальное окно
+     с сохранёнными данными и сообщением об ошибке (`getViewCreateTaskModalWithError`).
 
 4. **Ветка `Invalid`:** возвращаем модальное окно с ошибками валидации, объединёнными
    через `"; "`.
@@ -529,7 +582,8 @@ def getViewAfterCreateTask(
     request =
       CreateTaskRequest.empty(
         token = token.value,
-        tab = tab
+        tab = tab,
+        ordinal = Ordinal.Max.value
       ),
     errorMessage = none
   )
@@ -622,7 +676,10 @@ val home =
 ```dotty
 final case class HomeHandler(
     middleware: JwtAuthMiddleware[IO, UserInfo],
-    taskLifecycleService: TaskLifecycleService[IO]
+    taskLifecycleService: TaskLifecycleService[IO],
+    periodicTaskLifecycleService: PeriodicTaskLifecycleService[IO],
+    notesService: NotesService[IO],
+    historyService: HistoryService[IO]
 )(using Logger[IO]):
   private val defaultPage = View.login(None).toString
 
@@ -634,6 +691,9 @@ final case class HomeHandler(
             .flatMap: (user, token) =>
               getViewWelcome(
                 taskLifecycleService = taskLifecycleService,
+                periodicTaskLifecycleService = periodicTaskLifecycleService,
+                notesService = notesService,
+                historyService = historyService,
                 user = user,
                 jwtToken = token,
                 tab = tab
@@ -642,7 +702,8 @@ final case class HomeHandler(
               case ex: AuthorizationException =>
                 Logger[IO].error(ex)(
                   s"Ошибка при парсинге токена: ${ex.getMessage}"
-                ).as(defaultPage)
+                )
+                  .as(defaultPage)
               case ex =>
                 Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}")
                   .as(defaultPage)
@@ -653,8 +714,8 @@ final case class HomeHandler(
 **Пошаговый разбор:**
 
 1. **Обработка ошибок:**
-    - `AuthorizationException` → логируем и возвращаем форму логина.
-    - Любая другая ошибка → логируем и возвращаем форму логина.
+   - `AuthorizationException` → логируем и возвращаем форму логина.
+   - Любая другая ошибка → логируем и возвращаем форму логина.
 2. **Если токена нет** — сразу возвращаем форму логина.
 
 **Почему `HomeHandler` отличается от `InitialHandler`?**
@@ -689,7 +750,8 @@ final case class HomeHandler(
 4. **htmx вставляет HTML** в `#modal-container`. Пользователь видит форму.
 5. **Пользователь заполняет форму** и нажимает «Создать задачу».
 6. **htmx отправляет POST** на `/tasks` с данными формы.
-7. **`CreateTaskHandler`** валидирует запрос, вызывает `taskLifecycleService.create`,
+7. **`CreateTaskHandler`** валидирует запрос, при отмеченном чекбоксе сдвига вызывает
+   `taskLifecycleService.reorderTasks`, затем `taskLifecycleService.create`,
    создаёт задачу в БД.
 8. **При успехе** возвращается «закрытое» модальное окно с кнопкой
    «Обновить список задач».

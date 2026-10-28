@@ -127,14 +127,22 @@ object Dependencies {
   // ...
 
   object iron {
-    private val version = "3.3.2"
-    val core = "io.github.iltotore" %% "iron" % version
+    private val version = "3.4.1"
+    val cats            = "io.github.iltotore" %% "iron-cats"       % version
+    val circe           = "io.github.iltotore" %% "iron-circe"      % version
+    val core            = "io.github.iltotore" %% "iron"            % version
+    val doobie          = "io.github.iltotore" %% "iron-doobie"     % version
+    val pureconfig      = "io.github.iltotore" %% "iron-pureconfig" % version
   }
 
   val pdpLibs: Seq[ModuleID] =
     Seq(
       cats.catsEffect,
-      iron.core
+      iron.cats,
+      iron.circe,
+      iron.core,
+      iron.doobie,
+      iron.pureconfig
     )
 
   // ...
@@ -178,11 +186,17 @@ trait PdpUUID extends RefinedType[String, ValidUUID]:
   
 type Ordinal = Ordinal.T
 object Ordinal extends RefinedType[Int, Positive]:
+  val Min: T = Ordinal(1)
+
   val Max: T = Ordinal(1000)
 
   given Ordering[Ordinal] with
     def compare(x: Ordinal, y: Ordinal): Int =
-      x.value - y.value          
+      x.value - y.value
+
+  extension (ordinal: Ordinal)
+    def next: Ordinal =
+      Ordinal.applyUnsafe(ordinal.value + 1)          
 ```
 
 Это обычный [**case class**](https://docs.scala-lang.org/ru/tour/case-classes.html):

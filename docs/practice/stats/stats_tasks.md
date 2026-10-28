@@ -60,7 +60,7 @@ private[stats] def calculateProgress(
 ### Прогноз даты завершения
 
 ```dotty
-private[stats] def calculatePlannedCompletionDate(
+private[stats] def calculatePlannedEndDate(
     completedTasks: Vector[TaskResult],
     restTasks: Vector[TaskResult]
 ): LocalDate =

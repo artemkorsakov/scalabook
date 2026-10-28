@@ -115,12 +115,9 @@ private[services] class MockUsersService[F[_]: Sync](
     users: Ref[F, Map[UserId, User]]
 ) extends UsersService[F]:
   def create(username: UserName, passwordHash: EncryptedPassword): F[UserId] =
-    for
-      uuid <- GenUUID[F].make
-      id   = UserId(uuid)
-      user = User(id, username, passwordHash)
-      _ <- users.update(_ + (id -> user))
-    yield id
+    val id   = UserId(UUID.randomUUID())
+    val user = User(id, username, passwordHash)
+    users.update(_ + (id -> user)).as(id)
 
   def get(id: UserId): F[Option[User]] =
     users.get.map(_.values.find(_.id == id))
@@ -200,10 +197,10 @@ private[pdp] class PostgreSQLUsersService[F[_]: MonadCancelThrow](
 ```dotty
 trait AuthService[F[_]]:
   /** Регистрация нового пользователя */
-  def newUser(username: UserName, password: Password): F[JwtToken]
+  def newUser(username: UserName, password: Password): F[(JwtToken, UserId)]
 
   /** Вход существующего пользователя в систему */
-  def login(username: UserName, password: Password): F[JwtToken]
+  def login(username: UserName, password: Password): F[(JwtToken, UserId)]
 
   /** Выход пользователя из системы (инвалидация токена) */
   def logout(token: JwtToken, username: UserName): F[Boolean]
@@ -228,7 +225,7 @@ JWT токены используются для поддержания поль
 
 ```dotty
 object redis4cats {
-  private val version = "2.0.3"
+  private val version = "2.0.6"
   val effects         = "dev.profunktor" %% "redis4cats-effects"  % version
   val log4cats        = "dev.profunktor" %% "redis4cats-log4cats" % version
 }
@@ -312,7 +309,9 @@ object TokenConfig:
 
 /** `Config` — корневой объект конфигурации. */
 final case class Config(
-    localization: LocalizationConfig,
+    httpServerConfig: HttpServerConfig,
+    postgresql: PostgreSQLConfig,
+    redis: RedisConfig,
     token: TokenConfig
 ) derives ConfigReader
 ```

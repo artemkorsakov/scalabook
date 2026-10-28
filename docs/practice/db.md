@@ -216,7 +216,7 @@ private[services] class MockTaskTypeService[F[_]: Monad](
    * Создает новый тип задачи.
    * Атомарно: 1) берет следующий ID, 2) инкрементирует счетчик, 3) сохраняет запись.
    */
-  def create(newItem: CreateTaskType): F[UserTypeId] =
+  def create(newItem: CreateTaskType): F[TaskTypeId] =
     for
       // Получаем текущий ID и увеличиваем счетчик для следующего вызова.
       // applyUnsafe здесь безопасен, так как мы знаем, 

@@ -35,12 +35,12 @@ def make[F[_]: MonadThrow](
 Метод реализует полный цикл создания учётной записи:
 
 ```dotty
-def newUser(username: UserName, password: Password): F[JwtToken] =
+def newUser(username: UserName, password: Password): F[(JwtToken, UserId)] =
   // Шаг 1: Проверка уникальности имени пользователя
   usersService.find(username).flatMap:
     case Some(_) =>
       // Если пользователь уже существует - сигнализируем об ошибке
-      UserNameInUse(username).raiseError[F, JwtToken]
+      UserNameInUse(username).raiseError[F, (JwtToken, UserId)]
 
     case None =>
       // Шаг 2: Шифрование пароля с обработкой возможных ошибок
@@ -69,7 +69,7 @@ def newUser(username: UserName, password: Password): F[JwtToken] =
 
         // 3.6 Сохраняем обратную связку username -> текущий токен
         _ <- redis.setEx(username.show, token.value, tokenExpiration)
-      yield token       
+      yield (token, userId)
 ```
 
 **Ключевые моменты регистрации:**
@@ -86,16 +86,16 @@ def newUser(username: UserName, password: Password): F[JwtToken] =
 Метод аутентификации с проверкой учётных данных:
 
 ```dotty
-def login(username: UserName, password: Password): F[JwtToken] =
+def login(username: UserName, password: Password): F[(JwtToken, UserId)] =
   // Шаг 1: Поиск пользователя в БД
   usersService.find(username).flatMap:
     case None =>
       // Пользователь не найден - ошибка аутентификации
-      UserNotFound(username).raiseError[F, JwtToken]
+      UserNotFound(username).raiseError[F, (JwtToken, UserId)]
 
     case Some(user) if !crypto.check(password, user.passwordHash) =>
       // Пароль не совпадает с хешем - ошибка аутентификации
-      InvalidPassword(user.username).raiseError[F, JwtToken]
+      InvalidPassword(user.username).raiseError[F, (JwtToken, UserId)]
 
     case Some(user) =>
       // Шаг 2: Проверяем наличие активной сессии
@@ -103,7 +103,7 @@ def login(username: UserName, password: Password): F[JwtToken] =
         case Some(t) =>
           // У пользователя уже есть активная сессия - возвращаем существующий токен
           // Это позволяет избежать множественных сессий для одного пользователя
-          JwtToken(t).pure[F]
+          (JwtToken(t), user.id).pure[F]
 
         case None =>
           // Шаг 3: Создаём новую сессию
@@ -114,7 +114,8 @@ def login(username: UserName, password: Password): F[JwtToken] =
               user.asJson.noSpaces,
               tokenExpiration
             ) *>
-              redis.setEx(username.show, token.value, tokenExpiration)        
+              redis.setEx(username.show, token.value, tokenExpiration)
+          .map(token => (token, user.id))
 ```
 
 **Логика аутентификации:**
@@ -260,58 +261,19 @@ object SharedResources extends GlobalResource:
 
 ```dotty
 class AuthServiceSuite(global: GlobalRead) extends IOSuite:
-  // Настройка логирования - отключаем для чистоты вывода тестов
-  given Logger[IO] = NoOpLogger[IO]
+  private val jwtClaim: JwtClaim = JwtClaim("test")
 
-  // Конфигурационные параметры для тестов
-  private val tokenExpiration: FiniteDuration = 30.minutes
-  private val jwtAccessTokenKey: JwtAccessTokenKeyConfig =
-    JwtAccessTokenKeyConfig("bar")  // Секретный ключ для подписи
-  private val jwtClaim: JwtClaim = JwtClaim("test")  // Тестовый claim
-
-  // Тип разделяемого ресурса - кортеж из двух сервисов
   type Res = (AuthService[IO], UsersAuthService[IO, UserInfo])
 
-  /** Инициализация разделяемого ресурса для всех тестов
-    * Создаёт и настраивает все зависимости
-    */
   override def sharedResource: Resource[IO, Res] =
     for
-      // Получаем уже запущенный Redis контейнер из глобального контекста
-      redisContainer <- global.getOrFailR[RedisContainer](RedisKey)
-
-      // Создаем клиент Redis
-      redis          <- Redis[IO].utf8(redisContainer.redisUri)
-
-      // Очищаем Redis перед тестами
-      _              <- Resource.eval(redis.flushAll)
-
-      // Получаем реальный сервис БД (PostgreSQL) из общего ресурса
-      usersService <- global.getOrFailR[PostgreSQLUsersService](UsersServiceKey)
-
-      // Создаем компонент для работы с JWT
-      jwtExpire     <- Resource.eval(JwtExpire.make[IO])
-      tokens        <- Resource.eval(
-        Tokens.make[IO](jwtExpire, jwtAccessTokenKey, tokenExpiration).pure[IO]
-      )
-
-      // Создаем криптографический сервис
-      crypto <- Resource.eval(Crypto.make[IO])
-
-      // Собираем всё вместе в конечные сервисы
-    yield (
-      AuthService.make[IO](
-        tokenExpiration = tokenExpiration,
-        tokens = tokens,
-        usersService = usersService,
-        redis = redis,
-        crypto = crypto
-      ),
-      UsersAuthService.make[IO](redis)
-    )
-    end for
-  end sharedResource
+      authServices <- global.getOrFailR[AuthServices](AuthServicesKey)
+    yield (authServices.authService, authServices.usersAuthService)
+  end for
+end sharedResource
 ```
+
+Общие ресурсы `AuthServices` (финальный `AuthService` и `UsersAuthService`) создаются один раз в `SharedResources` для всех тестов:
 
 ## Детальное описание тестов
 
@@ -348,11 +310,11 @@ test("UsersAuthService.findUser should return an user if it exists"):
 
     for
       // Регистрация нового пользователя
-      newUserToken    <- authService.newUser(username, password)
-      maybeNewUser    <- usersAuthService.findUser(newUserToken)(jwtClaim)
+      (newUserToken, userId1) <- authService.newUser(username, password)
+      maybeNewUser <- usersAuthService.findUser(newUserToken)(jwtClaim)
 
       // Вход существующего пользователя
-      loggedUserToken <- authService.login(username, password)
+      (loggedUserToken, userId2) <- authService.login(username, password)
       maybeLoggedUser <- usersAuthService.findUser(loggedUserToken)(jwtClaim)
 
       // Выход из системы
@@ -362,7 +324,9 @@ test("UsersAuthService.findUser should return an user if it exists"):
       maybeLoggedOutNewUser <-
         usersAuthService.findUser(newUserToken)(jwtClaim)
     yield whenSuccess(maybeNewUser) { user =>
-      expect.same(username, user.username)
+      expect.same(username, user.username) |+|
+        expect.same(userId1, user.id) |+|
+        expect.same(userId2, user.id)
     } |+|
       whenSuccess(maybeLoggedUser) { user =>
         expect.same(username, user.username)
@@ -393,21 +357,19 @@ test("UsersAuthService.newUser should not create an user with existed username")
 
     for
       // Первая регистрация - успешна
-      newUserToken  <- authService.newUser(username, password)
-      maybeNewUser  <- usersAuthService.findUser(newUserToken)(jwtClaim)
+      (newUserToken, _) <- authService.newUser(username, password)
+      maybeNewUser      <- usersAuthService.findUser(newUserToken)(jwtClaim)
 
       // Попытка повторной регистрации с тем же именем
-      existedUser   <- authService.newUser(username, password2).attempt
+      existedUser       <- authService.newUser(username, password2).attempt
 
       // Проверка что старый пользователь не изменился
-      maybeNewUser2 <- usersAuthService.findUser(newUserToken)(jwtClaim)
+      maybeNewUser2     <- usersAuthService.findUser(newUserToken)(jwtClaim)
     yield matches((maybeNewUser, maybeNewUser2)) {
       case (Some(user), Some(user2)) =>
-        expect.all(
-          user.id == user2.id,             // ID не изменился
-          user.username == user2.username, // Имя не изменилось
-          existedUser == Left(UserNameInUse(username)) // Получили правильную ошибку
-        )
+        expect.same(user2.id, user.id) &&          // ID не изменился
+          expect.same(user2.username, user.username) && // Имя не изменилось
+          expect.same(existedUser, Left(UserNameInUse(username))) // Правильная ошибка
     }
 ```
 
@@ -475,14 +437,16 @@ test("UsersAuthService.login should login after logout"):
     val password = Password("forth_password")
 
     for
-      token     <- authService.newUser(username, password)
-      _         <- authService.login(username, password)
-      status    <- authService.logout(token, username)
-      newToken  <- authService.login(username, password)
-      maybeUser <- usersAuthService.findUser(newToken)(jwtClaim)
+      (token, userId1)    <- authService.newUser(username, password)
+      _                   <- authService.login(username, password)
+      status              <- authService.logout(token, username)
+      (newToken, userId2) <- authService.login(username, password)
+      maybeUser           <- usersAuthService.findUser(newToken)(jwtClaim)
     yield whenSuccess(maybeUser): user =>
       expect.same(username, user.username) |+|
-        expect(status)
+        expect(status) |+|
+        expect.same(userId1, user.id) |+|
+        expect.same(userId2, user.id)
 ```
 
 **Проверяет:**

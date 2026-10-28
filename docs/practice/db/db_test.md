@@ -55,19 +55,18 @@ object Dependencies {
 
   // Конфигурация библиотек для логирования
   object log4cats {
-    private val version = "2.7.1"
+    private val version = "2.8.0"
     
     val slf4j   = "org.typelevel" %% "log4cats-slf4j"  % version 
-    val logback = "ch.qos.logback" % "logback-classic" % "1.5.22"
+    val logback = "ch.qos.logback" % "logback-classic" % "1.6.6"
   }
 
-  // Блок для зависимостей Testcontainers
+  // Блок для зависимостей Testcontainers (testcontainers-scala)
   object testcontainers {
-    private val version = "1.21.4" 
+    private val version = "0.44.1" 
 
-    // Специфичный модуль для PostgreSQL, 
-    // содержащий предварительно настроенные конфигурации контейнеров
-    val postgres = "org.testcontainers" % "postgresql" % version
+    val postgres = "com.dimafeng" %% "testcontainers-scala-postgresql" % version
+    val redis    = "com.dimafeng" %% "testcontainers-scala-redis"      % version
   }
 
   // ... другие зависимости ...
@@ -79,6 +78,7 @@ object Dependencies {
       log4cats.slf4j,         
       doobie.postgres,        
       testcontainers.postgres,
+      testcontainers.redis,
       weaver.cats             
     )
     // модификатор `% Test` гарантирует, что эти библиотеки не будут включены 
@@ -97,85 +97,145 @@ object Dependencies {
 что позволяет инициализировать общие ресурсы один раз перед всеми тестами и корректно освободить их после завершения.
 
 ```dotty
-// pdp/src/test/scala/ru/scalabook/pdp/services/postgresql/SharedResources.scala
-package ru.scalabook.pdp.services.postgresql
+// pdp/src/test/scala/ru/scalabook/pdp/services/SharedResources.scala
+package ru.scalabook.pdp.services
 
 ...
 
 object SharedResources extends GlobalResource:
-  // Контейнер для сервисов
-  final case class TasksServices(
+  final case class AuthServices(
+      authService: AuthService[IO],
+      usersAuthService: UsersAuthService[IO, UserInfo],
+      usersService: PostgreSQLUsersService[IO],
+      middleware: JwtAuthMiddleware[IO, UserInfo]
+  )
+
+  final case class PDPServices(
       taskTypeService: PostgreSQLTaskTypeService[IO],
       sectionService: PostgreSQLSectionService[IO],
       goalService: PostgreSQLGoalService[IO],
-      taskService: PostgreSQLTaskService[IO]
+      taskService: PostgreSQLTaskService[IO],
+      sourcesService: PostgreSQLSourcesService[IO],
+      notesService: PostgreSQLNotesService[IO],
+      periodicStepService: PostgreSQLPeriodicStepService[IO],
+      periodicTaskService: PostgreSQLPeriodicTaskService[IO],
+      historyService: PostgreSQLHistoryService[IO]
   )
-  
+
   // Настройка системы логирования для тестовой среды
   private given loggerFactory: LoggerFactory[IO] = Slf4jFactory.create[IO]
   private given log: Logger[IO]                  = loggerFactory.getLogger
 
-  // Ключ для доступа к общим ресурсам (сервисам) из глобального хранилища Weaver
+  // Ключи для доступа к общим ресурсам из глобального хранилища Weaver
   val TasksServiceKey: Option[String] = "tasksServices".some
+  val AuthServicesKey: Option[String] = "authServices".some
+  val UserInfoKey: Option[String]     = "userInfo".some
 
   // Кастомный обработчик логирования SQL-запросов, выполняемых Doobie.
-  // Позволяет видеть все выполняемые запросы в логах тестов, что упрощает отладку.
   private val sqlLogHandler: LogHandler[IO] = (logEvent: LogEvent) =>
     log.info(s"${logEvent.sql}")
 
   // Основной метод, определяющий общие ресурсы для всех тестов.
-  // Weaver вызывает этот метод один раз перед запуском всех тестовых наборов.
   def sharedResources(global: GlobalWrite): Resource[IO, Unit] =
     for
       // 1. Запуск контейнера PostgreSQL.
-      container <- postgresResource()
+      postgresContainer <- postgresResource()
       // 2. Создание Transactor'a (абстракции соединения с БД) Doobie.
-      transactor = getTransactor(container)
-      // 3. Выполнение миграций базы данных (создание схемы, таблиц, индексов).
+      transactor = getTransactor(postgresContainer)
+      // 3. Выполнение миграций базы данных.
       _ <- Resource.eval(migration(transactor))
-      // 4. Создание экземпляров сервисов, инъектированных созданным Transactor'ом.
-      taskTypeService = new PostgreSQLTaskTypeService[IO](transactor)
-      sectionService  = new PostgreSQLSectionService[IO](transactor)
-      goalService     = new PostgreSQLGoalService[IO](transactor)
-      taskService     = new PostgreSQLTaskService[IO](transactor)
-      // 5. Регистрация каждого сервиса в глобальном хранилище.
+      // 4. Создание сервисов доступа к данным, инъектированных Transactor'ом.
+      taskTypeService     = new PostgreSQLTaskTypeService[IO](transactor)
+      sectionService      = new PostgreSQLSectionService[IO](transactor)
+      goalService         = new PostgreSQLGoalService[IO](transactor)
+      taskService         = new PostgreSQLTaskService[IO](transactor)
+      historyService      = new PostgreSQLHistoryService[IO](transactor)
+      sourcesService      = new PostgreSQLSourcesService[IO](transactor)
+      notesService        = new PostgreSQLNotesService[IO](transactor)
+      periodicStepService = new PostgreSQLPeriodicStepService[IO](transactor)
+      periodicTaskService = new PostgreSQLPeriodicTaskService[IO](transactor)
+      // 5. Регистрация сервисов задач в глобальном хранилище.
       _ <- global.putR(
-        TasksServices(
-          taskTypeService,
-          sectionService,
-          goalService,
-          taskService
+        PDPServices(
+          taskTypeService = taskTypeService,
+          sectionService = sectionService,
+          goalService = goalService,
+          taskService = taskService,
+          sourcesService = sourcesService,
+          notesService = notesService,
+          periodicStepService = periodicStepService,
+          periodicTaskService = periodicTaskService,
+          historyService = historyService
         ),
         TasksServiceKey
       )
+      // 6. Настройка сервисов авторизации (usersService + Redis + JWT).
+      usersService = new PostgreSQLUsersService[IO](transactor)
+      redisContainer <- redisResource()
+      redis          <- Redis[IO].utf8(redisContainer.redisUri)
+      _              <- Resource.eval(redis.flushAll)
+      jwtExpire      <- Resource.eval(JwtExpire.make[IO])
+      tokens         <- Resource.eval(
+        Tokens.make[IO](jwtExpire, jwtAccessTokenKey, tokenExpiration).pure[IO]
+      )
+      crypto <- Resource.eval(Crypto.make[IO])
+      authService = AuthService.make[IO](
+        tokenExpiration = tokenExpiration,
+        tokens = tokens,
+        usersService = usersService,
+        redis = redis,
+        crypto = crypto
+      )
+      usersAuthService = UsersAuthService.make[IO](redis)
+      username         = UserName("TestUserName")
+      userId <-
+        Resource.eval(usersService.create(
+          username,
+          EncryptedPassword("password")
+        ))
+      userInfo = UserInfo(id = userId, username = username)
+      _ <- global.putR(userInfo, UserInfoKey)
+      _ <- global.putR(
+        AuthServices(
+          authService,
+          usersAuthService,
+          usersService,
+          Kleisli.pure((userInfo, JwtToken(token)))
+        ),
+        AuthServicesKey
+      )
     yield () // Ресурс возвращает Unit, так как сервисы помещены в глобальное хранилище.
+  end for
+  end sharedResources
 
   private def postgresResource(): Resource[IO, PostgreSQLContainer] =
     Resource.make {
-      // Действие по приобретению ресурса: создание и запуск контейнера.
       IO {
-        // Используется официальный образ PostgreSQL 18
         val container = PostgreSQLContainer(dockerImageNameOverride =
           DockerImageName.parse("postgres:18")
         )
-        // Блокирующий вызов, запускающий контейнер
-        container.start() 
+        container.start()
         container
       }
-    } { container =>
-      // Действие по освобождению ресурса: остановка контейнера.
-      // Гарантированно выполняется даже в случае неудачи тестов.
-      IO(container.stop())
-    }
+    }(container => IO(container.stop()))
 
-  private def getTransactor(container: PostgreSQLContainer[Nothing])
+  private def redisResource(): Resource[IO, RedisContainer] =
+    Resource.make {
+      IO {
+        val container = RedisContainer()
+        container.start()
+        container
+      }
+    }(container => IO(container.stop()))
+
+  private def getTransactor(container: PostgreSQLContainer)
       : Aux[[x] =>> IO[x], Unit] =
     Transactor.fromDriverManager[[x] =>> IO[x]](
-      driver = "org.postgresql.Driver", // JDBC-драйвер PostgreSQL
-      url = container.getJdbcUrl,       // Динамический URL, сгенерированный Testcontainers
-      user = container.getUsername,     // Имя пользователя по умолчанию (обычно "test")
-      password = container.getPassword, // Пароль по умолчанию (обычно "test")
-      logHandler = Some(sqlLogHandler)  // Подключение логгера SQL-запросов
+      driver = "org.postgresql.Driver",
+      url = container.jdbcUrl,
+      user = container.username,
+      password = container.password,
+      logHandler = Some(sqlLogHandler)
     )
 
   private def migration(transactor: Aux[[x] =>> IO[x], Unit]): IO[Boolean] =
@@ -199,118 +259,185 @@ package ru.scalabook.pdp.services.postgresql
 // Параметр `global: GlobalRead` предоставляется Weaver 
 // и дает доступ к ранее зарегистрированным общим ресурсам.
 class PostgreSQLTaskTypeServiceSuite(global: GlobalRead) extends IOSuite:
-  // Тип Res определяет, какой именно ресурс будет использоваться 
-  // всеми тестами этого набора.
-  override type Res = PostgreSQLTaskTypeService[IO]
+  // Тип Res — кортеж из сервиса и двух id пользователей,
+  // которые используются тестами для изоляции данных.
+  override type Res =
+    (
+        service: PostgreSQLTaskTypeService[IO],
+        firstUserId: UserId,
+        secondUserId: UserId
+    )
 
-  // Метод, который Weaver использует для получения общего ресурса.
-  // Ресурс инициализируется один раз (перед первым тестом) и используется повторно.
+  // Weaver вызывает этот метод один раз (перед первым тестом).
+  // Извлекает сервисы из глобального хранилища и создаёт двух тестовых
+  // пользователей.
   override def sharedResource: Resource[IO, Res] =
-    global.getOrFailR[TasksServices](TasksServiceKey).map(_.taskTypeService)
+    for
+      authServices <- global.getOrFailR[AuthServices](AuthServicesKey)
+      pdpServices  <- global.getOrFailR[PDPServices](TasksServiceKey)
+      usersService = authServices.usersService
+      firstUserId <- Resource.eval(
+        usersService.create(
+          username = UserName("first_type_user"),
+          passwordHash = EncryptedPassword("password")
+        )
+      )
+      secondUserId <- Resource.eval(
+        usersService.create(
+          username = UserName("second_type_user"),
+          passwordHash = EncryptedPassword("password")
+        )
+      )
+    yield (pdpServices.taskTypeService, firstUserId, secondUserId)
 
   // Пример теста на создание сущности.
-  // Каждый тест - это функция, которая получает экземпляр `service` (общий ресурс).
-  test("PostgreSQLTaskService.create"): service =>
+  test("PostgreSQLTaskService.create"): resource =>
     val newType = CreateTaskType(
       name = TaskTypeName("Check create"),
-      userId = UserId(UUID.randomUUID())
+      userId = resource.firstUserId
     )
     for
-      // Выполнение операции создания и получение сгенерированного ID.
-      id            <- service.create(newType)
-      // Попытка получения только что созданной сущности по ID.
-      maybeTaskType <- service.get(id)
-    // Комбинатор `yield` возвращает assertion (проверку).
-    yield 
-      // `whenSuccess` - безопасное извлечение Option
-      whenSuccess(maybeTaskType): actual => 
-        // Проверка корректности сохраненных данных.
-        expect.all(
-          actual.id == id,                       // ID должен совпадать
-          actual.name == newType.name,           // Имя должно совпадать
-          actual.userId == newType.userId,       // ID пользователя должен совпадать
-          actual.displayed == newType.displayed, // Значение по умолчанию
-          actual.ordinal == newType.ordinal      // Значение по умолчанию
-        )
+      id            <- resource.service.create(newType)
+      maybeTaskType <- resource.service.get(id)
+    yield whenSuccess(maybeTaskType): actual =>
+      expect.same(id, actual.id) |+|
+        expect.same(newType.name, actual.name) |+|
+        expect.same(newType.userId, actual.userId) |+|
+        expect.same(newType.displayed, actual.displayed) |+|
+        expect.same(newType.ordinal, actual.ordinal)
 
   // Тест на обработку случая, когда сущность не найдена.
-  test("PostgreSQLTaskService.get - not found"): service =>
-    val nonExistentId = TaskTypeId(9999) // Заведомо несуществующий ID
-    service.get(nonExistentId).map: result =>
-      // Ожидается, что результат будет `None`.
+  test("PostgreSQLTaskService.get - not found"): resource =>
+    val nonExistentId = TaskTypeId(9999)
+    resource.service.get(nonExistentId).map: result =>
       expect(result.isEmpty)
 
   // Тест на получение всех сущностей.
-  test("PostgreSQLTaskService.getByUser"): service =>
-    val firstUserId = UserId(UUID.randomUUID())
+  test("PostgreSQLTaskService.getByUser"): resource =>
+    val firstUserId = resource.firstUserId
     val opensource  = CreateTaskType(
       name = TaskTypeName("Open Source"),
       userId = firstUserId
     )
-    val secondUserId = UserId(UUID.randomUUID())
+    val secondUserId = resource.secondUserId
     val myBlog       = CreateTaskType(
       name = TaskTypeName("Мой блог"),
       userId = secondUserId
     )
     for
-      osId        <- service.create(opensource)
-      mbId        <- service.create(myBlog)
-      // Получение списка пользовательских типов
-      firstTypes  <- service.getByUser(firstUserId)
-      secondTypes <- service.getByUser(secondUserId)
-    yield expect.all(
-      firstTypes.nonEmpty,
-      secondTypes.nonEmpty,
-      firstTypes.exists(_.id == osId),
-      firstTypes.forall(_.id != mbId),
-      secondTypes.forall(_.id != osId),
-      secondTypes.exists(_.id == mbId)
-    )
+      osId        <- resource.service.create(opensource)
+      mbId        <- resource.service.create(myBlog)
+      firstTypes  <- resource.service.getByUser(firstUserId)
+      secondTypes <- resource.service.getByUser(secondUserId)
+    yield expect(firstTypes.nonEmpty) &&
+      expect(secondTypes.nonEmpty) &&
+      expect(firstTypes.exists(_.id == osId)) &&
+      expect(firstTypes.forall(_.id != mbId)) &&
+      expect(secondTypes.forall(_.id != osId)) &&
+      expect(secondTypes.exists(_.id == mbId))
 
   // Тест на обновление существующей сущности.
-  test("PostgreSQLTaskService.update"): service =>
-    val userId    = UserId(UUID.randomUUID())
+  test("PostgreSQLTaskService.update"): resource =>
+    val userId    = resource.firstUserId
     val exercises = CreateTaskType(
       name = TaskTypeName("Exercises"),
       userId = userId
     )
     val newName = TaskTypeName("Exercises (updated)")
     for
-      id <- service.create(exercises)
-      // Новая версия сущности с тем же ID
+      id <- resource.service.create(exercises)
       updated = TaskType(
         id = id,
         name = newName,
-        userId = UserId(UUID.randomUUID()),
+        userId = resource.secondUserId,
         displayed = !exercises.displayed,
         ordinal = Ordinal(10)
       )
-      _            <- service.update(updated) // Операция обновления
-      maybeUpdated <- service.get(updated.id) // Получение для проверки
+      _            <- resource.service.update(updated)
+      maybeUpdated <- resource.service.get(updated.id)
     yield whenSuccess(maybeUpdated): actual =>
-      expect.all(
-        actual.id == updated.id,
-        actual.name == updated.name,           // Имя должно измениться
-        actual.userId == updated.userId,       // ID пользователя должен совпадать
-        actual.displayed == updated.displayed, // Статус отображения должен измениться
-        actual.ordinal == updated.ordinal      // Порядок должен измениться
+      expect.same(updated.id, actual.id) |+|
+        expect.same(updated.name, actual.name) |+|
+        expect.same(updated.userId, actual.userId) |+|
+        expect.same(updated.displayed, actual.displayed) |+|
+        expect.same(updated.ordinal, actual.ordinal)
+
+  // Тест на пакетное обновление нескольких сущностей.
+  test("PostgreSQLTaskService.updateAll"): resource =>
+    val userId = resource.firstUserId
+    val first  = CreateTaskType(
+      name = TaskTypeName("First"),
+      userId = userId
+    )
+    val second = CreateTaskType(
+      name = TaskTypeName("Second"),
+      userId = userId
+    )
+    val newFirst = CreateTaskType(
+      name = TaskTypeName("First (updated)"),
+      userId = userId,
+      displayed = false,
+      ordinal = Ordinal(10)
+    )
+    val newSecond = CreateTaskType(
+      name = TaskTypeName("Second (updated)"),
+      userId = userId,
+      displayed = false,
+      ordinal = Ordinal(11)
+    )
+
+    for
+      idFirst  <- resource.service.create(first)
+      idSecond <- resource.service.create(second)
+      updated = NonEmptyVector.of(
+        TaskType(
+          id = idFirst,
+          name = newFirst.name,
+          userId = newFirst.userId,
+          displayed = newFirst.displayed,
+          ordinal = newFirst.ordinal
+        ),
+        TaskType(
+          id = idSecond,
+          name = newSecond.name,
+          userId = newSecond.userId,
+          displayed = newSecond.displayed,
+          ordinal = newSecond.ordinal
+        )
       )
+      _                  <- resource.service.updateAll(updated)
+      maybeUpdatedFirst  <- resource.service.get(idFirst)
+      maybeUpdatedSecond <- resource.service.get(idSecond)
+    yield matches(maybeUpdatedFirst, maybeUpdatedSecond) {
+      case (Some(actualFirst), Some(actualSecond)) =>
+        expect.same(idFirst, actualFirst.id) |+|
+          expect.same(newFirst.name, actualFirst.name) |+|
+          expect.same(newFirst.userId, actualFirst.userId) |+|
+          expect.same(newFirst.displayed, actualFirst.displayed) |+|
+          expect.same(newFirst.ordinal, actualFirst.ordinal) |+|
+          expect.same(idSecond, actualSecond.id) |+|
+          expect.same(newSecond.name, actualSecond.name) |+|
+          expect.same(newSecond.userId, actualSecond.userId) |+|
+          expect.same(newSecond.displayed, actualSecond.displayed) |+|
+          expect.same(newSecond.ordinal, actualSecond.ordinal)
+    }
+    end for
 
   // Тест на удаление сущности.
-  test("PostgreSQLTaskService.delete"): service =>
+  test("PostgreSQLTaskService.delete"): resource =>
     val newType = CreateTaskType(
       name = TaskTypeName("Deprecated"),
-      userId = UserId(UUID.randomUUID())
+      userId = resource.firstUserId
     )
     for
-      id        <- service.create(newType)
-      initial   <- service.getByUser(newType.userId) // Состояние до удаления
-      _         <- service.delete(id)                // Операция удаления
-      finalList <- service.getByUser(newType.userId) // Состояние после удаления
-    yield expect.all(
-      initial.exists(_.id == id),  // Сущность должна присутствовать в начальном списке
-      finalList.forall(_.id != id) // Сущность должна отсутствовать в конечном списке
-    )
+      id        <- resource.service.create(newType)
+      initial   <- resource.service.getByUser(newType.userId)
+      _         <- resource.service.delete(id)
+      finalList <- resource.service.getByUser(newType.userId)
+    yield expect(initial.exists(_.id == id)) &&
+      expect(finalList.forall(_.id != id))
+
+end PostgreSQLTaskTypeServiceSuite
 ```
 
 [Полный список тестов][tests]

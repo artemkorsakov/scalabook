@@ -361,14 +361,21 @@ final case class TableTaskCard(
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
     progress: Double,
-    duration: String
+    duration: String,
+    sizeCategory: String
 )
 ```
 
+`TableTaskCard` содержит поле `sizeCategory`, которое вычисляется на основе планируемой
+продолжительности задачи (`task.duration`): менее 60 минут — `"small"`, менее 8 часов — `"medium"`,
+иначе — `"large"`. Оно используется для визуальной группировки задач по размеру.
+
 Метод `getAll` поддерживает **три опциональных фильтра**: по статусу, по типу задачи и по разделу.
 Они передаются в `taskService.getAll`, где преобразуются в динамический SQL-запрос.
-После получения задач сервис строит словари `id → name` и обогащает ими каждую строку таблицы.
-Также возвращаются сами справочники `types` и `sections` — они нужны фронтенду для наполнения выпадающих списков фильтров.
+Отличительная особенность: сервис **не собирает** `TableTaskCard`, а возвращает «сырые» результаты
+`Vector[TaskResult]` вместе со справочниками типов, разделов и целей. Преобразование
+`TaskResult` → `TableTaskCard` (`TableTaskCard.fromTaskResult`) происходит уже в слое представления
+`Views`, где строятся словари `id → name` и обогащаются строки таблицы.
 
 ```dotty
 def getAll(
@@ -376,7 +383,7 @@ def getAll(
     maybeStatus: Option[Status],
     maybeTaskType: Option[TaskTypeId],
     maybeSectionId: Option[SectionId]
-): F[(Vector[TableTaskCard], Vector[TaskType], Vector[Section])] =
+): F[(Vector[TaskResult], Vector[TaskType], Vector[Section], Vector[Goal])] =
   for
     types    <- taskTypeService.getByUser(userId)
     sections <- sectionService.getByUser(userId)
@@ -387,39 +394,17 @@ def getAll(
       maybeTaskType = maybeTaskType,
       maybeSectionId = maybeSectionId
     )
-  yield
-    val existedTypeIds    = tasks.map(_.taskTypeId).toSet
-    val existedSectionIds = tasks.map(_.sectionId).toSet
-
-    val typesMap    = types.map(t => (t.id, t.name)).toMap
-    val sectionsMap = sections.map(t => (t.id, t.name)).toMap
-    val goalsMap    = goals.map(t => (t.id, t.name)).toMap
-
-    val cardTasks = tasks.map: task =>
-      TableTaskCard(
-        id = task.id,
-        name = task.name,
-        taskType = typesMap.get(task.taskTypeId).map(_.value).getOrElse("—"),
-        status = task.status,
-        section = sectionsMap.get(task.sectionId).map(_.value).getOrElse("—"),
-        goal = goalsMap.get(task.goalId).map(_.value).getOrElse("—"),
-        ordinal = task.ordinal,
-        startDate = task.startDate,
-        endDate = task.endDate,
-        progress = task.progress,
-        duration = toDurationDescription(task.duration)
-      )
-
-    (cardTasks, types, sections)
+  yield (tasks, types, sections, goals)
 ```
 
-**Возвращаемое значение** — кортеж из трёх элементов:
+**Возвращаемое значение** — кортеж из четырёх элементов:
 
-1. `Vector[TableTaskCard]` — список задач для отображения в таблице.
-2. `Vector[TaskType]` — типы задач пользователя (для фильтра).
-3. `Vector[Section]` — разделы пользователя (для фильтра).
+1. `Vector[TaskResult]` — «сырые» задачи для таблицы.
+2. `Vector[TaskType]` — типы задач пользователя (для фильтра и обогащения).
+3. `Vector[Section]` — разделы пользователя (для фильтра и обогащения).
+4. `Vector[Goal]` — цели пользователя (для обогащения).
 
-Такое «тройное» возвращаемое значение избавляет от необходимости делать дополнительные HTTP-запросы
+Такое возвращаемое значение избавляет от необходимости делать дополнительные HTTP-запросы
 для загрузки справочников — всё приходит вместе с задачами.
 
 ## Увеличение затраченного времени
@@ -445,7 +430,7 @@ def addTimeSpent(
           task.timeSpent.plus(FiniteDuration(timeSpent, TimeUnit.MINUTES))
       )
       taskService.update(updated)
-    case _ => MonadThrow[F].pure(false)
+    case _ => false.pure[F]
 ```
 
 **Особенности:**

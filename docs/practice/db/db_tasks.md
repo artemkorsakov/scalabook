@@ -351,6 +351,76 @@ def delete(id: TaskId): F[Boolean] =
 Такой сервис — типичный пример **репозитория** в гексагональной архитектуре: он изолирует работу с БД от бизнес-логики, 
 что упрощает тестирование (можно подменить на in-memory реализацию) и замену хранилища (например, на MongoDB или Cassandra).
 
+#### `getAll(userId, maybeStatus, maybeTaskType, maybeSectionId): F[Vector[TaskResult]]`
+
+```dotty
+def getAll(
+    userId: UserId,
+    maybeStatus: Option[Status],
+    maybeTaskTypeId: Option[TaskTypeId],
+    maybeSectionId: Option[SectionId]
+): F[Vector[TaskResult]] =
+  getTasks(
+    userId = userId,
+    maybeStatus = maybeStatus,
+    maybeSectionId = maybeSectionId,
+    maybeTaskTypeId = maybeTaskTypeId
+  ).transact(xa)
+```
+
+**Что происходит:**
+
+- Формирует динамический `SELECT` из нескольких `Fragment`‑ов через конкатенацию `++`, 
+  где фильтры по статусу, разделу и типу добавляются только тогда, когда соответствующие `Option` не пусты.
+- Каждая строка результата отображается в `TaskResult` — компактную проекцию задачи 
+  (без `information`, `timeSpent`, но с вычисленным `progress = plan.progress` и `duration`). 
+  Это то, что отображается в списке задач на дашборде.
+
+**Возвращает:** `F[Vector[TaskResult]]` — отфильтрованные задачи пользователя.
+
+#### `existsSection(id, userId)` / `existsGoal(id, userId)` / `existsTaskType(id, userId)`
+
+```dotty
+def existsSection(id: SectionId, userId: UserId): F[Boolean] =
+  sql"""SELECT 1 FROM tasks WHERE section_id = $id AND user_id = $userId LIMIT 1;"""
+    .query[Int]
+    .option
+    .transact(xa)
+    .map(_.isDefined)
+```
+
+**Что происходит:**
+
+- Проверяет, есть ли хоть одна задача, ссылающаяся на раздел/цель/тип. 
+  Методы `existsGoal` и `existsTaskType` устроены идентично, отличаясь лишь колонкой (`goal_id`, `task_type_id`).
+- `.option` + `.map(_.isDefined)` — возвращает `true`, если запись найдена.
+
+**Возвращает:** `F[Boolean]`. Используются в доменных сервисах для запрета удаления 
+раздела/цели/типа, пока на них ссылаются задачи.
+
+#### `updateOrdinal(ordinals: NonEmptyVector[(TaskId, Ordinal)]): F[Boolean]`
+
+```dotty
+def updateOrdinal(ordinals: NonEmptyVector[(TaskId, Ordinal)]): F[Boolean] =
+  val (taskId, ordinal) = ordinals.head
+  ordinals.tail.foldLeft(
+    sql"""UPDATE tasks SET ordinal = $ordinal WHERE id = $taskId""".update.run
+  ) {
+    case (acc, (taskId, ordinal)) =>
+      acc *>
+        sql"""UPDATE tasks SET ordinal = $ordinal WHERE id = $taskId""".update.run
+  }
+    .transact(xa)
+    .map(_ > 0)
+```
+
+**Что происходит:**
+
+- Обновляет порядковые номера набора задач в **одной транзакции** (batch update через `foldLeft` и `*>`).
+- Если хотя бы одна задача не обновилась, вся операция откатывается.
+
+**Возвращает:** `F[Boolean]` — `true`, если обновлены все задачи.
+
 ---
 
 **Ссылки:**

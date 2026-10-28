@@ -28,7 +28,9 @@ final case class SettingsService[F[_]: MonadThrow](
     taskTypeService: TaskTypeService[F], // Сервис работы с типами задач
     sectionService: SectionService[F],   // Сервис работы с разделами
     goalService: GoalService[F],         // Сервис работы с целями
-    taskService: TaskService[F]          // Сервис задач
+    taskService: TaskService[F],         // Сервис задач
+    sourcesService: SourcesService[F],   // Сервис работы с источниками (база знаний)
+    periodicStepService: PeriodicStepService[F] // Сервис шагов периодических задач
 )
 ```
 
@@ -58,7 +60,15 @@ def createTaskType(newItem: CreateTaskType): F[TaskTypeId] =
     getAll = taskTypeService.getByUser(newItem.userId),
     getName = _.name,
     name = newItem.name,
-    create = taskTypeService.create(newItem)
+    create =
+      taskTypeService.create(newItem).flatTap { taskTypeId =>
+        val newSource = CreateSource(
+          taskTypeId = taskTypeId,
+          userId = newItem.userId,
+          information = ""
+        )
+        sourcesService.create(newSource)
+      }
   )
 
 private def createItem[A, B, C](
@@ -83,6 +93,7 @@ private def createItem[A, B, C](
 2. Проверяем, существует ли уже тип с запрошенным именем (`items.exists(getName(_) == name)`).
 3. Если дубликат найден, операция прерывается с ошибкой `IllegalArgumentException`.
 4. Если имя уникально, делегирует создание в `typeService.create`, который возвращает идентификатор нового типа (`TaskTypeId`).
+5. Дополнительно для каждого созданного типа `flatTap` создаёт связанную запись источника (`Source`) с пустым содержимым — она становится «Базой знаний» для данного типа в дашборде.
 
 **Обобщенная приватная логика `createItem`:**
 Для избежания дублирования кода, общая логика проверки уникальности и создания вынесена в параметризованный метод `createItem`. 
@@ -278,7 +289,11 @@ def deleteTaskType(id: TaskTypeId, userId: UserId): F[Boolean] =
       )
     ),
     // Если existsTaskType вернул false (тип не используется) → выполняем удаление
-    taskTypeService.delete(id)
+    taskTypeService.get(id).flatMap:
+      case Some(item) if item.userId == userId =>
+        sourcesService.delete(id, userId) *>
+          taskTypeService.delete(id)
+      case _ => false.pure[F]
   )
 ```
 

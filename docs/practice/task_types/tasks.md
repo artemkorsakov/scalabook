@@ -69,19 +69,19 @@ final case class Plan(steps: List[PlanStep]):
 object Plan:
   val Empty: Plan = Plan(List.empty)
   
-// pdp/src/main/scala/ru/scalabook/pdp/models/Plan.scala
+// pdp/src/main/scala/ru/scalabook/pdp/models/PlanStep.scala
 final case class PlanStep(
     number: StepNumber,
     step: StepName,
     completed: Boolean
-)
+) derives Decoder, Encoder
 
 object PlanStep:
   /** Номер пункта плана в формате: n.n.n */
   type StepNumber = StepNumber.T
 
-  // Нулевой пункт плана
-  val ZeroStepNumber: StepNumber = StepNumber("0")
+  val ZeroStepNumber: StepNumber  = StepNumber("0")
+  val FirstStepNumber: StepNumber = StepNumber("1")
 
   object StepNumber
       extends RefinedType[String, Match["^\\d+(?:\\.\\d+)*$"]]:
@@ -104,7 +104,9 @@ object PlanStep:
   extension (stepNumber: StepNumber)
     private def toPoints: List[Int] =
       stepNumber.value.split("\\.").flatMap(_.toIntOption).toList
-      
+
+    def level: Int = stepNumber.value.count(_ == '.')
+
   type StepName = StepName.T
   object StepName
       extends RefinedType[String, MinLength[2] & Trimmed]

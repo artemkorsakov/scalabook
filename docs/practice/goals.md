@@ -60,8 +60,7 @@ final case class GoalsStats(
   lazy val remaining: Int                    = all - completed
   lazy val remainingDuration: FiniteDuration = allDuration - completedDuration
   lazy val progress: Double                  =
-    if allDuration.toMinutes == 0 then 0.0
-    else (completedDuration.toMinutes * 10000 / allDuration.toMinutes) / 100.00
+    calculateProgress(current = completedDuration, all = allDuration)
 
   lazy val status: GoalStatus =
     if completed == 0 &&
@@ -101,9 +100,18 @@ final case class GoalsStats(
 
 **Формула `progress`:**
 
+Прогресс вычисляется через общую функцию `calculateProgress`:
+
 ```dotty
-(completedDuration.toMinutes * 10000 / allDuration.toMinutes) / 100.00
+def calculateProgress(
+    current: FiniteDuration,
+    all: FiniteDuration
+): Double =
+  if all.toMinutes == 0 then 0.0
+  else (current.toMinutes * 10000 / all.toMinutes) / 100.00
 ```
+
+Она же используется `SectionStats`, `TaskTypeStats` и другими агрегатами статистики — единый источник логики расчёта.
 
 **Пример:** `completedDuration = 30 мин`, `allDuration = 90 мин`:
 
@@ -148,14 +156,9 @@ def calculate(
         GoalsStats(
           name = name,
           all = tasks.length,
-          allDuration = tasks.foldLeft(FiniteDuration(0L, TimeUnit.MINUTES))(
-            (acc, t) => acc + t.duration
-          ),
+          allDuration = calculateDuration(tasks),
           completed = completedTasks.length,
-          completedDuration =
-            completedTasks.foldLeft(FiniteDuration(0L, TimeUnit.MINUTES))(
-              (acc, t) => acc + t.duration
-            ),
+          completedDuration = calculateDuration(completedTasks),
           remainingTasks = topRemainingTasks
         )
   }.toVector
@@ -206,12 +209,10 @@ val topRemainingTasks =
 **4. Агрегация длительностей:**
 
 ```dotty
-allDuration = tasks.foldLeft(FiniteDuration(0L, TimeUnit.MINUTES))(
-  (acc, t) => acc + t.duration
-)
+allDuration = calculateDuration(tasks)
 ```
 
-`foldLeft` суммирует длительности всех задач, начиная с нуля. Результат — `FiniteDuration`.
+`calculateDuration` суммирует длительности всех задач через `foldLeft`, начиная с нуля. Результат — `FiniteDuration`.
 
 **5. Использование `flatMap`:**
 
@@ -457,17 +458,51 @@ def motivation(progress: Double): String =
 ```dotty
 def toDurationDescription(duration: FiniteDuration): String =
   val minutes = duration.toMinutes
-  if minutes < 60 then s"$minutes мин"
-  else if minutes < 1440 then
-    s"${math.round(minutes * 100.0 / 60.0) / 100.0} ч"
-  else s"${math.round(minutes * 100.0 / 1440.0) / 100.0} дн"
+  val hours   = duration.toHours
+  val days    = duration.toDays
+
+  if days >= 365 then
+    val years         = days / 365
+    val remainingDays = days % 365
+    if remainingDays > 0 then s"$years г $remainingDays дн"
+    else s"$years г"
+  else if days >= 30 then
+    val months        = days / 30
+    val remainingDays = days % 30
+    if remainingDays > 0 then s"$months мес $remainingDays дн"
+    else s"$months мес"
+  else if days >= 7 then
+    val weeks         = days / 7
+    val remainingDays = days % 7
+    if remainingDays > 0 then s"$weeks нед $remainingDays дн"
+    else s"$weeks нед"
+  else if days >= 1 then
+    val remHours = hours - days * 24
+    if remHours > 0 then s"$days дн $remHours ч" else s"$days дн"
+  else if hours >= 1 then
+    val remMinutes = minutes - hours * 60
+    if remMinutes > 0 then s"$hours ч $remMinutes мин" else s"$hours ч"
+  else if minutes >= 1 then s"$minutes мин"
+  else
+    val seconds = duration.toSeconds
+    if seconds >= 1 then s"$seconds сек" else "менее 1 сек"
+  end if
 ```
 
-**Логика:**
+**Логика (7 уровней степени детализации):**
 
-- **Меньше часа** → `"45 мин"`.
-- **Меньше суток** → `"2.5 ч"` (округление до сотых).
-- **Больше суток** → `"3.75 дн"`.
+| Условие                | Результат                   | Пример                          |
+| ---------------------- | --------------------------- | ------------------------------- |
+| `days >= 365`          | `"X г"` / `"X г Y дн"`      | `"2 г 30 дн"`, `"1 г"`          |
+| `days >= 30`           | `"X мес Y дн"` / `"X мес"`  | `"5 мес 12 дн"`, `"3 мес"`      |
+| `days >= 7`            | `"X нед Y дн"` / `"X нед"`  | `"2 нед 3 дн"`, `"1 нед"`       |
+| `days >= 1`            | `"X дн Y ч"` / `"X дн"`     | `"5 дн 4 ч"`, `"2 дн"`          |
+| `hours >= 1`           | `"X ч Y мин"` / `"X ч"`     | `"2 ч 30 мин"`, `"3 ч"`         |
+| `minutes >= 1`         | `"X мин"`                   | `"45 мин"`                      |
+| иначе                  | `"X сек"` / `"менее 1 сек"` | `"30 сек"`, `"менее 1 сек"`     |
+
+Если в старшем уровне есть остаток, он добавляется к следующему («2 г 30 дн», «5 мес 12 дн»). 
+Если остатка нет — возвращается только старшая единица («1 г», «3 ч»).
 
 ## Итог по целям
 

@@ -93,7 +93,7 @@ object CompletedTask:
 Для работы с историей завершенных задач определяется отдельный сервис, следующий принципу единственной ответственности.
 
 ```dotty
-// pdp/src/main/scala/ru/scalook/pdp/services/HistroyServices.scala
+// pdp/src/main/scala/ru/scalabook/pdp/services/HistoryService.scala
 /** Алгебра (интерфейс) сервиса истории выполненных задач. Определяет
   * контракты для работы с архивом завершенных задач, независимо от конкретной
   * реализации хранилища.

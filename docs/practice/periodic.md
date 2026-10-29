@@ -95,24 +95,6 @@ object PeriodicType:
 > `Meta` используется на уровне Doobie, но в самой БД хранится **не строка, а enum** (`PeriodicTypeEnum`). 
 > Поэтому в запросах используется явное приведение `${periodicType}::PeriodicTypeEnum`.
 
-**JSON-сериализация:**
-
-```dotty
-given encoder: Encoder[PeriodicType] =
-  Encoder.encodeString.contramap(_.toString)
-given decoder: Decoder[PeriodicType] =
-  Decoder.decodeString.emap: str =>
-    PeriodicType.values
-      .find(_.toString.equalsIgnoreCase(str))
-      .toRight(
-        s"Invalid periodic type: $str. Available values: ${PeriodicType.values.mkString("Array(", ", ", ")")}"
-      )
-```
-
-- **`Encoder`** — превращает enum в строку (`"Daily"`).
-- **`Decoder`** — превращает строку в enum. `emap` позволяет вернуть **понятную ошибку**, если значение не распознано. 
-  Сообщение включает список допустимых значений — это помогает при отладке.
-
 **Отображение:**
 
 ```dotty

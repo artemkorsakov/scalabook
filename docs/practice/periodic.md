@@ -182,7 +182,7 @@ DTO для создания шага. Отличается от `PeriodicStep` �
 ## Сервис `PeriodicStepService`
 
 ```dotty
-private[services] trait PeriodicStepService[F[_]: Monad]:
+private[services] trait PeriodicStepService[F[_]]:
   def create(newItem: CreatePeriodicStep): F[PeriodicStepId]
   def get(id: PeriodicStepId): F[Option[PeriodicStep]]
   def getByUser(userId: UserId): F[Vector[PeriodicStep]]

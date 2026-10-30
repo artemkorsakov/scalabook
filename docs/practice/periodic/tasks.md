@@ -79,7 +79,7 @@ DTO для создания экземпляра. Отличается от `Per
 ## Сервис `PeriodicTaskService`
 
 ```dotty
-private[services] trait PeriodicTaskService[F[_]: Monad]:
+private[services] trait PeriodicTaskService[F[_]]:
   def create(newItem: CreatePeriodicTask): F[PeriodicTaskId]
   def get(id: PeriodicTaskId): F[Option[PeriodicTask]]
   def getByUser(userId: UserId): F[Vector[PeriodicTask]]

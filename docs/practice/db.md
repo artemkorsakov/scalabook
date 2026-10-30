@@ -85,7 +85,7 @@ nextPage = db/db_migration.html
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/TaskTypeService.scala
-private[services] trait TaskTypeService[F[_]: Monad]:
+private[services] trait TaskTypeService[F[_]]:
 
   /** Создаёт новый тип задачи. */
   def create(newItem: CreateTaskType): F[TaskTypeId]
@@ -146,7 +146,7 @@ private[services] trait TaskTypeService[F[_]: Monad]:
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/TaskService.scala  
-private[services] trait TaskService[F[_]: Monad]:
+private[services] trait TaskService[F[_]]:
 
   /** Создаёт новую задачу. */
   def create(task: CreateTask): F[TaskId]

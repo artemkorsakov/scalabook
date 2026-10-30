@@ -98,7 +98,7 @@ object CompletedTask:
   * контракты для работы с архивом завершенных задач, независимо от конкретной
   * реализации хранилища.
   */
-private[services] trait HistoryService[F[_]: Monad]:
+private[services] trait HistoryService[F[_]]:
   /** Сохраняет выполненную задачу в историю.
     *
     * @param task

@@ -91,7 +91,7 @@ private val createSourcesTable: Fragment =
 Интерфейс сервиса определяет четыре операции: создание, чтение, обновление, удаление.
 
 ```dotty
-private[services] trait SourcesService[F[_]: Monad]:
+private[services] trait SourcesService[F[_]]:
 
   /** Создаёт новый источник задач. */
   def create(newItem: CreateSource): F[SourceId]
@@ -226,7 +226,7 @@ def deleteTaskType(id: TaskTypeId, userId: UserId): F[Boolean] =
 Он инкапсулирует работу с источниками задач:
 
 ```dotty
-final case class DashboardService[F[_]: MonadThrow](
+final case class DashboardService[F[_]: Monad](
     sourcesService: SourcesService[F]
 ):
   def updateSource(
@@ -237,7 +237,7 @@ final case class DashboardService[F[_]: MonadThrow](
     sourcesService.get(taskTypeId, userId).flatMap:
       case Some(source) =>
         sourcesService.update(source.copy(information = information))
-      case None => Applicative[F].pure(false)
+      case None => false.pure[F]
 
   def getSource(taskTypeId: TaskTypeId, userId: UserId): F[Option[Source]] =
     sourcesService.get(taskTypeId, userId)

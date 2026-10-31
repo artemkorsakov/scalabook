@@ -16,13 +16,13 @@ nextPage = ui_register.html
 
 ### Описание маршрута
 
-Для логина регистрируем новый роут:
+Маршруты теперь объявляются непосредственно в хэндлерах. Для логина маршрут объявлен как приватная переменная `route` в `LoginHandler`:
 
 ```dotty
-val login = Route(
+private val route = Route(
   Request.post(Path.root / "auth" / "login")
     .withEntity(Entity.formOf[LoginRequest]),
-  Response.ok(Entity.html).orNotFound
+  Response.ok(Entity.html)
 )
 ```
 
@@ -35,9 +35,8 @@ val login = Route(
   который отправляет htmx по умолчанию. Krop с помощью `FormCodec[LoginRequest]`
   (кодек, который мы описывали в разделе про модели) превращает пары `username=...&password=...`
   в типизированный объект.
-- **`Response.ok(Entity.html).orNotFound`** — успешный ответ (200 OK) с HTML-телом.
-  `.orNotFound` — запасной вариант: если что-то пойдёт не так, вернётся 404.
-  На практике это редко срабатывает, потому что ошибки обрабатываются внутри хэндлера и возвращаются пользователю в блоке ошибок.
+- **`Response.ok(Entity.html)`** — успешный ответ (200 OK) с HTML-телом. Все варианты ответа
+  (успех или форма с ошибкой) генерируются внутри хэндлера, поэтому `.orNotFound` здесь не нужен.
 
 ### Хэндлер `LoginHandler`
 
@@ -46,8 +45,18 @@ final case class LoginHandler(
     authService: AuthService[IO],
     taskLifecycleService: TaskLifecycleService[IO]
 )(using Logger[IO]):
+  private val route = Route(
+    Request.post(Path.root / "auth" / "login")
+      .withEntity(Entity.formOf[LoginRequest]),
+    Response.ok(Entity.html)
+  )
+
+  // Нельзя раскрывать пользователю ошибку валидации.
+  private val fallbackPage: String =
+    View.login("Некорректный логин или пароль".some).toString
+
   val handler: Handler =
-    Routes.login.handleIO: (request: LoginRequest) =>
+    route.handleIO: (request: LoginRequest) =>
       UserRegistration.parse(request)
         .map { registration =>
           authService
@@ -58,16 +67,14 @@ final case class LoginHandler(
                 user = UserInfo(id, registration.username),
                 jwtToken = token,
                 tab = DefaultTab
-              ).map(_.some)
+              )
             .recoverWith:
               case UserNotFound(_) | InvalidPassword(_) =>
-                asError()
+                fallbackPage.pure[IO]
               case ex =>
-                Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
-        }.valueOr(_ => asError())
-
-  private def asError(): IO[Option[String]] =
-    View.login("Некорректный логин или пароль".some).toString.some.pure[IO]
+                Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}")
+                  .as(fallbackPage)
+        }.valueOr(_ => fallbackPage.pure[IO])
 end LoginHandler
 ```
 
@@ -80,9 +87,14 @@ end LoginHandler
       Нужен, чтобы сразу после логина показать приветственную страницу с задачами.
     - `using Logger[IO]` — логгер для записи ошибок.
 
-2. **`Routes.login.handleIO`** — регистрируем обработчик, принимающий `LoginRequest`.
+2. **`private val route`** — маршрут объявлен внутри хэндлера.
 
-3. **`UserRegistration.parse(request)`** — валидируем поля запроса. Раньше для этого был
+3. **`fallbackPage`** — приватная `val` с HTML-страницей логина и сообщением
+   «Некорректный логин или пароль». Это **единственная** страница-заглушка, которая
+   возвращается при любой ошибке (неверный пароль, неизвестный логин, ошибка валидации,
+   внутренняя ошибка). Сообщение одинаковое — чтобы не раскрывать, существует ли пользователь.
+
+4. **`UserRegistration.parse(request)`** — валидируем поля запроса. Раньше для этого был
    отдельный расширяющий объект `Parser` с методом `request.parse`, но в `f186beb` его **удалили**,
    а логика переехала в метод компаньона `UserRegistration.parse`. Возвращает
    `ValidatedNec[String, UserRegistration]`:
@@ -103,34 +115,32 @@ end LoginHandler
     - Если поля пустые или не соответствуют ограничениям — возвращается ошибка.
     - Если всё в порядке — возвращается `UserRegistration(username, password)`.
 
-4. **`.map { registration => ... }`** — если валидация прошла успешно, получаем
+5. **`.map { registration => ... }`** — если валидация прошла успешно, получаем
    `UserRegistration` и вызываем `authService.login(registration.username, registration.password)`.
 
-5. **`authService.login`** — проверяет пользователя в БД:
+6. **`authService.login`** — проверяет пользователя в БД:
     - Если пользователь найден и пароль верный — возвращает `(JwtToken, UserId)`.
     - Если пользователь не найден — выбрасывает `UserNotFound`.
     - Если пароль неверный — выбрасывает `InvalidPassword`.
 
-6. **`.flatMap: (token, id) => ...`** — при успехе формируем приветственную страницу
+7. **`.flatMap: (token, id) => ...`** — при успехе формируем приветственную страницу
    через `getViewWelcome` (та же функция, что использовалась в `InitialHandler`).
-   Оборачиваем результат в `Option` через `.some`.
+   Результат — это уже готовая HTML-строка.
 
-7. **`.recoverWith`** — обработка ошибок:
-    - **`UserNotFound` / `InvalidPassword`** — возвращаем форму логина с сообщением
-      «Некорректный логин или пароль».
-    - **Любое другое исключение** — логируем и возвращаем `None`.
+8. **`.recoverWith`** — обработка ошибок:
+    - **`UserNotFound` / `InvalidPassword`** — возвращаем `fallbackPage` (форму логина
+      с сообщением «Некорректный логин или пароль»).
+    - **Любое другое исключение** — логируем и тоже возвращаем `fallbackPage`.
 
-8. **`.valueOr(_ => asError())`** — обрабатывает случай, когда `UserRegistration.parse` вернул ошибку.
-   Например, если пользователь отправил пустую форму. В этом случае тоже показываем форму
-   логина с сообщением об ошибке.
+9. **`.valueOr(_ => fallbackPage.pure[IO])`** — обрабатывает случай, когда `UserRegistration.parse`
+   вернул ошибку. Например, если пользователь отправил пустую форму. В этом случае тоже
+   показываем форму логина с сообщением об ошибке.
 
-9. **`asError()`** — возвращает `Option[String]`, содержащий HTML-страницу логина с сообщением
-   об ошибке. Это значение передаётся в `hx-target="#app"` и заменяет содержимое главного контейнера.
+**Возвращаемый тип `IO[String]`:**
 
-**Особенность возвращаемого типа `IO[Option[String]]`:**
-
-Хэндлер возвращает `IO[Option[String]]`, где `Some(html)` — HTML для отображения, `None` —
-сигнал о том, что нужно показать 404 страницу (`.orNotFound` в роуте).
+Хэндлер возвращает `IO[String]` — всегда готовая HTML-строка. Раньше тип был
+`IO[Option[String]]` с `None` для 404, но теперь все ошибки намеренно возвращают форму
+логина с сообщением, поэтому `Option` больше не нужен.
 
 ### Обработка ошибок
 
@@ -138,11 +148,11 @@ end LoginHandler
 
 ![Error](../images/login_error.png)
 
-Сообщение формируется в `asError()`:
+Сообщение формируется в `fallbackPage`:
 
 ```dotty
-private def asError(): IO[Option[String]] =
-  View.login("Некорректный логин или пароль".some).toString.some.pure[IO]
+private val fallbackPage: String =
+  View.login("Некорректный логин или пароль".some).toString
 ```
 
 Обратите внимание: сообщение **одинаково** и для несуществующего пользователя, и для
@@ -153,8 +163,10 @@ private def asError(): IO[Option[String]] =
 
 ### Описание маршрута
 
+Маршрут объявлен внутри `LogoutHandler`:
+
 ```dotty
-val logout = Route(
+private val route = Route(
   Request.post(Path.root / "auth" / "logout").extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
@@ -167,6 +179,7 @@ val logout = Route(
   GET-запросы должны быть идемпотентными и не менять состояние.
 - **`.extractHeader[Authorization]`** — извлекает HTTP-заголовок `Authorization` из запроса.
   Именно там передаётся JWT-токен: `Authorization: Bearer <token>`.
+- **`.orNotFound`** — запасной вариант: 404, если запрос не совпал.
 
 ### Хэндлер `LogoutHandler`
 
@@ -175,8 +188,13 @@ final case class LogoutHandler(
     authService: AuthService[IO],
     middleware: JwtAuthMiddleware[IO, UserInfo]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
+  private val route = Route(
+    Request.post(Path.root / "auth" / "logout").extractHeader[Authorization],
+    Response.ok(Entity.html).orNotFound
+  )
+
   val handler: Handler =
-    Routes.logout.handleIO: (authorization: Authorization) =>
+    route.handleIO: (authorization: Authorization) =>
       withUserFromHeader(authorization): (user: UserInfo, token: JwtToken) =>
         authService.logout(token, user.username)
           .as(View.login(none).toString)

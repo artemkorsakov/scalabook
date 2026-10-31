@@ -245,13 +245,14 @@ val pdpLibs: Seq[ModuleID] =
 ### Описание маршрутов (Routes)
 
 В Krop маршрут (`Route`) — это декларация того, **какой HTTP-запрос** и **какой ответ** должен обрабатываться.
-Маршруты описываются декларативно и выносятся в отдельный объект `Routes`, чтобы их было удобно переиспользовать
-в хэндлерах и тестах.
+Маршруты описываются декларативно.
+
+Для health-check маршрут объявлен прямо в `HealthHandler`:
 
 ```dotty
-// pdp/src/main/scala/ru/scalabook/pdp/routes/Routes.scala
-object Routes:
-  val health =
+// pdp/src/main/scala/ru/scalabook/pdp/http/handlers/HealthHandler.scala
+final case class HealthHandler(healthCheck: HealthCheck[IO]):
+  private val route =
     Route(
       Request.get(Path.root / "health_check"),
       Response.ok(Entity.json)
@@ -276,8 +277,14 @@ object Routes:
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/http/handlers/HealthHandler.scala
 final case class HealthHandler(healthCheck: HealthCheck[IO]):
+  private val route =
+    Route(
+      Request.get(Path.root / "health_check"),
+      Response.ok(Entity.json)
+    )
+
   val handler: Handler =
-    Routes.health.handleIO(() =>
+    route.handleIO(() =>
       healthCheck.status.map(_.asJson)
     )
 ```
@@ -286,7 +293,7 @@ final case class HealthHandler(healthCheck: HealthCheck[IO]):
 
 1. **Зависимость `healthCheck: HealthCheck[IO]`** передаётся в конструктор. Это позволяет легко подменить
    реализацию в тестах (например, использовать мок, который всегда возвращает «ОК»).
-2. **`Routes.health`** — берём ранее описанный маршрут.
+2. **`private val route`** — маршрут объявлен внутри хэндлера.
 3. **`.handleIO(() => ...)`** — указываем, что при получении запроса нужно выполнить эффект `IO`.
    Обратите внимание на `()` — это говорит о том, что запрос не содержит параметров.
 4. **`healthCheck.status`** — вызов сервиса, который проверяет состояние Redis и PostgreSQL.

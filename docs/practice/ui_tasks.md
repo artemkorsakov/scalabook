@@ -674,8 +674,10 @@ object CreateTask:
 
 ### Маршрут
 
+Маршрут `/home/{tab}` объявлен прямо в `HomeHandler`:
+
 ```dotty
-val home =
+private val route =
   Route(
     Request.get(Path.root / "home" / Param.string).extractHeader[Cookie],
     Response.ok(Entity.html)
@@ -692,8 +694,14 @@ final case class HomeHandler(
     notesService: NotesService[IO],
     historyService: HistoryService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
+  private val route =
+    Route(
+      Request.get(Path.root / "home" / Param.string).extractHeader[Cookie],
+      Response.ok(Entity.html)
+    )
+
   val handler: Handler =
-    Routes.home.handleIO: (tab: String, cookie: Cookie) =>
+    route.handleIO: (tab: String, cookie: Cookie) =>
       withUserFromCookie(cookie)(
         f = (user, jwtToken) =>
           getViewWelcome(
@@ -712,11 +720,12 @@ final case class HomeHandler(
 **Пошаговый разбор:**
 
 1. **`extends AuthorizationHandler(middleware)`** — даёт доступ к `withUserFromCookie(cookie)`.
-2. **`withUserFromCookie(cookie)(f, fallbackPage)`** — извлекает токен из куки `token`,
+2. **`private val route`** — маршрут объявлен внутри хэндлера.
+3. **`withUserFromCookie(cookie)(f, fallbackPage)`** — извлекает токен из куки `token`,
    проверяет его и передаёт `(user, jwtToken)` в `f`. Если токена нет/невалиден —
    возвращает `fallbackPage` (форму логина).
-3. **`f`** — строит приветственную страницу нужной вкладки через `getViewWelcome`.
-4. Все ошибки (`AuthorizationException` и прочие) обрабатываются внутри `AuthorizationHandler`
+4. **`f`** — строит приветственную страницу нужной вкладки через `getViewWelcome`.
+5. Все ошибки (`AuthorizationException` и прочие) обрабатываются внутри `AuthorizationHandler`
    и сводятся к возврату `fallbackPage` — приложение не падает.
 
 **Почему `HomeHandler` отличается от `InitialHandler`?**

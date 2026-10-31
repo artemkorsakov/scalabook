@@ -13,8 +13,11 @@ nextPage = ../ui_settings.html
 
 ### Маршрут
 
+Каждый хэндлер объявляет свои маршруты у себя. Для формы регистрации маршрут объявляется как приватная
+переменная `formRoute` внутри `RegisterHandler`:
+
 ```dotty
-val register =
+private val formRoute =
   Route(
     Request.get(Path.root / "register"),
     Response.ok(Entity.html)
@@ -29,23 +32,44 @@ val register =
 
 ### Хэндлер `RegisterHandler`
 
+Хэндлера создания пользователя `RegisterHandler` владеет **двумя** обработчиками: 
+`formHandler` (отдача формы) и `registerHandler` (обработка POST-запроса).
+
 ```dotty
-object RegisterHandler:
-  val handler: Handler =
-    Routes.register.handle { () =>
-      View.register(None).toString
-    }
+final case class RegisterHandler(
+    authService: AuthService[IO],
+    taskLifecycleService: TaskLifecycleService[IO]
+)(using Logger[IO]):
+  private val formRoute =
+    Route(
+      Request.get(Path.root / "register"),
+      Response.ok(Entity.html)
+    )
+
+  val formHandler: Handler =
+    formRoute.handle(() => View.register(none).toString)
+```
+
+Фрагмент из `Main.scala`, где оба обработчика регистрируются:
+
+```dotty
+.orElse(registerHandler.formHandler)
+.orElse(registerHandler.registerHandler)
 ```
 
 **Разбор хэндлера:**
 
-- **`object RegisterHandler`** — это `object`, а не `case class`, потому что у хэндлера
-  нет зависимостей. Он просто отдаёт статический HTML.
-- **`Routes.register.handle`** — используем `handle`, а не `handleIO`, потому что
+- **`final case class RegisterHandler`** — это `case class`, потому что
+  хэндлеру создания пользователя нужны зависимости (`authService`, сервисы для welcome-страницы).
+  Форма и создание пользователя живут в одном хэндлере.
+- **`private val formRoute`** — маршрут объявлен внутри хэндлера (маршруты вынесены из `Routes.scala`).
+- **`formRoute.handle`** — используем `handle`, а не `handleIO`, потому что
   логика чистая: никаких эффектов (`IO`) не требуется, только рендер шаблона.
 - **`() => ...`** — лямбда без аргументов, потому что запрос не содержит параметров.
-- **`View.register(None)`** — рендерим Twirl-шаблон `register.scala.html`, передавая `None`
+- **`View.register(none)`** — рендерим Twirl-шаблон `register.scala.html`, передавая `None`
   в качестве сообщения об ошибке. Это значит «ошибки нет, показываем чистую форму».
+- **`formHandler` / `registerHandler`** — два отдельных `Handler`, каждый со своим маршрутом.
+  В `Main.scala` они подключаются через `.orElse`.
 
 ### Шаблон `register.scala.html`
 
@@ -67,7 +91,7 @@ object RegisterHandler:
         </div>
         <button
                 type="button"
-                hx-post="/new_user"
+                hx-post="/register/new"
                 hx-target="#app"
                 hx-swap="outerHTML"
         >Зарегистрироваться
@@ -92,7 +116,7 @@ object RegisterHandler:
 1. **`@(errorMessage: Option[String])`** — параметр шаблона. Если ошибка есть — показываем её под формой.
 2. **Форма регистрации** — два поля: `username` и `password`. Оба обязательны (`required`).
 3. **Кнопка «Зарегистрироваться»** — использует htmx:
-    - `hx-post="/new_user"` — отправляет POST-запрос на `/new_user`.
+    - `hx-post="/register/new"` — отправляет POST-запрос на `/register/new`.
     - `hx-target="#app"` — ответ сервера заменяет содержимое блока `#app`.
     - `hx-swap="outerHTML"` — заменяет весь блок, а не только его содержимое.
 4. **Блок `messageBlock`** — опциональное сообщение об ошибке (например, «Логин уже занят»).
@@ -110,23 +134,25 @@ object RegisterHandler:
 ## Создание нового пользователя
 
 Когда пользователь заполнил форму и нажал «Зарегистрироваться», htmx отправляет POST-запрос
-на `/new_user`. Здесь происходит вся логика создания нового пользователя.
+на `/register/new`. Здесь происходит вся логика создания нового пользователя.
 
 ### Маршрут
 
+Маршрут для создания пользователя объявлен в том же `RegisterHandler` как приватная
+переменная `registerRoute`:
+
 ```dotty
-val newUser = Route(
-  Request.post(Path.root / "new_user")
+private val registerRoute = Route(
+  Request.post(Path.root / "register" / "new")
     .withEntity(Entity.formOf[LoginRequest]),
   Response.status(HttpStatus.Created, Entity.html)
     .orElse(Response.status(HttpStatus.Ok, Entity.html))
-    .orNotFound
 )
 ```
 
 **Разбор маршрута:**
 
-- **`Request.post(Path.root / "new_user")`** — POST-запрос на `/new_user`.
+- **`Request.post(Path.root / "register" / "new")`** — POST-запрос на `/register/new`.
 - **`.withEntity(Entity.formOf[LoginRequest])`** — тело запроса в формате
   `application/x-www-form-urlencoded`, десериализуется в `LoginRequest`.
   Мы переиспользуем `LoginRequest`, потому что поля те же: `username` и `password`.
@@ -134,17 +160,20 @@ val newUser = Route(
   Это правильный статус для создания нового ресурса (пользователя).
 - **`.orElse(Response.status(HttpStatus.Ok, Entity.html))`** — запасной вариант `200 OK`,
   если возникла ошибка при регистрации и её нужно отобразить пользователю.
-- **`.orNotFound`** — 404, если ничего не совпало.
 
-### Хэндлер `NewUserHandler`
+### Хэндлер `RegisterHandler` (создание пользователя)
 
 ```dotty
-final case class NewUserHandler(
+final case class RegisterHandler(
     authService: AuthService[IO],
-    taskLifecycleService: TaskLifecycleService[IO]
+    taskLifecycleService: TaskLifecycleService[IO],
+    periodicTaskLifecycleService: PeriodicTaskLifecycleService[IO],
+    notesService: NotesService[IO],
+    historyService: HistoryService[IO]
 )(using Logger[IO]):
-  val handler: Handler =
-    Routes.newUser.handleIO {
+  // ...
+  val registerHandler: Handler =
+    registerRoute.handleIO {
       (request: LoginRequest) =>
         UserRegistration.parse(request)
           .map { registration =>
@@ -153,20 +182,24 @@ final case class NewUserHandler(
               .flatMap: (token, id) =>
                 getViewWelcome(
                   taskLifecycleService = taskLifecycleService,
+                  periodicTaskLifecycleService = periodicTaskLifecycleService,
+                  notesService = notesService,
+                  historyService = historyService,
                   user = UserInfo(id, registration.username),
                   jwtToken = token,
                   tab = DefaultTab
-                ).map(_.asRight.some)
+                ).map(_.asRight)
               .recoverWith:
                 case UserNameInUse(username) =>
                   asError(s"Данный логин уже занят: $username")
                 case ex =>
-                  Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
+                  Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}") *>
+                    asError("Произошла ошибка при регистрации.")
           }.valueOr(errors => asError(errors.mkString_(";")))
     }
 
-  private def asError(error: String): IO[Option[Either[String, String]]] =
-    View.register(error.some).toString.asLeft.some.pure[IO]
+  private def asError(error: String): IO[Either[String, String]] =
+    View.register(error.some).toString.asLeft.pure[IO]
 ```
 
 **Пошаговый разбор:**
@@ -183,45 +216,46 @@ final case class NewUserHandler(
     - Если логин занят — выбрасывает `UserNameInUse(username)`.
     - Другие ошибки (например, проблема с БД) — обычные исключения.
 4. **`.flatMap: (token, id) => ...`** — при успехе формируем приветственную страницу
-   через `getViewWelcome`, оборачиваем результат в `Right` и `Some`.
+   через `getViewWelcome`, оборачиваем результат в `Right`.
 5. **`.recoverWith`** — обработка ошибок:
     - **`UserNameInUse(username)`** — возвращаем форму регистрации с сообщением
       «Данный логин уже занят: {username}».
-    - **Любое другое исключение** — логируем и возвращаем `None`.
+    - **Любое другое исключение** — логируем и возвращаем форму с сообщением
+      «Произошла ошибка при регистрации».
 6. **`.valueOr(errors => asError(errors.mkString_(";")))`** — если `UserRegistration.parse` вернул ошибку
    (например, пустой логин), формируем форму регистрации с сообщением об ошибке.
    `errors.mkString_(";")` объединяет все ошибки в одну строку через `;`.
 
-**Особенность возвращаемого типа `IO[Option[Either[String, String]]]`:**
+**Особенность возвращаемого типа `IO[Either[String, String]]`:**
 
-Это сложный тип, который кодирует три возможных состояния:
+Этот тип кодирует два возможных состояния:
 
 | Тип                 | Значение             | Код ответа | Что означает                                                  |
 | ------------------- | -------------------- | -----------| ------------------------------------------------------------- |
-| `Some(Right(html))` | Успех                | 201        | Регистрация прошла, показываем welcome-страницу               |
-| `Some(Left(html))`  | Ошибка бизнес-логики | 200        | Логин занят или невалидные данные, показываем форму с ошибкой |
-| `None`              | Внутренняя ошибка    | 404        | Что-то пошло не так, возвращаем 404 страницу                  |
+| `Right(html)`       | Успех                | 201        | Регистрация прошла, показываем welcome-страницу               |
+| `Left(html)`        | Ошибка                | 200        | Логин занят или невалидные данные, показываем форму с ошибкой |
 
-Такая структура позволяет **htmx-клиенту** различать успех и ошибку: например, при успехе
-можно сразу перейти на главную страницу, а при ошибке — показать сообщение.
+Благодаря этому **htmx-клиенту** проще различать результат: при успехе возвращается `201 Created`,
+при ошибке — `200 OK` с формой и сообщением. Отдельного кодирования «внутренней ошибки» больше нет —
+любое исключение приводит к форме с ошибкой (статус `200`).
 
 **Метод `asError`:**
 
 ```dotty
-private def asError(error: String): IO[Option[Either[String, String]]] =
-  View.register(error.some).toString.asLeft.some.pure[IO]
+private def asError(error: String): IO[Either[String, String]] =
+  View.register(error.some).toString.asLeft.pure[IO]
 ```
 
-Возвращает форму регистрации с сообщением об ошибке, обёрнутую в `Left` и `Some`.
+Возвращает форму регистрации с сообщением об ошибке, обёрнутую в `Left`.
 Это сигнал клиенту: «регистрация не удалась, покажи форму с ошибкой».
 
 ## Полный поток регистрации
 
 Рассмотрим сценарий от начала до конца:
 
-1. **Пользователь открывает `/register`** → `RegisterHandler` отдаёт форму регистрации.
+1. **Пользователь открывает `/register`** → `RegisterHandler.formHandler` отдаёт форму регистрации.
 2. **Пользователь заполняет поля и нажимает «Зарегистрироваться»** → htmx отправляет
-   POST на `/new_user`.
+   POST на `/register/new`.
 3. **Сервер валидирует данные** → если логин/пароль не соответствуют ограничениям,
    возвращается форма с ошибкой.
 4. **Сервер создаёт пользователя** → если логин свободен, `AuthService.newUser`
@@ -268,23 +302,26 @@ case UserNameInUse(username) =>
 
 ### Внутренние ошибки
 
-Если произошла внутренняя ошибка (например, БД недоступна), пользователь увидит 404 страницу (`None`), 
-а в лог запишется подробная информация.
+Если произошла внутренняя ошибка (например, БД недоступна), в лог запишется подробная
+информация, а пользователь увидит форму регистрации с сообщением
+«Произошла ошибка при регистрации».
 
 ## Итог
 
 Мы реализовали полный цикл регистрации пользователя:
 
-- **`/register`** — отдаёт форму регистрации.
-- **`/new_user`** — принимает данные формы, создаёт пользователя, генерирует JWT-токен
-  и показывает welcome-страницу.
+- **`/register`** — отдаёт форму регистрации (`formHandler`).
+- **`/register/new`** — принимает данные формы, создаёт пользователя, генерирует JWT-токен
+  и показывает welcome-страницу (`registerHandler`).
 
 **Ключевые архитектурные решения:**
 
 - **Переиспользование `LoginRequest`** — форма регистрации и форма логина имеют одинаковые
   поля, поэтому мы используем один и тот же тип для десериализации.
-- **Тип `IO[Option[Either[String, String]]]`** — кодирует три состояния (успех / ошибка
-  бизнес-логики / внутренняя ошибка) и позволяет клиенту различать их.
+- **Два обработчика в одном `RegisterHandler`** — `formHandler` (отдача формы) и
+  `registerHandler` (создание пользователя) объединены в один хэндлер с двумя маршрутами.
+- **Тип `IO[Either[String, String]]`** — кодирует два состояния (успех / ошибка) —
+  `Right` даёт `201 Created`, `Left` даёт `200 OK` с формой и сообщением об ошибке.
 - **htmx для интерактивности** — все переходы и отправки форм происходят без перезагрузки
   страницы. Пользователь видит мгновенную реакцию на свои действия.
 - **Валидация на нескольких уровнях** — `UserRegistration.parse` проверяет формат данных,

@@ -33,9 +33,9 @@ final case class OpenTaskHandler(
             jwtToken = jwtToken,
             errorMessage = none
           ).map(_.map(html =>
-            View.base("План развития", html).toString
+            View.base(Title, html).toString
           )),
-        fallbackPage = View.base("План развития", NotFoundView).toString
+        fallbackPage = View.base(Title, NotFoundView).toString
       )
 end OpenTaskHandler
 ```

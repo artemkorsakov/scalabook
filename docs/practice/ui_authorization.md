@@ -19,12 +19,12 @@ nextPage = ui_authorization/ui_welcome.html
 
 ## Описание маршрута главной страницы
 
-Добавим в `Routes` новый маршрут для главной страницы. Его ключевое отличие от `/health_check` —
+Маршрут главной страницы объявлен непосредственно в хэндлере. Его ключевое отличие от `/health_check` —
 **извлечение HTTP-заголовка Cookie**: именно в куках хранится JWT-токен, по которому мы определяем,
 залогирован ли пользователь.
 
 ```dotty
-val index =
+private val route =
   Route(
     Request.get(Path.root).extractHeader[Cookie],
     Response.ok(Entity.html)
@@ -51,8 +51,14 @@ final case class InitialHandler(
     notesService: NotesService[IO],
     historyService: HistoryService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
+  private val route =
+    Route(
+      Request.get(Path.root).extractHeader[Cookie],
+      Response.ok(Entity.html)
+    )
+
   val handler: Handler =
-    Routes.index.handleIO: (cookie: Cookie) =>
+    route.handleIO: (cookie: Cookie) =>
       withUserFromCookie(cookie)(
         f = (user, jwtToken) =>
           getViewWelcomeHtml(
@@ -63,8 +69,8 @@ final case class InitialHandler(
             user = user,
             jwtToken = jwtToken,
             tab = DefaultTab
-          ).map(welcome => View.base("План развития", welcome).toString),
-        fallbackPage = View.base("План развития", View.login(none)).toString
+          ).map(welcome => View.base(Title, welcome).toString),
+        fallbackPage = View.base(Title, View.login(none)).toString
       )
 ```
 
@@ -80,19 +86,30 @@ final case class InitialHandler(
    Это даёт доступ к методам `withUserFromCookie`/`withUserFromCookieOpt` (см. «Базовый класс
    `AuthorizationHandler`» в разделе аутентификации).
 
-3. **`Routes.index.handleIO`** — регистрируем обработчик, принимающий `Cookie`. Метод `handleIO`
+3. **`private val route`** — маршрут объявлен внутри хэндлера.
+
+4. **`route.handleIO`** — регистрируем обработчик, принимающий `Cookie`. Метод `handleIO`
    используется вместо `handle`, потому что логика требует эффекта `IO` (проверка токена, загрузка задач).
 
-4. **`withUserFromCookie(cookie)(f, fallbackPage)`** — передаём куку **первым** аргументом,
+5. **`withUserFromCookie(cookie)(f, fallbackPage)`** — передаём куку **первым** аргументом,
    лямбду `f` и `fallbackPage` — вторым. Метод сам:
     - Извлекает токен из куки `token`.
     - Проверяет его через `middleware.fromToken.run` и передаёт `(user, jwtToken)` в `f`.
     - Если токена в куке нет или он невалиден — возвращает `fallbackPage`
       (заранее сформированную страницу логина).
 
-5. **`f = (user, jwtToken) => ...`** — формирует приветственную страницу через
-   `getViewWelcomeHtml` и оборачивает её в `View.base`. Если токен валиден — пользователь
+6. **`f = (user, jwtToken) => ...`** — формирует приветственную страницу через
+   `getViewWelcomeHtml` и оборачивает её в `View.base(Title, ...)`. Если токен валиден — пользователь
    видит свой рабочий стол; иначе — `fallbackPage` (форма входа).
+
+**Константа `Title`:**
+
+```dotty
+val Title: String = "План развития"
+```
+
+Вместо повторяющегося строкового литерала `"План развития"` во всех хэндлерах используется
+`Views.Title`. Это устраняет дублирование заголовка страницы и позволяет менять его в одном месте.
 
 Любая проблема с токеном (истёк, повреждён, неверная подпись) **не роняет приложение**:
 пользователь просто увидит форму входа, как будто он не авторизован. Ошибка при этом логируется.
@@ -199,7 +216,8 @@ cookie.values
 
 ```dotty
 object Views:
-  val DefaultTab: String = "in-progress"
+  val Title: String       = "План развития"
+  val DefaultTab: String  = "in-progress"
 
   def getViewWelcomeHtml(
       taskLifecycleService: TaskLifecycleService[IO],
@@ -316,7 +334,7 @@ object Views:
 Если что-то пошло не так — пользователь видит страницу логина:
 
 ```dotty
-View.base("План развития", View.login(none)).toString
+View.base(Title, View.login(none)).toString
 ```
 
 ![Login page](images/login.png)

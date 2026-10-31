@@ -861,7 +861,7 @@ final case class PeriodicTaskHandlers(
           service.get(PeriodicTaskId(uuid), user.id).map {
             _.map { periodicTask =>
               val html = View.periodicTask(task = periodicTask, errorMessage = none)
-              View.base("План развития", html).toString
+              View.base(Title, html).toString
             }
           },
         fallbackPage = NotFoundView
@@ -881,10 +881,8 @@ final case class PeriodicTaskHandlers(
   val completeHandler: Handler =
     completeFormPeriodicTask.handleIO:
       (uuid: UUID, authorization: Authorization) =>
-        withUserFromHeaderOpt(authorization): (user, token) =>
-          val periodicTaskId = PeriodicTaskId(uuid)
-          service.complete(id = periodicTaskId, userId = user.id)
-            .map(_ => HomeView.some)
+        withUserFromHeader(authorization): (user, token) =>
+          service.complete(PeriodicTaskId(uuid), user.id).as(HomeView)
 
   val editFormHandler: Handler =
     editFormPeriodicTask.handleIO: (uuid: UUID, authorization: Authorization) =>
@@ -929,10 +927,8 @@ final case class PeriodicTaskHandlers(
 
   val deleteHandler: Handler =
     deletePeriodicTask.handleIO: (uuid: UUID, authorization: Authorization) =>
-      withUserFromHeaderOpt(authorization): (user, token) =>
-        val periodicTaskId = PeriodicTaskId(uuid)
-        service.delete(id = periodicTaskId, userId = user.id)
-          .map(_ => HomeView.some)
+      withUserFromHeader(authorization): (user, token) =>
+        service.delete(PeriodicTaskId(uuid), user.id).as(HomeView)
 end PeriodicTaskHandlers
 ```
 

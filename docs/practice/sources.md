@@ -365,7 +365,7 @@ final case class OpenSourceHandler(
                       token = jwtToken.value,
                       errorMessage = none
                     )
-                  View.base("План развития", html).toString
+                  View.base(Title, html).toString
               }
             case Left(error) =>
               Logger[IO].error(error).as(none),
@@ -384,7 +384,7 @@ final case class OpenSourceHandler(
 4. **`(maybeTaskType, maybeSource).mapN`** — если обе сущности найдены, собираем `SourceCard` и рендерим `View.source`. 
    Если хотя бы одна не найдена — `None`, и `withUserFromCookieOpt` подставит `fallbackPage` (404).
 
-`NotFoundView` — готовая строка HTML, объединяющая `View.base("План развития", ...)` и `View.notFound()`. Используется повторно во всех хэндлерах дашборда.
+`NotFoundView` — готовая строка HTML, объединяющая `View.base(Title, ...)` и `View.notFound()`. Используется повторно во всех хэндлерах дашборда.
 
 ## Страница источника
 

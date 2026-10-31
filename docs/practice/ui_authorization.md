@@ -53,7 +53,7 @@ final case class InitialHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.index.handleIO: (cookie: Cookie) =>
-      handleUserIO(cookie)(
+      withUserFromCookie(cookie)(
         f = (user, jwtToken) =>
           getViewWelcomeHtml(
             taskLifecycleService = taskLifecycleService,
@@ -64,7 +64,7 @@ final case class InitialHandler(
             jwtToken = jwtToken,
             tab = DefaultTab
           ).map(welcome => View.base("План развития", welcome).toString),
-        defaultPage = View.base("План развития", View.login(none)).toString
+        fallbackPage = View.base("План развития", View.login(none)).toString
       )
 ```
 
@@ -77,22 +77,22 @@ final case class InitialHandler(
     - `using Logger[IO]` — логгер для записи ошибок.
 
 2. **`extends AuthorizationHandler(middleware)`** — наследуемся от базового класса.
-   Это даёт доступ к методам `handleUserIO`/`handleUserIOOpt` (см. «Базовый класс
+   Это даёт доступ к методам `withUserFromCookie`/`withUserFromCookieOpt` (см. «Базовый класс
    `AuthorizationHandler`» в разделе аутентификации).
 
 3. **`Routes.index.handleIO`** — регистрируем обработчик, принимающий `Cookie`. Метод `handleIO`
    используется вместо `handle`, потому что логика требует эффекта `IO` (проверка токена, загрузка задач).
 
-4. **`handleUserIO(cookie)(f, defaultPage)`** — передаём куку **первым** аргументом,
-   лямбду `f` и `defaultPage` — вторым. Метод сам:
+4. **`withUserFromCookie(cookie)(f, fallbackPage)`** — передаём куку **первым** аргументом,
+   лямбду `f` и `fallbackPage` — вторым. Метод сам:
     - Извлекает токен из куки `token`.
     - Проверяет его через `middleware.fromToken.run` и передаёт `(user, jwtToken)` в `f`.
-    - Если токена в куке нет или он невалиден — возвращает `defaultPage`
+    - Если токена в куке нет или он невалиден — возвращает `fallbackPage`
       (заранее сформированную страницу логина).
 
 5. **`f = (user, jwtToken) => ...`** — формирует приветственную страницу через
    `getViewWelcomeHtml` и оборачивает её в `View.base`. Если токен валиден — пользователь
-   видит свой рабочий стол; иначе — `defaultPage` (форма входа).
+   видит свой рабочий стол; иначе — `fallbackPage` (форма входа).
 
 Любая проблема с токеном (истёк, повреждён, неверная подпись) **не роняет приложение**:
 пользователь просто увидит форму входа, как будто он не авторизован. Ошибка при этом логируется.
@@ -170,10 +170,10 @@ object JwtAuthMiddleware:
 
 ## Считывание токена из куки
 
-Метод `handleUserIO(cookie)(f, defaultPage)` сам находит куку `token` и подставляет `defaultPage`,
+Метод `withUserFromCookie(cookie)(f, fallbackPage)` сам находит куку `token` и подставляет `fallbackPage`,
 если её нет или она невалидна.
 
-Внутри `handleUserIO(cookie)` токен извлекается так:
+Внутри `withUserFromCookie(cookie)` токен извлекается так:
 
 ```dotty
 cookie.values
@@ -181,7 +181,7 @@ cookie.values
     case rq if rq.name == "token" => rq.content
   } match
   case Some(token) => middleware.fromToken.run(token).flatMap(f)...
-  case None => defaultPage.pure[IO]
+  case None => fallbackPage.pure[IO]
 ```
 
 **Как это работает:**
@@ -190,7 +190,7 @@ cookie.values
 - **`collectFirst`** — ищет первый элемент, удовлетворяющий предикату.
 - **`case rq if rq.name == "token"`** — если имя куки равно `"token"`, возвращаем её содержимое
   (`rq.content`) — это строка JWT-токена.
-- Если куки с таким именем нет — `None`, и возвращается `defaultPage`.
+- Если куки с таким именем нет — `None`, и возвращается `fallbackPage`.
 
 ## Формирование приветственной страницы
 

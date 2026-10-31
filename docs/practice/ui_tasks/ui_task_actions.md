@@ -101,7 +101,7 @@ final case class CompleteTaskHandler(
         // ToDo: https://github.com/creativescala/krop/pull/57
         val authorization: Authorization =
           Authorization(Token(AuthScheme.Bearer, request.token))
-        handleUserIOOpt(authorization)(run)
+        withUserFromHeaderOpt(authorization)(run)
 end CompleteTaskHandler
 ```
 
@@ -129,9 +129,9 @@ end CompleteTaskHandler
 4. **`.valueOr(errors => ...)`** — если есть ошибки валидации, показываем форму
    задачи с сообщением об ошибке. Пользователь может исправить данные и попробовать снова.
 
-5. **`handleUserIOOpt(authorization)(run)`** — токен приходит в теле запроса, поэтому
+5. **`withUserFromHeaderOpt(authorization)(run)`** — токен приходит в теле запроса, поэтому
    вручную собираем заголовок `Authorization` из `request.token` (`Authorization(Token(AuthScheme.Bearer, ...))`)
-   и вызываем `handleUserIOOpt`.
+   и вызываем `withUserFromHeaderOpt`.
 
 ### Что такое `HomeView`?
 
@@ -325,7 +325,7 @@ final case class DeferTaskHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.deferFormTask.handleIO: (uuid: UUID, authorization: Authorization) =>
-      handleUserIOOpt(authorization): (user, jwtToken) =>
+      withUserFromHeaderOpt(authorization): (user, jwtToken) =>
         val taskId = TaskId(uuid)
         for
           _ <- taskLifecycleService.defer(
@@ -345,7 +345,7 @@ end DeferTaskHandler
 
 **Пошаговый разбор:**
 
-1. **`handleUserIOOpt(authorization)`** — мягкая проверка токена из заголовка
+1. **`withUserFromHeaderOpt(authorization)`** — мягкая проверка токена из заголовка
    (невалидный токен → `None`, а не исключение). `authorization` — первый аргумент,
    лямбда `(user, jwtToken)` — второй.
 
@@ -440,7 +440,7 @@ final case class StartTaskHandler(
       // ToDo: https://github.com/creativescala/krop/pull/57
       val authorization: Authorization =
         Authorization(Token(AuthScheme.Bearer, request.token))
-      handleUserIOOpt(authorization)(run)
+      withUserFromHeaderOpt(authorization)(run)
 end StartTaskHandler
 ```
 
@@ -607,7 +607,7 @@ final case class QueueTaskHandler(
       // ToDo: https://github.com/creativescala/krop/pull/57
       val authorization: Authorization =
         Authorization(Token(AuthScheme.Bearer, request.token))
-      handleUserIOOpt(authorization)(run)
+      withUserFromHeaderOpt(authorization)(run)
 end QueueTaskHandler
 ```
 
@@ -763,7 +763,7 @@ final case class DeleteTaskHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.deleteTask.handleIO: (uuid: UUID, authorization: Authorization) =>
-      handleUserIOOpt(authorization): (user, token) =>
+      withUserFromHeaderOpt(authorization): (user, token) =>
         val taskId = TaskId(uuid)
         taskLifecycleService
           .delete(
@@ -775,7 +775,7 @@ end DeleteTaskHandler
 
 **Пошаговый разбор:**
 
-1. **`handleUserIOOpt(authorization)`** — мягкая проверка токена из заголовка:
+1. **`withUserFromHeaderOpt(authorization)`** — мягкая проверка токена из заголовка:
    `authorization` — первый аргумент, лямбда `(user, token)` — второй.
 
 2. **`TaskId(uuid)`** — унарная сверка уже декодированного маршрутом `UUID`.

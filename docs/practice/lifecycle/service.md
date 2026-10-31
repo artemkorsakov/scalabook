@@ -183,7 +183,7 @@ private def findTask(
     userId: UserId,
     status: Status
 ): F[Task] =
-  getByUser(id, userId).flatMap:
+  taskService.get(id, userId).flatMap:
     case Some(task) if task.status == status =>
       MonadThrow[F].pure(task) // Задача найдена и имеет ожидаемый статус
     case Some(_) =>
@@ -296,7 +296,7 @@ def get(id: TaskId, userId: UserId): F[Option[TaskCard]] =
     types     <- taskTypeService.getByUser(userId)
     sections  <- sectionService.getByUser(userId)
     goals     <- goalService.getByUser(userId)
-    maybeTask <- getByUser(id, userId)
+    maybeTask <- taskService.get(id, userId)
   yield maybeTask.map: task =>
     val typesMap    = types.map(t => (t.id, t.name)).toMap
     val sectionsMap = sections.map(t => (t.id, t.name)).toMap
@@ -423,7 +423,7 @@ def addTimeSpent(
     userId: UserId,
     timeSpent: Int :| Positive
 ): F[Boolean] =
-  getByUser(id, userId).flatMap:
+  taskService.get(id, userId).flatMap:
     case Some(task) if task.status != Completed =>
       val updated = task.copy(
         timeSpent =
@@ -442,12 +442,12 @@ def addTimeSpent(
 
 Важная и необратимая операция.
 Сервис жизненного цикла делегирует её напрямую в `TaskService`, который отвечает за постоянное хранение.
-Перед удалением выполняется проверка, что задача принадлежит пользователю (`getByUser`),
+Перед удалением выполняется проверка, что задача принадлежит пользователю (`taskService.get(id, userId)`),
 чтобы предотвратить удаление чужих данных.
 
 ```dotty
 def delete(id: TaskId, userId: UserId): F[Boolean] =
-  getByUser(id, userId).flatMap:
+  taskService.get(id, userId).flatMap:
     case Some(_) => taskService.delete(id)
     case None    => MonadThrow[F].pure(false)
 ```

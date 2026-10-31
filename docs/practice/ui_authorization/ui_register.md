@@ -146,14 +146,14 @@ final case class NewUserHandler(
   val handler: Handler =
     Routes.newUser.handleIO {
       (request: LoginRequest) =>
-        request.parse
-          .map { case (username, password) =>
+        UserRegistration.parse(request)
+          .map { registration =>
             authService
-              .newUser(username, password)
+              .newUser(registration.username, registration.password)
               .flatMap: (token, id) =>
                 getViewWelcome(
                   taskLifecycleService = taskLifecycleService,
-                  user = UserInfo(id, username),
+                  user = UserInfo(id, registration.username),
                   jwtToken = token,
                   tab = DefaultTab
                 ).map(_.asRight.some)
@@ -171,11 +171,13 @@ final case class NewUserHandler(
 
 **Пошаговый разбор:**
 
-1. **`request.parse`** — валидируем поля запроса. Возвращает `Validated[String, (UserName, Password)]`:
+1. **`UserRegistration.parse(request)`** — валидируем поля запроса. Раньше для этого был
+   отдельный расширяющий объект `Parser` с методом `request.parse` (удалён в `f186beb`).
+   Теперь это метод компаньона, возвращает `ValidatedNec[String, UserRegistration]`:
     - Если `username` или `password` пустые, слишком короткие или длинные — ошибка.
-    - Если всё в порядке — пара `(UserName, Password)`.
-2. **`.map { case (username, password) => ... }`** — при успешной валидации вызываем
-   `authService.newUser(username, password)`.
+    - Если всё в порядке — `UserRegistration(username, password)`.
+2. **`.map { registration => ... }`** — при успешной валидации вызываем
+   `authService.newUser(registration.username, registration.password)`.
 3. **`authService.newUser`** — создаёт пользователя в БД:
     - Если логин свободен — создаёт пользователя и возвращает `(JwtToken, UserId)`.
     - Если логин занят — выбрасывает `UserNameInUse(username)`.
@@ -186,7 +188,7 @@ final case class NewUserHandler(
     - **`UserNameInUse(username)`** — возвращаем форму регистрации с сообщением
       «Данный логин уже занят: {username}».
     - **Любое другое исключение** — логируем и возвращаем `None`.
-6. **`.valueOr(errors => asError(errors.mkString_(";")))`** — если `request.parse` вернул ошибку
+6. **`.valueOr(errors => asError(errors.mkString_(";")))`** — если `UserRegistration.parse` вернул ошибку
    (например, пустой логин), формируем форму регистрации с сообщением об ошибке.
    `errors.mkString_(";")` объединяет все ошибки в одну строку через `;`.
 
@@ -285,7 +287,7 @@ case UserNameInUse(username) =>
   бизнес-логики / внутренняя ошибка) и позволяет клиенту различать их.
 - **htmx для интерактивности** — все переходы и отправки форм происходят без перезагрузки
   страницы. Пользователь видит мгновенную реакцию на свои действия.
-- **Валидация на нескольких уровнях** — `request.parse` проверяет формат данных,
+- **Валидация на нескольких уровнях** — `UserRegistration.parse` проверяет формат данных,
   `authService.newUser` — бизнес-правила (например, уникальность логина).
 - **Единый механизм ошибок** — все ошибки возвращаются в виде HTML-формы с сообщением,
   что упрощает обработку на клиенте.

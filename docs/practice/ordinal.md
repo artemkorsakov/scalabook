@@ -370,7 +370,7 @@ final case class CreateTaskModalHandler(
   val handler: Handler =
     Routes.getTaskCreate.handleIO:
       (tab: String, authorization: Authorization) =>
-        handleUserIO(authorization): (user, token) =>
+        withUserFromHeader(authorization): (user, token) =>
           val ordinalIO: IO[Ordinal] =
             TaskStatus.find(tab) match
               case Some(status)
@@ -403,7 +403,7 @@ end CreateTaskModalHandler
 
 **Пошаговый разбор:**
 
-1. **`handleUserIO(authorization)(...)`** — стандартная проверка токена из заголовка.
+1. **`withUserFromHeader(authorization)(...)`** — стандартная проверка токена из заголовка.
    `authorization` — первый аргумент, лямбда `(user, token)` — второй.
 2. **`TaskStatus.find(tab)`** — определяем статус по имени вкладки.
    Вкладки `"in-progress"`, `"planned"`, `"knowledge-base"` маппятся на соответствующие `Status`.

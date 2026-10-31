@@ -48,7 +48,7 @@ final case class EditFormTaskHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.editFormTask.handleIO: (uuid: UUID, authorization: Authorization) =>
-      handleUserIOOpt(authorization): (user, jwtToken) =>
+      withUserFromHeaderOpt(authorization): (user, jwtToken) =>
         getViewEditTaskModal(
           settingsService = settingsService,
           taskLifecycleService = taskLifecycleService,
@@ -818,7 +818,7 @@ final case class EditTaskHandler(
       // ToDo: https://github.com/creativescala/krop/pull/57
       val authorization: Authorization =
         Authorization(Token(AuthScheme.Bearer, request.token))
-      handleUserIOOpt(authorization)(run)
+      withUserFromHeaderOpt(authorization)(run)
 end EditTaskHandler
 ```
 
@@ -883,9 +883,9 @@ end EditTaskHandler
       «мягкому» поведению). На практике ошибки валидации обрабатываются
       в `taskLifecycleService.update`, поэтому эта ветка срабатывает редко.
 
-5. **`handleUserIOOpt(authorization)(run)`** — токен приходит в теле запроса, поэтому
+5. **`withUserFromHeaderOpt(authorization)(run)`** — токен приходит в теле запроса, поэтому
    вручную собираем заголовок `Authorization` из `request.token`
-   (`Authorization(Token(AuthScheme.Bearer, request.token))`) и вызываем `handleUserIOOpt`.
+   (`Authorization(Token(AuthScheme.Bearer, request.token))`) и вызываем `withUserFromHeaderOpt`.
    Если токен невалиден — `None`.
 
 **Почему после успешного обновления возвращается `getViewTask`, а не `getViewEditTaskModal`?**

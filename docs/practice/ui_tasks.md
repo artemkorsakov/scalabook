@@ -51,7 +51,7 @@ final case class CreateTaskModalHandler(
   val handler: Handler =
     Routes.getTaskCreate.handleIO:
       (tab: String, authorization: Authorization) =>
-        handleUserIO(authorization): (user, token) =>
+        withUserFromHeader(authorization): (user, token) =>
           val ordinalIO: IO[Ordinal] =
             TaskStatus.find(tab) match
               case Some(status)
@@ -83,7 +83,7 @@ final case class CreateTaskModalHandler(
 
 **Пошаговый разбор:**
 
-1. **`handleUserIO(authorization)(...)`** — стандартная проверка токена через
+1. **`withUserFromHeader(authorization)(...)`** — стандартная проверка токена через
    `AuthorizationHandler`. `authorization` из заголовка передаётся первым аргументом;
    лямбда `(user, token)` — вторым. После успешной проверки получаем `user` и `token`.
 
@@ -535,7 +535,7 @@ final case class CreateTaskHandler(
       // ToDo: https://github.com/creativescala/krop/pull/57
       val authorization: Authorization =
         Authorization(Token(AuthScheme.Bearer, request.token))
-      handleUserIO(authorization)(create)
+      withUserFromHeader(authorization)(create)
 ```
 
 **Пошаговый разбор:**
@@ -564,13 +564,13 @@ final case class CreateTaskHandler(
 4. **Ветка `Invalid`:** возвращаем модальное окно с ошибками валидации, объединёнными
    через `"; "`.
 
-5. **`handleUserIO(authorization)(create)`** — токен приходит в теле запроса, а не в заголовке.
-   Поскольку `handleUserIO` ждёт `Authorization`, мы вручную собираем заголовок из токена формы:
+5. **`withUserFromHeader(authorization)(create)`** — токен приходит в теле запроса, а не в заголовке.
+   Поскольку `withUserFromHeader` ждёт `Authorization`, мы вручную собираем заголовок из токена формы:
    ```dotty
    val authorization: Authorization =
      Authorization(Token(AuthScheme.Bearer, request.token))
    ```
-   После этого `handleUserIO` проверяет его через middleware и передаёт `(user, jwtToken)`
+   После этого `withUserFromHeader` проверяет его через middleware и передаёт `(user, jwtToken)`
    в лямбду `create`.
 
    > Примечание: пока это временное решение (см. `// ToDo` — ждём поддержку токена из формы
@@ -694,7 +694,7 @@ final case class HomeHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.home.handleIO: (tab: String, cookie: Cookie) =>
-      handleUserIO(cookie)(
+      withUserFromCookie(cookie)(
         f = (user, jwtToken) =>
           getViewWelcome(
             taskLifecycleService = taskLifecycleService,
@@ -705,19 +705,19 @@ final case class HomeHandler(
             jwtToken = jwtToken,
             tab = tab
           ),
-        defaultPage = View.login(None).toString
+        fallbackPage = View.login(None).toString
       )
 ```
 
 **Пошаговый разбор:**
 
-1. **`extends AuthorizationHandler(middleware)`** — даёт доступ к `handleUserIO(cookie)`.
-2. **`handleUserIO(cookie)(f, defaultPage)`** — извлекает токен из куки `token`,
+1. **`extends AuthorizationHandler(middleware)`** — даёт доступ к `withUserFromCookie(cookie)`.
+2. **`withUserFromCookie(cookie)(f, fallbackPage)`** — извлекает токен из куки `token`,
    проверяет его и передаёт `(user, jwtToken)` в `f`. Если токена нет/невалиден —
-   возвращает `defaultPage` (форму логина).
+   возвращает `fallbackPage` (форму логина).
 3. **`f`** — строит приветственную страницу нужной вкладки через `getViewWelcome`.
 4. Все ошибки (`AuthorizationException` и прочие) обрабатываются внутри `AuthorizationHandler`
-   и сводятся к возврату `defaultPage` — приложение не падает.
+   и сводятся к возврату `fallbackPage` — приложение не падает.
 
 **Почему `HomeHandler` отличается от `InitialHandler`?**
 

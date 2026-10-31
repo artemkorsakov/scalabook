@@ -869,7 +869,7 @@ final case class CreatePeriodicStepHandler(
       // ToDo: https://github.com/creativescala/krop/pull/57
       val authorization: Authorization =
         Authorization(Token(AuthScheme.Bearer, request.token))
-      handleUserIO(authorization)(create)
+      withUserFromHeader(authorization)(create)
 end CreatePeriodicStepHandler
 ```
 
@@ -945,7 +945,7 @@ final case class EditPeriodicStepRowHandler(
   val handler: Handler =
     Routes.editPeriodicStepRow.handleIO:
       (id: Int, authorization: Authorization) =>
-        handleUserIO(authorization): (user: UserInfo, jwtToken: JwtToken) =>
+        withUserFromHeader(authorization): (user: UserInfo, jwtToken: JwtToken) =>
           for
             stepId <- IO.fromEither(PeriodicStepId.either(id).leftMap(new IllegalArgumentException(_)))
             steps  <- settingsService.getSteps(user.id)
@@ -1007,7 +1007,7 @@ final case class EditPeriodicStepHandler(
         // ToDo: https://github.com/creativescala/krop/pull/57
         val authorization: Authorization =
           Authorization(Token(AuthScheme.Bearer, request.token))
-        handleUserIO(authorization)(edit)
+        withUserFromHeader(authorization)(edit)
 
   private def getError(...): IO[String] = ...
 end EditPeriodicStepHandler
@@ -1073,7 +1073,7 @@ final case class GetPeriodicStepRowHandler(
   val handler: Handler =
     Routes.getPeriodicStepRow.handleIO:
       (id: Int, authorization: Authorization) =>
-        handleUserIO(authorization): (user: UserInfo, jwtToken: JwtToken) =>
+        withUserFromHeader(authorization): (user: UserInfo, jwtToken: JwtToken) =>
           for
             stepId <- IO.fromEither(PeriodicStepId.either(id).leftMap(new IllegalArgumentException(_)))
             steps  <- settingsService.getSteps(user.id)
@@ -1094,7 +1094,7 @@ final case class DeletePeriodicStepHandler(
   val handler: Handler =
     Routes.deletePeriodicStep.handleIO:
       (id: Int, authorization: Authorization) =>
-        handleUserIO(authorization): (user: UserInfo, jwtToken: JwtToken) =>
+        withUserFromHeader(authorization): (user: UserInfo, jwtToken: JwtToken) =>
           PeriodicStepId.either(id) match
             case Right(stepId) =>
               for

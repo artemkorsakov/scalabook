@@ -74,7 +74,7 @@ final case class CreateTaskTypeHandler(
       // ToDo: https://github.com/creativescala/krop/pull/57
       val authorization: Authorization =
         Authorization(Token(AuthScheme.Bearer, request.token))
-      handleUserIO(authorization)(create)
+      withUserFromHeader(authorization)(create)
 ```
 
 **Пошаговый разбор:**
@@ -98,13 +98,13 @@ final case class CreateTaskTypeHandler(
       и загружаем страницу с сообщением об ошибке.
 5. **При ошибке валидации** — сразу загружаем страницу настроек с сообщением
    об ошибке.
-6. **`handleUserIO(authorization)(create)`** — токен приходит в теле запроса, а не в заголовке.
+6. **`withUserFromHeader(authorization)(create)`** — токен приходит в теле запроса, а не в заголовке.
    Поэтому вручную собираем заголовок `Authorization` из `request.token`:
    ```dotty
    val authorization: Authorization =
      Authorization(Token(AuthScheme.Bearer, request.token))
    ```
-   После чего `handleUserIO` проверяет его через middleware и передаёт
+   После чего `withUserFromHeader` проверяет его через middleware и передаёт
    `(user, jwtToken)` в лямбду `create`.
 
    > Примечание: пока это временное решение (см. `// ToDo` — ждём поддержку токена из формы
@@ -135,7 +135,7 @@ final case class DeleteTaskTypeHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.deleteTaskType.handleIO: (id: Int, authorization: Authorization) =>
-      handleUserIO(authorization): (user: UserInfo, jwtToken: JwtToken) =>
+      withUserFromHeader(authorization): (user: UserInfo, jwtToken: JwtToken) =>
         TaskTypeId.either(id) match
           case Right(taskTypeId) =>
             for
@@ -161,14 +161,14 @@ final case class DeleteTaskTypeHandler(
 
 1. **`(id: Int, authorization: Authorization)`** — обработчик принимает ID записи
    (из пути) и заголовок `Authorization`.
-2. **`handleUserIO(authorization)(...)`** — стандартная проверка токена через
+2. **`withUserFromHeader(authorization)(...)`** — стандартная проверка токена через
    `AuthorizationHandler`. В отличие от создания, здесь токен приходит **в заголовке**:
    `authorization` передаётся первым аргументом, а лямбда `(user, jwtToken)` — вторым.
 3. **`TaskTypeId.either(id)`** — валидация ID:
     - **`Right(taskTypeId)`** — ID валиден, удаляем запись и загружаем обновлённую страницу.
     - **`Left(error)`** — ID невалиден (например, отрицательный), показываем страницу
       с ошибкой.
-4. **Синтаксис `handleUserIO(authorization): (user, jwtToken) => ...`** — это
+4. **Синтаксис `withUserFromHeader(authorization): (user, jwtToken) => ...`** — это
    каррированный вызов: `authorization`/`token` первым аргументом, лямбда,
    обрабатывающая `(user, jwtToken)`, — вторым. Знак `:` вводит тип/тело лямбды.
 
@@ -197,7 +197,7 @@ final case class EditTaskTypeRowHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.editTaskTypeRow.handleIO: (id: Int, authorization: Authorization) =>
-      handleUserIO(authorization): (user: UserInfo, jwtToken: JwtToken) =>
+      withUserFromHeader(authorization): (user: UserInfo, jwtToken: JwtToken) =>
         for
           taskTypeId <- IO.fromEither(
             TaskTypeId.either(id).leftMap(new IllegalArgumentException(_))
@@ -408,7 +408,7 @@ final case class EditTaskTypeHandler(
       // ToDo: https://github.com/creativescala/krop/pull/57
       val authorization: Authorization =
         Authorization(Token(AuthScheme.Bearer, request.token))
-      handleUserIO(authorization)(edit)
+      withUserFromHeader(authorization)(edit)
 
   private def getError(
       id: Int,
@@ -516,7 +516,7 @@ final case class GetTaskTypeRowHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.getTaskTypeRow.handleIO: (id: Int, authorization: Authorization) =>
-      handleUserIO(authorization): (user: UserInfo, jwtToken: JwtToken) =>
+      withUserFromHeader(authorization): (user: UserInfo, jwtToken: JwtToken) =>
         for
           taskTypeId <- IO.fromEither(
             TaskTypeId.either(id).leftMap(new IllegalArgumentException(_))

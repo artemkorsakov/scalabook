@@ -93,7 +93,7 @@ final case class AddTimeSpentHandler(
         // ToDo: https://github.com/creativescala/krop/pull/57
         val authorization: Authorization =
           Authorization(Token(AuthScheme.Bearer, request.token))
-        handleUserIOOpt(authorization)(run)
+        withUserFromHeaderOpt(authorization)(run)
 end AddTimeSpentHandler
 ```
 
@@ -121,13 +121,13 @@ end AddTimeSpentHandler
    `None`. Это приведёт к 404. В реальном приложении можно было бы показать
    страницу с сообщением об ошибке.
 
-6. **`handleUserIOOpt(authorization)(run)`** — токен приходит в теле запроса, а не в заголовке.
+6. **`withUserFromHeaderOpt(authorization)(run)`** — токен приходит в теле запроса, а не в заголовке.
    Поэтому вручную собираем заголовок `Authorization` из `request.token`:
    ```dotty
    val authorization: Authorization =
      Authorization(Token(AuthScheme.Bearer, request.token))
    ```
-   после чего `handleUserIOOpt` проверяет его через middleware и передаёт
+   после чего `withUserFromHeaderOpt` проверяет его через middleware и передаёт
    `(user, jwtToken)` в лямбду `run`.
 
 ### Что делает `addTimeSpent`

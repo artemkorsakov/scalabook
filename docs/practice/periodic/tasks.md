@@ -186,13 +186,12 @@ def getByUser(userId: UserId): F[Vector[PeriodicTask]] =
 
 Возвращает **все** экземпляры пользователя. Фильтрация по `completed` и **проверка на существование** выполняются в `PeriodicTaskLifecycleService`.
 
-**Почему не фильтруется в SQL?** Потому что `getByUser` используется в двух сценариях:
+**Почему не фильтруется в SQL?** 
 
 - **`getTasks`** — фильтрует `completed == false` после создания недостающих.
-- **`getByUser` (private)** — проверяет, существует ли задача на конкретную дату (независимо от `completed`).
+- **`createTask`** — проверяет, есть ли уже задача на эту дату: `tasks.exists(task => task.periodicType == periodicType && task.date == date)`. Эта проверка не зависит от `completed`.
 
-Если бы SQL фильтровал по `completed == false`, проверка «создана ли задача на эту дату» 
-не увидела бы завершённые задачи — и создала бы дубликат. Поэтому фильтрация — на уровне сервиса.
+Если бы SQL фильтровал по `completed == false`, этот `exists`-проверка не увидела бы завершённые задачи — и создала бы дубликат. Поэтому фильтрация — на уровне сервиса.
 
 ### `update`
 
@@ -584,15 +583,15 @@ periodicTaskService.create(createItem).map: id =>
 
 ```dotty
 def get(id: PeriodicTaskId, userId: UserId): F[Option[PeriodicTaskCard]] =
-  getByUser(id, userId).map(_.map(PeriodicTaskCard.apply))
+  periodicTaskService.get(id, userId).map(_.map(PeriodicTaskCard.apply))
 ```
 
 **Разбор:**
 
-- **`getByUser(id, userId)`** — загружает задачу с проверкой владельца.
+- **`periodicTaskService.get(id, userId)`** — загружает задачу с проверкой владельца.
 - **`.map(_.map(PeriodicTaskCard.apply))`** — если задача есть, конвертирует в карточку.
 
-**Почему через `getByUser`, а не напрямую `periodicTaskService.get`?** `getByUser` фильтрует по `userId` — защита от доступа к чужим задачам.
+**Почему напрямую `periodicTaskService.get(id, userId)`?** В `cb36973` проверка владельца переехала в низкоуровневый сервис: метод принимает `userId` и фильтрует по нему. `LifecycleService` просто передаёт `userId`. Прошлый приватный helper `getByUser(id, userId)` удалён.
 
 ### `completeStep`
 
@@ -602,7 +601,7 @@ def completeStep(
     userId: UserId,
     number: String
 ): F[Boolean] =
-  getByUser(id, userId).flatMap:
+  periodicTaskService.get(id, userId).flatMap:
     case Some(task) =>
       val updatedSteps =
         task.plan.steps.map: step =>
@@ -617,7 +616,7 @@ def completeStep(
 
 **Разбор:**
 
-1. **`getByUser(id, userId)`** — загружает задачу с проверкой владельца.
+1. **`periodicTaskService.get(id, userId)`** — загружает задачу с проверкой владельца.
 2. **`case Some(task)`** — если задача найдена:
     - **`.map`** по шагам: если номер совпадает — помечаем выполненным.
     - **`periodicTaskService.update`** — сохраняем обновлённый план.
@@ -633,7 +632,7 @@ def completeStep(
 
 ```dotty
 def complete(id: PeriodicTaskId, userId: UserId): F[Boolean] =
-  getByUser(id, userId).flatMap:
+  periodicTaskService.get(id, userId).flatMap:
     case Some(task) => periodicTaskService.update(task.copy(completed = true))
     case None       => false.pure[F]
 ```
@@ -650,7 +649,7 @@ def complete(id: PeriodicTaskId, userId: UserId): F[Boolean] =
 
 ```dotty
 def updatePlan(id: PeriodicTaskId, userId: UserId, plan: Plan): F[Boolean] =
-  getByUser(id, userId).flatMap:
+  periodicTaskService.get(id, userId).flatMap:
     case Some(task) => periodicTaskService.update(task.copy(plan = plan))
     case None       => false.pure[F]
 ```
@@ -665,39 +664,14 @@ def updatePlan(id: PeriodicTaskId, userId: UserId, plan: Plan): F[Boolean] =
 
 ```dotty
 def delete(id: PeriodicTaskId, userId: UserId): F[Boolean] =
-  getByUser(id, userId).flatMap:
+  periodicTaskService.get(id, userId).flatMap:
     case Some(_) => periodicTaskService.delete(id)
     case None    => false.pure[F]
 ```
 
 **Разбор:** удаляет задачу, только если она принадлежит пользователю.
 
-**Почему проверка владельца здесь, а не в `PeriodicTaskService`?** 
-`PeriodicTaskService` — низкоуровневый сервис, он не знает о пользователях. 
-Проверка владельца — бизнес-правило уровня `LifecycleService`.
-
-### `getByUser` (private)
-
-```dotty
-private[services] def getByUser(
-    id: PeriodicTaskId,
-    userId: UserId
-): F[Option[PeriodicTask]] =
-  periodicTaskService.get(id).map: task =>
-    task.filter(_.userId == userId)
-```
-
-**Разбор:**
-
-1. **`periodicTaskService.get(id)`** — загружает задачу по ID (без проверки владельца).
-2. **`.filter(_.userId == userId)`** — оставляет только если владелец совпадает.
-
-**Почему `private[services]`, а не `private`?** Потому что `getByUser` используется в **тестах** (в пакете `services`), 
-но не должен быть доступен из хэндлеров (пакет `http.handlers`). 
-`private[services]` даёт доступ тестам, но скрывает от хэндлеров.
-
-**Почему не `public`?** Потому что `getByUser(id, userId)` — это **внутренняя утилита**. 
-Публичный API — `get(id, userId)` (возвращает карточку). `getByUser` возвращает сырую модель — это деталь реализации.
+**Почему проверка владельца не в `LifecycleService`?** В `cb36973` она переехала в низкоуровневый сервис — `periodicTaskService.get(id, userId)` уже фильтрует по `userId`. `LifecycleService` не держит собственный приватный helper и просто вызывает `periodicTaskService.get(id, userId)`.
 
 ## UI: вкладка «В работе»
 
@@ -882,7 +856,7 @@ final case class PeriodicTaskHandlers(
 
   val openHandler: Handler =
     openPeriodicTask.handleIO: (uuid: UUID, cookie: Cookie) =>
-      handleUserIOOpt(cookie)(
+      withUserFromCookieOpt(cookie)(
         f = (user, jwtToken) =>
           service.get(PeriodicTaskId(uuid), user.id).map {
             _.map { periodicTask =>
@@ -890,13 +864,13 @@ final case class PeriodicTaskHandlers(
               View.base("План развития", html).toString
             }
           },
-        defaultPage = NotFoundView
+        fallbackPage = NotFoundView
       )
 
   val compileStepHandler: Handler =
     completePlanStepPeriodicTask.handleIO:
       (uuid: UUID, number: String, authorization: Authorization) =>
-        handleUserIOOpt(authorization) { (user, jwtToken) =>
+        withUserFromHeaderOpt(authorization) { (user, jwtToken) =>
           val periodicTaskId = PeriodicTaskId(uuid)
           for
             _         <- service.completeStep(periodicTaskId, user.id, number)
@@ -907,14 +881,14 @@ final case class PeriodicTaskHandlers(
   val completeHandler: Handler =
     completeFormPeriodicTask.handleIO:
       (uuid: UUID, authorization: Authorization) =>
-        handleUserIOOpt(authorization): (user, token) =>
+        withUserFromHeaderOpt(authorization): (user, token) =>
           val periodicTaskId = PeriodicTaskId(uuid)
           service.complete(id = periodicTaskId, userId = user.id)
             .map(_ => HomeView.some)
 
   val editFormHandler: Handler =
     editFormPeriodicTask.handleIO: (uuid: UUID, authorization: Authorization) =>
-      handleUserIOOpt(authorization): (user, jwtToken) =>
+      withUserFromHeaderOpt(authorization): (user, jwtToken) =>
         val periodicTaskId = PeriodicTaskId(uuid)
         service.get(periodicTaskId, user.id).map {
           _.map { task =>
@@ -951,11 +925,11 @@ final case class PeriodicTaskHandlers(
       // ToDo: https://github.com/creativescala/krop/pull/57
       val authorization: Authorization =
         Authorization(Token(AuthScheme.Bearer, request.token))
-      handleUserIOOpt(authorization)(run)
+      withUserFromHeaderOpt(authorization)(run)
 
   val deleteHandler: Handler =
     deletePeriodicTask.handleIO: (uuid: UUID, authorization: Authorization) =>
-      handleUserIOOpt(authorization): (user, token) =>
+      withUserFromHeaderOpt(authorization): (user, token) =>
         val periodicTaskId = PeriodicTaskId(uuid)
         service.delete(id = periodicTaskId, userId = user.id)
           .map(_ => HomeView.some)
@@ -964,14 +938,14 @@ end PeriodicTaskHandlers
 
 ### Хэндлер открытия `openHandler`
 
-`handleUserIOOpt(cookie)(f, defaultPage)` извлекает токен из куки `token`, проверяет его,
+`withUserFromCookieOpt(cookie)(f, fallbackPage)` извлекает токен из куки `token`, проверяет его,
 вызывает `f`, передавая `(user, jwtToken)`. Если токена нет/невалиден или задача не найдена
-(лямбда вернула `None`) — подставляется `defaultPage` (`NotFoundView`).
+(лямбда вернула `None`) — подставляется `fallbackPage` (`NotFoundView`).
 Извлечение токена из куки инкапсулировано в `AuthorizationHandler`.
 
 ### Хэндлер завершения шага `compileStepHandler`
 
-`handleUserIOOpt(authorization)(...)` проверяет токен из заголовка, `service.completeStep` отмечает
+`withUserFromHeaderOpt(authorization)(...)` проверяет токен из заголовка, `service.completeStep` отмечает
 шаг выполненным, после чего возвращается обновлённая страница.
 
 ### Хэндлер завершения задачи `completeHandler`

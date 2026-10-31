@@ -48,14 +48,14 @@ final case class LoginHandler(
 )(using Logger[IO]):
   val handler: Handler =
     Routes.login.handleIO: (request: LoginRequest) =>
-      request.parse
-        .map { case (username, password) =>
+      UserRegistration.parse(request)
+        .map { registration =>
           authService
-            .login(username, password)
+            .login(registration.username, registration.password)
             .flatMap: (token, id) =>
               getViewWelcome(
                 taskLifecycleService = taskLifecycleService,
-                user = UserInfo(id, username),
+                user = UserInfo(id, registration.username),
                 jwtToken = token,
                 tab = DefaultTab
               ).map(_.some)
@@ -82,24 +82,29 @@ end LoginHandler
 
 2. **`Routes.login.handleIO`** — регистрируем обработчик, принимающий `LoginRequest`.
 
-3. **`request.parse`** — валидируем поля запроса. `LoginRequest.parse` возвращает
-   `ValidatedNec[String, (UserName, Password)]`:
+3. **`UserRegistration.parse(request)`** — валидируем поля запроса. Раньше для этого был
+   отдельный расширяющий объект `Parser` с методом `request.parse`, но в `f186beb` его **удалили**,
+   а логика переехала в метод компаньона `UserRegistration.parse`. Возвращает
+   `ValidatedNec[String, UserRegistration]`:
    ```dotty
-   def parse: ValidatedNec[String, (UserName, Password)] =
-      (
-        UserName.either(request.username).left.map(er =>
-          s"Логин: $er"
-        ).toValidatedNec,
-        Password.either(request.password).left.map(er =>
-          s"Пароль: $er"
-        ).toValidatedNec
-      ).mapN((a, b) => (a, b))
+   object UserRegistration:
+     def parse(request: LoginRequest): ValidatedNec[String, UserRegistration] =
+       (
+         UserName.either(request.username).left.map(er =>
+           s"Логин: $er"
+         ).toValidatedNec,
+         Password.either(request.password).left.map(er =>
+           s"Пароль: $er"
+         ).toValidatedNec
+       ).mapN((username, password) =>
+         UserRegistration(username = username, password = password)
+       )
    ```
     - Если поля пустые или не соответствуют ограничениям — возвращается ошибка.
-    - Если всё в порядке — возвращается пара `(UserName, Password)`.
+    - Если всё в порядке — возвращается `UserRegistration(username, password)`.
 
-4. **`.map { case (username, password) => ... }`** — если валидация прошла успешно,
-   вызываем `authService.login(username, password)`.
+4. **`.map { registration => ... }`** — если валидация прошла успешно, получаем
+   `UserRegistration` и вызываем `authService.login(registration.username, registration.password)`.
 
 5. **`authService.login`** — проверяет пользователя в БД:
     - Если пользователь найден и пароль верный — возвращает `(JwtToken, UserId)`.
@@ -115,7 +120,7 @@ end LoginHandler
       «Некорректный логин или пароль».
     - **Любое другое исключение** — логируем и возвращаем `None`.
 
-8. **`.valueOr(_ => asError())`** — обрабатывает случай, когда `request.parse` вернул ошибку.
+8. **`.valueOr(_ => asError())`** — обрабатывает случай, когда `UserRegistration.parse` вернул ошибку.
    Например, если пользователь отправил пустую форму. В этом случае тоже показываем форму
    логина с сообщением об ошибке.
 
@@ -172,7 +177,7 @@ final case class LogoutHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.logout.handleIO: (authorization: Authorization) =>
-      handleUserIO(authorization): (user: UserInfo, token: JwtToken) =>
+      withUserFromHeader(authorization): (user: UserInfo, token: JwtToken) =>
         authService.logout(token, user.username)
           .as(View.login(none).toString)
 ```
@@ -183,7 +188,7 @@ final case class LogoutHandler(
    `AuthorizationHandler`, который инкапсулирует логику проверки токена. Это избавляет
    от необходимости вручную извлекать токен из заголовка и валидировать его в каждом хэндлере.
 
-2. **`handleUserIO(authorization): (user: UserInfo, token: JwtToken) => ...`** — специальный
+2. **`withUserFromHeader(authorization): (user: UserInfo, token: JwtToken) => ...`** — специальный
    метод, который принимает **два** аргумента:
     - Первый — `authorization` из заголовка запроса (то, что извлекла `handleIO`).
     - Второй (каррированная лямбда) — `(user, token)`.
@@ -218,12 +223,12 @@ final case class LogoutHandler(
 trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
     Logger[IO]
 ):
-  def handleUserIO(authorization: Authorization)(
+  def withUserFromHeader(authorization: Authorization)(
       f: ((UserInfo, JwtToken)) => IO[String]
   ): IO[Option[String]] =
-    handleUserIOOpt(authorization)(f(_).map(_.some))
+    withUserFromHeaderOpt(authorization)(f(_).map(_.some))
 
-  def handleUserIOOpt(authorization: Authorization)(
+  def withUserFromHeaderOpt(authorization: Authorization)(
       f: ((UserInfo, JwtToken)) => IO[Option[String]]
   ): IO[Option[String]] =
     middleware
@@ -237,18 +242,18 @@ trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
         case ex =>
           Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
 
-  def handleUserIOOpt(cookie: Cookie)(
+  def withUserFromCookieOpt(cookie: Cookie)(
       f: ((UserInfo, JwtToken)) => IO[Option[String]],
-      defaultPage: String
+      fallbackPage: => String
   ): IO[String] =
-    handleUserIO(cookie: Cookie)(
-      f(_).map(_.getOrElse(defaultPage)),
-      defaultPage
+    withUserFromCookie(cookie: Cookie)(
+      f(_).map(_.getOrElse(fallbackPage)),
+      fallbackPage
     )
 
-  def handleUserIO(cookie: Cookie)(
+  def withUserFromCookie(cookie: Cookie)(
       f: ((UserInfo, JwtToken)) => IO[String],
-      defaultPage: String
+      fallbackPage: => String
   ): IO[String] =
     cookie.values
       .collectFirst {
@@ -262,13 +267,13 @@ trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
               Logger[IO].error(ex)(
                 s"Ошибка при парсинге токена: ${ex.getMessage}"
               )
-                .as(defaultPage)
+                .as(fallbackPage)
             case ex =>
               Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}")
-                .as(defaultPage)
+                .as(fallbackPage)
       case None =>
         Logger[IO].debug("В cookies не найден токен пользователя")
-          .as(defaultPage)
+          .as(fallbackPage)
 end AuthorizationHandler
 ```
 
@@ -278,27 +283,28 @@ end AuthorizationHandler
    **и** каррированную функцию `f`, которой передаётся `(user, token)`.
 2. Метод вызывает middleware для проверки токена.
 3. Если токен валиден — передаёт `(user, token)` в пользовательскую функцию `f`.
-4. Если заголовка/куки нет или токен невалиден — возвращается запасная страница.
+4. Если заголовка/куки нет или токен невалиден — возвращается `fallbackPage`.
 
 **Два способа передать токен:**
 
-- **`handleUserIO` / `handleUserIOOpt` с `Authorization`** — токен приходит в заголовке
-  `Authorization: Bearer <token>` (формы `/auth/login`, `/auth/logout`, действия задачи).
-  Возвращают `IO[Option[String]]`.
-- **`handleUserIO` / `handleUserIOOpt` с `Cookie`** — токен хранится в куки `token`
-  (открытие страниц: `/home`, `/task/{uuid}`, `/note/{uuid}` и т.д.). Трейт сам извлекает
-  токен из куки и возвращает `IO[String]`, подставляя `defaultPage` при отсутствии/невалидности
-  токена. Для мягкой версии (`handleUserIOOpt`) лямбда возвращает `Option`, и при `None`
-  тоже подставляется `defaultPage`.
+- **`withUserFromHeader` / `withUserFromHeaderOpt` с `Authorization`** — токен приходит
+  в заголовке `Authorization: Bearer <token>` (формы `/auth/login`, `/auth/logout`,
+  действия задачи). Возвращают `IO[Option[String]]`.
+- **`withUserFromCookie` / `withUserFromCookieOpt` с `Cookie`** — токен хранится в куки
+  `token` (открытие страниц: `/home`, `/task/{uuid}`, `/note/{uuid}` и т.д.). Трейт сам
+  извлекает токен из куки и возвращает `IO[String]`, подставляя `fallbackPage` при
+  отсутствии/невалидности токена. `fallbackPage` — **по имени** (`=> String`), то есть
+  вычисляется только при необходимости. Для мягкой версии (`withUserFromCookieOpt`) лямбда
+  возвращает `Option`, и при `None` тоже подставляется `fallbackPage`.
 
 **Преимущества такого подхода:**
 
 - **Единообразие**: все защищённые хэндлеры используют один и тот же механизм проверки.
 - **Безопасность по умолчанию**: если разработчик забыл проверить токен — компилятор
-  заставит его использовать `handleUserIO`, потому что обычный `handleIO` не даст доступ
+  заставит его использовать `withUserFromHeader`, потому что обычный `handleIO` не даст доступ
   к `UserInfo`.
 - **Единая точка для токена из куки**: извлечение `token` из куки и подстановка
-  `defaultPage` реализованы один раз в `AuthorizationHandler`, а не в каждом хэндлере.
+  `fallbackPage` реализованы один раз в `AuthorizationHandler`, а не в каждом хэндлере.
 
 ## Регистрация хэндлеров в Main
 

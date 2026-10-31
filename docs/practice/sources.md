@@ -344,7 +344,7 @@ final case class OpenSourceHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.openSource.handleIO: (id: Int, cookie: Cookie) =>
-      handleUserIOOpt(cookie)(
+      withUserFromCookieOpt(cookie)(
         f = (user, jwtToken) =>
           TaskTypeId.either(id) match
             case Right(taskTypeId) =>
@@ -369,20 +369,20 @@ final case class OpenSourceHandler(
               }
             case Left(error) =>
               Logger[IO].error(error).as(none),
-        defaultPage = NotFoundView
+        fallbackPage = NotFoundView
       )
 ```
 
 **Пошаговый разбор:**
 
-1. **`handleUserIOOpt(cookie)(f, defaultPage)`** — извлекает токен из куки `token`, проверяет
+1. **`withUserFromCookieOpt(cookie)(f, fallbackPage)`** — извлекает токен из куки `token`, проверяет
    его через middleware и передаёт `(user, jwtToken)` в лямбду `f`. Если токена нет или
-   невалиден — возвращает `defaultPage` (404). Извлечение токена из куки инкапсулировано
+   невалиден — возвращает `fallbackPage` (404). Извлечение токена из куки инкапсулировано
    в `AuthorizationHandler` (как и в `OpenTaskHandler`).
 2. **Парсинг ID** через `TaskTypeId.either(id)` — валидация на уровне типа.
 3. **Загрузка двух сущностей:** тип задачи и источник. 
 4. **`(maybeTaskType, maybeSource).mapN`** — если обе сущности найдены, собираем `SourceCard` и рендерим `View.source`. 
-   Если хотя бы одна не найдена — `None`, и `handleUserIOOpt` подставит `defaultPage` (404).
+   Если хотя бы одна не найдена — `None`, и `withUserFromCookieOpt` подставит `fallbackPage` (404).
 
 `NotFoundView` — готовая строка HTML, объединяющая `View.base("План развития", ...)` и `View.notFound()`. Используется повторно во всех хэндлерах дашборда.
 
@@ -524,7 +524,7 @@ final case class EditFormSourceHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.editFormSource.handleIO: (id: Int, authorization: Authorization) =>
-      handleUserIOOpt(authorization): (user, jwtToken) =>
+      withUserFromHeaderOpt(authorization): (user, jwtToken) =>
         TaskTypeId.either(id) match
           case Right(taskTypeId) =>
             for
@@ -551,7 +551,7 @@ end EditFormSourceHandler
 
 **Что делает:**
 
-1. **`handleUserIOOpt(authorization)(...)`** — мягкая проверка токена. `authorization`
+1. **`withUserFromHeaderOpt(authorization)(...)`** — мягкая проверка токена. `authorization`
    из заголовка — первый аргумент, лямбда `(user, jwtToken)` — второй.
 2. **`TaskTypeId.either(id)`** — валидация ID.
 3. **Загрузка типа задачи и источника.**
@@ -599,7 +599,7 @@ final case class EditSourceHandler(
       // ToDo: https://github.com/creativescala/krop/pull/57
       val authorization: Authorization =
         Authorization(Token(AuthScheme.Bearer, request.token))
-      handleUserIOOpt(authorization)(run)
+      withUserFromHeaderOpt(authorization)(run)
 end EditSourceHandler
 ```
 
@@ -610,8 +610,8 @@ end EditSourceHandler
 3. **`dashboardService.updateSource`** — обновление информации в БД.
 4. **При успехе** — рендер страницы источника с обновлённой информацией.
 5. **При ошибке** — рендер формы редактирования с сообщением об ошибке. Пользователь может исправить данные и отправить снова.
-6. **`handleUserIOOpt(authorization)(run)`** — токен приходит в теле запроса, поэтому вручную
-   собираем заголовок `Authorization` из `request.token` и вызываем `handleUserIOOpt`.
+6. **`withUserFromHeaderOpt(authorization)(run)`** — токен приходит в теле запроса, поэтому вручную
+   собираем заголовок `Authorization` из `request.token` и вызываем `withUserFromHeaderOpt`.
 
 **Почему используется `SourceCard`, а не `Source`?** 
 Потому что `Source` требует `SourceId` (внутренний ID), а у нас его нет в запросе — приходит только `taskTypeId`. 

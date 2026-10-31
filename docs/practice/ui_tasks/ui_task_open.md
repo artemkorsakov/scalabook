@@ -24,7 +24,7 @@ final case class OpenTaskHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.openTask.handleIO: (uuid: UUID, cookie: Cookie) =>
-      handleUserIOOpt(cookie)(
+      withUserFromCookieOpt(cookie)(
         f = (user, jwtToken) =>
           getViewTask(
             taskLifecycleService = taskLifecycleService,
@@ -35,7 +35,7 @@ final case class OpenTaskHandler(
           ).map(_.map(html =>
             View.base("План развития", html).toString
           )),
-        defaultPage = View.base("План развития", NotFoundView).toString
+        fallbackPage = View.base("План развития", NotFoundView).toString
       )
 end OpenTaskHandler
 ```
@@ -47,9 +47,9 @@ end OpenTaskHandler
    тип `UUID`, а не `String` — маршрут `/task/{uuid}` использует `uuidParam`
    (`Param[UUID]`), поэтому ручной парсинг UUID в хэндлере больше не нужен.
 
-2. **`handleUserIOOpt(cookie)(f, defaultPage)`** — извлекает токен из куки `token`,
+2. **`withUserFromCookieOpt(cookie)(f, fallbackPage)`** — извлекает токен из куки `token`,
    проверяет его через middleware и передаёт `(user, jwtToken)` в лямбду `f`.
-   Если токена нет или он невалиден — возвращает `defaultPage` (страницу 404).
+   Если токена нет или он невалиден — возвращает `fallbackPage` (страницу 404).
    Извлечение токена из куки теперь инкапсулировано в `AuthorizationHandler`
    (метод делает это внутри себя), поэтому ручной `cookie.getToken` не нужен.
 
@@ -58,7 +58,7 @@ end OpenTaskHandler
    результат в `View.base(...)` — полную HTML-страницу.
 
 4. **Возврат `Option`**: `f` возвращает `IO[Option[String]]`. Если задача не найдена —
-   `None`, и `handleUserIOOpt` подставляет `defaultPage` (404).
+   `None`, и `withUserFromCookieOpt` подставляет `fallbackPage` (404).
 
 ## Формирование страницы задачи
 

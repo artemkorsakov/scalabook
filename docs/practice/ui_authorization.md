@@ -46,38 +46,26 @@ val index =
 ```dotty
 final case class InitialHandler(
     middleware: JwtAuthMiddleware[IO, UserInfo],
-    taskLifecycleService: TaskLifecycleService[IO]
-)(using Logger[IO]):
-  private val defaultPage =
-    View.base("План развития", View.login(none)).toString
-
+    taskLifecycleService: TaskLifecycleService[IO],
+    periodicTaskLifecycleService: PeriodicTaskLifecycleService[IO],
+    notesService: NotesService[IO],
+    historyService: HistoryService[IO]
+)(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.index.handleIO: (cookie: Cookie) =>
-      cookie.getToken match
-        case Some(token) =>
-          middleware.fromToken.run(token)
-            .flatMap: (user, jwtToken) =>
-              getViewWelcomeHtml(
-                taskLifecycleService = taskLifecycleService,
-                user = user,
-                jwtToken = jwtToken,
-                tab = DefaultTab
-              ).map: welcome =>
-                View.base(
-                  "План развития",
-                  welcome
-                ).toString
-            .recoverWith:
-              case ex: AuthorizationException =>
-                Logger[IO].error(ex)(
-                  s"Ошибка при парсинге токена: ${ex.getMessage}"
-                )
-                  .as(defaultPage)
-              case ex =>
-                Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}")
-                  .as(defaultPage)
-        case None =>
-          defaultPage.pure[IO]
+      handleUserIO(cookie)(
+        f = (user, jwtToken) =>
+          getViewWelcomeHtml(
+            taskLifecycleService = taskLifecycleService,
+            periodicTaskLifecycleService = periodicTaskLifecycleService,
+            notesService = notesService,
+            historyService = historyService,
+            user = user,
+            jwtToken = jwtToken,
+            tab = DefaultTab
+          ).map(welcome => View.base("План развития", welcome).toString),
+        defaultPage = View.base("План развития", View.login(none)).toString
+      )
 ```
 
 **Пошаговый разбор:**
@@ -85,30 +73,29 @@ final case class InitialHandler(
 1. **Зависимости хэндлера:**
     - `middleware: JwtAuthMiddleware[IO, UserInfo]` — middleware для проверки JWT-токенов.
       Умеет превращать строку токена в объект `UserInfo` (информация о пользователе: id, username).
-    - `taskLifecycleService: TaskLifecycleService[IO]` — сервис для загрузки задач пользователя.
+    - Сервисы загрузки задач, периодических задач, заметок и истории.
     - `using Logger[IO]` — логгер для записи ошибок.
 
-2. **`defaultPage`** — заранее сформированная страница логина. Это «запасной вариант»:
-   если пользователь не авторизован или что-то пошло не так, он увидит именно её.
+2. **`extends AuthorizationHandler(middleware)`** — наследуемся от базового класса.
+   Это даёт доступ к методам `handleUserIO`/`handleUserIOOpt` (см. «Базовый класс
+   `AuthorizationHandler`» в разделе аутентификации).
 
 3. **`Routes.index.handleIO`** — регистрируем обработчик, принимающий `Cookie`. Метод `handleIO`
    используется вместо `handle`, потому что логика требует эффекта `IO` (проверка токена, загрузка задач).
 
-4. **`cookie.getToken`** — пытаемся извлечь токен из куки (см. следующий раздел).
-   Возвращается `Option[String]`.
+4. **`handleUserIO(cookie)(f, defaultPage)`** — передаём куку **первым** аргументом,
+   лямбду `f` и `defaultPage` — вторым. Метод сам:
+    - Извлекает токен из куки `token`.
+    - Проверяет его через `middleware.fromToken.run` и передаёт `(user, jwtToken)` в `f`.
+    - Если токена в куке нет или он невалиден — возвращает `defaultPage`
+      (заранее сформированную страницу логина).
 
-5. **Ветвление:**
-    - **`Some(token)`** — токен найден. Передаём его в `middleware.fromToken.run(token)`,
-      который возвращает пару `(UserInfo, JwtToken)`. Если токен валиден — формируем
-      приветственную страницу через `getViewWelcomeHtml` и оборачиваем её в `View.base`.
-      Если токен просрочен, подделан или содержит несуществующего пользователя —
-      ловим `AuthorizationException` и отдаём `defaultPage`.
-    - **`None`** — токена нет. Просто отдаём `defaultPage`.
+5. **`f = (user, jwtToken) => ...`** — формирует приветственную страницу через
+   `getViewWelcomeHtml` и оборачивает её в `View.base`. Если токен валиден — пользователь
+   видит свой рабочий стол; иначе — `defaultPage` (форма входа).
 
-6. **`.recoverWith`** — критически важная часть обработки ошибок. Любая проблема с токеном
-   (истёк, повреждён, неверная подпись) **не должна ронять приложение**. Пользователь просто
-   увидит форму входа, как будто он не авторизован. Ошибка при этом логируется —
-   это помогает диагностировать проблемы.
+Любая проблема с токеном (истёк, повреждён, неверная подпись) **не роняет приложение**:
+пользователь просто увидит форму входа, как будто он не авторизован. Ошибка при этом логируется.
 
 ## Что такое `JwtAuthMiddleware`
 
@@ -183,15 +170,18 @@ object JwtAuthMiddleware:
 
 ## Считывание токена из куки
 
-Токен хранится в куке с именем `token`. Для удобного извлечения используется
-метод расширения (`extension`) на типе `Cookie`:
+Метод `handleUserIO(cookie)(f, defaultPage)` сам находит куку `token` и подставляет `defaultPage`,
+если её нет или она невалидна.
+
+Внутри `handleUserIO(cookie)` токен извлекается так:
 
 ```dotty
-object Parser:
-  extension (cookie: Cookie)
-    def getToken: Option[String] =
-      cookie.values.collectFirst:
-        case rq if rq.name == "token" => rq.content
+cookie.values
+  .collectFirst {
+    case rq if rq.name == "token" => rq.content
+  } match
+  case Some(token) => middleware.fromToken.run(token).flatMap(f)...
+  case None => defaultPage.pure[IO]
 ```
 
 **Как это работает:**
@@ -200,7 +190,7 @@ object Parser:
 - **`collectFirst`** — ищет первый элемент, удовлетворяющий предикату.
 - **`case rq if rq.name == "token"`** — если имя куки равно `"token"`, возвращаем её содержимое
   (`rq.content`) — это строка JWT-токена.
-- Если куки с таким именем нет — возвращается `None`.
+- Если куки с таким именем нет — `None`, и возвращается `defaultPage`.
 
 ## Формирование приветственной страницы
 

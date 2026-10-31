@@ -866,7 +866,10 @@ final case class CreatePeriodicStepHandler(
                     getViewSettings(..., errorPeriodicStepMessage = ex.getMessage.some)
             case Validated.Invalid(errors) =>
               getViewSettings(..., errorPeriodicStepMessage = errors.toChain.toVector.mkString("; ").some)
-      handleUserIOByToken(request.token)(create)
+      // ToDo: https://github.com/creativescala/krop/pull/57
+      val authorization: Authorization =
+        Authorization(Token(AuthScheme.Bearer, request.token))
+      handleUserIO(authorization)(create)
 end CreatePeriodicStepHandler
 ```
 
@@ -1001,7 +1004,10 @@ final case class EditPeriodicStepHandler(
                     getError(id = id, userId = user.id, jwtToken = jwtToken, error = ex.getMessage)
               case Validated.Invalid(errors) =>
                 getError(id = id, userId = user.id, jwtToken = jwtToken, error = errors.mkString_(";"))
-        handleUserIOByToken(request.token)(edit)
+        // ToDo: https://github.com/creativescala/krop/pull/57
+        val authorization: Authorization =
+          Authorization(Token(AuthScheme.Bearer, request.token))
+        handleUserIO(authorization)(edit)
 
   private def getError(...): IO[String] = ...
 end EditPeriodicStepHandler

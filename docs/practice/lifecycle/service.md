@@ -126,7 +126,7 @@ object TaskLifecycleService:
 
 ```dotty
 def update(task: Task): F[Boolean] =
-  getByUser(task.id, task.userId).flatMap:
+  taskService.get(task.id, task.userId).flatMap:
     case Some(_) =>
       validateTask(
         ...

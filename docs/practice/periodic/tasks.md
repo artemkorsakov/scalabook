@@ -882,21 +882,16 @@ final case class PeriodicTaskHandlers(
 
   val openHandler: Handler =
     openPeriodicTask.handleIO: (uuid: UUID, cookie: Cookie) =>
-      cookie.parseToken.toValidatedNec
-        .map { token =>
-          handleUserIOByTokenOpt(token) {
-            (user, jwtToken) =>
-              val periodicTaskId = PeriodicTaskId(uuid)
-              service.get(periodicTaskId, user.id).map {
-                _.map { periodicTask =>
-                  val html = View.periodicTask(task = periodicTask, errorMessage = none)
-                  View.base("План развития", html).toString
-                }
-              }
-          }
-        }.valueOr(errors =>
-          Logger[IO].error(errors.toChain.toVector.mkString("; ")).as(none)
-        ).map(_.getOrElse(NotFoundView))
+      handleUserIOOpt(cookie)(
+        f = (user, jwtToken) =>
+          service.get(PeriodicTaskId(uuid), user.id).map {
+            _.map { periodicTask =>
+              val html = View.periodicTask(task = periodicTask, errorMessage = none)
+              View.base("План развития", html).toString
+            }
+          },
+        defaultPage = NotFoundView
+      )
 
   val compileStepHandler: Handler =
     completePlanStepPeriodicTask.handleIO:
@@ -953,7 +948,10 @@ final case class PeriodicTaskHandlers(
             }.valueOr(errors =>
               Logger[IO].error(errors.toChain.toVector.mkString("; ")).as(none)
             )
-      handleUserIOByTokenOpt(request.token)(run)
+      // ToDo: https://github.com/creativescala/krop/pull/57
+      val authorization: Authorization =
+        Authorization(Token(AuthScheme.Bearer, request.token))
+      handleUserIOOpt(authorization)(run)
 
   val deleteHandler: Handler =
     deletePeriodicTask.handleIO: (uuid: UUID, authorization: Authorization) =>
@@ -966,9 +964,10 @@ end PeriodicTaskHandlers
 
 ### Хэндлер открытия `openHandler`
 
-`cookie.parseToken` превращает отсутствие токена в куке в **валидационную ошибку** (`Left`). 
-Затем `handleUserIOByTokenOpt(token)(...)` проверяет токен,
-загружает задачу и рендерит страницу. Итог оборачивается в `NotFoundView`, если задачи нет.
+`handleUserIOOpt(cookie)(f, defaultPage)` извлекает токен из куки `token`, проверяет его,
+вызывает `f`, передавая `(user, jwtToken)`. Если токена нет/невалиден или задача не найдена
+(лямбда вернула `None`) — подставляется `defaultPage` (`NotFoundView`).
+Извлечение токена из куки инкапсулировано в `AuthorizationHandler`.
 
 ### Хэндлер завершения шага `compileStepHandler`
 

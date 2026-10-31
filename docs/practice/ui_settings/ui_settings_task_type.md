@@ -71,7 +71,10 @@ final case class CreateTaskTypeHandler(
                 errorSectionMessage = none,
                 errorGoalMessage = none
               )
-      handleUserIOByToken(request.token)(create)
+      // ToDo: https://github.com/creativescala/krop/pull/57
+      val authorization: Authorization =
+        Authorization(Token(AuthScheme.Bearer, request.token))
+      handleUserIO(authorization)(create)
 ```
 
 **Пошаговый разбор:**
@@ -95,11 +98,17 @@ final case class CreateTaskTypeHandler(
       и загружаем страницу с сообщением об ошибке.
 5. **При ошибке валидации** — сразу загружаем страницу настроек с сообщением
    об ошибке.
-6. **`handleUserIOByToken(request.token)(create)`** — специальный метод из
-   `AuthorizationHandler`, который:
-    - Извлекает токен из строки (`request.token`) — первый аргумент.
-    - Проверяет его через middleware.
-    - Передаёт `(user, jwtToken)` в лямбду `create` — второй аргумент.
+6. **`handleUserIO(authorization)(create)`** — токен приходит в теле запроса, а не в заголовке.
+   Поэтому вручную собираем заголовок `Authorization` из `request.token`:
+   ```dotty
+   val authorization: Authorization =
+     Authorization(Token(AuthScheme.Bearer, request.token))
+   ```
+   После чего `handleUserIO` проверяет его через middleware и передаёт
+   `(user, jwtToken)` в лямбду `create`.
+
+   > Примечание: пока это временное решение (см. `// ToDo` — ждём поддержку токена из формы
+   > в krop, https://github.com/creativescala/krop/pull/57).
 
 ### Маршрут
 
@@ -396,7 +405,10 @@ final case class EditTaskTypeHandler(
               error = error.mkString_(";")
             )
           )
-      handleUserIOByToken(request.token)(edit)
+      // ToDo: https://github.com/creativescala/krop/pull/57
+      val authorization: Authorization =
+        Authorization(Token(AuthScheme.Bearer, request.token))
+      handleUserIO(authorization)(edit)
 
   private def getError(
       id: Int,

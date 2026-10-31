@@ -98,7 +98,10 @@ final case class CompleteTaskHandler(
                 errorMessage = errors.mkString_(";").some
               ).map(_.map(_.toString))
             )
-        handleUserIOByTokenOpt(request.token)(run)
+        // ToDo: https://github.com/creativescala/krop/pull/57
+        val authorization: Authorization =
+          Authorization(Token(AuthScheme.Bearer, request.token))
+        handleUserIOOpt(authorization)(run)
 end CompleteTaskHandler
 ```
 
@@ -126,7 +129,9 @@ end CompleteTaskHandler
 4. **`.valueOr(errors => ...)`** — если есть ошибки валидации, показываем форму
    задачи с сообщением об ошибке. Пользователь может исправить данные и попробовать снова.
 
-5. **`handleUserIOByTokenOpt(request.token)(run)`** — проверка токена из тела запроса.
+5. **`handleUserIOOpt(authorization)(run)`** — токен приходит в теле запроса, поэтому
+   вручную собираем заголовок `Authorization` из `request.token` (`Authorization(Token(AuthScheme.Bearer, ...))`)
+   и вызываем `handleUserIOOpt`.
 
 ### Что такое `HomeView`?
 
@@ -432,7 +437,10 @@ final case class StartTaskHandler(
               errorMessage = errors.mkString_(";").some
             ).map(_.map(_.toString))
           )
-      handleUserIOByTokenOpt(request.token)(run)
+      // ToDo: https://github.com/creativescala/krop/pull/57
+      val authorization: Authorization =
+        Authorization(Token(AuthScheme.Bearer, request.token))
+      handleUserIOOpt(authorization)(run)
 end StartTaskHandler
 ```
 
@@ -596,7 +604,10 @@ final case class QueueTaskHandler(
                 errorMessage = error.some
               ).map(_.map(_.toString))
           end match
-      handleUserIOByTokenOpt(request.token)(run)
+      // ToDo: https://github.com/creativescala/krop/pull/57
+      val authorization: Authorization =
+        Authorization(Token(AuthScheme.Bearer, request.token))
+      handleUserIOOpt(authorization)(run)
 end QueueTaskHandler
 ```
 

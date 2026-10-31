@@ -532,7 +532,10 @@ final case class CreateTaskHandler(
                 errorRequest = request,
                 errorMessage = errors.toChain.toVector.mkString("; ")
               )
-      handleUserIOByToken(request.token)(create)
+      // ToDo: https://github.com/creativescala/krop/pull/57
+      val authorization: Authorization =
+        Authorization(Token(AuthScheme.Bearer, request.token))
+      handleUserIO(authorization)(create)
 ```
 
 **Пошаговый разбор:**
@@ -561,9 +564,17 @@ final case class CreateTaskHandler(
 4. **Ветка `Invalid`:** возвращаем модальное окно с ошибками валидации, объединёнными
    через `"; "`.
 
-5. **`handleUserIOByToken(request.token)(create)`** — извлекает токен из тела
-   запроса (не из заголовка!) — первый аргумент, проверяет его через middleware
-   и передаёт `(user, jwtToken)` в лямбду `create` — второй аргумент.
+5. **`handleUserIO(authorization)(create)`** — токен приходит в теле запроса, а не в заголовке.
+   Поскольку `handleUserIO` ждёт `Authorization`, мы вручную собираем заголовок из токена формы:
+   ```dotty
+   val authorization: Authorization =
+     Authorization(Token(AuthScheme.Bearer, request.token))
+   ```
+   После этого `handleUserIO` проверяет его через middleware и передаёт `(user, jwtToken)`
+   в лямбду `create`.
+
+   > Примечание: пока это временное решение (см. `// ToDo` — ждём поддержку токена из формы
+   > в krop, https://github.com/creativescala/krop/pull/57).
 
 `getViewAfterCreateTask` и `getViewCreateTaskModalWithError` используют тот же `getViewCreateTaskModal`,
 что и при открытии модального окна:
@@ -680,43 +691,33 @@ final case class HomeHandler(
     periodicTaskLifecycleService: PeriodicTaskLifecycleService[IO],
     notesService: NotesService[IO],
     historyService: HistoryService[IO]
-)(using Logger[IO]):
-  private val defaultPage = View.login(None).toString
-
+)(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.home.handleIO: (tab: String, cookie: Cookie) =>
-      cookie.getToken match
-        case Some(token) =>
-          middleware.fromToken.run(token)
-            .flatMap: (user, token) =>
-              getViewWelcome(
-                taskLifecycleService = taskLifecycleService,
-                periodicTaskLifecycleService = periodicTaskLifecycleService,
-                notesService = notesService,
-                historyService = historyService,
-                user = user,
-                jwtToken = token,
-                tab = tab
-              )
-            .recoverWith:
-              case ex: AuthorizationException =>
-                Logger[IO].error(ex)(
-                  s"Ошибка при парсинге токена: ${ex.getMessage}"
-                )
-                  .as(defaultPage)
-              case ex =>
-                Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}")
-                  .as(defaultPage)
-        case None =>
-          defaultPage.pure[IO]
+      handleUserIO(cookie)(
+        f = (user, jwtToken) =>
+          getViewWelcome(
+            taskLifecycleService = taskLifecycleService,
+            periodicTaskLifecycleService = periodicTaskLifecycleService,
+            notesService = notesService,
+            historyService = historyService,
+            user = user,
+            jwtToken = jwtToken,
+            tab = tab
+          ),
+        defaultPage = View.login(None).toString
+      )
 ```
 
 **Пошаговый разбор:**
 
-1. **Обработка ошибок:**
-   - `AuthorizationException` → логируем и возвращаем форму логина.
-   - Любая другая ошибка → логируем и возвращаем форму логина.
-2. **Если токена нет** — сразу возвращаем форму логина.
+1. **`extends AuthorizationHandler(middleware)`** — даёт доступ к `handleUserIO(cookie)`.
+2. **`handleUserIO(cookie)(f, defaultPage)`** — извлекает токен из куки `token`,
+   проверяет его и передаёт `(user, jwtToken)` в `f`. Если токена нет/невалиден —
+   возвращает `defaultPage` (форму логина).
+3. **`f`** — строит приветственную страницу нужной вкладки через `getViewWelcome`.
+4. Все ошибки (`AuthorizationException` и прочие) обрабатываются внутри `AuthorizationHandler`
+   и сводятся к возврату `defaultPage` — приложение не падает.
 
 **Почему `HomeHandler` отличается от `InitialHandler`?**
 

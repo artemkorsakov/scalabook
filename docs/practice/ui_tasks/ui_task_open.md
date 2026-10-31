@@ -24,26 +24,19 @@ final case class OpenTaskHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.openTask.handleIO: (uuid: UUID, cookie: Cookie) =>
-      cookie.getToken match
-        case Some(token) =>
-          val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
-            (user, jwtToken) =>
-              getViewTask(
-                taskLifecycleService = taskLifecycleService,
-                userId = user.id,
-                taskId = TaskId(uuid),
-                jwtToken = jwtToken,
-                errorMessage = none
-              ).map(_.map(html =>
-                View.base("План развития", html).toString
-              ))
-          handleUserIOByTokenOpt(token)(run)
-            .map(_.getOrElse(View.base("План развития", NotFoundView).toString))
-
-        case None =>
-          Logger[IO].error(
-            "В cookies не найден токен пользователя"
-          ).as(View.base("План развития", NotFoundView).toString)
+      handleUserIOOpt(cookie)(
+        f = (user, jwtToken) =>
+          getViewTask(
+            taskLifecycleService = taskLifecycleService,
+            userId = user.id,
+            taskId = TaskId(uuid),
+            jwtToken = jwtToken,
+            errorMessage = none
+          ).map(_.map(html =>
+            View.base("План развития", html).toString
+          )),
+        defaultPage = View.base("План развития", NotFoundView).toString
+      )
 end OpenTaskHandler
 ```
 
@@ -54,25 +47,18 @@ end OpenTaskHandler
    тип `UUID`, а не `String` — маршрут `/task/{uuid}` использует `uuidParam`
    (`Param[UUID]`), поэтому ручной парсинг UUID в хэндлере больше не нужен.
 
-2. **`cookie.getToken`** — извлекаем токен из cookie (тот же приём, что и в
-   `InitialHandler`).
+2. **`handleUserIOOpt(cookie)(f, defaultPage)`** — извлекает токен из куки `token`,
+   проверяет его через middleware и передаёт `(user, jwtToken)` в лямбду `f`.
+   Если токена нет или он невалиден — возвращает `defaultPage` (страницу 404).
+   Извлечение токена из куки теперь инкапсулировано в `AuthorizationHandler`
+   (метод делает это внутри себя), поэтому ручной `cookie.getToken` не нужен.
 
-3. **Если токен найден:**
-    - Определяем лямбду `run: ((UserInfo, JwtToken)) => IO[Option[String]]`.
-    - Сразу загружает задачу через `getViewTask` с `TaskId(uuid)` — без веток
-      `Right`/`Left`, потому что `uuid` уже валиден по типу.
-    - Оборачивает результат в `View.base(...)` — полную HTML-страницу.
+3. **Лямбда `f`** — сразу загружает задачу через `getViewTask` с `TaskId(uuid)`
+   без веток `Right`/`Left`, потому что `uuid` уже валиден по типу. Обёртывает
+   результат в `View.base(...)` — полную HTML-страницу.
 
-4. **`handleUserIOByTokenOpt(token)(run)`** — специальный метод, который:
-    - Принимает `token` первым аргументом (каррированный стиль).
-    - Проверяет токен через middleware.
-    - Если токен валиден — передаёт `(user, jwtToken)` в лямбду `run`.
-    - Если токен **невалиден** — возвращает начальную страницу с формой логина.
-
-5. **`.map(_.getOrElse(...))`** — если лямбда вернула `None` (задача не найдена
-   или токен невалиден), отдаём страницу 404.
-
-6. **Если токена нет в cookie** — сразу логируем и отдаём 404.
+4. **Возврат `Option`**: `f` возвращает `IO[Option[String]]`. Если задача не найдена —
+   `None`, и `handleUserIOOpt` подставляет `defaultPage` (404).
 
 ## Формирование страницы задачи
 

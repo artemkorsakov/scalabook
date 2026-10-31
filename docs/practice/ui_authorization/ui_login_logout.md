@@ -218,18 +218,14 @@ final case class LogoutHandler(
 trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
     Logger[IO]
 ):
-  def handleUserIO(authorization: Authorization)(f: ((
-      UserInfo,
-      JwtToken
-  )) => IO[String])
-      : IO[Option[String]] =
-    handleUserIOOpt(authorization)(a => f(a).map(_.some))
+  def handleUserIO(authorization: Authorization)(
+      f: ((UserInfo, JwtToken)) => IO[String]
+  ): IO[Option[String]] =
+    handleUserIOOpt(authorization)(f(_).map(_.some))
 
-  def handleUserIOOpt(authorization: Authorization)(f: ((
-      UserInfo,
-      JwtToken
-  )) => IO[Option[String]])
-      : IO[Option[String]] =
+  def handleUserIOOpt(authorization: Authorization)(
+      f: ((UserInfo, JwtToken)) => IO[Option[String]]
+  ): IO[Option[String]] =
     middleware
       .run(authorization)
       .flatMap(f)
@@ -237,43 +233,63 @@ trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
         case ex: AuthorizationException =>
           Logger[IO].error(ex)(
             s"Ошибка при парсинге токена: ${ex.getMessage}"
-          )
-            .as(
-              View.login("Возникла ошибка авторизации".some).toString.some
-            )
+          ).as(Views.ErrorView.some)
         case ex =>
           Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
 
-  def handleUserIOByToken(token: String)(f: ((UserInfo, JwtToken)) => IO[String])
-      : IO[Option[String]] =
-    handleUserIOByTokenOpt(token)(a => f(a).map(_.some))
+  def handleUserIOOpt(cookie: Cookie)(
+      f: ((UserInfo, JwtToken)) => IO[Option[String]],
+      defaultPage: String
+  ): IO[String] =
+    handleUserIO(cookie: Cookie)(
+      f(_).map(_.getOrElse(defaultPage)),
+      defaultPage
+    )
 
-  def handleUserIOByTokenOpt(token: String)(f: ((
-      UserInfo,
-      JwtToken
-  )) => IO[Option[String]]): IO[Option[String]] =
-    middleware.fromToken.run(token)
-      .flatMap(f)
-      .recoverWith:
-        case ex: AuthorizationException =>
-          Logger[IO].error(ex)(
-            s"Ошибка при парсинге токена: ${ex.getMessage}"
-          )
-            .as(
-              View.login("Возникла ошибка авторизации".some).toString.some
-            )
-        case ex =>
-          Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
+  def handleUserIO(cookie: Cookie)(
+      f: ((UserInfo, JwtToken)) => IO[String],
+      defaultPage: String
+  ): IO[String] =
+    cookie.values
+      .collectFirst {
+        case rq if rq.name == "token" => rq.content
+      } match
+      case Some(token) =>
+        middleware.fromToken.run(token)
+          .flatMap(f)
+          .recoverWith:
+            case ex: AuthorizationException =>
+              Logger[IO].error(ex)(
+                s"Ошибка при парсинге токена: ${ex.getMessage}"
+              )
+                .as(defaultPage)
+            case ex =>
+              Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}")
+                .as(defaultPage)
+      case None =>
+        Logger[IO].debug("В cookies не найден токен пользователя")
+          .as(defaultPage)
 end AuthorizationHandler
 ```
 
 **Что делает:**
 
-1. Все методы принимают **два** аргумента: исходные данные (`authorization` или `token`)
+1. Все методы принимают **два** аргумента: исходные данные (`authorization` или `cookie`)
    **и** каррированную функцию `f`, которой передаётся `(user, token)`.
 2. Метод вызывает middleware для проверки токена.
 3. Если токен валиден — передаёт `(user, token)` в пользовательскую функцию `f`.
-4. Если заголовка нет или токен невалиден, то происходит переход на форму логина с соответствующей ошибкой.
+4. Если заголовка/куки нет или токен невалиден — возвращается запасная страница.
+
+**Два способа передать токен:**
+
+- **`handleUserIO` / `handleUserIOOpt` с `Authorization`** — токен приходит в заголовке
+  `Authorization: Bearer <token>` (формы `/auth/login`, `/auth/logout`, действия задачи).
+  Возвращают `IO[Option[String]]`.
+- **`handleUserIO` / `handleUserIOOpt` с `Cookie`** — токен хранится в куки `token`
+  (открытие страниц: `/home`, `/task/{uuid}`, `/note/{uuid}` и т.д.). Трейт сам извлекает
+  токен из куки и возвращает `IO[String]`, подставляя `defaultPage` при отсутствии/невалидности
+  токена. Для мягкой версии (`handleUserIOOpt`) лямбда возвращает `Option`, и при `None`
+  тоже подставляется `defaultPage`.
 
 **Преимущества такого подхода:**
 
@@ -281,7 +297,8 @@ end AuthorizationHandler
 - **Безопасность по умолчанию**: если разработчик забыл проверить токен — компилятор
   заставит его использовать `handleUserIO`, потому что обычный `handleIO` не даст доступ
   к `UserInfo`.
-- **Меньше кода**: не нужно в каждом хэндлере писать одно и то же извлечение заголовка.
+- **Единая точка для токена из куки**: извлечение `token` из куки и подстановка
+  `defaultPage` реализованы один раз в `AuthorizationHandler`, а не в каждом хэндлере.
 
 ## Регистрация хэндлеров в Main
 

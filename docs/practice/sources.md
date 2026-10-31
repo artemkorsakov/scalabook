@@ -344,50 +344,45 @@ final case class OpenSourceHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.openSource.handleIO: (id: Int, cookie: Cookie) =>
-      cookie.getToken match
-        case Some(token) =>
-          val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
-            (user, jwtToken) =>
-              TaskTypeId.either(id) match
-                case Right(taskTypeId) =>
-                  for
-                    maybeTaskType <-
-                      settingsService.getTaskType(taskTypeId, user.id)
-                    maybeSource <-
-                      dashboardService.getSource(taskTypeId, user.id)
-                  yield (maybeTaskType, maybeSource).mapN {
-                    case (taskType, source) =>
-                      val html =
-                        View.source(
-                          source = SourceCard(
-                            id = taskTypeId,
-                            name = taskType.name.value,
-                            information = source.information
-                          ),
-                          token = jwtToken.value,
-                          errorMessage = none
-                        )
-                      View.base("План развития", html).toString
-                  }
-                case Left(error) =>
-                  Logger[IO].error(error).as(none)
-          handleUserIOByTokenOpt(token)(run)
-            .map(_.getOrElse(NotFoundView))
-
-        case None =>
-          Logger[IO].error(
-            "В cookies не найден токен пользователя"
-          ).as(NotFoundView)
+      handleUserIOOpt(cookie)(
+        f = (user, jwtToken) =>
+          TaskTypeId.either(id) match
+            case Right(taskTypeId) =>
+              for
+                maybeTaskType <-
+                  settingsService.getTaskType(taskTypeId, user.id)
+                maybeSource <-
+                  dashboardService.getSource(taskTypeId, user.id)
+              yield (maybeTaskType, maybeSource).mapN {
+                case (taskType, source) =>
+                  val html =
+                    View.source(
+                      source = SourceCard(
+                        id = taskTypeId,
+                        name = taskType.name.value,
+                        information = source.information
+                      ),
+                      token = jwtToken.value,
+                      errorMessage = none
+                    )
+                  View.base("План развития", html).toString
+              }
+            case Left(error) =>
+              Logger[IO].error(error).as(none),
+        defaultPage = NotFoundView
+      )
 ```
 
 **Пошаговый разбор:**
 
-1. **Извлечение токена из куки** — тот же приём, что и в `OpenTaskHandler`.
+1. **`handleUserIOOpt(cookie)(f, defaultPage)`** — извлекает токен из куки `token`, проверяет
+   его через middleware и передаёт `(user, jwtToken)` в лямбду `f`. Если токена нет или
+   невалиден — возвращает `defaultPage` (404). Извлечение токена из куки инкапсулировано
+   в `AuthorizationHandler` (как и в `OpenTaskHandler`).
 2. **Парсинг ID** через `TaskTypeId.either(id)` — валидация на уровне типа.
 3. **Загрузка двух сущностей:** тип задачи и источник. 
 4. **`(maybeTaskType, maybeSource).mapN`** — если обе сущности найдены, собираем `SourceCard` и рендерим `View.source`. 
-   Если хотя бы одна не найдена — `None`, и пользователь увидит 404.
-5. **`handleUserIOByTokenOpt`** — мягкая проверка токена: невалидный токен не роняет приложение, а приводит к 404.
+   Если хотя бы одна не найдена — `None`, и `handleUserIOOpt` подставит `defaultPage` (404).
 
 `NotFoundView` — готовая строка HTML, объединяющая `View.base("План развития", ...)` и `View.notFound()`. Используется повторно во всех хэндлерах дашборда.
 
@@ -601,7 +596,10 @@ final case class EditSourceHandler(
                     ).toString.some
             case Left(error) =>
               Logger[IO].error(error).as(none)
-      handleUserIOByTokenOpt(request.token)(run)
+      // ToDo: https://github.com/creativescala/krop/pull/57
+      val authorization: Authorization =
+        Authorization(Token(AuthScheme.Bearer, request.token))
+      handleUserIOOpt(authorization)(run)
 end EditSourceHandler
 ```
 
@@ -612,6 +610,8 @@ end EditSourceHandler
 3. **`dashboardService.updateSource`** — обновление информации в БД.
 4. **При успехе** — рендер страницы источника с обновлённой информацией.
 5. **При ошибке** — рендер формы редактирования с сообщением об ошибке. Пользователь может исправить данные и отправить снова.
+6. **`handleUserIOOpt(authorization)(run)`** — токен приходит в теле запроса, поэтому вручную
+   собираем заголовок `Authorization` из `request.token` и вызываем `handleUserIOOpt`.
 
 **Почему используется `SourceCard`, а не `Source`?** 
 Потому что `Source` требует `SourceId` (внутренний ID), а у нас его нет в запросе — приходит только `taskTypeId`. 

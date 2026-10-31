@@ -90,7 +90,10 @@ final case class AddTimeSpentHandler(
               }.valueOr { errors =>
                 Logger[IO].error(errors.mkString_(";")).as(none)
               }
-        handleUserIOByTokenOpt(request.token)(run)
+        // ToDo: https://github.com/creativescala/krop/pull/57
+        val authorization: Authorization =
+          Authorization(Token(AuthScheme.Bearer, request.token))
+        handleUserIOOpt(authorization)(run)
 end AddTimeSpentHandler
 ```
 
@@ -118,8 +121,14 @@ end AddTimeSpentHandler
    `None`. Это приведёт к 404. В реальном приложении можно было бы показать
    страницу с сообщением об ошибке.
 
-6. **`handleUserIOByTokenOpt(request.token)(run)`** — проверяет токен из тела
-   запроса (первый аргумент — `token`, второй — лямбда `run`) и передаёт `(user, jwtToken)` в `run`.
+6. **`handleUserIOOpt(authorization)(run)`** — токен приходит в теле запроса, а не в заголовке.
+   Поэтому вручную собираем заголовок `Authorization` из `request.token`:
+   ```dotty
+   val authorization: Authorization =
+     Authorization(Token(AuthScheme.Bearer, request.token))
+   ```
+   после чего `handleUserIOOpt` проверяет его через middleware и передаёт
+   `(user, jwtToken)` в лямбду `run`.
 
 ### Что делает `addTimeSpent`
 

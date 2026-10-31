@@ -815,7 +815,10 @@ final case class EditTaskHandler(
                     )
             case Validated.Invalid(errors) =>
               Logger[IO].error(errors.toChain.toVector.mkString("; ")).as(none)
-      handleUserIOByTokenOpt(request.token)(run)
+      // ToDo: https://github.com/creativescala/krop/pull/57
+      val authorization: Authorization =
+        Authorization(Token(AuthScheme.Bearer, request.token))
+      handleUserIOOpt(authorization)(run)
 end EditTaskHandler
 ```
 
@@ -880,8 +883,10 @@ end EditTaskHandler
       «мягкому» поведению). На практике ошибки валидации обрабатываются
       в `taskLifecycleService.update`, поэтому эта ветка срабатывает редко.
 
-5. **`handleUserIOByTokenOpt(request.token)(run)`** — проверяет токен из тела
-   запроса. Если невалиден — `None`.
+5. **`handleUserIOOpt(authorization)(run)`** — токен приходит в теле запроса, поэтому
+   вручную собираем заголовок `Authorization` из `request.token`
+   (`Authorization(Token(AuthScheme.Bearer, request.token))`) и вызываем `handleUserIOOpt`.
+   Если токен невалиден — `None`.
 
 **Почему после успешного обновления возвращается `getViewTask`, а не `getViewEditTaskModal`?**
 

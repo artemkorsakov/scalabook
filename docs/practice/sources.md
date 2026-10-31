@@ -201,11 +201,11 @@ def deleteTaskType(id: TaskTypeId, userId: UserId): F[Boolean] =
         s"Невозможно удалить тип задачи с ID $id: тип используется в задачах"
       )
     ),
-    taskTypeService.get(id).flatMap:
-      case Some(item) if item.userId == userId =>
+    taskTypeService.get(id, userId).flatMap:
+      case Some(_) =>
         sourcesService.delete(id, userId) *>
           taskTypeService.delete(id)
-      case _ => false.pure[F]
+      case None => false.pure[F]
   )
 ```
 
@@ -213,8 +213,8 @@ def deleteTaskType(id: TaskTypeId, userId: UserId): F[Boolean] =
 
 1. **`taskService.existsTaskType(id, userId)`** — проверяем, есть ли задачи с этим типом.
 2. **Если есть** — выбрасываем `IllegalArgumentException` с понятным сообщением. Это защита от «осиротевших» задач.
-3. **Если нет** — загружаем тип задачи через `taskTypeService.get(id)`:
-   - Если тип существует **и** принадлежит пользователю — удаляем источник (`sourcesService.delete`), затем сам тип (`taskTypeService.delete`).
+3. **Если нет** — загружаем тип задачи через `taskTypeService.get(id, userId)`:
+   - `get` принимает `userId` и фильтрует по владельцу: если тип существует **и** принадлежит пользователю — удаляем источник (`sourcesService.delete`), затем сам тип (`taskTypeService.delete`).
    - Иначе — возвращаем `false`.
 
 **Почему сначала источник, потом тип?** Если бы мы сначала удалили тип, а потом источник, 

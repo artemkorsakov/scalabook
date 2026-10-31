@@ -91,7 +91,7 @@ private[services] trait TaskTypeService[F[_]]:
   def create(newItem: CreateTaskType): F[TaskTypeId]
 
   /** Получает тип задачи по её идентификатору. */
-  def get(id: TaskTypeId): F[Option[TaskType]]
+  def get(id: TaskTypeId, userId: UserId): F[Option[TaskType]]
 
   /** Получает список всех типов задач. */
   def getByUser(userId: UserId): F[Vector[TaskType]]
@@ -150,7 +150,7 @@ private[services] trait TaskService[F[_]]:
   def create(task: CreateTask): F[TaskId]
 
   /** Получает задачу по её идентификатору. */
-  def get(id: TaskId): F[Option[Task]]
+  def get(id: TaskId, userId: UserId): F[Option[Task]]
 
   /** Получает список всех задач. */
   def getByUser(userId: UserId): F[Vector[Task]]
@@ -232,9 +232,9 @@ private[services] class MockTaskTypeService[F[_]: Monad](
       _ <- update(taskType)
     yield id // Возвращаем ID, под которым был сохранен тип.
        
-  /** Извлекает тип по ID. Возвращает None, если ключ не найден. */
-  def get(id: TaskTypeId): F[Option[TaskType]] =
-    taskTypes.get.map(_.get(id)) // Читаем Map и выполняем lookup.
+  /** Извлекает тип по ID. Возвращает None, если ключ не найден или тип чужой. */
+  def get(id: TaskTypeId, userId: UserId): F[Option[TaskType]] =
+    taskTypes.get.map(_.get(id).filter(_.userId == userId)) // Читаем Map и выполняем lookup с проверкой владельца.
 
   /** Извлекает все значения для заданного пользователя, 
     * преобразуя значения Map в Vector. 

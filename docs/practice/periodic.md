@@ -184,7 +184,7 @@ DTO для создания шага. Отличается от `PeriodicStep` �
 ```dotty
 private[services] trait PeriodicStepService[F[_]]:
   def create(newItem: CreatePeriodicStep): F[PeriodicStepId]
-  def get(id: PeriodicStepId): F[Option[PeriodicStep]]
+  def get(id: PeriodicStepId, userId: UserId): F[Option[PeriodicStep]]
   def getByUser(userId: UserId): F[Vector[PeriodicStep]]
   def update(item: PeriodicStep): F[Boolean]
   def updateAll(items: NonEmptyVector[PeriodicStep]): F[Boolean]
@@ -194,7 +194,8 @@ private[services] trait PeriodicStepService[F[_]]:
 **Разбор методов:**
 
 - **`create`** — создаёт шаг и возвращает сгенерированный ID.
-- **`get`** — получает шаг по ID. Возвращает `Option`, потому что шаг может не существовать.
+- **`get`** — получает шаг по ID **с проверкой владельца** (`userId`). Возвращает `Option`,
+  потому что шаг может не существовать (или принадлежать другому пользователю).
 - **`getByUser`** — получает все шаги пользователя.
 - **`update`** — обновляет один шаг. Возвращает `Boolean` — был ли шаг найден и обновлён.
 - **`updateAll`** — обновляет несколько шагов в одной транзакции. Ключевой метод для **переупорядочивания**.
@@ -263,12 +264,13 @@ def create(newItem: CreatePeriodicStep): F[PeriodicStepId] =
 ### `get`
 
 ```dotty
-def get(id: PeriodicStepId): F[Option[PeriodicStep]] =
-  sql"""SELECT id, number, name, user_id, periodic_type FROM periodic_steps WHERE id = $id"""
+def get(id: PeriodicStepId, userId: UserId): F[Option[PeriodicStep]] =
+  sql"""SELECT id, number, name, user_id, periodic_type FROM periodic_steps WHERE id = $id AND user_id = $userId"""
     .query[PeriodicStep].option.transact(xa)
 ```
 
 Возвращает `Option[PeriodicStep]`. `.option` превращает «нет строк» в `None`, «есть строка» — в `Some`.
+Запрос фильтрует и по `id`, и по `user_id` — сервис сам гарантирует, что пользователь не получит чужой шаг.
 
 ### `getByUser`
 
@@ -373,26 +375,26 @@ def getSteps(userId: UserId): F[Vector[PeriodicStep]] =
 
 ```dotty
 def deleteStep(id: PeriodicStepId, userId: UserId): F[Boolean] =
-  periodicStepService.get(id).flatMap:
-    case Some(item) if item.userId == userId =>
-      periodicStepService.delete(id)
-    case _ => false.pure[F]
+  periodicStepService.get(id, userId).flatMap:
+    case Some(_) => periodicStepService.delete(id)
+    case None    => false.pure[F]
 ```
 
 **Разбор:**
 
-1. **`periodicStepService.get(id)`** — загружаем шаг.
-2. **`case Some(item) if item.userId == userId`** — если шаг существует **и** принадлежит пользователю — удаляем.
-3. **`case _ => false.pure[F]`** — если шага нет или он чужой — возвращаем `false`.
+1. **`periodicStepService.get(id, userId)`** — загружаем шаг **с проверкой владельца**: метод
+   принимает `userId` и фильтрует по нему. Если шаг принадлежит другому пользователю — вернёт `None`.
+2. **`case Some(_) => periodicStepService.delete(id)`** — шаг существует **и** принадлежит пользователю — удаляем.
+3. **`case None => false.pure[F]`** — если шага нет или он чужой — возвращаем `false`.
 
-**Почему проверка владельца здесь, а не в `PeriodicStepService`?** 
-Потому что `PeriodicStepService` — низкоуровневый сервис, он не знает о пользователях. 
-Проверка владельца — бизнес-правило, которое живёт на уровне `SettingsService`. 
+**Почему проверка владельца ушла из `SettingsService`?** В `cb36973` проверка владельца переехала
+в низкоуровневый `PeriodicStepService`: `get(id, userId)` уже фильтрует по `user_id`.
+Раньше `SettingsService` сам сравнивал `item.userId == userId`, теперь это делает сервис. 
 Это разделение ответственности: низкоуровневый сервис делает «что сказано», высокоуровневый — «что разрешено».
 
-> проверка `item.userId == userId` защищает от **удаления чужого шага**. 
-> Без неё пользователь мог бы отправить `DELETE /settings/periodic_steps/42` и удалить шаг другого пользователя, если угадает ID. 
-> Это критическая уязвимость.
+> Проверка принадлежности жила в `SettingsService` и защищала от **удаления чужого шага**. 
+> Без неё пользователь мог бы отправить `DELETE /settings/periodic_steps/42` и удалить шаг другого пользователя, если угадать ID. 
+> Это критическая уязвимость. Теперь та же защита встроена в `PeriodicStepService.get(id, userId)`: чужая запись просто не находится.
 
 ### `reorderSteps`
 
@@ -962,8 +964,8 @@ end EditPeriodicStepRowHandler
 4. **Рендер `editPeriodicStepRow`** — редактируемая строка.
 
 > Шаг загружается через `getSteps` и поиск в векторе — O(n). Для больших списков это может быть медленно. 
-> Альтернатива — `periodicStepService.get(stepId)` — O(1), но требует проверки владельца. 
-> В текущей реализации `getSteps` уже фильтрует по пользователю, что упрощает проверку.
+> Альтернатива — `periodicStepService.get(stepId, userId)` — O(1), причём проверка владельца уже
+> встроена в метод (он фильтрует по `user_id`). В текущей реализации `getSteps` проще и достаточно.
 
 ### `EditPeriodicStepHandler`
 

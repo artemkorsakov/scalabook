@@ -289,15 +289,16 @@ def deleteTaskType(id: TaskTypeId, userId: UserId): F[Boolean] =
       )
     ),
     // Если existsTaskType вернул false (тип не используется) → выполняем удаление
-    taskTypeService.get(id).flatMap:
-      case Some(item) if item.userId == userId =>
+    taskTypeService.get(id, userId).flatMap:
+      case Some(_) =>
         sourcesService.delete(id, userId) *>
           taskTypeService.delete(id)
-      case _ => false.pure[F]
+      case None => false.pure[F]
   )
 ```
 
-Аналогичная логика применяется для удаления разделов и целей.
+Аналогичная логика применяется для удаления разделов и целей. Проверка владельца (`userId`)
+передаётся в `get(id, userId)` — низкоуровневый сервис фильтрует по `user_id`.
 
 ### Заключение по сервису настроек
 

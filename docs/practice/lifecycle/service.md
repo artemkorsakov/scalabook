@@ -62,19 +62,16 @@ final case class TaskLifecycleService[F[_]: MonadThrow](
       endDate: Option[LocalDate]
   ) =
     for
-      sectionOpt  <- sectionService.get(sectionId)
-      goalOpt     <- goalService.get(goalId)
-      taskTypeOpt <- taskTypeService.get(taskTypeId)
+      sectionOpt  <- sectionService.get(sectionId, userId)
+      goalOpt     <- goalService.get(goalId, userId)
+      taskTypeOpt <- taskTypeService.get(taskTypeId, userId)
     yield (
       // Преобразование Option в Validated с ошибкой
       sectionOpt
-        .filter(_.userId == userId)
         .toValidNel(s"Section with id '$sectionId' not found"),
       goalOpt
-        .filter(_.userId == userId)
         .toValidNel(s"Goal with id '$goalId' not found"),
       taskTypeOpt
-        .filter(_.userId == userId)
         .toValidNel(s"User type with id '$taskTypeId' not found"),
       // Валидация статуса
       validateStatus(

@@ -81,7 +81,7 @@ DTO для создания экземпляра. Отличается от `Per
 ```dotty
 private[services] trait PeriodicTaskService[F[_]]:
   def create(newItem: CreatePeriodicTask): F[PeriodicTaskId]
-  def get(id: PeriodicTaskId): F[Option[PeriodicTask]]
+  def get(id: PeriodicTaskId, userId: UserId): F[Option[PeriodicTask]]
   def getByUser(userId: UserId): F[Vector[PeriodicTask]]
   def update(item: PeriodicTask): F[Boolean]
   def delete(id: PeriodicTaskId): F[Boolean]
@@ -90,7 +90,8 @@ private[services] trait PeriodicTaskService[F[_]]:
 **Разбор методов:**
 
 - **`create`** — создаёт экземпляр и возвращает ID.
-- **`get`** — получает экземпляр по ID. `Option`, потому что может не существовать.
+- **`get`** — получает экземпляр по ID **с проверкой владельца**: принимает `userId`
+  и фильтрует по `user_id`. `Option`, потому что может не существовать (или принадлежать другому пользователю).
 - **`getByUser`** — получает все экземпляры пользователя. Используется для **фильтрации незавершённых** и **проверки, создана ли уже задача на эту дату**.
 - **`update`** — обновляет экземпляр. Возвращает `Boolean` — был ли он найден.
 - **`delete`** — удаляет экземпляр.
@@ -165,14 +166,16 @@ def create(newItem: CreatePeriodicTask): F[PeriodicTaskId] =
 ### `get`
 
 ```dotty
-def get(id: PeriodicTaskId): F[Option[PeriodicTask]] =
-  sql"""SELECT id, user_id, periodic_type, date, plan, completed FROM periodic_tasks WHERE id = $id"""
+def get(id: PeriodicTaskId, userId: UserId): F[Option[PeriodicTask]] =
+  sql"""SELECT id, user_id, periodic_type, date, plan, completed FROM periodic_tasks WHERE id = $id AND user_id = $userId"""
     .query[PeriodicTask]
     .option
     .transact(xa)
 ```
 
 Возвращает `Option[PeriodicTask]`. Doobie десериализует `VARCHAR[]` в `Plan` через `Meta[Plan]`.
+Запрос фильтрует и по `id`, и по `user_id` — так сервис сам гарантирует, что пользователь
+не получит чужую задачу.
 
 ### `getByUser`
 

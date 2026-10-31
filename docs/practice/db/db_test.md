@@ -298,7 +298,7 @@ class PostgreSQLTaskTypeServiceSuite(global: GlobalRead) extends IOSuite:
     )
     for
       id            <- resource.service.create(newType)
-      maybeTaskType <- resource.service.get(id)
+      maybeTaskType <- resource.service.get(id, resource.firstUserId)
     yield whenSuccess(maybeTaskType): actual =>
       expect.same(id, actual.id) |+|
         expect.same(newType.name, actual.name) |+|
@@ -309,7 +309,7 @@ class PostgreSQLTaskTypeServiceSuite(global: GlobalRead) extends IOSuite:
   // Тест на обработку случая, когда сущность не найдена.
   test("PostgreSQLTaskService.get - not found"): resource =>
     val nonExistentId = TaskTypeId(9999)
-    resource.service.get(nonExistentId).map: result =>
+    resource.service.get(nonExistentId, resource.firstUserId).map: result =>
       expect(result.isEmpty)
 
   // Тест на получение всех сущностей.
@@ -354,7 +354,7 @@ class PostgreSQLTaskTypeServiceSuite(global: GlobalRead) extends IOSuite:
         ordinal = Ordinal(10)
       )
       _            <- resource.service.update(updated)
-      maybeUpdated <- resource.service.get(updated.id)
+      maybeUpdated <- resource.service.get(updated.id, updated.userId)
     yield whenSuccess(maybeUpdated): actual =>
       expect.same(updated.id, actual.id) |+|
         expect.same(updated.name, actual.name) |+|
@@ -406,8 +406,8 @@ class PostgreSQLTaskTypeServiceSuite(global: GlobalRead) extends IOSuite:
         )
       )
       _                  <- resource.service.updateAll(updated)
-      maybeUpdatedFirst  <- resource.service.get(idFirst)
-      maybeUpdatedSecond <- resource.service.get(idSecond)
+      maybeUpdatedFirst  <- resource.service.get(idFirst, newFirst.userId)
+      maybeUpdatedSecond <- resource.service.get(idSecond, newSecond.userId)
     yield matches(maybeUpdatedFirst, maybeUpdatedSecond) {
       case (Some(actualFirst), Some(actualSecond)) =>
         expect.same(idFirst, actualFirst.id) |+|

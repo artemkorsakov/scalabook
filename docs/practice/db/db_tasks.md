@@ -278,11 +278,11 @@ def create(task: CreateTask): F[TaskId] =
 
 **Возвращает:** `F[TaskId]` — идентификатор созданной задачи.
 
-#### `get(id: TaskId): F[Option[Task]]`
+#### `get(id: TaskId, userId: UserId): F[Option[Task]]`
 
 ```dotty
-def get(id: TaskId): F[Option[Task]] =
-  sql"""SELECT id, name, user_id, task_type_id, status, section_id, goal_id, ordinal, start_date, end_date, information, plan, duration, time_spent FROM tasks WHERE id = $id"""
+def get(id: TaskId, userId: UserId): F[Option[Task]] =
+  sql"""SELECT id, name, user_id, task_type_id, status, section_id, goal_id, ordinal, start_date, end_date, information, plan, duration, time_spent FROM tasks WHERE id = $id AND user_id = $userId"""
     .query[Task]
     .option
     .transact(xa)
@@ -290,7 +290,7 @@ def get(id: TaskId): F[Option[Task]] =
 
 **Что происходит:**
 
-- `SELECT` по первичному ключу. Все поля перечислены явно — это хорошая практика, чтобы не зависеть от порядка колонок в таблице.
+- `SELECT` по первичному ключу **с фильтром по владельцу** (`AND user_id = $userId`) — сервис сам не отдаёт чужие задачи. Все поля перечислены явно — это хорошая практика, чтобы не зависеть от порядка колонок в таблице.
 - **`.query[Task].option`** — Doobie пытается прочитать результат как `Task`. Если строк нет, возвращается `None`; если есть — `Some(task)`.
 - Метод **не бросает исключение** при отсутствии задачи — это важно для корректной обработки в HTTP-слое (например, чтобы вернуть 404).
 

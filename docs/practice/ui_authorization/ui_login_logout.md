@@ -171,8 +171,8 @@ final case class LogoutHandler(
     middleware: JwtAuthMiddleware[IO, UserInfo]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
-    Routes.logout.handleIO:
-      handleUserIO: (user: UserInfo, token: JwtToken) =>
+    Routes.logout.handleIO: (authorization: Authorization) =>
+      handleUserIO(authorization): (user: UserInfo, token: JwtToken) =>
         authService.logout(token, user.username)
           .as(View.login(none).toString)
 ```
@@ -183,8 +183,12 @@ final case class LogoutHandler(
    `AuthorizationHandler`, который инкапсулирует логику проверки токена. Это избавляет
    от необходимости вручную извлекать токен из заголовка и валидировать его в каждом хэндлере.
 
-2. **`handleUserIO: (user: UserInfo, token: JwtToken) => ...`** — специальный метод,
-   который:
+2. **`handleUserIO(authorization): (user: UserInfo, token: JwtToken) => ...`** — специальный
+   метод, который принимает **два** аргумента:
+    - Первый — `authorization` из заголовка запроса (то, что извлекла `handleIO`).
+    - Второй (каррированная лямбда) — `(user, token)`.
+   
+   Метод:
     - Проверяет токен через middleware.
     - Если токен валиден — передаёт в лямбду `user` (информация о пользователе)
       и `token` (сам JWT-токен).
@@ -214,54 +218,62 @@ final case class LogoutHandler(
 trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
     Logger[IO]
 ):
-  def handleUserIO(f: ((UserInfo, JwtToken)) => IO[String])
-      : Authorization => IO[Option[String]] =
-    handleUserIOOpt(a => f(a).map(_.some))
+  def handleUserIO(authorization: Authorization)(f: ((
+      UserInfo,
+      JwtToken
+  )) => IO[String])
+      : IO[Option[String]] =
+    handleUserIOOpt(authorization)(a => f(a).map(_.some))
 
-  def handleUserIOOpt(f: ((UserInfo, JwtToken)) => IO[Option[String]])
-      : Authorization => IO[Option[String]] =
-    (authorization: Authorization) =>
-      middleware
-        .run(authorization)
-        .flatMap(f)
-        .recoverWith:
-          case ex: AuthorizationException =>
-            Logger[IO].error(ex)(
-              s"Ошибка при парсинге токена: ${ex.getMessage}"
+  def handleUserIOOpt(authorization: Authorization)(f: ((
+      UserInfo,
+      JwtToken
+  )) => IO[Option[String]])
+      : IO[Option[String]] =
+    middleware
+      .run(authorization)
+      .flatMap(f)
+      .recoverWith:
+        case ex: AuthorizationException =>
+          Logger[IO].error(ex)(
+            s"Ошибка при парсинге токена: ${ex.getMessage}"
+          )
+            .as(
+              View.login("Возникла ошибка авторизации".some).toString.some
             )
-              .as(
-                View.login("Возникла ошибка авторизации".some).toString.some
-              )
-          case ex =>
-            Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
+        case ex =>
+          Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
 
-  def handleUserIOByToken(f: ((UserInfo, JwtToken)) => IO[String])
-      : String => IO[Option[String]] =
-    handleUserIOByTokenOpt(a => f(a).map(_.some))
+  def handleUserIOByToken(token: String)(f: ((UserInfo, JwtToken)) => IO[String])
+      : IO[Option[String]] =
+    handleUserIOByTokenOpt(token)(a => f(a).map(_.some))
 
-  def handleUserIOByTokenOpt(f: ((UserInfo, JwtToken)) => IO[Option[String]])
-      : String => IO[Option[String]] =
-    (token: String) =>
-      middleware.fromToken.run(token)
-        .flatMap(f)
-        .recoverWith:
-          case ex: AuthorizationException =>
-            Logger[IO].error(ex)(
-              s"Ошибка при парсинге токена: ${ex.getMessage}"
+  def handleUserIOByTokenOpt(token: String)(f: ((
+      UserInfo,
+      JwtToken
+  )) => IO[Option[String]]): IO[Option[String]] =
+    middleware.fromToken.run(token)
+      .flatMap(f)
+      .recoverWith:
+        case ex: AuthorizationException =>
+          Logger[IO].error(ex)(
+            s"Ошибка при парсинге токена: ${ex.getMessage}"
+          )
+            .as(
+              View.login("Возникла ошибка авторизации".some).toString.some
             )
-              .as(
-                View.login("Возникла ошибка авторизации".some).toString.some
-              )
-          case ex =>
-            Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
+        case ex =>
+          Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
 end AuthorizationHandler
 ```
 
 **Что делает:**
 
-1. Вызывает middleware для проверки токена.
-2. Если токен валиден — передаёт `(user, token)` в пользовательскую функцию `f`.
-3. Если заголовка нет или токен невалиден, то происходит переход на форму логина с соответствующей ошибкой.
+1. Все методы принимают **два** аргумента: исходные данные (`authorization` или `token`)
+   **и** каррированную функцию `f`, которой передаётся `(user, token)`.
+2. Метод вызывает middleware для проверки токена.
+3. Если токен валиден — передаёт `(user, token)` в пользовательскую функцию `f`.
+4. Если заголовка нет или токен невалиден, то происходит переход на форму логина с соответствующей ошибкой.
 
 **Преимущества такого подхода:**
 

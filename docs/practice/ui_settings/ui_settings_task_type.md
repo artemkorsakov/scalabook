@@ -71,7 +71,7 @@ final case class CreateTaskTypeHandler(
                 errorSectionMessage = none,
                 errorGoalMessage = none
               )
-      handleUserIOByToken(create)(request.token)
+      handleUserIOByToken(request.token)(create)
 ```
 
 **Пошаговый разбор:**
@@ -95,11 +95,11 @@ final case class CreateTaskTypeHandler(
       и загружаем страницу с сообщением об ошибке.
 5. **При ошибке валидации** — сразу загружаем страницу настроек с сообщением
    об ошибке.
-6. **`handleUserIOByToken(create)(request.token)`** — специальный метод из
+6. **`handleUserIOByToken(request.token)(create)`** — специальный метод из
    `AuthorizationHandler`, который:
-    - Извлекает токен из строки (`request.token`).
+    - Извлекает токен из строки (`request.token`) — первый аргумент.
     - Проверяет его через middleware.
-    - Передаёт `(user, jwtToken)` в лямбду `create`.
+    - Передаёт `(user, jwtToken)` в лямбду `create` — второй аргумент.
 
 ### Маршрут
 
@@ -126,7 +126,7 @@ final case class DeleteTaskTypeHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.deleteTaskType.handleIO: (id: Int, authorization: Authorization) =>
-      handleUserIO: (user: UserInfo, jwtToken: JwtToken) =>
+      handleUserIO(authorization): (user: UserInfo, jwtToken: JwtToken) =>
         TaskTypeId.either(id) match
           case Right(taskTypeId) =>
             for
@@ -146,33 +146,22 @@ final case class DeleteTaskTypeHandler(
               errorSectionMessage = none,
               errorGoalMessage = none
             )
-      .apply(authorization)
 ```
 
 **Пошаговый разбор:**
 
 1. **`(id: Int, authorization: Authorization)`** — обработчик принимает ID записи
    (из пути) и заголовок `Authorization`.
-2. **`handleUserIO: (user, jwtToken) => ...`** — стандартная проверка токена через
-   `AuthorizationHandler`. В отличие от создания, здесь токен приходит **в заголовке**.
+2. **`handleUserIO(authorization)(...)`** — стандартная проверка токена через
+   `AuthorizationHandler`. В отличие от создания, здесь токен приходит **в заголовке**:
+   `authorization` передаётся первым аргументом, а лямбда `(user, jwtToken)` — вторым.
 3. **`TaskTypeId.either(id)`** — валидация ID:
     - **`Right(taskTypeId)`** — ID валиден, удаляем запись и загружаем обновлённую страницу.
     - **`Left(error)`** — ID невалиден (например, отрицательный), показываем страницу
       с ошибкой.
-4. **`.apply(authorization)`** — `handleUserIO` возвращает функцию, которая принимает
-   `Authorization` и возвращает `IO[String]`. Мы применяем её к заголовку.
-
-**Почему `.apply(authorization)` — это каррирование?**
-
-`handleUserIO` возвращает `Authorization => IO[String]` — то есть функцию, ожидающую
-заголовок. Это позволяет использовать её в цепочке композиции:
-
-```dotty
-handleUserIO: (user, jwtToken) => ...
-.apply(authorization)
-```
-
-Можно было бы написать `handleUserIO(f)(authorization)` — то же самое, но через `.apply` читается лучше.
+4. **Синтаксис `handleUserIO(authorization): (user, jwtToken) => ...`** — это
+   каррированный вызов: `authorization`/`token` первым аргументом, лямбда,
+   обрабатывающая `(user, jwtToken)`, — вторым. Знак `:` вводит тип/тело лямбды.
 
 ### Маршрут
 
@@ -199,7 +188,7 @@ final case class EditTaskTypeRowHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.editTaskTypeRow.handleIO: (id: Int, authorization: Authorization) =>
-      handleUserIO: (user: UserInfo, jwtToken: JwtToken) =>
+      handleUserIO(authorization): (user: UserInfo, jwtToken: JwtToken) =>
         for
           taskTypeId <- IO.fromEither(
             TaskTypeId.either(id).leftMap(new IllegalArgumentException(_))
@@ -213,7 +202,6 @@ final case class EditTaskTypeRowHandler(
           jwtToken.value,
           none
         ).toString
-      .apply(authorization)
 ```
 
 **Пошаговый разбор:**
@@ -408,7 +396,7 @@ final case class EditTaskTypeHandler(
               error = error.mkString_(";")
             )
           )
-      handleUserIOByToken(edit)(request.token)
+      handleUserIOByToken(request.token)(edit)
 
   private def getError(
       id: Int,
@@ -516,7 +504,7 @@ final case class GetTaskTypeRowHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.getTaskTypeRow.handleIO: (id: Int, authorization: Authorization) =>
-      handleUserIO: (user: UserInfo, jwtToken: JwtToken) =>
+      handleUserIO(authorization): (user: UserInfo, jwtToken: JwtToken) =>
         for
           taskTypeId <- IO.fromEither(
             TaskTypeId.either(id).leftMap(new IllegalArgumentException(_))
@@ -529,7 +517,6 @@ final case class GetTaskTypeRowHandler(
           taskType,
           jwtToken.value
         ).toString
-      .apply(authorization)
 ```
 
 **Назначение:** возвращает строку таблицы в обычном (нередактируемом) режиме.

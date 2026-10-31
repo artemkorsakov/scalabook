@@ -61,8 +61,8 @@ final case class SettingsHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
 
   val handler: Handler =
-    Routes.settings.handleIO:
-      handleUserIO: (user, jwtToken) =>
+    Routes.settings.handleIO: (authorization: Authorization) =>
+      handleUserIO(authorization): (user, jwtToken) =>
         getViewSettings(
           settingsService = settingsService,
           id = user.id,
@@ -83,7 +83,9 @@ final case class SettingsHandler(
    который инкапсулирует логику проверки токена. Это избавляет от необходимости
    вручную извлекать заголовок `Authorization` и валидировать его.
 
-3. **`handleUserIO: (user, token) => ...`** — специальный метод, который:
+3. **`handleUserIO(authorization): (user, token) => ...`** — специальный метод, который
+   принимает два аргумента: `authorization` (извлечённый `handleIO` из заголовка) и
+   каррированную лямбду `(user, token)`. Метод:
     - Проверяет токен через middleware.
     - Если токен валиден, передаёт в лямбду `user` (информация о пользователе)
       и `token` (сам JWT-токен).

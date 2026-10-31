@@ -23,25 +23,21 @@ final case class OpenTaskHandler(
     taskLifecycleService: TaskLifecycleService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
-    Routes.openTask.handleIO: (uuid: String, cookie: Cookie) =>
+    Routes.openTask.handleIO: (uuid: UUID, cookie: Cookie) =>
       cookie.getToken match
         case Some(token) =>
           val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
             (user, jwtToken) =>
-              TaskId.either(uuid) match
-                case Right(taskId) =>
-                  getViewTask(
-                    taskLifecycleService = taskLifecycleService,
-                    userId = user.id,
-                    taskId = taskId,
-                    jwtToken = jwtToken,
-                    errorMessage = none
-                  ).map(_.map(html =>
-                    View.base("План развития", html).toString
-                  ))
-                case Left(error) =>
-                  Logger[IO].error(error).as(none)
-          handleUserIOByTokenOpt(run)(token)
+              getViewTask(
+                taskLifecycleService = taskLifecycleService,
+                userId = user.id,
+                taskId = TaskId(uuid),
+                jwtToken = jwtToken,
+                errorMessage = none
+              ).map(_.map(html =>
+                View.base("План развития", html).toString
+              ))
+          handleUserIOByTokenOpt(token)(run)
             .map(_.getOrElse(View.base("План развития", NotFoundView).toString))
 
         case None =>
@@ -53,20 +49,22 @@ end OpenTaskHandler
 
 **Пошаговый разбор:**
 
-1. **`handleIO: (uuid: String, cookie: Cookie) => ...`** — обработчик принимает
-   UUID задачи из пути и cookie из заголовка.
+1. **`handleIO: (uuid: UUID, cookie: Cookie) => ...`** — обработчик принимает
+   UUID задачи из пути и cookie из заголовка. Обратите внимание: `uuid` уже имеет
+   тип `UUID`, а не `String` — маршрут `/task/{uuid}` использует `uuidParam`
+   (`Param[UUID]`), поэтому ручной парсинг UUID в хэндлере больше не нужен.
 
 2. **`cookie.getToken`** — извлекаем токен из cookie (тот же приём, что и в
    `InitialHandler`).
 
 3. **Если токен найден:**
     - Определяем лямбду `run: ((UserInfo, JwtToken)) => IO[Option[String]]`.
-    - Она парсит UUID через `TaskId.parse(uuid)`.
-    - **`Valid(taskId)`** → загружает задачу через `getViewTask` и оборачивает
-      результат в `View.base(...)` — полную HTML-страницу.
-    - **`Invalid(error)`** → логирует ошибку и возвращает `None`.
+    - Сразу загружает задачу через `getViewTask` с `TaskId(uuid)` — без веток
+      `Right`/`Left`, потому что `uuid` уже валиден по типу.
+    - Оборачивает результат в `View.base(...)` — полную HTML-страницу.
 
-4. **`handleUserIOByTokenOpt(run)(token)`** — специальный метод, который:
+4. **`handleUserIOByTokenOpt(token)(run)`** — специальный метод, который:
+    - Принимает `token` первым аргументом (каррированный стиль).
     - Проверяет токен через middleware.
     - Если токен валиден — передаёт `(user, jwtToken)` в лямбду `run`.
     - Если токен **невалиден** — возвращает начальную страницу с формой логина.

@@ -743,43 +743,47 @@ private[services] def getByUser(
 
 ## Роуты
 
+Пути периодических задач объявлены локально внутри `PeriodicTaskHandlers` (см. ниже). Это позволяет держать
+всю связку «маршрут + обработчик» для периодических задач в одном классе.
+
 ```dotty
-val openPeriodicTask = Route(
-  Request.get(Path.root / "periodic_task" / Param.string)
-    .extractHeader[`Cookie`],
+private val path = Path.root / "periodic_task" / uuidParam
+
+private val openPeriodicTask = Route(
+  Request.get(path).extractHeader[`Cookie`],
   Response.ok(Entity.html)
 )
 
-val completePlanStepPeriodicTask = Route(
-  Request.put(Path.root / "periodic_task" / Param.string / "completeStep" / Param.string)
+private val completePlanStepPeriodicTask = Route(
+  Request.put(path / "completeStep" / Param.string)
     .extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
 
-val completeFormPeriodicTask = Route(
-  Request.put(Path.root / "periodic_task" / Param.string / "complete")
-    .extractHeader[Authorization],
+private val completeFormPeriodicTask = Route(
+  Request.put(path / "complete").extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
 
-val editFormPeriodicTask = Route(
-  Request.get(Path.root / "periodic_task" / Param.string / "edit")
-    .extractHeader[Authorization],
+private val editFormPeriodicTask = Route(
+  Request.get(path / "edit").extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
 
-val editPeriodicTask = Route(
-  Request.put(Path.root / "periodic_task" / Param.string)
-    .withEntity(Entity.formOf[EditPeriodicTaskRequest]),
+private val editPeriodicTask = Route(
+  Request.put(path).withEntity(Entity.formOf[EditPeriodicTaskRequest]),
   Response.ok(Entity.html).orNotFound
 )
 
-val deletePeriodicTask = Route(
-  Request.delete(Path.root / "periodic_task" / Param.string)
-    .extractHeader[Authorization],
+private val deletePeriodicTask = Route(
+  Request.delete(path).extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
 ```
+
+Обратите внимание на **`uuidParam`** вместо `Param.string`: это `Param[UUID]`,
+который декодирует путь сразу в `UUID` (см. `UrlFormParser.uuidParam`), а не в строку.
+Это убирает необходимость парсить UUID вручную в каждом хэндлере.
 
 **Разбор маршрутов:**
 
@@ -837,92 +841,103 @@ end EditPeriodicTaskRequest
 
 ## Хэндлеры
 
-### `OpenPeriodicTaskHandler`
+Для периодических задач **все хэндлеры собраны в один класс** — `PeriodicTaskHandlers`, который:
+
+- объявляет все маршруты периодических задач (`private val openPeriodicTask`, `completeFormPeriodicTask` и т.д.);
+- содержит по одному `val`-публичному хэндлеру на маршрут (`openHandler`, `editFormHandler`, ...);
+- регистрируется в `Main` как единая зависимость.
 
 ```dotty
-final case class OpenPeriodicTaskHandler(
+final case class PeriodicTaskHandlers(
     middleware: JwtAuthMiddleware[IO, UserInfo],
     service: PeriodicTaskLifecycleService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.openPeriodicTask.handleIO: (uuid: String, cookie: Cookie) =>
-      cookie.getToken match
-        case Some(token) =>
-          val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+  private val path = Path.root / "periodic_task" / uuidParam
+
+  private val openPeriodicTask = Route(
+    Request.get(path).extractHeader[`Cookie`],
+    Response.ok(Entity.html)
+  )
+  private val completePlanStepPeriodicTask = Route(
+    Request.put(path / "completeStep" / Param.string)
+      .extractHeader[Authorization],
+    Response.ok(Entity.html).orNotFound
+  )
+  private val completeFormPeriodicTask = Route(
+    Request.put(path / "complete").extractHeader[Authorization],
+    Response.ok(Entity.html).orNotFound
+  )
+  private val editFormPeriodicTask = Route(
+    Request.get(path / "edit").extractHeader[Authorization],
+    Response.ok(Entity.html).orNotFound
+  )
+  private val editPeriodicTask = Route(
+    Request.put(path).withEntity(Entity.formOf[EditPeriodicTaskRequest]),
+    Response.ok(Entity.html).orNotFound
+  )
+  private val deletePeriodicTask = Route(
+    Request.delete(path).extractHeader[Authorization],
+    Response.ok(Entity.html).orNotFound
+  )
+
+  val openHandler: Handler =
+    openPeriodicTask.handleIO: (uuid: UUID, cookie: Cookie) =>
+      cookie.parseToken.toValidatedNec
+        .map { token =>
+          handleUserIOByTokenOpt(token) {
             (user, jwtToken) =>
-              PeriodicTaskId.either(uuid) match
-                case Right(periodicTaskId) =>
-                  service.get(periodicTaskId, user.id).map {
-                    _.map { periodicTask =>
-                      val html = View.periodicTask(task = periodicTask, errorMessage = none)
-                      View.base("План развития", html).toString
-                    }
-                  }
-                case Left(error) =>
-                  Logger[IO].error(error).as(none)
-          handleUserIOByTokenOpt(run)(token)
-            .map(_.getOrElse(NotFoundView))
-        case None =>
-          Logger[IO].error("В cookies не найден токен пользователя").as(NotFoundView)
-end OpenPeriodicTaskHandler
-```
-
-**Пошаговый разбор:**
-
-1. **`cookie.getToken`** — извлекаем токен из куки.
-2. **`Some(token)`** — если токен найден:
-    - **`PeriodicTaskId.parse(uuid)`** — валидируем UUID.
-    - **`Valid`** — загружаем задачу через `service.get`.
-    - **`service.get`** возвращает `Option[PeriodicTaskCard]`. Если задача найдена — рендерим страницу, оборачиваем в `View.base`.
-    - **`Invalid`** — логируем ошибку, возвращаем `None`.
-3. **`handleUserIOByTokenOpt(run)(token)`** — проверяет токен, передаёт `(user, jwtToken)` в `run`.
-4. **`.map(_.getOrElse(NotFoundView))`** — если `run` вернул `None` (задача не найдена или UUID невалиден) — показываем 404.
-
-**Почему `NotFoundView`, а не `View.base(...)`?** `NotFoundView` — готовый HTML для 404. 
-Если задача не найдена, не нужно рендерить полную страницу — достаточно заглушки.
-
-### `EditFormPeriodicTaskHandler`
-
-```dotty
-final case class EditFormPeriodicTaskHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    service: PeriodicTaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.editFormPeriodicTask.handleIO:
-      (uuid: String, authorization: Authorization) =>
-        handleUserIOOpt: (user, jwtToken) =>
-          PeriodicTaskId.either(uuid) match
-            case Right(taskId) =>
-              service.get(taskId, user.id).map {
-                _.map { task =>
-                  View.editPeriodicTask(task = task, token = jwtToken.value, errorMessage = none).toString
+              val periodicTaskId = PeriodicTaskId(uuid)
+              service.get(periodicTaskId, user.id).map {
+                _.map { periodicTask =>
+                  val html = View.periodicTask(task = periodicTask, errorMessage = none)
+                  View.base("План развития", html).toString
                 }
               }
-            case Left(error) =>
-              Logger[IO].error(error).as(none)
-        .apply(authorization)
-end EditFormPeriodicTaskHandler
-```
+          }
+        }.valueOr(errors =>
+          Logger[IO].error(errors.toChain.toVector.mkString("; ")).as(none)
+        ).map(_.getOrElse(NotFoundView))
 
-**Разбор:** аналогично `OpenPeriodicTaskHandler`, но рендерит **форму редактирования** (`View.editPeriodicTask`), а не страницу просмотра.
+  val compileStepHandler: Handler =
+    completePlanStepPeriodicTask.handleIO:
+      (uuid: UUID, number: String, authorization: Authorization) =>
+        handleUserIOOpt(authorization) { (user, jwtToken) =>
+          val periodicTaskId = PeriodicTaskId(uuid)
+          for
+            _         <- service.completeStep(periodicTaskId, user.id, number)
+            maybeTask <- service.get(periodicTaskId, user.id)
+          yield maybeTask.map(task => View.periodicTask(task, none).toString)
+        }
 
-### `EditPeriodicTaskHandler`
+  val completeHandler: Handler =
+    completeFormPeriodicTask.handleIO:
+      (uuid: UUID, authorization: Authorization) =>
+        handleUserIOOpt(authorization): (user, token) =>
+          val periodicTaskId = PeriodicTaskId(uuid)
+          service.complete(id = periodicTaskId, userId = user.id)
+            .map(_ => HomeView.some)
 
-```dotty
-final case class EditPeriodicTaskHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    service: PeriodicTaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.editPeriodicTask.handleIO:
-      (uuid: String, request: EditPeriodicTaskRequest) =>
-        val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
-          (user, jwtToken) =>
-            (
-              PeriodicTaskId.either(uuid).toValidatedNec,
-              request.plan.traverse(PlanStep.parse)
-            ).mapN { case (periodicTaskId, steps) =>
+  val editFormHandler: Handler =
+    editFormPeriodicTask.handleIO: (uuid: UUID, authorization: Authorization) =>
+      handleUserIOOpt(authorization): (user, jwtToken) =>
+        val periodicTaskId = PeriodicTaskId(uuid)
+        service.get(periodicTaskId, user.id).map {
+          _.map { task =>
+            View.editPeriodicTask(
+              task = task,
+              token = jwtToken.value,
+              errorMessage = none
+            ).toString
+          }
+        }
+
+  val editHandler: Handler =
+    editPeriodicTask.handleIO: (uuid: UUID, request: EditPeriodicTaskRequest) =>
+      val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+        (user, jwtToken) =>
+          request.plan.traverse(PlanStep.parse)
+            .map { steps =>
+              val periodicTaskId = PeriodicTaskId(uuid)
               val run: IO[Option[String]] =
                 for
                   _ <- service.updatePlan(periodicTaskId, user.id, Plan(steps.sortBy(_.number)))
@@ -938,108 +953,56 @@ final case class EditPeriodicTaskHandler(
             }.valueOr(errors =>
               Logger[IO].error(errors.toChain.toVector.mkString("; ")).as(none)
             )
-        handleUserIOByTokenOpt(run)(request.token)
-end EditPeriodicTaskHandler
+      handleUserIOByTokenOpt(request.token)(run)
+
+  val deleteHandler: Handler =
+    deletePeriodicTask.handleIO: (uuid: UUID, authorization: Authorization) =>
+      handleUserIOOpt(authorization): (user, token) =>
+        val periodicTaskId = PeriodicTaskId(uuid)
+        service.delete(id = periodicTaskId, userId = user.id)
+          .map(_ => HomeView.some)
+end PeriodicTaskHandlers
 ```
 
-**Пошаговый разбор:**
+### Хэндлер открытия `openHandler`
 
-1. **`PeriodicTaskId.parse(uuid).toValidatedNec`** — валидация UUID.
-2. **`request.plan.traverse(PlanStep.parse)`** — валидация каждого шага плана. 
-   `traverse` собирает `List[ValidatedNec[String, PlanStep]]` в `ValidatedNec[String, List[PlanStep]]`. Все ошибки аккумулируются.
-3. **`.mapN { case (periodicTaskId, steps) => ... }`** — если UUID и план валидны:
-    - **`service.updatePlan(...)`** — обновляем план.
-    - **`service.get(...)`** — загружаем обновлённую задачу.
-    - **`.map(_.map(task => View.periodicTask(...)))`** — рендерим страницу задачи.
-4. **`.recoverWith`** — при ошибке (например, задача не найдена) возвращаем **форму редактирования** с сообщением.
-5. **`.valueOr(errors => ...)`** — при ошибке валидации логируем и возвращаем `None`.
+`cookie.parseToken` превращает отсутствие токена в куке в **валидационную ошибку** (`Left`). 
+Затем `handleUserIOByTokenOpt(token)(...)` проверяет токен,
+загружает задачу и рендерит страницу. Итог оборачивается в `NotFoundView`, если задачи нет.
 
-**Почему `Plan(steps.sortBy(_.number))`?** Потому что `traverse` возвращает шаги в порядке из формы (который может быть любым). 
-`sortBy(_.number)` гарантирует, что план будет в правильном порядке.
+### Хэндлер завершения шага `compileStepHandler`
 
-### `CompleteStepPeriodicTaskHandler`
+`handleUserIOOpt(authorization)(...)` проверяет токен из заголовка, `service.completeStep` отмечает
+шаг выполненным, после чего возвращается обновлённая страница.
 
-```dotty
-final case class CompleteStepPeriodicTaskHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    service: PeriodicTaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.completePlanStepPeriodicTask.handleIO:
-      (uuid: String, number: String, authorization: Authorization) =>
-        handleUserIOOpt { (user, jwtToken) =>
-          PeriodicTaskId.either(uuid) match
-            case Right(periodicTaskId) =>
-              for
-                _ <- service.completeStep(periodicTaskId, user.id, number)
-                maybeTask <- service.get(periodicTaskId, user.id)
-              yield maybeTask.map(task => View.periodicTask(task, none).toString)
-            case Left(error) =>
-              Logger[IO].error(error).as(none)
-        }(authorization)
-end CompleteStepPeriodicTaskHandler
-```
+### Хэндлер завершения задачи `completeHandler`
 
-**Разбор:**
+`service.complete(...)` помечает задачу завершённой. Возвращается `HomeView` — главная страница,
+поскольку завершённая задача покидает список «В работе».
 
-1. **`handleUserIOOpt { (user, jwtToken) => ... }(authorization)`** — проверка токена из заголовка.
-2. **`PeriodicTaskId.parse(uuid)`** — валидация UUID.
-3. **`service.completeStep(periodicTaskId, user.id, number)`** — завершает шаг с указанным номером.
-4. **`service.get(...)`** — загружает обновлённую задачу.
-5. **`View.periodicTask(task, none)`** — рендерит страницу.
-
-### `CompletePeriodicTaskHandler`
-
-```dotty
-final case class CompletePeriodicTaskHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    service: PeriodicTaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.completeFormPeriodicTask.handleIO:
-      (uuid: String, authorization: Authorization) =>
-        handleUserIOOpt: (user, token) =>
-          PeriodicTaskId.either(uuid) match
-            case Right(periodicTaskId) =>
-              service.complete(id = periodicTaskId, userId = user.id).map(_ => HomeView.some)
-            case Left(error) =>
-              Logger[IO].error(error).as(none)
-        .apply(authorization)
-end CompletePeriodicTaskHandler
-```
-
-**Разбор:**
-
-1. **`service.complete(...)`** — помечает задачу завершённой.
-2. **`.map(_ => HomeView.some)`** — после завершения возвращает **главную страницу**. 
-   Пользователь видит обновлённый список задач (завершённая исчезает из «В работе»).
-
-**Почему `HomeView`, а не страницу задачи?** Потому что после завершения задача **покидает** список открытых. 
+**Почему `HomeView`, а не страницу задачи?** Потому что после завершения задача **покидает** список открытых.
 Логичнее вернуть пользователя к списку, а не показывать завершённую задачу.
 
-### `DeletePeriodicTaskHandler`
+### Хэндлер формы редактирования `editFormHandler`
 
-```dotty
-final case class DeletePeriodicTaskHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    service: PeriodicTaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.deletePeriodicTask.handleIO:
-      (uuid: String, authorization: Authorization) =>
-        handleUserIOOpt: (user, token) =>
-          PeriodicTaskId.either(uuid) match
-            case Right(periodicTaskId) =>
-              service.delete(id = periodicTaskId, userId = user.id).map(_ => HomeView.some)
-            case Left(error) =>
-              Logger[IO].error(error).as(none)
-        .apply(authorization)
-end DeletePeriodicTaskHandler
-```
+Аналогичен `openHandler`, но рендерит **форму редактирования** (`View.editPeriodicTask`),
+а не страницу просмотра.
 
-**Разбор:** аналогично `CompletePeriodicTaskHandler`, но удаляет задачу. Возвращает главную страницу.
+### Хэндлер сохранения правок `editHandler`
 
-**Почему `HomeView`?** Потому что удалённой задачи больше нет — показывать её страницу бессмысленно. Возврат к списку — логичное поведение.
+`request.plan.traverse(PlanStep.parse)` валидирует каждый шаг плана. Если все шаги валидны —
+`service.updatePlan` обновляет план и возвращается страница задачи. При `IllegalArgumentException`
+(например, задача не найдена) — возвращается форма редактирования с сообщением об ошибке.
+
+**Почему `Plan(steps.sortBy(_.number))`?** Потому что `traverse` возвращает шаги в порядке из формы
+(который может быть любым). `sortBy(_.number)` гарантирует, что план будет в правильном порядке.
+
+### Хэндлер удаления `deleteHandler`
+
+`service.delete(...)` удаляет задачу, только если она принадлежит пользователю. Возвращает `HomeView`.
+
+**Почему `HomeView`?** Потому что удалённой задачи больше нет — показывать её страницу бессмысленно.
+Возврат к списку — логичное поведение.
 
 ## Полный поток работы
 
@@ -1058,7 +1021,7 @@ end DeletePeriodicTaskHandler
 1. **Пользователь открывает задачу** → `/periodic_task/{id}`.
 2. **Видит план** с шагами.
 3. **Кликает «✅ Выполнить»** на шаге → htmx отправляет PUT на `/periodic_task/{id}/completeStep/{number}`.
-4. **`CompleteStepPeriodicTaskHandler`:**
+4. **`compileStepHandler`:**
     - Находит шаг по номеру.
     - Помечает `completed = true`.
     - Сохраняет.
@@ -1068,7 +1031,7 @@ end DeletePeriodicTaskHandler
 ### Завершение задачи
 
 1. **Пользователь кликает «✅ Завершить задачу»** → PUT на `/periodic_task/{id}/complete`.
-2. **`CompletePeriodicTaskHandler`:**
+2. **`completeHandler`:**
     - Помечает `completed = true`.
     - Возвращает `HomeView`.
 3. **htmx заменяет `#app`** — задача исчезает из «В работе» (фильтр `completed == false`).
@@ -1076,10 +1039,10 @@ end DeletePeriodicTaskHandler
 ### Редактирование плана
 
 1. **Пользователь кликает «✏️ Редактировать»** → GET на `/periodic_task/{id}/edit`.
-2. **`EditFormPeriodicTaskHandler`** рендерит форму редактирования плана.
+2. **`editFormHandler`** рендерит форму редактирования плана.
 3. **Пользователь меняет шаги** → PUT на `/periodic_task/{id}` с телом `token` и `plan[...]`.
-4. **`EditPeriodicTaskHandler`:**
-    - Валидирует UUID и шаги.
+4. **`editHandler`:**
+    - Валидирует шаги плана (uuid уже декодирован в `UUID` на уровне маршрута).
     - Обновляет план.
     - Возвращает страницу задачи.
 5. **htmx заменяет `#app`** — пользователь видит обновлённый план.
@@ -1087,7 +1050,7 @@ end DeletePeriodicTaskHandler
 ### Удаление задачи
 
 1. **Пользователь кликает «🗑️ Удалить»** → confirm → DELETE на `/periodic_task/{id}`.
-2. **`DeletePeriodicTaskHandler`:**
+2. **`deleteHandler`:**
     - Удаляет задачу.
     - Возвращает `HomeView`.
 3. **htmx заменяет `#app`** — задача исчезает из списка.

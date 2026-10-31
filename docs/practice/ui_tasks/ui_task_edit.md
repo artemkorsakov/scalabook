@@ -23,7 +23,7 @@ nextPage = ui_task_actions.html
 
 ```dotty
 val editFormTask = Route(
-  Request.get(Path.root / "task" / Param.string / "edit")
+  Request.get(Path.root / "task" / uuidParam / "edit")
     .extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
@@ -31,8 +31,9 @@ val editFormTask = Route(
 
 **Разбор маршрута:**
 
-- **`Request.get(Path.root / "task" / Param.string / "edit")`** — GET-запрос на
-  `/task/{uuid}/edit`, где `{uuid}` — идентификатор задачи.
+- **`Request.get(Path.root / "task" / uuidParam / "edit")`** — GET-запрос на
+  `/task/{uuid}/edit`, где `{uuid}` — идентификатор задачи. `uuidParam` декодирует
+  путь сразу в `UUID`.
 - **`.extractHeader[Authorization]`** — токен передаётся в заголовке
 - **`Response.ok(Entity.html).orNotFound`** — успешный ответ с HTML формы
   редактирования или 404, если задача не найдена.
@@ -46,30 +47,18 @@ final case class EditFormTaskHandler(
     taskLifecycleService: TaskLifecycleService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
-    Routes.editFormTask.handleIO:
-      (uuid: String, authorization: Authorization) =>
-        handleUserIOOpt: (user, jwtToken) =>
-          TaskId.either(uuid) match
-            case Right(taskId) =>
-              getViewEditTaskModal(
-                settingsService = settingsService,
-                taskLifecycleService = taskLifecycleService,
-                userId = user.id,
-                taskId = taskId,
-                jwtToken = jwtToken,
-                errorMessage = none
-              )
-            case Left(error) =>
-              Logger[IO].error(error).as(none)
-        .apply(authorization)
+    Routes.editFormTask.handleIO: (uuid: UUID, authorization: Authorization) =>
+      handleUserIOOpt(authorization): (user, jwtToken) =>
+        getViewEditTaskModal(
+          settingsService = settingsService,
+          taskLifecycleService = taskLifecycleService,
+          userId = user.id,
+          taskId = TaskId(uuid),
+          jwtToken = jwtToken,
+          errorMessage = none
+        )
 end EditFormTaskHandler
 ```
-
-**Пошаговый разбор:**
-
-1. **`TaskId.parse(uuid)`** — валидируем UUID задачи:
-    - **`Valid(taskId)`** — ID валиден, загружаем форму редактирования.
-    - **`Invalid(error)`** — UUID некорректен (например, не UUID-формат), логируем и возвращаем `None`.
 
 ### Формирование формы
 
@@ -776,7 +765,7 @@ loop(sources = tail, stepNumber = nextStepNumber, acc = newAcc)
 
 ```dotty
 val editTask = Route(
-  Request.put(Path.root / "task" / Param.string)
+  Request.put(Path.root / "task" / uuidParam)
     .withEntity(Entity.formOf[EditTaskRequest]),
   Response.ok(Entity.html).orNotFound
 )
@@ -784,7 +773,8 @@ val editTask = Route(
 
 **Разбор:**
 
-- **`Request.put(Path.root / "task" / Param.string)`** — PUT-запрос на `/task/{uuid}`.
+- **`Request.put(Path.root / "task" / uuidParam)`** — PUT-запрос на `/task/{uuid}`.
+  `uuidParam` декодирует путь сразу в `UUID`.
 - **`.withEntity(Entity.formOf[EditTaskRequest])`** — тело запроса в формате
   `application/x-www-form-urlencoded`, десериализуется в `EditTaskRequest`.
 - **`Response.ok(Entity.html).orNotFound`** — успешный ответ с HTML или 404.
@@ -798,7 +788,7 @@ final case class EditTaskHandler(
     taskLifecycleService: TaskLifecycleService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
-    Routes.editTask.handleIO: (taskId: String, request: EditTaskRequest) =>
+    Routes.editTask.handleIO: (taskId: UUID, request: EditTaskRequest) =>
       val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
         (user, jwtToken) =>
           Task.parse(request, user.id, taskId) match
@@ -825,28 +815,28 @@ final case class EditTaskHandler(
                     )
             case Validated.Invalid(errors) =>
               Logger[IO].error(errors.toChain.toVector.mkString("; ")).as(none)
-      handleUserIOByTokenOpt(run)(request.token)
+      handleUserIOByTokenOpt(request.token)(run)
 end EditTaskHandler
 ```
 
 **Пошаговый разбор:**
 
-1. **`(taskId: String, request: EditTaskRequest)`** — обработчик принимает UUID
-   из пути и данные формы.
+1. **`(taskId: UUID, request: EditTaskRequest)`** — обработчик принимает UUID
+   из пути (уже декодированный в `UUID` маршрутом `uuidParam`) и данные формы.
 
 2. **`Task.parse(request, user.id, taskId)`** — парсит запрос в доменный `Task`:
     - Валидирует все поля.
-    - Проверяет, что UUID корректен.
     - Преобразует `durationValue`/`durationUnit` в `FiniteDuration`.
     - Преобразует `plan` из `List[PlanStepRequest]` в `Plan`.
+    - UUID не парсится из строки — `taskId` уже приходит как `UUID`, валидность
+      гарантирована маршрутом.
     ```dotty
     def parse(
           request: EditTaskRequest,
           userId: UserId,
-          taskId: String
+          taskId: UUID
       ): ValidatedNec[String, Task] =
         (
-          TaskId.either(taskId).toValidatedNec,
           TaskName.either(request.name).toValidatedNec,
           TaskTypeId.either(request.taskTypeId).toValidatedNec,
           Status.find(
@@ -857,9 +847,9 @@ end EditTaskHandler
           Ordinal.either(request.ordinal).toValidatedNec,
           request.plan.traverse(PlanStep.parse)
         ).mapN {
-          case (id, name, taskTypeId, status, sectionId, goalId, ordinal, steps) =>
+          case (name, taskTypeId, status, sectionId, goalId, ordinal, steps) =>
             Task(
-              id = id,
+              id = TaskId(taskId),
               name = name,
               userId = userId,
               taskTypeId = taskTypeId,
@@ -890,7 +880,7 @@ end EditTaskHandler
       «мягкому» поведению). На практике ошибки валидации обрабатываются
       в `taskLifecycleService.update`, поэтому эта ветка срабатывает редко.
 
-5. **`handleUserIOByTokenOpt(run)(request.token)`** — проверяет токен из тела
+5. **`handleUserIOByTokenOpt(request.token)(run)`** — проверяет токен из тела
    запроса. Если невалиден — `None`.
 
 **Почему после успешного обновления возвращается `getViewTask`, а не `getViewEditTaskModal`?**

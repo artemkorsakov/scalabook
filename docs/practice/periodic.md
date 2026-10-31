@@ -866,7 +866,7 @@ final case class CreatePeriodicStepHandler(
                     getViewSettings(..., errorPeriodicStepMessage = ex.getMessage.some)
             case Validated.Invalid(errors) =>
               getViewSettings(..., errorPeriodicStepMessage = errors.toChain.toVector.mkString("; ").some)
-      handleUserIOByToken(create)(request.token)
+      handleUserIOByToken(request.token)(create)
 end CreatePeriodicStepHandler
 ```
 
@@ -942,13 +942,12 @@ final case class EditPeriodicStepRowHandler(
   val handler: Handler =
     Routes.editPeriodicStepRow.handleIO:
       (id: Int, authorization: Authorization) =>
-        handleUserIO: (user: UserInfo, jwtToken: JwtToken) =>
+        handleUserIO(authorization): (user: UserInfo, jwtToken: JwtToken) =>
           for
             stepId <- IO.fromEither(PeriodicStepId.either(id).leftMap(new IllegalArgumentException(_)))
             steps  <- settingsService.getSteps(user.id)
             step   <- IO.fromOption(steps.find(_.id == stepId))(new IllegalArgumentException("Шаг не найден"))
           yield View.editPeriodicStepRow(step, jwtToken.value, none).toString
-        .apply(authorization)
 end EditPeriodicStepRowHandler
 ```
 
@@ -1002,7 +1001,7 @@ final case class EditPeriodicStepHandler(
                     getError(id = id, userId = user.id, jwtToken = jwtToken, error = ex.getMessage)
               case Validated.Invalid(errors) =>
                 getError(id = id, userId = user.id, jwtToken = jwtToken, error = errors.mkString_(";"))
-        handleUserIOByToken(edit)(request.token)
+        handleUserIOByToken(request.token)(edit)
 
   private def getError(...): IO[String] = ...
 end EditPeriodicStepHandler
@@ -1068,13 +1067,12 @@ final case class GetPeriodicStepRowHandler(
   val handler: Handler =
     Routes.getPeriodicStepRow.handleIO:
       (id: Int, authorization: Authorization) =>
-        handleUserIO: (user: UserInfo, jwtToken: JwtToken) =>
+        handleUserIO(authorization): (user: UserInfo, jwtToken: JwtToken) =>
           for
             stepId <- IO.fromEither(PeriodicStepId.either(id).leftMap(new IllegalArgumentException(_)))
             steps  <- settingsService.getSteps(user.id)
             step   <- IO.fromOption(steps.find(_.id == stepId))(new IllegalArgumentException("Шаг не найден"))
           yield View.getPeriodicStepRow(step, jwtToken.value).toString
-        .apply(authorization)
 end GetPeriodicStepRowHandler
 ```
 
@@ -1090,7 +1088,7 @@ final case class DeletePeriodicStepHandler(
   val handler: Handler =
     Routes.deletePeriodicStep.handleIO:
       (id: Int, authorization: Authorization) =>
-        handleUserIO: (user: UserInfo, jwtToken: JwtToken) =>
+        handleUserIO(authorization): (user: UserInfo, jwtToken: JwtToken) =>
           PeriodicStepId.either(id) match
             case Right(stepId) =>
               for
@@ -1099,7 +1097,6 @@ final case class DeletePeriodicStepHandler(
               yield view
             case Left(error) =>
               getViewSettings(..., errorPeriodicStepMessage = error.some)
-        .apply(authorization)
 ```
 
 **Разбор:**

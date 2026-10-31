@@ -370,7 +370,7 @@ final case class CreateTaskModalHandler(
   val handler: Handler =
     Routes.getTaskCreate.handleIO:
       (tab: String, authorization: Authorization) =>
-        handleUserIO: (user, token) =>
+        handleUserIO(authorization): (user, token) =>
           val ordinalIO: IO[Ordinal] =
             TaskStatus.find(tab) match
               case Some(status)
@@ -398,16 +398,17 @@ final case class CreateTaskModalHandler(
               userId = user.id,
               request = request
             )
-        .apply(authorization)
 end CreateTaskModalHandler
 ```
 
 **Пошаговый разбор:**
 
-1. **`TaskStatus.find(tab)`** — определяем статус по имени вкладки. 
+1. **`handleUserIO(authorization)(...)`** — стандартная проверка токена из заголовка.
+   `authorization` — первый аргумент, лямбда `(user, token)` — второй.
+2. **`TaskStatus.find(tab)`** — определяем статус по имени вкладки.
    Вкладки `"in-progress"`, `"planned"`, `"knowledge-base"` маппятся на соответствующие `Status`.
 
-2. **Случай для `InProgress` и `Planned`:**
+3. **Случай для `InProgress` и `Planned`:**
     - Загружаем все задачи с этим статусом.
     - Для каждой вычисляем `ordinal.next` — следующий порядковый номер.
     - Берём **максимум** из них: `_.ordinal.next`.
@@ -417,11 +418,11 @@ end CreateTaskModalHandler
    Если последняя задача имеет порядок `10`, новая должна получить `11`. 
    `max` гарантирует это, даже если в списке есть пропуски или задачи с большими порядками.
 
-3. **Случай для `KnowledgeBase` и других:**
+4. **Случай для `KnowledgeBase` и других:**
     - Возвращаем `Ordinal.Max` — большое число, которое пользователь заменит при постановке в очередь.
     - Для статуса `KnowledgeBase` порядок не важен: задачи из базы знаний ещё не в очереди.
 
-4. **`ordinalIO.flatMap`** — получив порядок, создаём `CreateTaskRequest.empty` с этим порядком и рендерим модальное окно.
+5. **`ordinalIO.flatMap`** — получив порядок, создаём `CreateTaskRequest.empty` с этим порядком и рендерим модальное окно.
 
 **Что пользователь видит в форме:**
 

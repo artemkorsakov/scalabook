@@ -35,7 +35,7 @@ nextPage = ../ci_cd.html
 
 ```dotty
 val addTimeSpentTask = Route(
-  Request.put(Path.root / "task" / Param.string / "spent")
+  Request.put(Path.root / "task" / uuidParam / "spent")
     .withEntity(Entity.formOf[AddTimeSpentRequest]),
   Response.ok(Entity.html).orNotFound
 )
@@ -43,8 +43,10 @@ val addTimeSpentTask = Route(
 
 **Разбор маршрута:**
 
-- **`Request.put(Path.root / "task" / Param.string / "spent")`** — PUT-запрос на
-  `/task/{uuid}/spent`, где `{uuid}` — идентификатор задачи.
+- **`Request.put(Path.root / "task" / uuidParam / "spent")`** — PUT-запрос на
+  `/task/{uuid}/spent`, где `{uuid}` — идентификатор задачи. Вместо `Param.string`
+  используется **`uuidParam`** — это `Param[UUID]`, который сразу декодирует путь
+  в `UUID`, поэтому в хэндлере парсинг вручную не нужен.
 - **`.withEntity(Entity.formOf[AddTimeSpentRequest])`** — тело запроса в формате
   `application/x-www-form-urlencoded`, десериализуется в `AddTimeSpentRequest`.
 - **`Response.ok(Entity.html).orNotFound`** — успешный ответ (200 OK) с HTML-телом
@@ -65,62 +67,59 @@ final case class AddTimeSpentHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.addTimeSpentTask.handleIO:
-      (uuid: String, request: AddTimeSpentRequest) =>
+      (uuid: UUID, request: AddTimeSpentRequest) =>
         val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
           (user, jwtToken) =>
-            (
-              TaskId.either(uuid).toValidatedNec,
-              request.timeSpent.refineEither[Positive].toValidatedNec
-            ).mapN { case (taskId, timeSpent) =>
-              for
-                _ <- taskLifecycleService.addTimeSpent(
-                  id = taskId,
-                  userId = user.id,
-                  timeSpent = timeSpent
-                )
-                maybeView <- getViewTask(
-                  taskLifecycleService = taskLifecycleService,
-                  userId = user.id,
-                  taskId = taskId,
-                  jwtToken = jwtToken,
-                  errorMessage = none
-                )
-              yield maybeView.map(_.toString)
-            }.valueOr { errors =>
-              Logger[IO].error(errors.mkString_(";")).as(none)
-            }
-        handleUserIOByTokenOpt(run)(request.token)
+            request.timeSpent.refineEither[Positive].toValidatedNec
+              .map { timeSpent =>
+                val taskId = TaskId(uuid)
+                for
+                  _ <- taskLifecycleService.addTimeSpent(
+                    id = taskId,
+                    userId = user.id,
+                    timeSpent = timeSpent
+                  )
+                  maybeView <- getViewTask(
+                    taskLifecycleService = taskLifecycleService,
+                    userId = user.id,
+                    taskId = taskId,
+                    jwtToken = jwtToken,
+                    errorMessage = none
+                  )
+                yield maybeView.map(_.toString)
+              }.valueOr { errors =>
+                Logger[IO].error(errors.mkString_(";")).as(none)
+              }
+        handleUserIOByTokenOpt(request.token)(run)
 end AddTimeSpentHandler
 ```
 
 **Пошаговый разбор:**
 
-1. **`handleIO: (uuid: String, request: AddTimeSpentRequest) => ...`** — обработчик
-   принимает UUID задачи из пути и тело запроса.
+1. **`handleIO: (uuid: UUID, request: AddTimeSpentRequest) => ...`** — обработчик
+   принимает UUID задачи из пути (уже декодированный в `UUID` через `uuidParam`)
+   и тело запроса.
 
 2. **`val run: ((UserInfo, JwtToken)) => IO[Option[String]] = ...`** — каррированная
    лямбда, которая получает пользователя и токен после проверки.
 
-3. **Параллельная валидация через `ValidatedNec`:**
-    - **`TaskId.parse(uuid).toValidatedNec`** — валидируем UUID. Если невалиден —
-      ошибка валидации.
-    - **`request.timeSpent.refineEither[Positive].toValidatedNec`** — валидируем
+3. **Валидация через `ValidatedNec`:**
+    - `request.timeSpent.refineEither[Positive].toValidatedNec` — валидируем
       количество минут как положительное число.
 
-4. **`.mapN { case (taskId, timeSpent) => ... }`** — если оба значения валидны,
-   выполняем бизнес-логику:
+4. **`.map { timeSpent => ... }`** — если значение валидно, выполняем бизнес-логику:
     - `taskLifecycleService.addTimeSpent(id, userId, timeSpent)` — прибавляет
       `timeSpent` минут к текущему `timeSpent` задачи.
     - `getViewTask(...)` — загружает обновлённую страницу задачи, где поле
       «Затраченное время» уже обновлено.
 
 5. **`.valueOr { errors => ... }`** — если есть ошибки валидации (например,
-   отрицательное число минут или некорректный UUID), логируем их и возвращаем
+   отрицательное число минут), логируем их и возвращаем
    `None`. Это приведёт к 404. В реальном приложении можно было бы показать
    страницу с сообщением об ошибке.
 
-6. **`handleUserIOByTokenOpt(run)(request.token)`** — проверяет токен из тела
-   запроса и передаёт `(user, jwtToken)` в лямбду `run`.
+6. **`handleUserIOByTokenOpt(request.token)(run)`** — проверяет токен из тела
+   запроса (первый аргумент — `token`, второй — лямбда `run`) и передаёт `(user, jwtToken)` в `run`.
 
 ### Что делает `addTimeSpent`
 

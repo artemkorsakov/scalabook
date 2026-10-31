@@ -41,7 +41,7 @@ nextPage = ui_task_timer.html
 
 ```dotty
 val completeFormTask = Route(
-  Request.put(Path.root / "task" / Param.string / "complete")
+  Request.put(Path.root / "task" / uuidParam / "complete")
     .withEntity(Entity.formOf[CompileTaskRequest]),
   Response.ok(Entity.html).orNotFound
 )
@@ -49,8 +49,9 @@ val completeFormTask = Route(
 
 **Разбор:**
 
-- **`Request.put(Path.root / "task" / Param.string / "complete")`** — PUT-запрос на
-  `/task/{uuid}/complete`.
+- **`Request.put(Path.root / "task" / uuidParam / "complete")`** — PUT-запрос на
+  `/task/{uuid}/complete`. Вместо `Param.string` используется **`uuidParam`** —
+  путь декодируется сразу в `UUID`.
 - **`.withEntity(Entity.formOf[CompileTaskRequest])`** — тело запроса в формате
   `application/x-www-form-urlencoded`, десериализуется в `CompileTaskRequest`.
 - **`Response.ok(Entity.html).orNotFound`** — успешный ответ с HTML или 404.
@@ -64,49 +65,47 @@ final case class CompleteTaskHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.completeFormTask.handleIO:
-      (uuid: String, request: CompileTaskRequest) =>
+      (uuid: UUID, request: CompileTaskRequest) =>
         val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
           (user, jwtToken) =>
-            TaskId.either(uuid) match
-              case Right(taskId) =>
-                (
-                  Rating.values
-                    .find(_.r == request.rating)
-                    .toValidNec(
-                      s"Рейтинг (1-5) не определился: ${request.rating}"
-                    ),
-                  Review.either(request.review.trim).toValidatedNec,
-                  request.endDate.toValidNec("Не заполнена дата окончания")
-                ).mapN { case (rating, review, endDate) =>
-                  taskLifecycleService.complete(
-                    id = taskId,
-                    userId = user.id,
-                    rating = rating,
-                    review = review,
-                    endDate = endDate,
-                    duration = FiniteDuration(
-                      request.durationValue,
-                      request.durationUnit
-                    )
-                  ).map(_ => HomeView.some)
-                }.valueOr(errors =>
-                  getViewTask(
-                    taskLifecycleService = taskLifecycleService,
-                    userId = user.id,
-                    taskId = taskId,
-                    jwtToken = jwtToken,
-                    errorMessage = errors.mkString_(";").some
-                  ).map(_.map(_.toString))
+            val taskId = TaskId(uuid)
+            (
+              Rating.values
+                .find(_.r == request.rating)
+                .toValidNec(
+                  s"Рейтинг (1-5) не определился: ${request.rating}"
+                ),
+              Review.either(request.review.trim).toValidatedNec,
+              request.endDate.toValidNec("Не заполнена дата окончания")
+            ).mapN { case (rating, review, endDate) =>
+              taskLifecycleService.complete(
+                id = taskId,
+                userId = user.id,
+                rating = rating,
+                review = review,
+                endDate = endDate,
+                duration = FiniteDuration(
+                  request.durationValue,
+                  request.durationUnit
                 )
-              case Left(error) =>
-                Logger[IO].error(error).as(none)
-        handleUserIOByTokenOpt(run)(request.token)
+              ).map(_ => HomeView.some)
+            }.valueOr(errors =>
+              getViewTask(
+                taskLifecycleService = taskLifecycleService,
+                userId = user.id,
+                taskId = taskId,
+                jwtToken = jwtToken,
+                errorMessage = errors.mkString_(";").some
+              ).map(_.map(_.toString))
+            )
+        handleUserIOByTokenOpt(request.token)(run)
 end CompleteTaskHandler
 ```
 
 **Пошаговый разбор:**
 
-1. **`TaskId.parse(uuid)`** — валидация UUID из пути.
+1. **`TaskId(uuid)`** — унарная сверка готового `UUID` в `TaskId`. Ручной парсинг из строки
+   больше не нужен: `uuidParam` в маршруте уже декодировал путь в `UUID`.
 
 2. **Тройная валидация через `ValidatedNec`:**
     - **`Rating.values.find(_.r == request.rating)`** — ищет `Rating` по числовому
@@ -127,7 +126,7 @@ end CompleteTaskHandler
 4. **`.valueOr(errors => ...)`** — если есть ошибки валидации, показываем форму
    задачи с сообщением об ошибке. Пользователь может исправить данные и попробовать снова.
 
-5. **`handleUserIOByTokenOpt(run)(request.token)`** — проверка токена.
+5. **`handleUserIOByTokenOpt(request.token)(run)`** — проверка токена из тела запроса.
 
 ### Что такое `HomeView`?
 
@@ -302,7 +301,7 @@ final case class CompileTaskRequest(
 
 ```dotty
 val deferFormTask = Route(
-  Request.put(Path.root / "task" / Param.string / "defer")
+  Request.put(Path.root / "task" / uuidParam / "defer")
     .extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
@@ -310,7 +309,7 @@ val deferFormTask = Route(
 
 **Отличие от `complete`:** здесь **нет** тела запроса, потому что все данные уже
 известны (ID задачи из пути, пользователь — из токена). Используется только
-заголовок `Authorization`.
+заголовок `Authorization`. Вместо `Param.string` — **`uuidParam`**, декодирующий путь в `UUID`.
 
 ### Хэндлер `DeferTaskHandler`
 
@@ -320,41 +319,40 @@ final case class DeferTaskHandler(
     taskLifecycleService: TaskLifecycleService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
-    Routes.deferFormTask.handleIO:
-      (uuid: String, authorization: Authorization) =>
-        handleUserIOOpt: (user, jwtToken) =>
-          TaskId.either(uuid) match
-            case Right(taskId) =>
-              for
-                _ <- taskLifecycleService.defer(
-                  id = taskId,
-                  userId = user.id
-                )
-                maybeView <- getViewTask(
-                  taskLifecycleService = taskLifecycleService,
-                  userId = user.id,
-                  taskId = taskId,
-                  jwtToken = jwtToken,
-                  errorMessage = none
-                )
-              yield maybeView.map(_.toString)
-            case Left(error) =>
-              Logger[IO].error(error).as(none)
-        .apply(authorization)
+    Routes.deferFormTask.handleIO: (uuid: UUID, authorization: Authorization) =>
+      handleUserIOOpt(authorization): (user, jwtToken) =>
+        val taskId = TaskId(uuid)
+        for
+          _ <- taskLifecycleService.defer(
+            id = taskId,
+            userId = user.id
+          )
+          maybeView <- getViewTask(
+            taskLifecycleService = taskLifecycleService,
+            userId = user.id,
+            taskId = taskId,
+            jwtToken = jwtToken,
+            errorMessage = none
+          )
+        yield maybeView.map(_.toString)
 end DeferTaskHandler
 ```
 
 **Пошаговый разбор:**
 
-1. **`handleUserIOOpt`** — мягкая проверка токена (невалидный токен → `None`,
-   а не исключение).
+1. **`handleUserIOOpt(authorization)`** — мягкая проверка токена из заголовка
+   (невалидный токен → `None`, а не исключение). `authorization` — первый аргумент,
+   лямбда `(user, jwtToken)` — второй.
 
-2. **`taskLifecycleService.defer(id, userId)`** — выполняет откладывание:
-  - Проверяет, что задача в статусе `InProgress`.
-  - Меняет статус на `Planned`.
-  - Очищает `startDate` и `endDate`.
+2. **`TaskId(uuid)`** — унарная сверка готового `UUID` в `TaskId`. Парсинг из строки
+   не нужен — `uuidParam` уже декодировал путь.
 
-3. **`getViewTask(...)`** — загружает обновлённую страницу задачи. Пользователь
+3. **`taskLifecycleService.defer(id, userId)`** — выполняет откладывание:
+   - Проверяет, что задача в статусе `InProgress`.
+   - Меняет статус на `Planned`.
+   - Очищает `startDate` и `endDate`.
+
+4. **`getViewTask(...)`** — загружает обновлённую страницу задачи. Пользователь
    видит ту же задачу, но теперь с кнопкой «🚀 Взять в работу».
 
 **Почему нет формы и тела запроса?**
@@ -388,7 +386,7 @@ end DeferTaskHandler
 
 ```dotty
 val startFormTask = Route(
-  Request.put(Path.root / "task" / Param.string / "start")
+  Request.put(Path.root / "task" / uuidParam / "start")
     .withEntity(Entity.formOf[StartTaskRequest]),
   Response.ok(Entity.html).orNotFound
 )
@@ -402,31 +400,39 @@ final case class StartTaskHandler(
     taskLifecycleService: TaskLifecycleService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
-    Routes.startFormTask.handleIO: (uuid: String, request: StartTaskRequest) =>
+    Routes.startFormTask.handleIO: (uuid: UUID, request: StartTaskRequest) =>
       val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
         (user, jwtToken) =>
-          TaskId.either(uuid) match
-            case Right(taskId) =>
-              (
-                request.startDate.toValidNec("Не заполнена дата начала"),
-                request.endDate.toValidNec("Не заполнена дата окончания")
-              ).mapN { case (startDate, endDate) =>
-                for
-                  _ <- taskLifecycleService.start(
-                    id = taskId,
-                    userId = user.id,
-                    startDate = startDate,
-                    endDate = endDate
-                  )
-                  maybeView <- getViewTask(...)
-                yield maybeView.map(_.toString)
-              }.valueOr(errors =>
-                getViewTask(..., errorMessage = errors.mkString_(";").some)
-                  .map(_.map(_.toString))
+          val taskId = TaskId(uuid)
+          (
+            request.startDate.toValidNec("Не заполнена дата начала"),
+            request.endDate.toValidNec("Не заполнена дата окончания")
+          ).mapN { case (startDate, endDate) =>
+            for
+              _ <- taskLifecycleService.start(
+                id = taskId,
+                userId = user.id,
+                startDate = startDate,
+                endDate = endDate
               )
-            case Left(error) =>
-              Logger[IO].error(error).as(none)
-      handleUserIOByTokenOpt(run)(request.token)
+              maybeView <- getViewTask(
+                taskLifecycleService = taskLifecycleService,
+                userId = user.id,
+                taskId = taskId,
+                jwtToken = jwtToken,
+                errorMessage = none
+              )
+            yield maybeView.map(_.toString)
+          }.valueOr(errors =>
+            getViewTask(
+              taskLifecycleService = taskLifecycleService,
+              userId = user.id,
+              taskId = taskId,
+              jwtToken = jwtToken,
+              errorMessage = errors.mkString_(";").some
+            ).map(_.map(_.toString))
+          )
+      handleUserIOByTokenOpt(request.token)(run)
 end StartTaskHandler
 ```
 
@@ -435,6 +441,8 @@ end StartTaskHandler
 1. **Валидация дат** через `ValidatedNec`:
     - `startDate` — обязательна.
     - `endDate` — обязательна.
+   `uuid` приходит уже как `UUID` (`uuidParam` в маршруте), поэтому `TaskId(uuid)`
+   собирается сразу, без `Right`/`Left`-веток.
 
 2. **`.mapN { case (startDate, endDate) => ... }`** — при успехе вызываем
    `taskLifecycleService.start(...)`, который:
@@ -535,7 +543,7 @@ final case class StartTaskRequest(
 
 ```dotty
 val queueFormTask = Route(
-  Request.put(Path.root / "task" / Param.string / "queue")
+  Request.put(Path.root / "task" / uuidParam / "queue")
     .withEntity(Entity.formOf[QueueTaskRequest]),
   Response.ok(Entity.html).orNotFound
 )
@@ -549,47 +557,82 @@ final case class QueueTaskHandler(
     taskLifecycleService: TaskLifecycleService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
-    Routes.queueFormTask.handleIO: (uuid: String, request: QueueTaskRequest) =>
+    Routes.queueFormTask.handleIO: (uuid: UUID, request: QueueTaskRequest) =>
       val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
         (user, jwtToken) =>
-          TaskId.either(uuid) match
-            case Right(taskId) =>
-              Ordinal.either(request.ordinal) match
-                case Right(ordinal) =>
-                  for
-                    _ <- taskLifecycleService.enqueue(
-                      id = taskId,
-                      userId = user.id,
-                      ordinal = ordinal
-                    )
-                    maybeView <- getViewTask(...)
-                  yield maybeView.map(_.toString)
-                case Left(error) =>
-                  getViewTask(..., errorMessage = error.some)
-                    .map(_.map(_.toString))
+          val taskId = TaskId(uuid)
+          Ordinal.either(request.ordinal) match
+            case Right(ordinal) =>
+              val runReorderTasks: IO[Boolean] =
+                if request.ordinalShift.contains("on") then
+                  taskLifecycleService.reorderTasks(
+                    userId = user.id,
+                    ordinal = ordinal,
+                    status = Status.Planned
+                  )
+                else IO(true)
+
+              for
+                _ <- runReorderTasks
+                _ <- taskLifecycleService.enqueue(
+                  id = taskId,
+                  userId = user.id,
+                  ordinal = ordinal
+                )
+                maybeView <- getViewTask(
+                  taskLifecycleService = taskLifecycleService,
+                  userId = user.id,
+                  taskId = taskId,
+                  jwtToken = jwtToken,
+                  errorMessage = none
+                )
+              yield maybeView.map(_.toString)
             case Left(error) =>
-              Logger[IO].error(error).as(none)
-      handleUserIOByTokenOpt(run)(request.token)
+              getViewTask(
+                taskLifecycleService = taskLifecycleService,
+                userId = user.id,
+                taskId = taskId,
+                jwtToken = jwtToken,
+                errorMessage = error.some
+              ).map(_.map(_.toString))
+          end match
+      handleUserIOByTokenOpt(request.token)(run)
 end QueueTaskHandler
 ```
 
 **Пошаговый разбор:**
 
 1. **`Ordinal.either(request.ordinal)`** — валидация порядкового номера
-   (должен быть положительным).
+   (должен быть положительным). `taskId = TaskId(uuid)` — унарная сверка уже
+   декодированного маршрутом `UUID`.
 
-2. **`taskLifecycleService.enqueue(id, userId, ordinal)`** — переводит задачу:
+2. **`runReorderTasks`** — если в форме отмечен флажок `ordinalShift` (значение `"on"`),
+   сначала вызывается `reorderTasks`, который «раздвигает» уже занятые порядковые номера,
+   чтобы освободить место для новой задачи.
+
+3. **`taskLifecycleService.enqueue(id, userId, ordinal)`** — переводит задачу:
     - Проверяет, что задача в статусе `KnowledgeBase`.
     - Меняет статус на `Planned`.
     - Устанавливает указанный порядковый номер.
+   Если была включена перестановка — она выполняется **до** постановки в очередь.
 
-3. **При ошибке валидации `ordinal`** — показываем форму задачи с ошибкой.
+4. **При ошибке валидации `ordinal`** — показываем форму задачи с ошибкой.
 
 ### Модель `QueueTaskRequest`
 
 ```dotty
-final case class QueueTaskRequest(token: String, ordinal: Int) derives FormCodec
+final case class QueueTaskRequest(
+    token: String,
+    ordinal: Int,
+    ordinalShift: Option[String]
+) derives FormCodec
 ```
+
+- **`token`** — JWT-токен из скрытого поля формы.
+- **`ordinal`** — порядковый номер.
+- **`ordinalShift`** — опциональный флаг (например, чекбокс «сдвинуть порядок»).
+  Если равен `"on"`, перед постановкой в очередь выполняется перестановка порядковых номеров.
+  `Option[String]` означает, что флажок может быть не отмечен — тогда сдвиг не выполняется.
 
 ### Модальное окно «В очередь»
 
@@ -687,7 +730,7 @@ final case class QueueTaskRequest(token: String, ordinal: Int) derives FormCodec
 
 ```dotty
 val deleteTask = Route(
-  Request.delete(Path.root / "task" / Param.string)
+  Request.delete(Path.root / "task" / uuidParam)
     .extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
@@ -695,8 +738,8 @@ val deleteTask = Route(
 
 **Разбор:**
 
-- **`Request.delete(Path.root / "task" / Param.string)`** — DELETE-запрос на
-  `/task/{uuid}`.
+- **`Request.delete(Path.root / "task" / uuidParam)`** — DELETE-запрос на
+  `/task/{uuid}`. `uuidParam` декодирует путь сразу в `UUID`.
 - **`.extractHeader[Authorization]`** — токен из заголовка.
 - **`Response.ok(Entity.html).orNotFound`** — успешный ответ с HTML.
 
@@ -708,30 +751,30 @@ final case class DeleteTaskHandler(
     taskLifecycleService: TaskLifecycleService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
-    Routes.deleteTask.handleIO: (uuid: String, authorization: Authorization) =>
-      handleUserIOOpt: (user, token) =>
-        TaskId.either(uuid) match
-          case Right(taskId) =>
-            taskLifecycleService
-              .delete(
-                id = taskId,
-                userId = user.id
-              ).map(_ => HomeView.some)
-          case Left(error) =>
-            Logger[IO].error(error).as(none)
-      .apply(authorization)
+    Routes.deleteTask.handleIO: (uuid: UUID, authorization: Authorization) =>
+      handleUserIOOpt(authorization): (user, token) =>
+        val taskId = TaskId(uuid)
+        taskLifecycleService
+          .delete(
+            id = taskId,
+            userId = user.id
+          ).map(_ => HomeView.some)
 end DeleteTaskHandler
 ```
 
 **Пошаговый разбор:**
 
-1. **`handleUserIOOpt`** — мягкая проверка токена.
+1. **`handleUserIOOpt(authorization)`** — мягкая проверка токена из заголовка:
+   `authorization` — первый аргумент, лямбда `(user, token)` — второй.
 
-2. **`taskLifecycleService.delete(id, userId)`** — удаляет задачу:
+2. **`TaskId(uuid)`** — унарная сверка уже декодированного маршрутом `UUID`.
+
+3. **`taskLifecycleService.delete(id, userId)`** — удаляет задачу:
     - Проверяет, что задача принадлежит пользователю.
     - Удаляет запись из БД.
 
-3. **`.map(_ => HomeView.some)`** — после удаления возвращаем главную страницу.
+4. **`.map(_ => HomeView.some)`** — после удаления возвращаем главную страницу.
+   Пользователь видит список оставшихся задач, а удалённая задача исчезает.
    Пользователь видит список оставшихся задач, а удалённая задача исчезает.
 
 ### HTML-кнопка удаления
@@ -763,7 +806,8 @@ end DeleteTaskHandler
 
 1. **Маршрут** — PUT или DELETE на `/task/{uuid}/{action}`.
 2. **Хэндлер** — наследуется от `AuthorizationHandler`, проверяет токен,
-   парсит UUID, вызывает соответствующий метод `taskLifecycleService`.
+   получает UUID уже декодированным маршрутом (`uuidParam`), вызывает соответствующий
+   метод `taskLifecycleService`.
 3. **Модель запроса** — DTO с `derives FormCodec` (если есть тело).
 4. **HTML-кнопка/форма** — использует htmx для отправки запроса без перезагрузки.
 5. **Ответ** — либо страница задачи с обновлённым статусом, либо главная страница

@@ -51,7 +51,7 @@ final case class CreateTaskModalHandler(
   val handler: Handler =
     Routes.getTaskCreate.handleIO:
       (tab: String, authorization: Authorization) =>
-        handleUserIO: (user, token) =>
+        handleUserIO(authorization): (user, token) =>
           val ordinalIO: IO[Ordinal] =
             TaskStatus.find(tab) match
               case Some(status)
@@ -79,13 +79,13 @@ final case class CreateTaskModalHandler(
               userId = user.id,
               request = request
             )
-        .apply(authorization)
 ```
 
 **Пошаговый разбор:**
 
-1. **`handleUserIO: (user, token) => ...`** — стандартная проверка токена через
-   `AuthorizationHandler`. После успешной проверки получаем `user` и `token`.
+1. **`handleUserIO(authorization)(...)`** — стандартная проверка токена через
+   `AuthorizationHandler`. `authorization` из заголовка передаётся первым аргументом;
+   лямбда `(user, token)` — вторым. После успешной проверки получаем `user` и `token`.
 
 2. **Вычисление порядкового номера (`ordinalIO`)** — динамически определяется
    для вкладок «В работе» и «Запланировано»: берётся максимальный `ordinal`
@@ -532,7 +532,7 @@ final case class CreateTaskHandler(
                 errorRequest = request,
                 errorMessage = errors.toChain.toVector.mkString("; ")
               )
-      handleUserIOByToken(create)(request.token)
+      handleUserIOByToken(request.token)(create)
 ```
 
 **Пошаговый разбор:**
@@ -561,9 +561,9 @@ final case class CreateTaskHandler(
 4. **Ветка `Invalid`:** возвращаем модальное окно с ошибками валидации, объединёнными
    через `"; "`.
 
-5. **`handleUserIOByToken(create)(request.token)`** — извлекает токен из тела
-   запроса (не из заголовка!), проверяет его через middleware и передаёт
-   `(user, jwtToken)` в лямбду `create`.
+5. **`handleUserIOByToken(request.token)(create)`** — извлекает токен из тела
+   запроса (не из заголовка!) — первый аргумент, проверяет его через middleware
+   и передаёт `(user, jwtToken)` в лямбду `create` — второй аргумент.
 
 `getViewAfterCreateTask` и `getViewCreateTaskModalWithError` используют тот же `getViewCreateTaskModal`,
 что и при открытии модального окна:

@@ -371,7 +371,7 @@ final case class OpenSourceHandler(
                   }
                 case Left(error) =>
                   Logger[IO].error(error).as(none)
-          handleUserIOByTokenOpt(run)(token)
+          handleUserIOByTokenOpt(token)(run)
             .map(_.getOrElse(NotFoundView))
 
         case None =>
@@ -529,7 +529,7 @@ final case class EditFormSourceHandler(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val handler: Handler =
     Routes.editFormSource.handleIO: (id: Int, authorization: Authorization) =>
-      handleUserIOOpt: (user, jwtToken) =>
+      handleUserIOOpt(authorization): (user, jwtToken) =>
         TaskTypeId.either(id) match
           case Right(taskTypeId) =>
             for
@@ -551,13 +551,13 @@ final case class EditFormSourceHandler(
             }
           case Left(error) =>
             Logger[IO].error(error).as(none)
-      .apply(authorization)
 end EditFormSourceHandler
 ```
 
 **Что делает:**
 
-1. **`handleUserIOOpt`** — мягкая проверка токена.
+1. **`handleUserIOOpt(authorization)(...)`** — мягкая проверка токена. `authorization`
+   из заголовка — первый аргумент, лямбда `(user, jwtToken)` — второй.
 2. **`TaskTypeId.either(id)`** — валидация ID.
 3. **Загрузка типа задачи и источника.**
 4. **Рендер `editSource.scala.html`** с заполненной информацией.
@@ -601,7 +601,7 @@ final case class EditSourceHandler(
                     ).toString.some
             case Left(error) =>
               Logger[IO].error(error).as(none)
-      handleUserIOByTokenOpt(run)(request.token)
+      handleUserIOByTokenOpt(request.token)(run)
 end EditSourceHandler
 ```
 

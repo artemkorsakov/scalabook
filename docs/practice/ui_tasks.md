@@ -23,8 +23,10 @@ nextPage = ui_tasks/ui_task_open.html
 
 ### Маршрут
 
+Маршрут объявлен приватно внутри `TaskHandlers`:
+
 ```dotty
-val getTaskCreate = Route(
+private val createModalRoute = Route(
   Request.get(Path.root / "task" / "create" / Param.string)
     .extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
@@ -40,45 +42,39 @@ val getTaskCreate = Route(
 - **`Response.ok(Entity.html).orNotFound`** — успешный ответ (200 OK) с HTML-телом
   модального окна.
 
-### Хэндлер `CreateTaskModalHandler`
+### Хэндлер `createModalHandler` (класс `TaskHandlers`)
 
 ```dotty
-final case class CreateTaskModalHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO],
-    taskLifecycleService: TaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.getTaskCreate.handleIO:
-      (tab: String, authorization: Authorization) =>
-        withUserFromHeader(authorization): (user, token) =>
-          val ordinalIO: IO[Ordinal] =
-            TaskStatus.find(tab) match
-              case Some(status)
-                  if status == TaskStatus.InProgress ||
-                    status == TaskStatus.Planned =>
-                taskLifecycleService.taskService
-                  .getAll(
-                    userId = user.id,
-                    maybeStatus = status.some,
-                    maybeTaskType = none,
-                    maybeSectionId = none
-                  )
-                  .map(_.map(_.ordinal.next).maxOption.getOrElse(Ordinal.Min))
-              case _ => Ordinal.Max.pure[IO]
+val createModalHandler: Handler =
+  createModalRoute.handleIO: (tab: String, authorization: Authorization) =>
+    withUserFromHeader(authorization): (user, token) =>
+      val ordinalIO: IO[Ordinal] =
+        TaskStatus.find(tab) match
+          case Some(status)
+              if status == TaskStatus.InProgress ||
+                status == TaskStatus.Planned =>
+            taskLifecycleService.taskService
+              .getAll(
+                userId = user.id,
+                maybeStatus = status.some,
+                maybeTaskType = none,
+                maybeSectionId = none
+              )
+              .map(_.map(_.ordinal.next).maxOption.getOrElse(Ordinal.Min))
+          case _ => Ordinal.Max.pure[IO]
 
-          ordinalIO.flatMap: ordinal =>
-            val request = CreateTaskRequest.empty(
-              token = token.value,
-              tab = tab,
-              ordinal = ordinal.value
-            )
+      ordinalIO.flatMap: ordinal =>
+        val request = CreateTaskRequest.empty(
+          token = token.value,
+          tab = tab,
+          ordinal = ordinal.value
+        )
 
-            getViewEmptyCreateTaskModal(
-              settingsService = settingsService,
-              userId = user.id,
-              request = request
-            )
+        TaskViews.getViewEmptyCreateTaskModal(
+          settingsService = settingsService,
+          userId = user.id,
+          request = request
+        )
 ```
 
 **Пошаговый разбор:**
@@ -96,10 +92,13 @@ final case class CreateTaskModalHandler(
 3. **`CreateTaskRequest.empty(token, tab, ordinal.value)`** — формирует пустой
    запрос с уже вычисленным порядковым номером.
 
-4. **`getViewEmptyCreateTaskModal(...)`** — формирует HTML модального окна, передавая:
-  - `request` — значение полей модального окна по умолчанию.
+4. **`TaskViews.getViewEmptyCreateTaskModal(...)`** — вспомогательная view-функция
+   из `TaskViews` формирует HTML модального окна, передавая `request` — значение полей
+   по умолчанию.
 
 ### Формирование модального окна
+
+Вспомогательные view-функции вынесены в объект `TaskViews`:
 
 ```dotty
 def getViewEmptyCreateTaskModal(
@@ -115,7 +114,7 @@ def getViewEmptyCreateTaskModal(
     errorMessage = none
   )
 
-private def getViewCreateTaskModal(
+def getViewCreateTaskModal(
     settingsService: SettingsService[IO],
     isOpen: Boolean,
     userId: UserId,
@@ -220,7 +219,7 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 
 Возвращает «пустой» запрос со значениями по умолчанию. 
 Используется при первом открытии формы, когда `errorRequest` отсутствует. 
-Порядковый номер (`ordinal`) не фиксирован, а вычисляется в `CreateTaskModalHandler`:
+Порядковый номер (`ordinal`) не фиксирован, а вычисляется в `createModalHandler`:
 для вкладок «В работе» и «Запланировано» — это следующий номер после последнего,
 а для «Базы знаний» — `Ordinal.Max`, чтобы новая задача попала в конец списка.
 
@@ -480,62 +479,57 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 После того как пользователь заполнил форму и нажал «Создать задачу», htmx отправляет
 POST-запрос на `/tasks`. Здесь происходит вся логика создания.
 
-### Хэндлер `CreateTaskHandler`
+### Хэндлер `createHandler` (класс `TaskHandlers`)
 
 ```dotty
-final case class CreateTaskHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO],
-    taskLifecycleService: TaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.taskCreate.handleIO: (request: CreateTaskRequest) =>
-      val create: ((UserInfo, JwtToken)) => IO[String] =
-        (user, jwtToken) =>
-          CreateTask.parse(request, user.id) match
-            case Validated.Valid(task) =>
-              val runReorderTasks: IO[Boolean] =
-                if request.ordinalShift.contains("on") then
-                  taskLifecycleService.reorderTasks(
+val createHandler: Handler =
+  createRoute.handleIO: (request: CreateTaskRequest) =>
+    val create: ((UserInfo, JwtToken)) => IO[String] =
+      (user, jwtToken) =>
+        CreateTask.parse(request, user.id) match
+          case Validated.Valid(task) =>
+            val runReorderTasks: IO[Boolean] =
+              if request.ordinalShift.contains("on") then
+                taskLifecycleService.reorderTasks(
+                  userId = user.id,
+                  ordinal = task.ordinal,
+                  status = task.status
+                )
+              else IO(true)
+
+            val run: IO[String] =
+              for
+                _    <- runReorderTasks
+                _    <- taskLifecycleService.create(task)
+                view <-
+                  TaskViews.getViewAfterCreateTask(
+                    settingsService = settingsService,
                     userId = user.id,
-                    ordinal = task.ordinal,
-                    status = task.status
+                    token = jwtToken,
+                    tab = request.tab
                   )
-                else IO(true)
+              yield view
 
-              val run: IO[String] =
-                for
-                  _    <- runReorderTasks
-                  _    <- taskLifecycleService.create(task)
-                  view <-
-                    getViewAfterCreateTask(
-                      settingsService = settingsService,
-                      userId = user.id,
-                      token = jwtToken,
-                      tab = request.tab
-                    )
-                yield view
-
-              run
-                .recoverWith:
-                  case ex: IllegalArgumentException =>
-                    getViewCreateTaskModalWithError(
-                      settingsService = settingsService,
-                      userId = user.id,
-                      errorRequest = request,
-                      errorMessage = ex.getMessage
-                    )
-            case Validated.Invalid(errors) =>
-              getViewCreateTaskModalWithError(
-                settingsService = settingsService,
-                userId = user.id,
-                errorRequest = request,
-                errorMessage = errors.toChain.toVector.mkString("; ")
-              )
-      // ToDo: https://github.com/creativescala/krop/pull/57
-      val authorization: Authorization =
-        Authorization(Token(AuthScheme.Bearer, request.token))
-      withUserFromHeader(authorization)(create)
+            run
+              .recoverWith:
+                case ex: IllegalArgumentException =>
+                  TaskViews.getViewCreateTaskModalWithError(
+                    settingsService = settingsService,
+                    userId = user.id,
+                    errorRequest = request,
+                    errorMessage = ex.getMessage
+                  )
+          case Validated.Invalid(errors) =>
+            TaskViews.getViewCreateTaskModalWithError(
+              settingsService = settingsService,
+              userId = user.id,
+              errorRequest = request,
+              errorMessage = errors.toChain.toVector.mkString("; ")
+            )
+    // ToDo: https://github.com/creativescala/krop/pull/57
+    val authorization: Authorization =
+      Authorization(Token(AuthScheme.Bearer, request.token))
+    withUserFromHeader(authorization)(create)
 ```
 
 **Пошаговый разбор:**
@@ -576,8 +570,8 @@ final case class CreateTaskHandler(
    > Примечание: пока это временное решение (см. `// ToDo` — ждём поддержку токена из формы
    > в krop, https://github.com/creativescala/krop/pull/57).
 
-`getViewAfterCreateTask` и `getViewCreateTaskModalWithError` используют тот же `getViewCreateTaskModal`,
-что и при открытии модального окна:
+`TaskViews.getViewAfterCreateTask` и `TaskViews.getViewCreateTaskModalWithError` используют тот же
+`getViewCreateTaskModal` из `TaskViews`, что и при открытии модального окна:
 
 ```dotty
 def getViewAfterCreateTask(
@@ -755,12 +749,12 @@ final case class HomeHandler(
 
 1. **Пользователь на вкладке «Запланировано»** кликает «+ Создать задачу».
 2. **htmx отправляет GET** на `/task/create/planned` с токеном в заголовке.
-3. **`CreateTaskModalHandler`** проверяет токен, загружает справочники,
+3. **`TaskHandlers.createModalHandler`** проверяет токен, загружает справочники,
    возвращает HTML модального окна.
 4. **htmx вставляет HTML** в `#modal-container`. Пользователь видит форму.
 5. **Пользователь заполняет форму** и нажимает «Создать задачу».
 6. **htmx отправляет POST** на `/tasks` с данными формы.
-7. **`CreateTaskHandler`** валидирует запрос, при отмеченном чекбоксе сдвига вызывает
+7. **`TaskHandlers.createHandler`** валидирует запрос, при отмеченном чекбоксе сдвига вызывает
    `taskLifecycleService.reorderTasks`, затем `taskLifecycleService.create`,
    создаёт задачу в БД.
 8. **При успехе** возвращается «закрытое» модальное окно с кнопкой
@@ -777,10 +771,10 @@ final case class HomeHandler(
 
 Мы реализовали полный цикл создания задачи:
 
-1. **`CreateTaskModalHandler`** — открывает модальное окно с формой.
+1. **`TaskHandlers.createModalHandler`** — открывает модальное окно с формой.
 2. **`createTask.scala.html`** — рендерит форму с условно обязательными полями
    (даты обязательны только для «В работе»).
-3. **`CreateTaskHandler`** — валидирует данные, создаёт задачу, обрабатывает
+3. **`TaskHandlers.createHandler`** — валидирует данные, создаёт задачу, обрабатывает
    ошибки.
 4. **`HomeHandler`** — возвращает пользователя на его вкладку с обновлённым списком.
 

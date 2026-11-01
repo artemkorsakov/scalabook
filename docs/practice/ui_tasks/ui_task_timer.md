@@ -23,7 +23,7 @@ nextPage = ../ci_cd.html
 
 1. **Клиентский JavaScript** — обновляет отображение каждую секунду, не обращаясь к серверу.
 2. **HTML-разметка** — три кнопки (Старт, Стоп, Сброс) и счётчик.
-3. **Серверный хэндлер `AddTimeSpentHandler`** — принимает итоговое время и сохраняет его
+3. **Серверный хэндлер `addTimeSpentHandler`** — принимает итоговое время и сохраняет его
    в БД, прибавляя к уже накопленному значению `timeSpent`.
 
 **Ключевое решение:** таймер **не хранит состояние на сервере**. Когда пользователь
@@ -33,9 +33,12 @@ nextPage = ../ci_cd.html
 
 ## Маршрут
 
+Маршрут объявлен приватно внутри `TaskHandlers` на основе общего пути `taskPath`
+(`Path.root / "task" / uuidParam`):
+
 ```dotty
-val addTimeSpentTask = Route(
-  Request.put(Path.root / "task" / uuidParam / "spent")
+private val addTimeSpentRoute = Route(
+  Request.put(taskPath / "spent")
     .withEntity(Entity.formOf[AddTimeSpentRequest]),
   Response.ok(Entity.html).orNotFound
 )
@@ -43,10 +46,10 @@ val addTimeSpentTask = Route(
 
 **Разбор маршрута:**
 
-- **`Request.put(Path.root / "task" / uuidParam / "spent")`** — PUT-запрос на
-  `/task/{uuid}/spent`, где `{uuid}` — идентификатор задачи. Вместо `Param.string`
-  используется **`uuidParam`** — это `Param[UUID]`, который сразу декодирует путь
-  в `UUID`, поэтому в хэндлере парсинг вручную не нужен.
+- **`Request.put(taskPath / "spent")`** — PUT-запрос на
+  `/task/{uuid}/spent`, где `{uuid}` — идентификатор задачи. Используется **`uuidParam`**
+  — это `Param[UUID]`, который сразу декодирует путь в `UUID`, поэтому в хэндлере
+  парсинг вручную не нужен.
 - **`.withEntity(Entity.formOf[AddTimeSpentRequest])`** — тело запроса в формате
   `application/x-www-form-urlencoded`, десериализуется в `AddTimeSpentRequest`.
 - **`Response.ok(Entity.html).orNotFound`** — успешный ответ (200 OK) с HTML-телом
@@ -58,43 +61,38 @@ PUT семантически означает «обновить ресурс».
 у существующей задачи. POST обычно используется для создания новых ресурсов,
 поэтому PUT — более точный выбор.
 
-## Хэндлер `AddTimeSpentHandler`
+## Хэндлер `addTimeSpentHandler` (класс `TaskHandlers`)
 
 ```dotty
-final case class AddTimeSpentHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    taskLifecycleService: TaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.addTimeSpentTask.handleIO:
-      (uuid: UUID, request: AddTimeSpentRequest) =>
-        val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
-          (user, jwtToken) =>
-            request.timeSpent.refineEither[Positive].toValidatedNec
-              .map { timeSpent =>
-                val taskId = TaskId(uuid)
-                for
-                  _ <- taskLifecycleService.addTimeSpent(
-                    id = taskId,
-                    userId = user.id,
-                    timeSpent = timeSpent
-                  )
-                  maybeView <- getViewTask(
-                    taskLifecycleService = taskLifecycleService,
-                    userId = user.id,
-                    taskId = taskId,
-                    jwtToken = jwtToken,
-                    errorMessage = none
-                  )
-                yield maybeView.map(_.toString)
-              }.valueOr { errors =>
-                Logger[IO].error(errors.mkString_(";")).as(none)
-              }
-        // ToDo: https://github.com/creativescala/krop/pull/57
-        val authorization: Authorization =
-          Authorization(Token(AuthScheme.Bearer, request.token))
-        withUserFromHeaderOpt(authorization)(run)
-end AddTimeSpentHandler
+val addTimeSpentHandler: Handler =
+  addTimeSpentRoute.handleIO:
+    (uuid: UUID, request: AddTimeSpentRequest) =>
+      val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+        (user, jwtToken) =>
+          request.timeSpent.refineEither[Positive].toValidatedNec
+            .map { timeSpent =>
+              val taskId = TaskId(uuid)
+              for
+                _ <- taskLifecycleService.addTimeSpent(
+                  id = taskId,
+                  userId = user.id,
+                  timeSpent = timeSpent
+                )
+                maybeView <- getViewTask(
+                  taskLifecycleService = taskLifecycleService,
+                  userId = user.id,
+                  taskId = taskId,
+                  jwtToken = jwtToken,
+                  errorMessage = none
+                )
+              yield maybeView.map(_.toString)
+            }.valueOr { errors =>
+              Logger[IO].error(errors.mkString_(";")).as(none)
+            }
+      // ToDo: https://github.com/creativescala/krop/pull/57
+      val authorization: Authorization =
+        Authorization(Token(AuthScheme.Bearer, request.token))
+      withUserFromHeaderOpt(authorization)(run)
 ```
 
 **Пошаговый разбор:**

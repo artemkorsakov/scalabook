@@ -220,7 +220,7 @@ final case class QueueTaskRequest(
 
 **Аналогично** поле добавляется в `CreateTaskRequest` и `EditTaskRequest`.
 
-## Обновление `CreateTaskHandler`
+## Обновление `createHandler` (`TaskHandlers`)
 
 Теперь создание задачи выполняется в два шага: сначала выравнивание, потом само создание.
 
@@ -239,7 +239,7 @@ val run: IO[String] =
     _    <- runReorderTasks
     _    <- taskLifecycleService.create(task)
     view <-
-      getViewAfterCreateTask(
+      TaskViews.getViewAfterCreateTask(
         settingsService = settingsService,
         userId = user.id,
         token = jwtToken,
@@ -259,7 +259,7 @@ val run: IO[String] =
 
 `IO(true)` — no-op. Эффект ничего не делает, но возвращает `true`. Это позволяет писать единый for-comprehension независимо от флага.
 
-## Обновление `EditTaskHandler`
+## Обновление `editHandler` (`TaskHandlers`)
 
 Аналогично для редактирования:
 
@@ -292,7 +292,7 @@ val run: IO[Option[String]] =
 Она тоже сдвинется — но затем `update` перезапишет её порядок на `2`. 
 Итоговый результат корректный, хотя промежуточное состояние и содержит «лишнее» обновление.
 
-## Обновление `QueueTaskHandler`
+## Обновление `queueHandler` (`TaskHandlers`)
 
 Для постановки в очередь — та же логика, но с фиксированным статусом `Planned`:
 
@@ -362,44 +362,40 @@ case Right(ordinal) =>
 Для статусов **«В работе»** и **«Запланировано»** порядок рассчитывается так:
 
 ```dotty
-final case class CreateTaskModalHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO],
-    taskLifecycleService: TaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.getTaskCreate.handleIO:
-      (tab: String, authorization: Authorization) =>
-        withUserFromHeader(authorization): (user, token) =>
-          val ordinalIO: IO[Ordinal] =
-            TaskStatus.find(tab) match
-              case Some(status)
-                  if status == TaskStatus.InProgress ||
-                    status == TaskStatus.Planned =>
-                taskLifecycleService.taskService
-                  .getAll(
-                    userId = user.id,
-                    maybeStatus = status.some,
-                    maybeTaskType = none,
-                    maybeSectionId = none
-                  )
-                  .map(_.map(_.ordinal.next).maxOption.getOrElse(Ordinal.Min))
-              case _ => Ordinal.Max.pure[IO]
+val createModalHandler: Handler =
+  createModalRoute.handleIO: (tab: String, authorization: Authorization) =>
+    withUserFromHeader(authorization): (user, token) =>
+      val ordinalIO: IO[Ordinal] =
+        TaskStatus.find(tab) match
+          case Some(status)
+              if status == TaskStatus.InProgress ||
+                status == TaskStatus.Planned =>
+            taskLifecycleService.taskService
+              .getAll(
+                userId = user.id,
+                maybeStatus = status.some,
+                maybeTaskType = none,
+                maybeSectionId = none
+              )
+              .map(_.map(_.ordinal.next).maxOption.getOrElse(Ordinal.Min))
+          case _ => Ordinal.Max.pure[IO]
 
-          ordinalIO.flatMap: ordinal =>
-            val request = CreateTaskRequest.empty(
-              token = token.value,
-              tab = tab,
-              ordinal = ordinal.value
-            )
+      ordinalIO.flatMap: ordinal =>
+        val request = CreateTaskRequest.empty(
+          token = token.value,
+          tab = tab,
+          ordinal = ordinal.value
+        )
 
-            getViewEmptyCreateTaskModal(
-              settingsService = settingsService,
-              userId = user.id,
-              request = request
-            )
-end CreateTaskModalHandler
+        TaskViews.getViewEmptyCreateTaskModal(
+          settingsService = settingsService,
+          userId = user.id,
+          request = request
+        )
 ```
+
+`createModalHandler` объявлен внутри `TaskHandlers`; используемый им маршрут
+`createModalRoute` приватный.
 
 **Пошаговый разбор:**
 

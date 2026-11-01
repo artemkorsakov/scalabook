@@ -766,37 +766,42 @@ final case class EditPeriodicStepRequest(
 
 ### Маршруты
 
+Все маршруты шагов объявлены как приватные значения внутри класса `PeriodicStepHandlers`.
+Общий путь с параметром `periodicStepIdParam` выделен в отдельное значение `path`,
+а остальные маршруты строятся на его основе:
+
 ```dotty
-val addPeriodicStep = Route(
+private val path = Path.root / "settings" / "periodic_steps" / periodicStepIdParam
+
+private val createRoute = Route(
   Request.post(Path.root / "settings" / "periodic_steps")
     .withEntity(Entity.formOf[CreatePeriodicStepRequest]),
   Response.ok(Entity.html).orNotFound
 )
 
-val editPeriodicStep = Route(
-  Request.put(Path.root / "settings" / "periodic_steps" / Param.int)
-    .withEntity(Entity.formOf[EditPeriodicStepRequest]),
+private val editRoute = Route(
+  Request.put(path).withEntity(Entity.formOf[EditPeriodicStepRequest]),
   Response.ok(Entity.html).orNotFound
 )
 
-val editPeriodicStepRow = Route(
-  Request.get(Path.root / "settings" / "periodic_steps" / Param.int / "edit")
-    .extractHeader[Authorization],
+private val editRowRoute = Route(
+  Request.get(path / "edit").extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
 
-val getPeriodicStepRow = Route(
-  Request.get(Path.root / "settings" / "periodic_steps" / Param.int)
-    .extractHeader[Authorization],
+private val getRowRoute = Route(
+  Request.get(path).extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
 
-val deletePeriodicStep = Route(
-  Request.delete(Path.root / "settings" / "periodic_steps" / Param.int)
-    .extractHeader[Authorization],
+private val deleteRoute = Route(
+  Request.delete(path).extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
 ```
+
+`periodicStepIdParam` — это типизированный параметр пути (`Param[PeriodicStepId]`),
+поэтому в хэндлеры ID шага приходит уже как `PeriodicStepId`.
 
 **Разбор маршрутов:**
 
@@ -846,15 +851,18 @@ object CreatePeriodicStep:
 **Почему `ValidatedNec`, а не `Either`?** `ValidatedNec` **аккумулирует** все ошибки, а не останавливается на первой. 
 Пользователь видит сразу все проблемы («номер невалиден», «имя слишком короткое», «тип не найден»), а не исправляет по одной.
 
-### `CreatePeriodicStepHandler`
+### Класс `PeriodicStepHandlers`
+
+Все пять операций над шагами собраны в один класс `PeriodicStepHandlers`. Каждая операция — это
+отдельный публичный `val`-хэндлер, декларативно связанный со своим маршрутом:
 
 ```dotty
-final case class CreatePeriodicStepHandler(
+final case class PeriodicStepHandlers(
     middleware: JwtAuthMiddleware[IO, UserInfo],
     settingsService: SettingsService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.addPeriodicStep.handleIO: (request: CreatePeriodicStepRequest) =>
+  val createHandler: Handler =
+    createRoute.handleIO: (request: CreatePeriodicStepRequest) =>
       val create: ((UserInfo, JwtToken)) => IO[String] =
         (user, jwtToken) =>
           CreatePeriodicStep.parse(request, user.id) match
@@ -862,28 +870,51 @@ final case class CreatePeriodicStepHandler(
               settingsService
                 .createStep(newItem)
                 .flatMap: _ =>
-                  getViewSettings(...)
+                  getViewSettings(
+                    settingsService = settingsService,
+                    userId = user.id,
+                    jwtToken = jwtToken
+                  )
                 .recoverWith:
                   case ex: IllegalArgumentException =>
-                    getViewSettings(..., errorPeriodicStepMessage = ex.getMessage.some)
+                    getViewSettings(
+                      settingsService = settingsService,
+                      userId = user.id,
+                      jwtToken = jwtToken,
+                      errorPeriodicStepMessage = ex.getMessage.some
+                    )
             case Validated.Invalid(errors) =>
-              getViewSettings(..., errorPeriodicStepMessage = errors.toChain.toVector.mkString("; ").some)
+              getViewSettings(
+                settingsService = settingsService,
+                userId = user.id,
+                jwtToken = jwtToken,
+                errorPeriodicStepMessage = errors.toChain.toVector.mkString("; ").some
+              )
       // ToDo: https://github.com/creativescala/krop/pull/57
       val authorization: Authorization =
         Authorization(Token(AuthScheme.Bearer, request.token))
       withUserFromHeader(authorization)(create)
-end CreatePeriodicStepHandler
+
+  val editHandler: Handler = ...
+  val editRowHandler: Handler = ...
+  val getRowHandler: Handler = ...
+  val deleteHandler: Handler = ...
+end PeriodicStepHandlers
 ```
 
-**Пошаговый разбор:**
+**Пошаговый разбор `createHandler`:**
 
-1. **`handleIO: (request: CreatePeriodicStepRequest) => ...`** — регистрируем обработчик.
+1. **`createRoute.handleIO: (request: CreatePeriodicStepRequest) => ...`** — регистрируем обработчик на маршрут `createRoute`.
 2. **`val create: ((UserInfo, JwtToken)) => IO[String]`** — каррированная лямбда. Сначала получаем запрос, потом — пользователя.
 3. **`CreatePeriodicStep.parse(request, user.id)`** — валидация запроса.
 4. **`Valid(newItem)`** — если валидно, создаём шаг через `settingsService.createStep`.
 5. **`.flatMap: _ => getViewSettings(...)`** — после создания загружаем обновлённую страницу настроек.
 6. **`.recoverWith`** — при ошибке (например, дубликат шага) показываем страницу с сообщением.
 7. **`Invalid(errors)`** — при ошибке валидации показываем страницу с объединёнными сообщениями.
+
+> Такая группировка — общий паттерн всего проекта: операции одной сущности
+> (создание, редактирование, удаление, отображение строк) собираются в один класс,
+> а не размазываются по множеству отдельных классов-хэндлеров.
 
 **Почему после создания возвращается вся страница настроек?** Потому что htmx заменяет `#app`. 
 Пользователь видит обновлённый список шагов, включая новый. Это проще, чем возвращать только новую строку.
@@ -894,131 +925,175 @@ end CreatePeriodicStepHandler
 
 ### `getViewSettings`
 
-```dotty
-def getViewSettings(
-    settingsService: SettingsService[IO],
-    userId: UserId,
-    jwtToken: JwtToken,
-    errorTaskTypeMessage: Option[String],
-    errorSectionMessage: Option[String],
-    errorGoalMessage: Option[String],
-    errorPeriodicStepMessage: Option[String]
-): IO[String] =
-  for
-    taskTypes     <- settingsService.getTaskTypes(userId)
-    sections      <- settingsService.getSections(userId)
-    goals         <- settingsService.getGoals(userId)
-    periodicSteps <- settingsService.getSteps(userId)
-  yield
-    val sortedSteps: Vector[PeriodicStep] =
-      periodicSteps.sortBy(step => (step.periodicType.ordinal, step.number))
+`SettingsViews` предоставляет два варианта функции: перегрузку без параметров ошибок
+(используется для успешных операций) и полную перегрузку с четырьмя `Option`-параметрами
+для вывода сообщений об ошибках:
 
-    View.settings(
-      token = jwtToken.value,
-      taskTypes = taskTypes,
-      sections = sections,
-      goals = goals,
-      periodicSteps = sortedSteps,
-      ...
-    ).toString
+```dotty
+private[settings] object SettingsViews:
+  def getViewSettings(
+      settingsService: SettingsService[IO],
+      userId: UserId,
+      jwtToken: JwtToken
+  ): IO[String] =
+    getViewSettings(
+      settingsService = settingsService,
+      userId = userId,
+      jwtToken = jwtToken,
+      errorTaskTypeMessage = none,
+      errorSectionMessage = none,
+      errorGoalMessage = none,
+      errorPeriodicStepMessage = none
+    )
+
+  def getViewSettings(
+      settingsService: SettingsService[IO],
+      userId: UserId,
+      jwtToken: JwtToken,
+      errorTaskTypeMessage: Option[String],
+      errorSectionMessage: Option[String],
+      errorGoalMessage: Option[String],
+      errorPeriodicStepMessage: Option[String]
+  ): IO[String] =
+    for
+      taskTypes     <- settingsService.getTaskTypes(userId)
+      sections      <- settingsService.getSections(userId)
+      goals         <- settingsService.getGoals(userId)
+      periodicSteps <- settingsService.getSteps(userId)
+    yield
+      val sortedSteps: Vector[PeriodicStep] =
+        periodicSteps.sortBy(step => (step.periodicType.ordinal, step.number))
+
+      View.settings(
+        token = jwtToken.value,
+        taskTypes = taskTypes,
+        sections = sections,
+        goals = goals,
+        periodicSteps = sortedSteps,
+        errorTaskTypeMessage = errorTaskTypeMessage,
+        errorSectionMessage = errorSectionMessage,
+        errorGoalMessage = errorGoalMessage,
+        errorPeriodicStepMessage = errorPeriodicStepMessage
+      ).toString
 ```
 
 **Разбор:**
 
-1. **Загрузка** четырёх справочников: `taskTypes`, `sections`, `goals`, `periodicSteps`.
-2. **Сортировка шагов** по `(periodicType.ordinal, number)`:
+1. **Два варианта** — короткий (без ошибок) делегирует полному, передавая `none` для всех сообщений.
+2. **Загрузка** четырёх справочников: `taskTypes`, `sections`, `goals`, `periodicSteps`.
+3. **Сортировка шагов** по `(periodicType.ordinal, number)`:
     - Сначала по типу периода (`Daily` → `Weekly` → ...).
     - При равных типах — по номеру шага.
-3. **Рендер `settings.scala.html`** с отсортированными данными.
+4. **Рендер `settings.scala.html`** с отсортированными данными и переданными сообщениями об ошибках.
 
-**Почему сортировка здесь, а не в SQL?** Потому что:
-
-- Порядок `PeriodicType` задан в enum, а не в БД.
-- Сортировка по `number` — лексикографическая (`"1.10" < "1.2"`), а `StepNumber` имеет собственный `Ordering`, который учитывает иерархию.
-- Один источник сортировки — легче менять.
-
-### `EditPeriodicStepRowHandler`
+### `editRowHandler` — форма редактирования
 
 ```dotty
-final case class EditPeriodicStepRowHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.editPeriodicStepRow.handleIO:
-      (id: Int, authorization: Authorization) =>
-        withUserFromHeader(authorization): (user: UserInfo, jwtToken: JwtToken) =>
-          for
-            stepId <- IO.fromEither(PeriodicStepId.either(id).leftMap(new IllegalArgumentException(_)))
-            steps  <- settingsService.getSteps(user.id)
-            step   <- IO.fromOption(steps.find(_.id == stepId))(new IllegalArgumentException("Шаг не найден"))
-          yield View.editPeriodicStepRow(step, jwtToken.value, none).toString
-end EditPeriodicStepRowHandler
+val editRowHandler: Handler =
+  editRowRoute.handleIO:
+    (stepId: PeriodicStepId, authorization: Authorization) =>
+      withUserFromHeader(
+        authorization
+      ): (user: UserInfo, jwtToken: JwtToken) =>
+        getPeriodicStep(stepId, user.id).map: step =>
+          View.editPeriodicStepRow(
+            step,
+            jwtToken.value,
+            none
+          ).toString
 ```
 
 **Разбор:**
 
-1. **`PeriodicStepId.either(id)`** — валидация ID.
-2. **`settingsService.getSteps(user.id)`** — загрузка всех шагов пользователя.
-3. **`steps.find(_.id == stepId)`** — поиск нужного шага. Если не найден — `IllegalArgumentException`.
-4. **Рендер `editPeriodicStepRow`** — редактируемая строка.
+1. **`stepId: PeriodicStepId`** — ID приходит типизированным из пути через `periodicStepIdParam`.
+2. **`getPeriodicStep(stepId, user.id)`** — приватный вспомогательный метод, который загружает
+   все шаги пользователя и находит нужный:
+   ```dotty
+   private def getPeriodicStep(stepId: PeriodicStepId, userId: UserId): IO[PeriodicStep] =
+     for
+       steps <- settingsService.getSteps(userId)
+       step  <- IO.fromOption(
+         steps.find(_.id == stepId)
+       )(new IllegalArgumentException("Шаг не найден"))
+     yield step
+   ```
+3. **Рендер `editPeriodicStepRow`** — редактируемая строка.
 
 > Шаг загружается через `getSteps` и поиск в векторе — O(n). Для больших списков это может быть медленно. 
-> Альтернатива — `periodicStepService.get(stepId, userId)` — O(1), причём проверка владельца уже
-> встроена в метод (он фильтрует по `user_id`). В текущей реализации `getSteps` проще и достаточно.
+> В текущей реализации `getSteps` проще и достаточно.
 
-### `EditPeriodicStepHandler`
+### `editHandler` — сохранение правок
 
 ```dotty
-final case class EditPeriodicStepHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.editPeriodicStep.handleIO:
-      (id: Int, request: EditPeriodicStepRequest) =>
-        val edit: ((UserInfo, JwtToken)) => IO[String] =
-          (user, jwtToken) =>
-            val rearrange = request.ordinalShift.contains("on")
+val editHandler: Handler =
+  editRoute.handleIO:
+    (stepId: PeriodicStepId, request: EditPeriodicStepRequest) =>
+      val edit: ((UserInfo, JwtToken)) => IO[String] =
+        (user, jwtToken) =>
+          val rearrange = request.ordinalShift.contains("on")
 
-            PeriodicStep.parse(id, request, user.id) match
-              case Validated.Valid(updated) =>
-                val run =
-                  if rearrange then
-                    for
-                      items <- settingsService.getSteps(user.id)
-                      _     <- settingsService.updateStep(updated)
-                      (beforeUpdated, afterUpdated) = items
-                        .filter(step => step.periodicType == updated.periodicType && step.id != updated.id)
+          PeriodicStep.parse(stepId, request, user.id) match
+            case Validated.Valid(updated) =>
+              val run =
+                if rearrange then
+                  for
+                    items <- settingsService.getSteps(user.id)
+                    _     <- settingsService.updateStep(updated)
+                    (beforeUpdated, afterUpdated) =
+                      items
+                        .filter(step =>
+                          step.periodicType == updated.periodicType &&
+                            step.id != updated.id
+                        )
                         .partition(_.number < updated.number)
-                      ids = NonEmptyVector.one(updated.id)
-                        .prependVector(beforeUpdated.sortBy(_.number).map(_.id))
-                        .appendVector(afterUpdated.sortBy(_.number).map(_.id))
-                      _ <- settingsService.reorderSteps(ids, updated.periodicType, user.id)
-                    yield ()
-                  else
-                    settingsService.updateStep(updated).void
+                    ids =
+                      NonEmptyVector.one(updated.id)
+                        .prependVector(
+                          beforeUpdated.sortBy(_.number).map(_.id)
+                        )
+                        .appendVector(
+                          afterUpdated.sortBy(_.number).map(_.id)
+                        )
+                    _ <- settingsService.reorderSteps(
+                      ids,
+                      updated.periodicType,
+                      user.id
+                    )
+                  yield ()
+                else
+                  settingsService.updateStep(updated).void
 
-                run.map: _ =>
-                  View.getPeriodicStepRow(updated, jwtToken.value).toString
-                .recoverWith:
-                  case ex: IllegalArgumentException =>
-                    getError(id = id, userId = user.id, jwtToken = jwtToken, error = ex.getMessage)
-              case Validated.Invalid(errors) =>
-                getError(id = id, userId = user.id, jwtToken = jwtToken, error = errors.mkString_(";"))
-        // ToDo: https://github.com/creativescala/krop/pull/57
-        val authorization: Authorization =
-          Authorization(Token(AuthScheme.Bearer, request.token))
-        withUserFromHeader(authorization)(edit)
-
-  private def getError(...): IO[String] = ...
-end EditPeriodicStepHandler
+              run.map: _ =>
+                View.getPeriodicStepRow(
+                  updated,
+                  jwtToken.value
+                ).toString
+              .recoverWith:
+                case ex: IllegalArgumentException =>
+                  getRow(
+                    stepId = stepId,
+                    userId = user.id,
+                    jwtToken = jwtToken,
+                    errorMessage = ex.getMessage.some
+                  )
+            case Validated.Invalid(errors) =>
+              getRow(
+                stepId = stepId,
+                userId = user.id,
+                jwtToken = jwtToken,
+                errorMessage = errors.mkString_(";").some
+              )
+          end match
+      // ToDo: https://github.com/creativescala/krop/pull/57
+      val authorization: Authorization =
+        Authorization(Token(AuthScheme.Bearer, request.token))
+      withUserFromHeader(authorization)(edit)
 ```
 
 **Пошаговый разбор:**
 
 1. `val rearrange = request.ordinalShift.contains("on")` — проверка, отмечен ли чекбокс «Выровнять порядок».
-2. `PeriodicStep.parse(id, request, user.id)` — валидация запроса. Создаёт обновлённый `PeriodicStep` с новыми значениями.
+2. `PeriodicStep.parse(stepId, request, user.id)` — валидация запроса. Создаёт обновлённый `PeriodicStep` с новыми значениями.
 3. Два сценария:
    - **`rearrange = true`** — с переупорядочиванием:
        1. Загружаем все шаги пользователя.
@@ -1033,6 +1108,9 @@ end EditPeriodicStepHandler
      htmx заменит её в таблице (`hx-target="closest tr"`).
 5. `recoverWith`** — при ошибке возвращаем редактируемую строку с сообщением.
 6. `Invalid(errors)`** — при ошибке валидации возвращаем редактируемую строку с ошибками.
+
+> Приватная функция `getRow` — аналог `getPeriodicStep`, но рендерит строку в режиме
+> редактирования (шаблон `editPeriodicStepRow`) с сообщением об ошибке.
 
 **Почему возвращается только строка, а не вся страница?** Потому что `hx-put` на строке имеет `hx-target="closest tr"`. 
 htmx заменяет только эту строку — остальные не трогаются. Это быстрее и не сбрасывает скролл.
@@ -1065,54 +1143,47 @@ val ids = NonEmptyVector.one(updated.id)
 **Почему `sortBy(_.number)`?** Потому что `beforeUpdated` и `afterUpdated` — неупорядоченные векторы. 
 `sortBy` гарантирует, что шаги сохранят свой относительный порядок.
 
-### `GetPeriodicStepRowHandler`
+### `getRowHandler` — обычная строка
 
 ```dotty
-final case class GetPeriodicStepRowHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.getPeriodicStepRow.handleIO:
-      (id: Int, authorization: Authorization) =>
-        withUserFromHeader(authorization): (user: UserInfo, jwtToken: JwtToken) =>
-          for
-            stepId <- IO.fromEither(PeriodicStepId.either(id).leftMap(new IllegalArgumentException(_)))
-            steps  <- settingsService.getSteps(user.id)
-            step   <- IO.fromOption(steps.find(_.id == stepId))(new IllegalArgumentException("Шаг не найден"))
-          yield View.getPeriodicStepRow(step, jwtToken.value).toString
-end GetPeriodicStepRowHandler
+val getRowHandler: Handler =
+  getRowRoute.handleIO:
+    (stepId: PeriodicStepId, authorization: Authorization) =>
+      withUserFromHeader(authorization):
+        (user: UserInfo, jwtToken: JwtToken) =>
+          getPeriodicStep(stepId, user.id).map: step =>
+            View.getPeriodicStepRow(
+              step,
+              jwtToken.value
+            ).toString
 ```
 
-**Разбор:** аналогично `EditPeriodicStepRowHandler`, но рендерит **обычную** строку, а не редактируемую.
+**Разбор:** аналогично `editRowHandler`, но рендерит **обычную** строку, а не редактируемую.
 
-### `DeletePeriodicStepHandler`
+### `deleteHandler` — удаление шага
 
 ```dotty
-final case class DeletePeriodicStepHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.deletePeriodicStep.handleIO:
-      (id: Int, authorization: Authorization) =>
-        withUserFromHeader(authorization): (user: UserInfo, jwtToken: JwtToken) =>
-          PeriodicStepId.either(id) match
-            case Right(stepId) =>
-              for
-                _    <- settingsService.deleteStep(stepId, user.id)
-                view <- getViewSettings(settingsService = settingsService, userId = user.id, jwtToken = jwtToken)
-              yield view
-            case Left(error) =>
-              getViewSettings(..., errorPeriodicStepMessage = error.some)
+val deleteHandler: Handler =
+  deleteRoute.handleIO:
+    (stepId: PeriodicStepId, authorization: Authorization) =>
+      withUserFromHeader(
+        authorization
+      ): (user: UserInfo, jwtToken: JwtToken) =>
+        for
+          _    <- settingsService.deleteStep(stepId, user.id)
+          view <- getViewSettings(
+            settingsService = settingsService,
+            userId = user.id,
+            jwtToken = jwtToken
+          )
+        yield view
 ```
 
 **Разбор:**
 
-1. **`PeriodicStepId.either(id)`** — валидация ID.
+1. **`stepId: PeriodicStepId`** — типизированный ID шага из пути.
 2. **`settingsService.deleteStep(stepId, user.id)`** — удаление шага с проверкой владельца.
 3. **`getViewSettings(...)`** — загрузка обновлённой страницы настроек.
-4. **`Left(error)`** — при невалидном ID показываем страницу с ошибкой.
 
 **Почему после удаления возвращается вся страница?** 
 Потому что `hx-delete` на кнопке имеет `hx-target="#app"`. 
@@ -1138,7 +1209,7 @@ final case class DeletePeriodicStepHandler(
      "name": "Зарядка"
    }
    ```
-5. **`CreatePeriodicStepHandler`** валидирует запрос через `CreatePeriodicStep.parse`:
+5. **`PeriodicStepHandlers.createHandler`** валидирует запрос через `CreatePeriodicStep.parse`:
     - `StepNumber("1")` — валиден.
     - `StepName("Зарядка")` — валиден.
     - `PeriodicType.find("daily")` → `Some(Daily)`.
@@ -1149,7 +1220,7 @@ final case class DeletePeriodicStepHandler(
 
 1. **Пользователь кликает «✏️ Редактировать»** на шаге.
 2. **htmx отправляет GET** на `/settings/periodic_steps/{id}/edit`.
-3. **`EditPeriodicStepRowHandler`** загружает шаг и рендерит **редактируемую строку**:
+3. **`PeriodicStepHandlers.editRowHandler`** загружает шаг и рендерит **редактируемую строку**:
     - `select` для типа.
     - `input` для номера.
     - `input` для имени.
@@ -1166,7 +1237,7 @@ final case class DeletePeriodicStepHandler(
      "ordinalShift": "on"
    }
    ```
-6. **`EditPeriodicStepHandler`:**
+6. **`PeriodicStepHandlers.editHandler`:**
     - Валидирует запрос.
     - Видит `rearrange = true`.
     - Загружает все шаги пользователя.
@@ -1182,7 +1253,7 @@ final case class DeletePeriodicStepHandler(
 1. **Пользователь кликает «🗑️ Удалить»** на шаге.
 2. **Браузер показывает `confirm`** с вопросом.
 3. **Пользователь подтверждает** → htmx отправляет DELETE на `/settings/periodic_steps/{id}`.
-4. **`DeletePeriodicStepHandler`:**
+4. **`PeriodicStepHandlers.deleteHandler`:**
     - Валидирует ID.
     - Вызывает `settingsService.deleteStep(stepId, user.id)`.
     - Загружает обновлённую страницу.

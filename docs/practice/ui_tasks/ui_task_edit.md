@@ -12,79 +12,78 @@ nextPage = ui_task_actions.html
 затраченное время, описание и план выполнения. Она открывается по кнопке «✏️ Редактировать»
 на странице задачи и заменяет её содержимое в контейнере `#app`.
 
-Редактирование реализовано через **два хэндлера**:
+Редактирование реализовано через **два хэндлера** в классе `TaskHandlers`:
 
-1. **`EditFormTaskHandler`** — отображает форму редактирования с предзаполненными полями.
-2. **`EditTaskHandler`** — принимает отправленные данные и сохраняет изменения.
+1. **`TaskHandlers.editFormHandler`** — отображает форму редактирования с предзаполненными полями.
+2. **`TaskHandlers.editHandler`** — принимает отправленные данные и сохраняет изменения.
 
 ## Отображение формы редактирования
 
 ### Маршрут
 
+Маршрут объявлен приватно внутри `TaskHandlers` на основе общего пути `taskPath`
+(`Path.root / "task" / uuidParam`):
+
 ```dotty
-val editFormTask = Route(
-  Request.get(Path.root / "task" / uuidParam / "edit")
-    .extractHeader[Authorization],
+private val editFormRoute = Route(
+  Request.get(taskPath / "edit").extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
 ```
 
 **Разбор маршрута:**
 
-- **`Request.get(Path.root / "task" / uuidParam / "edit")`** — GET-запрос на
+- **`Request.get(taskPath / "edit")`** — GET-запрос на
   `/task/{uuid}/edit`, где `{uuid}` — идентификатор задачи. `uuidParam` декодирует
   путь сразу в `UUID`.
 - **`.extractHeader[Authorization]`** — токен передаётся в заголовке
 - **`Response.ok(Entity.html).orNotFound`** — успешный ответ с HTML формы
   редактирования или 404, если задача не найдена.
 
-### Хэндлер `EditFormTaskHandler`
+### Хэндлер `editFormHandler`
 
 ```dotty
-final case class EditFormTaskHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO],
-    taskLifecycleService: TaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.editFormTask.handleIO: (uuid: UUID, authorization: Authorization) =>
-      withUserFromHeaderOpt(authorization): (user, jwtToken) =>
-        getViewEditTaskModal(
-          settingsService = settingsService,
-          taskLifecycleService = taskLifecycleService,
-          userId = user.id,
-          taskId = TaskId(uuid),
-          jwtToken = jwtToken,
-          errorMessage = none
-        )
-end EditFormTaskHandler
+val editFormHandler: Handler =
+  editFormRoute.handleIO: (uuid: UUID, authorization: Authorization) =>
+    withUserFromHeaderOpt(authorization): (user, jwtToken) =>
+      getViewEditTaskModal(
+        settingsService = settingsService,
+        taskLifecycleService = taskLifecycleService,
+        userId = user.id,
+        taskId = TaskId(uuid),
+        jwtToken = jwtToken,
+        errorMessage = none
+      )
 ```
 
 ### Формирование формы
 
+Функция `getViewEditTaskModal` вынесена в объект `TaskViews`:
+
 ```dotty
-def getViewEditTaskModal(
-    settingsService: SettingsService[IO],
-    taskLifecycleService: TaskLifecycleService[IO],
-    userId: UserId,
-    taskId: TaskId,
-    jwtToken: JwtToken,
-    errorMessage: Option[String]
-): IO[Option[String]] =
-  for
-    taskTypes     <- settingsService.getTaskTypes(userId)
-    sections      <- settingsService.getSections(userId)
-    goals         <- settingsService.getGoals(userId)
-    maybeTaskCard <- taskLifecycleService.get(taskId, userId)
-  yield maybeTaskCard.map: card =>
-    View.editTask(
-      task = card,
-      token = jwtToken.value,
-      taskTypes = taskTypes,
-      sections = sections,
-      goals = goals,
-      errorMessage = errorMessage
-    ).toString
+private[tasks] object TaskViews:
+  def getViewEditTaskModal(
+      settingsService: SettingsService[IO],
+      taskLifecycleService: TaskLifecycleService[IO],
+      userId: UserId,
+      taskId: TaskId,
+      jwtToken: JwtToken,
+      errorMessage: Option[String]
+  ): IO[Option[String]] =
+    for
+      taskTypes     <- settingsService.getTaskTypes(userId)
+      sections      <- settingsService.getSections(userId)
+      goals         <- settingsService.getGoals(userId)
+      maybeTaskCard <- taskLifecycleService.get(taskId, userId)
+    yield maybeTaskCard.map: card =>
+      View.editTask(
+        task = card,
+        token = jwtToken.value,
+        taskTypes = taskTypes,
+        sections = sections,
+        goals = goals,
+        errorMessage = errorMessage
+      ).toString
 ```
 
 **Что происходит:**
@@ -108,7 +107,7 @@ def getViewEditTaskModal(
 Форма может быть показана в двух случаях:
 
 - **Первый раз** — когда пользователь кликнул «Редактировать». Тогда `errorMessage = None`.
-- **После ошибки сохранения** — когда `EditTaskHandler` не смог сохранить
+- **После ошибки сохранения** — когда `TaskHandlers.editHandler` не смог сохранить
   изменения и вернул форму с сохранёнными данными и сообщением об ошибке.
 
 ## Шаблон `editTask.scala.html`
@@ -763,63 +762,72 @@ loop(sources = tail, stepNumber = nextStepNumber, acc = newAcc)
 
 ### Маршрут
 
+Маршрут объявлен приватно внутри `TaskHandlers` на основе общего пути `taskPath`
+(`Path.root / "task" / uuidParam`):
+
 ```dotty
-val editTask = Route(
-  Request.put(Path.root / "task" / uuidParam)
-    .withEntity(Entity.formOf[EditTaskRequest]),
+private val editRoute = Route(
+  Request.put(taskPath).withEntity(Entity.formOf[EditTaskRequest]),
   Response.ok(Entity.html).orNotFound
 )
 ```
 
 **Разбор:**
 
-- **`Request.put(Path.root / "task" / uuidParam)`** — PUT-запрос на `/task/{uuid}`.
+- **`Request.put(taskPath)`** — PUT-запрос на `/task/{uuid}`.
   `uuidParam` декодирует путь сразу в `UUID`.
 - **`.withEntity(Entity.formOf[EditTaskRequest])`** — тело запроса в формате
   `application/x-www-form-urlencoded`, десериализуется в `EditTaskRequest`.
 - **`Response.ok(Entity.html).orNotFound`** — успешный ответ с HTML или 404.
 
-### Хэндлер `EditTaskHandler`
+### Хэндлер `editHandler` (класс `TaskHandlers`)
 
 ```dotty
-final case class EditTaskHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO],
-    taskLifecycleService: TaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.editTask.handleIO: (taskId: UUID, request: EditTaskRequest) =>
-      val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
-        (user, jwtToken) =>
-          Task.parse(request, user.id, taskId) match
-            case Validated.Valid(task) =>
-              taskLifecycleService
-                .update(task)
-                .flatMap: _ =>
-                  getViewTask(
+val editHandler: Handler =
+  editRoute.handleIO: (taskId: UUID, request: EditTaskRequest) =>
+    val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+      (user, jwtToken) =>
+        Task.parse(request, user.id, taskId) match
+          case Validated.Valid(task) =>
+            val runReorderTasks: IO[Boolean] =
+              if request.ordinalShift.contains("on") then
+                taskLifecycleService.reorderTasks(
+                  userId = user.id,
+                  ordinal = task.ordinal,
+                  status = task.status
+                )
+              else IO(true)
+
+            val run: IO[Option[String]] =
+              for
+                _    <- runReorderTasks
+                _    <- taskLifecycleService.update(task)
+                view <- getViewTask(
+                  taskLifecycleService = taskLifecycleService,
+                  userId = user.id,
+                  taskId = task.id,
+                  jwtToken = jwtToken,
+                  errorMessage = none
+                )
+              yield view.map(_.toString)
+
+            run
+              .recoverWith:
+                case ex: IllegalArgumentException =>
+                  getViewEditTaskModal(
+                    settingsService = settingsService,
                     taskLifecycleService = taskLifecycleService,
                     userId = user.id,
                     taskId = task.id,
                     jwtToken = jwtToken,
-                    errorMessage = none
-                  ).map(_.map(_.toString))
-                .recoverWith:
-                  case ex: IllegalArgumentException =>
-                    getViewEditTaskModal(
-                      settingsService = settingsService,
-                      taskLifecycleService = taskLifecycleService,
-                      userId = user.id,
-                      taskId = task.id,
-                      jwtToken = jwtToken,
-                      errorMessage = ex.getMessage.some
-                    )
-            case Validated.Invalid(errors) =>
-              Logger[IO].error(errors.toChain.toVector.mkString("; ")).as(none)
-      // ToDo: https://github.com/creativescala/krop/pull/57
-      val authorization: Authorization =
-        Authorization(Token(AuthScheme.Bearer, request.token))
-      withUserFromHeaderOpt(authorization)(run)
-end EditTaskHandler
+                    errorMessage = ex.getMessage.some
+                  )
+          case Validated.Invalid(errors) =>
+            Logger[IO].error(errors.toChain.toVector.mkString("; ")).as(none)
+    // ToDo: https://github.com/creativescala/krop/pull/57
+    val authorization: Authorization =
+      Authorization(Token(AuthScheme.Bearer, request.token))
+    withUserFromHeaderOpt(authorization)(run)
 ```
 
 **Пошаговый разбор:**
@@ -872,18 +880,24 @@ end EditTaskHandler
         }
     ```
 
-3. **Ветка `Valid(task)`:**
+3. **Переупорядочивание** — если отмечен чекбокс «Выровнять порядок»
+   (`request.ordinalShift.contains("on")`), перед обновлением вызывается
+   `taskLifecycleService.reorderTasks`, который пересчитывает порядковые номера
+   остальных задач, чтобы сохранить их уникальность.
+
+4. **Ветка `Valid(task)`:**
+    - Сначала выполняем (при необходимости) переупорядочивание.
     - Вызываем `taskLifecycleService.update(task)` — обновляем задачу в БД
       с дополнительной валидацией.
     - **Успех** → возвращаем обновлённую страницу задачи через `getViewTask`.
     - **Ошибка** → возвращаем форму редактирования с ошибкой и сохранёнными данными.
 
-4. **Ветка `Invalid(errors)`:**
+5. **Ветка `Invalid(errors)`:**
     - Логируем ошибки и возвращаем `None`. Это приведёт к 404 (или другому
       «мягкому» поведению). На практике ошибки валидации обрабатываются
       в `taskLifecycleService.update`, поэтому эта ветка срабатывает редко.
 
-5. **`withUserFromHeaderOpt(authorization)(run)`** — токен приходит в теле запроса, поэтому
+6. **`withUserFromHeaderOpt(authorization)(run)`** — токен приходит в теле запроса, поэтому
    вручную собираем заголовок `Authorization` из `request.token`
    (`Authorization(Token(AuthScheme.Bearer, request.token))`) и вызываем `withUserFromHeaderOpt`.
    Если токен невалиден — `None`.
@@ -910,6 +924,7 @@ final case class EditTaskRequest(
     sectionId: Int,
     goalId: Int,
     ordinal: Int,
+    ordinalShift: Option[String],
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
     information: String,
@@ -1005,12 +1020,13 @@ val planSteps: List[PlanStepRequest] = planMap.toList
 
 1. **Пользователь на странице задачи** кликает «✏️ Редактировать».
 2. **htmx отправляет GET** на `/task/{uuid}/edit`.
-3. **`EditFormTaskHandler`** проверяет токен, загружает задачу и справочники,
+3. **`TaskHandlers.editFormHandler`** проверяет токен, загружает задачу и справочники,
    возвращает HTML формы.
 4. **htmx заменяет `#app`** — пользователь видит форму с предзаполненными полями.
 5. **Пользователь изменяет поля** и нажимает «💾 Сохранить».
 6. **htmx отправляет PUT** на `/task/{uuid}` с данными формы.
-7. **`EditTaskHandler`** парсит запрос, обновляет задачу в БД.
+7. **`TaskHandlers.editHandler`** парсит запрос, при необходимости выполняет
+   переупорядочивание, обновляет задачу в БД.
 8. **При успехе** возвращается обновлённая страница задачи — пользователь
    видит результат своих изменений.
 9. **При ошибке** возвращается та же форма с сообщением об ошибке и сохранёнными
@@ -1020,10 +1036,10 @@ val planSteps: List[PlanStepRequest] = planMap.toList
 
 Мы реализовали полный цикл редактирования задачи:
 
-1. **`EditFormTaskHandler`** — открывает форму с предзаполненными полями.
+1. **`TaskHandlers.editFormHandler`** — открывает форму с предзаполненными полями.
 2. **`editTask.scala.html`** — рендерит форму с редактором плана и двухсоставными
    полями продолжительности.
-3. **`EditTaskHandler`** — принимает данные, валидирует, сохраняет.
+3. **`TaskHandlers.editHandler`** — принимает данные, валидирует, сохраняет.
 4. **`EditTaskRequest`** — DTO с нетривиальной логикой декодирования плана.
 
 **Ключевые архитектурные решения:**

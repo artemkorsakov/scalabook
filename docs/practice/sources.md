@@ -307,17 +307,20 @@ function openSource(sourceId) {
 
 ## Роут и хэндлер страницы источника
 
+Хэндлеры источника консолидированы в класс `SourceHandlers`. Маршруты объявлены
+приватно на основе общего пути `path = Path.root / "source" / taskTypeIdParam`.
+
 ### Роут
 
 ```dotty
-val openSource = Route(
-  Request.get(Path.root / "source" / Param.int)
-    .extractHeader[`Cookie`],
+private val openSource = Route(
+  Request.get(path).extractHeader[`Cookie`],
   Response.ok(Entity.html)
 )
 ```
 
-- **`Param.int`** — ID типа задачи из пути.
+- **`taskTypeIdParam`** — типизированный `Param[TaskTypeId]`: декодирует путь
+  сразу в `TaskTypeId`, без ручного `TaskTypeId.either`.
 - **`extractHeader[`Cookie`]`** — извлекаем куки, чтобы проверить авторизацию.
 
 ### DTO страницы
@@ -334,43 +337,34 @@ final case class SourceCard(
 - **`name`** — имя типа задачи.
 - **`information`** — контент источника в markdown.
 
-### Хэндлер `OpenSourceHandler`
+### Хэндлер `openHandler`
 
 ```dotty
-final case class OpenSourceHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO],
-    dashboardService: DashboardService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.openSource.handleIO: (id: Int, cookie: Cookie) =>
-      withUserFromCookieOpt(cookie)(
-        f = (user, jwtToken) =>
-          TaskTypeId.either(id) match
-            case Right(taskTypeId) =>
-              for
-                maybeTaskType <-
-                  settingsService.getTaskType(taskTypeId, user.id)
-                maybeSource <-
-                  dashboardService.getSource(taskTypeId, user.id)
-              yield (maybeTaskType, maybeSource).mapN {
-                case (taskType, source) =>
-                  val html =
-                    View.source(
-                      source = SourceCard(
-                        id = taskTypeId,
-                        name = taskType.name.value,
-                        information = source.information
-                      ),
-                      token = jwtToken.value,
-                      errorMessage = none
-                    )
-                  View.base(Title, html).toString
-              }
-            case Left(error) =>
-              Logger[IO].error(error).as(none),
-        fallbackPage = NotFoundView
-      )
+val openHandler: Handler =
+  openSource.handleIO: (taskTypeId: TaskTypeId, cookie: Cookie) =>
+    withUserFromCookieOpt(cookie)(
+      f = (user, jwtToken) =>
+        for
+          maybeTaskType <-
+            settingsService.getTaskType(taskTypeId, user.id)
+          maybeSource <-
+            dashboardService.getSource(taskTypeId, user.id)
+        yield (maybeTaskType, maybeSource).mapN {
+          case (taskType, source) =>
+            val html =
+              View.source(
+                source = SourceCard(
+                  id = taskTypeId,
+                  name = taskType.name.value,
+                  information = source.information
+                ),
+                token = jwtToken.value,
+                errorMessage = none
+              )
+            View.base(Title, html).toString
+        },
+      fallbackPage = NotFoundView
+    )
 ```
 
 **Пошаговый разбор:**
@@ -378,13 +372,14 @@ final case class OpenSourceHandler(
 1. **`withUserFromCookieOpt(cookie)(f, fallbackPage)`** — извлекает токен из куки `token`, проверяет
    его через middleware и передаёт `(user, jwtToken)` в лямбду `f`. Если токена нет или
    невалиден — возвращает `fallbackPage` (404). Извлечение токена из куки инкапсулировано
-   в `AuthorizationHandler` (как и в `OpenTaskHandler`).
-2. **Парсинг ID** через `TaskTypeId.either(id)` — валидация на уровне типа.
+   в `AuthorizationHandler`.
+2. **Типизированный ID** — `taskTypeIdParam` сразу декодирует путь в `TaskTypeId`,
+   ветки `Right`/`Left` не нужны.
 3. **Загрузка двух сущностей:** тип задачи и источник. 
 4. **`(maybeTaskType, maybeSource).mapN`** — если обе сущности найдены, собираем `SourceCard` и рендерим `View.source`. 
    Если хотя бы одна не найдена — `None`, и `withUserFromCookieOpt` подставит `fallbackPage` (404).
 
-`NotFoundView` — готовая строка HTML, объединяющая `View.base(Title, ...)` и `View.notFound()`. Используется повторно во всех хэндлерах дашборда.
+`NotFoundView` — готовая строка HTML из `WelcomeViews`, объединяющая `View.base(Title, ...)` и `View.notFound()`. Используется повторно во всех хэндлерах дашборда.
 
 ## Страница источника
 
@@ -449,21 +444,23 @@ String, errorMessage: Option[String])
 
 ### Роуты
 
+Маршруты приватные, объявлены внутри `SourceHandlers` на общем пути
+`path = Path.root / "source" / taskTypeIdParam`:
+
 ```dotty
-val editFormSource = Route(
-  Request.get(Path.root / "source" / Param.int / "edit")
-    .extractHeader[Authorization],
+private val editFormSource = Route(
+  Request.get(path / "edit").extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
-val editSource = Route(
-  Request.put(Path.root / "source" / Param.int)
-    .withEntity(Entity.formOf[EditSourceRequest]),
+private val editSource = Route(
+  Request.put(path).withEntity(Entity.formOf[EditSourceRequest]),
   Response.ok(Entity.html).orNotFound
 )
 ```
 
 - **GET `/source/{id}/edit`** — открывает форму редактирования.
 - **PUT `/source/{id}`** — сохраняет изменения.
+- **`taskTypeIdParam`** — декодирует сегмент пути сразу в `TaskTypeId`.
 
 ### Модель `EditSourceRequest`
 
@@ -517,95 +514,77 @@ final case class EditSourceRequest(
 ### Хэндлер формы редактирования
 
 ```dotty
-final case class EditFormSourceHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO],
-    dashboardService: DashboardService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.editFormSource.handleIO: (id: Int, authorization: Authorization) =>
+val editFormHandler: Handler =
+  editFormSource.handleIO:
+    (taskTypeId: TaskTypeId, authorization: Authorization) =>
       withUserFromHeaderOpt(authorization): (user, jwtToken) =>
-        TaskTypeId.either(id) match
-          case Right(taskTypeId) =>
-            for
-              maybeTaskType <-
-                settingsService.getTaskType(taskTypeId, user.id)
-              maybeSource <-
-                dashboardService.getSource(taskTypeId, user.id)
-            yield (maybeTaskType, maybeSource).mapN {
-              case (taskType, source) =>
-                View.editSource(
-                  source = SourceCard(
-                    id = taskTypeId,
-                    name = taskType.name.value,
-                    information = source.information
-                  ),
-                  token = jwtToken.value,
-                  errorMessage = none
-                ).toString
-            }
-          case Left(error) =>
-            Logger[IO].error(error).as(none)
-end EditFormSourceHandler
+        for
+          maybeTaskType <-
+            settingsService.getTaskType(taskTypeId, user.id)
+          maybeSource <-
+            dashboardService.getSource(taskTypeId, user.id)
+        yield (maybeTaskType, maybeSource).mapN {
+          case (taskType, source) =>
+            View.editSource(
+              source = SourceCard(
+                id = taskTypeId,
+                name = taskType.name.value,
+                information = source.information
+              ),
+              token = jwtToken.value,
+              errorMessage = none
+            ).toString
+        }
 ```
 
 **Что делает:**
 
 1. **`withUserFromHeaderOpt(authorization)(...)`** — мягкая проверка токена. `authorization`
    из заголовка — первый аргумент, лямбда `(user, jwtToken)` — второй.
-2. **`TaskTypeId.either(id)`** — валидация ID.
+2. **Типизированный ID** — `taskTypeIdParam` уже декодировал путь в `TaskTypeId`.
 3. **Загрузка типа задачи и источника.**
 4. **Рендер `editSource.scala.html`** с заполненной информацией.
 
 ### Хэндлер обработки редактирования
 
 ```dotty
-final case class EditSourceHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    dashboardService: DashboardService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.editSource.handleIO: (id: Int, request: EditSourceRequest) =>
-      val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
-        (user, jwtToken) =>
-          TaskTypeId.either(id) match
-            case Right(taskTypeId) =>
-              val source = SourceCard(
-                id = taskTypeId,
-                name = request.name,
-                information = request.information
-              )
+val editHandler: Handler =
+  editSource.handleIO: (taskTypeId: TaskTypeId, request: EditSourceRequest) =>
+    val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+      (user, jwtToken) =>
+        val source = SourceCard(
+          id = taskTypeId,
+          name = request.name,
+          information = request.information
+        )
 
-              dashboardService.updateSource(
-                taskTypeId,
-                user.id,
-                request.information
-              )
-                .map: _ =>
-                  View.source(
-                    source = source,
-                    token = jwtToken.value,
-                    errorMessage = none
-                  ).toString.some
-                .recover:
-                  case ex: IllegalArgumentException =>
-                    View.editSource(
-                      source = source,
-                      token = jwtToken.value,
-                      errorMessage = ex.getMessage.some
-                    ).toString.some
-            case Left(error) =>
-              Logger[IO].error(error).as(none)
-      // ToDo: https://github.com/creativescala/krop/pull/57
-      val authorization: Authorization =
-        Authorization(Token(AuthScheme.Bearer, request.token))
-      withUserFromHeaderOpt(authorization)(run)
-end EditSourceHandler
+        dashboardService.updateSource(
+          taskTypeId,
+          user.id,
+          request.information
+        )
+          .map: _ =>
+            View.source(
+              source = source,
+              token = jwtToken.value,
+              errorMessage = none
+            ).toString.some
+          .recover:
+            case ex: IllegalArgumentException =>
+              View.editSource(
+                source = source,
+                token = jwtToken.value,
+                errorMessage = ex.getMessage.some
+              ).toString.some
+    // ToDo: https://github.com/creativescala/krop/pull/57
+    val authorization: Authorization =
+      Authorization(Token(AuthScheme.Bearer, request.token))
+    withUserFromHeaderOpt(authorization)(run)
 ```
 
 **Пошаговый разбор:**
 
-1. **Валидация ID.**
+1. **Типизированный ID** — декодирован из пути `taskTypeIdParam`, ручная валидация не нужна.
 2. **Сборка `SourceCard`** из данных формы.
 3. **`dashboardService.updateSource`** — обновление информации в БД.
 4. **При успехе** — рендер страницы источника с обновлённой информацией.
@@ -677,9 +656,9 @@ end EditSourceHandler
 | **`DashboardService`**         | Операции для UI-страниц                                           |
 | **`SettingsService`**          | Интеграция: создание/удаление источника при работе с типом задачи |
 | **Вкладка «Источник»**         | На главной странице                                               |
-| **`OpenSourceHandler`**        | Страница источника                                                |
-| **`EditFormSourceHandler`**    | Форма редактирования                                              |
-| **`EditSourceHandler`**        | Сохранение изменений                                              |
+| **`SourceHandlers.openHandler`**      | Страница источника                                                |
+| **`SourceHandlers.editFormHandler`**  | Форма редактирования                                              |
+| **`SourceHandlers.editHandler`**      | Сохранение изменений                                              |
 | **`source.scala.html`**        | Отображение источника                                             |
 | **`editSource.scala.html`**    | Форма редактирования                                              |
 

@@ -27,8 +27,10 @@ nextPage = ui_settings/ui_settings_task_type.html
 
 ## Маршрут
 
+Маршрут объявлен приватно внутри `SettingsHandler`:
+
 ```dotty
-val settings = Route(
+private val route = Route(
   Request.get(Path.root / "settings").extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
@@ -59,13 +61,17 @@ final case class SettingsHandler(
     middleware: JwtAuthMiddleware[IO, UserInfo],
     settingsService: SettingsService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
+  private val route = Route(
+    Request.get(Path.root / "settings").extractHeader[Authorization],
+    Response.ok(Entity.html).orNotFound
+  )
 
   val handler: Handler =
-    Routes.settings.handleIO: (authorization: Authorization) =>
+    route.handleIO: (authorization: Authorization) =>
       withUserFromHeader(authorization): (user, jwtToken) =>
-        getViewSettings(
+        SettingsViews.getViewSettings(
           settingsService = settingsService,
-          id = user.id,
+          userId = user.id,
           jwtToken = jwtToken
         )
 ```
@@ -92,76 +98,86 @@ final case class SettingsHandler(
     - Если невалиден — автоматически возвращает `AuthorizationException`,
       которую обрабатывает `AuthorizationHandler`.
 
-4. **`getViewSettings(...)`** — формирует HTML-страницу настроек, загружая все справочники
-   пользователя.
+4. **`SettingsViews.getViewSettings(...)`** — вспомогательная view-функция из `SettingsViews`
+   формирует HTML-страницу настроек, загружая все справочники пользователя.
 
 ## Формирование страницы настроек
 
-Логика загрузки справочников вынесена в две перегруженные функции `getViewSettings`.
-Первая — упрощённая, без сообщений об ошибках. Вторая — полная, принимает три опциональных
-сообщения (по одному на каждый справочник).
+Логика загрузки справочников вынесена в объект `SettingsViews` в виде двух перегруженных
+функций `getViewSettings`. Первая — упрощённая, без сообщений об ошибках. Вторая — полная,
+принимает четыре опциональных сообщения (по одному на каждый справочник).
 
 ### Упрощённая версия
 
 ```dotty
 def getViewSettings(
     settingsService: SettingsService[IO],
-    id: UserId,
+    userId: UserId,
     jwtToken: JwtToken
 ): IO[String] =
   getViewSettings(
     settingsService = settingsService,
-    id = id,
+    userId = userId,
     jwtToken = jwtToken,
     errorTaskTypeMessage = none,
     errorSectionMessage = none,
-    errorGoalMessage = none
+    errorGoalMessage = none,
+    errorPeriodicStepMessage = none
   )
 ```
 
 Эта версия используется, когда страница открывается «с нуля» (например, при клике на кнопку «Настройки»). 
-Никаких ошибок нет, поэтому все три сообщения — `none`.
+Никаких ошибок нет, поэтому все четыре сообщения — `none`.
 
 ### Полная версия
 
 ```dotty
 def getViewSettings(
     settingsService: SettingsService[IO],
-    id: UserId,
+    userId: UserId,
     jwtToken: JwtToken,
     errorTaskTypeMessage: Option[String],
     errorSectionMessage: Option[String],
-    errorGoalMessage: Option[String]
+    errorGoalMessage: Option[String],
+    errorPeriodicStepMessage: Option[String]
 ): IO[String] =
   for
-    taskTypes <- settingsService.getTaskTypes(id)
-    sections  <- settingsService.getSections(id)
-    goals     <- settingsService.getGoals(id)
-  yield View.settings(
-    token = jwtToken.value,
-    taskTypes = taskTypes,
-    sections = sections,
-    goals = goals,
-    errorTaskTypeMessage = errorTaskTypeMessage,
-    errorSectionMessage = errorSectionMessage,
-    errorGoalMessage = errorGoalMessage
-  ).toString
+    taskTypes     <- settingsService.getTaskTypes(userId)
+    sections      <- settingsService.getSections(userId)
+    goals         <- settingsService.getGoals(userId)
+    periodicSteps <- settingsService.getSteps(userId)
+  yield
+    val sortedSteps: Vector[PeriodicStep] =
+      periodicSteps.sortBy(step => (step.periodicType.ordinal, step.number))
+
+    View.settings(
+      token = jwtToken.value,
+      taskTypes = taskTypes,
+      sections = sections,
+      goals = goals,
+      periodicSteps = sortedSteps,
+      errorTaskTypeMessage = errorTaskTypeMessage,
+      errorSectionMessage = errorSectionMessage,
+      errorGoalMessage = errorGoalMessage,
+      errorPeriodicStepMessage = errorPeriodicStepMessage
+    ).toString
 ```
 
 **Что происходит:**
 
-1. **Загружаем типы задач, разделы и цели пользователя.**
+1. **Загружаем типы задач, разделы, цели и периодические шаги пользователя.**
+   Шаги сортируются по типу периодичности и номеру (`step.periodicType.ordinal`, `step.number`).
 2. **Рендер шаблона `View.settings(...)`** — передаём в Twirl-шаблон:
     - `token` — JWT-токен для htmx-заголовков.
-    - `taskTypes`, `sections`, `goals` — загруженные справочники.
-    - Три опциональных сообщения об ошибках.
+    - `taskTypes`, `sections`, `goals`, `periodicSteps` — загруженные справочники.
+    - Четыре опциональных сообщения об ошибках.
 
-**Почему три отдельных сообщения об ошибках?**
+**Почему четыре отдельных сообщения об ошибках?**
 
 Каждый справочник — это независимая сущность. 
 Пользователь может ошибиться при добавлении типа задачи (например, ввести пустое имя), 
 но при этом успешно добавить раздел. 
-Три отдельных сообщения позволяют показывать ошибку **точно под** соответствующим разделом.
+Четыре отдельных сообщения позволяют показывать ошибку **точно под** соответствующим разделом.
 
 ## Шаблон `settings.scala.html`
 
@@ -390,8 +406,9 @@ def getViewSettings(
 
 1. **Пользователь кликает «⚙️ Настройки»** на главной странице → htmx отправляет
    GET на `/settings` с заголовком `Authorization: Bearer <token>`.
-2. **SettingsHandler** проверяет токен и загружает три справочника пользователя.
-3. **Сервер возвращает HTML** с тремя таблицами (типы, разделы, цели). htmx заменяет
+2. **`SettingsHandler`** проверяет токен и загружает справочники пользователя
+   (типы задач, разделы, цели, периодические шаги).
+3. **Сервер возвращает HTML** с таблицами справочников. htmx заменяет
    содержимое `#app`.
 4. **Пользователь кликает «+ Добавить тип задачи»** → JavaScript показывает скрытую
    форму. Форма становится видимой.

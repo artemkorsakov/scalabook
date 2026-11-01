@@ -15,15 +15,27 @@ nextPage = ui_task_edit.html
 
 Маршрут страницы — `/task/{uuid}`, где `{uuid}` — уникальный идентификатор задачи.
 
-## Хэндлер `OpenTaskHandler`
+## Хэндлер `openHandler` (класс `TaskHandlers`)
+
+Все операции со страницей задачи собраны в один класс `TaskHandlers`. Операция открытия
+задачи — это публичный `val openHandler`, декларативно связанный со своим приватным маршрутом
+`openRoute`:
 
 ```dotty
-final case class OpenTaskHandler(
+final case class TaskHandlers(
     middleware: JwtAuthMiddleware[IO, UserInfo],
+    settingsService: SettingsService[IO],
     taskLifecycleService: TaskLifecycleService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.openTask.handleIO: (uuid: UUID, cookie: Cookie) =>
+  private val taskPath = Path.root / "task" / uuidParam
+
+  private val openRoute = Route(
+    Request.get(taskPath).extractHeader[`Cookie`],
+    Response.ok(Entity.html)
+  )
+
+  val openHandler: Handler =
+    openRoute.handleIO: (uuid: UUID, cookie: Cookie) =>
       withUserFromCookieOpt(cookie)(
         f = (user, jwtToken) =>
           getViewTask(
@@ -32,12 +44,16 @@ final case class OpenTaskHandler(
             taskId = TaskId(uuid),
             jwtToken = jwtToken,
             errorMessage = none
-          ).map(_.map(html =>
-            View.base(Title, html).toString
-          )),
-        fallbackPage = View.base(Title, NotFoundView).toString
+          ).map(_.map(html => View.base(Title, html).toString)),
+        fallbackPage = NotFoundView
       )
-end OpenTaskHandler
+
+  val editFormHandler: Handler = ...
+  val editHandler: Handler = ...
+  val createHandler: Handler = ...
+  val completeHandler: Handler = ...
+  // ... остальные операции
+end TaskHandlers
 ```
 
 **Пошаговый разбор:**
@@ -50,7 +66,7 @@ end OpenTaskHandler
 2. **`withUserFromCookieOpt(cookie)(f, fallbackPage)`** — извлекает токен из куки `token`,
    проверяет его через middleware и передаёт `(user, jwtToken)` в лямбду `f`.
    Если токена нет или он невалиден — возвращает `fallbackPage` (страницу 404).
-   Извлечение токена из куки теперь инкапсулировано в `AuthorizationHandler`
+   Извлечение токена из куки инкапсулировано в `AuthorizationHandler`
    (метод делает это внутри себя), поэтому ручной `cookie.getToken` не нужен.
 
 3. **Лямбда `f`** — сразу загружает задачу через `getViewTask` с `TaskId(uuid)`
@@ -60,45 +76,63 @@ end OpenTaskHandler
 4. **Возврат `Option`**: `f` возвращает `IO[Option[String]]`. Если задача не найдена —
    `None`, и `withUserFromCookieOpt` подставляет `fallbackPage` (404).
 
+5. **`fallbackPage = NotFoundView`** — константа из `WelcomeViews`, общий шаблон 404
+   для всего приложения.
+
 ## Формирование страницы задачи
 
+Функция `getViewTask` вынесена в объект `TaskViews`, который группирует все вспомогательные
+функции построения представлений задач:
+
 ```dotty
-def getViewTask(
-    taskLifecycleService: TaskLifecycleService[IO],
-    userId: UserId,
-    taskId: TaskId,
-    jwtToken: JwtToken,
-    errorMessage: Option[String]
-): IO[Option[HtmlFormat.Appendable]] =
-  for
-    (plannedTasks, _, _) <- taskLifecycleService.getAll(
-      userId = userId,
-      maybeStatus = Status.Planned.some,
-      maybeTaskType = none,
-      maybeSectionId = none
-    )
-    maybeTask <- taskLifecycleService.get(taskId, userId)
-  yield maybeTask.map: card =>
-    val availableOrdinals = getAvailableOrdinals(plannedTasks)
-    View.task(
-      task = card,
-      token = jwtToken.value,
-      availableOrdinals = availableOrdinals,
-      errorMessage = errorMessage
-    )
+private[tasks] object TaskViews:
+  def getViewTask(
+      taskLifecycleService: TaskLifecycleService[IO],
+      userId: UserId,
+      taskId: TaskId,
+      jwtToken: JwtToken,
+      errorMessage: Option[String]
+  ): IO[Option[HtmlFormat.Appendable]] =
+    for
+      (tasks, taskTypes, sections, goals) <- taskLifecycleService.getAll(
+        userId = userId,
+        maybeStatus = Status.Planned.some,
+        maybeTaskType = none,
+        maybeSectionId = none
+      )
+      maybeTask <- taskLifecycleService.get(taskId, userId)
+    yield maybeTask.map: card =>
+      val typesMap     = taskTypes.map(t => (t.id, t.name)).toMap
+      val sectionsMap  = sections.map(t => (t.id, t.name)).toMap
+      val goalsMap     = goals.map(t => (t.id, t.name)).toMap
+      val plannedTasks =
+        tasks.map(task =>
+          TableTaskCard.fromTaskResult(task, typesMap, sectionsMap, goalsMap)
+        )
+      val availableOrdinals = getAvailableOrdinals(plannedTasks)
+      View.task(
+        task = card,
+        token = jwtToken.value,
+        availableOrdinals = availableOrdinals,
+        errorMessage = errorMessage
+      )
 ```
 
 **Что происходит:**
 
-1. **Загрузка запланированных задач** — нужны для вычисления доступных порядковых
-   номеров при постановке задачи в очередь. Загружаем **все** задачи со статусом
-   `Planned` для данного пользователя.
+1. **Загрузка данных** — `taskLifecycleService.getAll` возвращает кортеж
+   `(tasks, taskTypes, sections, goals)`. Задачи со статусом `Planned` нужны для
+   вычисления доступных порядковых номеров при постановке задачи в очередь, а справочники —
+   для обогащения строк таблицы читаемыми названиями.
 
-2. **Загрузка конкретной задачи** — `taskLifecycleService.get(taskId, userId)`
+2. **Обогащение строк** — задачи превращаются в `TableTaskCard` через
+   `TableTaskCard.fromTaskResult`, подставляя названия типов, разделов и целей вместо их ID.
+
+3. **Загрузка конкретной задачи** — `taskLifecycleService.get(taskId, userId)`
    возвращает `Option[TaskCard]`. Если задача не найдена или не принадлежит
    пользователю — будет `None`.
 
-3**Рендер шаблона** — `View.task(...)` возвращает `HtmlFormat.Appendable`,
+4. **Рендер шаблона** — `View.task(...)` возвращает `HtmlFormat.Appendable`,
    обёрнутый в `Option` (если задача найдена).
 
 ## Вычисление доступных порядковых номеров
@@ -574,7 +608,7 @@ CSS использует `data-level` для отступов и цветово�
 </div>
 ```
 
-Шаблон `notFound.scala.html` используется в `OpenTaskHandler`, когда:
+Шаблон `notFound.scala.html` используется в `TaskHandlers.openHandler`, когда:
 
 - Задача с таким UUID не существует.
 - Задача принадлежит другому пользователю.

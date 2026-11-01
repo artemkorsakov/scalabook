@@ -14,15 +14,19 @@ nextPage = ../ui_tasks.html
 
 ## Общий паттерн CRUD-операций
 
-Для каждой сущности реализуется **пять хэндлеров** и **три шаблона**:
+Для каждой сущности реализуется **один класс хэндлеров** (с несколькими `val`-хэндлерами)
+и **три шаблона**:
 
 | Операция                              | Хэндлер                  | Шаблон                               |
 | ------------------------------------- | ------------------------ | ------------------------------------ |
-| Создание                              | `CreateTaskTypeHandler`  | — (возвращает всю страницу настроек) |
-| Удаление                              | `DeleteTaskTypeHandler`  | — (возвращает всю страницу настроек) |
-| Отображение строки для редактирования | `EditTaskTypeRowHandler` | `editTaskTypeRow.scala.html`         |
-| Сохранение изменений                  | `EditTaskTypeHandler`    | — (возвращает обновлённую строку)    |
-| Отображение обычной строки            | `GetTaskTypeRowHandler`  | `getTaskTypeRow.scala.html`          |
+| Создание                              | `TaskTypeHandlers.createHandler`  | — (возвращает всю страницу настроек) |
+| Удаление                              | `TaskTypeHandlers.deleteHandler`  | — (возвращает всю страницу настроек) |
+| Отображение строки для редактирования | `TaskTypeHandlers.editRowHandler` | `editTaskTypeRow.scala.html`         |
+| Сохранение изменений                  | `TaskTypeHandlers.editHandler`    | — (возвращает обновлённую строку)    |
+| Отображение обычной строки            | `TaskTypeHandlers.getRowHandler`  | `getTaskTypeRow.scala.html`          |
+
+Все операции одной сущности собраны в **один класс** `TaskTypeHandlers`. Каждая операция — это
+отдельный публичный `val`-хэндлер, декларативно связанный со своим приватным маршрутом.
 
 Такое разделение — следствие использования htmx: каждое действие требует **конкретного
 фрагмента HTML** в ответ. Мы не можем «просто обновить строку» — сервер должен вернуть
@@ -30,57 +34,101 @@ nextPage = ../ui_tasks.html
 
 ## Создание типа задачи
 
-### Хэндлер `CreateTaskTypeHandler`
+### `TaskTypeHandlers` — класс
+
+Все операции (создание, удаление, редактирование, отображение строк) собраны в один класс
+`TaskTypeHandlers`. Общий путь с типизированным параметром `taskTypeIdParam` выделен в `path`,
+а пять операций декларативно связаны со своими приватными маршрутами:
 
 ```dotty
-final case class CreateTaskTypeHandler(
+final case class TaskTypeHandlers(
     middleware: JwtAuthMiddleware[IO, UserInfo],
     settingsService: SettingsService[IO]
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.addTaskType.handleIO: (request: CreateItemRequest) =>
-      val create: ((UserInfo, JwtToken)) => IO[String] =
-        (user, jwtToken) =>
-          TaskTypeName.either(request.name) match
-            case Right(name) =>
-              val newItem = CreateTaskType(name, user.id)
-              settingsService
-                .createTaskType(newItem)
-                .flatMap: _ =>
+  private val path = Path.root / "settings" / "task_types" / taskTypeIdParam
+  private val createRoute = Route(
+    Request.post(Path.root / "settings" / "task_types")
+      .withEntity(Entity.formOf[CreateItemRequest]),
+    Response.ok(Entity.html).orNotFound
+  )
+  private val editRoute = Route(
+    Request.put(path).withEntity(Entity.formOf[EditItemRequest]),
+    Response.ok(Entity.html).orNotFound
+  )
+  private val editRowRoute = Route(
+    Request.get(path / "edit").extractHeader[Authorization],
+    Response.ok(Entity.html).orNotFound
+  )
+  private val getRowRoute = Route(
+    Request.get(path).extractHeader[Authorization],
+    Response.ok(Entity.html).orNotFound
+  )
+  private val deleteRoute = Route(
+    Request.delete(path).extractHeader[Authorization],
+    Response.ok(Entity.html).orNotFound
+  )
+
+  val createHandler: Handler = ...
+  val editHandler: Handler = ...
+  val editRowHandler: Handler = ...
+  val getRowHandler: Handler = ...
+  val deleteHandler: Handler = ...
+end TaskTypeHandlers
+```
+
+`taskTypeIdParam` — это типизированный параметр пути (`Param[TaskTypeId]`), поэтому в хэндлеры
+ID записи приходит уже как `TaskTypeId`, а не `Int`, и ручной вызов `TaskTypeId.either` не нужен.
+
+### `createHandler` — создание
+
+```dotty
+val createHandler: Handler =
+  createRoute.handleIO: (request: CreateItemRequest) =>
+    val create: ((UserInfo, JwtToken)) => IO[String] =
+      (user, jwtToken) =>
+        TaskTypeName.either(request.name) match
+          case Right(name) =>
+            val newItem = CreateTaskType(name, user.id)
+            settingsService
+              .createTaskType(newItem)
+              .flatMap: _ =>
+                getViewSettings(
+                  settingsService = settingsService,
+                  userId = user.id,
+                  jwtToken = jwtToken
+                )
+              .recoverWith:
+                case ex: IllegalArgumentException =>
                   getViewSettings(
                     settingsService = settingsService,
-                    id = user.id,
-                    jwtToken = jwtToken
+                    userId = user.id,
+                    jwtToken = jwtToken,
+                    errorTaskTypeMessage = ex.getMessage.some,
+                    errorSectionMessage = none,
+                    errorGoalMessage = none,
+                    errorPeriodicStepMessage = none
                   )
-                .recoverWith:
-                  case ex: IllegalArgumentException =>
-                    getViewSettings(
-                      settingsService = settingsService,
-                      id = user.id,
-                      jwtToken = jwtToken,
-                      errorTaskTypeMessage = ex.getMessage.some,
-                      errorSectionMessage = none,
-                      errorGoalMessage = none
-                    )
-            case Left(error) =>
-              getViewSettings(
-                settingsService = settingsService,
-                id = user.id,
-                jwtToken = jwtToken,
-                errorTaskTypeMessage = error.some,
-                errorSectionMessage = none,
-                errorGoalMessage = none
-              )
-      // ToDo: https://github.com/creativescala/krop/pull/57
-      val authorization: Authorization =
-        Authorization(Token(AuthScheme.Bearer, request.token))
-      withUserFromHeader(authorization)(create)
+          case Left(error) =>
+            getViewSettings(
+              settingsService = settingsService,
+              userId = user.id,
+              jwtToken = jwtToken,
+              errorTaskTypeMessage = error.some,
+              errorSectionMessage = none,
+              errorGoalMessage = none,
+              errorPeriodicStepMessage = none
+            )
+
+    // ToDo: https://github.com/creativescala/krop/pull/57
+    val authorization: Authorization =
+      Authorization(Token(AuthScheme.Bearer, request.token))
+    withUserFromHeader(authorization)(create)
 ```
 
 **Пошаговый разбор:**
 
-1. **`handleIO: (request: CreateItemRequest) => ...`** — регистрируем обработчик,
-   принимающий `CreateItemRequest` (содержит `name` и `token`).
+1. **`createRoute.handleIO: (request: CreateItemRequest) => ...`** — регистрируем обработчик
+   на маршрут `createRoute`, принимающий `CreateItemRequest` (содержит `name` и `token`).
    ```dotty
    final case class CreateItemRequest(token: String, name: String) derives FormCodec
    ```
@@ -113,7 +161,7 @@ final case class CreateTaskTypeHandler(
 ### Маршрут
 
 ```dotty
-val addTaskType = Route(
+private val createRoute = Route(
   Request.post(Path.root / "settings" / "task_types")
     .withEntity(Entity.formOf[CreateItemRequest]),
   Response.ok(Entity.html).orNotFound
@@ -126,101 +174,89 @@ val addTaskType = Route(
 
 ## Удаление типа задачи
 
-### Хэндлер `DeleteTaskTypeHandler`
+### Хэндлер `deleteHandler`
 
 ```dotty
-final case class DeleteTaskTypeHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.deleteTaskType.handleIO: (id: Int, authorization: Authorization) =>
-      withUserFromHeader(authorization): (user: UserInfo, jwtToken: JwtToken) =>
-        TaskTypeId.either(id) match
-          case Right(taskTypeId) =>
-            for
-              _    <- settingsService.deleteTaskType(taskTypeId, user.id)
-              view <- getViewSettings(
-                settingsService = settingsService,
-                id = user.id,
-                jwtToken = jwtToken
-              )
-            yield view
-          case Left(error) =>
-            getViewSettings(
-              settingsService = settingsService,
-              id = user.id,
-              jwtToken = jwtToken,
-              errorTaskTypeMessage = error.some,
-              errorSectionMessage = none,
-              errorGoalMessage = none
-            )
+val deleteHandler: Handler =
+  deleteRoute.handleIO:
+    (taskTypeId: TaskTypeId, authorization: Authorization) =>
+      withUserFromHeader(
+        authorization
+      ): (user: UserInfo, jwtToken: JwtToken) =>
+        for
+          _    <- settingsService.deleteTaskType(taskTypeId, user.id)
+          view <- getViewSettings(
+            settingsService = settingsService,
+            userId = user.id,
+            jwtToken = jwtToken
+          )
+        yield view
 ```
 
 **Пошаговый разбор:**
 
-1. **`(id: Int, authorization: Authorization)`** — обработчик принимает ID записи
-   (из пути) и заголовок `Authorization`.
+1. **`(taskTypeId: TaskTypeId, authorization: Authorization)`** — обработчик принимает
+   типизированный ID записи (из пути через `taskTypeIdParam`) и заголовок `Authorization`.
 2. **`withUserFromHeader(authorization)(...)`** — стандартная проверка токена через
    `AuthorizationHandler`. В отличие от создания, здесь токен приходит **в заголовке**:
    `authorization` передаётся первым аргументом, а лямбда `(user, jwtToken)` — вторым.
-3. **`TaskTypeId.either(id)`** — валидация ID:
-    - **`Right(taskTypeId)`** — ID валиден, удаляем запись и загружаем обновлённую страницу.
-    - **`Left(error)`** — ID невалиден (например, отрицательный), показываем страницу
-      с ошибкой.
-4. **Синтаксис `withUserFromHeader(authorization): (user, jwtToken) => ...`** — это
-   каррированный вызов: `authorization`/`token` первым аргументом, лямбда,
-   обрабатывающая `(user, jwtToken)`, — вторым. Знак `:` вводит тип/тело лямбды.
+3. **`settingsService.deleteTaskType(taskTypeId, user.id)`** — удаление записи. Типизированный
+   `TaskTypeId` гарантирует валидность ID на уровне типов, поэтому ветки `Right`/`Left` не нужны.
+4. **`getViewSettings(...)`** — загрузка обновлённой страницы настроек.
+
+   > Синтаксис `withUserFromHeader(authorization): (user, jwtToken) => ...` — это
+   > каррированный вызов: `authorization`/`token` первым аргументом, лямбда,
+   > обрабатывающая `(user, jwtToken)`, — вторым. Знак `:` вводит тип/тело лямбды.
 
 ### Маршрут
 
 ```dotty
-val deleteTaskType = Route(
-  Request.delete(Path.root / "settings" / "task_types" / Param.int)
-    .extractHeader[Authorization],
+private val deleteRoute = Route(
+  Request.delete(path).extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
 ```
 
+где `path = Path.root / "settings" / "task_types" / taskTypeIdParam`.
+
 - DELETE-запрос на `/settings/task_types/{id}`.
-- ID извлекается из пути (`Param.int`).
+- ID извлекается из пути типизированным параметром `taskTypeIdParam`.
 - Токен извлекается из заголовка `Authorization`.
 
 ## Отображение строки для редактирования
 
-### Хэндлер `EditTaskTypeRowHandler`
+### Хэндлер `editRowHandler`
 
 ```dotty
-final case class EditTaskTypeRowHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.editTaskTypeRow.handleIO: (id: Int, authorization: Authorization) =>
-      withUserFromHeader(authorization): (user: UserInfo, jwtToken: JwtToken) =>
-        for
-          taskTypeId <- IO.fromEither(
-            TaskTypeId.either(id).leftMap(new IllegalArgumentException(_))
-          )
-          taskTypes <- settingsService.getTaskTypes(user.id)
-          taskType  <- IO.fromOption(
-            taskTypes.find(_.id.value == id)
-          )(new IllegalArgumentException("Задача не найдена"))
-        yield View.editTaskTypeRow(
-          taskType,
-          jwtToken.value,
-          none
-        ).toString
+val editRowHandler: Handler =
+  editRowRoute.handleIO:
+    (taskTypeId: TaskTypeId, authorization: Authorization) =>
+      withUserFromHeader(
+        authorization
+      ): (user: UserInfo, jwtToken: JwtToken) =>
+        getTaskType(taskTypeId, user.id).map: taskType =>
+          View.editTaskTypeRow(
+            taskType,
+            jwtToken.value,
+            none
+          ).toString
 ```
 
 **Пошаговый разбор:**
 
-1. **`TaskTypeId.either(id)`** — валидация ID. Если невалиден — выбрасывается
-   `IllegalArgumentException` через `IO.fromEither`.
-2. **`settingsService.getTaskTypes(user.id)`** — загружаем все типы задач пользователя.
-3. **`taskTypes.find(_.id.value == id)`** — ищем нужный тип. Если не найден —
-   выбрасываем `IllegalArgumentException("Задача не найдена")`.
-4. **`View.editTaskTypeRow(...)`** — рендерим шаблон `editTaskTypeRow.scala.html`
+1. **`taskTypeId: TaskTypeId`** — ID приходит типизированным из пути через `taskTypeIdParam`.
+2. **`getTaskType(taskTypeId, user.id)`** — приватный вспомогательный метод, который
+   загружает все типы и находит нужный:
+   ```dotty
+   private def getTaskType(id: TaskTypeId, userId: UserId): IO[TaskType] =
+     for
+       taskTypes <- settingsService.getTaskTypes(userId)
+       taskType  <- IO.fromOption(
+         taskTypes.find(_.id == id)
+       )(new IllegalArgumentException("Задача не найдена"))
+     yield taskType
+   ```
+3. **`View.editTaskTypeRow(...)`** — рендерим шаблон `editTaskTypeRow.scala.html`
    с обычным состоянием (без ошибки).
 
 **Зачем загружать все типы, а не один?**
@@ -233,12 +269,13 @@ final case class EditTaskTypeRowHandler(
 ### Маршрут
 
 ```dotty
-  val editTaskTypeRow = Route(
-    Request.get(Path.root / "settings" / "task_types" / Param.int / "edit")
-      .extractHeader[Authorization],
-    Response.ok(Entity.html).orNotFound
-  )
+private val editRowRoute = Route(
+  Request.get(path / "edit").extractHeader[Authorization],
+  Response.ok(Entity.html).orNotFound
+)
 ```
+
+где `path = Path.root / "settings" / "task_types" / taskTypeIdParam`.
 
 - GET-запрос на `/settings/task_types/{id}/edit`.
 - Возвращает HTML-строку таблицы в режиме редактирования.
@@ -337,105 +374,79 @@ final case class EditTaskTypeRowHandler(
 
 ## Сохранение изменений
 
-### Хэндлер `EditTaskTypeHandler`
+### Хэндлер `editHandler`
 
 Это самый сложный из всех хэндлеров — он поддерживает **переупорядочивание** записей.
 
 ```dotty
-final case class EditTaskTypeHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.editTaskType.handleIO: (id: Int, request: EditItemRequest) =>
-      val edit: ((UserInfo, JwtToken)) => IO[String] =
-        (user, jwtToken) =>
-          val rearrange = request.ordinalShift.contains("on")
-          (
-            TaskTypeId.either(id).toValidatedNec,
-            TaskTypeName.either(request.name).toValidatedNec,
-            Ordinal.either(request.ordinal).toValidatedNec
-          ).mapN { case (taskTypeId, name, ordinal) =>
-            val updated =
-              TaskType(
-                id = taskTypeId,
-                name = name,
-                userId = user.id,
-                displayed = request.displayed.contains("on"),
-                ordinal = ordinal
-              )
-
-            val run =
-              if rearrange then
-                for
-                  items <- settingsService.getTaskTypes(user.id)
-                  _     <- settingsService.updateTaskType(updated)
-                  (beforeUpdated, afterUpdated) =
-                    items
-                      .filterNot(_.id == updated.id)
-                      .partition(_.ordinal < updated.ordinal)
-                  ids = NonEmptyVector.one(updated.id)
-                    .prependVector(
-                      beforeUpdated.sortBy(_.ordinal).map(_.id)
-                    )
-                    .appendVector(afterUpdated.sortBy(_.ordinal).map(_.id))
-                  _ <- settingsService.reorderTaskTypes(ids, user.id)
-                yield ()
-              else
-                settingsService.updateTaskType(updated)
-
-            run.map: _ =>
-              View.getTaskTypeRow(
-                updated,
-                jwtToken.value
-              ).toString
-            .recoverWith:
-              case ex: IllegalArgumentException =>
-                getError(
-                  id = id,
-                  userId = user.id,
-                  jwtToken = jwtToken,
-                  error = ex.getMessage
-                )
-          }.valueOr(error =>
-            getError(
-              id = id,
+val editHandler: Handler =
+  editRoute.handleIO: (taskTypeId: TaskTypeId, request: EditItemRequest) =>
+    val edit: ((UserInfo, JwtToken)) => IO[String] =
+      (user, jwtToken) =>
+        val rearrange = request.ordinalShift.contains("on")
+        (
+          TaskTypeName.either(request.name).toValidatedNec,
+          Ordinal.either(request.ordinal).toValidatedNec
+        ).mapN { case (name, ordinal) =>
+          val updated =
+            TaskType(
+              id = taskTypeId,
+              name = name,
               userId = user.id,
-              jwtToken = jwtToken,
-              error = error.mkString_(";")
+              displayed = request.displayed.contains("on"),
+              ordinal = ordinal
             )
-          )
-      // ToDo: https://github.com/creativescala/krop/pull/57
-      val authorization: Authorization =
-        Authorization(Token(AuthScheme.Bearer, request.token))
-      withUserFromHeader(authorization)(edit)
 
-  private def getError(
-      id: Int,
-      userId: UserId,
-      jwtToken: JwtToken,
-      error: String
-  ): IO[String] =
-    for
-      taskTypeId <- IO.fromEither(
-        TaskTypeId.either(id).leftMap(new IllegalArgumentException(_))
-      )
-      taskTypes <- settingsService.getTaskTypes(userId)
-      taskType  <- IO.fromOption(
-        taskTypes.find(_.id.value == id)
-      )(new IllegalArgumentException("Задача не найдена"))
-    yield View.editTaskTypeRow(
-      taskType,
-      jwtToken.value,
-      error.some
-    ).toString
-end EditTaskTypeHandler
+          val run =
+            if rearrange then
+              for
+                items <- settingsService.getTaskTypes(user.id)
+                _     <- settingsService.updateTaskType(updated)
+                (beforeUpdated, afterUpdated) =
+                  items
+                    .filterNot(_.id == updated.id)
+                    .partition(_.ordinal < updated.ordinal)
+                ids = NonEmptyVector.one(updated.id)
+                  .prependVector(
+                    beforeUpdated.sortBy(_.ordinal).map(_.id)
+                  )
+                  .appendVector(afterUpdated.sortBy(_.ordinal).map(_.id))
+                _ <- settingsService.reorderTaskTypes(ids, user.id)
+              yield ()
+            else
+              settingsService.updateTaskType(updated).void
+
+          run.map: _ =>
+            View.getTaskTypeRow(
+              updated,
+              jwtToken.value
+            ).toString
+          .recoverWith:
+            case ex: IllegalArgumentException =>
+              editError(
+                id = taskTypeId,
+                userId = user.id,
+                jwtToken = jwtToken,
+                error = ex.getMessage
+              )
+        }.valueOr(error =>
+          editError(
+            id = taskTypeId,
+            userId = user.id,
+            jwtToken = jwtToken,
+            error = error.mkString_(";")
+          )
+        )
+    // ToDo: https://github.com/creativescala/krop/pull/57
+    val authorization: Authorization =
+      Authorization(Token(AuthScheme.Bearer, request.token))
+    withUserFromHeader(authorization)(edit)
 ```
 
 **Пошаговый разбор:**
 
-1. **`(id: Int, request: EditItemRequest)`** — обработчик принимает ID из пути
-   и тело формы с новыми данными.
+1. **`(taskTypeId: TaskTypeId, request: EditItemRequest)`** — обработчик принимает
+   типизированный ID из пути и тело формы с новыми данными.
    ```dotty
    final case class EditItemRequest(
       token: String,
@@ -451,15 +462,16 @@ end EditTaskTypeHandler
    выполняется переиндексация порядковых номеров остальных записей.
 
 3. **Валидация через `ValidatedNec`:**
-    - `TaskTypeId.either(id)` — валидация ID.
     - `TaskTypeName.either(request.name)` — валидация имени.
     - `Ordinal.either(request.ordinal)` — валидация порядкового номера.
 
+   Идентификатор уже типизирован (`TaskTypeId`), поэтому его валидация не требуется.
    `.mapN { ... }` собирает результаты: если **все** валидны — выполняется лямбда;
    если есть ошибки — они аккумулируются в `ValidatedNec` и обрабатываются через
    `.valueOr`.
 
 4. **Создание обновлённого `TaskType`:**
+    - `id = taskTypeId` — типизированный ID из пути.
     - `displayed = request.displayed.contains("on")` — чекбокс отмечен → `true`.
     - `ordinal = ordinal` — новое значение порядка.
 
@@ -476,10 +488,10 @@ end EditTaskTypeHandler
 6. **Успех:** возвращаем обновлённую строку через `View.getTaskTypeRow`.
 
 7. **Ошибка бизнес-логики:** перехватываем `IllegalArgumentException` и вызываем
-   `getError`, который рендерит строку в режиме редактирования с сообщением.
+   `editError`, который рендерит строку в режиме редактирования с сообщением.
 
-8. **`getError`** — вспомогательный метод, который:
-    - Загружает оригинальный `TaskType` (по ID).
+8. **`editError`** — приватный вспомогательный метод, который:
+    - Загружает оригинальный `TaskType` (по ID) через `getTaskType`.
     - Рендерит `editTaskTypeRow` с сообщением об ошибке.
 
 **Зачем нужен `ordinalShift`?**
@@ -494,12 +506,13 @@ end EditTaskTypeHandler
 ### Маршрут
 
 ```dotty
-val editTaskType = Route(
-  Request.put(Path.root / "settings" / "task_types" / Param.int)
-    .withEntity(Entity.formOf[EditItemRequest]),
+private val editRoute = Route(
+  Request.put(path).withEntity(Entity.formOf[EditItemRequest]),
   Response.ok(Entity.html).orNotFound
 )
 ```
+
+где `path = Path.root / "settings" / "task_types" / taskTypeIdParam`.
 
 - PUT-запрос на `/settings/task_types/{id}`.
 - Тело — форма с новыми данными.
@@ -507,28 +520,20 @@ val editTaskType = Route(
 
 ## Отображение обычной строки
 
-### Хэндлер `GetTaskTypeRowHandler`
+### Хэндлер `getRowHandler`
 
 ```dotty
-final case class GetTaskTypeRowHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    settingsService: SettingsService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.getTaskTypeRow.handleIO: (id: Int, authorization: Authorization) =>
-      withUserFromHeader(authorization): (user: UserInfo, jwtToken: JwtToken) =>
-        for
-          taskTypeId <- IO.fromEither(
-            TaskTypeId.either(id).leftMap(new IllegalArgumentException(_))
-          )
-          taskTypes <- settingsService.getTaskTypes(user.id)
-          taskType  <- IO.fromOption(
-            taskTypes.find(_.id.value == id)
-          )(new IllegalArgumentException("Задача не найдена"))
-        yield View.getTaskTypeRow(
-          taskType,
-          jwtToken.value
-        ).toString
+val getRowHandler: Handler =
+  getRowRoute.handleIO:
+    (taskTypeId: TaskTypeId, authorization: Authorization) =>
+      withUserFromHeader(
+        authorization
+      ): (user: UserInfo, jwtToken: JwtToken) =>
+        getTaskType(taskTypeId, user.id).map: taskType =>
+          View.getTaskTypeRow(
+            taskType,
+            jwtToken.value
+          ).toString
 ```
 
 **Назначение:** возвращает строку таблицы в обычном (нередактируемом) режиме.
@@ -541,12 +546,13 @@ final case class GetTaskTypeRowHandler(
 ### Маршрут
 
 ```dotty
-val getTaskTypeRow = Route(
-  Request.get(Path.root / "settings" / "task_types" / Param.int)
-    .extractHeader[Authorization],
+private val getRowRoute = Route(
+  Request.get(path).extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
 ```
+
+где `path = Path.root / "settings" / "task_types" / taskTypeIdParam`.
 
 ## Шаблон `getTaskTypeRow.scala.html`
 
@@ -637,14 +643,15 @@ val getTaskTypeRow = Route(
 
 ## Итог
 
-Мы реализовали полный CRUD для трёх справочников:
+Мы реализовали полный CRUD для трёх справочников, собрав все операции каждой сущности
+в единый класс `TaskTypeHandlers`:
 
-1. **Создание** (`CreateTaskTypeHandler`) — добавляет новую запись и перезагружает
+1. **Создание** (`TaskTypeHandlers.createHandler`) — добавляет новую запись и перезагружает
    страницу настроек.
-2. **Удаление** (`DeleteTaskTypeHandler`) — удаляет запись и перезагружает страницу.
-3. **Редактирование** (`EditTaskTypeRowHandler` + `EditTaskTypeHandler`) —
+2. **Удаление** (`TaskTypeHandlers.deleteHandler`) — удаляет запись и перезагружает страницу.
+3. **Редактирование** (`TaskTypeHandlers.editRowHandler` + `TaskTypeHandlers.editHandler`) —
    открывает форму редактирования прямо в строке таблицы и сохраняет изменения.
-4. **Отмена** (`GetTaskTypeRowHandler`) — возвращает строку в обычный вид.
+4. **Отмена** (`TaskTypeHandlers.getRowHandler`) — возвращает строку в обычный вид.
 
 **Ключевые архитектурные решения:**
 

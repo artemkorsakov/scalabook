@@ -39,9 +39,12 @@ nextPage = ui_task_timer.html
 
 ### Маршрут
 
+Маршрут объявлен приватно внутри `TaskHandlers` на основе общего пути `taskPath`
+(`Path.root / "task" / uuidParam`):
+
 ```dotty
-val completeFormTask = Route(
-  Request.put(Path.root / "task" / uuidParam / "complete")
+private val completeFormRoute = Route(
+  Request.put(taskPath / "complete")
     .withEntity(Entity.formOf[CompileTaskRequest]),
   Response.ok(Entity.html).orNotFound
 )
@@ -49,65 +52,58 @@ val completeFormTask = Route(
 
 **Разбор:**
 
-- **`Request.put(Path.root / "task" / uuidParam / "complete")`** — PUT-запрос на
-  `/task/{uuid}/complete`. Вместо `Param.string` используется **`uuidParam`** —
-  путь декодируется сразу в `UUID`.
+- **`Request.put(taskPath / "complete")`** — PUT-запрос на
+  `/task/{uuid}/complete`. `uuidParam` декодирует путь сразу в `UUID`.
 - **`.withEntity(Entity.formOf[CompileTaskRequest])`** — тело запроса в формате
   `application/x-www-form-urlencoded`, десериализуется в `CompileTaskRequest`.
 - **`Response.ok(Entity.html).orNotFound`** — успешный ответ с HTML или 404.
 
-### Хэндлер `CompleteTaskHandler`
+### Хэндлер `completeHandler` (класс `TaskHandlers`)
 
 ```dotty
-final case class CompleteTaskHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    taskLifecycleService: TaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.completeFormTask.handleIO:
-      (uuid: UUID, request: CompileTaskRequest) =>
-        val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
-          (user, jwtToken) =>
-            val taskId = TaskId(uuid)
-            (
-              Rating.values
-                .find(_.r == request.rating)
-                .toValidNec(
-                  s"Рейтинг (1-5) не определился: ${request.rating}"
-                ),
-              Review.either(request.review.trim).toValidatedNec,
-              request.endDate.toValidNec("Не заполнена дата окончания")
-            ).mapN { case (rating, review, endDate) =>
-              taskLifecycleService.complete(
-                id = taskId,
-                userId = user.id,
-                rating = rating,
-                review = review,
-                endDate = endDate,
-                duration = FiniteDuration(
-                  request.durationValue,
-                  request.durationUnit
-                )
-              ).map(_ => HomeView.some)
-            }.valueOr(errors =>
-              getViewTask(
-                taskLifecycleService = taskLifecycleService,
-                userId = user.id,
-                taskId = taskId,
-                jwtToken = jwtToken,
-                errorMessage = errors.mkString_(";").some
-              ).map(_.map(_.toString))
+val completeHandler: Handler =
+  completeFormRoute.handleIO: (uuid: UUID, request: CompileTaskRequest) =>
+    val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+      (user, jwtToken) =>
+        val taskId = TaskId(uuid)
+        (
+          Rating.values
+            .find(_.r == request.rating)
+            .toValidNec(
+              s"Рейтинг (1-5) не определился: ${request.rating}"
+            ),
+          Review.either(request.review.trim).toValidatedNec,
+          request.endDate.toValidNec("Не заполнена дата окончания")
+        ).mapN { case (rating, review, endDate) =>
+          taskLifecycleService.complete(
+            id = taskId,
+            userId = user.id,
+            rating = rating,
+            review = review,
+            endDate = endDate,
+            duration = FiniteDuration(
+              request.durationValue,
+              request.durationUnit
             )
-        // ToDo: https://github.com/creativescala/krop/pull/57
-        val authorization: Authorization =
-          Authorization(Token(AuthScheme.Bearer, request.token))
-        withUserFromHeaderOpt(authorization)(run)
-end CompleteTaskHandler
+          ).map(_ => HomeView.some)
+        }.valueOr(errors =>
+          getViewTask(
+            taskLifecycleService = taskLifecycleService,
+            userId = user.id,
+            taskId = taskId,
+            jwtToken = jwtToken,
+            errorMessage = errors.mkString_(";").some
+          ).map(_.map(_.toString))
+        )
+    // ToDo: https://github.com/creativescala/krop/pull/57
+    val authorization: Authorization =
+      Authorization(Token(AuthScheme.Bearer, request.token))
+    withUserFromHeaderOpt(authorization)(run)
 ```
 
 **Пошаговый разбор:**
 
-1. **`TaskId(uuid)`** — унарная сверка готового `UUID` в `TaskId`. Ручной парсинг из строки
+1. **`TaskId(uuid)`** — унарная свёртка готового `UUID` в `TaskId`. Ручной парсинг из строки
    больше не нужен: `uuidParam` в маршруте уже декодировал путь в `UUID`.
 
 2. **Тройная валидация через `ValidatedNec`:**
@@ -135,7 +131,7 @@ end CompleteTaskHandler
 
 ### Что такое `HomeView`?
 
-`HomeView` — это константа, возвращающая HTML главной страницы:
+`HomeView` — это константа из `WelcomeViews`, возвращающая HTML главной страницы:
 
 ```dotty
 val HomeView: String = View.home().toString
@@ -304,9 +300,12 @@ final case class CompileTaskRequest(
 
 ### Маршрут
 
+Маршрут объявлен приватно внутри `TaskHandlers` на основе общего пути `taskPath`
+(`Path.root / "task" / uuidParam`):
+
 ```dotty
-val deferFormTask = Route(
-  Request.put(Path.root / "task" / uuidParam / "defer")
+private val deferFormRoute = Route(
+  Request.put(taskPath / "defer")
     .extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
@@ -314,33 +313,28 @@ val deferFormTask = Route(
 
 **Отличие от `complete`:** здесь **нет** тела запроса, потому что все данные уже
 известны (ID задачи из пути, пользователь — из токена). Используется только
-заголовок `Authorization`. Вместо `Param.string` — **`uuidParam`**, декодирующий путь в `UUID`.
+заголовок `Authorization`. `uuidParam` декодирует путь сразу в `UUID`.
 
-### Хэндлер `DeferTaskHandler`
+### Хэндлер `deferHandler` (класс `TaskHandlers`)
 
 ```dotty
-final case class DeferTaskHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    taskLifecycleService: TaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.deferFormTask.handleIO: (uuid: UUID, authorization: Authorization) =>
-      withUserFromHeaderOpt(authorization): (user, jwtToken) =>
-        val taskId = TaskId(uuid)
-        for
-          _ <- taskLifecycleService.defer(
-            id = taskId,
-            userId = user.id
-          )
-          maybeView <- getViewTask(
-            taskLifecycleService = taskLifecycleService,
-            userId = user.id,
-            taskId = taskId,
-            jwtToken = jwtToken,
-            errorMessage = none
-          )
-        yield maybeView.map(_.toString)
-end DeferTaskHandler
+val deferHandler: Handler =
+  deferFormRoute.handleIO: (uuid: UUID, authorization: Authorization) =>
+    withUserFromHeaderOpt(authorization): (user, jwtToken) =>
+      val taskId = TaskId(uuid)
+      for
+        _ <- taskLifecycleService.defer(
+          id = taskId,
+          userId = user.id
+        )
+        maybeView <- getViewTask(
+          taskLifecycleService = taskLifecycleService,
+          userId = user.id,
+          taskId = taskId,
+          jwtToken = jwtToken,
+          errorMessage = none
+        )
+      yield maybeView.map(_.toString)
 ```
 
 **Пошаговый разбор:**
@@ -389,59 +383,57 @@ end DeferTaskHandler
 
 ### Маршрут
 
+Маршрут объявлен приватно внутри `TaskHandlers` на основе общего пути `taskPath`
+(`Path.root / "task" / uuidParam`):
+
 ```dotty
-val startFormTask = Route(
-  Request.put(Path.root / "task" / uuidParam / "start")
+private val startFormRoute = Route(
+  Request.put(taskPath / "start")
     .withEntity(Entity.formOf[StartTaskRequest]),
   Response.ok(Entity.html).orNotFound
 )
 ```
 
-### Хэндлер `StartTaskHandler`
+### Хэндлер `startHandler` (класс `TaskHandlers`)
 
 ```dotty
-final case class StartTaskHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    taskLifecycleService: TaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.startFormTask.handleIO: (uuid: UUID, request: StartTaskRequest) =>
-      val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
-        (user, jwtToken) =>
-          val taskId = TaskId(uuid)
-          (
-            request.startDate.toValidNec("Не заполнена дата начала"),
-            request.endDate.toValidNec("Не заполнена дата окончания")
-          ).mapN { case (startDate, endDate) =>
-            for
-              _ <- taskLifecycleService.start(
-                id = taskId,
-                userId = user.id,
-                startDate = startDate,
-                endDate = endDate
-              )
-              maybeView <- getViewTask(
-                taskLifecycleService = taskLifecycleService,
-                userId = user.id,
-                taskId = taskId,
-                jwtToken = jwtToken,
-                errorMessage = none
-              )
-            yield maybeView.map(_.toString)
-          }.valueOr(errors =>
-            getViewTask(
+val startHandler: Handler =
+  startFormRoute.handleIO: (uuid: UUID, request: StartTaskRequest) =>
+    val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+      (user, jwtToken) =>
+        val taskId = TaskId(uuid)
+        (
+          request.startDate.toValidNec("Не заполнена дата начала"),
+          request.endDate.toValidNec("Не заполнена дата окончания")
+        ).mapN { case (startDate, endDate) =>
+          for
+            _ <- taskLifecycleService.start(
+              id = taskId,
+              userId = user.id,
+              startDate = startDate,
+              endDate = endDate
+            )
+            maybeView <- getViewTask(
               taskLifecycleService = taskLifecycleService,
               userId = user.id,
               taskId = taskId,
               jwtToken = jwtToken,
-              errorMessage = errors.mkString_(";").some
-            ).map(_.map(_.toString))
-          )
-      // ToDo: https://github.com/creativescala/krop/pull/57
-      val authorization: Authorization =
-        Authorization(Token(AuthScheme.Bearer, request.token))
-      withUserFromHeaderOpt(authorization)(run)
-end StartTaskHandler
+              errorMessage = none
+            )
+          yield maybeView.map(_.toString)
+        }.valueOr(errors =>
+          getViewTask(
+            taskLifecycleService = taskLifecycleService,
+            userId = user.id,
+            taskId = taskId,
+            jwtToken = jwtToken,
+            errorMessage = errors.mkString_(";").some
+          ).map(_.map(_.toString))
+        )
+    // ToDo: https://github.com/creativescala/krop/pull/57
+    val authorization: Authorization =
+      Authorization(Token(AuthScheme.Bearer, request.token))
+    withUserFromHeaderOpt(authorization)(run)
 ```
 
 **Пошаговый разбор:**
@@ -549,66 +541,64 @@ final case class StartTaskRequest(
 
 ### Маршрут
 
+Маршрут объявлен приватно внутри `TaskHandlers` на основе общего пути `taskPath`
+(`Path.root / "task" / uuidParam`):
+
 ```dotty
-val queueFormTask = Route(
-  Request.put(Path.root / "task" / uuidParam / "queue")
+private val queueFormRoute = Route(
+  Request.put(taskPath / "queue")
     .withEntity(Entity.formOf[QueueTaskRequest]),
   Response.ok(Entity.html).orNotFound
 )
 ```
 
-### Хэндлер `QueueTaskHandler`
+### Хэндлер `queueHandler` (класс `TaskHandlers`)
 
 ```dotty
-final case class QueueTaskHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    taskLifecycleService: TaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.queueFormTask.handleIO: (uuid: UUID, request: QueueTaskRequest) =>
-      val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
-        (user, jwtToken) =>
-          val taskId = TaskId(uuid)
-          Ordinal.either(request.ordinal) match
-            case Right(ordinal) =>
-              val runReorderTasks: IO[Boolean] =
-                if request.ordinalShift.contains("on") then
-                  taskLifecycleService.reorderTasks(
-                    userId = user.id,
-                    ordinal = ordinal,
-                    status = Status.Planned
-                  )
-                else IO(true)
+val queueHandler: Handler =
+  queueFormRoute.handleIO: (uuid: UUID, request: QueueTaskRequest) =>
+    val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+      (user, jwtToken) =>
+        val taskId = TaskId(uuid)
+        Ordinal.either(request.ordinal) match
+          case Right(ordinal) =>
+            val runReorderTasks: IO[Boolean] =
+              if request.ordinalShift.contains("on") then
+                taskLifecycleService.reorderTasks(
+                  userId = user.id,
+                  ordinal = ordinal,
+                  status = Status.Planned
+                )
+              else IO(true)
 
-              for
-                _ <- runReorderTasks
-                _ <- taskLifecycleService.enqueue(
-                  id = taskId,
-                  userId = user.id,
-                  ordinal = ordinal
-                )
-                maybeView <- getViewTask(
-                  taskLifecycleService = taskLifecycleService,
-                  userId = user.id,
-                  taskId = taskId,
-                  jwtToken = jwtToken,
-                  errorMessage = none
-                )
-              yield maybeView.map(_.toString)
-            case Left(error) =>
-              getViewTask(
+            for
+              _ <- runReorderTasks
+              _ <- taskLifecycleService.enqueue(
+                id = taskId,
+                userId = user.id,
+                ordinal = ordinal
+              )
+              maybeView <- getViewTask(
                 taskLifecycleService = taskLifecycleService,
                 userId = user.id,
                 taskId = taskId,
                 jwtToken = jwtToken,
-                errorMessage = error.some
-              ).map(_.map(_.toString))
-          end match
-      // ToDo: https://github.com/creativescala/krop/pull/57
-      val authorization: Authorization =
-        Authorization(Token(AuthScheme.Bearer, request.token))
-      withUserFromHeaderOpt(authorization)(run)
-end QueueTaskHandler
+                errorMessage = none
+              )
+            yield maybeView.map(_.toString)
+          case Left(error) =>
+            getViewTask(
+              taskLifecycleService = taskLifecycleService,
+              userId = user.id,
+              taskId = taskId,
+              jwtToken = jwtToken,
+              errorMessage = error.some
+            ).map(_.map(_.toString))
+        end match
+    // ToDo: https://github.com/creativescala/krop/pull/57
+    val authorization: Authorization =
+      Authorization(Token(AuthScheme.Bearer, request.token))
+    withUserFromHeaderOpt(authorization)(run)
 ```
 
 **Пошаговый разбор:**
@@ -739,38 +729,35 @@ final case class QueueTaskRequest(
 
 ### Маршрут
 
+Маршрут объявлен приватно внутри `TaskHandlers` на основе общего пути `taskPath`
+(`Path.root / "task" / uuidParam`):
+
 ```dotty
-val deleteTask = Route(
-  Request.delete(Path.root / "task" / uuidParam)
-    .extractHeader[Authorization],
+private val deleteRoute = Route(
+  Request.delete(taskPath).extractHeader[Authorization],
   Response.ok(Entity.html).orNotFound
 )
 ```
 
 **Разбор:**
 
-- **`Request.delete(Path.root / "task" / uuidParam)`** — DELETE-запрос на
-  `/task/{uuid}`. `uuidParam` декодирует путь сразу в `UUID`.
+- **`Request.delete(taskPath)`** — DELETE-запрос на `/task/{uuid}`.
+  `uuidParam` декодирует путь сразу в `UUID`.
 - **`.extractHeader[Authorization]`** — токен из заголовка.
 - **`Response.ok(Entity.html).orNotFound`** — успешный ответ с HTML.
 
-### Хэндлер `DeleteTaskHandler`
+### Хэндлер `deleteHandler` (класс `TaskHandlers`)
 
 ```dotty
-final case class DeleteTaskHandler(
-    middleware: JwtAuthMiddleware[IO, UserInfo],
-    taskLifecycleService: TaskLifecycleService[IO]
-)(using Logger[IO]) extends AuthorizationHandler(middleware):
-  val handler: Handler =
-    Routes.deleteTask.handleIO: (uuid: UUID, authorization: Authorization) =>
-      withUserFromHeaderOpt(authorization): (user, token) =>
-        val taskId = TaskId(uuid)
-        taskLifecycleService
-          .delete(
-            id = taskId,
-            userId = user.id
-          ).map(_ => HomeView.some)
-end DeleteTaskHandler
+val deleteHandler: Handler =
+  deleteRoute.handleIO: (uuid: UUID, authorization: Authorization) =>
+    withUserFromHeaderOpt(authorization): (user, token) =>
+      val taskId = TaskId(uuid)
+      taskLifecycleService
+        .delete(
+          id = taskId,
+          userId = user.id
+        ).map(_ => HomeView.some)
 ```
 
 **Пошаговый разбор:**
@@ -778,15 +765,15 @@ end DeleteTaskHandler
 1. **`withUserFromHeaderOpt(authorization)`** — мягкая проверка токена из заголовка:
    `authorization` — первый аргумент, лямбда `(user, token)` — второй.
 
-2. **`TaskId(uuid)`** — унарная сверка уже декодированного маршрутом `UUID`.
+2. **`TaskId(uuid)`** — унарная свёртка уже декодированного маршрутом `UUID`.
 
 3. **`taskLifecycleService.delete(id, userId)`** — удаляет задачу:
     - Проверяет, что задача принадлежит пользователю.
     - Удаляет запись из БД.
 
-4. **`.map(_ => HomeView.some)`** — после удаления возвращаем главную страницу.
-   Пользователь видит список оставшихся задач, а удалённая задача исчезает.
-   Пользователь видит список оставшихся задач, а удалённая задача исчезает.
+4. **`.map(_ => HomeView.some)`** — после удаления возвращаем главную страницу
+   (`HomeView` из `WelcomeViews`). Пользователь видит список оставшихся задач,
+   а удалённая задача исчезает.
 
 ### HTML-кнопка удаления
 
@@ -815,8 +802,10 @@ end DeleteTaskHandler
 
 Все пять действий следуют одному паттерну:
 
-1. **Маршрут** — PUT или DELETE на `/task/{uuid}/{action}`.
-2. **Хэндлер** — наследуется от `AuthorizationHandler`, проверяет токен,
+1. **Маршрут** — PUT или DELETE на `/task/{uuid}/{action}`. Маршруты приватные,
+   объявлены внутри `TaskHandlers` на общем пути `taskPath`.
+2. **Хэндлер** — `val`-хэндлер (`completeHandler`, `deferHandler`, `startHandler`,
+   `queueHandler`, `deleteHandler`) внутри `TaskHandlers`; проверяет токен,
    получает UUID уже декодированным маршрутом (`uuidParam`), вызывает соответствующий
    метод `taskLifecycleService`.
 3. **Модель запроса** — DTO с `derives FormCodec` (если есть тело).

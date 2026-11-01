@@ -131,7 +131,6 @@ object Dependencies {
     val cats            = "io.github.iltotore" %% "iron-cats"       % version
     val circe           = "io.github.iltotore" %% "iron-circe"      % version
     val core            = "io.github.iltotore" %% "iron"            % version
-    val doobie          = "io.github.iltotore" %% "iron-doobie"     % version
     val pureconfig      = "io.github.iltotore" %% "iron-pureconfig" % version
   }
 
@@ -141,7 +140,6 @@ object Dependencies {
       iron.cats,
       iron.circe,
       iron.core,
-      iron.doobie,
       iron.pureconfig
     )
 
@@ -180,10 +178,6 @@ object User:
 trait PdpUUID extends RefinedType[String, ValidUUID]:
   inline def apply(uuid: UUID): T = applyUnsafe(uuid.toString)
 
-  given Meta[T]  = Meta[UUID].imap[T](apply)(id => UUID.fromString(id.value))
-  given Write[T] = Write.Single[T](given_Meta_T.put)
-  given Read[T]  = Read.Single[T](given_Meta_T.get)
-  
 type Ordinal = Ordinal.T
 object Ordinal extends RefinedType[Int, Positive]:
   val Min: T = Ordinal(1)

@@ -324,14 +324,14 @@ test("UsersAuthService.findUser should return an user if it exists"):
       maybeLoggedOutNewUser <-
         usersAuthService.findUser(newUserToken)(jwtClaim)
     yield whenSuccess(maybeNewUser) { user =>
-      expect.same(username, user.username) |+|
-        expect.same(userId1, user.id) |+|
+      expect.same(username, user.username) &&
+        expect.same(userId1, user.id) &&
         expect.same(userId2, user.id)
-    } |+|
+    } &&
       whenSuccess(maybeLoggedUser) { user =>
         expect.same(username, user.username)
-      } |+|
-      expect(status) |+|
+      } &&
+      expect(status) &&
       expect(maybeLoggedOutNewUser.isEmpty)
     end for
 ```
@@ -443,9 +443,9 @@ test("UsersAuthService.login should login after logout"):
       (newToken, userId2) <- authService.login(username, password)
       maybeUser           <- usersAuthService.findUser(newToken)(jwtClaim)
     yield whenSuccess(maybeUser): user =>
-      expect.same(username, user.username) |+|
-        expect(status) |+|
-        expect.same(userId1, user.id) |+|
+      expect.same(username, user.username) &&
+        expect(status) &&
+        expect.same(userId1, user.id) &&
         expect.same(userId2, user.id)
 ```
 

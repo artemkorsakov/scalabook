@@ -212,122 +212,115 @@ cookie.values
 ## Формирование приветственной страницы
 
 Если токен валиден, формируем приветственную страницу с задачами пользователя.
-Логика вынесена в объект `Views`:
+Логика вынесена в объект `WelcomeViews`:
 
 ```dotty
-object Views:
+object WelcomeViews:
   val Title: String       = "План развития"
   val DefaultTab: String  = "in-progress"
 
   def getViewWelcomeHtml(
       taskLifecycleService: TaskLifecycleService[IO],
+      periodicTaskLifecycleService: PeriodicTaskLifecycleService[IO],
+      notesService: NotesService[IO],
+      historyService: HistoryService[IO],
       user: UserInfo,
       jwtToken: JwtToken,
       tab: String
   ): IO[HtmlFormat.Appendable] =
-    taskLifecycleService
-      .getAll(
-        userId = user.id,
-        maybeStatus = none,
-        maybeTaskType = none,
-        maybeSectionId = none
-      ).map: (tasks, types, sections) =>
-        val inProgressTasks =
-          tasks
-            .filter(_.status == Status.InProgress)
-            .sortBy(t => (t.endDate, t.ordinal))
-        val plannedTasks =
-          tasks
-            .filter(_.status == Status.Planned)
-            .sortBy(_.ordinal.value)
-        val knowledgeBaseTasks =
-          tasks
-            .filter(_.status == Status.KnowledgeBase)
-            .sortBy(_.name.value)
+    for
+      notes <- notesService.getByUser(user.id)
+      (taskResults, taskTypes, sections, goals) <- taskLifecycleService.getAll(...)
+      completedTasks <- historyService.getByUser(user.id)
+      periodicTasks  <- periodicTaskLifecycleService.getTasks(user.id)
+    yield
+      val typesMap    = taskTypes.map(t => (t.id, t.name)).toMap
+      val sectionsMap = sections.map(t => (t.id, t.name)).toMap
+      val goalsMap    = goals.map(t => (t.id, t.name)).toMap
+      ...
+      // Карточки вкладок
+      val plannedTasks =
+        plannedResults.map(task =>
+          TablePlannedTaskCard.fromTaskResult(task, typesMap, sectionsMap, goalsMap))
+      val knowledgeBaseTasks =
+        knowledgeBaseResults.map(task =>
+          TableKnowledgeBaseTaskCard.fromTaskResult(task, typesMap, sectionsMap, goalsMap))
 
-        val plannedTaskTypeNames       = plannedTasks.map(_.taskType).toSet
-        val plannedSectionNames        = plannedTasks.map(_.section).toSet
-        val knowledgeBaseTaskTypeNames =
-          knowledgeBaseTasks.map(_.taskType).toSet
-        val knowledgeBaseSectionNames = knowledgeBaseTasks.map(_.section).toSet
+      // Множества id присутствующих типов, разделов и целей
+      val plannedGoalIds = plannedResults.map(task => task.goalId).toSet
+      val knowledgeBaseGoalIds = knowledgeBaseResults.map(task => task.goalId).toSet
 
-        val plannedTaskTypes =
-          types
-            .sortBy(_.ordinal)
-            .collect {
-              case t if plannedTaskTypeNames(t.name.value) => t.name.value
-            }
-        val knowledgeBaseTaskTypes =
-          types
-            .sortBy(_.ordinal)
-            .collect {
-              case t if knowledgeBaseTaskTypeNames(t.name.value) => t.name.value
-            }
-        val plannedSections =
-          sections
-            .sortBy(_.ordinal)
-            .collect {
-              case t if plannedSectionNames(t.name.value) => t.name.value
-            }
-        val knowledgeBaseSections =
-          sections
-            .sortBy(_.ordinal)
-            .collect {
-              case t if knowledgeBaseSectionNames(t.name.value) => t.name.value
-            }
+      // Списки опций фильтров
+      val plannedGoalFilters =
+        goals.sortBy(_.ordinal).collect {
+          case t if plannedGoalIds(t.id) => t.name.value
+        }
+      val knowledgeBaseGoalFilters =
+        goals.sortBy(_.ordinal).collect {
+          case t if knowledgeBaseGoalIds(t.id) => t.name.value
+        }
 
-        View.welcome(
-          username = user.username.value,
-          token = jwtToken.value,
-          tab = tab,
-          inProgressTasks = inProgressTasks,
-          plannedTasks = plannedTasks,
-          knowledgeBaseTasks = knowledgeBaseTasks,
-          plannedTaskTypes = plannedTaskTypes,
-          plannedSections = plannedSections,
-          knowledgeBaseTaskTypes = knowledgeBaseTaskTypes,
-          knowledgeBaseSections = knowledgeBaseSections
-        )
+      View.welcome(
+        username = user.username.value,
+        token = jwtToken,
+        tab = tab,
+        inProgress = View.welcomeInProgress(inProgressTasks, periodicTasks),
+        planned = View.welcomePlanned(plannedTasks, plannedTaskTypes, plannedSections, plannedGoalFilters),
+        knowledgeBase = View.welcomeKnowledgeBase(knowledgeBaseTasks, knowledgeBaseTaskTypes, knowledgeBaseSections, knowledgeBaseGoalFilters),
+        goals = View.goalsStats(currentGoals, plannedGoals, achievedGoals),
+        statistics = View.statistics(stats),
+        sources = View.welcomeSources(taskTypes),
+        notes = View.welcomeNotes(notes),
+        history = View.history(historyTasks)
+      )
 ```
 
 **Что происходит пошагово:**
 
 1. **`DefaultTab`** — вкладка, открытая по умолчанию (`"in-progress"`).
 
-2. **Загрузка данных:** `taskLifecycleService.getAll(userId, none, none, none)`
-   возвращает кортеж `(tasks, types, sections)`:
-    - `tasks` — все задачи пользователя (без фильтров).
-    - `types` — все типы задач пользователя.
-    - `sections` — все разделы пользователя.
+2. **Загрузка данных** несколькими сервисами в `for`-комнате:
+    - `taskLifecycleService.getAll(userId, none, none, none)` — задачи, типы, разделы и цели;
+    - `notesService.getByUser` — заметки;
+    - `historyService.getByUser` — завершённые задачи;
+    - `periodicTaskLifecycleService.getTasks` — периодические задачи на сегодня.
 
-3. **Группировка задач по статусам:**
-    - **`inProgressTasks`** — задачи «В работе», отсортированные по `(endDate, ordinal)`.
-      Сначала задачи с ближайшим дедлайном, а при равенстве — по порядку.
-    - **`plannedTasks`** — задачи «Запланировано», отсортированные по `ordinal`.
-      Порядок задаётся пользователем вручную.
-    - **`knowledgeBaseTasks`** — задачи «База знаний», отсортированные по имени.
-      Алфавитный порядок для удобства поиска.
+3. **Построение карт `typesMap`, `sectionsMap`, `goalsMap`** — id → имя, чтобы
+   карточки задач могли показать «обогащённые» имена вместо id.
 
-4. **Подготовка опций для фильтров.** Здесь важный момент: **фильтры должны показывать
-   только те типы и разделы, которые реально встречаются в задачах данной вкладки.**
-   Иначе пользователь увидит в выпадающем списке типы, которые нигде не используются,
+4. **Группировка задач по статусам:**
+    - **`inProgressResults`** — задачи «В работе», отсортированные по `(endDate, ordinal)`.
+    - **`plannedResults`** — задачи «Запланировано», отсортированные по `ordinal`.
+    - **`knowledgeBaseResults`** — задачи «База знаний», отсортированные по имени.
+
+5. **Подготовка опций для фильтров.** Здесь важный момент: **фильтры должны показывать
+   только те типы, разделы и цели, которые реально встречаются в задачах данной вкладки.**
+   Иначе пользователь увидит в выпадающем списке значения, которые нигде не используются,
    и это создаст путаницу.
 
-    - **`plannedTaskTypeNames`** — `Set` имён типов, встречающихся в запланированных задачах.
-    - **`plannedSectionNames`** — аналогично для разделов.
-    - **`knowledgeBaseTaskTypeNames`**, **`knowledgeBaseSectionNames`** — то же для базы знаний.
+    - **`plannedTaskTypeNames`, `plannedSectionNames`, `plannedGoalIds`** — множества id,
+      встречающихся в запланированных задачах.
+    - **`knowledgeBaseTaskTypeNames`, `knowledgeBaseSectionNames`, `knowledgeBaseGoalIds`** —
+      то же для базы знаний.
 
-5. **Формирование отсортированных списков опций:**
-    - Проходим по всем `types` в порядке `ordinal` и оставляем только те, чьи имена
-      встречаются в `Set`. Так фильтр показывает типы в правильном порядке (не алфавитном,
-      а по `ordinal`).
-    - Аналогично для разделов.
+6. **Формирование отсортированных списков опций (включая цели):**
+    - Проходим по всем `types`, `sections` и `goals` в порядке `ordinal` и оставляем
+      только те, чьи id встречаются в соответствующем `Set`. Так фильтр показывает
+      значения в правильном порядке (не алфавитном, а по `ordinal`).
+    - `plannedGoalFilters` и `knowledgeBaseGoalFilters` — **новые** списки целей
+      для фильтра «Цель» на вкладках «Запланировано» и «База знаний».
 
-6. **`View.welcome(...)`** — рендерим Twirl-шаблон, передавая все подготовленные данные.
+7. **`View.welcome(...)`** — собираем страницу из уже отрисованных HTML-фрагментов
+   вкладок. Каждая вкладка рендерится отдельным шаблоном: `welcomeInProgress`,
+   `welcomePlanned`, `welcomeKnowledgeBase`, `goalsStats`, `statistics`, `welcomeSources`,
+   `welcomeNotes`, `history`. Списки фильтров (`taskTypes`, `sections`, `goals`) передаются
+   только во вкладки, где они нужны.
 
 ## Внешний вид страницы
 
-Если всё прошло успешно, пользователь видит приветственную страницу с тремя вкладками:
+Если всё прошло успешно, пользователь видит приветственную страницу с восемью вкладками
+(«В работе», «Запланировано», «База знаний», «Цели», «Статистика», «Источник», «Заметки»,
+«История»):
 
 ![In progress tab](images/in-progress.png)
 
@@ -485,8 +478,8 @@ Krop пробует обработчики по очереди через `orEls
   подставлять его при каждом запросе к тому же домену.
 - **Middleware для проверки** — `JwtAuthMiddleware` инкапсулирует всю логику проверки
   токена: декодирование, валидацию подписи, поиск пользователя.
-- **Формирование контекстных фильтров** — фильтры показывают только те типы и разделы,
-  которые реально встречаются в задачах вкладки.
+- **Формирование контекстных фильтров** — фильтры показывают только те типы, разделы
+  и цели, которые реально встречаются в задачах вкладки.
 - **htmx для интерактивности** — переключение вкладок, открытие модальных окон и отправка
   форм происходят без перезагрузки страницы.
 - **Twirl для шаблонов** — типобезопасные HTML-шаблоны, проверяемые компилятором.

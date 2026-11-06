@@ -107,7 +107,7 @@ private[tasks] object TaskViews:
       val goalsMap     = goals.map(t => (t.id, t.name)).toMap
       val plannedTasks =
         tasks.map(task =>
-          TableTaskCard.fromTaskResult(task, typesMap, sectionsMap, goalsMap)
+          TablePlannedTaskCard.fromTaskResult(task, typesMap, sectionsMap, goalsMap)
         )
       val availableOrdinals = getAvailableOrdinals(plannedTasks)
       View.task(
@@ -125,8 +125,8 @@ private[tasks] object TaskViews:
    вычисления доступных порядковых номеров при постановке задачи в очередь, а справочники —
    для обогащения строк таблицы читаемыми названиями.
 
-2. **Обогащение строк** — задачи превращаются в `TableTaskCard` через
-   `TableTaskCard.fromTaskResult`, подставляя названия типов, разделов и целей вместо их ID.
+2. **Обогащение строк** — задачи превращаются в `TablePlannedTaskCard` через
+   `TablePlannedTaskCard.fromTaskResult`, подставляя названия типов, разделов и целей вместо их ID.
 
 3. **Загрузка конкретной задачи** — `taskLifecycleService.get(taskId, userId)`
    возвращает `Option[TaskCard]`. Если задача не найдена или не принадлежит
@@ -138,7 +138,7 @@ private[tasks] object TaskViews:
 ## Вычисление доступных порядковых номеров
 
 ```dotty
-def getAvailableOrdinals(plannedTasks: Vector[TableTaskCard])
+def getAvailableOrdinals(plannedTasks: Vector[TablePlannedTaskCard])
     : Vector[OrdinalCard] =
   val top = 5
 

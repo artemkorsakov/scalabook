@@ -9,59 +9,70 @@ nextPage = ui_login_logout.html
 
 `welcome.scala.html` — [центральный шаблон всего приложения](https://gitverse.ru/scalabook/pdp/content/master/pdp/src/main/twirl/ru/scalabook/pdp/views/welcome.scala.html). 
 Это рабочий стол пользователя, куда он попадает после авторизации. 
-Шаблон отображает три вкладки с задачами в разных статусах,
-кнопки управления (настройки и выход), а также служит «хостом» для всех модальных окон.
+Шаблон отображает восемь вкладок (задачи в разных статусах, цели, статистику,
+источники, заметки, историю), кнопки управления (настройки и выход), а также служит
+«хостом» для всех модальных окон.
 
 Основная задача шаблона — быть **единым экраном** для работы с задачами: пользователь видит
-свой прогресс, может переключаться между вкладками, фильтровать задачи по типу и разделу,
-создавать новые задачи, открывать существующие и управлять их статусами. Всё это происходит
-без перезагрузки страницы благодаря htmx.
+свой прогресс, может переключаться между вкладками, фильтровать задачи по типу, разделу
+и цели, создавать новые задачи, открывать существующие и управлять их статусами. Всё это
+происходит без перезагрузки страницы благодаря htmx.
+
+Сам `welcome.scala.html` не содержит логики отображения вкладок — он лишь **компонует**
+уже готовые HTML-фрагменты, которые формируются отдельными шаблонами:
+
+- `welcomeInProgress.scala.html` — вкладка «В работе»;
+- `welcomePlanned.scala.html` — вкладка «Запланировано»;
+- `welcomeKnowledgeBase.scala.html` — вкладка «База знаний»;
+- `goalsStats.scala.html` — вкладка «Цели»;
+- `statistics.scala.html` — вкладка «Статистика»;
+- `welcomeSources.scala.html` — вкладка «Источник»;
+- `welcomeNotes.scala.html` — вкладка «Заметки»;
+- `history.scala.html` — вкладка «История».
 
 ## Импорты и параметры
 
 ```html
-@import ru.scalabook.pdp.frontend.TableTaskCard
-@import java.time.format.DateTimeFormatter
+@import dev.profunktor.auth.jwt.JwtToken
 
-@(username: String, token: String, tab: String, 
-  inProgressTasks: Vector[TableTaskCard], 
-  plannedTasks: Vector[TableTaskCard], 
-  knowledgeBaseTasks: Vector[TableTaskCard], 
-  plannedTaskTypes: Vector[String], plannedSections: Vector[String], 
-  knowledgeBaseTaskTypes: Vector[String], knowledgeBaseSections: Vector[String])
+@(username: String, token: JwtToken, tab: String, inProgress: Html, planned: Html,
+  knowledgeBase: Html, goals: Html, statistics: Html, sources: Html, notes: Html, history: Html)
 ```
 
-**Импорты:**
+**Импорт:**
 
-- **`TableTaskCard`** — доменная модель для отображения задачи в таблице или карточке.
-  Содержит уже «обогащённые» данные: имя типа, раздела и цели вместо их id.
-- **`DateTimeFormatter`** — для форматирования дат в вид `dd.MM.yyyy` (например, `25.07.2026`).
+- **`JwtToken`** — тип JWT-токена. Передаётся в `welcome.scala.html`, чтобы шаблон
+  сохранил его в куки и заголовки через невидимый iframe.
 
 **Параметры шаблона:**
 
-| Параметр                 | Тип                     | Назначение                                                                                                                |
-| ------------------------ | ----------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `username`               | `String`                | Имя пользователя для приветствия. Отображается в шапке: «Добро пожаловать, @username!»                                    |
-| `token`                  | `String`                | JWT-токен для отправки в htmx-заголовках. Используется кнопкой «Выход» и всеми защищёнными запросами                      |
-| `tab`                    | `String`                | Текущая активная вкладка. Одно из значений: `"in-progress"`, `"planned"`, `"knowledge-base"`                              |
-| `inProgressTasks`        | `Vector[TableTaskCard]` | Задачи в статусе «В работе». Отображаются карточками с прогресс-баром                                                     |
-| `plannedTasks`           | `Vector[TableTaskCard]` | Задачи в статусе «Запланировано». Отображаются таблицей с фильтрами                                                       |
-| `knowledgeBaseTasks`     | `Vector[TableTaskCard]` | Задачи в статусе «База знаний». Отображаются таблицей с фильтрами                                                         |
-| `plannedTaskTypes`       | `Vector[String]`        | Список типов задач для фильтра на вкладке «Запланировано». Содержит только те типы, которые реально есть в `plannedTasks` |
-| `plannedSections`        | `Vector[String]`        | Список разделов для фильтра на вкладке «Запланировано»                                                                    |
-| `knowledgeBaseTaskTypes` | `Vector[String]`        | Список типов задач для фильтра на вкладке «База знаний»                                                                   |
-| `knowledgeBaseSections`  | `Vector[String]`        | Список разделов для фильтра на вкладке «База знаний»                                                                      |
+| Параметр        | Тип      | Назначение                                                                               |
+| --------------- | -------- | ---------------------------------------------------------------------------------------- |
+| `username`      | `String` | Имя пользователя для приветствия. Отображается в шапке: «Добро пожаловать, @username!»    |
+| `token`         | `JwtToken`| JWT-токен. Используется кнопкой «Выход» и сохранением в куки                              |
+| `tab`           | `String` | Текущая активная вкладка: `"in-progress"`, `"planned"`, `"knowledge-base"`, `"goals"`, `"statistics"`, `"sources"`, `"notes"`, `"history"` |
+| `inProgress`    | `Html`   | Готовый HTML вкладки «В работе» (шаблон `welcomeInProgress`)                              |
+| `planned`       | `Html`   | Готовый HTML вкладки «Запланировано» (шаблон `welcomePlanned`)                            |
+| `knowledgeBase` | `Html`   | Готовый HTML вкладки «База знаний» (шаблон `welcomeKnowledgeBase`)                        |
+| `goals`         | `Html`   | Готовый HTML вкладки «Цели» (шаблон `goalsStats`)                                         |
+| `statistics`    | `Html`   | Готовый HTML вкладки «Статистика» (шаблон `statistics`)                                   |
+| `sources`       | `Html`   | Готовый HTML вкладки «Источник» (шаблон `welcomeSources`)                                 |
+| `notes`         | `Html`   | Готовый HTML вкладки «Заметки» (шаблон `welcomeNotes`)                                    |
+| `history`       | `Html`   | Готовый HTML вкладки «История» (шаблон `history`)                                         |
 
-**Почему фильтры передаются отдельными параметрами?**
+**Почему каждый из восьми параметров — это `Html`, а не набор данных?**
 
-Можно было бы вычислять список типов и разделов прямо в шаблоне, «пробегаясь» по задачам.
-Но это плохая практика по двум причинам:
+`welcome.scala.html` — это **компоновщик**. Он не знает ни о задачах, ни о целях, ни
+о статистике: он лишь раскладывает уже готовые HTML-фрагменты по вкладкам. Это позволяет
+держать шаблон тривиальным, а всю логику формирования каждой вкладки выносить в отдельные
+шаблоны и в `WelcomeViews`.
 
-1. **Производительность** — при большом количестве задач шаблон выполнял бы O(n) операций
-   на каждый рендер. Лучше сделать это один раз в сервисе.
-2. **Разделение ответственности** — шаблон должен заниматься **отображением**,
-   а логика (какие типы показывать в фильтре) — это ответственность сервиса.
-   Шаблон получает уже готовые списки.
+**Почему фильтры вкладок не передаются сюда?**
+
+Списки типов, разделов и целей для фильтров — **локальная** деталь вкладок
+«Запланировано» и «База знаний». Каждый такой список готовит `WelcomeViews`
+только для той вкладки, где он нужен, и передаёт его в соответствующий шаблон.
+`welcome.scala.html` о фильтрах ничего не знает.
 
 ## Структура разметки
 
@@ -70,7 +81,7 @@ nextPage = ui_login_logout.html
 
 ```html
 <div id="app" class="app-container">
-  <iframe onload="saveUserCookies('@token')" style="display:none;"></iframe>
+  <iframe onload="saveUserCookies('@token.value')" style="display:none;"></iframe>
   <div id="welcomeBlock" class="welcome-container">...</div>
   <div id="modal-container"></div>
 </div>
@@ -98,7 +109,7 @@ nextPage = ui_login_logout.html
 ### Сохранение токена в куки
 
 ```html
-<iframe onload="saveUserCookies('@token')" style="display:none;"></iframe>
+<iframe onload="saveUserCookies('@token.value')" style="display:none;"></iframe>
 ```
 
 **Зачем это нужно:**
@@ -109,7 +120,7 @@ nextPage = ui_login_logout.html
 с htmx и замене HTML) куки могут не обновиться.
 
 Этот iframe решает проблему: при загрузке страницы `welcome` он вызывает
-`saveUserCookies('@token')`, который:
+`saveUserCookies('@token.value')`, который:
 
 1. Сохраняет токен в `localStorage` (доступен из JavaScript).
 2. Дублирует токен в обычную куку (не `HttpOnly`), доступную из JS.
@@ -168,7 +179,7 @@ nextPage = ui_login_logout.html
   hx-post="/auth/logout"
   hx-target="#app"
   hx-swap="outerHTML"
-  hx-headers='{"Authorization": "Bearer @token"}'
+  hx-headers='{"Authorization": "Bearer @token.value"}'
   class="danger-btn"
 >
   Выход
@@ -185,9 +196,10 @@ nextPage = ui_login_logout.html
 
 ## Вкладки
 
-Вкладки — это механизм навигации между тремя представлениями задач. Каждая вкладка
-имеет свою логику отображения: «В работе» показывает карточки с прогресс-барами,
-«Запланировано» и «База знаний» — таблицы с фильтрами.
+Вкладки — это механизм навигации между восемью представлениями рабочего стола. Каждая
+вкладка имеет свою логику отображения: «В работе» показывает карточки с прогресс-барами,
+«Запланировано» и «База знаний» — таблицы с фильтрами, остальные — цели, статистику,
+источники, заметки и историю.
 
 ```html
 <div class="tabs-container">
@@ -196,13 +208,45 @@ nextPage = ui_login_logout.html
                 data-tab="in-progress"
                 onclick="switchTab('in-progress')">
             🛠️ В работе
-            <span title="...">ℹ️</span>
+            <span title="Текущие задачи в работе, отсортированные по планируемой дате завершения">ℹ️</span>
         </button>
-        ...
+        <button class="tab-btn @if(tab == "planned"){active}"
+                data-tab="planned"
+                onclick="switchTab('planned')">
+            ⏳ Запланировано
+            <span title="Запланированные, но ещё не начатые задачи">ℹ️</span>
+        </button>
+        <button class="tab-btn @if(tab == "knowledge-base"){active}"
+                data-tab="knowledge-base"
+                onclick="switchTab('knowledge-base')">
+            📚 База знаний
+            <span title="Материалы для изучения, по которым пока ещё не сформирован детализированный план">ℹ️</span>
+        </button>
+        <button class="tab-btn @if(tab == "goals"){active}" data-tab="goals" onclick="switchTab('goals')">
+            🎯 Цели
+            <span title="Статистика по целям">ℹ️</span>
+        </button>
+        <button class="tab-btn @if(tab == "statistics"){active}" data-tab="statistics" onclick="switchTab('statistics')">
+            📊 Статистика
+            <span title="Статистика по задачам">ℹ️</span>
+        </button>
+        <button class="tab-btn @if(tab == "sources"){active}" data-tab="sources" onclick="switchTab('sources')">
+            🌐 Источник
+            <span title="Ресурсы для пополнения Базы знаний">ℹ️</span>
+        </button>
+        <button class="tab-btn @if(tab == "notes"){active}" data-tab="notes" onclick="switchTab('notes')">
+            📝 Заметки
+            <span title="Заметки и записи, не привязанные к задачам">ℹ️</span>
+        </button>
+        <button class="tab-btn @if(tab == "history"){active}" data-tab="history" onclick="switchTab('history')">
+            📜 История
+            <span title="📜 История выполненных задач">ℹ️</span>
+        </button>
     </div>
-    <div id="tab-in-progress" class="tab-content @if(tab == "in-progress"){active}">
-        ...
-    </div>
+
+    <div id="tab-in-progress" class="tab-content @if(tab == "in-progress"){active}">@inProgress</div>
+    <div id="tab-planned" class="tab-content @if(tab == "planned"){active}">@planned</div>
+    <div id="tab-knowledge-base" class="tab-content @if(tab == "knowledge-base"){active}">@knowledgeBase</div>
     ...
 </div>
 ```
@@ -215,6 +259,9 @@ nextPage = ui_login_logout.html
    - Добавляет `active` к нажатой кнопке и соответствующему блоку.
 3. **При первой загрузке** активная вкладка определяется параметром `tab`:
    `@if(tab == "in-progress"){active}`.
+4. **Содержимое вкладки** — это подставленный HTML-фрагмент (`@inProgress`, `@planned`,
+   `@knowledgeBase` и т.д.). После замены содержимого `#app` (например, при создании задачи)
+   htmx обновляет только те фрагменты, которые изменились на сервере.
 
 **Зачем нужен `<span title="...">ℹ️</span>`?**
 
@@ -228,24 +275,37 @@ nextPage = ui_login_logout.html
 
 ## Вкладка «В работе»
 
+Вкладка формируется отдельным шаблоном `welcomeInProgress.scala.html`, который принимает
+два параметра: `tasks` (обычные задачи в работе, карточки `TableInProgressTaskCard`)
+и `periodicTasks` (периодические задачи на сегодня, карточки `TablePeriodicTaskCard`).
+Хост-шаблон подставляет результат в `@inProgress`.
+
 ```html
-<div id="tab-in-progress" class="tab-content @if(tab == "in-progress"){active}">
-    <div class="tab-actions">
-        <button class="add-btn"
-                hx-get="/task/create/in-progress"
-                hx-target="#modal-container"
-                hx-swap="innerHTML"
-                onclick="openCreateTaskModal()">
-            + Создать задачу
-        </button>
-    </div>
+@(tasks: Vector[TableInProgressTaskCard], periodicTasks: Vector[TablePeriodicTaskCard])
+
+<div class="tab-actions">
+    <button class="add-btn"
+            hx-get="/task/create/in-progress"
+            hx-target="#modal-container"
+            hx-swap="innerHTML"
+            onclick="openCreateTaskModal()">
+        + Создать задачу
+    </button>
+</div>
+
+<!-- Периодические задачи -->
+@if(periodicTasks.nonEmpty) {
+<div class="periodic-tasks-section">
+    <h3 class="periodic-tasks-title">🔄 Периодические задачи</h3>
     <div class="tasks-grid">
-        @for(task <- inProgressTasks) {
-        <div id="@task.id" class="task-card" onclick="openTask('@task.id')">
-            ...
-        </div>
-        }
+        @for(task <- periodicTasks) { @task.renderHtml }
     </div>
+</div>
+}
+
+<!-- Обычные задачи -->
+<div class="tasks-grid">
+    @for(task <- tasks) { @task.renderHtml }
 </div>
 ```
 
@@ -253,11 +313,16 @@ nextPage = ui_login_logout.html
 
 - **Карточки, а не таблица** — задачи «В работе» отображаются карточками, потому что
   для них важны прогресс-бар и дедлайн, а не табличные метрики.
+- **Периодические задачи** — если на сегодня созданы периодические задачи (см.
+  документацию по периодическим задачам), они выводятся отдельным блоком
+  «🔄 Периодические задачи» над обычными.
 - **Клик по карточке** — открывает страницу задачи в новой вкладке браузера
   (`onclick="openTask('@task.id')"`). Функция `openTask` формирует URL `/task/{id}`
   и открывает его в новом окне.
 - **Кнопка «Создать задачу»** — открывает модальное окно с формой создания задачи.
   Запрос идёт на `/task/create/in-progress`, а результат вставляется в `#modal-container`.
+- **Фильтров нет** — в отличие от «Запланировано» и «Базы знаний», задачи «В работе»
+  не фильтруются: их обычно немного, и для них важнее контекст (прогресс и дедлайн).
 
 **Структура карточки:**
 
@@ -303,140 +368,322 @@ nextPage = ui_login_logout.html
 
 ## Вкладка «Запланировано»
 
+Вкладка формируется отдельным шаблоном `welcomePlanned.scala.html`, который принимает
+четыре параметра: `tasks` (карточки `TablePlannedTaskCard`), `taskTypes`, `sections`
+и `goals` (списки для фильтров). Хост-шаблон подставляет результат вызова в `@planned`.
+
 ```html
-<div id="tab-planned" class="tab-content @if(tab == "planned"){active}">
-    <div class="tab-actions">
-        <button class="add-btn"
-                hx-get="/task/create/planned"
-                hx-target="#modal-container"
-                hx-swap="innerHTML"
-                onclick="openCreateTaskModal()">
-            + Создать задачу
+@(tasks: Vector[TablePlannedTaskCard], taskTypes: Vector[String], sections: Vector[String], goals: Vector[String])
+
+<div class="tab-actions">
+    <button class="add-btn"
+            hx-get="/task/create/planned"
+            hx-target="#modal-container"
+            hx-swap="innerHTML"
+            onclick="openCreateTaskModal()">
+        + Создать задачу
+    </button>
+</div>
+
+<!-- Фильтры -->
+<div class="filter-container">
+    <div class="filter-group">
+        <label for="plannedTypeFilter">Тип:</label>
+        <select id="plannedTypeFilter" class="filter-select" onchange="filterPlannedTasks()">
+            <option value="all">Все типы</option>
+            @for(taskType <- taskTypes) {
+            <option value="@taskType">@taskType</option>
+            }
+        </select>
+    </div>
+    <div class="filter-group">
+        <label for="plannedSectionFilter">Раздел:</label>
+        <select id="plannedSectionFilter" class="filter-select" onchange="filterPlannedTasks()">
+            <option value="all">Все разделы</option>
+            @for(section <- sections) {
+            <option value="@section">@section</option>
+            }
+        </select>
+    </div>
+    <div class="filter-group">
+        <label for="plannedGoalFilter">Цель:</label>
+        <select id="plannedGoalFilter" class="filter-select" onchange="filterPlannedTasks()">
+            <option value="all">Все цели</option>
+            @for(goal <- goals) {
+            <option value="@goal">@goal</option>
+            }
+        </select>
+    </div>
+    <div class="filter-group">
+        <button type="button" class="reset-filter-btn" onclick="resetPlannedFilters()">
+            🔄 Сброс фильтра
         </button>
     </div>
-
-    <div class="filter-container">
-        <div class="filter-group">
-            <label for="plannedTypeFilter">Тип:</label>
-            <select id="plannedTypeFilter" class="filter-select" onchange="filterPlannedTasks()">
-                <option value="all">Все типы</option>
-                @for(taskType <- plannedTaskTypes) {
-                <option value="@taskType">@taskType</option>
-                }
-            </select>
-        </div>
-        <div class="filter-group">
-            <label for="plannedSectionFilter">Раздел:</label>
-            <select id="plannedSectionFilter" class="filter-select" onchange="filterPlannedTasks()">
-                <option value="all">Все разделы</option>
-                @for(section <- plannedSections) {
-                <option value="@section">@section</option>
-                }
-            </select>
-        </div>
+    <div class="filter-group filter-total">
+        <span class="filter-total-label">Всего:</span>
+        <span class="filter-total-value" id="plannedTotal">@tasks.length</span>
     </div>
+</div>
 
-    <div class="tasks-table-container">
-        <table class="tasks-table" id="plannedTasksTable">
-            ...
-        </table>
-    </div>
+<div class="tasks-table-container">
+    <table class="tasks-table" id="plannedTasksTable">
+        <thead>
+        <tr>
+            <th>Название</th>
+            <th>Тип</th>
+            <th>Раздел</th>
+            <th>Порядок</th>
+        </tr>
+        </thead>
+        <tbody>
+        @for(task <- tasks) { @task.renderHtml }
+        </tbody>
+    </table>
 </div>
 ```
 
 **Особенности вкладки:**
 
-- **Таблица, а не карточки** — запланированные задачи сравниваются по типу, разделу
-  и порядковому номеру, поэтому таблица удобнее.
-- **Два фильтра** — по типу и разделу. Списки опций (`plannedTaskTypes`, `plannedSections`)
-  приходят из сервиса и содержат только те типы/разделы, которые реально есть
-  в `plannedTasks`. Это важно: пользователь не видит бесполезных опций.
+- **Таблица, а не карточки** — запланированные задачи сравниваются по типу, разделу,
+  цели и порядковому номеру, поэтому таблица удобнее.
+- **Три фильтра** — по типу, разделу и **цели**. Списки опций (`taskTypes`, `sections`,
+  `goals`) приходят из сервиса и содержат **только те значения, которые реально есть**
+  в этой вкладке. Это важно: пользователь не видит бесполезных опций.
 - **Фильтрация на клиенте** — JavaScript-функция `filterPlannedTasks()` скрывает строки,
   которые не соответствуют выбранным фильтрам. Это быстро (не требует запроса к серверу)
   и удобно: пользователь может комбинировать фильтры в реальном времени.
+- **Кнопка «🔄 Сброс фильтра»** — `resetPlannedFilters()` возвращает все три выпадающих
+  списка к значению «Все».
+- **Счётчик «Всего»** — элемент `#plannedTotal` показывает количество видимых в данный
+  момент строк и обновляется при каждой фильтрации.
 
-**Структура таблицы:**
+**Рендеринг строк таблицы:**
+
+Сами строки таблицы рендерятся карточкой `TablePlannedTaskCard` через typeclass
+`Render`. Карточка содержит уже «обогащённые» данные — имена типа, раздела и цели вместо
+их id:
 
 ```html
-<table class="tasks-table" id="plannedTasksTable">
-  <thead>
-    <tr>
-      <th>Название</th>
-      <th>Тип</th>
-      <th>Раздел</th>
-      <th>Порядок</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for(task <- plannedTasks) {
-    <tr
-      class="task-row"
-      data-task-type="@task.taskType"
-      data-task-section="@task.section"
-      onclick="openTask('@task.id')"
-    >
-      <td>@task.name</td>
-      <td>@task.taskType</td>
-      <td>@task.section</td>
-      <td>@task.ordinal.value</td>
-    </tr>
-    }
-  </tbody>
-</table>
+<tr class="task-row"
+    data-task-type="@task.taskType"
+    data-task-section="@task.section"
+    data-task-goal="@task.goal"
+    onclick="openTask('@task.id')">
+    <td>@task.name</td>
+    <td>@task.taskType</td>
+    <td>@task.section</td>
+    <td>@task.ordinal</td>
+</tr>
 ```
 
 **Ключевые моменты:**
 
-- **`data-task-type` и `data-task-section`** — атрибуты, по которым JavaScript-функция
-  `filterPlannedTasks()` понимает, показывать строку или скрывать.
+- **`data-task-type`, `data-task-section` и `data-task-goal`** — атрибуты, по которым
+  JavaScript-функция `filterPlannedTasks()` понимает, показывать строку или скрывать.
 - **Клик по строке** — открывает задачу в новой вкладке. `onclick="openTask('@task.id')"`.
-- **Колонка «Порядок»** — показывает `task.ordinal.value`, по которому задачи сортируются.
+- **Колонка «Порядок»** — показывает `task.ordinal`, по которому задачи сортируются.
 
 ![planned-tasks](../images/planned-tasks.png)
 
 ## Вкладка «База знаний»
 
+Вкладка формируется отдельным шаблоном `welcomeKnowledgeBase.scala.html`, который
+принимает четыре параметра: `tasks` (карточки `TableKnowledgeBaseTaskCard`), `taskTypes`,
+`sections` и `goals`. Хост-шаблон подставляет результат в `@knowledgeBase`.
+
 ```html
-<div id="tab-knowledge-base" class="tab-content @if(tab == "knowledge-base"){active}">
-    <div class="tab-actions">
-        <button class="add-btn"
-                hx-get="/task/create/knowledge-base"
-                hx-target="#modal-container"
-                hx-swap="innerHTML"
-                onclick="openCreateTaskModal()">
-            + Создать задачу
+@(tasks: Vector[TableKnowledgeBaseTaskCard], taskTypes: Vector[String], sections: Vector[String], goals: Vector[String])
+
+<div class="tab-actions">
+    <button class="add-btn"
+            hx-get="/task/create/knowledge-base"
+            hx-target="#modal-container"
+            hx-swap="innerHTML"
+            onclick="openCreateTaskModal()">
+        + Создать задачу
+    </button>
+</div>
+
+<!-- Легенда размера задач -->
+<div class="size-legend">
+    <div class="size-legend-item">
+        <span class="size-badge size-small">Мелкая</span>
+        <span class="size-description">меньше часа</span>
+    </div>
+    <div class="size-legend-item">
+        <span class="size-badge size-medium">Средняя</span>
+        <span class="size-description">меньше 8 часов</span>
+    </div>
+    <div class="size-legend-item">
+        <span class="size-badge size-large">Большая</span>
+        <span class="size-description">больше 8 часов</span>
+    </div>
+</div>
+
+<!-- Фильтры (аналогично «Запланировано», но со своими id и функцией) -->
+<div class="filter-container">
+    <div class="filter-group">
+        <label for="knowledgeTypeFilter">Тип:</label>
+        <select id="knowledgeTypeFilter" class="filter-select" onchange="filterKnowledgeTasks()">
+            <option value="all">Все типы</option>
+            @for(taskType <- taskTypes) { <option value="@taskType">@taskType</option> }
+        </select>
+    </div>
+    <div class="filter-group">
+        <label for="knowledgeSectionFilter">Раздел:</label>
+        <select id="knowledgeSectionFilter" class="filter-select" onchange="filterKnowledgeTasks()">
+            <option value="all">Все разделы</option>
+            @for(section <- sections) { <option value="@section">@section</option> }
+        </select>
+    </div>
+    <div class="filter-group">
+        <label for="knowledgeGoalFilter">Цель:</label>
+        <select id="knowledgeGoalFilter" class="filter-select" onchange="filterKnowledgeTasks()">
+            <option value="all">Все цели</option>
+            @for(goal <- goals) { <option value="@goal">@goal</option> }
+        </select>
+    </div>
+    <div class="filter-group">
+        <button type="button" class="reset-filter-btn" onclick="resetKnowledgeFilters()">
+            🔄 Сброс фильтра
         </button>
     </div>
-
-    <div class="filter-container">
-        ... (аналогично вкладке «Запланировано»)
+    <div class="filter-group filter-total">
+        <span class="filter-total-label">Всего:</span>
+        <span class="filter-total-value" id="knowledgeTotal">@tasks.length</span>
     </div>
+</div>
 
-    <div class="tasks-table-container">
-        <table class="tasks-table" id="knowledgeTasksTable">
-            <thead>
-            <tr>
-                <th>Название</th>
-                <th>Тип</th>
-                <th>Раздел</th>
-                <th>Продолжительность</th>
-            </tr>
-            </thead>
-            ...
-        </table>
-    </div>
+<div class="tasks-table-container">
+    <table class="tasks-table" id="knowledgeTasksTable">
+        <thead>
+        <tr>
+            <th>Название</th>
+            <th>Тип</th>
+            <th>Раздел</th>
+            <th>Продолжительность</th>
+        </tr>
+        </thead>
+        <tbody>
+        @for(task <- tasks) { @task.renderHtml }
+        </tbody>
+    </table>
 </div>
 ```
 
 **Отличия от «Запланировано»:**
 
+- **Легенда размеров** — сверху таблицы расположен блок `.size-legend`, который поясняет
+  цветные бейджи размера задачи (мелкая / средняя / большая).
 - **Последняя колонка** — «Продолжительность» вместо «Порядок». Для задач в базе знаний
   важна оценка трудоёмкости, т.к. задача ещё не запланирована и очередность у задач одинаковая.
-- **Другой набор фильтров** — `knowledgeBaseTaskTypes` и `knowledgeBaseSections`.
-- **Функция `filterKnowledgeTasks()`** — аналогична `filterPlannedTasks()`, но работает
-  с другой таблицей.
+- **Три фильтра** — `knowledgeTypeFilter`, `knowledgeSectionFilter` и `knowledgeGoalFilter`.
+- **Функции `filterKnowledgeTasks()` и `resetKnowledgeFilters()`** — аналогичны
+  функциям вкладки «Запланировано», но работают с другой таблицей и другим счётчиком.
+
+**Рендеринг строк таблицы:**
+
+Строки рендерит карточка `TableKnowledgeBaseTaskCard`. Помимо названия, типа и раздела,
+она показывает продолжительность в виде бейджа с иконкой, отражающей категорию размера:
+
+- `Small` (< 1 часа, 🌱) — мелкая задача;
+- `Medium` (< 8 часов, 🌳) — средняя задача;
+- `Large` (> 8 часов, 🌲) — большая задача.
+
+Каждая строка несёт атрибуты `data-task-type`, `data-task-section` и `data-task-goal`
+для клиентской фильтрации и `onclick="openTask('@task.id')"` для открытия задачи.
 
 ![knowledge-base-tasks](../images/knowledge-base-tasks.png)
+
+## Клиентская фильтрация по цели
+
+Фильтрация задач по цели — это **клиентская** логика (реализована в `pdp.js`, без запроса
+к серверу). Она симметрична уже существовавшей фильтрации по типу и разделу, но добавляет
+третье измерение — цель.
+
+**Единая функция `filterTasks`:**
+
+```js
+function filterTasks(tableId, typeFilterId, sectionFilterId, goalFilterId, totalId) {
+    const typeFilter = document.getElementById(typeFilterId).value;
+    const sectionFilter = document.getElementById(sectionFilterId).value;
+    const goalFilter = document.getElementById(goalFilterId).value;
+
+    const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+    let visibleCount = 0;
+
+    rows.forEach(function(row) {
+        const taskType = row.getAttribute('data-task-type');
+        const taskSection = row.getAttribute('data-task-section');
+        const taskGoal = row.getAttribute('data-task-goal');
+
+        const typeMatch = typeFilter === 'all' || taskType === typeFilter;
+        const sectionMatch = sectionFilter === 'all' || taskSection === sectionFilter;
+        const goalMatch = goalFilter === 'all' || taskGoal === goalFilter;
+
+        if (typeMatch && sectionMatch && goalMatch) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    const totalElement = document.getElementById(totalId);
+    if (totalElement) {
+        totalElement.textContent = visibleCount;
+    }
+}
+```
+
+**Как это работает:**
+
+1. Функция читает текущие значения трёх `<select>` — тип, раздел и **цель**.
+2. Для каждой строки таблицы берёт атрибуты `data-task-type`, `data-task-section`
+   и `data-task-goal` (их проставляет карточка при рендеринге).
+3. Строка показывается, **только если она подходит под все три фильтра одновременно**
+   (логика И). Значение `"all"` означает «фильтр отключён».
+4. Счётчик `#plannedTotal` / `#knowledgeTotal` обновляется в реальном времени.
+
+**Обёртки для каждой вкладки:**
+
+```js
+function filterPlannedTasks() {
+    filterTasks('plannedTasksTable', 'plannedTypeFilter', 'plannedSectionFilter', 'plannedGoalFilter', 'plannedTotal');
+}
+
+function filterKnowledgeTasks() {
+    filterTasks('knowledgeTasksTable', 'knowledgeTypeFilter', 'knowledgeSectionFilter', 'knowledgeGoalFilter', 'knowledgeTotal');
+}
+
+function resetPlannedFilters() {
+    document.getElementById('plannedTypeFilter').value = 'all';
+    document.getElementById('plannedSectionFilter').value = 'all';
+    document.getElementById('plannedGoalFilter').value = 'all';
+    filterPlannedTasks();
+}
+
+function resetKnowledgeFilters() {
+    document.getElementById('knowledgeTypeFilter').value = 'all';
+    document.getElementById('knowledgeSectionFilter').value = 'all';
+    document.getElementById('knowledgeGoalFilter').value = 'all';
+    filterKnowledgeTasks();
+}
+```
+
+**Почему фильтр по цели хранится на клиенте, а не на сервере?**
+
+Вкладки «Запланировано» и «База знаний» уже полностью отрисованы на сервере (все строки
+в DOM). Значит, фильтровать их можно мгновенно на клиенте — без дополнительных запросов.
+Сервер при этом отвечает только за **подготовку списка доступных целей**: `WelcomeViews`
+собирает из видимых задач множество id целей и превращает его в отсортированный список
+имён целей, передавая его шаблону в параметр `goals`.
+
+**Почему в списке только актуальные цели?**
+
+Аналогично типу и разделу: если цели нет ни у одной задачи вкладки, бесполезно показывать
+её в выпадающем списке. Поэтому `WelcomeViews` включает в фильтр цели только тех задач,
+которые реально находятся на этой вкладке, и сортирует их по порядковому номеру.
 
 ## Контейнер для модальных окон
 
@@ -461,19 +708,22 @@ htmx вставляет их в `#modal-container` через `hx-target="#modal
 
 Рассмотрим полный сценарий:
 
-1. **Пользователь логинится** → сервер возвращает `welcome.scala.html` с тремя вкладками.
+1. **Пользователь логинится** → сервер возвращает `welcome.scala.html` с восемью вкладками.
    По умолчанию открыта «В работе».
 2. **Пользователь кликает на вкладку «Запланировано»** → JavaScript-функция `switchTab`
-   меняет активный класс. **Запроса к серверу нет** — все три вкладки уже отрисованы.
-3. **Пользователь нажимает «+ Создать задачу»** → htmx отправляет GET на
+   меняет активный класс. **Запроса к серверу нет** — все вкладки уже отрисованы.
+3. **Пользователь выбирает фильтр по цели** → `filterPlannedTasks()` мгновенно скрывает
+   строки, не соответствующие выбранной цели (комбинируя с фильтрами типа и раздела).
+   Счётчик «Всего» обновляется. **Запроса к серверу нет** — все строки уже в DOM.
+4. **Пользователь нажимает «+ Создать задачу»** → htmx отправляет GET на
    `/task/create/planned`. Сервер возвращает HTML модального окна. htmx вставляет
    его в `#modal-container`.
-4. **Пользователь заполняет форму и нажимает «Создать»** → htmx отправляет POST
+5. **Пользователь заполняет форму и нажимает «Создать»** → htmx отправляет POST
    на `/tasks`. Сервер создаёт задачу и возвращает обновлённый `welcome.scala.html`.
    htmx заменяет содержимое `#app` — пользователь видит новую задачу в таблице.
-5. **Пользователь кликает на строку задачи** → JavaScript-функция `openTask` открывает
+6. **Пользователь кликает на строку задачи** → JavaScript-функция `openTask` открывает
    новую вкладку браузера с URL `/task/{id}`. Там отображается детальная страница задачи.
-6. **Пользователь нажимает «Выход»** → `clearUserCookies()` очищает куки, затем htmx
+7. **Пользователь нажимает «Выход»** → `clearUserCookies()` очищает куки, затем htmx
    отправляет POST на `/auth/logout`. Сервер инвалидирует токен и возвращает форму логина.
    htmx заменяет `#app` — пользователь видит форму входа.
 
@@ -481,9 +731,10 @@ htmx вставляет их в `#modal-container` через `hx-target="#modal
 
 `welcome.scala.html` — это **рабочий стол** пользователя, который:
 
-1. **Показывает задачи в трёх представлениях**: карточки для активных, таблицы
-   для запланированных и базы знаний.
-2. **Позволяет фильтровать задачи** по типу и разделу прямо на клиенте.
+1. **Показывает восемь представлений**: задачи в работе, запланированные, база знаний,
+   цели, статистику, источники, заметки и историю.
+2. **Позволяет фильтровать задачи** по типу, разделу и цели прямо на клиенте,
+   с кнопкой сброса и живым счётчиком.
 3. **Интегрируется с htmx** для загрузки модальных окон и отправки форм без перезагрузки.
 4. **Хранит JWT-токен** в куках и `localStorage` для последующих запросов.
 5. **Даёт быстрый доступ** к настройкам и выходу через кнопки в шапке.

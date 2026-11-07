@@ -94,27 +94,9 @@ object CompletedTask:
 
 ```dotty
 // pdp/src/main/scala/ru/scalabook/pdp/services/HistoryService.scala
-/** Алгебра (интерфейс) сервиса истории выполненных задач. Определяет
-  * контракты для работы с архивом завершенных задач, независимо от конкретной
-  * реализации хранилища.
-  */
 private[services] trait HistoryService[F[_]]:
-  /** Сохраняет выполненную задачу в историю.
-    *
-    * @param task
-    *   Модель завершенной задачи для сохранения.
-    * @return
-    *   F[Int] - эффект с идентификатором созданной задачи
-    */
   def create(task: CompletedTask): F[Int]
 
-  /** Возвращает все выполненные задачи из истории. Предназначен для
-    * формирования отчетов, аналитики и отображения достижений пользователя.
-    *
-    * @return
-    *   F[Vector[CompletedTask]] - эффект, возвращающий коллекцию завершенных
-    *   задач.
-    */
   def getByUser(userId: UserId): F[Vector[CompletedTask]]
 ```
 

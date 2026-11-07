@@ -10,9 +10,7 @@ nextPage = complete.html
 ## Создание задачи
 
 Процесс создания задачи является фундаментальной операцией в системе управления индивидуальным развитием.
-Ключевой особенностью является возможность инициализации задачи сразу в одном из трех возможных статусов,
-что позволяет гибко планировать и структурировать работу.
-Каждый статус накладывает определенные требования к полноте заполнения данных:
+Каждый статус, в котором создается задача, накладывает определенные требования к полноте заполнения данных:
 
 - **База знаний** и **Запланировано**: Требуется заполнение всех базовых полей (название, описание, тип задачи, раздел, цель),
   но **не требуется** план выполнения и даты.
@@ -20,7 +18,7 @@ nextPage = complete.html
   кроме плана выполнения.
 
 План выполнения заполняется при редактировании задачи на отдельной странице для большего удобства пользователя
-(в модельном окне место ограничено по размеру).
+(в модальном окне место ограничено по размеру).
 
 ### Реализация операции создания
 
@@ -92,8 +90,7 @@ object TaskLifecycleService:
       status: Status,
       startDate: Option[LocalDate],
       endDate: Option[LocalDate]
-  )
-      : ValidatedNel[String, Unit] =
+  ): ValidatedNel[String, Unit] =
     status match
       // Для статуса "В работе" и "Завершено" обязательны корректные даты
       case Status.InProgress | Status.Completed =>
@@ -164,13 +161,13 @@ def enqueue(
     userId: UserId,
     ordinal: Ordinal,
 ): F[Boolean] =
-  // 1. Находим задачу, строго проверяя её текущий статус
-    findTask(id, userId, Status.KnowledgeBase).flatMap: task =>
+  // 1. Находим задачу, проверяя её текущий статус
+  findTask(id, userId, Status.KnowledgeBase).flatMap: task =>
     // 2. Создаем обновленную версию: меняем статус и привязываем план
-      val updated = task.copy(
-        status = Status.Planned,
-        ordinal = ordinal
-      )
+    val updated = task.copy(
+      status = Status.Planned,
+      ordinal = ordinal
+    )
     // 3. Сохраняем изменения
     taskService.update(updated)
 
@@ -263,28 +260,28 @@ def defer(id: TaskId, userId: UserId): F[Boolean] =
 final case class TaskCard(
     id: TaskId,
     name: TaskName,
+    taskTypeId: TaskTypeId,
     taskType: String,
     status: Status,
+    sectionId: SectionId,
     section: String,
+    goalId: GoalId,
     goal: String,
     ordinal: Ordinal,
     startDate: Option[LocalDate],
     endDate: Option[LocalDate],
     information: String,
     plan: List[PlanRowCard],
-    completedCount: Int,
-    count: Int,
-    progress: Double,
+    progress: ProgressCard,
     duration: FiniteDuration,
-    durationDesc: String,
-    timeSpent: FiniteDuration,
-    timeSpentDesc: String,
-    remainingTimeDesc: String
-)
+    timeSpent: FiniteDuration
+):
+  val durationDesc: String      = duration.render
+  val timeSpentDesc: String     = timeSpent.render
+  val remainingTimeDesc: String = duration.minus(timeSpent).render
 ```
 
 Метод `get` сначала загружает справочники типов, разделов и целей пользователя, а затем — саму задачу.
-Такая последовательность позволяет построить словари `id → name` и заменить идентификаторы на человекочитаемые названия.
 Если какая-то из связанных сущностей не найдена (например, раздел был удалён), в качестве запасного значения
 используется `"—"`, чтобы страница не падала с ошибкой.
 
@@ -322,11 +319,7 @@ def get(id: TaskId, userId: UserId): F[Option[TaskCard]] =
       count = task.plan.steps.length,
       progress = math.round(task.plan.progress * 10000.0) / 100.0,
       duration = task.duration,
-      durationDesc = toDurationDescription(task.duration),
-      timeSpent = task.timeSpent,
-      timeSpentDesc = toDurationDescription(task.timeSpent),
-      remainingTimeDesc =
-        toDurationDescription(task.duration.minus(task.timeSpent))
+      timeSpent = task.timeSpent
     )
 ```
 
@@ -351,7 +344,7 @@ def get(id: TaskId, userId: UserId): F[Option[TaskCard]] =
 - `TableKnowledgeBaseTaskCard` — вкладка «База знаний».
 
 Каждая карточка содержит только те поля, которые нужны в своей таблице. Например,
-`TablePlannedTaskCard` несёт название, тип, раздел, **цель** и порядковый номер — именно
+`TablePlannedTaskCard` несёт название, тип, раздел, цель и порядковый номер — именно
 они нужны для строки таблицы и клиентских фильтров:
 
 ```dotty

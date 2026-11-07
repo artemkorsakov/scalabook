@@ -63,15 +63,18 @@ private[stats] def calculateProgress(
 private[stats] def calculatePlannedEndDate(
     completedTasks: Vector[TaskResult],
     restTasks: Vector[TaskResult]
-): LocalDate =
+): PlannedDate =
   val now = LocalDate.now()
   val statsStartDate =
     completedTasks.flatMap(_.startDate).minOption.getOrElse(now)
   val days           = 1 + (now.toEpochDay - statsStartDate.toEpochDay)
   val speedInMinutes = calculateDuration(completedTasks).toMinutes / days
   val restMinutes = calculateDuration(restTasks).toMinutes
-  if speedInMinutes == 0 then now.plusDays(restMinutes)
-  else now.plusDays(restMinutes / speedInMinutes)
+  val restDays    =
+    if speedInMinutes == 0 then restMinutes
+    else restMinutes / speedInMinutes
+
+  PlannedDate(restDays)
 ```
 
 **Пошаговый разбор:**
@@ -85,13 +88,43 @@ private[stats] def calculatePlannedEndDate(
    Сколько минут задач в среднем закрывается за день.
    **Пример:** выполнено 600 минут за 10 дней → `speedInMinutes = 60` минут в день.
 5. **`restMinutes = calculateDuration(restTasks).toMinutes`** — сколько минут осталось на все незавершённые задачи.
-6. **`if speedInMinutes == 0 then now.plusDays(restMinutes)`** — защита от деления на ноль. 
-   Если скорость нулевая (пока ничего не завершено), предполагаем, что пользователь будет закрывать **по одной минуте задач в день**. 
-   Формула «скорость 1 минута в день» — это fallback, который даёт «бесконечный», но не абсурдный прогноз.
-7. **`now.plusDays(restMinutes / speedInMinutes)`** — основной прогноз. 
-   Оставшиеся минуты делятся на скорость в минутах в день, получается количество дней до завершения.
+6. **`restDays`** — количество дней до завершения. 
+   Если скорость нулевая (`speedInMinutes == 0`, пока ничего не завершено), берётся `restMinutes` как есть — 
+   это fallback, который даёт «бесконечный», но не абсурдный прогноз.
+   **Пример:** `restMinutes = 300`, `speedInMinutes = 60` → `restDays = 5` → прогноз — `сегодня + 5 дней`.
+7. **`PlannedDate(restDays)`** — результат упаковывается в `PlannedDate`. 
+   Функция возвращает **не просто дату**, а количество дней до неё.
 
-**Пример:** `restMinutes = 300`, `speedInMinutes = 60` → `restDays = 5` → прогноз — `сегодня + 5 дней`.
+### Модель `PlannedDate`
+
+```dotty
+final case class PlannedDate(
+    daysUntil: Long
+):
+  val date: LocalDate = LocalDate.now().plusDays(daysUntil)
+
+object PlannedDate:
+  given Render[PlannedDate] with
+    def render(value: PlannedDate): String =
+      val module = value.daysUntil % 10
+      val days   =
+        if module == 1 then s"${value.daysUntil} день"
+        else if module > 4 || module == 0 then s"${value.daysUntil} дней"
+        else s"${value.daysUntil} дня"
+      s"${value.date.render} ($days)"
+```
+
+**Разбор:**
+
+- **`daysUntil`** — сколько дней осталось до прогнозируемой даты завершения.
+- **`date`** — вычисляемая дата: `сегодня + daysUntil`. Сама дата не хранится, а **выводится** из `daysUntil` каждый раз. 
+  Благодаря этому модель всегда актуальна относительно текущего дня, даже если прошло время с момента расчёта.
+- **`given Render[PlannedDate]`** — человекочитаемое отображение: дата в формате `dd.MM.yyyy` плюс относительная подпись 
+  («день», «дня», «дней») по правилам русской морфологии. Стандартный `Render[LocalDate]` рендерит только саму дату.
+
+**Почему `PlannedDate`, а не просто `LocalDate`?** Потому что пользователю важно не только «когда», но и «сколько осталось». 
+Модель объединяет абсолютную дату и относительное количество дней, а `Render` автоматически подбирает правильное склонение. 
+Это делает прогноз наглядным: `07.11.2026 (5 дней)` вместо сухой даты.
 
 Прогноз **динамичен**: чем больше задач завершается, тем точнее становится оценка. 
 Он не требует ручной настройки и автоматически адаптируется к темпу пользователя.
@@ -132,7 +165,7 @@ final case class StatusStats(
     inProgress: StatusDuration,
     planned: StatusDuration,
     knowledgeBase: StatusDuration,
-    plannedEndDate: LocalDate
+    plannedEndDate: PlannedDate
 ):
   lazy val all: StatusDuration = StatusDuration(
     tasks = inProgress.tasks + planned.tasks + knowledgeBase.tasks,
@@ -143,7 +176,7 @@ final case class StatusStats(
 **Разбор:**
 
 - **`inProgress`**, **`planned`**, **`knowledgeBase`** — три `StatusDuration` для трёх активных статусов.
-- **`plannedEndDate`** — прогнозируемая дата завершения всех задач.
+- **`plannedEndDate`** — прогнозируемая дата завершения всех задач (`PlannedDate`).
 - **`all`** — агрегат по всем трём статусам.
 
 ### Фабричный метод `calculate`
@@ -201,7 +234,7 @@ final case class TaskTypeDuration(
     restDuration: FiniteDuration,
     completedTasks: Int,
     completedDuration: FiniteDuration,
-    plannedEndDate: LocalDate
+    plannedEndDate: PlannedDate
 ):
   lazy val progress: Double =
     calculateProgress(
@@ -215,7 +248,7 @@ final case class TaskTypeDuration(
 - **`name`** — название типа задачи (например, «Книга»).
 - **`restTasks`**, **`restDuration`** — сколько задач и времени осталось.
 - **`completedTasks`**, **`completedDuration`** — сколько задач и времени завершено.
-- **`plannedEndDate`** — прогноз завершения задач этого типа.
+- **`plannedEndDate`** — прогноз завершения задач этого типа (`PlannedDate`).
 - **`progress`** — доля завершённого времени от общего.
 
 **Почему именно `completedDuration / (restDuration + completedDuration)`?** 
@@ -232,7 +265,7 @@ object TaskTypeDuration:
       tasks: Vector[TaskResult]
   ): TaskTypeDuration = {
     val (completedTasks, restTasks) = tasks.partition(_.status == Completed)
-    val plannedEndDate: LocalDate   =
+    val plannedEndDate: PlannedDate =
       calculatePlannedEndDate(
         completedTasks = completedTasks,
         restTasks = restTasks
@@ -324,7 +357,7 @@ final case class SectionDuration(
     restDuration: FiniteDuration,
     completedTasks: Int,
     completedDuration: FiniteDuration,
-    plannedEndDate: LocalDate
+    plannedEndDate: PlannedDate
 ):
   lazy val progress: Double =
     calculateProgress(
@@ -351,7 +384,7 @@ object SectionDuration:
       tasks: Vector[TaskResult]
   ): SectionDuration = {
     val (completedTasks, restTasks) = tasks.partition(_.status == Completed)
-    val plannedEndDate: LocalDate   =
+    val plannedEndDate: PlannedDate =
       calculatePlannedEndDate(
         completedTasks = completedTasks,
         restTasks = restTasks
@@ -509,7 +542,9 @@ end Statistics
     - **`TaskTypesStats.calculate(tasks, ...)`** — группирует по типам, считает прогресс и прогноз по каждому типу.
     - **`SectionsStats.calculate(tasks, ...)`** — группирует по разделам, считает прогресс и прогноз по каждому разделу.
 
-4. **Сервер рендерит шаблон** `statistics.scala.html`, передавая `Statistics`.
+4. **Сервер рендерит шаблон** `statistics.scala.html`, передавая `Statistics`. 
+   Прогнозируемые даты выводятся через `PlannedDate.render` — пользователь видит не сухую дату, 
+   а дату с подписью «дней осталось», например `07.11.2026 (5 дней)`.
 
 5. **Пользователь видит четыре блока:**
     - **Цели** — с прогресс-барами и мотивашками.
@@ -524,7 +559,8 @@ end Statistics
 | Компонент                                    | Назначение                                |
 | -------------------------------------------- | ----------------------------------------- |
 | **`calculateProgress`**                      | Формула прогресса с защитой от нуля       |
-| **`calculatePlannedCompletionDate`**         | Прогноз даты на основе скорости           |
+| **`calculatePlannedEndDate`**                | Прогноз даты на основе скорости           |
+| **`PlannedDate`**                            | Прогноз как «дата + количество дней»      |
 | **`StatusDuration`**, **`StatusStats`**      | Статистика по статусам                    |
 | **`TaskTypeDuration`**, **`TaskTypesStats`** | Статистика по типам задач                 |
 | **`SectionDuration`**, **`SectionsStats`**   | Статистика по разделам                    |
@@ -539,6 +575,8 @@ end Statistics
 - **Единый источник данных** — все блоки согласованы.
 - **Сортировка по `Ordinal`** — пользователь видит элементы в привычном порядке.
 - **Единообразие моделей** — `TaskTypeDuration` и `SectionDuration` структурно идентичны, что упрощает чтение и поддержку.
+- **Прогноз как `PlannedDate`** — модель хранит количество дней до завершения, а дата выводится на её основе. 
+  Рендер добавляет относительную подпись «дней осталось», делая прогноз наглядным.
 
 Статистика — это **инструмент принятия решений и мотивации**. 
 Она показывает, где пользователь находится, куда движется и когда достигнет цели. 

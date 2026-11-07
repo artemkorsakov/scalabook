@@ -30,7 +30,7 @@ trait Sync[F[_]] extends MonadCancel[F, Throwable] with Clock[F] with Defer[F]
 
 ```dotty
 // ❌ Так нельзя — побочный эффект выполнится немедленно 
-// и не будет референциально прозрачным
+// и не будет ссылочно прозрачным
 val inc: Long = counter.incrementAndGet()
 ```
 

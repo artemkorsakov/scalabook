@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = group.html
-showNext = true
-nextPage = idempotent-monoid.html
-%}
-
 # Идемпотентная полугруппа
 
 **Идемпотентная полугруппа** — это алгебраическая структура, представляющая собой полугруппу, 

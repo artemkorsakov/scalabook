@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ui_task_open.html
-showNext = true
-nextPage = ui_task_actions.html
-%}
-
 # Редактирование задачи
 
 Страница редактирования задачи — это форма, которая позволяет пользователю изменить

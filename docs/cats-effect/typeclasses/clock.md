@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = unique.html
-showNext = true
-nextPage = defer.html
-%}
-
 # Clock — работа со временем
 
 ## Введение

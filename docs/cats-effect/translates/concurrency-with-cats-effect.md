@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../translates.html
-showNext = true
-nextPage = cats-concurrency-basics-with-ref-and-deferred.html
-%}
-
 # Параллелизм с Cats Effect
 
 [Перевод статьи "Concurrency with Cats Effect", написанной Krzysztof Atłasik][Article]

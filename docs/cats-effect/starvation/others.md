@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = kuber.html
-showNext = true
-nextPage = ../io-runtime-config.html
-%}
-
 # Настройки и ложные срабатывания
 
 ## Детализация таймера (Timer Resolution) — ложные срабатывания

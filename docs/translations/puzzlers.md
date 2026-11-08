@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = type-level-programming-in-scala.html
-showNext = true
-nextPage = project_euler.html
-%}
-
 # Головоломки на Scala
 
 В этом разделе приведены различные головоломки, 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = io-runtime-config.html
-showNext = true
-nextPage = test-runtime.html
-%}
-
 # Tracing — трассировка стека
 
 Трассировка (tracing) — это расширенная функция `IO`, которая предоставляет разработчикам детальную информацию 

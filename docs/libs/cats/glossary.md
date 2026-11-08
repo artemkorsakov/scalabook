@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = jump_start_guide.html
-showNext = true
-nextPage = laws-testing.html
-%}
-
 # Глоссарий
 
 ## Значение символов

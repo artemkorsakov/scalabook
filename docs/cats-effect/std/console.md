@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = dispatcher.html
-showNext = true
-nextPage = env.html
-%}
-
 # Console — Простой ввод/вывод в консоль
 
 ## Что такое `Console`?

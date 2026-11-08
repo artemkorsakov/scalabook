@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = doubly_linked_lists.html
-showNext = true
-nextPage = queues.html
-%}
-
 # Стеки
 
 _Стек_ — это линейный список, в котором все операции вставки и удаления (и, как правило, операции доступа к данным) 

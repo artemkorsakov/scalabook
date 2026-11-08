@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = arrow/arrow-choice.html
-showNext = true
-nextPage = lattice/join-semilattice.html
-%}
-
 # Решетки
 
 Решёткоподобные структуры представляет структуры, которые могут напоминать кольца, но работают по другим законам.

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = crig.html
-showNext = true
-nextPage = bool-ring.html
-%}
-
 # Коммутативное кольцо
 
 Коммутативное кольцо с единицей объединяет в себе [коммутативное кольцо без единицы](crng.md) и [кольцо с единицей](ring.md).

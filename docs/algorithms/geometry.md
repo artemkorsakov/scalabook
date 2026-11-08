@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = equations.html
-showNext = true
-nextPage = strings.html
-%}
-
 # Геометрия
 
 ## Расстояние между точками

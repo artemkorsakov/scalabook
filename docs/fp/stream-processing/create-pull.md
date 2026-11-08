@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../stream-processing.html
-showNext = true
-nextPage = stream.html
-%}
-
 # Создание и комбинирование Pull-операций
 
 `Pull[O, R]` — это не просто контейнер, а **описание процесса обработки данных**.

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = csemigroup.html
-showNext = true
-nextPage = cmonoid.html
-%}
-
 # Полурешетка
 
 `Semilattice[A]` - [коммутативная](csemigroup.md) и [идемпотентная](band.md) полугруппа.

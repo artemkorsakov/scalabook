@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = state.html
-showNext = true
-nextPage = parallelism.html
-%}
-
 # Функциональный журнал
 
 ## Описание

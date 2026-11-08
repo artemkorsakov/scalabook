@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = apply.html
-showNext = true
-nextPage = bind.html
-%}
-
 # Applicative
 
 **Applicative** — это концепция из функционального программирования, расширяющая возможности [функтора](functor.md) 

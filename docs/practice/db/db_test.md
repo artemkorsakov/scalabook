@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = db_tasks.html
-showNext = true
-nextPage = ../lifecycle.html
-%}
-
 # Интеграционное тестирование с базой данных
 
 ## Проблема тестирования кода, взаимодействующего с базой данных

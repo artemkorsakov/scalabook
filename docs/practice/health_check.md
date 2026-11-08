@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = authorization/create.html
-showNext = true
-nextPage = main.html
-%}
-
 # Система мониторинга работоспособности
 
 Важно иметь механизм контроля состояния сервисов. Health check (проверка работоспособности) позволяет:

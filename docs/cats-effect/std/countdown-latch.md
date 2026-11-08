@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = backpressure.html
-showNext = true
-nextPage = cyclic-barrier.html
-%}
-
 # CountDownLatch — Ожидание заданного количества событий
 
 `CountDownLatch[F[_]]` — это **одноразовый примитив синхронизации**, 

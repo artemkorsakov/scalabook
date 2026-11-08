@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = refined.html
-showNext = true
-nextPage = cats/algebra.html
-%}
-
 # Cats
 
 ![Графика Cats](images/cats2.png)

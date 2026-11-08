@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = thread-model.html
-showNext = true
-nextPage = starvation-and-tuning.html
-%}
-
 # Планировщики
 
 Поскольку Cats Effect — это библиотека, предоставляющая собственную среду выполнения (runtime), 

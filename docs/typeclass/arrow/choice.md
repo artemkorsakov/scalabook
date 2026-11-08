@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = arrow.html
-showNext = true
-nextPage = arrow-choice.html
-%}
-
 # Choice
 
 В функциональном программировании мы привыкли работать с функциями вида `A => B`. 

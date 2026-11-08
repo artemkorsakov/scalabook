@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = cats/laws-testing.html
-showNext = true
-nextPage = fs2/guide.html
-%}
-
 # FS2
 
 [**FS2**][home] — это библиотека для работы с функциональными, эффективными и параллельными потоками (streams) в языке Scala.

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = band.html
-showNext = true
-nextPage = csemigroup.html
-%}
-
 #  Идемпотентный моноид
 
 _IdempotentMonoid_ — это [моноид](monoid.md), 

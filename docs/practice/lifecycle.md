@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = db/db_test.html 
-showNext = true
-nextPage = lifecycle/service.html
-%}
-
 # Жизненный цикл задач
 
 После успешного определения алгебр (интерфейсов операций) и их интерпретаторов (реализаций для конкретных эффектов), 

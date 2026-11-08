@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = heyting.html
-showNext = true
-nextPage = bool.html
-%}
-
 # Общая Булева алгебра
 
 ## Формальное определение

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../scala.html
-showNext = true
-nextPage = two_stars.html
-%}
-
 # ✯
 
 ## 📚 Книги и документация

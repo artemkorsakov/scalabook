@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = monad-error.html
-showNext = true
-nextPage = contravariant-monoidal.html
-%}
-
 # Invariant Monoidal
 
 ## Инвариантный моноид

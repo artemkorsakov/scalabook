@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = index.html
-showNext = true
-nextPage = number_theory/numerical.html
-%}
-
 # Теория чисел
 
 ## Введение

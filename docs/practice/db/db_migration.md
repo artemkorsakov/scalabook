@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../db.html
-showNext = true
-nextPage = db_crud.html
-%}
-
 # Создание и поддержка структуры базы данных
 
 ## Работа с PostgreSQL через библиотеку Doobie

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = equal.html
-showNext = true
-nextPage = bounded.html
-%}
-
 # Order
 
 `Order` — это класс типов, который определяет методы для сравнения двух объектов одного типа. 

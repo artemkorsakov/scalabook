@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = abgroup.html
-showNext = true
-nextPage = rig.html
-%}
-
 # Полукольцо
 
 В то время как [группа](group.md), [моноид](monoid.md) и [полугруппа](semigroup.md) 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../number_theory.html
-showNext = true
-nextPage = primes.html
-%}
-
 # Численные алгоритмы
 
 ## Алгоритм Евклида

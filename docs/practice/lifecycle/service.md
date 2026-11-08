@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../lifecycle.html
-showNext = true
-nextPage = complete.html
-%}
-
 # Сервис цикла задач
 
 ## Создание задачи

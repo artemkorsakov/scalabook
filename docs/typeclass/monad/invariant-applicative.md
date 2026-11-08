@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = functor.html
-showNext = true
-nextPage = semigroupal.html
-%}
-
 # Invariant Applicative
 
 `InvariantApplicative` (инвариантный аппликативный функтор) — это функциональная абстракция,

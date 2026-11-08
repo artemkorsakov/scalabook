@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = fp/composition.html
-showNext = true
-nextPage = handling-errors.html
-%}
-
 # Функциональные структуры данных
 
 Функциональные структуры данных представляют собой фундаментальную концепцию в функциональном программировании, 

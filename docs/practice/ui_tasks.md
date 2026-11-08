@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ui_settings/ui_settings_task_type.html
-showNext = true
-nextPage = ui_tasks/ui_task_open.html
-%}
-
 # Создание задачи
 
 Создание задачи — центральная операция всего приложения. Пользователь может создать задачу

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = health_check.html
-showNext = true
-nextPage = ui_authorization.html
-%}
-
 # Запуск сервера
 
 В этом разделе мы завершим сборку приложения, объединив все ранее созданные компоненты в единое работающее целое. 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = spire/other.html
-showNext = true
-nextPage = frp.html
-%}
-
 # Функциональное реактивное программирование
 
 В рамках реализации ["Индивидуального плана развития"](../practice/index.md) я столкнулся со следующей проблемой:

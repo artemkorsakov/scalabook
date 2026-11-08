@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = guide.html
-showNext = true
-nextPage = io.html
-%}
-
 # Примитивы параллелизма
 
 В пакете [`fs2.concurrent`](https://github.com/typelevel/fs2/tree/main/core/shared/src/main/scala/fs2/concurrent) 

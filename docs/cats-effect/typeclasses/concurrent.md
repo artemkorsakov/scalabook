@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = spawn.html
-showNext = true
-nextPage = concurrent/ref.html
-%}
-
 # Concurrent — параллельное состояние и синхронизация
 
 `Concurrent[F[_]]` (или `GenConcurrent[F[_], E]` с явным типом ошибки) — это класс типов, который **расширяет `Spawn`** 

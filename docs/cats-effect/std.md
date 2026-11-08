@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = typeclasses/async.html
-showNext = true
-nextPage = std/resource.html
-%}
-
 # Стандартная библиотека
 
 Этот раздел — коллекция **мощных, готовых к использованию конкурентных примитивов**.

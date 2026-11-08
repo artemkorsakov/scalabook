@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = applicative-error.html
-showNext = true
-nextPage = invariant-monoidal.html
-%}
-
 # MonadError
 
 `MonadError` — это класс типов, который объединяет возможности [`Monad`](monad.md) и [`ApplicativeError`](applicative-error.md), 

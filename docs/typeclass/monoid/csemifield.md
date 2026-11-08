@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = semifield.html
-showNext = true
-nextPage = gcdring.html
-%}
-
 # Коммутативное полуполе
 
 Коммутативное полуполе - это [полуполе](semifield.md) с коммутативным умножением.

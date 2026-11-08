@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../authorization.html
-showNext = true
-nextPage = ../health_check.html
-%}
-
 # Реализация сервиса авторизации
 
 ## Создание сервиса авторизации

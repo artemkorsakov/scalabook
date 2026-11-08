@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../typeclasses.html
-showNext = true
-nextPage = clock.html
-%}
-
 # Unique — источник уникальных токенов
 
 ## Введение

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = random.html
-showNext = true
-nextPage = countdown-latch.html
-%}
-
 # Backpressure — Управление потоком данных при перегрузках
 
 `Backpressure` (обратное давление) — это механизм контроля потока, 

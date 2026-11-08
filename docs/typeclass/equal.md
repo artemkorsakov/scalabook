@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = lattice/bool.html
-showNext = true
-nextPage = equal/equal.html
-%}
-
 # Группа Equal
 
 ## Введение

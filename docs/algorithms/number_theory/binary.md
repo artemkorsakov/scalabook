@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = primes.html
-showNext = true
-nextPage = ../combinatorics.html
-%}
-
 # Двоичные числа и другие системы счисления
 
 ## Степень двойки

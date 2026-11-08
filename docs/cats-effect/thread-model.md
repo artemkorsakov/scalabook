@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = producer-consumer-problem.html
-showNext = true
-nextPage = schedulers.html
-%}
-
 # Модель потоков в Cats Effect
 
 Cats Effect — это мощный инструмент для создания высокопроизводительных, конкурентных систем на Scala. 

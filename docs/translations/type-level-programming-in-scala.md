@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = introduction-to-programming-with-zio-functional-effects.html
-showNext = true
-nextPage = puzzlers.html
-%}
-
 # Программирование на уровне типов в Scala
 
 В этом разделе приведен перевод статей ["Type-Level Programming in Scala"][blog] с адаптацией под версию Scala 3.

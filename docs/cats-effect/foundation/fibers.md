@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../index.html
-showNext = true
-nextPage = effects.html
-%}
-
 # Волокна
 
 ## Введение

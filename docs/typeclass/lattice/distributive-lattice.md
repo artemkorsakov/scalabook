@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = lattice.html
-showNext = true
-nextPage = bounded-join-semilattice.html
-%}
-
 # Дистрибутивная решётка
 
 ## Формальное определение

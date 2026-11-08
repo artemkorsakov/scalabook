@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = resource.html
-showNext = true
-nextPage = mapref.html
-%}
-
 # AtomicCell — безопасная клетка для эксклюзивного доступа
 
 ## Что такое `AtomicCell`?

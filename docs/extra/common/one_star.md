@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../common.html
-showNext = true
-nextPage = two_stars.html
-%}
-
 # ✯
 
 ## 📚 Книги и документация

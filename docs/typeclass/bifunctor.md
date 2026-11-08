@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = monad/parallel.html
-showNext = true
-nextPage = bifunctor/bifunctor.html
-%}
-
 # Группа Bifunctor
 
 ## Введение

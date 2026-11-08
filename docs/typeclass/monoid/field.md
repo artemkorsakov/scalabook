@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = euclidean-ring.html
-showNext = true
-nextPage = ../monad.html
-%}
-
 # Поле
 
 **Поле** — это алгебраическая структура, которая является [Евклидовым кольцом](euclidean-ring.md)

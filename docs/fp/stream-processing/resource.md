@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = error-handling.html
-showNext = true
-nextPage = applications.html
-%}
-
 # Обеспечение безопасности ресурсов
 
 ## Введение в проблему

@@ -1,8 +1,3 @@
-{%
-showPrev = true
-prevPage = concurrency-with-cats-effect.html
-%}
-
 # Основы параллелизма Cats с Ref и Deferred
 
 [Перевод статьи "Cats Concurrency basics with Ref and Deferred", автор Krzysztof Grajek][Ref and Deffered]

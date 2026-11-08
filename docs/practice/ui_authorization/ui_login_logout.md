@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ui_welcome.html
-showNext = true
-nextPage = ui_register.html
-%}
-
 # Страницы входа и выхода
 
 После того как мы настроили главную страницу с проверкой авторизации, нужно реализовать два ключевых

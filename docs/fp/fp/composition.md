@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = currying.html
-showNext = true
-nextPage = ../data-structures.html
-%}
-
 # Композиция функций
 
 Композиция функций — фундаментальная концепция функционального программирования, 

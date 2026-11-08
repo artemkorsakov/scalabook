@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = cmonoid.html
-showNext = true
-nextPage = abgroup.html
-%}
-
 # Ограниченная полурешетка
 
 `BoundedSemilattice[A]` - [коммутативный](cmonoid.md) и [идемпотентный](idempotent-monoid.md) моноид, 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = semiring.html
-showNext = true
-nextPage = csemiring.html
-%}
-
 # Полукольцо с единицей
 
 Полукольцо с единицей - это [полукольцо](semiring.md), в котором существует нейтральный элемент по умножению (называемый единицей): 

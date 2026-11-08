@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = index.html
-showNext = true
-nextPage = affixes.html
-%}
-
 # Как избежать переполнения стека в Scala с помощью free-монад
 
 Перевод статьи Runar Oli Bjarnason ["Stackless Scala With Free Monads"][Trampolines] с небольшими отступлениями.

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = heap.html
-showNext = true
-nextPage = hash-tables.html
-%}
-
 # Графы
 
 _Граф_ (_graph_) обычно определяется как множество точек (называемых _вершинами_ (_vertices_)) 

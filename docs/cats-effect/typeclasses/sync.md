@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = monadcancel.html
-showNext = true
-nextPage = spawn.html
-%}
-
 # Sync — синхронный FFI в Cats Effect
 
 ## Введение: Что такое синхронный FFI?

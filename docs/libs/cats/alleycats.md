@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = algebra.html
-showNext = true
-nextPage = jump_start_guide.html
-%}
-
 # Alleycats
 
 ## Обзор

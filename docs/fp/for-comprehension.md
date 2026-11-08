@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = handling-errors.html
-showNext = true
-nextPage = laziness.html
-%}
-
 # For-comprehension
 
 Представьте, что вам нужно работать со значениями, которые обернуты в контейнеры (например, `List`, `Option`, `Future`). 

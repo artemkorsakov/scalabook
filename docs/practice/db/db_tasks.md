@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = db_crud.html
-showNext = true
-nextPage = db_test.html
-%}
-
 # Реализация сервиса работы с задачами
 
 ## Реализация специальных преобразований типов для работы с Doobie

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = monoid.html
-showNext = true
-nextPage = band.html
-%}
-
 # Группа
 
 Моноиды, как базовые алгебраические структуры, представляют собой упорядоченные множества 

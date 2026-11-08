@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = std/cyclic-barrier.html
-showNext = true
-nextPage = producer-consumer-problem.html
-%}
-
 # Копирование файлов
 
 Давайте напишем программу, которая копирует файлы. Сначала мы разработаем чистую функцию, выполняющую копирование, 

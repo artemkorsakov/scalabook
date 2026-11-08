@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = semilattice.html
-showNext = true
-nextPage = bounded-semilattice.html
-%}
-
 # Коммутативный моноид
 
 `CMonoid[A]` - [моноид](monoid.md), который [коммутативен](csemigroup.md).

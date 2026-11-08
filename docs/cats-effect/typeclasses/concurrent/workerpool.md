@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = deferred.html
-showNext = true
-nextPage = ../temporal.html
-%}
-
 # WorkerPool
 
 Теперь, используя все знания, построим **пул воркеров** на базе `Ref` и `Deferred`:

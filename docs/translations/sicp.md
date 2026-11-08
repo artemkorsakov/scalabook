@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = pfhais.html
-showNext = true
-nextPage = sicp/chapter2.html
-%}
-
 # Структура и интерпретация компьютерных программ
 
 В этом разделе приведены решения упражнений, взятых из книги 

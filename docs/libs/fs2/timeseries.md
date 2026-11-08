@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = io.html
-showNext = true
-nextPage = scodec.html
-%}
-
 # Временные ряды
 
 Пакет `fs2.timeseries` предоставляет различные утилиты для работы со значениями, имеющими временные метки. 

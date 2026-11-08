@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = idempotent-monoid.html
-showNext = true
-nextPage = semilattice.html
-%}
-
 # Коммутативная полугруппа
 
 `CSemigroup[A]` - [полугруппа](semigroup.md), которая является коммутативной.

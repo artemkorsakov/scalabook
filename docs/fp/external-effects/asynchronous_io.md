@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = free_monad.html
-showNext = true
-nextPage = common_io.html
-%}
-
 # Неблокируемый и асинхронный ввод-вывод
 
 Теперь обратимся к последней оставшейся проблеме нашей исходной `IO` монады: 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = timeseries.html
-showNext = true
-nextPage = ../spire.html
-%}
-
 # Scodec
 
 Библиотека `fs2-scodec` предоставляет возможность потокового кодирования и декодирования бинарных данных, 

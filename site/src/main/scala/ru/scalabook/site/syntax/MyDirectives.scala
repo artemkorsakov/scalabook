@@ -2,7 +2,7 @@ package ru.scalabook.site.syntax
 
 import cats.syntax.apply.catsSyntaxTuple2Semigroupal
 import laika.api.*
-import laika.api.bundle.*
+import laika.api.bundle.{TemplateDirectives, *}
 import laika.ast.*
 
 object MyDirectives extends DirectiveRegistry:
@@ -26,8 +26,50 @@ object MyDirectives extends DirectiveRegistry:
       }
     }
 
+  private val leftArrow  = "← "
+  private val rightArrow = " →"
+
+  private val previousPage: TemplateDirectives.Directive =
+    TemplateDirectives.create("previousPage") {
+      import TemplateDirectives.dsl.*
+
+      cursor.map { cursor =>
+        val previous = cursor.flattenedSiblings.previousDocument
+
+        val title = previous.flatMap(c => c.target.title)
+        val path  = previous.map(c => c.path)
+
+        val link =
+          (title, path).mapN { (t, p) =>
+            SpanLink(Seq(Text(leftArrow), t), InternalTarget(p))
+          }
+
+        TemplateElement(link.getOrElse(Text("")))
+      }
+    }
+
+  private val nextPage =
+    TemplateDirectives.create("nextPage") {
+      import TemplateDirectives.dsl.*
+
+      cursor.map { cursor =>
+        val next = cursor.flattenedSiblings.nextDocument
+
+        val title = next.flatMap(c => c.target.title)
+        val path  = next.map(c => c.path)
+
+        val link =
+          (title, path).mapN { (t, p) =>
+            SpanLink(Seq(t, Text(rightArrow)), InternalTarget(p))
+          }
+
+        TemplateElement(link.getOrElse(Text("")))
+      }
+    }
+
   val spanDirectives: Seq[SpanDirectives.Directive]   = Seq(noteSpanDirective)
   val blockDirectives: Seq[BlockDirectives.Directive] = Seq(noteBlockDirective)
-  val templateDirectives: Seq[TemplateDirectives.Directive] = Seq()
-  val linkDirectives: Seq[LinkDirectives.Directive]         = Seq()
+  val templateDirectives: Seq[TemplateDirectives.Directive] =
+    Seq(previousPage, nextPage)
+  val linkDirectives: Seq[LinkDirectives.Directive] = Seq()
 end MyDirectives

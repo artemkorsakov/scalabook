@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../lattice.html
-showNext = true
-nextPage = meet-semilattice.html
-%}
-
 # Полурешётка объединения
 
 ## Формальное определение

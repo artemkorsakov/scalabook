@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../patterns.html
-showNext = true
-nextPage = tagless-final.html
-%}
-
 # Алгебраические типы данных
 
 ## Что такое алгебраические типы данных?

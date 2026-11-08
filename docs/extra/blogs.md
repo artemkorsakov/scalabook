@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = common/five_stars.html
-showNext = true
-nextPage = podcasts.html
-%}
-
 # Блоги
 
 В этой части раздела представлен список популярных блогов по программированию. Блоги сортируются по нескольким

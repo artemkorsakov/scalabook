@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = contravariant-monoidal.html
-showNext = true
-nextPage = parallel.html
-%}
-
 # Alternative
 
 `Alternative` — это абстракция в функциональном программировании, 

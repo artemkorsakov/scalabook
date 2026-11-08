@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = expandable.html
-showNext = true
-nextPage = resource.html
-%}
-
 # Обработка ошибок в функциональных потоках
 
 В функциональном программировании мы стремимся делать побочные эффекты и ошибки явными 

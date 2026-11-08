@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../index.html
-showNext = true
-nextPage = reduction.html
-%}
-
 # Чистые функции
 
 ## Определение и характеристики чистых функций

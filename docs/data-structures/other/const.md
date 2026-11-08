@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = id.html
-showNext = true
-nextPage = eval.html
-%}
-
 # Const: Тип-константа
 
 ## Странный тип данных

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = db_migration.html
-showNext = true
-nextPage = db_tasks.html
-%}
-
 # Реализация конкретных сервисов работы с PostgreSQL
 
 ## Конкретизация абстрактных алгебр: от интерфейса к реализации

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = statuses.html
-showNext = true
-nextPage = ../db.html
-%}
-
 # Задача
 
 Каждая задача имеет набор полей, 

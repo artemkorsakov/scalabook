@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../sicp.html
-showNext = true
-nextPage = ../mil-dfp.html
-%}
-
 # Глава 2
 
 ## Глава 2. Построение абстракций с помощью данных

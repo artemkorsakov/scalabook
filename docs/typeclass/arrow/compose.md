@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../arrow.html
-showNext = true
-nextPage = category.html
-%}
-
 # Compose
 
 `Compose` — это класс типов, который предоставляет возможность композиции функций или морфизмов. 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = fs2/scodec.html
-showNext = true
-nextPage = spire/user_guide.html
-%}
-
 # Spire
 
 [Spire][home] — это числовая библиотека для Scala, которая должна быть универсальной, быстрой и точной.

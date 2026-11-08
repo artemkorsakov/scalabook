@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = local-effects.html
-showNext = true
-nextPage = stream-processing/create-pull.html
-%}
-
 # Потоковая обработка и инкрементный ввод-вывод
 
 ## Введение

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = category.html
-showNext = true
-nextPage = profunctor.html
-%}
-
 # Split
 
 `Split` — это класс типов в Scala, который предоставляет возможность 

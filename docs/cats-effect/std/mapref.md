@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = atomic-cell.html
-showNext = true
-nextPage = queue.html
-%}
-
 # MapRef — атомарный словарь для ключей
 
 `MapRef[F[_], K, V]` — это **специализированная структура данных**, которую можно представить 

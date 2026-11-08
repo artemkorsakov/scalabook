@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = dequeue.html
-showNext = true
-nextPage = semaphore.html
-%}
-
 # PQueue — Асинхронная очередь с приоритетом
 
 `PQueue[F[_], A: Order]` — это **конкурентная очередь с приоритетом**, где каждый элемент имеет свой приоритет, 

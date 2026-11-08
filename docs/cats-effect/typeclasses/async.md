@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = temporal.html
-showNext = true
-nextPage = ../std.html
-%}
-
 # Async — асинхронный FFI
 
 `Async[F[_]]` — это класс типов, который расширяет `Temporal[F[_]]` 

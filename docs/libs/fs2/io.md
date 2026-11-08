@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = concurrency-primitives.html
-showNext = true
-nextPage = timeseries.html
-%}
-
 # Ввод-вывод (I/O)
 
 ## Сетевое взаимодействие (Networking)

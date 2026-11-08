@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = gen-bool.html
-showNext = true
-nextPage = ../equal.html
-%}
-
 # Булева алгебра
 
 ## Формальное определение

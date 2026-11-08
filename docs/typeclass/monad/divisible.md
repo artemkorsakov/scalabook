@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = divide.html
-showNext = true
-nextPage = co-bind.html
-%}
-
 # Divisible
 
 **`Divisible`** — это класс типов, который расширяет возможности **`Divide`** 

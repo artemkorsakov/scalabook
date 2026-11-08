@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = foldable.html
-showNext = true
-nextPage = reducible.html
-%}
-
 # Traverse
 
 `Traverse` — это концепция из функционального программирования, 

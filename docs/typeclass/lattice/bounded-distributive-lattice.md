@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = bounded-lattice.html
-showNext = true
-nextPage = logic.html
-%}
-
 # Дистрибутивная решётка с границами
 
 ## Формальное определение

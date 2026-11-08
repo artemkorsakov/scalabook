@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = intensive-tasks.html
-showNext = true
-nextPage = too-many-threads.html
-%}
-
 # Недостаток процессоров (CPU Starvation)
 
 Одна из самых коварных тенденций в современном программном обеспечении, развертываемом на серверах, — это 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = main.html
-showNext = true
-nextPage = ui_authorization/ui_welcome.html
-%}
-
 # Главная страница
 
 Начнём с главной страницы приложения. Это точка входа, куда попадает пользователь при открытии сайта.

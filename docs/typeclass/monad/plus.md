@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = monad.html
-showNext = true
-nextPage = plus-empty.html
-%}
-
 # Plus
 
 `Plus` — это концепция из функционального программирования, которая расширяет идею [монад](monad.md) и [аппликативных функторов](applicative.md). 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = alternative.html
-showNext = true
-nextPage = ../bifunctor.html
-%}
-
 # Parallel
 
 При изучении различных монад вы могли заметить, что некоторые типы данных имеют одинаковую структуру, 

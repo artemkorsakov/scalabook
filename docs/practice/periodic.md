@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = stats/history.html
-showNext = true
-nextPage = periodic/tasks.html
-%}
-
 # Периодические задачи
 
 ## Основная концепция

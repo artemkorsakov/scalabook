@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = stack_overflow_error.html
-showNext = true
-nextPage = asynchronous_io.html
-%}
-
 # Свободная монада
 
 ## Введение

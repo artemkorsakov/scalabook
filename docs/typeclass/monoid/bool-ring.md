@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = cring.html
-showNext = true
-nextPage = semifield.html
-%}
-
 # Кольцо Буля
 
 Кольцо Буля — это [кольцо](cring.md), умножение в котором идемпотентно, то есть `a · a = a` для всех элементов `a`. 

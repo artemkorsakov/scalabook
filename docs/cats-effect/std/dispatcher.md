@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = hotswap.html
-showNext = true
-nextPage = console.html
-%}
-
 # Dispatcher — Мост между миром эффектов и нечистым кодом
 
 ## Мотивация: проблема выполнения эффектов в колбэках

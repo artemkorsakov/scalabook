@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = mapref.html
-showNext = true
-nextPage = dequeue.html
-%}
-
 # Queue — Асинхронная очередь для обмена данными
 
 `Queue[F[_], A]` — это **чисто функциональная, конкурентная очередь**, 

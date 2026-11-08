@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = join-semilattice.html
-showNext = true
-nextPage = lattice.html
-%}
-
 # Полурешётка пересечения
 
 ## Формальное определение

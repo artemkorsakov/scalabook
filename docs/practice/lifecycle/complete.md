@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = service.html
-showNext = true
-nextPage = ../authorization.html
-%}
-
 # Завершение задачи
 
 Завершение — это ключевой этап в жизненном цикле задачи, который подводит итог выполненной работы, 

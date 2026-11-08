@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = split.html
-showNext = true
-nextPage = strong.html
-%}
-
 # Profunctor
 
 `Profunctor` — это класс типов в функциональном программировании, 

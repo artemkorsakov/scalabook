@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = for-comprehension.html
-showNext = true
-nextPage = state.html
-%}
-
 # Ленивые вычисления
 
 ## Понятие строгости и нестрогости функций

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = bounded-distributive-lattice.html
-showNext = true
-nextPage = de-morgan.html
-%}
-
 # Общая логика
 
 ## Формальное определение

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = sync.html
-showNext = true
-nextPage = concurrent.html
-%}
-
 # Spawn — создание и управление волокнами
 
 `Spawn[F[_]]` (или `GenSpawn[F[_], E]` с явным типом ошибки) — это **класс типов**, 

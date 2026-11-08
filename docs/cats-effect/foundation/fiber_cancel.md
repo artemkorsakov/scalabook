@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = threads_fibers.html
-showNext = true
-nextPage = fiber_join.html
-%}
-
 # Отмена волокон
 
 В традиционных JVM-потоках отмена — это **головная боль**. Поток можно только прервать (`Thread.interrupt()`), но это:

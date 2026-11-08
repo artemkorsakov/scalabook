@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = foundation/fiber_join.html
-showNext = true
-nextPage = typeclasses/unique.html
-%}
-
 # Классы типов
 
 ## Что значит быть эффектом?

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = parallelism.html
-showNext = true
-nextPage = external-effects/stack_overflow_error.html
-%}
-
 # Внешние эффекты и ввод/вывод
 
 ## Введение

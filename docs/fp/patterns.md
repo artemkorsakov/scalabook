@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = stream-processing/applications.html
-showNext = true
-nextPage = patterns/adt.html
-%}
-
 # Паттерны проектирования в ФП
 
 В современной разработке мы постоянно сталкиваемся с необходимостью создавать **надёжные, поддерживаемые и расширяемые** системы. 

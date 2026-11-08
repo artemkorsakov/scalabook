@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = terminology.html
-showNext = true
-nextPage = fiber_cancel.html
-%}
-
 # Потоки и волокна
 
 ## Пропасть между потребностями и возможностями

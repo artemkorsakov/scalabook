@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ref.html
-showNext = true
-nextPage = workerpool.html
-%}
-
 # `Deferred` — Однократный контейнер для синхронизации волокон
 
 `Deferred[F[_], A]` — это **чисто функциональный примитив синхронизации**, 

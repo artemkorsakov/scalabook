@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = starvation/others.html
-showNext = true
-nextPage = tracing.html
-%}
-
 # Конфигурация IORuntime
 
 `IORuntime` — это сердце Cats Effect, содержащее все необходимые пулы потоков, 

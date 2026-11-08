@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = bifunctor/bitraverse.html
-showNext = true
-nextPage = arrow/compose.html
-%}
-
 # Группа Arrow
 
 В функциональном программировании **Arrow** — это абстракция, обобщающая понятие функций 

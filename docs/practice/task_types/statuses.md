@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../task_types.html
-showNext = true
-nextPage = tasks.html
-%}
-
 # Статусы и типы задач
 
 ## Статусы задачи

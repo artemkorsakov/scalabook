@@ -1,8 +1,3 @@
-{%
-showNext = true
-nextPage = foundation/fibers.html
-%}
-
 # Cats effect
 
 [**Cats Effect**][home] — это чистая асинхронная среда выполнения для Scala. 

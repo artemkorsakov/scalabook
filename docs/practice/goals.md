@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = sources.html
-showNext = true
-nextPage = stats/stats_tasks.html
-%}
-
 # Статистика
 
 Статистика — это инструмент, который превращает разрозненные задачи в **осмысленную картину прогресса**. 

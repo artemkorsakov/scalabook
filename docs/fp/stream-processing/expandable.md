@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = stream.html
-showNext = true
-nextPage = error-handling.html
-%}
-
 # Расширяемые `Pull` и `Stream`
 
 ## Контекст и Мотивация

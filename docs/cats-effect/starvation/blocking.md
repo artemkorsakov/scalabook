@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../starvation-and-tuning.html
-showNext = true
-nextPage = intensive-tasks.html
-%}
-
 # Блокирующие задачи
 
 Самый простой и очевидный источник нехватки ресурсов CPU — это **выполнение блокирующих задач в пуле вычислительных потоков**. 

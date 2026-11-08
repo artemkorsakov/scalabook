@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = logic.html
-showNext = true
-nextPage = heyting.html
-%}
-
 # Алгебра Де Моргана
 
 ## Формальное определение

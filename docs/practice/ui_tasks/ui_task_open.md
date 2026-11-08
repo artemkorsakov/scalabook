@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../ui_tasks.html
-showNext = true
-nextPage = ui_task_edit.html
-%}
-
 # Страница задачи
 
 Страница задачи — это детальный экран, на котором пользователь работает с конкретной задачей.

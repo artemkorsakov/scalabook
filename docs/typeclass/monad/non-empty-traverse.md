@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = reducible.html
-showNext = true
-nextPage = contravariant-functor.html
-%}
-
 # NonEmptyTraverse
 
 `NonEmptyTraverse` — это **непустая версия** класса типов [`Traverse`](traverse.md), 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = scala/five_stars.html
-showNext = true
-nextPage = common/one_star.html
-%}
-
 # Ресурсы по программированию
 
 Структурированная база материалов для изучения программирования в целом. 

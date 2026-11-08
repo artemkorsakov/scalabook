@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = test-runtime.html
-showNext = true
-nextPage = io-local.html
-%}
-
 # Дампы волокон (Fiber Dumps)
 
 ## Проблема: асинхронные взаимоблокировки (Async Deadlocks)

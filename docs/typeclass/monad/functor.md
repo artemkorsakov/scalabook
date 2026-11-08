@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = invariant-functor.html
-showNext = true
-nextPage = invariant-applicative.html
-%}
-
 # Функтор
 
 **Функтор** — это концепция из теории категорий, которая широко используется в функциональном программировании. 

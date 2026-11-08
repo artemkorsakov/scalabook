@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = bool-ring.html
-showNext = true
-nextPage = csemifield.html
-%}
-
 # Полуполе
 
 Полуполе - это [полукольцо с единицей](rig.md), в котором каждый ненулевой элемент имеет обратный относительно умножения.

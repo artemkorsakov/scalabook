@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = countdown-latch.html
-showNext = true
-nextPage = ../copy-files.html
-%}
-
 # CyclicBarrier — Многократный барьер синхронизации
 
 `CyclicBarrier[F[_]]` — это **многократно используемый примитив синхронизации**, 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = strong.html
-showNext = true
-nextPage = choice.html
-%}
-
 # Arrow
 
 `Arrow` — это класс типов в функциональном программировании, 

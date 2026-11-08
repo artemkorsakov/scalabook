@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = tracing.html
-showNext = true
-nextPage = fiber-dumps.html
-%}
-
 # Тестирование времени выполнения
 
 ## Проблема: как тестировать асинхронный и недетерминированный код

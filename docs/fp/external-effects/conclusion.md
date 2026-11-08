@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = common_io.html
-showNext = true
-nextPage = ../local-effects.html
-%}
-
 # Заключение
 
 ## Общая картина

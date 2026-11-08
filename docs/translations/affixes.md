@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = trampolining.html
-showNext = true
-nextPage = introduction-to-programming-with-zio-functional-effects.html
-%}
-
 # Значение аффиксов Scala
 
 [Перевод статьи "Build your vocabulary with Scala affixes", автор Ross A. Baker][Affixes]

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../concurrent.html
-showNext = true
-nextPage = deferred.html
-%}
-
 # `Ref` — Атомарная ссылка для конкурентного доступа
 
 `Ref[F[_], A]` — это **конкурентно-безопасная, атомарная ссылка** на значение типа `A` в контексте эффекта `F`. 

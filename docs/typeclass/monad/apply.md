@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = semigroupal.html
-showNext = true
-nextPage = applicative.html
-%}
-
 # Apply
 
 **Apply** — это абстракция в функциональном программировании, которая расширяет возможности [`Semigroupal`](semigroupal.md), 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = project_euler_21_40.html
-showNext = true
-nextPage = project_euler_61_80.html
-%}
-
 # Задачи №41-№60
 
 ## Задача №41

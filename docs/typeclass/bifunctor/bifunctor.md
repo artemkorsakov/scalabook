@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../bifunctor.html
-showNext = true
-nextPage = bifoldable.html
-%}
-
 # Bifunctor
 
 **Bifunctor** — это класс типов, который обобщает [возможность применения функций](../monad/functor.md)

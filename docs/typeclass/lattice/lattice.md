@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = meet-semilattice.html
-showNext = true
-nextPage = distributive-lattice.html
-%}
-
 # Полная решётка
 
 ## Формальное определение

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ui_tasks/ui_task_timer.html
-showNext = true
-nextPage = ordinal.html
-%}
-
 # Добавление Docker-образа
 
 После того как приложение полностью реализовано и протестировано локально, наступает этап

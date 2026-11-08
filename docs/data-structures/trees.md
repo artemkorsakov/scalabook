@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = linear_list/arrays.html
-showNext = true
-nextPage = trees/binary-tree.html
-%}
-
 # Деревья
 
 Формально _дерево_ (_tree_) определяется как конечное множество \\(T\\) одного или более узлов со следующими свойствами:

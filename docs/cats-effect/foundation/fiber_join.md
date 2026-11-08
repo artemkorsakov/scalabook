@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = fiber_cancel.html
-showNext = true
-nextPage = ../typeclasses.html
-%}
-
 # Объединение волокон
 
 Не все параллельные операции — это «запустил и забыл». В реальных приложениях обычно требуется:

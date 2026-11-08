@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = number_theory/binary.html
-showNext = true
-nextPage = combinatorics/factorial.html
-%}
-
 # Комбинаторика
 
 ## Введение

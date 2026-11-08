@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = blogs.html
-showNext = true
-nextPage = conferences.html
-%}
-
 # Подкасты
 
 Для тех, кто предпочитает аудиоформат, собран список подкастов, посвящённых программированию.

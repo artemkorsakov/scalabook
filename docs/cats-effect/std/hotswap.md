@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = supervisor/example.html
-showNext = true
-nextPage = dispatcher.html
-%}
-
 # Hotswap — Безопасная замена ресурсов «на лету»
 
 ## Мотивация: проблема с вложенными `Resource`

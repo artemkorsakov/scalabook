@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = stats_tasks.html
-showNext = true
-nextPage = ../periodic.html
-%}
-
 # История выполненных задач
 
 История — это раздел, который показывает **архив всех завершённых задач**. 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = bimonad.html
-showNext = true
-nextPage = free-monads.html
-%}
-
 # Monad Transformer
 
 **Monad Transformer** (или **трансформер монад**) — это конструкция в функциональном программировании, 

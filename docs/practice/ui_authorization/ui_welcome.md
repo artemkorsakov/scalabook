@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../ui_authorization.html
-showNext = true
-nextPage = ui_login_logout.html
-%}
-
 # Шаблон `welcome.scala.html`
 
 `welcome.scala.html` — [центральный шаблон всего приложения](https://gitverse.ru/scalabook/pdp/content/master/pdp/src/main/twirl/ru/scalabook/pdp/views/welcome.scala.html). 

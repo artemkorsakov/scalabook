@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = mutex.html
-showNext = true
-nextPage = supervisor/example.html
-%}
-
 # Supervisor — Управление жизненным циклом волокон
 
 ## Мотивация: проблема со `start` и `background`

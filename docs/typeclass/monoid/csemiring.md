@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = rig.html
-showNext = true
-nextPage = isemiring.html
-%}
-
 # Коммутативное полукольцо
 
 Коммутативное полукольцо - это [полукольцо](semiring.md), с коммутативной операцией умножения:

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../fs2.html
-showNext = true
-nextPage = concurrency-primitives.html
-%}
-
 # Руководство пользователя
 
 > Если не указано иное, под типом `Stream` в этом документе подразумевается `fs2.Stream`, а НЕ `scala.collection.immutable.Stream`.

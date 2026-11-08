@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = user_guide.html
-showNext = true
-nextPage = ../frp.html
-%}
-
 # Классы типов в Spire
 
 ## Векторное пространство

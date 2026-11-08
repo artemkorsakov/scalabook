@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = strings.html
-showNext = true
-nextPage = derivative.html
-%}
-
 # Игры
 
 ## Дартс

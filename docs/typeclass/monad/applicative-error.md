@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = free-monads.html
-showNext = true
-nextPage = monad-error.html
-%}
-
 # ApplicativeError
 
 `ApplicativeError` — это класс типов, который расширяет [`Applicative`](applicative.md), 

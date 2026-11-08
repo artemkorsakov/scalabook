@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = defer.html
-showNext = true
-nextPage = sync.html
-%}
-
 # MonadCancel — управление отменами и ресурсами
 
 ## Введение: Жизненный цикл волокна

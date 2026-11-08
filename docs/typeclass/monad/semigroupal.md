@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = invariant-applicative.html
-showNext = true
-nextPage = apply.html
-%}
-
 # Semigroupal
 
 **Semigroupal** — это абстракция из функционального программирования, которая позволяет комбинировать два или более значений, 

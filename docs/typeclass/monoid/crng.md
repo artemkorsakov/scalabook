@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ring.html
-showNext = true
-nextPage = crig.html
-%}
-
 # Коммутативное кольцо без единицы
 
 Коммутативное кольцо - [кольцо без единицы](rng.md), коммутативное относительно умножения.

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = combinatorics/partition.html
-showNext = true
-nextPage = sort.html
-%}
-
 # Последовательности
 
 ## Числа Фибоначчи

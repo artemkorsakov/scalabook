@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = de-morgan.html
-showNext = true
-nextPage = gen-bool.html
-%}
-
 # Алгебра Гейтинга
 
 ## Формальное определение

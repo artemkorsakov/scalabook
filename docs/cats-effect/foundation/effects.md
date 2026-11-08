@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = fibers.html
-showNext = true
-nextPage = terminology.html
-%}
-
 # Эффекты
 
 ## Введение

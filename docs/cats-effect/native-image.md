@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = io-local.html
-showNext = true
-nextPage = scala-native.html
-%}
-
 # GraalVM Native Image и Cats Effect
 
 ## Что такое GraalVM Native Image?

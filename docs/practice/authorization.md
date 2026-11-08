@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = lifecycle/complete.html
-showNext = true
-nextPage = authorization/create.html
-%}
-
 # Авторизация
 
 Система авторизации является ключевым компонентом приложения, позволяющим пользователям создавать 

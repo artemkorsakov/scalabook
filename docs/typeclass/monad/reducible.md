@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = traverse.html
-showNext = true
-nextPage = non-empty-traverse.html
-%}
-
 # Reducible
 
 `Reducible` — это класс типов, который расширяет `Foldable`, добавляя методы для **сокращения (редукции)** коллекций. 

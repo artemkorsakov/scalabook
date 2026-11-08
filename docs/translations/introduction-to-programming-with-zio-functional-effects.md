@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = affixes.html
-showNext = true
-nextPage = type-level-programming-in-scala.html
-%}
-
 # Введение в программирование с функциональными ZIO эффектами
 
 [Перевод статьи "Introduction to Programming with ZIO Functional Effects", автор Jorge Vasquez][Article]

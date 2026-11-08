@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = scala-native.html
-showNext = true
-nextPage = translates.html
-%}
-
 # Jlink Image
 
 **`jlink`** — это инструмент в составе [Java Platform Module System (JPMS)](https://openjdk.org/projects/jigsaw/spec/), впервые появившийся в Java 9. 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../linear_list.html
-showNext = true
-nextPage = doubly_linked_lists.html
-%}
-
 # Связанные списки
 
 _Связанные списки_ реализованы в Scala в виде класса `List`.

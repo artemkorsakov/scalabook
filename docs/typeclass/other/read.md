@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = show.html
-showNext = true
-nextPage = io.html
-%}
-
 # Read
 
 `Read` — это класс типов, который предоставляет абстракцию для преобразования строк в объекты определённого типа. 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = index.html
-showNext = true
-nextPage = cats.html
-%}
-
 # Уточняющие типы в Scala
 
 Статья вышла [в блоге компании "Криптонит" на хабре](https://habr.com/ru/companies/kryptonite/articles/719488/).

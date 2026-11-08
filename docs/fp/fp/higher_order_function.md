@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = tail_recursion.html
-showNext = true
-nextPage = currying.html
-%}
-
 # Функции высшего порядка
 
 ## Определение и основные характеристики

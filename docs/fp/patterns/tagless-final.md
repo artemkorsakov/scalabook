@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = adt.html
-showNext = true
-nextPage = ../conclusion.html
-%}
-
 # Tagless Final
 
 ## Введение

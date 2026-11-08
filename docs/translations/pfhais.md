@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = project_euler/project_euler_81_100.html
-showNext = true
-nextPage = sicp.html
-%}
-
 # Pure functional HTTP APIs in Scala
 
 В этом разделе приведен пример реализации на Scala 3 чистой имплементации http-сервиса 

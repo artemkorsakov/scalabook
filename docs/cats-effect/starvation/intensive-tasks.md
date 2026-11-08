@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = blocking.html
-showNext = true
-nextPage = lack-of-processors.html
-%}
-
 # Вычислительно-ресурсоемкие задачи
 
 ## Проблема: не только блокировка вызывает голодание

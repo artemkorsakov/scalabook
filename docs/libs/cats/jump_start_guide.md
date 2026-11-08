@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = alleycats.html
-showNext = true
-nextPage = glossary.html
-%}
-
 # Быстрый старт
 
 Это руководство по быстрому старту едва затрагивает поверхность того, на что способен Cats, 

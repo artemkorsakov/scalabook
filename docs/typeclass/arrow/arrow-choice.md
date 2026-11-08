@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = choice.html
-showNext = true
-nextPage = ../lattice.html
-%}
-
 # Arrow Choice
 
 `ArrowChoice` — это расширение [`Choice`](choice.md), добавляющее метод `choose` с инфиксным синтаксисом `+++`:

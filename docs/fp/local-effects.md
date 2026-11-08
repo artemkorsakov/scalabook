@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = external-effects/conclusion.html
-showNext = true
-nextPage = stream-processing.html
-%}
-
 # Локальные эффекты и изменяемое состояние
 
 ## Введение в концепцию

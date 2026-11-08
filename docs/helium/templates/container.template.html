@@ -2,7 +2,7 @@
     @:include(helium.site.templates.pageNav)
     <main class="content">
         ${cursor.currentDocument.content}
-        @:include(../helium/templates/prev-next-nav.template.html)
+        <div class="prev-next-nav">@:previousPage @:nextPage</div>
         @:include(../helium/templates/giscus.template.html)
         @:include(helium.site.templates.footer)
     </main>

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = geometry.html
-showNext = true
-nextPage = games.html
-%}
-
 # Работа со строками
 
 ## Палиндром

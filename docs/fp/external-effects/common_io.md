@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = asynchronous_io.html
-showNext = true
-nextPage = conclusion.html
-%}
-
 # Тип ввода-вывода общего назначения: IO
 
 ## Введение

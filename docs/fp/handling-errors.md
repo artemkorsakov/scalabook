@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = data-structures.html
-showNext = true
-nextPage = for-comprehension.html
-%}
-
 # Обработка ошибок
 
 ## Основные принципы функционального подхода к генерации и обработке ошибок

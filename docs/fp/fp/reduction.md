@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = pure_function.html
-showNext = true
-nextPage = tail_recursion.html
-%}
-
 # Редукция
 
 ## Понятие редукции

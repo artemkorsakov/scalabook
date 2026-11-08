@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../other.html
-showNext = true
-nextPage = read.html
-%}
-
 # Show
 
 **Класс типов `Show`** — это абстракция, которая предоставляет возможность преобразовывать значения любого типа 

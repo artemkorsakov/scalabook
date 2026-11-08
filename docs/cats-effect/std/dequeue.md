@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = queue.html
-showNext = true
-nextPage = pqueue.html
-%}
-
 # Dequeue — Асинхронная двусторонняя очередь
 
 `Dequeue[F[_], A]` (Double-Ended Queue) — это **конкурентная двусторонняя очередь**, 

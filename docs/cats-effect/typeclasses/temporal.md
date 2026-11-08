@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = concurrent/workerpool.html
-showNext = true
-nextPage = async.html
-%}
-
 # Temporal — работа со временем и таймаутами
 
 `Temporal[F[_]]` — это класс типов, который **расширяет `Concurrent[F[_]]`** 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ordinal.html
-showNext = true
-nextPage = goals.html
-%}
-
 # Источники задач
 
 Когда пользователь работает с большим планом развития, рано или поздно наступает момент, 

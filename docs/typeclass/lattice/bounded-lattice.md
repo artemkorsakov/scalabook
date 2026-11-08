@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = bounded-meet-semilattice.html
-showNext = true
-nextPage = bounded-distributive-lattice.html
-%}
-
 # Решётка с границами
 
 ## Формальное определение

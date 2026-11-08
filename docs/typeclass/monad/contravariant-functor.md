@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = non-empty-traverse.html
-showNext = true
-nextPage = divide.html
-%}
-
 # Контравариантный функтор
 
 **Контравариантный функтор** (contravariant functor) — это класс типов, 

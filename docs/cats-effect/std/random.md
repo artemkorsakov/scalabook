@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = env.html
-showNext = true
-nextPage = backpressure.html
-%}
-
 # Random — Функциональный генератор случайных чисел
 
 ## Что такое `Random`?

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = schedulers.html
-showNext = true
-nextPage = starvation/blocking.html
-%}
-
 # Нехватка ресурсов и оптимизация
 
 ## Автоматический мониторинг производительности

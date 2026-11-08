@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = trees/binary-search-tree.html
-showNext = true
-nextPage = graph.html
-%}
-
 # Куча
 
 [Куча][heap wiki] (_heap_) — это специализированная структура данных типа дерево, которая удовлетворяет свойству кучи:

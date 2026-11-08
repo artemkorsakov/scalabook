@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../cats.html
-showNext = true
-nextPage = alleycats.html
-%}
-
 # Обзор Algebra
 
 **Algebra** — это библиотека (или модуль в составе Cats), 

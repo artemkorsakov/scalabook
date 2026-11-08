@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = project_euler_61_80.html
-showNext = true
-nextPage = ../pfhais.html
-%}
-
 # Задачи №81-№100
 
 ## Задача №81

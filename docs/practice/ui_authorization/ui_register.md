@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ui_login_logout.html
-showNext = true
-nextPage = ../ui_settings.html
-%}
-
 # Регистрация пользователя
 
 Регистрация — это первый шаг, который проходит новый пользователь при знакомстве с приложением.

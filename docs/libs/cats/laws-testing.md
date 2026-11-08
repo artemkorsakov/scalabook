@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = glossary.html
-showNext = true
-nextPage = ../fs2.html
-%}
-
 # Тестирование законов
 
 ## Введение

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = combination.html
-showNext = true
-nextPage = partition.html
-%}
-
 # Размещение
 
 _Размещение_ — это упорядоченный набор из `k` элементов, выбранных из `n` различных элементов, где важен порядок выбора элементов. 

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = four_stars.html
-showNext = true
-nextPage = ../common.html
-%}
-
 # ✯✯✯✯✯
 
 ## 📚 Книги и документация

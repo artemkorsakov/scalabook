@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = too-many-threads.html
-showNext = true
-nextPage = others.html
-%}
-
 # Конкуренция за резервные ресурсы (Overcommitment)
 
 > Этот сценарий специфичен для **Kubernetes**, **Amazon ECS** и аналогичных контейнерных развертываний с управлением ресурсами.

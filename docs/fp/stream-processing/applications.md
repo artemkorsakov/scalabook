@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = resource.html
-showNext = true
-nextPage = ../patterns.html
-%}
-
 # Применение
 
 ## Что такое потоковая обработка?

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ui_task_edit.html
-showNext = true
-nextPage = ui_task_timer.html
-%}
-
 # Действия над задачей
 
 После того как задача создана и находится на странице `/task/{id}`, пользователь может выполнять

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = fiber-dumps.html
-showNext = true
-nextPage = native-image.html
-%}
-
 # IOLocal — Контекстно-зависимые данные для волокон
 
 `IOLocal` — это мощный механизм Cats Effect, который позволяет передавать контекстную информацию (contextual data) 

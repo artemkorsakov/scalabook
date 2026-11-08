@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../equal.html
-showNext = true
-nextPage = order.html
-%}
-
 # Equal
 
 `Equal` — это класс типов, который определяет метод для проверки равенства двух объектов. 

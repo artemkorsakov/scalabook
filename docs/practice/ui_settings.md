@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ui_authorization/ui_register.html
-showNext = true
-nextPage = ui_settings/ui_settings_task_type.html
-%}
-
 # Страница настроек
 
 Страница настроек — это центр управления справочниками приложения. 

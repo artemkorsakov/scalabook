@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = native-image.html
-showNext = true
-nextPage = jlink.html
-%}
-
 # Scala Native
 
 [Scala Native](https://github.com/scala-native/scala-native) — это технология, 

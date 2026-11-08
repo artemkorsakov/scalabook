@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = effects.html
-showNext = true
-nextPage = threads_fibers.html
-%}
-
 # Асинхронность, Одновременность и Параллелизм
 
 ## Введение

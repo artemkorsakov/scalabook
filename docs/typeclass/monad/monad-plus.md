@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = applicative-plus.html
-showNext = true
-nextPage = is-empty.html
-%}
-
 # MonadPlus
 
 `MonadPlus` — это расширение концепции [монады](monad.md) в функциональном программировании,

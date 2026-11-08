@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = distributive-lattice.html
-showNext = true
-nextPage = bounded-meet-semilattice.html
-%}
-
 # Полурешётка объединения с нулём
 
 ## Формальное определение

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = console.html
-showNext = true
-nextPage = random.html
-%}
-
 # Env — Чтение переменных окружения
 
 `Env[F[_]]` — это **класс типов**, предоставляющий функциональный 

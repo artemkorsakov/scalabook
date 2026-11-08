@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = isemiring.html
-showNext = true
-nextPage = ring.html
-%}
-
 # Кольцо без единицы
 
 Учитывая множество `R` и операции `+` и `*`, 

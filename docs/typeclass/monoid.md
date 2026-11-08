@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = index.html
-showNext = true
-nextPage = monoid/semigroup.html
-%}
-
 # Группа моноидов
 
 **Моноиды** – это фундаментальная концепция в математике и информатике, 

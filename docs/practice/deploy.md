@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = index.html
-showNext = true
-nextPage = task_types.html
-%}
-
 # Создание нового проекта на Scala 3
 
 Итак, начнем с разворачивания нового проекта.

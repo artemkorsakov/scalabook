@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = deploy.html
-showNext = true
-nextPage = task_types/statuses.html
-%}
-
 # Основные типы задач
 
 В следующих главах мы сосредоточимся на индивидуальных планах развития (ИПР) для разработчиков, 

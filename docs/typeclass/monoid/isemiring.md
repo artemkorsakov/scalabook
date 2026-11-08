@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = csemiring.html
-showNext = true
-nextPage = rng.html
-%}
-
 #  Идемпотентное полукольцо
 
 Идемпотентное полукольцо - это [полукольцо](semiring.md), которое также является [идемпотентным](band.md),

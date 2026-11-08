@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = clock.html
-showNext = true
-nextPage = monadcancel.html
-%}
-
 # Defer — ленивое создание эффектов
 
 ## Введение

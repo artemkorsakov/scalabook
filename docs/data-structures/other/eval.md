@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = const.html
-showNext = true
-nextPage = kleisli.html
-%}
-
 # Eval: Управление синхронными вычислениями
 
 ## Проблема управления вычислениями

@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../supervisor.html
-showNext = true
-nextPage = ../hotswap.html
-%}
-
 # Общее состояние и области совместного использования
 
 ## Что такое общее состояние в функциональной конкурентности?

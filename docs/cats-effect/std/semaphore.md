@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = pqueue.html
-showNext = true
-nextPage = mutex.html
-%}
-
 # Semaphore — Счётный семафор для контроля параллелизма
 
 **Семафор** — это классический примитив синхронизации, 

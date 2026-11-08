@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = lack-of-processors.html
-showNext = true
-nextPage = kuber.html
-%}
-
 # Слишком много потоков — обратная сторона медали
 
 В некотором смысле, этот сценарий — зеркальное отражение проблемы «недостаточно процессоров», 

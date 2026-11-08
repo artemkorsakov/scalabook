@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = create-pull.html
-showNext = true
-nextPage = expandable.html
-%}
-
 # Потоки
 
 ## Вспомним, что такое Pull

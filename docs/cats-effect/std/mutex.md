@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = semaphore.html
-showNext = true
-nextPage = supervisor.html
-%}
-
 # Mutex — Взаимное исключение для волокон
 
 `Mutex` (Mutual Exclusion) — это примитив синхронизации, который гарантирует, 

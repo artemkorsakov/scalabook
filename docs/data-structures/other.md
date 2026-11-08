@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = hash-tables.html
-showNext = true
-nextPage = other/id.html
-%}
-
 # Вне группы
 
 Внегрупповые структуры данных.

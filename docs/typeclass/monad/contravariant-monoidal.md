@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = invariant-monoidal.html
-showNext = true
-nextPage = alternative.html
-%}
-
 # Contravariant Monoidal
 
 Класс типов `ContravariantMonoidal` предназначен для [контравариантных функторов](contravariant-functor.md),

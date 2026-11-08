@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = order.html
-showNext = true
-nextPage = signed.html
-%}
-
 # Bounded 
 
 `Bounded` — это класс типов, который определяет минимальное и максимальное значение для определённого типа. 

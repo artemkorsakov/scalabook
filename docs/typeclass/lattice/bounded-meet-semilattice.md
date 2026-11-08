@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = bounded-join-semilattice.html
-showNext = true
-nextPage = bounded-lattice.html
-%}
-
 # Полурешётка пересечения с единицей
 
 ## Формальное определение

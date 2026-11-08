@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../external-effects.html
-showNext = true
-nextPage = free_monad.html
-%}
-
 # TailRec: прыжки на батуте
 
 ## Проблема переполнения стека в функциональных программах

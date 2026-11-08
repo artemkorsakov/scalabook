@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = reduction.html
-showNext = true
-nextPage = higher_order_function.html
-%}
-
 # Хвостовая рекурсия
 
 ## Введение в рекурсию

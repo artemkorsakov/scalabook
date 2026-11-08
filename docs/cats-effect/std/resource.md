@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../std.html
-showNext = true
-nextPage = atomic-cell.html
-%}
-
 # Resource — безопасное управление ресурсами
 
 ## Мотивация: проблема управления ресурсами

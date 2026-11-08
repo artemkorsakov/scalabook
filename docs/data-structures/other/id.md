@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = ../other.html
-showNext = true
-nextPage = const.html
-%}
-
 # Id: Монада идентичности
 
 ## Эффект отсутствия эффектов

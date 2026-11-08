@@ -1,10 +1,3 @@
-{%
-showPrev = true
-prevPage = deq.html
-showNext = true
-nextPage = ../trees.html
-%}
-
 # Массивы
 
 _Массив_ — это упорядоченная структура, индексированный набор связанных элементов.

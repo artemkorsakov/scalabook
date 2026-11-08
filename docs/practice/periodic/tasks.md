@@ -673,40 +673,42 @@ def delete(id: PeriodicTaskId, userId: UserId): F[Boolean] =
 
 ## UI: вкладка «В работе»
 
-```dotty
-@if(periodicTasks.nonEmpty) {
+Вкладка «В работе» рендерится методом `Views.welcomeInProgress`, а блок периодических задач
+выводится через `periodicTasks.map(_.render)` — каждая карточка `TablePeriodicTaskCard`
+рендерит себя сама. Готовый HTML выглядит так:
+
+```html
 <div class="periodic-tasks-section">
     <h3 class="periodic-tasks-title">🔄 Периодические задачи</h3>
 
     <div class="tasks-grid">
-        @for(task <- periodicTasks) {
-        <div id="@task.id"
+        <div id="{task.id}"
              class="task-card periodic-task-card"
-             onclick="openPeriodicTask('@task.id')">
+             onclick="openPeriodicTask('{task.id}')">
 
-            <div class="task-title">@task.name</div>
+            <div class="task-title">{task.name}</div>
 
             <div class="task-progress">
                 <div class="progress-label">
                     <span>Прогресс</span>
-                    <span class="progress-percent">@{task.progress}%</span>
+                    <span class="progress-percent">{task.progress}%</span>
                 </div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: @{task.progress}%"></div>
+                    <div class="progress-fill" style="width: {task.progress}%"></div>
                 </div>
             </div>
         </div>
-        }
     </div>
 </div>
-}
 ```
+
+Полный блок (с заголовком и сеткой) выводится только если `periodicTasks` не пуст —
+`if periodicTasks.nonEmpty then ... else frag()` в scalatags.
 
 **Разбор:**
 
-- **`@if(periodicTasks.nonEmpty)`** — блок не рендерится, если нет задач.
 - **`🔄 Периодические задачи`** — заголовок с иконкой цикла.
-- **`onclick="openPeriodicTask('@task.id')"`** — клик открывает `/periodic_task/{id}`.
+- **`onclick="openPeriodicTask('{task.id}')"`** — клик открывает `/periodic_task/{id}`.
 - **`task.name`** — готовое имя (`15.03.2026 - Ежедневная задача`).
 - **Прогресс-бар** — процент выполнения плана.
 
@@ -889,8 +891,13 @@ final case class PeriodicTaskHandlers(
         service.get(periodicTaskId, user.id).map {
           _.map { task =>
             View.editPeriodicTask(
-              task = task,
-              token = jwtToken.value,
+              periodicTaskId = task.id,
+              name = task.name,
+              request = EditPeriodicTaskRequest(
+                token = jwtToken.value,
+                plan = task.plan.map(PlanStepRequest.apply)
+              ),
+              token = jwtToken,
               errorMessage = none
             ).toString
           }
@@ -908,13 +915,16 @@ final case class PeriodicTaskHandlers(
                   _ <- service.updatePlan(periodicTaskId, user.id, Plan(steps.sortBy(_.number)))
                   maybeTask <- service.get(periodicTaskId, user.id)
                 yield maybeTask.map(task => View.periodicTask(task, none).toString)
-              run.recoverWith:
-                case ex: IllegalArgumentException =>
-                  for
-                    maybeTask <- service.get(periodicTaskId, user.id)
-                  yield maybeTask.map(task =>
-                    View.editPeriodicTask(task, jwtToken.value, ex.getMessage.some).toString
-                  )
+              run
+                .recover:
+                  case ex: IllegalArgumentException =>
+                    View.editPeriodicTask(
+                      periodicTaskId = periodicTaskId,
+                      name = "Ошибка при редактировании задачи",
+                      request = request,
+                      token = jwtToken,
+                      errorMessage = ex.getMessage.some
+                    ).toString.some
             }.valueOr(errors =>
               Logger[IO].error(errors.toChain.toVector.mkString("; ")).as(none)
             )

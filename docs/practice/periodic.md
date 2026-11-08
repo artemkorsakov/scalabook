@@ -546,16 +546,29 @@ periodicStepService.updateAll(updated)
 
 ## Шаблоны
 
-### `settings.scala.html` — общий вид
+### `Views.settings` — общий вид
+
+Метод рендера страницы настроек:
+
+```dotty
+def settings(
+    token: JwtToken,
+    taskTypes: Vector[TaskType],
+    sections: Vector[Section],
+    goals: Vector[Goal],
+    periodicSteps: Vector[PeriodicStep],
+    errorTaskTypeMessage: Option[String],
+    errorSectionMessage: Option[String],
+    errorGoalMessage: Option[String],
+    errorPeriodicStepMessage: Option[String]
+): String
+```
 
 Раздел «Периодические задачи» в настройках группирует шаги **по типу периода**. Для каждого типа — своя таблица:
 
 ```html
-@for(periodicType <- PeriodicType.values) {
-@defining(periodicSteps.filter(_.periodicType == periodicType)) { stepsForType
-=> @if(stepsForType.nonEmpty) {
 <div class="periodic-type-section">
-  <h4 class="periodic-type-title">@periodicType.show</h4>
+  <h4 class="periodic-type-title">Ежедневная задача</h4>
   <table class="periodic-steps-table">
     <thead>
       <tr>
@@ -565,10 +578,9 @@ periodicStepService.updateAll(updated)
       </tr>
     </thead>
     <tbody hx-target="closest tr" hx-swap="outerHTML">
-      @for(step <- stepsForType) {
-      <tr class="periodic-step-row" data-periodic-step-id="@step.id.value">
-        <td>@step.number.value</td>
-        <td class="markdown-content" data-markdown="@step.name.value"></td>
+      <tr class="periodic-step-row" data-periodic-step-id="1">
+        <td>1</td>
+        <td class="markdown-content" data-markdown="Зарядка"></td>
         <td>
           <button
             class="edit-btn"
@@ -583,19 +595,17 @@ periodicStepService.updateAll(updated)
           </button>
         </td>
       </tr>
-      }
     </tbody>
   </table>
 </div>
-} } }
 ```
 
-**Разбор:**
+**Разбор данных:**
 
-- **`PeriodicType.values`** — проходим по всем пяти типам в фиксированном порядке (`Daily`, `Weekly`, ..., `Yearly`).
-- **`filter(_.periodicType == periodicType)`** — фильтруем шаги по типу.
-- **`if(stepsForType.nonEmpty)`** — если для типа нет шагов, секция не рендерится.
-- **`<h4>@periodicType.show</h4>`** — заголовок секции («Ежедневная задача», «Еженедельная задача» и т.д.).
+- **`periodicSteps`** — входной параметр: `Vector[PeriodicStep]`, уже отсортированный по `(periodicType.ordinal, number)`.
+- Метод группирует шаги по `periodicType` через `PeriodicType.values`.
+- **`periodicType.show`** — выводим человекочитаемое название типа в заголовке секции
+  `<h4>` («Ежедневная задача», «Еженедельная задача» и т.д.).
 - **Таблица без колонки «Период»** — тип вынесен в заголовок.
 
 **Преимущества группировки:**
@@ -604,12 +614,16 @@ periodicStepService.updateAll(updated)
 2. **Быстрый поиск:** чтобы найти ежедневные, не нужно читать колонку «Период» в каждой строке.
 3. **Стабильный порядок:** типы идут в порядке `enum`, независимо от данных.
 
-### `getPeriodicStepRow.scala.html` — строка для htmx-ответа
+### `Views.getPeriodicStepRow` — строка для htmx-ответа
+
+Метод рендера обычной строки периодического шага (не редактируемой):
+
+```dotty
+def getPeriodicStepRow(step: PeriodicStep): String
+```
 
 ```html
-@import ru.scalabook.pdp.models.PeriodicStep @import cats.syntax.show.* @(step:
-PeriodicStep, token: String)
-<tr class="periodic-step-row" data-periodic-step-id="@step.id.value">
+<tr class="periodic-step-row" data-periodic-step-id="1">
   <td>
     <button
       class="refresh-btn"
@@ -620,14 +634,14 @@ PeriodicStep, token: String)
     >
       🔄 Обновить
     </button>
-    @step.periodicType.show
+    Ежедневная задача
   </td>
-  <td>@step.number.value</td>
-  <td>@step.name.value</td>
+  <td>1</td>
+  <td class="markdown-content" data-markdown="Зарядка"></td>
   <td>
     <button
       class="edit-btn"
-      hx-get="/settings/periodic_steps/@step.id.value/edit"
+      hx-get="/settings/periodic_steps/1/edit"
       hx-trigger="edit"
       onclick="handleEditClick(this)"
     >
@@ -635,7 +649,7 @@ PeriodicStep, token: String)
     </button>
     <button
       class="delete-btn"
-      hx-delete="/settings/periodic_steps/@step.id.value"
+      hx-delete="/settings/periodic_steps/1"
       hx-target="#app"
       hx-swap="outerHTML"
       hx-confirm="..."
@@ -646,43 +660,50 @@ PeriodicStep, token: String)
 </tr>
 ```
 
-### `editPeriodicStepRow.scala.html` — редактируемая строка
+**Разбор:**
+
+- **`step: PeriodicStep`** — единственный входной параметр. Токен здесь не нужен — row не содержит формы.
+- **`hx-get="/settings"`** — кнопка «Обновить» перезагружает всю страницу настроек.
+- **`<td class="markdown-content" data-markdown="...">`** — имя шага хранится в `data-markdown` атрибуте для клиентской разметки.
+
+### `EditPeriodicStepRequest.render` — редактируемая строка
+
+Метод рендера редактируемой строки периодического шага:
+
+```dotty
+def render(
+    step: PeriodicStep,
+    token: JwtToken,
+    maybeError: Option[String]
+): String
+```
 
 ```html
-@import ru.scalabook.pdp.models.PeriodicStep 
-@import ru.scalabook.pdp.models.PeriodicType 
-@import cats.syntax.show.* 
-
-@(step: PeriodicStep, token: String, errorMessage: Option[String])
 <tr
   class="periodic-step-row editing"
   hx-trigger="cancel"
-  hx-get="/settings/periodic_steps/@step.id.value"
+  hx-get="/settings/periodic_steps/1"
 >
   <td>
     <select name="periodicType" class="edit-input" required>
-      @for(periodicType <- PeriodicType.values) {
-      <option
-        value="@periodicType.toString.toLowerCase"
-        @if(periodicType=""
-        ="step.periodicType){selected}"
-      >
-        @periodicType.show
-      </option>
-      }
+      <option value="daily" selected>Ежедневная задача</option>
+      <option value="weekly">Еженедельная задача</option>
+      <option value="monthly">Ежемесячная задача</option>
+      <option value="quarterly">Ежеквартальная задача</option>
+      <option value="yearly">Ежегодная задача</option>
     </select>
   </td>
   <td>
     <input
       class="edit-input"
       name="number"
-      value="@step.number.value"
-      pattern="..."
+      value="1"
+      pattern="^\d+(?:\.\d+)*$"
       autofocus
     />
   </td>
   <td>
-    <input class="edit-input" name="name" value="@step.name.value" />
+    <input class="edit-input" name="name" value="Зарядка" />
     <div class="periodic-step-ordinal-shift">
       <label>
         <input class="edit-checkbox" name="ordinalShift" type="checkbox" />
@@ -691,29 +712,30 @@ PeriodicStep, token: String)
     </div>
   </td>
   <td>
-    <input type="hidden" name="token" value="@token" />
-    <button class="cancel-btn" hx-get="/settings/periodic_steps/@step.id.value">
+    <input type="hidden" name="token" value="..." />
+    <button class="cancel-btn" hx-get="/settings/periodic_steps/1">
       ❌ Отмена
     </button>
     <button
       class="save-btn"
-      hx-put="/settings/periodic_steps/@step.id.value"
+      hx-put="/settings/periodic_steps/1"
       hx-include="closest tr"
     >
       💾 Сохранить
     </button>
-    @errorMessage.map { msg =>
-    <div class="error">@msg</div>
-    }
+    <div class="error">Сообщение об ошибке</div>
   </td>
 </tr>
 ```
 
 **Разбор:**
 
+- **`step: PeriodicStep`** — редактируемый шаг.
+- **`token: JwtToken`** — JWT-токен для аутентификации (отправляется в скрытом поле).
+- **`maybeError: Option[String]`** — сообщение об ошибке, если валидация не прошла.
 - **`class="periodic-step-row editing"`** — дополнительный класс `editing` для «одновременного редактирования только одной строки».
 - **`hx-trigger="cancel"`** — строка реагирует на событие `cancel` (когда пользователь открывает другую строку).
-- **`hx-get="/settings/periodic_steps/@step.id"`** — при `cancel` возвращает обычную строку (не редактируемую).
+- **`hx-get="/settings/periodic_steps/1"`** — при `cancel` возвращает обычную строку (не редактируемую).
 - **`select` для типа** — позволяет изменить период.
 - **`input` для номера** — с `pattern` и `title`.
 - **`input` для имени** — обычное текстовое поле.
@@ -957,7 +979,7 @@ private[settings] object SettingsViews:
       val sortedSteps: Vector[PeriodicStep] =
         periodicSteps.sortBy(step => (step.periodicType.ordinal, step.number))
 
-      View.settings(
+      Views.settings(
         token = jwtToken.value,
         taskTypes = taskTypes,
         sections = sections,
@@ -977,7 +999,7 @@ private[settings] object SettingsViews:
 3. **Сортировка шагов** по `(periodicType.ordinal, number)`:
     - Сначала по типу периода (`Daily` → `Weekly` → ...).
     - При равных типах — по номеру шага.
-4. **Рендер `settings.scala.html`** с отсортированными данными и переданными сообщениями об ошибках.
+4. **Рендер `Views.settings`** с отсортированными данными и переданными сообщениями об ошибках.
 
 ### `editRowHandler` — форма редактирования
 
@@ -989,7 +1011,7 @@ val editRowHandler: Handler =
         authorization
       ): (user: UserInfo, jwtToken: JwtToken) =>
         getPeriodicStep(stepId, user.id).map: step =>
-          View.editPeriodicStepRow(
+          EditPeriodicStepRequest.render(
             step,
             jwtToken.value,
             none
@@ -1010,7 +1032,7 @@ val editRowHandler: Handler =
        )(new IllegalArgumentException("Шаг не найден"))
      yield step
    ```
-3. **Рендер `editPeriodicStepRow`** — редактируемая строка.
+3. **Рендер `EditPeriodicStepRequest.render`** — редактируемая строка.
 
 > Шаг загружается через `getSteps` и поиск в векторе — O(n). Для больших списков это может быть медленно. 
 > В текущей реализации `getSteps` проще и достаточно.
@@ -1057,7 +1079,7 @@ val editHandler: Handler =
                   settingsService.updateStep(updated).void
 
               run.map: _ =>
-                View.getPeriodicStepRow(
+                Views.getPeriodicStepRow(
                   updated,
                   jwtToken.value
                 ).toString
@@ -1097,13 +1119,13 @@ val editHandler: Handler =
        4. Формируем новый порядок: `[before] + [updated] + [after]`.
        5. Вызываем `reorderSteps` с новым порядком.
    - **`rearrange = false`** — просто `updateStep(updated)` без переупорядочивания.
-4. `run.map: _ => View.getPeriodicStepRow(updated, ...)`** — при успехе возвращаем **только обновлённую строку**. 
+4. `run.map: _ => Views.getPeriodicStepRow(updated, ...)`** — при успехе возвращаем **только обновлённую строку**. 
      htmx заменит её в таблице (`hx-target="closest tr"`).
 5. `recoverWith`** — при ошибке возвращаем редактируемую строку с сообщением.
 6. `Invalid(errors)`** — при ошибке валидации возвращаем редактируемую строку с ошибками.
 
 > Приватная функция `getRow` — аналог `getPeriodicStep`, но рендерит строку в режиме
-> редактирования (шаблон `editPeriodicStepRow`) с сообщением об ошибке.
+> редактирования (метод `EditPeriodicStepRequest.render`) с сообщением об ошибке.
 
 **Почему возвращается только строка, а не вся страница?** Потому что `hx-put` на строке имеет `hx-target="closest tr"`. 
 htmx заменяет только эту строку — остальные не трогаются. Это быстрее и не сбрасывает скролл.
@@ -1145,7 +1167,7 @@ val getRowHandler: Handler =
       withUserFromHeader(authorization):
         (user: UserInfo, jwtToken: JwtToken) =>
           getPeriodicStep(stepId, user.id).map: step =>
-            View.getPeriodicStepRow(
+            Views.getPeriodicStepRow(
               step,
               jwtToken.value
             ).toString

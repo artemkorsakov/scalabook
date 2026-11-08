@@ -325,106 +325,58 @@ View.base(Title, View.login(none)).toString
 
 ![Login page](images/login.png)
 
-## Шаблонизатор Twirl
+## Рендеринг представлений (scalatags)
 
-Для формирования фронта используется **Twirl** — [типобезопасный шаблонизатор от Play Framework](https://www.playframework.com/documentation/3.0.x/ScalaTemplates).
-Его ключевое преимущество: шаблоны компилируются в обычные Scala-функции, 
-поэтому ошибки в разметке обнаруживаются **на этапе компиляции**, а не в рантайме. 
-Это особенно ценно в больших проектах, где HTML-страницы разрастаются.
+Для формирования HTML используются чистые Scala-функции с DSL **scalatags** — типобезопасной
+библиотекой для построения HTML в Scala-коде. Это позволяет ловить ошибки разметки на этапе
+компиляции, а не в рантайме. Все функции-рендеры собраны в объекте `Views`
+(`Views.scala`). scalatags-код типобезопасен: компилятор проверяет структуру DOM-дерева,
+наличие необходимых атрибутов и корректность типов.
 
-### Базовый шаблон `base.scala.html`
+### Базовый рендер `Views.base`
 
-Это «обёртка» для всех страниц приложения. Он содержит общие элементы: `<head>`,
+Функция-обёртка для всех страниц приложения. Содержит общие элементы: `<head>`,
 подключение CSS и JS, верхнюю панель с заголовком.
 
-```html
-@(title: String, content: Html)
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>@title</title>
-
-    <link rel="stylesheet" href="/assets/css/pdp.css" />
-    <link rel="icon" href="/assets/icons/favicon.ico" type="image/x-icon" />
-    <script src="/assets/js/pdp.js"></script>
-    <script src="@{"https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.js"}" integrity="sha384-Q+Dky3iHVJOr6wUjQ4ulh6uQ76an/t+ak1+PjMVaxRjbZamFLAG+u9InkfjbsEQf" crossorigin="anonymous"></script>
-</head>
-<body>
-<header class="app-header">
-    <div class="header-container">
-        <a href="/">@title</a>
-    </div>
-    <div class="header-divider"></div>
-</header>
-
-<main class="main-content">
-    @content
-</main>
-</body>
-</html>
+```dotty
+def base(pageTitle: String, pageContent: String): String
 ```
+
+Строит `<html lang="ru">` с `<head>`, содержащим `meta charset="utf-8"`, `meta viewport`,
+`<title>`, stylesheet `/assets/css/pdp.css`, favicon, `/assets/js/pdp.js`,
+htmx@2.0.10 CDN script и `marked.min.js` CDN script.
+Затем `<body>` с `<header class="app-header">` (ссылка на `/`) и
+`<main class="main-content">`, оборачивающим содержимое.
 
 **Параметры:**
 
-- **`title: String`** — заголовок страницы, отображается в браузерной вкладке и в шапке.
+- **`pageTitle: String`** — заголовок страницы, отображается в браузерной вкладке и в шапке.
   Клик по нему ведёт на главную страницу.
-- **`content: Html`** — основное содержимое страницы, вставляется в `<main>`.
+- **`pageContent: String`** — основное содержимое страницы, вставляется в `<main>`.
 
 **Важно:** здесь подключается **htmx** — библиотека для обновления частей страницы без перезагрузки.
 Именно она используется на welcome-странице для переключения вкладок, отправки форм и обновления
 списка задач. Без неё все действия требовали бы полной перезагрузки страницы.
 
-### Шаблон `login.scala.html`
+### Рендер `Views.login`
 
-Форма входа. Показывается, если пользователь не авторизован.
+Страница формы входа. Показывается, если пользователь не авторизован.
 
-```html
-@(errorMessage: Option[String])
-<div id="app" class="app-container-narrow">
-   <h2>Вход в систему</h2>
-
-   <form id="loginForm">
-      <div class="form-group">
-         <label for="loginUsername">Имя пользователя:</label>
-         <input id="loginUsername" name="username" type="text" required/>
-      </div>
-      <div class="form-group">
-         <label for="loginPassword">Пароль:</label>
-         <input id="loginPassword" name="password" type="password" required/>
-      </div>
-      <button
-              type="button"
-              hx-post="/auth/login"
-              hx-target="#app"
-              hx-swap="outerHTML"
-      >Войти
-      </button>
-   </form>
-
-   <div class="messageBlock">
-      @errorMessage.map { msg =>
-      <div class="error">@msg</div>
-      }
-   </div>
-
-   <p>
-      Нет аккаунта?
-      <a
-              onclick="htmx.process(this); this.click();"
-              hx-get="/register"
-              hx-target="#app"
-              hx-swap="outerHTML"
-      >Зарегистрироваться</a>
-   </p>
-</div>
+```dotty
+def login(errorMessage: Option[String]): String
 ```
+
+Функция рендерит `<div id="app" class="app-container-narrow">` с заголовком
+`<h2>Вход в систему</h2>`, форму через `LoginRequest.render("loginForm", "/auth/login", "Войти")`,
+блок ошибки через `errorBlock(errorMessage)` и ссылку «Зарегистрироваться» с htmx-атрибутами
+(`hx-get="/register"`, `Htmx.appTarget`, `Htmx.appSwap`).
 
 **Особенности:**
 
 - **`errorMessage: Option[String]`** — опциональное сообщение об ошибке (например,
   «Неверный логин или пароль»). Если оно есть — отображается под формой в блоке `.error`.
+- Форма отправляется через htmx: `hx-post="/auth/login"`, `hx-target="#app"`,
+  `hx-swap="outerHTML"`.
 - **`hx-post="/auth/login"`** — форма отправляется через htmx без перезагрузки страницы.
 - **`hx-target="#app"`** — ответ сервера заменяет содержимое блока `#app`. Если логин
   успешен, сервер вернёт welcome-страницу; если нет — ту же форму с сообщением об ошибке.
@@ -475,7 +427,7 @@ Krop пробует обработчики по очереди через `orEls
   и цели, которые реально встречаются в задачах вкладки.
 - **htmx для интерактивности** — переключение вкладок, открытие модальных окон и отправка
   форм происходят без перезагрузки страницы.
-- **Twirl для шаблонов** — типобезопасные HTML-шаблоны, проверяемые компилятором.
+- **scalatags для разметки** — HTML строится в Scala-коде и проверяется компилятором.
 
 ---
 

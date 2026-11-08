@@ -317,31 +317,106 @@ case Right(ordinal) =>
 
 Во все формы, где есть поле ввода порядка, добавляется чекбокс:
 
-### `createTask.scala.html`
+### `Views.createTask`
 
-```html
-<div class="form-group">
-  <label for="ordinalShift">Выровнять порядок?</label>
-  <input id="ordinalShift" name="ordinalShift" type="checkbox" />
-</div>
+Вызывает `CreateTaskRequest.render`, который рендерит форму создания задачи. Секция порядкового номера:
+
+```dotty
+group("ordinal", "Порядок:")(input(
+  attr("id")    := "ordinal",
+  attr("name")  := "ordinal",
+  attr("type")  := "number",
+  attr("min")   := "1",
+  attr("value") := request.ordinal,
+  required
+)),
+group("ordinalShift", "Выровнять порядок?")(
+  input(
+    attr("id")   := "ordinalShift",
+    attr("name") := "ordinalShift",
+    attr("type") := "checkbox"
+  )
+),
 ```
 
-### `editTask.scala.html`
+### `Views.editTask`
 
-```html
-<div class="form-group">
-  <label for="ordinalShift">Выровнять порядок?</label>
-  <input id="ordinalShift" name="ordinalShift" type="checkbox" />
-</div>
+Вызывает `EditTaskRequest.render`, который рендерит форму редактирования задачи. Секция порядкового номера:
+
+```dotty
+group("ordinal", "Порядок:")(
+  input(
+    attr("id")    := "ordinal",
+    attr("name")  := "ordinal",
+    attr("type")  := "number",
+    attr("min")   := "1",
+    attr("value") := request.ordinal,
+    cls           := "form-input",
+    required
+  )
+),
+group("ordinalShift", "Выровнять порядок?")(
+  input(
+    attr("id")   := "ordinalShift",
+    attr("name") := "ordinalShift",
+    attr("type") := "checkbox"
+  )
+)
 ```
 
-### `task.scala.html` (в модальном окне выбора порядка)
+### `Views.task` (модальное окно выбора порядка)
 
-```html
-<div class="form-group">
-  <label for="ordinalShift">Выровнять порядок?</label>
-  <input id="ordinalShift" name="ordinalShift" type="checkbox" />
-</div>
+Вызывает `QueueTaskRequest.render`, который рендерит форму в модальном окне `ordinalModal`. Содержит поля `ordinal` и `ordinalShift`:
+
+```dotty
+form(
+  attr("id")     := "ordinalForm",
+  attr("hx-put") := s"/task/${id.value}/queue",
+  Htmx.appTarget,
+  Htmx.appSwap,
+  Htmx.hiddenToken(token.value),
+  div(
+    cls := "form-group",
+    label(`for` := "ordinalSelect")("Порядок:"),
+    div(
+      cls := "ordinal-info-block compact",
+      div(cls := "ordinal-info-title")(
+        s"""Доступные порядки задач типа "$taskType":"""
+      ),
+      div(cls := "ordinal-info-list")(ordinalListChildren*)
+    ),
+    input(
+      attr("id")    := "ordinalSelect",
+      attr("name")  := "ordinal",
+      attr("type")  := "number",
+      cls           := "form-input",
+      placeholder   := "Введите порядок",
+      attr("value") := ordinal
+    ),
+    div(
+      cls := "form-group",
+      label(`for` := "ordinalShift")("Выровнять порядок?"),
+      input(
+        attr("id")   := "ordinalShift",
+        attr("name") := "ordinalShift",
+        attr("type") := "checkbox"
+      )
+    )
+  ),
+  div(
+    cls := "modal-actions",
+    button(
+      `type`  := "submit",
+      cls     := "save-btn",
+      onclick := "closeModal('ordinalModal')"
+    )("Подтвердить"),
+    button(
+      `type`  := "button",
+      cls     := "cancel-btn",
+      onclick := "closeModal('ordinalModal')"
+    )("Отмена")
+  )
+)
 ```
 
 Чекбокс по умолчанию **не отмечен**. 

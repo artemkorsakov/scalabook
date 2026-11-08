@@ -59,66 +59,36 @@ final case class RegisterHandler(
 - **`formRoute.handle`** — используем `handle`, а не `handleIO`, потому что
   логика чистая: никаких эффектов (`IO`) не требуется, только рендер шаблона.
 - **`() => ...`** — лямбда без аргументов, потому что запрос не содержит параметров.
-- **`View.register(none)`** — рендерим Twirl-шаблон `register.scala.html`, передавая `None`
-  в качестве сообщения об ошибке. Это значит «ошибки нет, показываем чистую форму».
+- **`View.register(none)`** — вызываем метод `Views.register` с `None` в качестве
+  сообщения об ошибке. Это значит «ошибки нет, показываем чистую форму».
 - **`formHandler` / `registerHandler`** — два отдельных `Handler`, каждый со своим маршрутом.
   В `Main.scala` они подключаются через `.orElse`.
 
-### Шаблон `register.scala.html`
+### Рендер формы `Views.register`
 
-```html
-@import ru.scalabook.pdp.frontend.Views.DefaultTab
+Метод `Views.register` — это scalatags-функция в объекте `Views`. Она принимает
+`errorMessage: Option[String]` и возвращает `String` (рендер в HTML). Рендерится:
 
-@(errorMessage: Option[String])
-<div id="app" class="app-container-narrow">
-    <h2>Регистрация</h2>
-
-    <form id="registerForm">
-        <div class="form-group">
-            <label for="username">Имя пользователя:</label>
-            <input id="username" name="username" type="text" required/>
-        </div>
-        <div class="form-group">
-            <label for="password">Пароль:</label>
-            <input id="password" name="password" type="password" required/>
-        </div>
-        <button
-                type="button"
-                hx-post="/register/new"
-                hx-target="#app"
-                hx-swap="outerHTML"
-        >Зарегистрироваться
-        </button>
-    </form>
-
-    <div class="messageBlock">
-        @errorMessage.map { msg =>
-        <div class="error">@msg</div>
-        }
-    </div>
-
-    <p>
-        Есть аккаунт?
-        <a href="/">Войти</a>
-    </p>
-</div>
-```
+- Обёртка `<div id="app" class="app-container-narrow">`.
+- Заголовок `<h2>Регистрация</h2>`.
+- Форма — результат `LoginRequest.render("registerForm", "/register/new", "Зарегистрироваться")`:
+  поля `username` и `password`, кнопка с `hx-post="/register/new"`, `hx-target="#app"`,
+  `hx-swap="outerHTML"`.
+- Блок ошибок `errorBlock(errorMessage)`.
+- Ссылка: `p("Есть аккаунт?", a(href := "/")("Войти"))` — обычный anchor, не htmx.
 
 **Ключевые моменты:**
 
-1. **`@(errorMessage: Option[String])`** — параметр шаблона. Если ошибка есть — показываем её под формой.
+1. **`Views.register(errorMessage: Option[String])`** — метод объекта `Views`.
+   Если ошибка есть — показываем её под формой.
 2. **Форма регистрации** — два поля: `username` и `password`. Оба обязательны (`required`).
+   Рендерится через `LoginRequest.render("registerForm", "/register/new", "Зарегистрироваться")`.
 3. **Кнопка «Зарегистрироваться»** — использует htmx:
-    - `hx-post="/register/new"` — отправляет POST-запрос на `/register/new`.
-    - `hx-target="#app"` — ответ сервера заменяет содержимое блока `#app`.
-    - `hx-swap="outerHTML"` — заменяет весь блок, а не только его содержимое.
-4. **Блок `messageBlock`** — опциональное сообщение об ошибке (например, «Логин уже занят»).
-5. **Ссылка «Войти»** — использует htmx:
-    - `onclick="htmx.process(this); this.click();"` — обязательный трюк: сначала htmx
-      обрабатывает элемент (навешивает обработчики), затем программно вызывается клик.
-      Без этого htmx-атрибуты могут не сработать после динамической подстановки HTML.
-    - `hx-get="/home/@DefaultTab"` — GET-запрос на `/home/in-progress`.
-    - `hx-target="#app"` — заменяет содержимое `#app` на страницу входа.
+     - `hx-post="/register/new"` — отправляет POST-запрос на `/register/new`.
+     - `hx-target="#app"` — ответ сервера заменяет содержимое блока `#app`.
+     - `hx-swap="outerHTML"` — заменяет весь блок, а не только его содержимое.
+4. **Блок `errorBlock`** — опциональное сообщение об ошибке (например, «Логин уже занят»).
+5. **Ссылка «Войти»** — обычный `<a href="/">Войти</a>`, не htmx.
 
 Открывается такая форма:
 

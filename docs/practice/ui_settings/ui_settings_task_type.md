@@ -2,21 +2,14 @@
 
 После того как мы реализовали страницу настроек, нужно добавить функциональность для управления
 справочниками: **создание**, **редактирование**, **удаление** и **отображение** типов задач,
-разделов и целей. Каждая из этих сущностей работает по одному паттерну, поэтому мы подробно
+разделов, целей и периодических задач. Каждая из этих сущностей работает по одному паттерну, поэтому мы подробно
 разберём типы задач, а для разделов и целей отметим только отличия.
 
 ## Общий паттерн CRUD-операций
 
-Для каждой сущности реализуется **один класс хэндлеров** (с несколькими `val`-хэндлерами)
-и **три шаблона**:
-
-| Операция                              | Хэндлер                  | Шаблон                               |
-| ------------------------------------- | ------------------------ | ------------------------------------ |
-| Создание                              | `TaskTypeHandlers.createHandler`  | — (возвращает всю страницу настроек) |
-| Удаление                              | `TaskTypeHandlers.deleteHandler`  | — (возвращает всю страницу настроек) |
-| Отображение строки для редактирования | `TaskTypeHandlers.editRowHandler` | `editTaskTypeRow.scala.html`         |
-| Сохранение изменений                  | `TaskTypeHandlers.editHandler`    | — (возвращает обновлённую строку)    |
-| Отображение обычной строки            | `TaskTypeHandlers.getRowHandler`  | `getTaskTypeRow.scala.html`          |
+Для каждой сущности реализуется **один класс хэндлеров** (с несколькими `val`-хэндлерами).
+Рендерные методы для строк таблиц находятся в `Views` (метод `getTaskTypeRow`),
+а редактируемая строка рендерится через `EditItemRequest.render`:
 
 Все операции одной сущности собраны в **один класс** `TaskTypeHandlers`. Каждая операция — это
 отдельный публичный `val`-хэндлер, декларативно связанный со своим приватным маршрутом.
@@ -227,30 +220,26 @@ val editRowHandler: Handler =
       withUserFromHeader(
         authorization
       ): (user: UserInfo, jwtToken: JwtToken) =>
-        getTaskType(taskTypeId, user.id).map: taskType =>
-          View.editTaskTypeRow(
-            taskType,
-            jwtToken.value,
-            none
-          ).toString
+          getTaskType(taskTypeId, user.id).map: taskType =>
+            EditItemRequest.render(taskType, jwtToken, none).toString
 ```
 
 **Пошаговый разбор:**
 
 1. **`taskTypeId: TaskTypeId`** — ID приходит типизированным из пути через `taskTypeIdParam`.
 2. **`getTaskType(taskTypeId, user.id)`** — приватный вспомогательный метод, который
-   загружает все типы и находит нужный:
-   ```dotty
-   private def getTaskType(id: TaskTypeId, userId: UserId): IO[TaskType] =
-     for
-       taskTypes <- settingsService.getTaskTypes(userId)
-       taskType  <- IO.fromOption(
-         taskTypes.find(_.id == id)
-       )(new IllegalArgumentException("Задача не найдена"))
-     yield taskType
-   ```
-3. **`View.editTaskTypeRow(...)`** — рендерим шаблон `editTaskTypeRow.scala.html`
-   с обычным состоянием (без ошибки).
+    загружает все типы и находит нужный:
+    ```dotty
+    private def getTaskType(id: TaskTypeId, userId: UserId): IO[TaskType] =
+      for
+        taskTypes <- settingsService.getTaskTypes(userId)
+        taskType  <- IO.fromOption(
+          taskTypes.find(_.id == id)
+        )(new IllegalArgumentException("Задача не найдена"))
+      yield taskType
+    ```
+3. **`EditItemRequest.render(...)`** — рендерим scalatags-карточку `EditItemRequest`
+    с обычным состоянием (безд ошибки).
 
 **Зачем загружать все типы, а не один?**
 
@@ -275,93 +264,57 @@ private val editRowRoute = Route(
 
 ![Settings, edit task type](../images/settings_edit_task_type.png)
 
-## Шаблон `editTaskTypeRow.scala.html`
+## Рендер редактируемой строки
 
-```html
-@import ru.scalabook.pdp.models.TaskType
+Редактируемая строка рендерится через scalatags-метод `EditItemRequest.render`:
 
-@(taskType: TaskType, token: String, errorMessage: Option[String])
-<tr class="task-type-row editing"
-    hx-trigger="cancel"
-    hx-get="/settings/task_types/@taskType.id.value"
->
-   <td>
-      <input
-              class="edit-input"
-              name="name"
-              value="@taskType.name.value"
-              autofocus
-      />
-   </td>
-   <td>
-      <input
-              class="edit-input"
-              name="ordinal"
-              type="number"
-              value="@taskType.ordinal.value"
-              min="0"
-      />
-      Выровнять порядок?
-      <input
-              class="edit-checkbox"
-              name="ordinalShift"
-              type="checkbox"
-      />
-   </td>
-   <td>
-      <input
-              class="edit-checkbox"
-              name="displayed"
-              type="checkbox"
-              @if(taskType.displayed) { checked }
-      />
-   </td>
-   <td>
-      <input type="hidden" name="token" value="@token"/>
-      <button
-              class="cancel-btn"
-              hx-get="/settings/task_types/@taskType.id.value"
-      >
-         ❌ Отмена
-      </button>
-      <button
-              class="save-btn"
-              hx-put="/settings/task_types/@taskType.id.value"
-              hx-include="closest tr"
-      >
-         💾 Сохранить
-      </button>
-      @errorMessage.map { msg =>
-      <div class="error">@msg</div>
-      }
-   </td>
-</tr>
+```dotty
+object EditItemRequest:
+  def render(
+      item: TaskType,
+      token: JwtToken,
+      maybeError: Option[String]
+  ): String
 ```
+
+Метод генерирует `<tr class="task-type-row editing" hx-trigger="cancel" hx-get="{path}">`:
+
+- Первая `<td>`: `<input.edit-input>` с `name="name"`, `autofocus`, `value="{name}"`.
+- Вторая `<td>`: `<input.edit-input>` с `name="ordinal"`, `type="number"`, `min="0"`,
+  плюс text "Выровнять порядок?" и `<input.edit-checkbox>` с `name="ordinalShift"`.
+- Третья `<td>`: `<input.edit-checkbox>` с `name="displayed"`, `type="checkbox"` — `checked` если `displayed`.
+- Четвёртая `<td>`:
+  - `<input type="hidden" name="token" value="{token.value}"/>` — токен для PUT-запроса,
+    генерируется через `Htmx.hiddenToken(token.value)`.
+  - Кнопка «❌ Отмена» — `hx-get="{path}"`.
+  - Кнопка «💾 Сохранить» — `hx-put="{path}"`, `hx-include="closest tr"`.
+  - Ошибка: `maybeError.map(msg => div.err(msg))`.
 
 **Ключевые особенности:**
 
 1. **`class="task-type-row editing"`** — дополнительный класс `editing` используется
-   для реализации «одновременного редактирования только одной строки». Функция
-   `handleEditClick` ищет `.editing` и предлагает закрыть предыдущую строку.
+    для реализации «одновременного редактирования только одной строки». Функция
+    `handleEditClick` ищет `.editing` и предлагает закрыть предыдущую строку.
 
 2. **`hx-trigger="cancel"`** — строка реагирует на событие `cancel`. Когда пользователь
-   открывает другую строку, `handleEditClick` отправляет событие `cancel` на текущую,
-   что вызывает GET-запрос на `/settings/task_types/{id}` (получить обычную строку).
+    открывает другую строку, `handleEditClick` отправляет событие `cancel` на текущую,
+    что вызывает GET-запрос на `/settings/task_types/{id}` (получить обычную строку).
 
 3. **`autofocus`** на поле `name` — курсор автоматически встаёт в поле редактирования.
 
 4. **`hx-include="closest tr"`** — при отправке формы PUT-запрос включает **все поля
-   из ближайшей строки** (`tr`). Это избавляет от необходимости вручную собирать
-   данные из полей. Включаются: `name`, `ordinal`, `ordinalShift`, `displayed`, `token`.
+    из ближайшей строки** (`tr`). Это избавляет от необходимости вручную собирать
+    данные из полей. Включаются: `name`, `ordinal`, `ordinalShift`, `displayed`, `token`.
 
 5. **`<input type="hidden" name="token">`** — токен передаётся в теле PUT-запроса.
+    Генерируется через `Htmx.hiddenToken(token.value)`.
 
 6. **Кнопка «Отмена»** — GET-запрос на `/settings/task_types/{id}`,
-   что возвращает обычную строку.
+    что возвращает обычную строку.
 
 7. **Кнопка «Сохранить»** — PUT-запрос с данными из строки.
 
-8. **Сообщение об ошибке** — если есть, отображается красным блоком под кнопками.
+8. **Сообщение об ошибке** — если `maybeError` не `None`, отображается красным блоком.
 
 ![Settings, edit error](../images/settings_edit_error.png)
 
@@ -411,8 +364,7 @@ val editHandler: Handler =
 
           run.map: _ =>
             View.getTaskTypeRow(
-              updated,
-              jwtToken.value
+              updated
             ).toString
           .recoverWith:
             case ex: IllegalArgumentException =>
@@ -480,12 +432,12 @@ val editHandler: Handler =
 
 6. **Успех:** возвращаем обновлённую строку через `View.getTaskTypeRow`.
 
-7. **Ошибка бизнес-логики:** перехватываем `IllegalArgumentException` и вызываем
-   `editError`, который рендерит строку в режиме редактирования с сообщением.
+ 7. **Ошибка бизнес-логики:** перехватываем `IllegalArgumentException` и вызываем
+    `editError`, который рендерит строку в режиме редактирования с сообщением.
 
-8. **`editError`** — приватный вспомогательный метод, который:
-    - Загружает оригинальный `TaskType` (по ID) через `getTaskType`.
-    - Рендерит `editTaskTypeRow` с сообщением об ошибке.
+ 8. **`editError`** — приватный вспомогательный метод, который:
+     - Загружает оригинальный `TaskType` (по ID) через `getTaskType`.
+     - Рендерит `EditItemRequest.render(taskType, jwtToken, error)` с сообщением.
 
 **Зачем нужен `ordinalShift`?**
 
@@ -524,8 +476,7 @@ val getRowHandler: Handler =
       ): (user: UserInfo, jwtToken: JwtToken) =>
         getTaskType(taskTypeId, user.id).map: taskType =>
           View.getTaskTypeRow(
-            taskType,
-            jwtToken.value
+            taskType
           ).toString
 ```
 
@@ -547,56 +498,33 @@ private val getRowRoute = Route(
 
 где `path = Path.root / "settings" / "task_types" / taskTypeIdParam`.
 
-## Шаблон `getTaskTypeRow.scala.html`
+## Рендер обычной строки
 
-```html
-@import ru.scalabook.pdp.models.TaskType
+От обычную строку рендерится scalatags-методом `getTaskTypeRow` в `Views`:
 
-@(taskType: TaskType, token: String)
-<tr class="task-type-row" data-task-type-id="@taskType.id.value">
-   <td>
-      <button
-              class="refresh-btn"
-              onclick="htmx.process(this); this.click();"
-              hx-get="/settings"
-              hx-target="#app"
-              hx-swap="outerHTML"
-
-      >
-         🔄 Обновить
-      </button>
-      @taskType.name.value
-   </td>
-   <td>@taskType.ordinal.value</td>
-   <td>@if(taskType.displayed) { ✓ } else { ✗ }</td>
-   <td>
-      <button
-              class="edit-btn"
-              hx-get="/settings/task_types/@taskType.id.value/edit"
-              hx-trigger="edit"
-              onclick="handleEditClick(this)"
-      >
-         ✏️ Редактировать
-      </button>
-      <button
-              class="delete-btn"
-              hx-delete="/settings/task_types/@taskType.id.value"
-              hx-target="#app"
-              hx-swap="outerHTML"
-              hx-confirm="Вы уверены, что хотите удалить тип задачи «@taskType.name.value»?"
-      >
-         🗑️ Удалить
-      </button>
-   </td>
-</tr>
+```dotty
+def getTaskTypeRow(taskType: TaskType): String
 ```
+
+Метод генерирует `<tr class="task-type-row" data-task-type-id="{id}">`:
+
+- Первая `<td>`: кнопка «🔄 Обновить» (`hx-get="/settings"`, `hx-target="#app"`,
+  `hx-swap="outerHTML"`, `onclick="htmx.process(this); this.click();"`)
+  и значение `name` (отображается как plain text).
+- Вторая `<td>`: значение `ordinal` (plain text).
+- Третья `<td>`: `✓` или `✗` в зависимости от `displayed`.
+- Четвёртая `<td>`:
+  - Кнопка «✏️ Редактировать» — `hx-get="/settings/task_types/{id}/edit"`,
+    `hx-trigger="edit"`, `onclick="handleEditClick(this)"`.
+  - Кнопка «🗑️ Удалить» — `hx-delete="/settings/task_types/{id}"`,
+    `hx-target="#app"`, `hx-swap="outerHTML"`, `hx-confirm="Вы уверены, что хотите удалить тип задачи «{name}»?"`.
 
 **Особенности:**
 
 - **`data-task-type-id`** — атрибут с ID для отладки.
-- **Кнопка «Обновить»** — перезагружает всю страницу настроек. 
-  Кнопка необходимо, потому что после редактирования обновляется только редактируемая строка, 
-  хотя в остальных строках мог измениться порядок - чтобы это отобразить нужно обновить страницу целиком по кнопке.
+- **Кнопка «Обновить»** — перезагружает всю страницу настроек.
+  Кнопка необходима, потому что после редактирования обновляется только редактируемая строка,
+  хотя в остальных строках мог измениться порядок — чтобы это отобразить нужно обновить страницу целиком по кнопке.
 - **Кнопка «Редактировать»** — `hx-trigger="edit"` — запрос отправляется **только**
   когда функция `handleEditClick` программно вызовет событие `edit`. Это позволяет
   закрывать ранее открытые строки редактирования.
@@ -611,7 +539,8 @@ private val getRowRoute = Route(
 | Тип ID              | `TaskTypeId`           | `SectionId`           | `GoalId`           |
 | Тип имени           | `TaskTypeName`         | `SectionName`         | `GoalName`         |
 | URL-префикс         | `/settings/task_types` | `/settings/sections`  | `/settings/goals`  |
-| Шаблон              | `getTaskTypeRow`       | `getSectionRow`       | `getGoalRow`       |
+| Обычная строка      | `getTaskTypeRow`       | `getSectionRow`       | `getGoalRow`       |
+| Редактируемая строка | `EditItemRequest.render` | `EditItemRequest.render` | `EditItemRequest.render` |
 | Сообщение об ошибке | `errorTaskTypeMessage` | `errorSectionMessage` | `errorGoalMessage` |
 
 Такое копирование — осознанное решение. Оно позволяет в будущем **специализировать**
@@ -636,7 +565,7 @@ private val getRowRoute = Route(
 
 ## Итог
 
-Мы реализовали полный CRUD для трёх справочников, собрав все операции каждой сущности
+Мы реализовали полный CRUD для четырёх справочников, собрав все операции каждой сущности
 в единый класс `TaskTypeHandlers`:
 
 1. **Создание** (`TaskTypeHandlers.createHandler`) — добавляет новую запись и перезагружает
@@ -652,11 +581,13 @@ private val getRowRoute = Route(
   на первой.
 - **Опция «Выровнять порядок»** — позволяет переупорядочивать записи, сохраняя
   уникальность порядковых номеров.
-- **Единообразие для трёх справочников** — упрощает поддержку и понимание кода.
+- **Единообразие для четырёх справочников** — упрощает поддержку и понимание кода.
+- **Единый подход к рендеру** — обычные строки используют scalatags-методы `Views`,
+  а редактируемые — `EditItemRequest.render`, что работает для всех сущностей.
 
 После реализации этой функциональности пользователь может полностью управлять
-своими справочниками через UI: создавать типы задач, разделы и цели, редактировать
-их названия, порядок и признак отображения, а также удалять ненужные записи.
+своими справочниками через UI: создавать типы задач, разделы, цели и периодические шаги,
+редактировать их названия, порядок и признак отображения, а также удалять ненужные записи.
 Всё это — без единой перезагрузки страницы.
 
 ---

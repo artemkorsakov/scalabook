@@ -103,7 +103,7 @@ private[tasks] object TaskViews:
 - **После ошибки сохранения** — когда `TaskHandlers.editHandler` не смог сохранить
   изменения и вернул форму с сохранёнными данными и сообщением об ошибке.
 
-## Шаблон `editTask.scala.html`
+## Рендер формы ``Views.editTask```
 
 Шаблон — это большая форма, которая по структуре напоминает страницу задачи,
 но с полями ввода вместо текста. Рассмотрим её по частям.
@@ -113,8 +113,8 @@ private[tasks] object TaskViews:
 ```html
 <div class="task-detail-header">
   <div class="task-detail-nav">
-    <span class="task-detail-status-badge @task.status.toString.toLowerCase">
-      @task.status.show
+    <span class="task-detail-status-badge planned">
+      В работе
     </span>
   </div>
   <div class="task-detail-actions">
@@ -123,7 +123,7 @@ private[tasks] object TaskViews:
     </button>
     <button
       class="cancel-task-btn"
-      hx-get="/task/@task.id"
+      hx-get="/task/..."
       hx-target="#app"
       hx-swap="outerHTML"
     >
@@ -150,20 +150,18 @@ private[tasks] object TaskViews:
 ```html
 <form
   id="editTaskForm"
-  hx-put="/task/@task.id"
+  hx-put="/task/..."
   hx-target="#app"
   hx-swap="outerHTML"
 >
   <div id="form-error">
-    @errorMessage.map { msg =>
-    <div class="error">@msg</div>
-    }
+    <div class="error">Ошибка сохранения</div>
   </div>
-  <input type="hidden" name="token" value="@token" />
+  <input type="hidden" name="token" value="..." />
   <input
     type="hidden"
     name="status"
-    value="@task.status.toString.toLowerCase"
+    value="planned"
   />
   ...
 </form>
@@ -190,7 +188,7 @@ private[tasks] object TaskViews:
     name="name"
     type="text"
     required
-    value="@task.name.value"
+    value="Название задачи"
     class="form-input"
   />
 </div>
@@ -208,16 +206,8 @@ private[tasks] object TaskViews:
     <div class="form-group">
       <label for="taskTypeId">Тип задачи:</label>
       <select id="taskTypeId" name="taskTypeId" class="form-select" required>
-        @for(taskType <- taskTypes.filter(_.displayed).sortBy(_.ordinal.value))
-        {
-        <option
-          value="@taskType.id.value"
-          @if(task.taskType=""
-          ="taskType.name.value){selected}"
-        >
-          @taskType.name.value
-        </option>
-        }
+        <option value="1" selected>Тип задачи 1</option>
+        <option value="2">Тип задачи 2</option>
       </select>
     </div>
     ...
@@ -229,9 +219,11 @@ private[tasks] object TaskViews:
 
 - **`.filter(_.displayed)`** — показываем только включённые элементы.
 - **`.sortBy(_.ordinal.value)`** — сортируем по порядку.
-- **`@if(task.taskType == taskType.name.value){selected}`** — выделяем текущий
-  выбранный вариант. Обратите внимание: `task.taskType` — это **строка** (название),
-  а `taskType.name.value` — тоже строка, поэтому сравнение работает напрямую.
+- **Выделение текущего выбранного варианта** — для `<option>`, где
+  `task.taskType == taskType.name.value`, добавляется атрибут `selected`
+  (`if ... then selected else frag()` в scalatags). Обратите внимание:
+  `task.taskType` — это **строка** (название), а `taskType.name.value` — тоже строка,
+  поэтому сравнение работает напрямую.
 
 **Почему сравнение по имени, а не по ID?**
 
@@ -250,7 +242,7 @@ private[tasks] object TaskViews:
       id="startDate"
       name="startDate"
       type="date"
-      value="@task.startDate"
+      value="2026-07-25"
       class="form-input"
     />
   </div>
@@ -260,17 +252,17 @@ private[tasks] object TaskViews:
       id="endDate"
       name="endDate"
       type="date"
-      value="@task.endDate"
+      value="2026-08-01"
       class="form-input"
     />
   </div>
 </div>
 ```
 
-**Важная деталь:** `task.startDate` — это `Option[LocalDate]`. При передаче в `value`
-Twirl автоматически выводит `Some(date)` как `date` (без обёртки), а `None` — как
-пустую строку. Это работает благодаря тому, что `LocalDate.toString` возвращает
-строку в формате ISO (`2026-07-25`), который принимает `<input type="date">`.
+**Важная деталь:** `task.startDate` — это `Option[LocalDate]`. В scalatags
+опциональные значения формы обрабатываются через `optDate.fold("")(d => d.toString)`,
+что отображает `Some(date)` как строку в формате ISO (`2026-07-25`), а `None` — как
+пустую строку. Это обеспечивает корректную работу `<input type="date">`.
 
 ### Продолжительность (двухсоставное поле)
 
@@ -283,7 +275,7 @@ Twirl автоматически выводит `Some(date)` как `date` (бе
       name="durationValue"
       type="number"
       min="1"
-      value="@task.duration.length"
+      value="3"
       required
       class="form-input duration-input"
     />
@@ -293,27 +285,9 @@ Twirl автоматически выводит `Some(date)` как `date` (бе
       class="form-select duration-select"
       required
     >
-      <option
-        value="minutes"
-        @if(task.duration.unit=""
-        ="TimeUnit.MINUTES){selected}"
-      >
-        в минутах
-      </option>
-      <option
-        value="hours"
-        @if(task.duration.unit=""
-        ="TimeUnit.HOURS){selected}"
-      >
-        в часах
-      </option>
-      <option
-        value="days"
-        @if(task.duration.unit=""
-        ="TimeUnit.DAYS){selected}"
-      >
-        в днях
-      </option>
+            <option value="minutes" selected>в минутах</option>
+            <option value="hours">в часах</option>
+            <option value="days">в днях</option>
     </select>
   </div>
 </div>
@@ -336,7 +310,7 @@ Twirl автоматически выводит `Some(date)` как `date` (бе
 <div class="task-detail-section full-width">
   <h3>📝 Информация</h3>
   <textarea id="information" name="information" rows="10" class="form-textarea">
-@task.information</textarea>
+...</textarea>
 </div>
 ```
 
@@ -350,21 +324,20 @@ Twirl автоматически выводит `Some(date)` как `date` (бе
 ```html
 <div class="plan-editor">
   <div id="planContainer">
-    @if(task.plan.nonEmpty) { @for((plan, index) <- task.plan.zipWithIndex) {
-    <div class="plan-step-editor" data-index="@index">
+    <div class="plan-step-editor" data-index="0">
       <div class="plan-step-input-group">
         <input
           type="text"
-          name="plan[@index].number"
-          value="@plan.number"
+          name="plan[0].number"
+          value="1"
           class="form-input plan-step-number-input"
           placeholder="Номер шага"
           pattern="^\d+(?:\.\d+)*$"
         />
         <input
           type="text"
-          name="plan[@index].step"
-          value="@plan.step"
+          name="plan[0].step"
+          value="Шаг плана"
           class="form-input plan-step-input"
           placeholder="Шаг плана"
         />
@@ -380,20 +353,16 @@ Twirl автоматически выводит `Some(date)` как `date` (бе
         <label>
           <input
             type="checkbox"
-            @if(plan.completed){checked}
             onchange="toggleStepStatus(this)"
           />
         </label>
         <input
           type="hidden"
-          name="plan[@index].completed"
-          value="@if(plan.completed){true}else{false}"
+          name="plan[0].completed"
+          value="false"
         />
       </div>
     </div>
-    } } else {
-    <p class="empty-message" id="emptyPlanMessage">План не составлен</p>
-    }
   </div>
   <button type="button" class="add-step-btn" onclick="addStep()">
     + Добавить шаг
@@ -1030,8 +999,8 @@ val planSteps: List[PlanStepRequest] = planMap.toList
 Мы реализовали полный цикл редактирования задачи:
 
 1. **`TaskHandlers.editFormHandler`** — открывает форму с предзаполненными полями.
-2. **`editTask.scala.html`** — рендерит форму с редактором плана и двухсоставными
-   полями продолжительности.
+2. **`Views.editTask`** — рендерит форму с редактором плана и двухсоставными
+    полями продолжительности.
 3. **`TaskHandlers.editHandler`** — принимает данные, валидирует, сохраняет.
 4. **`EditTaskRequest`** — DTO с нетривиальной логикой декодирования плана.
 

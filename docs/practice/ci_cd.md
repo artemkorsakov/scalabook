@@ -17,8 +17,7 @@
 lazy val pdp = (project in file("pdp"))
   .enablePlugins(
     DockerPlugin,        // Сборка Docker-образа
-    JavaAppPackaging,    // Упаковка JVM-приложения (JRE + все jar'ы + скрипт запуска)
-    SbtTwirl             // Компиляция Twirl-шаблонов
+    JavaAppPackaging    // Упаковка JVM-приложения (JRE + все jar'ы + скрипт запуска)
   )
 ```
 
@@ -29,7 +28,6 @@ lazy val pdp = (project in file("pdp"))
   кладётся в Docker-образ.
 - **`DockerPlugin`** — расширяет `JavaAppPackaging`, добавляя возможность
   собрать Docker-образ из дистрибутива.
-- **`SbtTwirl`** — нужен, потому что у нас HTML-шаблоны на Twirl.
 
 Без `JavaAppPackaging` плагин `DockerPlugin` не заработает — он зависит от него.
 

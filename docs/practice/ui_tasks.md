@@ -216,7 +216,7 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 для вкладок «В работе» и «Запланировано» — это следующий номер после последнего,
 а для «Базы знаний» — `Ordinal.Max`, чтобы новая задача попала в конец списка.
 
-## Шаблон `createTask.scala.html`
+## Рендер формы ``Views.createTask``
 
 Шаблон состоит из двух веток: закрытое модальное окно и открытое. 
 Первая используется после успешного создания задачи для «мягкого» закрытия окна.
@@ -224,12 +224,11 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 ### Ветка «Модальное окно закрыто»
 
 ```html
-@if(!isOpen) {
 <div id="task-modal" class="uk-modal uk-open" style="display:block;">
   <div class="uk-modal-dialog uk-modal-body">
     <button
       class="add-btn"
-      hx-get="/home/@req.tab"
+      hx-get="/home/..."
       hx-target="#app"
       hx-swap="outerHTML"
       onclick="closeCreateTaskModal()"
@@ -238,7 +237,6 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
     </button>
   </div>
 </div>
-}
 ```
 
 ![Обновить список задач](images/reload_tasks.png)
@@ -260,19 +258,17 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 ### Ветка «Модальное окно открыто»
 
 ```html
-@if(isOpen) {
 <div id="task-modal" class="uk-modal uk-open" style="display:block;">
   <div class="uk-modal-dialog uk-modal-body">
     <h2 class="uk-modal-title">Создание задачи</h2>
 
     <form hx-post="/tasks" hx-target="#modal-container" hx-swap="innerHTML">
-      <input type="hidden" name="token" value="@req.token" />
-      <input type="hidden" name="tab" value="@req.tab" />
+      <input type="hidden" name="token" value="..." />
+      <input type="hidden" name="tab" value="..." />
       ...
     </form>
   </div>
 </div>
-}
 ```
 
 **Ключевые моменты формы:**
@@ -300,7 +296,7 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
     type="text"
     required
     placeholder="Введите название"
-    value="@req.name"
+    value="..."
   />
 </div>
 ```
@@ -315,15 +311,8 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
   <label for="taskTypeId">Тип задачи:</label>
   <select id="taskTypeId" name="taskTypeId" required>
     <option value="">Выберите тип...</option>
-    @for(taskType <- taskTypes.filter(_.displayed).sortBy(_.ordinal.value)) {
-    <option
-      value="@taskType.id.value"
-      @if(req.taskTypeId=""
-      ="taskType.id.value){selected}"
-    >
-      @taskType.name.value
-    </option>
-    }
+    <option value="1">Тип задачи 1</option>
+    <option value="2" selected>Тип задачи 2</option>
   </select>
 </div>
 ```
@@ -333,9 +322,8 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 - **`.filter(_.displayed)`** — показываем только включённые элементы. Скрытые
   (архивные) не должны быть доступны для выбора.
 - **`.sortBy(_.ordinal.value)`** — сортируем по порядку, заданному пользователем
-  в настройках.
-- **`@if(req.taskTypeId == taskType.id.value){selected}`** — выделяем текущий
-  выбранный вариант при повторном рендере после ошибки.
+  в настройках._scalatags `map` генерирует `<option>` с `selected` атрибутом
+  для ранее выбранного варианта при повторном рендере после ошибки._
 
 **Порядок:**
 
@@ -347,7 +335,7 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
     name="ordinal"
     type="number"
     min="1"
-    value="@req.ordinal"
+    value="1000"
     required
   />
 </div>
@@ -362,13 +350,14 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 <div class="form-group">
     <label for="startDate">Дата начала:</label>
     <input id="startDate" name="startDate" type="date"
-           value="@req.startDate.map(_.toString).getOrElse("")"
-           @if(req.tab == "in-progress") { required }/>
+           value="..."
+           required/>
 </div>
 ```
 
 Здесь ключевая деталь: атрибут `required` **условный**. Для вкладки `"in-progress"`
-даты обязательны (задача уже в работе, значит, начало зафиксировано). Для
+атрибут `required` добавляется scalatags условно, а значение даты подставляется
+через `.fold("")(d => d.toString)`. Для
 `"planned"` и `"knowledge-base"` — опциональны.
 
 **Информация:**
@@ -376,8 +365,8 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 ```html
 <div class="form-group">
   <label for="information">Информация:</label>
-  <textarea id="information" name="information" rows="10">
-@req.information</textarea>
+  <textarea id="information" name="information" rows="10" class="form-textarea">
+...</textarea>
 </div>
 ```
 
@@ -396,7 +385,7 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
       name="durationValue"
       type="number"
       min="1"
-      value="@req.durationValue"
+      value="30"
       required
       class="duration-input"
       placeholder="Значение"
@@ -407,21 +396,13 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
       class="duration-select"
       required
     >
-      <option
-        value="minutes"
-        @if(req.durationUnit=""
-        ="TimeUnit.MINUTES){selected}"
-      >
+      <option value="minutes" selected>
         в минутах
       </option>
-      <option
-        value="hours"
-        @if(req.durationUnit=""
-        ="TimeUnit.HOURS){selected}"
-      >
+      <option value="hours">
         в часах
       </option>
-      <option value="days" @if(req.durationUnit="" ="TimeUnit.DAYS){selected}">
+      <option value="days">
         в днях
       </option>
     </select>
@@ -457,9 +438,7 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 
 ```html
 <div class="messageBlock">
-  @errorMessage.map { msg =>
-  <div class="error">@msg</div>
-  }
+  <div class="error">Ошибка валидации</div>
 </div>
 ```
 
@@ -765,8 +744,8 @@ final case class HomeHandler(
 Мы реализовали полный цикл создания задачи:
 
 1. **`TaskHandlers.createModalHandler`** — открывает модальное окно с формой.
-2. **`createTask.scala.html`** — рендерит форму с условно обязательными полями
-   (даты обязательны только для «В работе»).
+2. **`Views.createTask`** — рендерит форму с условно обязательными полями
+    (даты обязательны только для «В работе»).
 3. **`TaskHandlers.createHandler`** — валидирует данные, создаёт задачу, обрабатывает
    ошибки.
 4. **`HomeHandler`** — возвращает пользователя на его вкладку с обновлённым списком.

@@ -226,7 +226,7 @@ final case class OrdinalCard(ordinal: Int, after: String)
 Модель доступного порядкового номера. `ordinal` — номер, `after` — название задачи,
 после которой этот номер идёт.
 
-## Шаблон `task.scala.html`
+## Рендер карточки задачи ``Views.task```
 
 Шаблон состоит из трёх основных блоков: **верхняя панель с действиями**,
 **информация о задаче**, **план и модальные окна**.
@@ -236,71 +236,44 @@ final case class OrdinalCard(ordinal: Int, after: String)
 ```html
 <div class="task-detail-header">
    <div class="task-detail-nav">
-      <span class="task-detail-status-badge @task.status.toString.toLowerCase">
-          @task.status.show
+    <span class="task-detail-status-badge in-progress">
+          В работе
       </span>
-   </div>
-   <div class="task-detail-actions">
+    </div>
+    <div class="task-detail-actions">
       <!-- Кнопки действий в зависимости от статуса -->
-      @task.status match {
-      case Status.InProgress => {
-      <button
-         class="complete-task-btn"
-         onclick="openModal('completeModal')"
-      >
-         ✅ Завершить задачу
-      </button>
-      <button
-         class="postpone-task-btn"
-         hx-put="/task/@task.id/defer"
-         hx-target="#app"
-         hx-swap="outerHTML"
-         hx-confirm="Вы уверены, что хотите отложить задачу «@task.name.value»?"
-      >
-         ⏳ Отложить задачу
-      </button>
-      }
-      case Status.Planned => {
-      @if(task.plan.isEmpty) {
-      <button
-         class="start-task-btn"
-         disabled
-         title="Нельзя взять в работу задачу без плана выполнения"
-      >
-         🚀 Взять в работу
-      </button>
-      } else {
-      <button
-         class="start-task-btn"
-         onclick="openModal('startModal')"
-      >
-         🚀 Взять в работу
-      </button>
-      }
-      }
-      case Status.KnowledgeBase => {
-      @if(task.plan.isEmpty) {
-      <button
-         class="queue-task-btn"
-         disabled
-         title="Нельзя поставить задачу в очередь без плана выполнения"
-      >
-         📋 В очередь
-      </button>
-      } else {
-      <button
-         class="queue-task-btn"
-         onclick="openModal('ordinalModal')"
-      >
-         📋 В очередь
-      </button>
-      }
-      }
-      case _ => {}
-      }
+       <button
+          class="complete-task-btn"
+          onclick="openModal('completeModal')"
+       >
+          ✅ Завершить задачу
+       </button>
+       <button
+          class="postpone-task-btn"
+          hx-put="/task/.../defer"
+          hx-target="#app"
+          hx-swap="outerHTML"
+          hx-confirm="Вы уверены, что хотите отложить задачу «...»?"
+       >
+          ⏳ Отложить задачу
+       </button>
+           <button
+              class="start-task-btn"
+              disabled
+              title="Нельзя взять в работу задачу без плана выполнения"
+           >
+              🚀 Взять в работу
+           </button>
+         <button
+           class="queue-task-btn"
+           disabled
+           title="Нельзя поставить задачу в очередь без плана выполнения"
+         >
+           📋 В очередь
+         </button>
       <button
          class="edit-task-btn"
-         hx-get="/task/@task.id/edit"
+         hx-get="/task/.../edit"
          hx-target="#app"
          hx-swap="outerHTML"
       >
@@ -308,10 +281,10 @@ final case class OrdinalCard(ordinal: Int, after: String)
       </button>
       <button
          class="delete-task-btn"
-         hx-delete="/task/@task.id"
+         hx-delete="/task/..."
          hx-target="#app"
          hx-swap="outerHTML"
-         hx-confirm="Вы уверены, что хотите удалить задачу «@task.name.value»?"
+         hx-confirm="Вы уверены, что хотите удалить задачу «...»?"
       >
          🗑️ Удалить
       </button>
@@ -346,12 +319,12 @@ final case class OrdinalCard(ordinal: Int, after: String)
 ```html
 <button
   class="postpone-task-btn"
-  hx-put="/task/@task.id/defer"
+  hx-put="/task/.../defer"
   hx-target="#app"
   hx-swap="outerHTML"
-  hx-confirm="Вы уверены, что хотите отложить задачу «@task.name.value»?"
+  hx-confirm="Вы уверены, что хотите отложить задачу «...»?"
 >
-  ⏳ Отложить задачу
+  ⏳ Отложить задача
 </button>
 ```
 
@@ -363,7 +336,6 @@ final case class OrdinalCard(ordinal: Int, after: String)
 **Особенность "Взять в работу" и "В очередь":**
 
 ```html
-@if(task.plan.isEmpty) {
 <button
   class="start-task-btn"
   disabled
@@ -371,11 +343,6 @@ final case class OrdinalCard(ordinal: Int, after: String)
 >
   🚀 Взять в работу
 </button>
-} else {
-<button class="start-task-btn" onclick="openModal('startModal')">
-  🚀 Взять в работу
-</button>
-}
 ```
 
 - Если у задачи **нет плана** — кнопка **отключена** с подсказкой.
@@ -393,7 +360,7 @@ final case class OrdinalCard(ordinal: Int, after: String)
 
 ```html
 <!-- Название задачи -->
-<h1 class="task-detail-title">@task.name.value</h1>
+<h1 class="task-detail-title">Название задачи</h1>
 
 <!-- Основная информация -->
 <div class="task-detail-grid">
@@ -401,19 +368,19 @@ final case class OrdinalCard(ordinal: Int, after: String)
       <h3>📋 Основная информация</h3>
       <div class="task-detail-item">
          <span class="detail-label">Тип задачи:</span>
-         <span class="detail-value">@task.taskType</span>
+         <span class="detail-value">Тип задачи</span>
       </div>
       <div class="task-detail-item">
          <span class="detail-label">Раздел:</span>
-         <span class="detail-value">@task.section</span>
+         <span class="detail-value">Раздел</span>
       </div>
       <div class="task-detail-item">
          <span class="detail-label">Цель:</span>
-         <span class="detail-value">@task.goal</span>
+         <span class="detail-value">Цель</span>
       </div>
       <div class="task-detail-item">
          <span class="detail-label">Порядок:</span>
-         <span class="detail-value">#@task.ordinal.value</span>
+         <span class="detail-value">#1000</span>
       </div>
    </div>
 
@@ -421,23 +388,23 @@ final case class OrdinalCard(ordinal: Int, after: String)
       <h3>📅 Даты</h3>
       <div class="task-detail-item">
          <span class="detail-label">Дата начала:</span>
-         <span class="detail-value">@task.startDate.map(_.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))).getOrElse("—")</span>
+         <span class="detail-value">25.07.2026</span>
       </div>
       <div class="task-detail-item">
          <span class="detail-label">Дата окончания:</span>
-         <span class="detail-value">@task.endDate.map(_.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))).getOrElse("—")</span>
+         <span class="detail-value">—</span>
       </div>
       <div class="task-detail-item">
          <span class="detail-label">Продолжительность:</span>
-         <span class="detail-value">@task.durationDesc</span>
+         <span class="detail-value">10 часов</span>
       </div>
       <div class="task-detail-item">
          <span class="detail-label">Затраченное время:</span>
-         <span class="detail-value">@task.timeSpentDesc</span>
+         <span class="detail-value">3 часа</span>
       </div>
       <div class="task-detail-item">
          <span class="detail-label">Оставшееся время:</span>
-         <span class="detail-value">@task.remainingTimeDesc</span>
+         <span class="detail-value">7 часов</span>
       </div>
    </div>
 </div>
@@ -449,7 +416,8 @@ final case class OrdinalCard(ordinal: Int, after: String)
 **Форматирование дат:**
 
 ```html
-@task.startDate.map(_.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))).getOrElse("—")
+```html
+25.07.2026
 ```
 
 - Если дата есть — форматируется в вид `25.07.2026`.
@@ -468,14 +436,14 @@ final case class OrdinalCard(ordinal: Int, after: String)
          <button
             class="timer-btn start-btn"
             id="startTimerBtn"
-            onclick="startTimer('@task.id')"
+            onclick="startTimer('...')"
          >
             ▶️ Старт
          </button>
          <button
             class="timer-btn stop-btn"
             id="stopTimerBtn"
-            onclick="stopTimer('@task.id', '@token')"
+            onclick="stopTimer('...', '...')"
             style="display: none;"
          >
             ⏹️ Стоп
@@ -540,11 +508,11 @@ final case class OrdinalCard(ordinal: Int, after: String)
 <div class="plan-progress-container">
   <div class="plan-progress-label">
     <span>Прогресс выполнения</span>
-    <span class="plan-progress-percent">@task.progress%</span>
+    <span class="plan-progress-percent">42%</span>
   </div>
   <div class="plan-progress-bar">
-    <div class="plan-progress-fill" style="width: @task.progress%;">
-      <span class="plan-progress-text">@task.completedCount / @task.count</span>
+    <div class="plan-progress-fill" style="width: 42%;">
+      <span class="plan-progress-text">5 / 12</span>
     </div>
   </div>
 </div>
@@ -555,23 +523,17 @@ final case class OrdinalCard(ordinal: Int, after: String)
 **Список шагов плана:**
 
 ```html
-@for(plan <- task.plan) { @defining(plan.number.count(_ == '.')) { level =>
 <div
   class="task-plan-item"
-  data-level="@level"
-  data-completed="@plan.completed"
+  data-level="1"
+  data-completed="false"
 >
-  <div class="plan-step-number level-@level">@plan.number</div>
+  <div class="plan-step-number level-1">1.2</div>
   <div class="plan-step-content">
-    <div class="plan-step-text">@plan.step</div>
-    @if(plan.completed) {
-    <span class="plan-step-status completed">✅ Выполнено</span>
-    } else {
+    <div class="plan-step-text">Пример шага плана</div>
     <span class="plan-step-status pending">⏳ Ожидает</span>
-    }
   </div>
 </div>
-} }
 ```
 
 **Иерархия уровней:** `plan.number.count(_ == '.')` считает количество точек
@@ -601,7 +563,7 @@ CSS использует `data-level` для отступов и цветово�
 </div>
 ```
 
-Шаблон `notFound.scala.html` используется в `TaskHandlers.openHandler`, когда:
+Рендер ``Views.notFound`` используется в `TaskHandlers.openHandler`, когда:
 
 - Задача с таким UUID не существует.
 - Задача принадлежит другому пользователю.

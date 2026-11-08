@@ -245,17 +245,17 @@ final case class GoalTaskStats(
 
 ```html
 <button
-    class="tab-btn @if(tab == "statistics"){active}"
-    data-tab="statistics"
-    onclick="switchTab('statistics')"
+    class="tab-btn active"
+    data-tab="goals"
+    onclick="switchTab('goals')"
 >
-    📊 Цели
+    🎯 Цели
     <span title="Статистика по целям">ℹ️</span>
 </button>
 ```
 
-- **`📊 Цели`** — название вкладки. Лаконично, сразу говорит о содержимом.
-- **`data-tab="statistics"`** — идентификатор для JS-функции `switchTab`.
+- **`🎯 Цели`** — название вкладки. Лаконично, сразу говорит о содержимом.
+- **`data-tab="goals"`** — идентификатор для JS-функции `switchTab`.
 - **`title`** — подсказка при наведении.
 
 ![Цели](images/stats_goals.png)
@@ -263,107 +263,100 @@ final case class GoalTaskStats(
 ### Контент вкладки
 
 ```html
-<div id="tab-statistics" class="tab-content @if(tab == "statistics"){active}">
-    @statistics
+<div id="tab-goals" class="tab-content active">
+    …фрагмент вкладки…
 </div>
 ```
 
-HTML-фрагмент `@statistics` рендерится на сервере и вставляется в вкладку. Это позволяет отделить логику группировки целей по статусам в Scala-коде, а не в шаблоне.
+HTML-фрагмент вкладки рендерится методом `Views.goalsStats` на сервере и вставляется в `<div id="tab-goals">`. Класс `active` добавляется через хелпер `activeIf(tab)`, если вкладка открыта по умолчанию. Это позволяет отделить логику группировки целей по статусам в Scala-коде, а не в шаблоне.
 
-### Шаблон `goalsStats.scala.html`
+### Рендер ``Views.goalsStats```
 
-Шаблон принимает **три готовых вектора** — уже отфильтрованных по статусу цели:
+`Views.goalsStats(currentGoals, plannedGoals, achievedGoals)` — метод рендеринга, принимающий **три готовых вектора** — уже отфильтрованных по статусу цели. Метод возвращает `String` (готовый HTML).
 
-```html
-@(currentGoals: Vector[GoalsStats], plannedGoals: Vector[GoalsStats],
-achievedGoals: Vector[GoalsStats])
+```dotty
+def goalsStats(
+    currentGoals: Vector[GoalsStats],
+    plannedGoals: Vector[GoalsStats],
+    achievedGoals: Vector[GoalsStats]
+): String
 ```
 
-**Почему три вектора, а не один с фильтрацией в шаблоне?**
+**Почему три вектора, а не один с фильтрацией в методе?**
 
-Потому что фильтрация — это **логика**, а не отображение. Она должна быть на сервере. Шаблон получает готовые данные и просто рендерит их в три блока.
+Потому что фильтрация — это **логика**, а не отображение. Она должна быть на сервере. Метод получает готовые данные и просто рендерит их в три блока.
+
+Внутренние helpers: `goalCard(goal, achieved)` — карточка одной цели; `subsection(title, goals)` — блок секции; `achievedSubsection(goals)` — блок достигнутых; `goalsStatsTable(goal)` — таблица метрик внутри карточки.
 
 #### Блок «Текущие цели»
 
-```html
-@if(currentGoals.nonEmpty) {
-<div class="goals-subsection">
-  <h3 class="goals-subsection-title">🔥 Текущие цели</h3>
-  <div class="goals-list">
-    @for(goal <- currentGoals) {
-    <div class="goal-card">
-      <div class="goal-name">@goal.name.value</div>
+```dotty
+div(cls := "statistics-section")(
+  h2(cls := "statistics-title")("🎯 Цели"),
+  subsection("🔥 Текущие цели", currentGoals),
+  ...
+)
 
-      <div class="goal-progress-container">
-        <div class="goal-progress-bar">
-          <div class="goal-progress-fill" style="width: @{goal.progress}%">
-            <span class="goal-progress-text">@{goal.progress}%</span>
-          </div>
-        </div>
-        <div class="goal-motivation">@motivation(goal.progress)</div>
-      </div>
+def subsection(title: String, goals: Vector[GoalsStats]): Modifier =
+  if goals.nonEmpty then
+    div(cls := "goals-subsection")(
+      h3(cls := "goals-subsection-title")(title),
+      div(cls := "goals-list")(
+        goals.map { goal =>
+          goalCard(goal, false)
+        }*
+      )
+    )
+  else frag()
+```
 
-      <table class="stats-table goal-stats-table">
-        <thead>
-          <tr>
-            <th>Осталось</th>
-            <th>Осталось по времени</th>
-            <th>Завершено</th>
-            <th>Завершено по времени</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="stat-value">@goal.remaining</td>
-            <td class="stat-value">
-              @toDurationDescription(goal.remainingDuration)
-            </td>
-            <td class="stat-value">@goal.completed</td>
-            <td class="stat-value">
-              @toDurationDescription(goal.completedDuration)
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      @if(goal.remainingTasks.nonEmpty) {
-      <div class="goal-remaining-tasks">
-        <div class="goal-remaining-title">Оставшиеся задачи:</div>
-        <ul class="goal-remaining-list">
-          @for(task <- goal.remainingTasks) {
-          <li class="goal-remaining-item">
-            <a href="/task/@task.id" class="goal-task-link" target="_blank">
-              @task.name.value
-            </a>
-            <span
-              class="goal-task-status status-@task.status.toString.toLowerCase"
-            >
-              @task.status.show
-            </span>
-          </li>
-          }
-        </ul>
-      </div>
-      }
-    </div>
-    }
-  </div>
-</div>
-}
+```dotty
+def goalCard(goal: GoalsStats, achieved: Boolean): Tag =
+  div(cls := s"goal-card ${if achieved then "achieved" else ""}")(
+    div(cls := "goal-name")(goal.name.value),
+    if !achieved then
+      frag(
+        div(cls := "goal-progress-container")(
+          div(cls := "goal-progress-bar")(
+            div(
+              cls   := "goal-progress-fill",
+              style := s"width: ${goal.progress}%"
+            )(
+              span(cls := "goal-progress-text")(s"${goal.progress}%")
+            )
+          ),
+          div(cls := "goal-motivation")(raw(motivation(goal.progress)))
+        ),
+        goalsStatsTable(goal),
+        if goal.remainingTasks.nonEmpty then
+          div(cls := "goal-remaining-tasks")(
+            div(cls := "goal-remaining-title")("Оставшиеся задачи:"),
+            ul(cls := "goal-remaining-list")(
+              goal.remainingTasks.map { task =>
+                li(cls := "goal-remaining-item")(
+                  a(
+                    href           := s"/task/${task.id.value}",
+                    cls            := "goal-task-link",
+                    attr("target") := "_blank"
+                  )(task.name.value),
+                  span(
+                    cls := s"goal-task-status status-${task.status.toString.toLowerCase}"
+                  )(task.status.show)
+                )
+              }*
+            )
+          )
+        else frag()
+      )
+    else frag()
+  )
 ```
 
 **Ключевые детали:**
 
 **1. Прогресс-бар с мотивацией:**
 
-```html
-<div class="goal-progress-fill" style="width: @{goal.progress}%">
-  <span class="goal-progress-text">@{goal.progress}%</span>
-</div>
-<div class="goal-motivation">@motivation(goal.progress)</div>
-```
-
-- **Ширина** — процент прогресса, передаётся в inline-стиль.
+- **Ширина** — процент прогресса, передаётся в inline-стиль через `style := s"width: ${goal.progress}%"`.
 - **Текст внутри** — то же значение для точности.
 - **Мотивация** — функция `motivation`, возвращающая фразу в зависимости от процента.
 
@@ -371,32 +364,14 @@ achievedGoals: Vector[GoalsStats])
 
 Четыре колонки: осталось (задачи), осталось (время), завершено (задачи), завершено (время). Компактно и информативно.
 
-**`@toDurationDescription(goal.remainingDuration)`** — функция форматирования `FiniteDuration` в человекочитаемый вид: `"2 ч 30 мин"`, `"5 дн"` и т.д.
+Метод `goalsStatsTable(goal)` генерирует `<table class="stats-table goal-stats-table">` с `remaining`, `toDurationDescription(goal.remainingDuration)`, `completed`, `toDurationDescription(goal.completedDuration)`. `toDurationDescription` форматирует `FiniteDuration` в человекочитаемый вид: `"2 ч 30 мин"`, `"5 дн"` и т.д.
 
 **3. Список оставшихся задач:**
 
-```html
-<a href="/task/@task.id" class="goal-task-link" target="_blank">
-  @task.name.value
-</a>
-<span class="goal-task-status status-@task.status.toString.toLowerCase">
-  @task.status.show
-</span>
-```
-
-- **Ссылка на задачу** — открывается в новой вкладке (`target="_blank"`). Пользователь может быстро перейти к задаче, не теряя страницу статистики.
+- **Ссылка на задачу** — `href := s"/task/${task.id.value}"`, открывается в новой вкладке (`attr("target") := "_blank"`). Пользователь может быстро перейти к задаче, не теряя страницу статистики.
 - **Бейдж статуса** — класс `status-inprogress`, `status-planned`, `status-knowledgebase` для цветовой кодировки.
 
 #### Блок «Планируемые цели»
-
-```html
-@if(plannedGoals.nonEmpty) {
-<div class="goals-subsection">
-  <h3 class="goals-subsection-title">📋 Планируемые цели</h3>
-  ...
-</div>
-}
-```
 
 Структура та же, что и у текущих, но:
 
@@ -405,18 +380,19 @@ achievedGoals: Vector[GoalsStats])
 
 #### Блок «Достигнутые цели»
 
-```html
-@if(achievedGoals.nonEmpty) {
-<div class="goals-subsection">
-  <h3 class="goals-subsection-title">🏆 Достигнутые цели</h3>
-  @for(goal <- achievedGoals) {
-  <div class="goal-card achieved">...</div>
-  }
-</div>
-}
+```dotty
+def achievedSubsection(goals: Vector[GoalsStats]): Modifier =
+  if goals.nonEmpty then
+    div(cls := "goals-subsection")(
+      h3(cls := "goals-subsection-title")("🏆 Достигнутые цели"),
+      div(cls := "goals-list")(
+        goals.map { g => goalCard(g, true) }*
+      )
+    )
+  else frag()
 ```
 
-- **Класс `achieved`** — зелёная рамка, светлый фон. Визуальная награда.
+- **Класс `achieved`** — зелёная рамка, светлый фон. Визуальная награда. Передаётся через `goalCard(g, true)`, который добавляет `"achieved"` к className.
 - **Нет прогресс-бара и нет списка задач** — всё выполнено, показывать нечего.
 
 **Почему нет списка задач?** Все задачи завершены. Отображать их — избыточно. Пользователь видит: «цель достигнута, всё сделано».

@@ -147,6 +147,10 @@ final case class AddTimeSpentRequest(
 
 ## HTML-разметка таймера
 
+Секция таймера рендерится методом `Views.task` (страница задачи). В scalatags
+идентификатор задачи и токен подставляются через строковые литералы
+(`s"startTimer('${task.id.value}')"`), в готовом HTML — это:
+
 ```html
 <div class="task-detail-section full-width">
   <h3>⏱️ Таймер</h3>
@@ -156,17 +160,17 @@ final case class AddTimeSpentRequest(
       <button
         class="timer-btn start-btn"
         id="startTimerBtn"
-        onclick="startTimer('@task.id')"
+        onclick="startTimer('{task.id}')"
       >
         ▶️ Старт
       </button>
       <button
         class="timer-btn stop-btn"
         id="stopTimerBtn"
-        onclick="stopTimer('@task.id', '@token')"
+        onclick="stopTimer('{task.id}', '{token}')"
         style="display: none;"
       >
-        ⏹️ Стоп
+        ⏹️ Записать
       </button>
       <button
         class="timer-btn reset-btn"
@@ -185,10 +189,10 @@ final case class AddTimeSpentRequest(
 1. **`#timerDisplay`** — счётчик в формате `HH:MM:SS`. Начальное значение — `00:00:00`.
 
 2. **Кнопка «Старт»** (`#startTimerBtn`) — запускает таймер через
-   `startTimer('@task.id')`. По умолчанию видима.
+   `startTimer('{task.id}')`. По умолчанию видима.
 
-3. **Кнопка «Стоп»** (`#stopTimerBtn`) — останавливает таймер через
-   `stopTimer('@task.id', '@token')`. По умолчанию **скрыта** (`style="display: none;"`).
+3. **Кнопка «Стоп/Записать»** (`#stopTimerBtn`) — останавливает таймер через
+   `stopTimer('{task.id}', '{token}')`. По умолчанию **скрыта** (`style="display: none;"`).
 
 4. **Кнопка «Сброс»** (`#resetTimerBtn`) — сбрасывает таймер на ноль без
    сохранения. Всегда видима.

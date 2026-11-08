@@ -130,7 +130,7 @@ val completeHandler: Handler =
 val HomeView: String = View.home().toString
 ```
 
-`home.scala.html`:
+``Views.home``:
 
 ```html
 <div class="home-container">
@@ -173,15 +173,15 @@ final case class CompileTaskRequest(
             <button class="modal-close-btn" onclick="closeModal('completeModal')">×</button>
         </div>
         <div class="modal-body">
-            <p class="modal-hint">Заполните информацию о завершении задачи <strong>@task.name.value</strong></p>
+            <p class="modal-hint">Заполните информацию о завершении задачи <strong>Название задачи</strong></p>
 
             <form id="completeForm"
-                  hx-put="/task/@task.id/complete"
+                  hx-put="/task/.../complete"
                   hx-target="#app"
                   hx-swap="outerHTML"
                   hx-on::after-request="if(event.detail.xhr.status === 200) closeModal('completeModal')"
             >
-                <input type="hidden" name="token" value="@token" />
+        <input type="hidden" name="token" value="..." />
 
                 <div class="form-group">
                     <label for="ratingInput">Оценка (от 1 до 5):</label>
@@ -226,7 +226,7 @@ final case class CompileTaskRequest(
                             name="endDate"
                             type="date"
                             class="form-input"
-                            value="@{LocalDate.now().format(DateTimeFormatter.ISO_DATE)}"
+                value="2026-11-08"
                             required
                     />
                 </div>
@@ -241,14 +241,14 @@ final case class CompileTaskRequest(
                                 min="1"
                                 class="form-input duration-input"
                                 placeholder="Значение"
-                                value="@task.duration.length"
+                                value="120"
                                 required
                         />
                         <select id="completeDurationUnit" name="durationUnit" class="form-select duration-select" required>
                             <option value="" disabled selected>Выберите единицу...</option>
-                            <option value="minutes" @if(task.duration.unit == TimeUnit.MINUTES){selected}>в минутах</option>
-                            <option value="hours" @if(task.duration.unit == TimeUnit.HOURS){selected}>в часах</option>
-                            <option value="days" @if(task.duration.unit == TimeUnit.DAYS){selected}>в днях</option>
+                            <option value="minutes" selected>в минутах</option>
+                            <option value="hours">в часах</option>
+                            <option value="days">в днях</option>
                         </select>
                     </div>
                 </div>
@@ -353,15 +353,15 @@ val deferHandler: Handler =
 задачу» — этого достаточно. Подтверждение обеспечивается через `hx-confirm`
 в HTML-кнопке.
 
-Шаблонизатор `task.scala.html`
+Рендер ``Views.task`` (scalatags):
 
 ```html
 <button
     class="postpone-task-btn"
-    hx-put="/task/@task.id/defer"
+    hx-put="/task/.../defer"
     hx-target="#app"
     hx-swap="outerHTML"
-    hx-confirm="Вы уверены, что хотите отложить задачу «@task.name.value»?"
+    hx-confirm="Вы уверены, что хотите отложить задачу «...»?"
 >
     ⏳ Отложить задачу
 </button>
@@ -472,15 +472,15 @@ final case class StartTaskRequest(
     </div>
     <div class="modal-body">
       <p class="modal-hint">
-        Укажите даты для задачи <strong>@task.name.value</strong>
+        Укажите даты для задачи <strong>Название задачи</strong>
       </p>
       <form
         id="startForm"
-        hx-put="/task/@task.id/start"
+        hx-put="/task/.../start"
         hx-target="#app"
         hx-swap="outerHTML"
       >
-        <input type="hidden" name="token" value="@token" />
+        <input type="hidden" name="token" value="..." />
 
         <div class="form-group">
           <label for="startDateInput">Дата начала:</label>
@@ -489,7 +489,7 @@ final case class StartTaskRequest(
             name="startDate"
             type="date"
             class="form-input"
-            value="@{LocalDate.now().format(DateTimeFormatter.ISO_DATE)}"
+            value="2026-11-08"
           />
         </div>
         <div class="form-group">
@@ -499,7 +499,7 @@ final case class StartTaskRequest(
             name="endDate"
             type="date"
             class="form-input"
-            value="@{LocalDate.now().plusWeeks(1).format(DateTimeFormatter.ISO_DATE)}"
+            value="2026-11-15"
           />
         </div>
 
@@ -641,34 +641,32 @@ final case class QueueTaskRequest(
     </div>
     <div class="modal-body">
       <p class="modal-hint">
-        Выберите свободный порядок для задачи <strong>@task.name.value</strong>
+        Выберите свободный порядок для задачи <strong>Название задачи</strong>
       </p>
       <form
         id="ordinalForm"
-        hx-put="/task/@task.id/queue"
+        hx-put="/task/.../queue"
         hx-target="#app"
         hx-swap="outerHTML"
       >
-        <input type="hidden" name="token" value="@token" />
+        <input type="hidden" name="token" value="..." />
 
         <div class="form-group">
           <label for="ordinalSelect">Порядок:</label>
 
           <div class="ordinal-info-block compact">
             <div class="ordinal-info-title">
-              Доступные порядки задач типа "@task.taskType":
+              Доступные порядки задач типа "Разработка":
             </div>
             <div class="ordinal-info-list">
-              @for(ordinalCard <- availableOrdinals) {
               <div class="ordinal-info-item">
                 <span class="ordinal-number">
-                  Свободный порядок @ordinalCard.ordinal
+                  Свободный порядок 5
                 </span>
                 <span class="ordinal-after">
-                  после задачи: @ordinalCard.after
+                  после задачи: Предыдущая задача
                 </span>
               </div>
-              }
             </div>
           </div>
 
@@ -678,7 +676,7 @@ final case class QueueTaskRequest(
             type="number"
             class="form-input"
             placeholder="Введите порядок"
-            value="@availableOrdinals.headOption.map(_.ordinal).getOrElse(1)"
+            value="1"
           />
         </div>
 
@@ -775,10 +773,10 @@ val deleteHandler: Handler =
 ```html
 <button
   class="delete-task-btn"
-  hx-delete="/task/@task.id"
+  hx-delete="/task/..."
   hx-target="#app"
   hx-swap="outerHTML"
-  hx-confirm="Вы уверены, что хотите удалить задачу «@task.name.value»?"
+  hx-confirm="Вы уверены, что хотите удалить задачу «...»?"
 >
   🗑️ Удалить
 </button>

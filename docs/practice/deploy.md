@@ -31,7 +31,7 @@ SBT (Scala Build Tool) — это стандартный инструмент д
 ## Шаг 2: Подключение полезных плагинов SBT
 
 Плагины расширяют функциональность SBT, автоматизируя рутинные задачи и помогая поддерживать качество кода.
-Мы добавим семь важных плагинов.
+Мы добавим шесть важных плагинов.
 
 1. В папке вашего проекта создайте файл по пути `project/plugins.sbt`.
    Если папка `project` уже существует, просто создайте в ней файл.
@@ -42,7 +42,6 @@ SBT (Scala Build Tool) — это стандартный инструмент д
    addSbtPlugin("com.github.reibitto"     % "sbt-welcome"               % "0.6.0")
    addSbtPlugin("com.github.sbt"          % "sbt-native-packager"       % "1.11.7")
    addSbtPlugin("org.jmotor.sbt"          % "sbt-dependency-updates"    % "1.2.9")
-   addSbtPlugin("org.playframework.twirl" % "sbt-twirl"                 % "2.0.9")
    addSbtPlugin("org.scalameta"           % "sbt-scalafmt"              % "2.6.1")
    ```
 
@@ -162,15 +161,6 @@ SBT (Scala Build Tool) — это стандартный инструмент д
   Docker-образы, deb/rpm-пакеты для Linux, MSI для Windows, .exe, .app и многие другие.
   Это критически важно для деплоя приложения в production.
 
-#### Компиляция Twirl-шаблонов sbt-twirl
-
-- [**Репозиторий**](https://github.com/playframework/twirl)
-- [**Документация**](https://www.playframework.com/documentation/latest/ScalaTemplates)
-- **Что делает?** Компилирует Twirl-шаблоны (файлы `.scala.html`, `.scala.txt`, `.scala.xml`) в обычные Scala-классы.
-  Twirl — это шаблонизатор от Play Framework, который позволяет создавать HTML-страницы,
-  используя типобезопасный Scala-код. Все шаблоны проверяются компилятором, что исключает ошибки
-  в разметке на этапе компиляции.
-
 ## Шаг 3: Создание псевдонимов (алиасов) для SBT команд
 
 Чтобы не запоминать длинные последовательности команд, удобно создать для них короткие псевдонимы (алиасы).
@@ -259,8 +249,7 @@ SBT (Scala Build Tool) — это стандартный инструмент д
       // Плагины для генерации фронта и docker image
       .enablePlugins(
         DockerPlugin,
-        JavaAppPackaging,
-        SbtTwirl
+        JavaAppPackaging
       )
       .settings(
         name := "pdp-backend",
@@ -314,8 +303,6 @@ ThisBuild / scalacOptions ++=
     "-explain",
     // Превращает неиспользуемые импорты в ошибки
     "-Wunused:imports",
-    // Игнорирует ложноположительные сообщения об ошибка в шаблонах Twirl
-    "-Wconf:src=.*/views/html/.*:silent",
     // Предупреждает о местах, где компилятор делал предположения о типах
     "-unchecked",
     // Не даст скомпилировать код с предупреждениями.

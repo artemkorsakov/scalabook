@@ -1,10 +1,10 @@
 # Страница настроек
 
 Страница настроек — это центр управления справочниками приложения. 
-Здесь пользователь настраивает **типы задач**, **разделы** и **цели** — три сущности, 
+Здесь пользователь настраивает **типы задач**, **разделы**, **цели** и **периодические задачи** — четыре справочника,
 которые затем используются при создании и фильтрации задач. 
 
-Страница настроек устроена по единому шаблону для каждой из трёх сущностей:
+Страница настроек устроена по единому шаблону для каждой из четырёх секций:
 
 1. **Таблица** со списком существующих записей.
 2. **Форма добавления** новой записи (скрыта по умолчанию).
@@ -42,7 +42,7 @@ private val route = Route(
 
 **Почему здесь используется заголовок `Authorization`, а не куки?**
 
-Страница настроек вызывается через htmx-запрос из `welcome.scala.html`. 
+Страница настроек вызывается через htmx-запрос из рендер-метода `Views.welcome`. 
 htmx передаёт токен через заголовок `Authorization`, а не через куки — так удобнее, 
 потому что клиентский JavaScript может явно указать токен в `hx-headers`. 
 Это соответствует общей архитектуре приложения: все защищённые эндпоинты принимают токен в заголовке.
@@ -144,7 +144,7 @@ def getViewSettings(
       periodicSteps.sortBy(step => (step.periodicType.ordinal, step.number))
 
     View.settings(
-      token = jwtToken.value,
+      token = jwtToken,
       taskTypes = taskTypes,
       sections = sections,
       goals = goals,
@@ -160,10 +160,10 @@ def getViewSettings(
 
 1. **Загружаем типы задач, разделы, цели и периодические шаги пользователя.**
    Шаги сортируются по типу периодичности и номеру (`step.periodicType.ordinal`, `step.number`).
-2. **Рендер шаблона `View.settings(...)`** — передаём в Twirl-шаблон:
-    - `token` — JWT-токен для htmx-заголовков.
-    - `taskTypes`, `sections`, `goals`, `periodicSteps` — загруженные справочники.
-    - Четыре опциональных сообщения об ошибках.
+2. **Рендер представления `View.settings(...)`** — передаём в scalatags-метод:
+     - `token` — JWT-токен для htmx-заголовков.
+     - `taskTypes`, `sections`, `goals`, `periodicSteps` — загруженные справочники.
+     - Четыре опциональных сообщения об ошибках.
 
 **Почему четыре отдельных сообщения об ошибках?**
 
@@ -172,39 +172,37 @@ def getViewSettings(
 но при этом успешно добавить раздел. 
 Четыре отдельных сообщения позволяют показывать ошибку **точно под** соответствующим разделом.
 
-## Шаблон `settings.scala.html`
+## Рендер представления `Views.settings`
 
-Шаблон состоит из трёх независимых секций, каждая из которых следует одному паттерну.
-Разберём его по частям.
+Scalatags-метод в `Views.scala`:
 
-### Импорты и параметры
-
-```html
-@import ru.scalabook.pdp.models.Goal
-@import ru.scalabook.pdp.models.Section
-@import ru.scalabook.pdp.models.TaskType
-
-@(token: String, 
-  taskTypes: Vector[TaskType], 
-  sections: Vector[Section], 
-  goals: Vector[Goal], 
-  errorTaskTypeMessage: Option[String], 
-  errorSectionMessage: Option[String], 
-  errorGoalMessage: Option[String]
-)
+```dotty
+def settings(
+    token: JwtToken,
+    taskTypes: Vector[TaskType],
+    sections: Vector[Section],
+    goals: Vector[Goal],
+    periodicSteps: Vector[PeriodicStep],
+    errorTaskTypeMessage: Option[String],
+    errorSectionMessage: Option[String],
+    errorGoalMessage: Option[String],
+    errorPeriodicStepMessage: Option[String]
+): String
 ```
 
-**Параметры шаблона:**
+**Параметры метода:**
 
-| Параметр               | Тип                | Назначение                                 |
-| ---------------------- | ------------------ | ------------------------------------------ |
-| `token`                | `String`           | JWT-токен для htmx-заголовков              |
-| `taskTypes`            | `Vector[TaskType]` | Список типов задач пользователя            |
-| `sections`             | `Vector[Section]`  | Список разделов пользователя               |
-| `goals`                | `Vector[Goal]`     | Список целей пользователя                  |
-| `errorTaskTypeMessage` | `Option[String]`   | Сообщение об ошибке для секции типов задач |
-| `errorSectionMessage`  | `Option[String]`   | Сообщение об ошибке для секции разделов    |
-| `errorGoalMessage`     | `Option[String]`   | Сообщение об ошибке для секции целей       |
+| Параметр                 | Тип                | Назначение                                 |
+| ------------------------ | ------------------ | ------------------------------------------ |
+| `token`                  | `JwtToken`         | JWT-токен для htmx-заголовков              |
+| `taskTypes`              | `Vector[TaskType]` | Список типов задач пользователя            |
+| `sections`               | `Vector[Section]`  | Список разделов пользователя               |
+| `goals`                  | `Vector[Goal]`     | Список целей пользователя                  |
+| `periodicSteps`          | `Vector[PeriodicStep]` | Список периодических шагов пользователя |
+| `errorTaskTypeMessage`   | `Option[String]`   | Сообщение об ошибке для секции типов задач |
+| `errorSectionMessage`    | `Option[String]`   | Сообщение об ошибке для секции разделов    |
+| `errorGoalMessage`       | `Option[String]`   | Сообщение об ошибке для секции целей       |
+| `errorPeriodicStepMessage` | `Option[String]` | Сообщение об ошибке для секции периодических шагов |
 
 ### Общая структура
 
@@ -228,55 +226,26 @@ def getViewSettings(
 
 ### Секция «Типы задач»
 
+Три справочника (типы задач, разделы, цели) рендерятся единой scalatags-функцией `settingsTable(tableClass, rows, emptyMessage)`, которая генерирует `<table>` с `<thead>` и `<tbody hx-target="closest tr" hx-swap="outerHTML">`. Каждая строка строится локальной функцией `row(...)`.
+
+Вот пример структуры `<thead>` столбцов:
+
 ```html
-<h3>Типы задач</h3>
-<div class="settings-list">
-  @if(taskTypes.nonEmpty) {
-  <table class="task-types-table">
-    <thead>
-      <tr>
-        <th>Название</th>
-        <th>Порядок</th>
-        <th>Включен?</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody hx-target="closest tr" hx-swap="outerHTML">
-      @for(taskType <- taskTypes.sortBy(_.ordinal.value)) {
-      <tr class="task-type-row" data-task-type-id="@taskType.id.value">
-        <td>@taskType.name.value</td>
-        <td>@taskType.ordinal.value</td>
-        <td>@if(taskType.displayed) { ✓ } else { ✗ }</td>
-        <td>
-          <button
-            class="edit-btn"
-            hx-get="/settings/task_types/@taskType.id.value/edit"
-            hx-trigger="edit"
-            onclick="handleEditClick(this)"
-          >
-            ✏️ Редактировать
-          </button>
-          <button
-            class="delete-btn"
-            hx-delete="/settings/task_types/@taskType.id.value"
-            hx-target="#app"
-            hx-swap="outerHTML"
-            hx-confirm="Вы уверены, что хотите удалить тип задачи «@taskType.name.value»?"
-          >
-            🗑️ Удалить
-          </button>
-        </td>
-      </tr>
-      }
-    </tbody>
-  </table>
-  } else {
-  <p class="empty-message">Типы задач не найдены</p>
-  }
-</div>
+<thead>
+  <tr>
+    <th>Название</th>
+    <th>Порядок</th>
+    <th>Включен?</th>
+    <th></th>
+  </tr>
+</thead>
 ```
 
+Атрибуты `<tbody>` — `hx-target="closest tr"`, `hx-swap="outerHTML"` — позволяют при удалении или редактировании строки заменить только `<tr>` (а не всю таблицу).
+
 **Разбор таблицы:**
+
+Каждая строка генерируется scalatags-хелпером `row(...)`. `<tbody>` состоит из `tr` для каждого элемента, где значения подставляются из карточки объекта.
 
 - **Сортировка** — `taskTypes.sortBy(_.ordinal.value)` сортирует записи по порядку.
   Пользователь видит их в том порядке, который задал сам.
@@ -309,7 +278,7 @@ def getViewSettings(
     hx-target="#app"
     hx-swap="outerHTML"
   >
-    <input type="hidden" name="token" value="@token" />
+    <input type="hidden" name="token" value="{token.value}" />
     <div class="form-group">
       <label for="taskTypeName">Название типа задачи:</label>
       <input
@@ -343,23 +312,19 @@ def getViewSettings(
 - **`hx-post="/settings/task_types"`** — POST-запрос на создание нового типа задачи.
 - **`hx-target="#app"`** — после создания сервер возвращает обновлённую страницу,
   htmx заменяет `#app`.
-- **`<input type="hidden" name="token" value="@token" />`** — токен передаётся
+- **`<input type="hidden" name="token" value="{token.value}" />`** — токен передаётся
   в теле формы из-за проблемы [в фреймворке Krop](https://github.com/creativescala/krop/issues/55).
+  Значение берётся из JWT-токена (параметр `token: JwtToken`).
 - **Кнопка «Отмена»** — вызывает `hideAddTaskTypeForm()`, которая скрывает форму
   и очищает её поля.
 
-**Сообщение об ошибке:**
+**Ключевые моменты:**
 
-```html
-<div class="messageBlock">
-  @errorTaskTypeMessage.map { msg =>
-  <div class="error">@msg</div>
-  }
-</div>
-```
-
-- Если `errorTaskTypeMessage` содержит сообщение — отображается красный блок с текстом.
-- Если `None` — блок не отображается.
+- Каждый справочник имеет **своё** сообщение об ошибке (`errorXxxMessage`),
+  которое рендерится под соответствующей секцией. Это позволяет показывать ошибку
+  **точно под** соответствующим разделом.
+- Для каждого справочника существует отдельное сообщение об ошибке: `errorTaskTypeMessage`, `errorSectionMessage`, `errorGoalMessage`, `errorPeriodicStepMessage`.
+- Если соответствующее сообщение `None` — блок не отображается.
 
 ![Settings, task type error](images/settings_task_type_error.png)
 
@@ -383,15 +348,23 @@ def getViewSettings(
 
 ### Секция «Периодические задачи»
 
-```html
-<h3>Периодические задачи</h3>
-<!-- Содержимое периодических задач -->
-```
+В `Views.settings` есть четвёртая секция — периодические задачи. В отличие от трёх
+справочников выше, здесь используется отдельная структура:
 
-Это **заглушка** для будущей функциональности. Периодические задачи — это задачи,
-которые повторяются по расписанию (например, «читать по 30 минут каждый день»).
-Их реализация будет разобрана позднее, но структура страницы уже готова
-к добавлению этой секции.
+- Периодические шаги группируются по типу периодичности (`PeriodicType`).
+- Для каждого типа генерируется `div.periodic-type-section` с заголовком `h4.periodic-type-title`.
+- Внутри таблицы с классом `periodic-steps-table` столбцы: **«Номер»**, **«Наименование»**, **«»**.
+- Каждая строка — `tr.periodic-step-row[data-periodic-step-id="{id}"]`.
+  Первый столбец — номер (`step.number`), второй — наименование с markdown-контентом
+  (`step.name`, рендерится через `data-markdown`).
+- Кнопки: **✏️ Редактировать** (`hx-get="/settings/periodic_steps/{id}/edit"`, `hx-trigger="edit"`,
+  `onclick="handleEditClick(this)"`) и **🗑️ Удалить** (`hx-delete="/settings/periodic_steps/{id}"`,
+  `hx-target="#app"`, `hx-swap="outerHTML"`, `hx-confirm="Вы уверены, что хотите удалить периодическую задачу «...»?"`).
+
+Секция формируется в `Views.settings` через параметр `periodicSteps: Vector[PeriodicStep]`.
+Порядок определяется сортировкой в `SettingsViews.getViewSettings`.
+
+Детали работы с периодическими шагами разобраны в разделе о периодических задачах.
 
 ## Поток работы со страницей настроек
 
@@ -415,22 +388,23 @@ def getViewSettings(
 
 ## Итог
 
-Мы реализовали страницу настроек — центр управления тремя справочниками приложения:
+Мы реализовали страницу настроек — центр управления четырьмя справочниками приложения:
 
 1. **Типы задач** — классификация задач по формату (книга, статья, видео).
 2. **Разделы** — тематическая группировка задач (Программирование, Психология).
 3. **Цели** — стратегические ориентиры, к которым привязаны задачи.
+4. **Периодические шаги** — задачи, повторяющиеся по расписанию, сгруппированные по типу периодичности.
 
 **Ключевые архитектурные решения:**
 
-- **Единообразие секций** — каждая из трёх секций устроена одинаково. Это упрощает
+- **Единообразие секций** — каждая из четырёх секций устроена одинаково. Это упрощает
   восприятие и поддержку кода.
 - **htmx для интерактивности** — все операции (создание, редактирование, удаление)
   происходят без перезагрузки страницы.
 - **Одновременное редактирование только одной строки** — через `hx-trigger="edit"`
   и функцию `handleEditClick`.
 - **Подтверждение удаления** — через `hx-confirm`, чтобы избежать случайных удалений.
-- **Три независимых сообщения об ошибках** — чтобы ошибки отображались точно
+- **Четыре независимых сообщения об ошибках** — чтобы ошибки отображались точно
   под соответствующей секцией.
   
 ---

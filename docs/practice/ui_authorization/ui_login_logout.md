@@ -249,7 +249,7 @@ trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
         case ex: AuthorizationException =>
           Logger[IO].error(ex)(
             s"Ошибка при парсинге токена: ${ex.getMessage}"
-          ).as(Views.ErrorView.some)
+          ).as(View.error().toString.some)
         case ex =>
           Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
 

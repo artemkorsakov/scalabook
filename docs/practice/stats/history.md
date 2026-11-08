@@ -49,142 +49,35 @@ final case class CompletedTaskCard(
 Ничего лишнего — ни типа задачи, ни раздела, ни цели. 
 Если пользователю нужно узнать подробности, он кликает на задачу и переходит на её страницу.
 
-## Шаблон `history.scala.html`
+## Рендер ``Views.history```
 
-Шаблон принимает вектор завершенных задач.
+`Views.history(completedTasks: Vector[CompletedTaskCard])` — метод рендеринга, принимающий вектор завершённых задач и возвращающий готовый HTML.
 
-```html
-@import ru.scalabook.pdp.http.dto.CompletedTaskCard
-@import ru.scalabook.pdp.models.toDurationDescription
-@import java.time.format.DateTimeFormatter
-
-@(completedTasks: Vector[CompletedTaskCard])
-```
-
-**Импорты:**
-
-- **`CompletedTaskCard`** — DTO.
-- **`toDurationDescription`** — функция форматирования `FiniteDuration` в человекочитаемый вид (`"2 ч 30 мин"`, `"45 мин"`, `"3 дн"`).
-- **`DateTimeFormatter`** — для форматирования дат в вид `dd.MM.yyyy`.
-
-### Общая структура
-
-```html
-<div class="history-section">
-  <h2 class="history-title">📜 История выполненных задач</h2>
-
-  @if(completedTasks.nonEmpty) {
-  <div class="history-list">...</div>
-  } else {
-  <div class="empty-message">
-    История пуста. Завершите первую задачу, чтобы она появилась здесь.
-  </div>
-  }
-</div>
+```dotty
+def history(completedTasks: Vector[CompletedTaskCard]): String =
+  frag(
+    div(cls := "history-section")(
+      h2(cls := "history-title")("📜 История выполненных задач"),
+      if completedTasks.nonEmpty then
+        div(cls := "history-list")(
+          completedTasks.map(_.render)*
+        )
+      else
+        div(cls := "empty-message")(
+          "История пуста. Завершите первую задачу, чтобы она появилась здесь."
+        )
+    )
+  ).render
 ```
 
 **Разбор:**
 
 - **`.history-section`** — контейнер раздела.
 - **`📜 История выполненных задач`** — заголовок. Свиток ассоциируется с историей и архивом.
-- **`@if(completedTasks.nonEmpty)`** — ветвление: если есть задачи, показываем список; если нет — заглушку.
+- **`if completedTasks.nonEmpty`** — ветвление: если есть задачи, показываем список; если нет — заглушку.
 - **`.empty-message`** — сообщение для пустой истории с подсказкой: «Завершите первую задачу, чтобы она появилась здесь».
 
-### Карточка задачи
-
-Каждая завершённая задача обёрнута в `.history-item` с `onclick`:
-
-```html
-@for(task <- completedTasks) {
-<div class="history-item" onclick="openTask('@task.taskId')">...</div>
-}
-```
-
-**Разбор:**
-
-- **`onclick="openTask('@task.taskId')"`** — при клике на любую часть карточки вызывается JS-функция `openTask`, 
-  которая открывает `/task/{id}` в новой вкладке.
-
-**Почему открывается в новой вкладке?**
-
-Потому что пользователь работает с историей. Открытие задачи в новой вкладке сохраняет контекст: вернувшись, 
-он увидит ту же историю, тот же скролл, тот же порядок. Тот же подход используется в карточках задач на главной странице.
-
-### Заголовок карточки: наименование и рейтинг
-
-```html
-<div class="history-item-header">
-   <div class="history-task-name">@task.name.value</div>
-   <div class="history-task-rating">
-      @for(_ <- 1 to task.rating.r) {
-      <span class="star-filled">★</span>
-      }
-      @for(_ <- task.rating.r + 1 to 5) {
-      <span class="star-empty">☆</span>
-      }
-   </div>
-</div>
-```
-
-**Как строится рейтинг:**
-
-- **Первый цикл** — от 1 до `rating.r`. Это заполненные звёзды (★).
-- **Второй цикл** — от `rating.r + 1` до 5. Это пустые звёзды (☆).
-
-**Пример:** для `rating.r = 4`:
-
-- Заполненные: `★★★★`
-- Пустые: `☆`
-- Итог: `★★★★☆`
-
-### Метаданные: даты и продолжительность
-
-```html
-<div class="history-meta-grid">
-  <div class="history-meta-item">
-    <span class="meta-icon">📅</span>
-    <span class="meta-label">Начало:</span>
-    <span class="meta-value"
-      >@task.startDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))</span
-    >
-  </div>
-  <div class="history-meta-item">
-    <span class="meta-icon">🏁</span>
-    <span class="meta-label">Окончание:</span>
-    <span class="meta-value"
-      >@task.endDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))</span
-    >
-  </div>
-  <div class="history-meta-item">
-    <span class="meta-icon">⏱️</span>
-    <span class="meta-label">Затрачено:</span>
-    <span class="meta-value">@toDurationDescription(task.duration)</span>
-  </div>
-</div>
-```
-
-**Разбор:**
-
-Три метрики, каждая с иконкой, подписью и значением:
-
-| Метрика       | Иконка | Формат       |
-| ------------- | ------ | ------------ |
-| **Начало**    | 📅     | `01.03.2026` |
-| **Окончание** | 🏁     | `15.03.2026` |
-| **Затрачено** | ⏱️      | `2 ч 30 мин` |
-
-### Ревью
-
-```html
-<div class="history-review">
-   <div class="history-review-icon">💬</div>
-   <div class="history-review-text">@task.review.value</div>
-</div>
-```
-
-**Почему отзыв важен?** Отзыв — это **рефлексия**. 
-Когда пользователь завершает задачу и пишет «Книга оказалась сложнее, чем я думал, но примеры помогли», он фиксирует опыт. 
-Через месяц, просматривая историю, он вспомнит эти выводы. Без отзыва история становится безликой: список названий и дат.
+Каждый `CompletedTaskCard` рендерится методом `.render()` — карточка содержит `onclick`, name, рейтинг, даты, duration, review. Details см. в главе «Карточка задачи».
 
 ## Полный поток работы
 
@@ -192,7 +85,7 @@ final case class CompletedTaskCard(
 
 2. **Сервер формирует `Vector[CompletedTaskCard]`** — для каждой завершённой задачи берёт ID, имя, оценку, отзыв, длительность, даты.
 
-3. **Рендерится `history.scala.html`** — карточки в списке.
+3. **Рендерится `Views.history`** — карточки в списке.
 
 4. **Пользователь видит:**
     - Последние завершенные задачи сверху.
@@ -201,7 +94,7 @@ final case class CompletedTaskCard(
     - Затраченное время.
     - Отзыв.
 
-5. **Пользователь кликает на карточку** → `openTask('@task.taskId')` открывает `/task/{id}` в новой вкладке.
+5. **Пользователь кликает на карточку** → `openTask('{task.taskId}')` открывает `/task/{id}` в новой вкладке.
 
 6. **Пользователь возвращается** — история остаётся на месте, скролл и порядок сохранены.
 

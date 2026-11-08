@@ -246,11 +246,11 @@ end DashboardService
 
 ## UI: вкладка «Источник» на главной странице
 
-На главной странице (`welcome.scala.html`) появляется новая вкладка:
+На главной странице (`Views.welcome`) появляется новая вкладка:
 
 ```html
 <button
-        class="tab-btn @if(tab == "sources"){active}"
+        class="tab-btn active"
 data-tab="sources"
 onclick="switchTab('sources')"
 >
@@ -259,13 +259,11 @@ onclick="switchTab('sources')"
 </button>
 
 <!-- Вкладка: Источник -->
-<div id="tab-sources" class="tab-content @if(tab == "sources"){active}">
+<div id="tab-sources" class="tab-content active">
 <div class="tasks-grid">
-    @for(taskType <- taskTypes) {
-    <div id="@taskType.id.value" class="task-card source-card" onclick="openSource('@taskType.id.value')">
-        <div class="task-title">@taskType.name.value</div>
+    <div id="1" class="task-card source-card" onclick="openSource('1')">
+        <div class="task-title">Книги по Scala</div>
     </div>
-    }
 </div>
 ```
 
@@ -273,7 +271,7 @@ onclick="switchTab('sources')"
 
 - **Карточки, а не таблица** — источники не имеют метрик (прогресса, дат), поэтому таблица не нужна. 
   Карточки с названием типа задачи — минималистично и читаемо.
-- **`onclick="openSource('@taskType.id.value')"`** — JavaScript-функция `openSource` открывает `/source/{id}` в новой вкладке.
+- **`onclick="openSource('1')"`** — JavaScript-функция `openSource` открывает `/source/{id}` в новой вкладке.
 - **Отображается только `name`** — тип задачи («Книги по Scala»), а не информация источника. Это список типов, а не список источников.
 
 ### Модель карточки
@@ -376,15 +374,11 @@ val openHandler: Handler =
 
 ## Страница источника
 
-Шаблон `source.scala.html` отображает наименование и информацию:
+Метод `Views.source` отображает наименование и информацию:
 
 ```html
-@import ru.scalabook.pdp.http.dto.SourceCard @(source: SourceCard, token:
-String, errorMessage: Option[String])
-
 <div id="app" class="app-container">
   <div id="sourceDetailBlock" class="task-detail-container">
-    <!-- Верхняя панель с кнопкой редактирования -->
     <div class="task-detail-header">
       <div class="task-detail-nav">
         <span class="task-detail-status-badge source-badge">🌐 Источник</span>
@@ -392,7 +386,7 @@ String, errorMessage: Option[String])
       <div class="task-detail-actions">
         <button
           class="edit-task-btn"
-          hx-get="/source/@source.id.value/edit"
+          hx-get="/source/1/edit"
           hx-target="#app"
           hx-swap="outerHTML"
         >
@@ -401,26 +395,19 @@ String, errorMessage: Option[String])
       </div>
     </div>
 
-    <!-- Сообщение об ошибке -->
     <div class="messageBlock">
-      @errorMessage.map { msg =>
-      <div class="error">@msg</div>
-      }
+      <div class="error">Ошибка</div>
     </div>
 
-    <!-- Наименование -->
-    <h1 class="task-detail-title">@source.name</h1>
+    <h1 class="task-detail-title">Книги по Scala</h1>
 
-    <!-- Информация -->
     <div class="task-detail-section full-width">
       <h3>📝 Информация</h3>
       <div
         class="task-detail-information markdown-content"
-        data-markdown="@source.information"
+        data-markdown="## Теория категорий"
       >
-        @if(source.information.isEmpty) {
         <p class="empty-message">Информация отсутствует</p>
-        }
       </div>
     </div>
   </div>
@@ -431,7 +418,7 @@ String, errorMessage: Option[String])
 
 - **`data-markdown`** — атрибут с markdown-текстом. JavaScript-функция `renderMarkdown` (в `pdp.js`) найдёт его и отрендерит через `marked.js`.
 - **Класс `markdown-content`** — стилизация (заголовки, списки, код, ссылки).
-- **Заглушка для пустого источника** — `@if(source.information.isEmpty)`.
+- **Заглушка для пустого источника** — условный рендеринг при пустом `information`.
 
 ## Редактирование источника
 
@@ -469,7 +456,7 @@ final case class EditSourceRequest(
 
 ### Форма редактирования
 
-Шаблон `editSource.scala.html` содержит одно редактируемое поле — `information`:
+Метод `Views.editSource` содержит одно редактируемое поле — `information`:
 
 ```html
 <!-- Наименование (только для чтения) -->
@@ -479,7 +466,7 @@ final case class EditSourceRequest(
     id="sourceName"
     name="name"
     type="text"
-    value="@source.name"
+    value="Книги по Scala"
     class="form-input"
     readonly
   />
@@ -495,7 +482,7 @@ final case class EditSourceRequest(
     class="form-textarea"
     placeholder="Введите описание источника в markdown-формате..."
   >
-@source.information</textarea>
+## Теория категорий</textarea>
 </div>
 ```
 
@@ -536,7 +523,7 @@ val editFormHandler: Handler =
    из заголовка — первый аргумент, лямбда `(user, jwtToken)` — второй.
 2. **Типизированный ID** — `taskTypeIdParam` уже декодировал путь в `TaskTypeId`.
 3. **Загрузка типа задачи и источника.**
-4. **Рендер `editSource.scala.html`** с заполненной информацией.
+4. **Рендер `Views.editSource`** с заполненной информацией.
 
 ### Хэндлер обработки редактирования
 
@@ -652,8 +639,8 @@ val editHandler: Handler =
 | **`SourceHandlers.openHandler`**      | Страница источника                                                |
 | **`SourceHandlers.editFormHandler`**  | Форма редактирования                                              |
 | **`SourceHandlers.editHandler`**      | Сохранение изменений                                              |
-| **`source.scala.html`**        | Отображение источника                                             |
-| **`editSource.scala.html`**    | Форма редактирования                                              |
+| **`Views.source`**             | Отображение источника                                             |
+| **`Views.editSource`**         | Форма редактирования                                              |
 
 **Ключевые архитектурные решения:**
 

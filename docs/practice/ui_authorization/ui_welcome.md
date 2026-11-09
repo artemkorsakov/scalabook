@@ -1,4 +1,4 @@
-# Рендер представления «Рабочий стол» (`Views.welcome`)
+# Рендер представления «Рабочий стол»
 
 `views/Views.scala` — объект со всеми рендер-методами приложения в [репозитории](https://gitverse.ru/scalabook/pdp) (путь `pdp/src/main/scala/ru/scalabook/pdp/views/Views.scala`).
 

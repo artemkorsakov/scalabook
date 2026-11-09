@@ -76,7 +76,7 @@ private[tasks] object TaskViews:
         sections = sections,
         goals = goals,
         errorMessage = errorMessage
-      ).toString
+      )
 ```
 
 **Что происходит:**
@@ -771,7 +771,7 @@ val editHandler: Handler =
                   jwtToken = jwtToken,
                   errorMessage = none
                 )
-              yield view.map(_.toString)
+              yield view
 
             run
               .recoverWith:

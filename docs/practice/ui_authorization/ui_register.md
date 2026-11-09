@@ -40,7 +40,7 @@ final case class RegisterHandler(
     )
 
   val formHandler: Handler =
-    formRoute.handle(() => View.register(none).toString)
+    formRoute.handle(() => View.register(none))
 ```
 
 Фрагмент из `Main.scala`, где оба обработчика регистрируются:
@@ -162,7 +162,7 @@ final case class RegisterHandler(
     }
 
   private def asError(error: String): IO[Either[String, String]] =
-    View.register(error.some).toString.asLeft.pure[IO]
+    View.register(error.some).asLeft.pure[IO]
 ```
 
 **Пошаговый разбор:**
@@ -206,7 +206,7 @@ final case class RegisterHandler(
 
 ```dotty
 private def asError(error: String): IO[Either[String, String]] =
-  View.register(error.some).toString.asLeft.pure[IO]
+  View.register(error.some).asLeft.pure[IO]
 ```
 
 Возвращает форму регистрации с сообщением об ошибке, обёрнутую в `Left`.

@@ -37,7 +37,7 @@ final case class TaskHandlers(
             taskId = TaskId(uuid),
             jwtToken = jwtToken,
             errorMessage = none
-          ).map(_.map(html => View.base(Title, html).toString)),
+          ).map(_.map(html => View.base(Title, html))),
         fallbackPage = NotFoundView
       )
 

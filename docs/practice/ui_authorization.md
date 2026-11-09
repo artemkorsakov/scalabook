@@ -62,8 +62,8 @@ final case class InitialHandler(
             user = user,
             jwtToken = jwtToken,
             tab = DefaultTab
-          ).map(welcome => View.base(Title, welcome).toString),
-        fallbackPage = View.base(Title, View.login(none)).toString
+          ).map(welcome => View.base(Title, welcome)),
+        fallbackPage = View.base(Title, View.login(none))
       )
 ```
 
@@ -124,7 +124,7 @@ trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
         case ex: AuthorizationException =>
           Logger[IO].error(ex)(
             s"Ошибка при парсинге токена: ${ex.getMessage}"
-          ).as(View.error().toString.some)
+          ).as(View.error().some)
         case ex =>
           Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
 
@@ -263,30 +263,6 @@ object JwtAuthMiddleware:
 (например, из куки). Оно «заворачивает» строку в правильный заголовок `Authorization: Bearer <token>`
 и вызывает middleware.
 
-## Считывание токена из куки
-
-Метод `withUserFromCookie(cookie)(f, fallbackPage)` сам находит куку `token` и подставляет `fallbackPage`,
-если её нет или она невалидна.
-
-Внутри `withUserFromCookie(cookie)` токен извлекается так:
-
-```dotty
-cookie.values
-  .collectFirst {
-    case rq if rq.name == "token" => rq.content
-  } match
-  case Some(token) => middleware.fromToken.run(token).flatMap(f)...
-  case None => fallbackPage.pure[IO]
-```
-
-**Как это работает:**
-
-- **`cookie.values`** — список всех кук (`RequestCookie`), отправленных браузером.
-- **`collectFirst`** — ищет первый элемент, удовлетворяющий предикату.
-- **`case rq if rq.name == "token"`** — если имя куки равно `"token"`, возвращаем её содержимое
-  (`rq.content`) — это строка JWT-токена.
-- Если куки с таким именем нет — `None`, и возвращается `fallbackPage`.
-
 ## Формирование приветственной страницы
 
 Если токен валиден, формируем приветственную страницу с задачами пользователя.
@@ -405,14 +381,14 @@ object WelcomeViews:
 Если что-то пошло не так — пользователь видит страницу логина:
 
 ```dotty
-View.base(Title, View.login(none)).toString
+View.base(Title, View.login(none))
 ```
 
 ![Login page](images/login.png)
 
 ## Рендеринг представлений (scalatags)
 
-Для формирования HTML используются чистые Scala-функции с DSL **scalatags** — типобезопасной
+Для формирования HTML используются чистые Scala-функции с DSL [scalatags](https://github.com/lihaoyi/scalatags) — типобезопасной
 библиотекой для построения HTML в Scala-коде. Это позволяет ловить ошибки разметки на этапе
 компиляции, а не в рантайме. Все функции-рендеры собраны в объекте `Views`
 (`Views.scala`). scalatags-код типобезопасен: компилятор проверяет структуру DOM-дерева,
@@ -427,9 +403,7 @@ View.base(Title, View.login(none)).toString
 def base(pageTitle: String, pageContent: String): String
 ```
 
-Строит `<html lang="ru">` с `<head>`, содержащим `meta charset="utf-8"`, `meta viewport`,
-`<title>`, stylesheet `/assets/css/pdp.css`, favicon, `/assets/js/pdp.js`,
-htmx@2.0.10 CDN script и `marked.min.js` CDN script.
+Строит `<html lang="ru">` с `<head>`, содержащим мета-информацию.
 Затем `<body>` с `<header class="app-header">` (ссылка на `/`) и
 `<main class="main-content">`, оборачивающим содержимое.
 

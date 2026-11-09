@@ -153,7 +153,7 @@ def getViewSettings(
       errorSectionMessage = errorSectionMessage,
       errorGoalMessage = errorGoalMessage,
       errorPeriodicStepMessage = errorPeriodicStepMessage
-    )
+    ).render
 ```
 
 **Что происходит:**
@@ -187,7 +187,7 @@ def settings(
     errorSectionMessage: Option[String],
     errorGoalMessage: Option[String],
     errorPeriodicStepMessage: Option[String]
-): String
+): Frag
 ```
 
 **Параметры метода:**

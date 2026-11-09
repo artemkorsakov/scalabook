@@ -561,7 +561,7 @@ def settings(
     errorSectionMessage: Option[String],
     errorGoalMessage: Option[String],
     errorPeriodicStepMessage: Option[String]
-): String
+): Frag
 ```
 
 Раздел «Периодические задачи» в настройках группирует шаги **по типу периода**. Для каждого типа — своя таблица:
@@ -675,7 +675,7 @@ def render(
     step: PeriodicStep,
     token: JwtToken,
     maybeError: Option[String]
-): String
+): Tag
 ```
 
 ```html
@@ -989,7 +989,7 @@ private[settings] object SettingsViews:
         errorSectionMessage = errorSectionMessage,
         errorGoalMessage = errorGoalMessage,
         errorPeriodicStepMessage = errorPeriodicStepMessage
-      )
+      ).render
 ```
 
 **Разбор:**
@@ -1015,7 +1015,7 @@ val editRowHandler: Handler =
             step,
             jwtToken.value,
             none
-          )
+          ).render
 ```
 
 **Разбор:**

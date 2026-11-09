@@ -875,7 +875,7 @@ final case class PeriodicTaskHandlers(
           for
             _         <- service.completeStep(periodicTaskId, user.id, number)
             maybeTask <- service.get(periodicTaskId, user.id)
-          yield maybeTask.map(task => View.periodicTask(task, none))
+          yield maybeTask.map(task => View.periodicTask(task, none).render)
         }
 
   val completeHandler: Handler =
@@ -899,7 +899,7 @@ final case class PeriodicTaskHandlers(
               ),
               token = jwtToken,
               errorMessage = none
-            )
+            ).render
           }
         }
 
@@ -914,7 +914,7 @@ final case class PeriodicTaskHandlers(
                 for
                   _ <- service.updatePlan(periodicTaskId, user.id, Plan(steps.sortBy(_.number)))
                   maybeTask <- service.get(periodicTaskId, user.id)
-                yield maybeTask.map(task => View.periodicTask(task, none))
+                yield maybeTask.map(task => View.periodicTask(task, none).render)
               run
                 .recover:
                   case ex: IllegalArgumentException =>
@@ -924,7 +924,7 @@ final case class PeriodicTaskHandlers(
                       request = request,
                       token = jwtToken,
                       errorMessage = ex.getMessage.some
-                    ).some
+                    ).render.some
             }.valueOr(errors =>
               Logger[IO].error(errors.toChain.toVector.mkString("; ")).as(none)
             )

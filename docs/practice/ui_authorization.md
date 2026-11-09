@@ -62,7 +62,7 @@ final case class InitialHandler(
             user = user,
             jwtToken = jwtToken,
             tab = DefaultTab
-          ).map(welcome => View.base(Title, welcome)),
+          ).map(welcome => View.base(Title, raw(welcome))),
         fallbackPage = View.base(Title, View.login(none))
       )
 ```
@@ -281,7 +281,7 @@ object WelcomeViews:
       user: UserInfo,
       jwtToken: JwtToken,
       tab: String
-  ): IO[HtmlFormat.Appendable] =
+  ): IO[String] =
     for
       notes <- notesService.getByUser(user.id)
       (taskResults, taskTypes, sections, goals) <- taskLifecycleService.getAll(...)
@@ -326,7 +326,7 @@ object WelcomeViews:
         sources = View.welcomeSources(taskTypes),
         notes = View.welcomeNotes(notes),
         history = View.history(historyTasks)
-      )
+      ).render
 ```
 
 **Что происходит пошагово:**
@@ -400,7 +400,7 @@ View.base(Title, View.login(none))
 подключение CSS и JS, верхнюю панель с заголовком.
 
 ```dotty
-def base(pageTitle: String, pageContent: String): String
+def base(pageTitle: String, pageContent: Modifier): String
 ```
 
 Строит `<html lang="ru">` с `<head>`, содержащим мета-информацию.
@@ -411,7 +411,9 @@ def base(pageTitle: String, pageContent: String): String
 
 - **`pageTitle: String`** — заголовок страницы, отображается в браузерной вкладке и в шапке.
   Клик по нему ведёт на главную страницу.
-- **`pageContent: String`** — основное содержимое страницы, вставляется в `<main>`.
+- **`pageContent: Modifier`** — основное содержимое страницы (scalatags-фрагмент), вставляется
+  в `<main>`. Если передаётся уже готовая HTML-строка (например, результат `WelcomeViews`),
+  её оборачивают в `raw(...)`.
 
 **Важно:** здесь подключается **htmx** — библиотека для обновления частей страницы без перезагрузки.
 Именно она используется на welcome-странице для переключения вкладок, отправки форм и обновления
@@ -422,7 +424,7 @@ def base(pageTitle: String, pageContent: String): String
 Страница формы входа. Показывается, если пользователь не авторизован.
 
 ```dotty
-def login(errorMessage: Option[String]): String
+def login(errorMessage: Option[String]): Frag
 ```
 
 Функция рендерит `<div id="app" class="app-container-narrow">` с заголовком

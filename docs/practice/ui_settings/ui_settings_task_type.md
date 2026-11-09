@@ -221,7 +221,7 @@ val editRowHandler: Handler =
         authorization
       ): (user: UserInfo, jwtToken: JwtToken) =>
           getTaskType(taskTypeId, user.id).map: taskType =>
-            EditItemRequest.render(taskType, jwtToken, none)
+            EditItemRequest.render(taskType, jwtToken, none).render
 ```
 
 **Пошаговый разбор:**
@@ -239,7 +239,8 @@ val editRowHandler: Handler =
       yield taskType
     ```
 3. **`EditItemRequest.render(...)`** — рендерим scalatags-карточку `EditItemRequest`
-    с обычным состоянием (безд ошибки).
+    (возвращает `Tag`), затем `.render` превращает её в HTML-строку
+    (без ошибки).
 
 **Зачем загружать все типы, а не один?**
 

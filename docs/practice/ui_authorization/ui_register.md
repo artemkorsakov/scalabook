@@ -40,7 +40,7 @@ final case class RegisterHandler(
     )
 
   val formHandler: Handler =
-    formRoute.handle(() => View.register(none))
+    formRoute.handle(() => View.register(none).render)
 ```
 
 Фрагмент из `Main.scala`, где оба обработчика регистрируются:
@@ -59,15 +59,17 @@ final case class RegisterHandler(
 - **`formRoute.handle`** — используем `handle`, а не `handleIO`, потому что
   логика чистая: никаких эффектов (`IO`) не требуется, только рендер шаблона.
 - **`() => ...`** — лямбда без аргументов, потому что запрос не содержит параметров.
-- **`View.register(none)`** — вызываем метод `Views.register` с `None` в качестве
-  сообщения об ошибке. Это значит «ошибки нет, показываем чистую форму».
+- **`View.register(none).render`** — вызываем метод `Views.register` с `None` в качестве
+  сообщения об ошибке (`Frag`), затем `.render` превращает его в HTML-строку.
+  Это значит «ошибки нет, показываем чистую форму».
 - **`formHandler` / `registerHandler`** — два отдельных `Handler`, каждый со своим маршрутом.
   В `Main.scala` они подключаются через `.orElse`.
 
 ### Рендер формы `Views.register`
 
 Метод `Views.register` — это scalatags-функция в объекте `Views`. Она принимает
-`errorMessage: Option[String]` и возвращает `String` (рендер в HTML). Рендерится:
+`errorMessage: Option[String]` и возвращает `Frag` (scalatags-фрагмент, который можно
+превратить в HTML через `.render`). Рендерится:
 
 - Обёртка `<div id="app" class="app-container-narrow">`.
 - Заголовок `<h2>Регистрация</h2>`.
@@ -162,7 +164,7 @@ final case class RegisterHandler(
     }
 
   private def asError(error: String): IO[Either[String, String]] =
-    View.register(error.some).asLeft.pure[IO]
+    View.register(error.some).render.asLeft.pure[IO]
 ```
 
 **Пошаговый разбор:**
@@ -206,7 +208,7 @@ final case class RegisterHandler(
 
 ```dotty
 private def asError(error: String): IO[Either[String, String]] =
-  View.register(error.some).asLeft.pure[IO]
+  View.register(error.some).render.asLeft.pure[IO]
 ```
 
 Возвращает форму регистрации с сообщением об ошибке, обёрнутую в `Left`.

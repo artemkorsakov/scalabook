@@ -34,15 +34,15 @@ def welcome(
     username: String,
     token: JwtToken,
     tab: String,
-    inProgress: String,
-    planned: String,
-    knowledgeBase: String,
-    goals: String,
-    statistics: String,
-    sources: String,
-    notes: String,
-    history: String
-): String
+    inProgress: Modifier,
+    planned: Modifier,
+    knowledgeBase: Modifier,
+    goals: Modifier,
+    statistics: Modifier,
+    sources: Modifier,
+    notes: Modifier,
+    history: Modifier
+): Frag
 ```
 
 **Импорт:**
@@ -59,21 +59,22 @@ def welcome(
 | `username`      | `String` | Имя пользователя для приветствия. Отображается в шапке: «Добро пожаловать, $username!»    |
 | `token`         | `JwtToken`| JWT-токен. Используется кнопкой «Выход» и сохранением в куки                              |
 | `tab`           | `String` | Текущая активная вкладка: `"in-progress"`, `"planned"`, `"knowledge-base"`, `"goals"`, `"statistics"`, `"sources"`, `"notes"`, `"history"` |
-| `inProgress`    | `String` | Готовый HTML вкладки «В работе» (метод `Views.welcomeInProgress`)                         |
-| `planned`       | `String` | Готовый HTML вкладки «Запланировано» (метод `Views.welcomePlanned`)                       |
-| `knowledgeBase` | `String` | Готовый HTML вкладки «База знаний» (метод `Views.welcomeKnowledgeBase`)                   |
-| `goals`         | `String` | Готовый HTML вкладки «Цели» (метод `Views.goalsStats`)                                    |
-| `statistics`    | `String` | Готовый HTML вкладки «Статистика» (метод `Views.statistics`)                              |
-| `sources`       | `String` | Готовый HTML вкладки «Источник» (метод `Views.welcomeSources`)                            |
-| `notes`         | `String` | Готовый HTML вкладки «Заметки» (метод `Views.welcomeNotes`)                               |
-| `history`       | `String` | Готовый HTML вкладки «История» (метод `Views.history`)                                    |
+| `inProgress`    | `Modifier` | Готовый кусок вкладки «В работе» (метод `Views.welcomeInProgress`)                         |
+| `planned`       | `Modifier` | Готовый кусок вкладки «Запланировано» (метод `Views.welcomePlanned`)                       |
+| `knowledgeBase` | `Modifier` | Готовый кусок вкладки «База знаний» (метод `Views.welcomeKnowledgeBase`)                   |
+| `goals`         | `Modifier` | Готовый кусок вкладки «Цели» (метод `Views.goalsStats`)                                    |
+| `statistics`    | `Modifier` | Готовый кусок вкладки «Статистика» (метод `Views.statistics`)                              |
+| `sources`       | `Modifier` | Готовый кусок вкладки «Источник» (метод `Views.welcomeSources`)                            |
+| `notes`         | `Modifier` | Готовый кусок вкладки «Заметки» (метод `Views.welcomeNotes`)                               |
+| `history`       | `Modifier` | Готовый кусок вкладки «История» (метод `Views.history`)                                    |
 
-**Почему каждый из восьми параметров — это `String`, а не набор данных?**
+**Почему каждый из восьми параметров — это `Modifier`, а не набор данных?**
 
 `Views.welcome` — это **компоновщик**. Он не знает ни о задачах, ни о целях, ни
-о статистике: он лишь раскладывает уже готовые HTML-фрагменты по вкладкам. Это позволяет
-держать метод тривиальным, а всю логику формирования каждой вкладки выносить в отдельные
-рендер-методы и в `WelcomeViews`.
+о статистике: он лишь раскладывает уже готовые scalatags-фрагменты по вкладкам.
+Возвращаемый тип `Frag` в хэндлерах превращается в HTML-строку через `.render`.
+Это позволяет держать метод тривиальным, а всю логику формирования каждой вкладки
+выносить в отдельные рендер-методы и в `WelcomeViews`.
 
 **Почему фильтры вкладок не передаются сюда?**
 

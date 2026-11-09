@@ -76,7 +76,7 @@ private[tasks] object TaskViews:
         sections = sections,
         goals = goals,
         errorMessage = errorMessage
-      )
+      ).render
 ```
 
 **Что происходит:**

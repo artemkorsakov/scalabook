@@ -125,7 +125,7 @@ def getViewCreateTaskModal(
     sections = sections,
     goals = goals,
     errorMessage = errorMessage
-  )
+  ).render
 ```
 
 **Что происходит:**
@@ -679,7 +679,7 @@ final case class HomeHandler(
             jwtToken = jwtToken,
             tab = tab
           ),
-        fallbackPage = View.login(None)
+        fallbackPage = View.login(None).render
       )
 ```
 

@@ -513,7 +513,7 @@ val editFormHandler: Handler =
               ),
               token = jwtToken.value,
               errorMessage = none
-            )
+            ).render
         }
 ```
 
@@ -548,14 +548,14 @@ val editHandler: Handler =
               source = source,
               token = jwtToken.value,
               errorMessage = none
-            ).some
+            ).render.some
           .recover:
             case ex: IllegalArgumentException =>
               View.editSource(
                 source = source,
                 token = jwtToken.value,
                 errorMessage = ex.getMessage.some
-              ).some
+              ).render.some
     // ToDo: https://github.com/creativescala/krop/pull/57
     val authorization: Authorization =
       Authorization(Token(AuthScheme.Bearer, request.token))

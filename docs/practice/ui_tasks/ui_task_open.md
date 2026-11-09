@@ -37,7 +37,7 @@ final case class TaskHandlers(
             taskId = TaskId(uuid),
             jwtToken = jwtToken,
             errorMessage = none
-          ).map(_.map(html => View.base(Title, html))),
+          ).map(_.map(html => View.base(Title, raw(html)))),
         fallbackPage = NotFoundView
       )
 
@@ -64,7 +64,9 @@ end TaskHandlers
 
 3. **Лямбда `f`** — сразу загружает задачу через `getViewTask` с `TaskId(uuid)`
    без веток `Right`/`Left`, потому что `uuid` уже валиден по типу. Обёртывает
-   результат в `View.base(...)` — полную HTML-страницу.
+   результат в `View.base(...)` — полную HTML-страницу. Так как `getViewTask`
+   возвращает строку, её оборачивают в `raw(...)`, потому что `View.base` принимает
+   scalatags-фрагмент `Modifier`.
 
 4. **Возврат `Option`**: `f` возвращает `IO[Option[String]]`. Если задача не найдена —
    `None`, и `withUserFromCookieOpt` подставляет `fallbackPage` (404).
@@ -85,7 +87,7 @@ private[tasks] object TaskViews:
       taskId: TaskId,
       jwtToken: JwtToken,
       errorMessage: Option[String]
-  ): IO[Option[HtmlFormat.Appendable]] =
+  ): IO[Option[String]] =
     for
       (tasks, taskTypes, sections, goals) <- taskLifecycleService.getAll(
         userId = userId,
@@ -108,7 +110,7 @@ private[tasks] object TaskViews:
         token = jwtToken.value,
         availableOrdinals = availableOrdinals,
         errorMessage = errorMessage
-      )
+      ).render
 ```
 
 **Что происходит:**
@@ -125,8 +127,8 @@ private[tasks] object TaskViews:
    возвращает `Option[TaskCard]`. Если задача не найдена или не принадлежит
    пользователю — будет `None`.
 
-4. **Рендер шаблона** — `View.task(...)` возвращает `HtmlFormat.Appendable`,
-   обёрнутый в `Option` (если задача найдена).
+4. **Рендер шаблона** — `View.task(...)` возвращает `Frag`; `.render` превращает его
+   в HTML-строку, обёрнутую в `Option` (если задача найдена).
 
 ## Вычисление доступных порядковых номеров
 

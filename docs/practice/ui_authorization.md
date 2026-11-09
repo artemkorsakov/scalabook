@@ -77,7 +77,7 @@ final case class InitialHandler(
 
 2. **`extends AuthorizationHandler(middleware)`** — наследуемся от базового класса.
    Это даёт доступ к методам `withUserFromCookie`/`withUserFromCookieOpt` (см. «Базовый класс
-   `AuthorizationHandler`» в разделе аутентификации).
+   `AuthorizationHandler`»).
 
 3. **`private val route`** — маршрут объявлен внутри хэндлера.
 
@@ -95,17 +95,102 @@ final case class InitialHandler(
    `getViewWelcomeHtml` и оборачивает её в `View.base(Title, ...)`. Если токен валиден — пользователь
    видит свой рабочий стол; иначе — `fallbackPage` (форма входа).
 
-**Константа `Title`:**
-
-```dotty
-val Title: String = "План развития"
-```
-
-Вместо повторяющегося строкового литерала `"План развития"` во всех хэндлерах используется
-`Views.Title`. Это устраняет дублирование заголовка страницы и позволяет менять его в одном месте.
-
 Любая проблема с токеном (истёк, повреждён, неверная подпись) **не роняет приложение**:
 пользователь просто увидит форму входа, как будто он не авторизован. Ошибка при этом логируется.
+
+### Базовый класс `AuthorizationHandler`
+
+`AuthorizationHandler` — это вспомогательный трейт, который инкапсулирует логику
+проверки токена. Он используется всеми защищёнными хэндлерами (настройки, задачи, таймер и т.д.).
+
+Реализация выглядит так:
+
+```dotty
+trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
+    Logger[IO]
+):
+  def withUserFromHeader(authorization: Authorization)(
+      f: ((UserInfo, JwtToken)) => IO[String]
+  ): IO[Option[String]] =
+    withUserFromHeaderOpt(authorization)(f(_).map(_.some))
+
+  def withUserFromHeaderOpt(authorization: Authorization)(
+      f: ((UserInfo, JwtToken)) => IO[Option[String]]
+  ): IO[Option[String]] =
+    middleware
+      .run(authorization)
+      .flatMap(f)
+      .recoverWith:
+        case ex: AuthorizationException =>
+          Logger[IO].error(ex)(
+            s"Ошибка при парсинге токена: ${ex.getMessage}"
+          ).as(View.error().toString.some)
+        case ex =>
+          Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
+
+  def withUserFromCookieOpt(cookie: Cookie)(
+      f: ((UserInfo, JwtToken)) => IO[Option[String]],
+      fallbackPage: => String
+  ): IO[String] =
+    withUserFromCookie(cookie: Cookie)(
+      f(_).map(_.getOrElse(fallbackPage)),
+      fallbackPage
+    )
+
+  def withUserFromCookie(cookie: Cookie)(
+      f: ((UserInfo, JwtToken)) => IO[String],
+      fallbackPage: => String
+  ): IO[String] =
+    cookie.values
+      .collectFirst {
+        case rq if rq.name == "token" => rq.content
+      } match
+      case Some(token) =>
+        middleware.fromToken.run(token)
+          .flatMap(f)
+          .recoverWith:
+            case ex: AuthorizationException =>
+              Logger[IO].error(ex)(
+                s"Ошибка при парсинге токена: ${ex.getMessage}"
+              )
+                .as(fallbackPage)
+            case ex =>
+              Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}")
+                .as(fallbackPage)
+      case None =>
+        Logger[IO].debug("В cookies не найден токен пользователя")
+          .as(fallbackPage)
+end AuthorizationHandler
+```
+
+**Что делает:**
+
+1. Все методы принимают **два** аргумента: исходные данные (`authorization` или `cookie`)
+   **и** каррированную функцию `f`, которой передаётся `(user, token)`.
+2. Метод вызывает middleware для проверки токена.
+3. Если токен валиден — передаёт `(user, token)` в пользовательскую функцию `f`.
+4. Если заголовка/куки нет или токен невалиден — возвращается `fallbackPage`.
+
+**Два способа передать токен:**
+
+- **`withUserFromHeader` / `withUserFromHeaderOpt` с `Authorization`** — токен приходит
+  в заголовке `Authorization: Bearer <token>` (формы `/auth/login`, `/auth/logout`,
+  действия задачи). Возвращают `IO[Option[String]]`.
+- **`withUserFromCookie` / `withUserFromCookieOpt` с `Cookie`** — токен хранится в куки
+  `token` (открытие страниц: `/home`, `/task/{uuid}`, `/note/{uuid}` и т.д.). Трейт сам
+  извлекает токен из куки и возвращает `IO[String]`, подставляя `fallbackPage` при
+  отсутствии/невалидности токена. `fallbackPage` — **по имени** (`=> String`), то есть
+  вычисляется только при необходимости. Для мягкой версии (`withUserFromCookieOpt`) лямбда
+  возвращает `Option`, и при `None` тоже подставляется `fallbackPage`.
+
+**Преимущества такого подхода:**
+
+- **Единообразие**: все защищённые хэндлеры используют один и тот же механизм проверки.
+- **Безопасность по умолчанию**: если разработчик забыл проверить токен — компилятор
+  заставит его использовать `withUserFromHeader`, потому что обычный `handleIO` не даст доступ
+  к `UserInfo`.
+- **Единая точка для токена из куки**: извлечение `token` из куки и подстановка
+  `fallbackPage` реализованы один раз в `AuthorizationHandler`, а не в каждом хэндлере.
 
 ## Что такое `JwtAuthMiddleware`
 

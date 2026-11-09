@@ -989,7 +989,7 @@ private[settings] object SettingsViews:
         errorSectionMessage = errorSectionMessage,
         errorGoalMessage = errorGoalMessage,
         errorPeriodicStepMessage = errorPeriodicStepMessage
-      ).toString
+      )
 ```
 
 **Разбор:**
@@ -1015,7 +1015,7 @@ val editRowHandler: Handler =
             step,
             jwtToken.value,
             none
-          ).toString
+          )
 ```
 
 **Разбор:**
@@ -1082,7 +1082,7 @@ val editHandler: Handler =
                 Views.getPeriodicStepRow(
                   updated,
                   jwtToken.value
-                ).toString
+                )
               .recoverWith:
                 case ex: IllegalArgumentException =>
                   getRow(
@@ -1170,7 +1170,7 @@ val getRowHandler: Handler =
             Views.getPeriodicStepRow(
               step,
               jwtToken.value
-            ).toString
+            )
 ```
 
 **Разбор:** аналогично `editRowHandler`, но рендерит **обычную** строку, а не редактируемую.

@@ -221,7 +221,7 @@ val editRowHandler: Handler =
         authorization
       ): (user: UserInfo, jwtToken: JwtToken) =>
           getTaskType(taskTypeId, user.id).map: taskType =>
-            EditItemRequest.render(taskType, jwtToken, none).toString
+            EditItemRequest.render(taskType, jwtToken, none)
 ```
 
 **Пошаговый разбор:**
@@ -365,7 +365,7 @@ val editHandler: Handler =
           run.map: _ =>
             View.getTaskTypeRow(
               updated
-            ).toString
+            )
           .recoverWith:
             case ex: IllegalArgumentException =>
               editError(
@@ -477,7 +477,7 @@ val getRowHandler: Handler =
         getTaskType(taskTypeId, user.id).map: taskType =>
           View.getTaskTypeRow(
             taskType
-          ).toString
+          )
 ```
 
 **Назначение:** возвращает строку таблицы в обычном (нередактируемом) режиме.

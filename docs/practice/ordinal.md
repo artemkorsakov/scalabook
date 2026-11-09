@@ -277,7 +277,7 @@ val run: IO[Option[String]] =
       jwtToken = jwtToken,
       errorMessage = none
     )
-  yield view.map(_.toString)
+  yield view
 ```
 
 Здесь **важен нюанс**: если старый порядок был `5`, а новый `2`, то при `reorderTasks(ordinal = 2)` 
@@ -308,7 +308,7 @@ case Right(ordinal) =>
       ordinal = ordinal
     )
     maybeView <- getViewTask(...)
-  yield maybeView.map(_.toString)
+  yield maybeView
 ```
 
 Задача переводится из `KnowledgeBase` в `Planned` с указанным порядком. Перед этим выравниваются все задачи статуса `Planned`.

@@ -153,7 +153,7 @@ def getViewSettings(
       errorSectionMessage = errorSectionMessage,
       errorGoalMessage = errorGoalMessage,
       errorPeriodicStepMessage = errorPeriodicStepMessage
-    ).toString
+    )
 ```
 
 **Что происходит:**

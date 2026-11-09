@@ -86,7 +86,7 @@ val completeHandler: Handler =
             taskId = taskId,
             jwtToken = jwtToken,
             errorMessage = errors.mkString_(";").some
-          ).map(_.map(_.toString))
+          )
         )
     // ToDo: https://github.com/creativescala/krop/pull/57
     val authorization: Authorization =
@@ -127,7 +127,7 @@ val completeHandler: Handler =
 `HomeView` — это константа из `WelcomeViews`, возвращающая HTML главной страницы:
 
 ```dotty
-val HomeView: String = View.home().toString
+val HomeView: String = View.home()
 ```
 
 ``Views.home``:
@@ -327,7 +327,7 @@ val deferHandler: Handler =
           jwtToken = jwtToken,
           errorMessage = none
         )
-      yield maybeView.map(_.toString)
+      yield maybeView
 ```
 
 **Пошаговый разбор:**
@@ -413,7 +413,7 @@ val startHandler: Handler =
               jwtToken = jwtToken,
               errorMessage = none
             )
-          yield maybeView.map(_.toString)
+          yield maybeView
         }.valueOr(errors =>
           getViewTask(
             taskLifecycleService = taskLifecycleService,
@@ -421,7 +421,7 @@ val startHandler: Handler =
             taskId = taskId,
             jwtToken = jwtToken,
             errorMessage = errors.mkString_(";").some
-          ).map(_.map(_.toString))
+          )
         )
     // ToDo: https://github.com/creativescala/krop/pull/57
     val authorization: Authorization =
@@ -578,7 +578,7 @@ val queueHandler: Handler =
                 jwtToken = jwtToken,
                 errorMessage = none
               )
-            yield maybeView.map(_.toString)
+            yield maybeView
           case Left(error) =>
             getViewTask(
               taskLifecycleService = taskLifecycleService,
@@ -586,7 +586,7 @@ val queueHandler: Handler =
               taskId = taskId,
               jwtToken = jwtToken,
               errorMessage = error.some
-            ).map(_.map(_.toString))
+            )
         end match
     // ToDo: https://github.com/creativescala/krop/pull/57
     val authorization: Authorization =

@@ -78,7 +78,7 @@ val addTimeSpentHandler: Handler =
                   jwtToken = jwtToken,
                   errorMessage = none
                 )
-              yield maybeView.map(_.toString)
+              yield maybeView
             }.valueOr { errors =>
               Logger[IO].error(errors.mkString_(";")).as(none)
             }

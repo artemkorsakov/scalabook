@@ -276,7 +276,8 @@ private def tabButton(activeClass: String, dataTab: String, text: String, title:
 **Как работает переключение вкладок:**
 
 1. **Каждая кнопка** имеет атрибут `data-tab` с именем вкладки и `onclick="switchTab('...')"`.
-2. **Функция `switchTab`** ([в pdp.js](https://gitverse.ru/scalabook/pdp), путь `pdp/src/universal/assets/js/pdp.js`):
+2. **Функция `switchTab`** ([в pdp.js](https://gitverse.ru/scalabook/pdp/content/master/pdp/src/universal/assets/js/pdp.js), 
+   путь `pdp/src/universal/assets/js/pdp.js`):
    - Убирает класс `active` у всех кнопок и всех блоков `.tab-content`.
    - Добавляет `active` к нажатой кнопке и соответствующему блоку.
 3. **При первой загрузке** активная вкладка определяется параметром `tab`:
@@ -297,6 +298,8 @@ private def tabButton(activeClass: String, dataTab: String, text: String, title:
 ![in-progress-hint](../images/in-progress-hint.png)
 
 ## Вкладка «В работе»
+
+![in-progress-tasks](../images/in-progress-tasks.png)
 
 Метод `Views.welcomeInProgress` принимает
 два параметра: `tasks` (обычные задачи в работе, карточки `TableInProgressTaskCard`)
@@ -333,7 +336,7 @@ private def tabButton(activeClass: String, dataTab: String, text: String, title:
 - **Карточки, а не таблица** — задачи «В работе» отображаются карточками, потому что
   для них важны прогресс-бар и дедлайн, а не табличные метрики.
 - **Периодические задачи** — если на сегодня созданы периодические задачи (см.
-  документацию по периодическим задачам), они выводятся отдельным блоком
+  [документацию по периодическим задачам](../periodic.md)), они выводятся отдельным блоком
   «🔄 Периодические задачи» над обычными.
 - **Клик по карточке** — открывает страницу задачи в новой вкладке браузера
   (`onclick="openTask('...')" `). Функция `openTask` формирует URL `/task/{id}`
@@ -383,9 +386,9 @@ private def tabButton(activeClass: String, dataTab: String, text: String, title:
 - **Прогресс-бар** — визуализация прогресса. `task.progress` — число от 0.0 до 1.0,
   умножаем на 100 и округляем до целого. Ширина `.progress-fill` задаётся inline-стилем.
 
-![in-progress-tasks](../images/in-progress-tasks.png)
-
 ## Вкладка «Запланировано»
+
+![planned-tasks](../images/planned-tasks.png)
 
 Метод `Views.welcomePlanned` принимает
 четыре параметра: `tasks` (карточки `TablePlannedTaskCard`), `taskTypes`, `sections`
@@ -459,7 +462,7 @@ private def tabButton(activeClass: String, dataTab: String, text: String, title:
 
 - **Таблица, а не карточки** — запланированные задачи сравниваются по типу, разделу,
   цели и порядковому номеру, поэтому таблица удобнее.
-- **Три фильтра** — по типу, разделу и **цели**. Списки опций (`taskTypes`, `sections`,
+- **Три фильтра** — по типу, разделу и цели. Списки опций (`taskTypes`, `sections`,
   `goals`) приходят из сервиса и содержат **только те значения, которые реально есть**
   в этой вкладке. Это важно: пользователь не видит бесполезных опций.
 - **Фильтрация на клиенте** — JavaScript-функция `filterPlannedTasks()` скрывает строки,
@@ -496,9 +499,9 @@ private def tabButton(activeClass: String, dataTab: String, text: String, title:
 - **Клик по строке** — открывает задачу в новой вкладке. `onclick="openTask('...')"`.
 - **Колонка «Порядок»** — показывает `task.ordinal`, по которому задачи сортируются.
 
-![planned-tasks](../images/planned-tasks.png)
-
 ## Вкладка «База знаний»
+
+![knowledge-base-tasks](../images/knowledge-base-tasks.png)
 
 Метод `Views.welcomeKnowledgeBase` принимает
 четыре параметра: `tasks` (карточки `TableKnowledgeBaseTaskCard`), `taskTypes`,
@@ -604,13 +607,10 @@ private def tabButton(activeClass: String, dataTab: String, text: String, title:
 Каждая строка несёт атрибуты `data-task-type`, `data-task-section` и `data-task-goal`
 для клиентской фильтрации и `onclick="openTask('...')"` для открытия задачи.
 
-![knowledge-base-tasks](../images/knowledge-base-tasks.png)
-
 ## Клиентская фильтрация по цели
 
-Фильтрация задач по цели — это **клиентская** логика (реализована в `pdp.js`, без запроса
-к серверу). Она симметрична уже существовавшей фильтрации по типу и разделу, но добавляет
-третье измерение — цель.
+Фильтрация задач — это **клиентская** логика (реализована в `pdp.js`, без запроса
+к серверу).
 
 **Единая функция `filterTasks`:**
 

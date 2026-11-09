@@ -861,7 +861,7 @@ final case class PeriodicTaskHandlers(
           service.get(PeriodicTaskId(uuid), user.id).map {
             _.map { periodicTask =>
               val html = View.periodicTask(task = periodicTask, errorMessage = none)
-              View.base(Title, html).toString
+              View.base(Title, html)
             }
           },
         fallbackPage = NotFoundView
@@ -875,7 +875,7 @@ final case class PeriodicTaskHandlers(
           for
             _         <- service.completeStep(periodicTaskId, user.id, number)
             maybeTask <- service.get(periodicTaskId, user.id)
-          yield maybeTask.map(task => View.periodicTask(task, none).toString)
+          yield maybeTask.map(task => View.periodicTask(task, none))
         }
 
   val completeHandler: Handler =
@@ -899,7 +899,7 @@ final case class PeriodicTaskHandlers(
               ),
               token = jwtToken,
               errorMessage = none
-            ).toString
+            )
           }
         }
 
@@ -914,7 +914,7 @@ final case class PeriodicTaskHandlers(
                 for
                   _ <- service.updatePlan(periodicTaskId, user.id, Plan(steps.sortBy(_.number)))
                   maybeTask <- service.get(periodicTaskId, user.id)
-                yield maybeTask.map(task => View.periodicTask(task, none).toString)
+                yield maybeTask.map(task => View.periodicTask(task, none))
               run
                 .recover:
                   case ex: IllegalArgumentException =>
@@ -924,7 +924,7 @@ final case class PeriodicTaskHandlers(
                       request = request,
                       token = jwtToken,
                       errorMessage = ex.getMessage.some
-                    ).toString.some
+                    ).some
             }.valueOr(errors =>
               Logger[IO].error(errors.toChain.toVector.mkString("; ")).as(none)
             )

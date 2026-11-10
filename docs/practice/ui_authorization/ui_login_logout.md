@@ -9,7 +9,7 @@
 
 ### Описание маршрута
 
-Маршруты теперь объявляются непосредственно в хэндлерах. Для логина маршрут объявлен как приватная переменная `route` в `LoginHandler`:
+Для логина маршрут объявлен как приватная переменная `route` в `LoginHandler`:
 
 ```dotty
 private val route = Route(
@@ -87,10 +87,8 @@ end LoginHandler
    возвращается при любой ошибке (неверный пароль, неизвестный логин, ошибка валидации,
    внутренняя ошибка). Сообщение одинаковое — чтобы не раскрывать, существует ли пользователь.
 
-4. **`UserRegistration.parse(request)`** — валидируем поля запроса. Раньше для этого был
-   отдельный расширяющий объект `Parser` с методом `request.parse`, но в `f186beb` его **удалили**,
-   а логика переехала в метод компаньона `UserRegistration.parse`. Возвращает
-   `ValidatedNec[String, UserRegistration]`:
+4. **`UserRegistration.parse(request)`** — валидируем поля запроса. 
+   Возвращает `ValidatedNec[String, UserRegistration]`:
    ```dotty
    object UserRegistration:
      def parse(request: LoginRequest): ValidatedNec[String, UserRegistration] =
@@ -128,12 +126,6 @@ end LoginHandler
 9. **`.valueOr(_ => fallbackPage.pure[IO])`** — обрабатывает случай, когда `UserRegistration.parse`
    вернул ошибку. Например, если пользователь отправил пустую форму. В этом случае тоже
    показываем форму логина с сообщением об ошибке.
-
-**Возвращаемый тип `IO[String]`:**
-
-Хэндлер возвращает `IO[String]` — всегда готовая HTML-строка. Раньше тип был
-`IO[Option[String]]` с `None` для 404, но теперь все ошибки намеренно возвращают форму
-логина с сообщением, поэтому `Option` больше не нужен.
 
 ### Обработка ошибок
 

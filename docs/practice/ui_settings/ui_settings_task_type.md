@@ -227,27 +227,19 @@ val editRowHandler: Handler =
 **Пошаговый разбор:**
 
 1. **`taskTypeId: TaskTypeId`** — ID приходит типизированным из пути через `taskTypeIdParam`.
-2. **`getTaskType(taskTypeId, user.id)`** — приватный вспомогательный метод, который
-    загружает все типы и находит нужный:
+2. **`getTaskType(taskTypeId, user.id)`** — приватный вспомогательный метод, который находит нужный тип задачи:
     ```dotty
     private def getTaskType(id: TaskTypeId, userId: UserId): IO[TaskType] =
       for
-        taskTypes <- settingsService.getTaskTypes(userId)
-        taskType  <- IO.fromOption(
-          taskTypes.find(_.id == id)
-        )(new IllegalArgumentException("Задача не найдена"))
+        maybeTaskType <- settingsService.getTaskType(id, userId)
+        taskType      <- IO.fromOption(maybeTaskType)(
+          new IllegalArgumentException("Задача не найдена")
+        )
       yield taskType
     ```
 3. **`EditItemRequest.render(...)`** — рендерим scalatags-карточку `EditItemRequest`
     (возвращает `Tag`), затем `.render` превращает её в HTML-строку
     (без ошибки).
-
-**Зачем загружать все типы, а не один?**
-
-В текущей реализации `SettingsService` не имеет метода `getTaskType(id)`.
-Вместо этого мы загружаем все типы и ищем нужный в памяти. Это работает, потому
-что типов задач у одного пользователя обычно немного (5–20). Если бы их было
-тысячи, стоило бы добавить отдельный метод.
 
 ### Маршрут
 
@@ -275,7 +267,105 @@ object EditItemRequest:
       item: TaskType,
       token: JwtToken,
       maybeError: Option[String]
-  ): String
+  ): Tag =
+    renderItem(
+      row = "task-type-row",
+      name = item.name.value,
+      displayed = item.displayed,
+      ordinal = item.ordinal,
+      token = token,
+      path = s"/settings/task_types/${item.id.value}",
+      maybeError = maybeError
+    )
+
+  def render(
+      item: Section,
+      token: JwtToken,
+      maybeError: Option[String]
+  ): Tag =
+    renderItem(
+      row = "section-row",
+      name = item.name.value,
+      displayed = item.displayed,
+      ordinal = item.ordinal,
+      token = token,
+      path = s"/settings/sections/${item.id.value}",
+      maybeError = maybeError
+    )
+
+  def render(
+      item: Goal,
+      token: JwtToken,
+      maybeError: Option[String]
+  ): Tag =
+    renderItem(
+      row = "goal-row",
+      name = item.name.value,
+      displayed = item.displayed,
+      ordinal = item.ordinal,
+      token = token,
+      path = s"/settings/goals/${item.id.value}",
+      maybeError = maybeError
+    )
+
+  private def renderItem(
+      row: String,
+      name: String,
+      displayed: Boolean,
+      ordinal: Ordinal,
+      token: JwtToken,
+      path: String,
+      maybeError: Option[String]
+  ): Tag =
+    tr(
+      cls                := s"$row editing",
+      attr("hx-trigger") := "cancel",
+      attr("hx-get")     := path,
+      td(
+        input(
+          cls          := "edit-input",
+          attr("name") := "name",
+          value        := name,
+          autofocus
+        )
+      ),
+      td(
+        input(
+          cls          := "edit-input",
+          attr("name") := "ordinal",
+          `type`       := "number",
+          value        := ordinal.value.toString,
+          min          := "0"
+        ),
+        "Выровнять порядок?",
+        input(
+          cls          := "edit-checkbox",
+          attr("name") := "ordinalShift",
+          `type`       := "checkbox"
+        )
+      ),
+      td(
+        input(
+          cls          := "edit-checkbox",
+          attr("name") := "displayed",
+          `type`       := "checkbox",
+          if displayed then List[Modifier](checked) else List.empty[Modifier]
+        )
+      ),
+      td(
+        Htmx.hiddenToken(token.value),
+        button(cls := "cancel-btn", attr("hx-get") := path)("❌ Отмена"),
+        button(
+          cls                := "save-btn",
+          attr("hx-put")     := path,
+          attr("hx-include") := "closest tr"
+        )("💾 Сохранить"),
+        maybeError.map(msg => div(cls := "error")(msg)).getOrElse(frag())
+      )
+    )
+  end renderItem
+
+end EditItemRequest
 ```
 
 Метод генерирует `<tr class="task-type-row editing" hx-trigger="cancel" hx-get="{path}">`:
@@ -310,8 +400,7 @@ object EditItemRequest:
 5. **`<input type="hidden" name="token">`** — токен передаётся в теле PUT-запроса.
     Генерируется через `Htmx.hiddenToken(token.value)`.
 
-6. **Кнопка «Отмена»** — GET-запрос на `/settings/task_types/{id}`,
-    что возвращает обычную строку.
+6. **Кнопка «Отмена»** — GET-запрос на `/settings/task_types/{id}`, что возвращает обычную строку.
 
 7. **Кнопка «Сохранить»** — PUT-запрос с данными из строки.
 
@@ -433,12 +522,12 @@ val editHandler: Handler =
 
 6. **Успех:** возвращаем обновлённую строку через `View.getTaskTypeRow`.
 
- 7. **Ошибка бизнес-логики:** перехватываем `IllegalArgumentException` и вызываем
-    `editError`, который рендерит строку в режиме редактирования с сообщением.
+7. **Ошибка бизнес-логики:** перехватываем `IllegalArgumentException` и вызываем
+   `editError`, который рендерит строку в режиме редактирования с сообщением.
 
- 8. **`editError`** — приватный вспомогательный метод, который:
-     - Загружает оригинальный `TaskType` (по ID) через `getTaskType`.
-     - Рендерит `EditItemRequest.render(taskType, jwtToken, error)` с сообщением.
+8. **`editError`** — приватный вспомогательный метод, который:
+   - Загружает оригинальный `TaskType` (по ID) через `getTaskType`.
+   - Рендерит `EditItemRequest.render(taskType, jwtToken, error)` с сообщением.
 
 **Зачем нужен `ordinalShift`?**
 
@@ -504,7 +593,60 @@ private val getRowRoute = Route(
 От обычную строку рендерится scalatags-методом `getTaskTypeRow` в `Views`:
 
 ```dotty
-def getTaskTypeRow(taskType: TaskType): String
+def getTaskTypeRow(taskType: TaskType): String =
+  rowWithRefresh(
+    rowClass = "task-type-row",
+    dataAttr = "data-task-type-id",
+    dataValue = taskType.id.value.toString,
+    name = taskType.name.value,
+    ordinal = taskType.ordinal.value,
+    displayed = taskType.displayed,
+    editPath = s"/settings/task_types/${taskType.id.value}/edit",
+    deletePath = s"/settings/task_types/${taskType.id.value}",
+    confirm =
+      s"""Вы уверены, что хотите удалить тип задачи «${taskType.name.value}»?"""
+  ).render
+  
+private def rowWithRefresh(
+    rowClass: String,
+    dataAttr: String,
+    dataValue: String,
+    name: String,
+    ordinal: Int,
+    displayed: Boolean,
+    editPath: String,
+    deletePath: String,
+    confirm: String
+): Tag =
+  tr(cls := rowClass, attr(dataAttr) := dataValue)(
+    td(
+      button(
+        cls             := "refresh-btn",
+        attr("onclick") := "htmx.process(this); this.click();",
+        attr("hx-get")  := "/settings",
+        Htmx.appTarget,
+        Htmx.appSwap
+      )("🔄 Обновить"),
+      name
+    ),
+    td(ordinal),
+    td(if displayed then "✓" else "✗"),
+    td(
+      button(
+        cls                := "edit-btn",
+        attr("hx-get")     := editPath,
+        attr("hx-trigger") := "edit",
+        attr("onclick")    := "handleEditClick(this)"
+      )("✏️ Редактировать"),
+      button(
+        cls               := "delete-btn",
+        attr("hx-delete") := deletePath,
+        Htmx.appTarget,
+        Htmx.appSwap,
+        attr("hx-confirm") := confirm
+      )("🗑️ Удалить")
+    )
+  )  
 ```
 
 Метод генерирует `<tr class="task-type-row" data-task-type-id="{id}">`:

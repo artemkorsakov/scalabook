@@ -169,9 +169,7 @@ final case class RegisterHandler(
 
 **Пошаговый разбор:**
 
-1. **`UserRegistration.parse(request)`** — валидируем поля запроса. Раньше для этого был
-   отдельный расширяющий объект `Parser` с методом `request.parse` (удалён в `f186beb`).
-   Теперь это метод компаньона, возвращает `ValidatedNec[String, UserRegistration]`:
+1. **`UserRegistration.parse(request)`** — валидируем поля запроса, возвращает `ValidatedNec[String, UserRegistration]`:
     - Если `username` или `password` пустые, слишком короткие или длинные — ошибка.
     - Если всё в порядке — `UserRegistration(username, password)`.
 2. **`.map { registration => ... }`** — при успешной валидации вызываем

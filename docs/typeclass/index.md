@@ -68,7 +68,7 @@
 - [Type Classes vs Records of Functions](https://www.inner-product.com/posts/type-classes-vs-records-of-functions/)
 - [Type Classes in Scala - Baeldung](https://www.baeldung.com/scala/type-classes)
 - [Typeclasses in Scala](https://www.youtube.com/watch?v=sVMES4RZF-8)
-- [Typeclasses in Scala 3](https://www.youtube.com/watch?app=desktop&v=co4LSvVoX-s)
+- [Typeclasses in Scala 3](https://www.youtube.com/watch?app=desktop&amp;v=co4LSvVoX-s)
 - [Why are Type Classes Useful in Scala?](https://blog.rockthejvm.com/why-are-typeclasses-useful/)
 - [Why Type Classes are Useful](https://www.youtube.com/watch?v=bupBZKJT0EA)
 

@@ -112,6 +112,6 @@ def divide(a: Int, b: Int): Option[Int] =
     - Основной: [GitVerse](https://gitverse.ru/artemkorsakov)
     - Дополнительный: [GitHub](https://github.com/artemkorsakov)
 - **Для связи**: [написать email](mailto:artemkorsakov@mail.ru)
-- **Для совместной работы**: [вакансии ИТ-компании «Криптонит»](https://career.kryptonite.ru/vacancies/?locations=moscow&search=Scala)
+- **Для совместной работы**: [вакансии ИТ-компании «Криптонит»](https://career.kryptonite.ru/vacancies/?locations=moscow&amp;search=Scala)
 
 [home]: https://gitverse.ru/artemkorsakov/scalabook

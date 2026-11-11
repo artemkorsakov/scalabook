@@ -178,7 +178,7 @@ factorial(10)   // 3628800
 - [FP Anti-Patterns](https://scalajobs.com/blog/functional-programming-anti-patterns-in-scala)
 - [Functional Programming by Alexander Alvin](https://alvinalexander.com/photos/functional-programming-simplied-free-pdf-preview/)
 - [Functional Programming for Beginners](https://apocalisp.wordpress.com/2011/01/10/functional-programming-for-beginners/)
-- [Functional Programming Group](https://www.youtube.com/watch?app=desktop&v=s2ay9nEW3ak&list=PLNo5uJesLLQjRmM9lASwVeL0fFtJuKU0U)
+- [Functional Programming Group](https://www.youtube.com/watch?app=desktop&amp;v=s2ay9nEW3ak&amp;list=PLNo5uJesLLQjRmM9lASwVeL0fFtJuKU0U)
 - [Functional Programming in Scala](https://www.youtube.com/playlist?list=PLJGDHERh23x8AD0LFiS9iPg_tKLS1i1wZ)
 - [Functional Programming in Scala, Second Edition, Chapter 1-2 by Michael Pilquist, Rúnar Bjarnason, and Paul Chiusano](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Functional Programming Isn't the Answer](https://degoes.net/articles/fp-is-not-the-answer)

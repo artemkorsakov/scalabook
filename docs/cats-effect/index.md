@@ -211,7 +211,7 @@ Cats Effect предлагает выразительный и безопасн�
 - [Baeldung: Introduction to Cats Effects](https://www.baeldung.com/scala/cats-effects-intro)
 - [Baeldung: Introduction to Concurrent Programming With Cats Effect Fibers](https://www.baeldung.com/scala/cats-effect-fibers-concurrent-programming)
 - [Baeldung: Difference Between flatMap(), flatTap(), evalMap() and evalTap() in Cats Effect](https://www.baeldung.com/scala/cats-effect)
-- [Cats by example – State](https://www.youtube.com/watch?v=T8fhAHw9GM0&list=PLy4hTMY6erDBmvZiEDjtCTP8XCdhaXc2c)
+- [Cats by example – State](https://www.youtube.com/watch?v=T8fhAHw9GM0&amp;list=PLy4hTMY6erDBmvZiEDjtCTP8XCdhaXc2c)
 - [Cats Effect 3 by Daniel Spiewak](https://www.youtube.com/watch?v=KZtVBtOrP50)
 - [Cats Effect 3 for Beginners Part-1](https://yadukrishnan.live/cats-effect-3-for-beginners-part-1)
 - [Cats Effect Fibers](https://blog.rockthejvm.com/cats-effect-fibers/)

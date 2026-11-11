@@ -396,7 +396,7 @@ classDiagram
 - [More on Monoids and Monads](https://apocalisp.wordpress.com/2010/07/21/more-on-monoids-and-monads/)
 - [On Monoids](https://apocalisp.wordpress.com/2010/06/14/on-monoids/)
 - [Scala with Cats][Scala with Cats]
-- [Semigroups and Monoids in Scala](https://www.youtube.com/watch?v=LmBTiFYa-V4&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
+- [Semigroups and Monoids in Scala](https://www.youtube.com/watch?v=LmBTiFYa-V4&amp;list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 
 [sample]: https://gitverse.ru/scalabook/typeclasses
 [Scala with Cats]: https://scalawithcats.com/dist/scala-with-cats.html#applications-of-monoids

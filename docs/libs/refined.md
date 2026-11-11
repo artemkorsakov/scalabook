@@ -29,7 +29,7 @@
 val str: String = "€‡™µ"
 ```
 
-> Вспомним фразу [Ken Scambler](https://github.com/kenbot), процитированную [вот в этом видео](https://www.youtube.com/watch?v=zExb9x3fzKs&t=52s): валиден ли китайский перевод книг Шекспира в качестве входящего параметра типа `String`?!
+> Вспомним фразу [Ken Scambler](https://github.com/kenbot), процитированную [вот в этом видео](https://www.youtube.com/watch?v=zExb9x3fzKs&amp;t=52s): валиден ли китайский перевод книг Шекспира в качестве входящего параметра типа `String`?!
 
 В абсолютном большинстве случаев такая "свобода" не нужна.
 
@@ -519,7 +519,7 @@ Person.refine("Andrew", 150, "id")
 - [refined lib][refined lib]
 - Видео:
     - [Better types = fewer tests - Raúl Raja](https://www.youtube.com/watch?v=TScwxX62uig)
-    - [Combining Refined Types with Type Class Derivation in Scala - Lawrence Carvalho](https://www.youtube.com/watch?v=Hq2QWbUXKbE&t)
+    - [Combining Refined Types with Type Class Derivation in Scala - Lawrence Carvalho](https://www.youtube.com/watch?v=Hq2QWbUXKbE&amp;t)
     - [Decorate your types with refined - Frank Thomas](https://www.youtube.com/watch?v=zExb9x3fzKs)
     - [Defusing the configuration time bomb with PureConfig and Refined - Leif Wickland](https://www.youtube.com/watch?v=NjqRi-cF3-g)
     - [Enhancing the type system with Refined Types - Juliano Alves](https://www.youtube.com/watch?v=Fx8WXcAZWuk)

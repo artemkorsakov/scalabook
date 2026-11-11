@@ -820,11 +820,11 @@ type Enumeratee[I, O, A] = Free[[X] =>> Either[I => X, (O, X)], A]
 [API]: https://www.scala-lang.org/api/3.2.2/scala/util/control/TailCalls$.html
 [Apfelmus]: https://apfelmus.nfshost.com/articles/operational-monad.html
 [Asymptotic Improvement of Computations over Free Monads]: https://janis-voigtlaender.eu/papers/AsymptoticImprovementOfComputationsOverFreeMonads.pdf
-[Category Theory]: https://books.google.ru/books/about/Category_Theory.html?hl=ru&id=AIhUtQAACAAJ&redir_esc=y
+[Category Theory]: https://books.google.ru/books/about/Category_Theory.html?hl=ru&amp;id=AIhUtQAACAAJ&amp;redir_esc=y
 [Kiselyov, Incremental]: https://okmij.org/ftp/Streams.html
 [Lato, Iteratee]: https://themonadreader.files.wordpress.com/2010/05/issue16.pdf
 [Free Monads for Less]: http://comonad.com/reader/2011/free-monads-for-less/
-[Swierstra]: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.101.4131&rep=rep1&type=pdf
+[Swierstra]: https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.101.4131&amp;rep=rep1&amp;type=pdf
 [The monad reader]: https://themonadreader.files.wordpress.com/2011/10/issue19.pdf
 [Trampolined Style]: https://dl.acm.org/doi/abs/10.1145/317636.317779
 [Trampolines]: https://blog.higher-order.com/assets/trampolines.pdf

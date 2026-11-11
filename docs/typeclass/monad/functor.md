@@ -568,6 +568,6 @@ nested.map(_ + 1)
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Functor.html)
 - [SKB – Scala Functor](https://leobenkel.com/2021/01/skb-scala-functor/)
 - [Tour of Scala](https://tourofscala.com/scala/functor)
-- [What the Functor? Functors in Scala - Rock the JVM](https://www.youtube.com/watch?v=aSnY2JBzjUw&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
+- [What the Functor? Functors in Scala - Rock the JVM](https://www.youtube.com/watch?v=aSnY2JBzjUw&amp;list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 
 [sample]: https://gitverse.ru/scalabook/typeclasses

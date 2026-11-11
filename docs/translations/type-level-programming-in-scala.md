@@ -418,7 +418,7 @@ toBoolean[Eq[Sq[_9], Add[_1, Mult[_8, _10]]]] // true
 Операции `Nat` обычно ограничиваются результатами ниже `10_000`. 
 Время компиляции становится довольно продолжительным или переполняется стек. 
 Альтернативой является использование двоичного представления чисел, названного здесь _Dense_ 
-после реализации в ["Чисто функциональных структурах данных" Окасаки](https://books.google.ru/books?id=owgkEAAAQBAJ&printsec=frontcover&hl=ru#v=onepage&q&f=false). 
+после реализации в ["Чисто функциональных структурах данных" Окасаки](https://books.google.ru/books?id=owgkEAAAQBAJ&amp;printsec=frontcover&amp;hl=ru#v=onepage&amp;q&amp;f=false). 
 Мы будем использовать это представление для решения упрощенной задачи Project Euler в системе типов в следующей главе.
 
 Здесь показаны только базовая форма и реализации приращения и свертки. 
@@ -2255,4 +2255,4 @@ ZipWith.zipped(a :^: b :^: c :^: KNil) foreach { case n :: s :: b :: HNil =>
 [wiki]: https://wiki.haskell.org/Peano_numbers
 [match types]: https://docs.scala-lang.org/scala3/reference/new-types/match-types.html
 [Project Euler]: https://projecteuler.net/about
-[Project Euler, p4]: https://projecteuler.net/index.php?section=problems&id=4
+[Project Euler, p4]: https://projecteuler.net/index.php?section=problems&amp;id=4

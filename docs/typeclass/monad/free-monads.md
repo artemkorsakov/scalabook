@@ -462,7 +462,7 @@ Free[F, A] =
 - [Cats: Free Monad](https://typelevel.org/cats/datatypes/freemonad.html)
 - [Deriving the Free Monad](https://noelwelsh.com/posts/deriving-the-free-monad/)
 - [Free Monads Are Simple](https://underscore.io/blog/posts/2015/04/14/free-monads-are-simple.html)
-- [Free Monad in Scala](https://www.youtube.com/watch?v=lzlCjgRWPDU&list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
+- [Free Monad in Scala](https://www.youtube.com/watch?v=lzlCjgRWPDU&amp;list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 - [Functional Programming in Scala, Second Edition, Chapter 13](https://www.manning.com/books/functional-programming-in-scala-second-edition?query=Functional%20Programming%20in%20Scala,%20Second%20Edition)
 - [Herding Cats](http://eed3si9n.com/herding-cats/Free-monads.html)
 - [Learn Functional Programming course/tutorial on Scala](https://github.com/dehun/learn-fp)

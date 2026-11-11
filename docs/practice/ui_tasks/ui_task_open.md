@@ -228,70 +228,58 @@ final case class OrdinalCard(ordinal: Int, after: String)
 Модель доступного порядкового номера. `ordinal` — номер, `after` — название задачи,
 после которой этот номер идёт.
 
-## Рендер карточки задачи ``Views.task```
+## Рендер карточки задачи `Views.task`
 
 Шаблон состоит из трёх основных блоков: **верхняя панель с действиями**,
 **информация о задаче**, **план и модальные окна**.
 
 ### Верхняя панель
 
-```html
-<div class="task-detail-header">
-   <div class="task-detail-nav">
-    <span class="task-detail-status-badge in-progress">
-          В работе
-      </span>
-    </div>
-    <div class="task-detail-actions">
-      <!-- Кнопки действий в зависимости от статуса -->
-       <button
-          class="complete-task-btn"
-          onclick="openModal('completeModal')"
-       >
-          ✅ Завершить задачу
-       </button>
-       <button
-          class="postpone-task-btn"
-          hx-put="/task/.../defer"
-          hx-target="#app"
-          hx-swap="outerHTML"
-          hx-confirm="Вы уверены, что хотите отложить задачу «...»?"
-       >
-          ⏳ Отложить задачу
-       </button>
-           <button
-              class="start-task-btn"
-              disabled
-              title="Нельзя взять в работу задачу без плана выполнения"
-           >
-              🚀 Взять в работу
-           </button>
-         <button
-           class="queue-task-btn"
-           disabled
-           title="Нельзя поставить задачу в очередь без плана выполнения"
-         >
-           📋 В очередь
-         </button>
-      <button
-         class="edit-task-btn"
-         hx-get="/task/.../edit"
-         hx-target="#app"
-         hx-swap="outerHTML"
-      >
-         ✏️ Редактировать
-      </button>
-      <button
-         class="delete-task-btn"
-         hx-delete="/task/..."
-         hx-target="#app"
-         hx-swap="outerHTML"
-         hx-confirm="Вы уверены, что хотите удалить задачу «...»?"
-      >
-         🗑️ Удалить
-      </button>
-   </div>
-</div>
+```dotty
+val statusButtons: Modifier = task.status match
+  case Status.InProgress =>
+    frag(
+      button(
+        cls             := "complete-task-btn",
+        attr("onclick") := "openModal('completeModal')"
+      )("✅ Завершить задачу"),
+      button(
+        cls            := "postpone-task-btn",
+        attr("hx-put") := s"/task/${task.id.value}/defer",
+        Htmx.appTarget,
+        Htmx.appSwap,
+        attr("hx-confirm") :=
+          s"""Вы уверены, что хотите отложить задачу «${task.name.value}»?"""
+      )("⏳ Отложить задачу")
+    )
+  case Status.Planned =>
+    if task.plan.isEmpty then
+      button(
+        cls           := "start-task-btn",
+        disabled      := true,
+        attr("title") := "Нельзя взять в работу задачу без плана выполнения"
+      )("🚀 Взять в работу")
+    else
+      button(
+        cls             := "start-task-btn",
+        attr("onclick") := "openModal('startModal')"
+      )("🚀 Взять в работу")
+  case Status.KnowledgeBase =>
+    if task.plan.isEmpty then
+      button(
+        cls      := "queue-task-btn",
+        disabled := true,
+        attr(
+          "title"
+        ) := "Нельзя поставить задачу в очередь без плана выполнения"
+      )("📋 В очередь")
+    else
+      button(
+        cls             := "queue-task-btn",
+        attr("onclick") := "openModal('ordinalModal')"
+      )("📋 В очередь")
+  case _ =>
+    frag()
 ```
 
 **Как работают кнопки действий:**
@@ -318,16 +306,15 @@ final case class OrdinalCard(ordinal: Int, after: String)
 
 **Особенность «Отложить задачу»:**
 
-```html
-<button
-  class="postpone-task-btn"
-  hx-put="/task/.../defer"
-  hx-target="#app"
-  hx-swap="outerHTML"
-  hx-confirm="Вы уверены, что хотите отложить задачу «...»?"
->
-  ⏳ Отложить задача
-</button>
+```dotty
+button(
+  cls            := "postpone-task-btn",
+  attr("hx-put") := s"/task/${task.id.value}/defer",
+  Htmx.appTarget,
+  Htmx.appSwap,
+  attr("hx-confirm") :=
+    s"""Вы уверены, что хотите отложить задачу «${task.name.value}»?"""
+)("⏳ Отложить задачу")
 ```
 
 - **`hx-put="/task/{id}/defer"`** — PUT-запрос на откладывание задачи.
@@ -337,14 +324,18 @@ final case class OrdinalCard(ordinal: Int, after: String)
 
 **Особенность "Взять в работу" и "В очередь":**
 
-```html
-<button
-  class="start-task-btn"
-  disabled
-  title="Нельзя взять в работу задачу без плана выполнения"
->
-  🚀 Взять в работу
-</button>
+```dotty
+if task.plan.isEmpty then
+  button(
+    cls           := "start-task-btn",
+    disabled      := true,
+    attr("title") := "Нельзя взять в работу задачу без плана выполнения"
+  )("🚀 Взять в работу")
+else
+  button(
+    cls             := "start-task-btn",
+    attr("onclick") := "openModal('startModal')"
+  )("🚀 Взять в работу")
 ```
 
 - Если у задачи **нет плана** — кнопка **отключена** с подсказкой.
@@ -360,56 +351,67 @@ final case class OrdinalCard(ordinal: Int, after: String)
 
 ### Основная информация
 
-```html
-<!-- Название задачи -->
-<h1 class="task-detail-title">Название задачи</h1>
+```dotty
+div(
+  `id` := "taskDetailBlock",
+  cls  := "task-detail-container",
+  div(cls := "task-detail-header")(
+    div(cls := "task-detail-nav")(
+      span(
+        cls :=
+          s"task-detail-status-badge ${task.status.toString.toLowerCase}"
+      )(task.status.show)
+    ),
+    div(cls := "task-detail-actions")(
+      statusButtons,
+      editButton(s"/task/${task.id.value}/edit"),
+      deleteButton(
+        s"/task/${task.id.value}",
+        task.name.value,
+        "задачу"
+      )
+    )
+  ),
+  errorBlock(errorMessage),
+  task.render,
+  ...
+)
 
-<!-- Основная информация -->
-<div class="task-detail-grid">
-   <div class="task-detail-section">
-      <h3>📋 Основная информация</h3>
-      <div class="task-detail-item">
-         <span class="detail-label">Тип задачи:</span>
-         <span class="detail-value">Тип задачи</span>
-      </div>
-      <div class="task-detail-item">
-         <span class="detail-label">Раздел:</span>
-         <span class="detail-value">Раздел</span>
-      </div>
-      <div class="task-detail-item">
-         <span class="detail-label">Цель:</span>
-         <span class="detail-value">Цель</span>
-      </div>
-      <div class="task-detail-item">
-         <span class="detail-label">Порядок:</span>
-         <span class="detail-value">#1000</span>
-      </div>
-   </div>
+final case class TaskCard(...):
+  ...
+  def render: Frag =
+    val mainInfo =
+      detailSection(
+        "📋 Основная информация",
+        Seq(
+          "Тип задачи" -> taskType,
+          "Раздел"     -> section,
+          "Цель"       -> goal,
+          "Порядок"    -> s"#${ordinal.value}"
+        )
+      )
 
-   <div class="task-detail-section">
-      <h3>📅 Даты</h3>
-      <div class="task-detail-item">
-         <span class="detail-label">Дата начала:</span>
-         <span class="detail-value">25.07.2026</span>
-      </div>
-      <div class="task-detail-item">
-         <span class="detail-label">Дата окончания:</span>
-         <span class="detail-value">—</span>
-      </div>
-      <div class="task-detail-item">
-         <span class="detail-label">Продолжительность:</span>
-         <span class="detail-value">10 часов</span>
-      </div>
-      <div class="task-detail-item">
-         <span class="detail-label">Затраченное время:</span>
-         <span class="detail-value">3 часа</span>
-      </div>
-      <div class="task-detail-item">
-         <span class="detail-label">Оставшееся время:</span>
-         <span class="detail-value">7 часов</span>
-      </div>
-   </div>
-</div>
+    val dates =
+      detailSection(
+        "📅 Даты",
+        Seq(
+          "Дата начала"       -> startDate.render,
+          "Дата окончания"    -> endDate.render,
+          "Продолжительность" -> durationDesc,
+          "Затраченное время" -> timeSpentDesc,
+          "Оставшееся время"  -> remainingTimeDesc
+        )
+      )
+
+    frag(
+      titleCard(name.value),
+      div(
+        cls := "task-detail-grid",
+        mainInfo,
+        dates
+      )
+    )
+  end render
 ```
 
 Два блока в сетке: слева — основная информация (тип, раздел, цель, порядок),
@@ -417,9 +419,17 @@ final case class OrdinalCard(ordinal: Int, after: String)
 
 **Форматирование дат:**
 
-```html
-```html
-25.07.2026
+```dotty
+private inline def formatter: DateTimeFormatter =
+  DateTimeFormatter.ofPattern("dd.MM.yyyy")
+
+given Render[LocalDate] with
+  def render(value: LocalDate): String =
+    value.format(formatter)
+
+given Render[Option[LocalDate]] with
+  def render(value: Option[LocalDate]): String =
+    value.map(_.render).getOrElse("—")
 ```
 
 - Если дата есть — форматируется в вид `25.07.2026`.
@@ -429,37 +439,35 @@ final case class OrdinalCard(ordinal: Int, after: String)
 
 ### Таймер
 
-```html
-<div class="task-detail-section full-width">
-   <h3>⏱️ Таймер</h3>
-   <div class="timer-container">
-      <div class="timer-display" id="timerDisplay">00:00:00</div>
-      <div class="timer-actions">
-         <button
-            class="timer-btn start-btn"
-            id="startTimerBtn"
-            onclick="startTimer('...')"
-         >
-            ▶️ Старт
-         </button>
-         <button
-            class="timer-btn stop-btn"
-            id="stopTimerBtn"
-            onclick="stopTimer('...', '...')"
-            style="display: none;"
-         >
-            ⏹️ Стоп
-         </button>
-         <button
-            class="timer-btn reset-btn"
-            id="resetTimerBtn"
-            onclick="resetTimer()"
-         >
-            🔄 Сброс
-         </button>
-      </div>
-   </div>
-</div>
+```dotty
+div(cls := "task-detail-section full-width")(
+  h3("⏱️ Таймер"),
+  div(
+    cls                  := "timer-container",
+    attr("data-task-id") := task.id.value.toString
+  )(
+    div(cls := "timer-display", `id` := "timerDisplay")("00:00:00"),
+    div(cls := "timer-actions")(
+      button(
+        cls             := "timer-btn start-btn",
+        `id`            := "startTimerBtn",
+        attr("onclick") := s"startTimer('${task.id.value}')"
+      )("▶️ Старт"),
+      button(
+        cls             := "timer-btn stop-btn",
+        `id`            := "stopTimerBtn",
+        attr("onclick") :=
+          s"stopTimer('${task.id.value}', '${token.value}')",
+        style := "display: none;"
+      )("⏹️ Записать"),
+      button(
+        cls             := "timer-btn reset-btn",
+        `id`            := "resetTimerBtn",
+        attr("onclick") := "resetTimer()"
+      )("🔄 Сброс")
+    )
+  )
+)
 ```
 
 **Как работает таймер:**
@@ -489,14 +497,39 @@ final case class OrdinalCard(ordinal: Int, after: String)
 
 ![](../images/task_plan.png)
 
-```html
-<div class="plan-header">
-  <h3>📋 План выполнения</h3>
-  <label class="hide-completed-label">
-    <input type="checkbox" id="hideCompleted" onchange="toggleCompleted()" />
-    Скрыть выполненное
-  </label>
-</div>
+```dotty
+def renderPlan(
+    plan: List[PlanRowCard],
+    progress: ProgressCard,
+    link: String
+): Tag =
+  div(
+    cls := "task-detail-section full-width",
+    div(
+      cls := "plan-header",
+      h3("📋 План выполнения"),
+      label(
+        cls := "hide-completed-label",
+        input(
+          `type`   := "checkbox",
+          id       := "hideCompleted",
+          onchange := "toggleCompleted()",
+          checked
+        ),
+        " Скрыть выполненное"
+      )
+    ),
+    if plan.nonEmpty then
+      frag(
+        progress.render,
+        div(
+          cls := "task-plan-list",
+          id  := "planList",
+          plan.map(_.render(link))
+        )
+      )
+    else p(cls := "empty-message")("План не составлен")
+  )
 ```
 
 **Чекбокс «Скрыть выполненное»** — JavaScript-функция `toggleCompleted()`
@@ -506,36 +539,71 @@ final case class OrdinalCard(ordinal: Int, after: String)
 
 **Прогресс-бар:**
 
-```html
-<div class="plan-progress-container">
-  <div class="plan-progress-label">
-    <span>Прогресс выполнения</span>
-    <span class="plan-progress-percent">42%</span>
-  </div>
-  <div class="plan-progress-bar">
-    <div class="plan-progress-fill" style="width: 42%;">
-      <span class="plan-progress-text">5 / 12</span>
-    </div>
-  </div>
-</div>
+```dotty
+final case class ProgressCard(
+    progress: Double,
+    completedCount: Int,
+    count: Int
+):
+  def render: Tag =
+    div(
+      cls := "plan-progress-container",
+      div(
+        cls := "plan-progress-label",
+        span("Прогресс выполнения"),
+        span(cls := "plan-progress-percent")(s"$progress%")
+      ),
+      div(
+        cls := "plan-progress-bar",
+        div(
+          cls   := "plan-progress-fill",
+          style := s"width: $progress%;",
+          span(cls := "plan-progress-text")(completedCount / count)
+        )
+      )
+    )
 ```
 
 Показывает процент выполнения и счётчик `выполнено / всего`.
 
 **Список шагов плана:**
 
-```html
-<div
-  class="task-plan-item"
-  data-level="1"
-  data-completed="false"
->
-  <div class="plan-step-number level-1">1.2</div>
-  <div class="plan-step-content">
-    <div class="plan-step-text">Пример шага плана</div>
-    <span class="plan-step-status pending">⏳ Ожидает</span>
-  </div>
-</div>
+```dotty
+div(
+  cls := "task-plan-list",
+  id  := "planList",
+  plan.map(_.render(link))
+)
+
+final case class PlanRowCard(number: String, step: String, completed: Boolean):
+  def render(link: String): Tag =
+    val level = number.count(_ == '.')
+    div(
+      cls := "task-plan-item" + (if completed then " completed-hidden" else ""),
+      attr("data-level")     := level,
+      attr("data-completed") := completed,
+      div(
+        cls := s"plan-step-number level-$level",
+        number
+      ),
+      div(
+        cls := "plan-step-content",
+        div(
+          cls                   := "plan-step-text markdown-content",
+          attr("data-markdown") := step
+        ),
+        if completed then
+          span(cls := "plan-step-status completed")("✅ Выполнено")
+        else
+          button(
+            cls            := "plan-step-complete-btn",
+            attr("hx-put") := s"$link/$number",
+            Htmx.appTarget,
+            Htmx.appSwap,
+            title := "Отметить шаг как выполненный"
+          )("✅ Выполнить")
+      )
+    )
 ```
 
 **Иерархия уровней:** `plan.number.count(_ == '.')` считает количество точек
@@ -555,17 +623,18 @@ CSS использует `data-level` для отступов и цветово�
 
 ## Обработка «задача не найдена»
 
-```html
-<div class="home-container">
-  <div class="not-found-content">
-    <h1 class="not-found-title">404</h1>
-    <p class="not-found-text">Страница не найдена</p>
-    <a href="/" class="home-button">🏠 На главную</a>
-  </div>
-</div>
+```dotty
+def notFound(): Modifier =
+  div(cls := "home-container")(
+    div(cls := "not-found-content")(
+      h1(cls := "not-found-title")("404"),
+      p(cls := "not-found-text")("Страница не найдена"),
+      a(href := "/", cls := "home-button")("🏠 На главную")
+    )
+  )
 ```
 
-Рендер ``Views.notFound`` используется в `TaskHandlers.openHandler`, когда:
+Рендер ``Vies.notFound`` используется в `TaskHandlers.openHandler`, когда:
 
 - Задача с таким UUID не существует.
 - Задача принадлежит другому пользователю.

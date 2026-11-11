@@ -103,34 +103,77 @@ private[tasks] object TaskViews:
 - **После ошибки сохранения** — когда `TaskHandlers.editHandler` не смог сохранить
   изменения и вернул форму с сохранёнными данными и сообщением об ошибке.
 
-## Рендер формы ``Views.editTask```
+## Рендер формы ```View.editTask```
 
 Шаблон — это большая форма, которая по структуре напоминает страницу задачи,
 но с полями ввода вместо текста. Рассмотрим её по частям.
 
 ### Верхняя панель
 
-```html
-<div class="task-detail-header">
-  <div class="task-detail-nav">
-    <span class="task-detail-status-badge planned">
-      В работе
-    </span>
-  </div>
-  <div class="task-detail-actions">
-    <button class="save-task-btn" form="editTaskForm" type="submit">
-      💾 Сохранить
-    </button>
-    <button
-      class="cancel-task-btn"
-      hx-get="/task/..."
-      hx-target="#app"
-      hx-swap="outerHTML"
-    >
-      ❌ Отмена
-    </button>
-  </div>
-</div>
+```dotty
+def editTask(
+    taskId: TaskId,
+    request: EditTaskRequest,
+    token: JwtToken,
+    taskTypes: Vector[TaskType],
+    sections: Vector[Section],
+    goals: Vector[Goal],
+    errorMessage: Option[String]
+): Frag =
+  frag(
+    div(
+      `id` := "app",
+      cls  := "app-container",
+      div(
+        `id` := "taskDetailBlock",
+        cls  := "task-detail-container",
+        editHeader(
+          statusBadge = span(
+            cls := s"task-detail-status-badge ${request.status.toLowerCase}"
+          )(request.status),
+          cancelPath = s"/task/${taskId.value}",
+          form = "editTaskForm"
+        ),
+        EditTaskRequest.render(
+          taskId,
+          request,
+          token,
+          taskTypes,
+          sections,
+          goals,
+          errorMessage
+        )
+      )
+    )
+  )
+  
+private def editHeader(
+    statusBadge: Modifier,
+    cancelPath: String,
+    form: String
+): Tag =
+  div(cls := "task-detail-header")(
+    div(cls := "task-detail-nav")(statusBadge),
+    div(cls := "task-detail-actions")(
+      saveButton(form),
+      cancelButton(cancelPath)
+    )
+  )
+  
+private def saveButton(form: String): Tag =
+  button(
+    cls          := "save-task-btn",
+    attr("form") := form,
+    `type`       := "submit"
+  )("💾 Сохранить")
+
+private def cancelButton(cancelPath: String): Tag =
+  button(
+    cls            := "cancel-task-btn",
+    attr("hx-get") := cancelPath,
+    Htmx.appTarget,
+    Htmx.appSwap
+  )("❌ Отмена")      
 ```
 
 **Особенности:**
@@ -147,24 +190,187 @@ private[tasks] object TaskViews:
 
 ### Форма редактирования
 
-```html
-<form
-  id="editTaskForm"
-  hx-put="/task/..."
-  hx-target="#app"
-  hx-swap="outerHTML"
->
-  <div id="form-error">
-    <div class="error">Ошибка сохранения</div>
-  </div>
-  <input type="hidden" name="token" value="..." />
-  <input
-    type="hidden"
-    name="status"
-    value="planned"
-  />
-  ...
-</form>
+```dotty
+def render(
+    id: TaskId,
+    request: EditTaskRequest,
+    token: JwtToken,
+    taskTypes: Vector[TaskType],
+    sections: Vector[Section],
+    goals: Vector[Goal],
+    errorMessage: Option[String]
+): Tag =
+  val sDate = dateOptC.encode(request.startDate)
+  val eDate = dateOptC.encode(request.endDate)
+
+  def selectOptions(
+      selectedValue: String,
+      options: (String, String)*
+  ): Seq[Modifier] =
+    options.map { (optValue, text) =>
+      option(
+        (value := optValue) ::
+          (if optValue == selectedValue then List[Modifier](selected)
+           else List.empty[Modifier])
+      )(text)
+    }
+
+  val typeSection = div(
+    cls := "task-detail-section",
+    h3("📋 Основная информация"),
+    group("taskTypeId", "Тип задачи:")(
+      select(
+        attr("id")   := "taskTypeId",
+        attr("name") := "taskTypeId",
+        cls          := "form-select",
+        required,
+        selectOptions(
+          request.taskTypeId.toString,
+          taskTypes.filter(_.displayed).sortBy(_.ordinal.value).map(t =>
+            t.id.value.toString -> t.name.toString
+          )*
+        )
+      )
+    ),
+    group("sectionId", "Раздел:")(
+      select(
+        attr("id")   := "sectionId",
+        attr("name") := "sectionId",
+        cls          := "form-select",
+        required,
+        selectOptions(
+          request.sectionId.toString,
+          sections.filter(_.displayed).sortBy(_.ordinal.value).map(s =>
+            s.id.value.toString -> s.name.toString
+          )*
+        )
+      )
+    ),
+    group("goalId", "Цель:")(
+      select(
+        attr("id")   := "goalId",
+        attr("name") := "goalId",
+        cls          := "form-select",
+        required,
+        selectOptions(
+          request.goalId.toString,
+          goals.filter(_.displayed).sortBy(_.ordinal.value).map(g =>
+            g.id.value.toString -> g.name.toString
+          )*
+        )
+      )
+    ),
+    group("ordinal", "Порядок:")(
+      input(
+        attr("id")    := "ordinal",
+        attr("name")  := "ordinal",
+        attr("type")  := "number",
+        attr("min")   := "1",
+        attr("value") := request.ordinal,
+        cls           := "form-input",
+        required
+      )
+    ),
+    group("ordinalShift", "Выровнять порядок?")(
+      input(
+        attr("id")   := "ordinalShift",
+        attr("name") := "ordinalShift",
+        attr("type") := "checkbox"
+      )
+    )
+  )
+
+  val datesSection = div(
+    cls := "task-detail-section",
+    h3("📅 Даты"),
+    group("startDate", "Дата начала:")(
+      input(
+        attr("id")    := "startDate",
+        attr("name")  := "startDate",
+        attr("type")  := "date",
+        attr("value") := sDate,
+        cls           := "form-input"
+      )
+    ),
+    group("endDate", "Дата окончания:")(
+      input(
+        attr("id")    := "endDate",
+        attr("name")  := "endDate",
+        attr("type")  := "date",
+        attr("value") := eDate,
+        cls           := "form-input"
+      )
+    ),
+    durationGroup(
+      inputId = "durationValue",
+      text = "Продолжительность:",
+      value = request.durationValue,
+      unit = request.durationUnit,
+      selectId = "durationUnit",
+      min = "1"
+    ),
+    durationGroup(
+      inputId = "timeSpentValue",
+      text = "Затраченное время:",
+      value = request.timeSpentValue,
+      unit = request.timeSpentUnit,
+      selectId = "timeSpentUnit",
+      min = "0"
+    )
+  )
+
+  form(
+    attr("id")     := "editTaskForm",
+    attr("hx-put") := s"/task/${id.value}",
+    Htmx.appTarget,
+    Htmx.appSwap,
+    formErrorBlock(errorMessage),
+    Htmx.hiddenToken(token.value),
+    input(
+      `type` := "hidden",
+      name   := "status",
+      value  := request.status.toLowerCase
+    ),
+    group("taskName", "Название задачи:")(
+      input(
+        attr("id")   := "taskName",
+        attr("name") := "name",
+        attr("type") := "text",
+        required,
+        attr("value") := request.name,
+        cls           := "form-input"
+      )
+    ),
+    div(
+      cls := "task-detail-grid",
+      typeSection,
+      datesSection
+    ),
+    div(
+      cls := "task-detail-section full-width",
+      h3("📝 Информация"),
+      textarea(
+        attr("id")   := "information",
+        attr("name") := "information",
+        attr("rows") := 10,
+        cls          := "form-textarea"
+      )(request.information)
+    ),
+    renderEditPlan(request.plan),
+    div(
+      cls := "task-detail-section full-width",
+      h3("📝 Дополнительные пункты плана в markdown-формате"),
+      p("Задачи должны задаваться в виде: - [ ] Пункт 1"),
+      textarea(
+        attr("id")   := "additional_plan",
+        attr("name") := "additional_plan",
+        attr("rows") := 10,
+        cls          := "form-textarea"
+      )()
+    ),
+    formErrorBlock(errorMessage)
+  )
+end render
 ```
 
 **Ключевые моменты:**
@@ -180,18 +386,17 @@ private[tasks] object TaskViews:
 
 ### Название задачи
 
-```html
-<div class="form-group">
-  <label for="taskName">Название задачи:</label>
-  <input
-    id="taskName"
-    name="name"
-    type="text"
-    required
-    value="Название задачи"
-    class="form-input"
-  />
-</div>
+```dotty
+group("taskName", "Название задачи:")(
+  input(
+    attr("id")   := "taskName",
+    attr("name") := "name",
+    attr("type") := "text",
+    required,
+    attr("value") := request.name,
+    cls           := "form-input"
+  )
+),
 ```
 
 Простое текстовое поле с предзаполненным значением. `required` гарантирует,
@@ -199,20 +404,83 @@ private[tasks] object TaskViews:
 
 ### Основная информация
 
-```html
-<div class="task-detail-grid">
-  <div class="task-detail-section">
-    <h3>📋 Основная информация</h3>
-    <div class="form-group">
-      <label for="taskTypeId">Тип задачи:</label>
-      <select id="taskTypeId" name="taskTypeId" class="form-select" required>
-        <option value="1" selected>Тип задачи 1</option>
-        <option value="2">Тип задачи 2</option>
-      </select>
-    </div>
-    ...
-  </div>
-</div>
+```dotty
+val typeSection = div(
+  cls := "task-detail-section",
+  h3("📋 Основная информация"),
+  group("taskTypeId", "Тип задачи:")(
+    select(
+      attr("id")   := "taskTypeId",
+      attr("name") := "taskTypeId",
+      cls          := "form-select",
+      required,
+      selectOptions(
+        request.taskTypeId.toString,
+        taskTypes.filter(_.displayed).sortBy(_.ordinal.value).map(t =>
+          t.id.value.toString -> t.name.toString
+        )*
+      )
+    )
+  ),
+  group("sectionId", "Раздел:")(
+    select(
+      attr("id")   := "sectionId",
+      attr("name") := "sectionId",
+      cls          := "form-select",
+      required,
+      selectOptions(
+        request.sectionId.toString,
+        sections.filter(_.displayed).sortBy(_.ordinal.value).map(s =>
+          s.id.value.toString -> s.name.toString
+        )*
+      )
+    )
+  ),
+  group("goalId", "Цель:")(
+    select(
+      attr("id")   := "goalId",
+      attr("name") := "goalId",
+      cls          := "form-select",
+      required,
+      selectOptions(
+        request.goalId.toString,
+        goals.filter(_.displayed).sortBy(_.ordinal.value).map(g =>
+          g.id.value.toString -> g.name.toString
+        )*
+      )
+    )
+  ),
+  group("ordinal", "Порядок:")(
+    input(
+      attr("id")    := "ordinal",
+      attr("name")  := "ordinal",
+      attr("type")  := "number",
+      attr("min")   := "1",
+      attr("value") := request.ordinal,
+      cls           := "form-input",
+      required
+    )
+  ),
+  group("ordinalShift", "Выровнять порядок?")(
+    input(
+      attr("id")   := "ordinalShift",
+      attr("name") := "ordinalShift",
+      attr("type") := "checkbox"
+    )
+  )
+)
+
+def selectOptions(
+    selectedValue: String,
+    options: (String, String)*
+): Seq[Modifier] =
+  options.map { (optValue, text) =>
+    option(
+      (value := optValue) ::
+        (if optValue == selectedValue then List[Modifier](selected)
+         else List.empty[Modifier])
+    )(text)
+  }
 ```
 
 **Три выпадающих списка** (тип, раздел, цель). Особенности:
@@ -220,77 +488,54 @@ private[tasks] object TaskViews:
 - **`.filter(_.displayed)`** — показываем только включённые элементы.
 - **`.sortBy(_.ordinal.value)`** — сортируем по порядку.
 - **Выделение текущего выбранного варианта** — для `<option>`, где
-  `task.taskType == taskType.name.value`, добавляется атрибут `selected`
-  (`if ... then selected else frag()` в scalatags). Обратите внимание:
-  `task.taskType` — это **строка** (название), а `taskType.name.value` — тоже строка,
-  поэтому сравнение работает напрямую.
-
-**Почему сравнение по имени, а не по ID?**
-
-Потому что `TaskCard` (модель отображения) содержит уже «обогащённые» данные —
-названия вместо ID. Это следствие того, что `TaskCard` создаётся на сервере
-из доменного `Task` и справочников, и хранит готовые строки для UI.
+  `task.taskTypeId == taskType.id.value`, добавляется атрибут `selected`
 
 ### Даты
 
-```html
-<div class="task-detail-section">
-  <h3>📅 Даты</h3>
-  <div class="form-group">
-    <label for="startDate">Дата начала:</label>
-    <input
-      id="startDate"
-      name="startDate"
-      type="date"
-      value="2026-07-25"
-      class="form-input"
-    />
-  </div>
-  <div class="form-group">
-    <label for="endDate">Дата окончания:</label>
-    <input
-      id="endDate"
-      name="endDate"
-      type="date"
-      value="2026-08-01"
-      class="form-input"
-    />
-  </div>
-</div>
+```dotty
+val datesSection = div(
+  cls := "task-detail-section",
+  h3("📅 Даты"),
+  group("startDate", "Дата начала:")(
+    input(
+      attr("id")    := "startDate",
+      attr("name")  := "startDate",
+      attr("type")  := "date",
+      attr("value") := sDate,
+      cls           := "form-input"
+    )
+  ),
+  group("endDate", "Дата окончания:")(
+    input(
+      attr("id")    := "endDate",
+      attr("name")  := "endDate",
+      attr("type")  := "date",
+      attr("value") := eDate,
+      cls           := "form-input"
+    )
+  ),
+)
 ```
-
-**Важная деталь:** `task.startDate` — это `Option[LocalDate]`. В scalatags
-опциональные значения формы обрабатываются через `optDate.fold("")(d => d.toString)`,
-что отображает `Some(date)` как строку в формате ISO (`2026-07-25`), а `None` — как
-пустую строку. Это обеспечивает корректную работу `<input type="date">`.
 
 ### Продолжительность (двухсоставное поле)
 
-```html
-<div class="form-group">
-  <label for="durationValue">Продолжительность:</label>
-  <div class="duration-group">
-    <input
-      id="durationValue"
-      name="durationValue"
-      type="number"
-      min="1"
-      value="3"
-      required
-      class="form-input duration-input"
-    />
-    <select
-      id="durationUnit"
-      name="durationUnit"
-      class="form-select duration-select"
-      required
-    >
-            <option value="minutes" selected>в минутах</option>
-            <option value="hours">в часах</option>
-            <option value="days">в днях</option>
-    </select>
-  </div>
-</div>
+```dotty
+durationGroup(
+  inputId = "durationValue",
+  text = "Продолжительность:",
+  value = request.durationValue,
+  unit = request.durationUnit,
+  selectId = "durationUnit",
+  min = "1"
+),
+durationGroup(
+  inputId = "timeSpentValue",
+  text = "Затраченное время:",
+  value = request.timeSpentValue,
+  unit = request.timeSpentUnit,
+  selectId = "timeSpentUnit",
+  min = "0"
+)
 ```
 
 **Ключевое отличие от страницы создания задачи:** здесь используется **не**
@@ -306,12 +551,17 @@ private[tasks] object TaskViews:
 
 ### Информация
 
-```html
-<div class="task-detail-section full-width">
-  <h3>📝 Информация</h3>
-  <textarea id="information" name="information" rows="10" class="form-textarea">
-...</textarea>
-</div>
+```dotty
+div(
+  cls := "task-detail-section full-width",
+  h3("📝 Информация"),
+  textarea(
+    attr("id")   := "information",
+    attr("name") := "information",
+    attr("rows") := 10,
+    cls          := "form-textarea"
+  )(request.information)
+),
 ```
 
 Многострочное поле для описания задачи. Значение вставляется как **содержимое**
@@ -321,53 +571,95 @@ private[tasks] object TaskViews:
 
 ![](../images/edit_task_plan.png)
 
-```html
-<div class="plan-editor">
-  <div id="planContainer">
-    <div class="plan-step-editor" data-index="0">
-      <div class="plan-step-input-group">
-        <input
-          type="text"
-          name="plan[0].number"
-          value="1"
-          class="form-input plan-step-number-input"
-          placeholder="Номер шага"
-          pattern="^\d+(?:\.\d+)*$"
-        />
-        <input
-          type="text"
-          name="plan[0].step"
-          value="Шаг плана"
-          class="form-input plan-step-input"
-          placeholder="Шаг плана"
-        />
-        <button
-          type="button"
-          class="remove-step-btn"
-          onclick="removeStep(this)"
-        >
-          ✕
-        </button>
-      </div>
-      <div class="plan-step-status-toggle">
-        <label>
-          <input
-            type="checkbox"
-            onchange="toggleStepStatus(this)"
-          />
-        </label>
-        <input
-          type="hidden"
-          name="plan[0].completed"
-          value="false"
-        />
-      </div>
-    </div>
-  </div>
-  <button type="button" class="add-step-btn" onclick="addStep()">
-    + Добавить шаг
-  </button>
-</div>
+```dotty
+def renderEditPlan(plan: List[PlanStepRequest]): Tag =
+  div(
+    cls := "task-detail-section full-width",
+    h3("📋 План выполнения"),
+    div(
+      cls := "plan-editor",
+      div(
+        id := "planContainer",
+        PlanStepRequest.render(plan)
+      ),
+      button(
+        `type`  := "button",
+        cls     := "add-step-btn",
+        onclick := "addStep()"
+      )("+ Добавить шаг")
+    )
+  )
+  
+final case class PlanStepRequest(
+    number: String,
+    step: String,
+    completed: Boolean
+)
+
+object PlanStepRequest:
+  def apply(row: PlanRowCard): PlanStepRequest =
+    PlanStepRequest(
+      number = row.number,
+      step = row.step,
+      completed = row.completed
+    )
+
+  def render(plan: List[PlanStepRequest]): Frag =
+    if plan.nonEmpty then
+      frag(
+        plan.zipWithIndex.map { (step, index) =>
+          div(
+            cls                := "plan-step-editor",
+            attr("data-index") := index,
+            div(
+              cls := "plan-step-input-group",
+              input(
+                `type`        := "text",
+                name          := s"plan[$index].number",
+                value         := step.number,
+                cls           := "form-input plan-step-number-input",
+                placeholder   := "Номер шага",
+                pattern       := "^\\d+(?:\\.\\d+)*$",
+                attr("title") := "Только цифры и точки (например: 1.2.3)"
+              ),
+              input(
+                `type`      := "text",
+                name        := s"plan[$index].step",
+                value       := step.step,
+                cls         := "form-input plan-step-input",
+                placeholder := "Шаг плана"
+              ),
+              button(
+                `type`  := "button",
+                cls     := "remove-step-btn",
+                onclick := "removeStep(this)"
+              )("✕")
+            ),
+            div(
+              cls := "plan-step-status-toggle",
+              label(
+                input(
+                  List[Modifier](
+                    `type`   := "checkbox",
+                    onchange := "toggleStepStatus(this)"
+                  )
+                    :::
+                      (if step.completed then List[Modifier](checked)
+                       else List.empty[Modifier])*
+                )
+              ),
+              input(
+                `type` := "hidden",
+                name   := s"plan[$index].completed",
+                value  := (if step.completed then "true" else "false")
+              )
+            )
+          )
+        }*
+      )
+    else
+      p(cls := "empty-message", id := "emptyPlanMessage")("План не составлен")
+end PlanStepRequest  
 ```
 
 **Как работает редактор плана:**
@@ -444,20 +736,18 @@ private[tasks] object TaskViews:
 
 ![](../images/add_additional_plan.png)
 
-```html
-<!-- Дополнительные пункты плана в markdown-формате -->
-<div class="task-detail-section full-width">
-  <h3>📝 Дополнительные пункты плана в markdown-формате</h3>
-  <p>
-    Задачи должны задаваться в виде: - [ ] Пункт 1
-  </p>
-  <textarea
-    id="additional_plan"
-    name="additional_plan"
-    rows="10"
-    class="form-textarea"
-  ></textarea>
-</div>
+```dotty
+div(
+  cls := "task-detail-section full-width",
+  h3("📝 Дополнительные пункты плана в markdown-формате"),
+  p("Задачи должны задаваться в виде: - [ ] Пункт 1"),
+  textarea(
+    attr("id")   := "additional_plan",
+    attr("name") := "additional_plan",
+    attr("rows") := 10,
+    cls          := "form-textarea"
+  )()
+),
 ```
 
 **Разбор разметки:**
@@ -858,11 +1148,6 @@ val editHandler: Handler =
     - Логируем ошибки и возвращаем `None`. Это приведёт к 404 (или другому
       «мягкому» поведению). На практике ошибки валидации обрабатываются
       в `taskLifecycleService.update`, поэтому эта ветка срабатывает редко.
-
-6. **`withUserFromHeaderOpt(authorization)(run)`** — токен приходит в теле запроса, поэтому
-   вручную собираем заголовок `Authorization` из `request.token`
-   (`Authorization(Token(AuthScheme.Bearer, request.token))`) и вызываем `withUserFromHeaderOpt`.
-   Если токен невалиден — `None`.
 
 **Почему после успешного обновления возвращается `getViewTask`, а не `getViewEditTaskModal`?**
 

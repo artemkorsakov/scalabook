@@ -112,15 +112,6 @@ val addTimeSpentHandler: Handler =
    `None`. Это приведёт к 404. В реальном приложении можно было бы показать
    страницу с сообщением об ошибке.
 
-6. **`withUserFromHeaderOpt(authorization)(run)`** — токен приходит в теле запроса, а не в заголовке.
-   Поэтому вручную собираем заголовок `Authorization` из `request.token`:
-   ```dotty
-   val authorization: Authorization =
-     Authorization(Token(AuthScheme.Bearer, request.token))
-   ```
-   после чего `withUserFromHeaderOpt` проверяет его через middleware и передаёт
-   `(user, jwtToken)` в лямбду `run`.
-
 ### Что делает `addTimeSpent`
 
 Метод `taskLifecycleService.addTimeSpent(id, userId, timeSpent)` выполняет
@@ -151,37 +142,35 @@ final case class AddTimeSpentRequest(
 идентификатор задачи и токен подставляются через строковые литералы
 (`s"startTimer('${task.id.value}')"`), в готовом HTML — это:
 
-```html
-<div class="task-detail-section full-width">
-  <h3>⏱️ Таймер</h3>
-  <div class="timer-container">
-    <div class="timer-display" id="timerDisplay">00:00:00</div>
-    <div class="timer-actions">
-      <button
-        class="timer-btn start-btn"
-        id="startTimerBtn"
-        onclick="startTimer('{task.id}')"
-      >
-        ▶️ Старт
-      </button>
-      <button
-        class="timer-btn stop-btn"
-        id="stopTimerBtn"
-        onclick="stopTimer('{task.id}', '{token}')"
-        style="display: none;"
-      >
-        ⏹️ Записать
-      </button>
-      <button
-        class="timer-btn reset-btn"
-        id="resetTimerBtn"
-        onclick="resetTimer()"
-      >
-        🔄 Сброс
-      </button>
-    </div>
-  </div>
-</div>
+```dotty
+div(cls := "task-detail-section full-width")(
+  h3("⏱️ Таймер"),
+  div(
+    cls                  := "timer-container",
+    attr("data-task-id") := task.id.value.toString
+  )(
+    div(cls := "timer-display", `id` := "timerDisplay")("00:00:00"),
+    div(cls := "timer-actions")(
+      button(
+        cls             := "timer-btn start-btn",
+        `id`            := "startTimerBtn",
+        attr("onclick") := s"startTimer('${task.id.value}')"
+      )("▶️ Старт"),
+      button(
+        cls             := "timer-btn stop-btn",
+        `id`            := "stopTimerBtn",
+        attr("onclick") :=
+          s"stopTimer('${task.id.value}', '${token.value}')",
+        style := "display: none;"
+      )("⏹️ Записать"),
+      button(
+        cls             := "timer-btn reset-btn",
+        `id`            := "resetTimerBtn",
+        attr("onclick") := "resetTimer()"
+      )("🔄 Сброс")
+    )
+  )
+)
 ```
 
 **Структура:**
@@ -265,7 +254,7 @@ function startTimer(taskId) {
   const currentState = getTimerState();
   if (currentState && currentState.taskId === taskId) return;
 
-  if (currentState && currentState.taskId !== taskId) {
+  if (currentState) {
     const confirmSwitch = confirm(
       "Таймер уже запущен для другой задачи. Остановить его и запустить новый?",
     );

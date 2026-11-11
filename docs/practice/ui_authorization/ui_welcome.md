@@ -26,7 +26,7 @@
 
 ## Импорты и параметры
 
-```scala
+```dotty
 import ru.scalabook.pdp.views.Views as View
 import dev.profunktor.auth.jwt.JwtToken
 
@@ -88,12 +88,15 @@ def welcome(
 Разметка организована вокруг контейнера `#app`. Это **ключевой элемент** для htmx:
 когда сервер возвращает новую страницу или её фрагмент, htmx заменяет именно содержимое `#app`.
 
-```html
-<div id="app" class="app-container">
-  <iframe onload="saveUserCookies('...')" style="display:none;"></iframe>
-  <div id="welcomeBlock" class="welcome-container">...</div>
-  <div id="modal-container"></div>
-</div>
+```dotty
+frag(
+  div(
+    `id` := "app",
+    cls  := "app-container",
+    iframe(
+      attr("onload") := s"""saveUserCookies('${token.value}')""",
+      style          := "display:none;"
+    ),
 ```
 
 **Разбор структуры:**
@@ -117,8 +120,11 @@ def welcome(
 
 ### Сохранение токена в куки
 
-```html
-<iframe onload="saveUserCookies('${token.value}')" style="display:none;"></iframe>
+```dotty
+iframe(
+  attr("onload") := s"""saveUserCookies('${token.value}')""",
+  style          := "display:none;"
+)
 ```
 
 **Зачем это нужно:**
@@ -139,16 +145,16 @@ def welcome(
 
 ## Верхняя панель
 
-```html
-<div class="welcome-header">
-  <div class="welcome-user">
-    <h2>Добро пожаловать, $username!</h2>
-  </div>
-  <div class="welcome-actions">
-    <button ... class="settings-btn">⚙️ Настройки</button>
-    <button ... class="danger-btn">Выход</button>
-  </div>
-</div>
+```dotty
+div(
+  cls := "welcome-header",
+  div(cls := "welcome-user")(
+    h2(s"Добро пожаловать, $username!")
+  ),
+  div(cls := "welcome-actions")(
+    ...
+  )
+),
 ```
 
 **Структура:**
@@ -158,17 +164,15 @@ def welcome(
 
 **Кнопка «Настройки»:**
 
-```html
-<button
-  type="button"
-  onclick="htmx.process(this); this.click();"
-  hx-get="/settings"
-  hx-target="#app"
-  hx-swap="outerHTML"
-  class="settings-btn"
->
-  ⚙️ Настройки
-</button>
+```dotty
+button(
+  `type`          := "button",
+  attr("onclick") := "htmx.process(this); this.click();",
+  attr("hx-get")  := "/settings",
+  Htmx.appTarget,
+  Htmx.appSwap,
+  cls := "settings-btn"
+)("⚙️ Настройки")
 ```
 
 - **`hx-get="/settings"`** — GET-запрос на страницу настроек.
@@ -181,18 +185,18 @@ def welcome(
 
 **Кнопка «Выход»:**
 
-```html
-<button
-  type="button"
-  onclick="clearUserCookies(); htmx.process(this); this.click();"
-  hx-post="/auth/logout"
-  hx-target="#app"
-  hx-swap="outerHTML"
-  hx-headers='{"Authorization": "Bearer ${token.value}"}'
-  class="danger-btn"
->
-  Выход
-</button>
+```dotty
+button(
+  `type`          := "button",
+  attr("onclick") :=
+    "clearUserCookies(); htmx.process(this); this.click();",
+  attr("hx-post") := "/auth/logout",
+  Htmx.appTarget,
+  Htmx.appSwap,
+  attr("hx-headers") :=
+    s"""{"Authorization": "Bearer ${token.value}"}""",
+  cls := "danger-btn"
+)("Выход")
 ```
 
 - **`onclick="clearUserCookies(); htmx.process(this); this.click();"`** — сначала очищаем
@@ -213,12 +217,12 @@ def welcome(
 В `Views.scala` вкладки строятся с помощью приватных хелперов `tabButton` и `tabContent`,
 а класс активного таба вычисляется функцией `activeIf`:
 
-```scala
+```dotty
 val activeIf = (name: String) =>
   if tab == name then "active" else ""
 ```
 
-```scala
+```dotty
 // Кнопка вкладки: класс активной вкладки добавляется через s"tab-btn $activeClass"
 private def tabButton(activeClass: String, dataTab: String, text: String, title: String): Tag =
   button(
@@ -230,48 +234,80 @@ private def tabButton(activeClass: String, dataTab: String, text: String, title:
 
 Разметка вкладок собирается из восьми `tabButton` и восьми контейнеров `tabContent`:
 
-```html
-<div class="tabs-container">
-    <div class="tabs-header">
-        <button class="tab-btn active" data-tab="in-progress" onclick="switchTab('in-progress')">
-            🛠️ В работе
-            <span title="Текущие задачи в работе, отсортированные по планируемой дате завершения">ℹ️</span>
-        </button>
-        <button class="tab-btn" data-tab="planned" onclick="switchTab('planned')">
-            ⏳ Запланировано
-            <span title="Запланированные, но ещё не начатые задачи">ℹ️</span>
-        </button>
-        <button class="tab-btn" data-tab="knowledge-base" onclick="switchTab('knowledge-base')">
-            📚 База знаний
-            <span title="Материалы для изучения, по которым пока ещё не сформирован детализированный план">ℹ️</span>
-        </button>
-        <button class="tab-btn" data-tab="goals" onclick="switchTab('goals')">
-            🎯 Цели
-            <span title="Статистика по целям">ℹ️</span>
-        </button>
-        <button class="tab-btn" data-tab="statistics" onclick="switchTab('statistics')">
-            📊 Статистика
-            <span title="Статистика по задачам">ℹ️</span>
-        </button>
-        <button class="tab-btn" data-tab="sources" onclick="switchTab('sources')">
-            🌐 Источник
-            <span title="Ресурсы для пополнения Базы знаний">ℹ️</span>
-        </button>
-        <button class="tab-btn" data-tab="notes" onclick="switchTab('notes')">
-            📝 Заметки
-            <span title="Заметки и записи, не привязанные к задачам">ℹ️</span>
-        </button>
-        <button class="tab-btn" data-tab="history" onclick="switchTab('history')">
-            📜 История
-            <span title="📜 История выполненных задач">ℹ️</span>
-        </button>
-    </div>
-
-    <div id="tab-in-progress" class="tab-content active">…фрагмент вкладки…</div>
-    <div id="tab-planned" class="tab-content">…фрагмент вкладки…</div>
-    <div id="tab-knowledge-base" class="tab-content">…фрагмент вкладки…</div>
-    …
-</div>
+```dotty
+div(
+  cls := "tabs-container",
+  div(cls := "tabs-header")(
+    tabButton(
+      activeIf("in-progress"),
+      "in-progress",
+      "🛠️ В работе",
+      "Текущие задачи в работе, отсортированные по планируемой дате завершения"
+    ),
+    tabButton(
+      activeIf("planned"),
+      "planned",
+      "⏳ Запланировано",
+      "Запланированные, но ещё не начатые задачи"
+    ),
+    tabButton(
+      activeIf("knowledge-base"),
+      "knowledge-base",
+      "📚 База знаний",
+      "Материалы для изучения, по которым пока ещё не сформирован детализированный план"
+    ),
+    tabButton(
+      activeIf("goals"),
+      "goals",
+      "🎯 Цели",
+      "Статистика по целям"
+    ),
+    tabButton(
+      activeIf("statistics"),
+      "statistics",
+      "📊 Статистика",
+      "Статистика по задачам"
+    ),
+    tabButton(
+      activeIf("sources"),
+      "sources",
+      "🌐 Источник",
+      "Ресурсы для пополнения Базы знаний"
+    ),
+    tabButton(
+      activeIf("notes"),
+      "notes",
+      "📝 Заметки",
+      "Заметки и записи, не привязанные к задачам"
+    ),
+    tabButton(
+      activeIf("history"),
+      "history",
+      "📜 История",
+      "📜 История выполненных задач"
+    )
+  ),
+  tabContent(
+    "tab-in-progress",
+    activeIf("in-progress"),
+    inProgress
+  ),
+  tabContent("tab-planned", activeIf("planned"), planned),
+  tabContent(
+    "tab-knowledge-base",
+    activeIf("knowledge-base"),
+    knowledgeBase
+  ),
+  tabContent("tab-goals", activeIf("goals"), goals),
+  tabContent(
+    "tab-statistics",
+    activeIf("statistics"),
+    statistics
+  ),
+  tabContent("tab-sources", activeIf("sources"), sources),
+  tabContent("tab-notes", activeIf("notes"), notes),
+  tabContent("tab-history", activeIf("history"), history)
+)
 ```
 
 **Как работает переключение вкладок:**
@@ -307,29 +343,29 @@ private def tabButton(activeClass: String, dataTab: String, text: String, title:
 и `periodicTasks` (периодические задачи на сегодня, карточки `TablePeriodicTaskCard`).
 Хост-метод `Views.welcome` подставляет результат в контейнер `#tab-in-progress`.
 
-```html
-<div class="tab-actions">
-    <button class="add-btn"
-            hx-get="/task/create/in-progress"
-            hx-target="#modal-container"
-            hx-swap="innerHTML"
-            onclick="openCreateTaskModal()">
-        + Создать задачу
-    </button>
-</div>
-
-<!-- Периодические задачи -->
-<div class="periodic-tasks-section">
-    <h3 class="periodic-tasks-title">🔄 Периодические задачи</h3>
-    <div class="tasks-grid">
-        ...
-    </div>
-</div>
-
-<!-- Обычные задачи -->
-<div class="tasks-grid">
-    ...
-</div>
+```dotty
+frag(
+  div(cls := "tab-actions")(
+    button(
+      cls            := "add-btn",
+      attr("hx-get") := "/task/create/in-progress",
+      Htmx.modalTarget,
+      Htmx.modalSwap,
+      attr("onclick") := "openCreateTaskModal()"
+    )("+ Создать задачу")
+  ),
+  if periodicTasks.nonEmpty then
+    div(cls := "periodic-tasks-section")(
+      h3(cls := "periodic-tasks-title")("🔄 Периодические задачи"),
+      div(cls := "tasks-grid")(
+        periodicTasks.map(_.render)*
+      )
+    )
+  else frag(),
+  div(cls := "tasks-grid")(
+    tasks.map(_.render)*
+  )
+)
 ```
 
 **Особенности вкладки:**
@@ -349,34 +385,39 @@ private def tabButton(activeClass: String, dataTab: String, text: String, title:
 
 **Структура карточки:**
 
-```html
-<div class="task-title">...название...</div>
+```dotty
+final case class TableInProgressTaskCard(
+    id: TaskId,
+    name: TaskName,
+    startDate: Option[LocalDate],
+    endDate: Option[LocalDate],
+    progress: Double
+):
+  lazy val isOverdue: Boolean = endDate.exists(_.isBefore(LocalDate.now()))
 
-<div class="task-meta-grid">
-  <div class="task-meta-item">
-    <span class="meta-icon">📅</span>
-    <span class="meta-label">Начало:</span>
-    <span class="meta-value">...</span>
-  </div>
-  <div class="task-meta-item">
-    <span class="meta-icon">⏰</span>
-    <span class="meta-label">Дедлайн:</span>
-    <span class="meta-value">...</span>
-  </div>
-</div>
-
-<div class="task-progress">
-  <div class="progress-label">
-    <span>Прогресс</span>
-    <span class="progress-percent">...%</span>
-  </div>
-  <div class="progress-bar">
-    <div
-      class="progress-fill"
-      style="width: ..."
-    ></div>
-  </div>
-</div>
+  def render: Tag =
+    div(
+      attr("id") := id.toString,
+      cls        := "task-card",
+      onclick    := s"openTask('${id.value}')",
+      div(cls := "task-title")(name.value),
+      div(
+        cls := "task-meta-grid",
+        div(
+          cls := "task-meta-item",
+          span(cls := "meta-icon")("📅"),
+          span(cls := "meta-label")("Начало:"),
+          span(cls := "meta-value")(startDate.render)
+        ),
+        div(
+          cls := "task-meta-item" + (if isOverdue then " overdue" else ""),
+          span(cls := "meta-icon")("⏰"),
+          span(cls := "meta-label")("Дедлайн:"),
+          span(cls := "meta-value")(endDate.render)
+        )
+      ),
+      progressBar((progress * 100).toInt.toDouble)
+    )
 ```
 
 **Разбор:**
@@ -397,66 +438,61 @@ private def tabButton(activeClass: String, dataTab: String, text: String, title:
 
 Хелпер `filterGroup` формирует `<select>` с подписью и опциями:
 
-```html
-<div class="tab-actions">
-    <button class="add-btn"
-            hx-get="/task/create/planned"
-            hx-target="#modal-container"
-            hx-swap="innerHTML"
-            onclick="openCreateTaskModal()">
-        + Создать задачу
-    </button>
-</div>
-
-<!-- Фильтры -->
-<div class="filter-container">
-    <div class="filter-group">
-        <label for="plannedTypeFilter">Тип:</label>
-        <select id="plannedTypeFilter" class="filter-select" onchange="filterPlannedTasks()">
-            <option value="all">Все типы</option>
-            ...
-        </select>
-    </div>
-    <div class="filter-group">
-        <label for="plannedSectionFilter">Раздел:</label>
-        <select id="plannedSectionFilter" class="filter-select" onchange="filterPlannedTasks()">
-            <option value="all">Все разделы</option>
-            ...
-        </select>
-    </div>
-    <div class="filter-group">
-        <label for="plannedGoalFilter">Цель:</label>
-        <select id="plannedGoalFilter" class="filter-select" onchange="filterPlannedTasks()">
-            <option value="all">Все цели</option>
-            ...
-        </select>
-    </div>
-    <div class="filter-group">
-        <button type="button" class="reset-filter-btn" onclick="resetPlannedFilters()">
-            🔄 Сброс фильтра
-        </button>
-    </div>
-    <div class="filter-group filter-total">
-        <span class="filter-total-label">Всего:</span>
-        <span class="filter-total-value" id="plannedTotal">...</span>
-    </div>
-</div>
-
-<div class="tasks-table-container">
-    <table class="tasks-table" id="plannedTasksTable">
-        <thead>
-        <tr>
-            <th>Название</th>
-            <th>Тип</th>
-            <th>Раздел</th>
-            <th>Порядок</th>
-        </tr>
-        </thead>
-        <tbody>
-        ...
-        </tbody>
-    </table>
-</div>
+```dotty
+def welcomePlanned(
+    tasks: Vector[TablePlannedTaskCard],
+    taskTypes: Vector[String],
+    sections: Vector[String],
+    goals: Vector[String]
+): Modifier =
+  frag(
+    div(cls := "tab-actions")(
+      addTaskButton("/task/create/planned")
+    ),
+    div(cls := "filter-container")(
+      filterGroup(
+        "plannedTypeFilter",
+        "Тип:",
+        taskTypes,
+        "filterPlannedTasks()",
+        "Все типы"
+      ),
+      filterGroup(
+        "plannedSectionFilter",
+        "Раздел:",
+        sections,
+        "filterPlannedTasks()",
+        "Все разделы"
+      ),
+      filterGroup(
+        "plannedGoalFilter",
+        "Цель:",
+        goals,
+        "filterPlannedTasks()",
+        "Все цели"
+      ),
+      div(cls := "filter-group")(
+        button(
+          `type`          := "button",
+          cls             := "reset-filter-btn",
+          attr("onclick") := "resetPlannedFilters()"
+        )("🔄 Сброс фильтра")
+      ),
+      div(cls := "filter-group filter-total")(
+        span(cls := "filter-total-label")("Всего:"),
+        span(
+          cls  := "filter-total-value",
+          `id` := "plannedTotal"
+        )(tasks.length)
+      )
+    ),
+    div(cls := "tasks-table-container")(
+      table(cls := "tasks-table", `id` := "plannedTasksTable")(
+        thead(tr(th("Название"), th("Тип"), th("Раздел"), th("Порядок"))),
+        tbody(tasks.map(_.render)*)
+      )
+    )
+  )
 ```
 
 **Особенности вкладки:**
@@ -480,17 +516,27 @@ private def tabButton(activeClass: String, dataTab: String, text: String, title:
 `Render`. Карточка содержит уже «обогащённые» данные — имена типа, раздела и цели вместо
 их id:
 
-```html
-<tr class="task-row"
-    data-task-type="..."
-    data-task-section="..."
-    data-task-goal="..."
-    onclick="openTask('...')">
-    <td>...название...</td>
-    <td>...тип...</td>
-    <td>...раздел...</td>
-    <td>...порядок...</td>
-</tr>
+```dotty
+final case class TablePlannedTaskCard(
+    id: TaskId,
+    name: TaskName,
+    taskType: String,
+    section: String,
+    goal: String,
+    ordinal: Ordinal
+):
+  def render: Tag =
+    tr(
+      cls                       := "task-row",
+      attr("data-task-type")    := taskType,
+      attr("data-task-section") := section,
+      attr("data-task-goal")    := goal,
+      onclick                   := s"openTask('${id.value}')",
+      td(name.value),
+      td(taskType),
+      td(section),
+      td(ordinal.value)
+    )
 ```
 
 **Ключевые моменты:**
@@ -504,86 +550,76 @@ private def tabButton(activeClass: String, dataTab: String, text: String, title:
 
 ![knowledge-base-tasks](../images/knowledge-base-tasks.png)
 
-Метод `Views.welcomeKnowledgeBase` принимает
+Метод `View.welcomeKnowledgeBase` принимает
 четыре параметра: `tasks` (карточки `TableKnowledgeBaseTaskCard`), `taskTypes`,
 `sections` и `goals`. Хост-метод подставляет результат в контейнер `#tab-knowledge-base`.
 
-```html
-<div class="tab-actions">
-    <button class="add-btn"
-            hx-get="/task/create/knowledge-base"
-            hx-target="#modal-container"
-            hx-swap="innerHTML"
-            onclick="openCreateTaskModal()">
-        + Создать задачу
-    </button>
-</div>
-
-<!-- Легенда размера задач -->
-<div class="size-legend">
-    <div class="size-legend-item">
-        <span class="size-badge size-small">Мелкая</span>
-        <span class="size-description">меньше часа</span>
-    </div>
-    <div class="size-legend-item">
-        <span class="size-badge size-medium">Средняя</span>
-        <span class="size-description">меньше 8 часов</span>
-    </div>
-    <div class="size-legend-item">
-        <span class="size-badge size-large">Большая</span>
-        <span class="size-description">больше 8 часов</span>
-    </div>
-</div>
-
-<!-- Фильтры (аналогично «Запланировано», но со своими id и функцией) -->
-<div class="filter-container">
-    <div class="filter-group">
-        <label for="knowledgeTypeFilter">Тип:</label>
-        <select id="knowledgeTypeFilter" class="filter-select" onchange="filterKnowledgeTasks()">
-            <option value="all">Все типы</option>
-            ...
-        </select>
-    </div>
-    <div class="filter-group">
-        <label for="knowledgeSectionFilter">Раздел:</label>
-        <select id="knowledgeSectionFilter" class="filter-select" onchange="filterKnowledgeTasks()">
-            <option value="all">Все разделы</option>
-            ...
-        </select>
-    </div>
-    <div class="filter-group">
-        <label for="knowledgeGoalFilter">Цель:</label>
-        <select id="knowledgeGoalFilter" class="filter-select" onchange="filterKnowledgeTasks()">
-            <option value="all">Все цели</option>
-            ...
-        </select>
-    </div>
-    <div class="filter-group">
-        <button type="button" class="reset-filter-btn" onclick="resetKnowledgeFilters()">
-            🔄 Сброс фильтра
-        </button>
-    </div>
-    <div class="filter-group filter-total">
-        <span class="filter-total-label">Всего:</span>
-        <span class="filter-total-value" id="knowledgeTotal">...</span>
-    </div>
-</div>
-
-<div class="tasks-table-container">
-    <table class="tasks-table" id="knowledgeTasksTable">
-        <thead>
-        <tr>
-            <th>Название</th>
-            <th>Тип</th>
-            <th>Раздел</th>
-            <th>Продолжительность</th>
-        </tr>
-        </thead>
-        <tbody>
-        ...
-        </tbody>
-    </table>
-</div>
+```dotty
+  def welcomeKnowledgeBase(
+      tasks: Vector[TableKnowledgeBaseTaskCard],
+      taskTypes: Vector[String],
+      sections: Vector[String],
+      goals: Vector[String]
+  ): Modifier =
+    frag(
+      div(cls := "tab-actions")(
+        addTaskButton("/task/create/knowledge-base")
+      ),
+      div(cls := "size-legend")(
+        sizeLegendItem("size-small", "Мелкая", "меньше часа"),
+        sizeLegendItem("size-medium", "Средняя", "меньше 8 часов"),
+        sizeLegendItem("size-large", "Большая", "больше 8 часов")
+      ),
+      div(cls := "filter-container")(
+        filterGroup(
+          "knowledgeTypeFilter",
+          "Тип:",
+          taskTypes,
+          "filterKnowledgeTasks()",
+          "Все типы"
+        ),
+        filterGroup(
+          "knowledgeSectionFilter",
+          "Раздел:",
+          sections,
+          "filterKnowledgeTasks()",
+          "Все разделы"
+        ),
+        filterGroup(
+          "knowledgeGoalFilter",
+          "Цель:",
+          goals,
+          "filterKnowledgeTasks()",
+          "Все цели"
+        ),
+        div(cls := "filter-group")(
+          button(
+            `type`          := "button",
+            cls             := "reset-filter-btn",
+            attr("onclick") := "resetKnowledgeFilters()"
+          )("🔄 Сброс фильтра")
+        ),
+        div(cls := "filter-group filter-total")(
+          span(cls := "filter-total-label")("Всего:"),
+          span(cls := "filter-total-value", `id` := "knowledgeTotal")(
+            tasks.length
+          )
+        )
+      ),
+      div(cls := "tasks-table-container")(
+        table(cls := "tasks-table", `id` := "knowledgeTasksTable")(
+          thead(
+            tr(
+              th("Название"),
+              th("Тип"),
+              th("Раздел"),
+              th("Продолжительность")
+            )
+          ),
+          tbody(tasks.map(_.render)*)
+        )
+      )
+    )
 ```
 
 **Отличия от «Запланировано»:**
@@ -693,8 +729,8 @@ function resetKnowledgeFilters() {
 
 ## Контейнер для модальных окон
 
-```html
-<div id="modal-container"></div>
+```dotty
+div(`id` := "modal-container")
 ```
 
 Модальные окна — это отдельные HTML-фрагменты, которые подгружаются с сервера при клике

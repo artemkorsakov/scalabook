@@ -16,7 +16,7 @@
 ```dotty
 lazy val pdp = (project in file("pdp"))
   .enablePlugins(
-    DockerPlugin,        // Сборка Docker-образа
+    DockerPlugin,       // Сборка Docker-образа
     JavaAppPackaging    // Упаковка JVM-приложения (JRE + все jar'ы + скрипт запуска)
   )
 ```

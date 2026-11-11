@@ -677,29 +677,47 @@ def delete(id: PeriodicTaskId, userId: UserId): F[Boolean] =
 выводится через `periodicTasks.map(_.render)` — каждая карточка `TablePeriodicTaskCard`
 рендерит себя сама. Готовый HTML выглядит так:
 
-```html
-<div class="periodic-tasks-section">
-    <h3 class="periodic-tasks-title">🔄 Периодические задачи</h3>
-
-    <div class="tasks-grid">
-        <div id="{task.id}"
-             class="task-card periodic-task-card"
-             onclick="openPeriodicTask('{task.id}')">
-
-            <div class="task-title">{task.name}</div>
-
-            <div class="task-progress">
-                <div class="progress-label">
-                    <span>Прогресс</span>
-                    <span class="progress-percent">{task.progress}%</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: {task.progress}%"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+```dotty
+def welcomeInProgress(
+    tasks: Vector[TableInProgressTaskCard],
+    periodicTasks: Vector[TablePeriodicTaskCard]
+): Modifier =
+  frag(
+    div(cls := "tab-actions")(
+      button(
+        cls            := "add-btn",
+        attr("hx-get") := "/task/create/in-progress",
+        Htmx.modalTarget,
+        Htmx.modalSwap,
+        attr("onclick") := "openCreateTaskModal()"
+      )("+ Создать задачу")
+    ),
+    if periodicTasks.nonEmpty then
+      div(cls := "periodic-tasks-section")(
+        h3(cls := "periodic-tasks-title")("🔄 Периодические задачи"),
+        div(cls := "tasks-grid")(
+          periodicTasks.map(_.render)*
+        )
+      )
+    else frag(),
+    div(cls := "tasks-grid")(
+      tasks.map(_.render)*
+    )
+  )
+  
+final case class TablePeriodicTaskCard(
+    id: PeriodicTaskId,
+    name: String,
+    progress: Double
+):
+  def render: Tag =
+    div(
+      attr("id") := id.toString,
+      cls        := "task-card periodic-task-card",
+      onclick    := s"openPeriodicTask('${id.value}')",
+      div(cls := "task-title")(name),
+      progressBar(progress)
+    )  
 ```
 
 Полный блок (с заголовком и сеткой) выводится только если `periodicTasks` не пуст —

@@ -243,15 +243,13 @@ final case class GoalTaskStats(
 
 ### Кнопка вкладки
 
-```html
-<button
-    class="tab-btn active"
-    data-tab="goals"
-    onclick="switchTab('goals')"
->
-    🎯 Цели
-    <span title="Статистика по целям">ℹ️</span>
-</button>
+```dotty
+tabButton(
+  activeIf("goals"),
+  "goals",
+  "🎯 Цели",
+  "Статистика по целям"
+),
 ```
 
 - **`🎯 Цели`** — название вкладки. Лаконично, сразу говорит о содержимом.
@@ -262,17 +260,17 @@ final case class GoalTaskStats(
 
 ### Контент вкладки
 
-```html
-<div id="tab-goals" class="tab-content active">
-    …фрагмент вкладки…
-</div>
+```dotty
+tabContent("tab-goals", activeIf("goals"), goals)
 ```
 
-HTML-фрагмент вкладки рендерится методом `Views.goalsStats` на сервере и вставляется в `<div id="tab-goals">`. Класс `active` добавляется через хелпер `activeIf(tab)`, если вкладка открыта по умолчанию. Это позволяет отделить логику группировки целей по статусам в Scala-коде, а не в шаблоне.
+HTML-фрагмент вкладки рендерится методом `View.goalsStats` на сервере и вставляется в `<div id="tab-goals">`. 
+Класс `active` добавляется через хелпер `activeIf(tab)`, если вкладка открыта по умолчанию. 
+Это позволяет отделить логику группировки целей по статусам в Scala-коде, а не в шаблоне.
 
-### Рендер ``Views.goalsStats```
+### Рендер ```View.goalsStats```
 
-`Views.goalsStats(currentGoals, plannedGoals, achievedGoals)` — метод рендеринга, принимающий **три готовых вектора** — уже отфильтрованных по статусу цели. Метод возвращает `String` (готовый HTML).
+`View.goalsStats(currentGoals, plannedGoals, achievedGoals)` — метод рендеринга, принимающий **три готовых вектора** — уже отфильтрованных по статусу цели. Метод возвращает `String` (готовый HTML).
 
 ```dotty
 def goalsStats(

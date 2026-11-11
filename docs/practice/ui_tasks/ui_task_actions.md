@@ -118,24 +118,18 @@ val completeHandler: Handler =
 4. **`.valueOr(errors => ...)`** — если есть ошибки валидации, показываем форму
    задачи с сообщением об ошибке. Пользователь может исправить данные и попробовать снова.
 
-5. **`withUserFromHeaderOpt(authorization)(run)`** — токен приходит в теле запроса, поэтому
-   вручную собираем заголовок `Authorization` из `request.token` (`Authorization(Token(AuthScheme.Bearer, ...))`)
-   и вызываем `withUserFromHeaderOpt`.
-
 ### Что такое `HomeView`?
 
 `HomeView` — это константа из `WelcomeViews`, возвращающая HTML главной страницы:
 
 ```dotty
 val HomeView: String = View.home()
-```
 
-``Views.home``:
-
-```html
-<div class="home-container">
-    <a href="/" class="home-button">🏠 На главную</a>
-</div>
+object View:
+  def home(): String =
+    div(cls := "home-container")(
+      a(href := "/", cls := "home-button")("🏠 На главную")
+    ).render
 ```
 
 ### Модель `CompileTaskRequest`
@@ -164,103 +158,130 @@ final case class CompileTaskRequest(
 
 ### Модальное окно «Завершение задачи»
 
-```html
-<!-- Модальное окно для завершения задачи -->
-<div id="completeModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Завершение задачи</h3>
-            <button class="modal-close-btn" onclick="closeModal('completeModal')">×</button>
-        </div>
-        <div class="modal-body">
-            <p class="modal-hint">Заполните информацию о завершении задачи <strong>Название задачи</strong></p>
+```dotty
+object CompileTaskRequest:
+  def render(id: TaskId, token: JwtToken, timeSpent: FiniteDuration): Tag =
+    val now = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
 
-            <form id="completeForm"
-                  hx-put="/task/.../complete"
-                  hx-target="#app"
-                  hx-swap="outerHTML"
-                  hx-on::after-request="if(event.detail.xhr.status === 200) closeModal('completeModal')"
-            >
-        <input type="hidden" name="token" value="..." />
+    form(
+      attr("id")     := "completeForm",
+      attr("hx-put") := s"/task/$id/complete",
+      Htmx.appTarget,
+      Htmx.appSwap,
+      attr("hx-on::after-request") :=
+        "if(event.detail.xhr.status === 200) closeModal('completeModal')",
+      Htmx.hiddenToken(token.value),
+      div(
+        cls := "form-group",
+        label(`for` := "ratingInput")("Оценка (от 1 до 5):"),
+        div(
+          cls := "rating-container",
+          div(
+            cls := "rating-stars",
+            (1 to 5).map { n =>
+              span(
+                cls                := "star",
+                attr("data-value") := n,
+                onclick            := s"setRating($n)"
+              )("☆")
+            }
+          ),
+          input(
+            attr("id")    := "ratingInput",
+            attr("name")  := "rating",
+            attr("type")  := "number",
+            cls           := "form-input rating-input",
+            placeholder   := "Оценка 1-5",
+            attr("value") := "5",
+            attr("min")   := "1",
+            attr("max")   := "5",
+            required
+          )
+        )
+      ),
+      div(
+        cls := "form-group",
+        label(`for` := "reviewInput")("Отзыв о выполненной работе:"),
+        textarea(
+          attr("id")   := "reviewInput",
+          attr("name") := "review",
+          cls          := "form-textarea",
+          attr("rows") := 10,
+          placeholder  :=
+            "Опишите, что было сделано, с какими сложностями столкнулись...",
+          required
+        )()
+      ),
+      div(
+        cls := "form-group",
+        label(`for` := "completeEndDateInput")("Фактическая дата окончания:"),
+        input(
+          attr("id")    := "completeEndDateInput",
+          attr("name")  := "endDate",
+          attr("type")  := "date",
+          cls           := "form-input",
+          attr("value") := now,
+          required
+        )
+      ),
+      durationGroup(timeSpent),
+      div(
+        cls := "modal-actions",
+        button(`type` := "submit", cls := "save-btn")("Завершить задачу"),
+        button(
+          `type`  := "button",
+          cls     := "cancel-btn",
+          onclick := "closeModal('completeModal')"
+        )("Отмена")
+      )
+    )
+  end render
 
-                <div class="form-group">
-                    <label for="ratingInput">Оценка (от 1 до 5):</label>
-                    <div class="rating-container">
-                        <div class="rating-stars">
-                            <span class="star" data-value="1" onclick="setRating(1)">☆</span>
-                            <span class="star" data-value="2" onclick="setRating(2)">☆</span>
-                            <span class="star" data-value="3" onclick="setRating(3)">☆</span>
-                            <span class="star" data-value="4" onclick="setRating(4)">☆</span>
-                            <span class="star" data-value="5" onclick="setRating(5)">☆</span>
-                        </div>
-                        <input
-                                id="ratingInput"
-                                name="rating"
-                                type="number"
-                                class="form-input rating-input"
-                                placeholder="Оценка 1-5"
-                                value="5"
-                                min="1"
-                                max="5"
-                                required
-                        />
-                    </div>
-                </div>
+  private def durationGroup(timeSpent: FiniteDuration): Tag =
+    div(
+      cls := "form-group",
+      label(`for` := "completeDurationValue")("Фактическая продолжительность:"),
+      div(
+        cls := "duration-group",
+        input(
+          attr("id")    := "completeDurationValue",
+          attr("name")  := "durationValue",
+          attr("type")  := "number",
+          attr("min")   := "1",
+          cls           := "form-input duration-input",
+          placeholder   := "Значение",
+          attr("value") := timeSpent.length,
+          required
+        ),
+        select(
+          attr("id")   := "completeDurationUnit",
+          attr("name") := "durationUnit",
+          cls          := "form-select duration-select",
+          required,
+          option(value := "", disabled, selected)("Выберите единицу..."),
+          durationOption(
+            "minutes",
+            TimeUnit.MINUTES,
+            timeSpent.unit,
+            "в минутах"
+          ),
+          durationOption("hours", TimeUnit.HOURS, timeSpent.unit, "в часах"),
+          durationOption("days", TimeUnit.DAYS, timeSpent.unit, "в днях")
+        )
+      )
+    )
 
-                <div class="form-group">
-                    <label for="reviewInput">Отзыв о выполненной работе:</label>
-                    <textarea
-                            id="reviewInput"
-                            name="review"
-                            class="form-textarea"
-                            rows="10"
-                            placeholder="Опишите, что было сделано, с какими сложностями столкнулись..."
-                            required
-                    ></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="completeEndDateInput">Фактическая дата окончания:</label>
-                    <input
-                            id="completeEndDateInput"
-                            name="endDate"
-                            type="date"
-                            class="form-input"
-                value="2026-11-08"
-                            required
-                    />
-                </div>
-
-                <div class="form-group">
-                    <label for="completeDurationValue">Фактическая продолжительность:</label>
-                    <div class="duration-group">
-                        <input
-                                id="completeDurationValue"
-                                name="durationValue"
-                                type="number"
-                                min="1"
-                                class="form-input duration-input"
-                                placeholder="Значение"
-                                value="120"
-                                required
-                        />
-                        <select id="completeDurationUnit" name="durationUnit" class="form-select duration-select" required>
-                            <option value="" disabled selected>Выберите единицу...</option>
-                            <option value="minutes" selected>в минутах</option>
-                            <option value="hours">в часах</option>
-                            <option value="days">в днях</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="submit" class="save-btn">Завершить задачу</button>
-                    <button type="button" class="cancel-btn" onclick="closeModal('completeModal')">Отмена</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+  private def durationOption(
+      optValue: String,
+      optionUnit: TimeUnit,
+      selectedUnit: TimeUnit,
+      text: String
+  ): Modifier =
+    option(
+      (value := optValue) ::
+        (if optionUnit == selectedUnit then List[Modifier](selected)
+         else List.empty[Modifier])
+    )(text)
 ```
 
 **Особенности:**
@@ -355,16 +376,15 @@ val deferHandler: Handler =
 
 Рендер ``Views.task`` (scalatags):
 
-```html
-<button
-    class="postpone-task-btn"
-    hx-put="/task/.../defer"
-    hx-target="#app"
-    hx-swap="outerHTML"
-    hx-confirm="Вы уверены, что хотите отложить задачу «...»?"
->
-    ⏳ Отложить задачу
-</button>
+```dotty
+button(
+  cls            := "postpone-task-btn",
+  attr("hx-put") := s"/task/${task.id.value}/defer",
+  Htmx.appTarget,
+  Htmx.appSwap,
+  attr("hx-confirm") :=
+    s"""Вы уверены, что хотите отложить задачу «${task.name.value}»?"""
+)("⏳ Отложить задачу")
 ```
 
 ## Взятие в работу
@@ -432,8 +452,9 @@ val startHandler: Handler =
 **Пошаговый разбор:**
 
 1. **Валидация дат** через `ValidatedNec`:
-    - `startDate` — обязательна.
-    - `endDate` — обязательна.
+   - `startDate` — обязательна.
+   - `endDate` — обязательна.
+   
    `uuid` приходит уже как `UUID` (`uuidParam` в маршруте), поэтому `TaskId(uuid)`
    собирается сразу, без `Right`/`Left`-веток.
 
@@ -461,62 +482,56 @@ final case class StartTaskRequest(
 
 ### Модальное окно «Взять в работу»
 
-```html
-<div id="startModal" class="modal-overlay" style="display: none;">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Взять задачу в работу</h3>
-      <button class="modal-close-btn" onclick="closeModal('startModal')">
-        ×
-      </button>
-    </div>
-    <div class="modal-body">
-      <p class="modal-hint">
-        Укажите даты для задачи <strong>Название задачи</strong>
-      </p>
-      <form
-        id="startForm"
-        hx-put="/task/.../start"
-        hx-target="#app"
-        hx-swap="outerHTML"
-      >
-        <input type="hidden" name="token" value="..." />
+```dotty
+object StartTaskRequest:
+  def render(id: TaskId, token: JwtToken): Tag =
+    val now        = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
+    val weeksLater =
+      LocalDate.now().plusWeeks(1).format(DateTimeFormatter.ISO_DATE)
 
-        <div class="form-group">
-          <label for="startDateInput">Дата начала:</label>
-          <input
-            id="startDateInput"
-            name="startDate"
-            type="date"
-            class="form-input"
-            value="2026-11-08"
-          />
-        </div>
-        <div class="form-group">
-          <label for="endDateInput">Дата окончания:</label>
-          <input
-            id="endDateInput"
-            name="endDate"
-            type="date"
-            class="form-input"
-            value="2026-11-15"
-          />
-        </div>
-
-        <div class="modal-actions">
-          <button type="submit" class="save-btn">Начать работу</button>
-          <button
-            type="button"
-            class="cancel-btn"
-            onclick="closeModal('startModal')"
-          >
-            Отмена
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+    form(
+      attr("id")     := "startForm",
+      attr("hx-put") := s"/task/${id.value}/start",
+      Htmx.appTarget,
+      Htmx.appSwap,
+      Htmx.hiddenToken(token.value),
+      div(
+        cls := "form-group",
+        label(`for` := "startDateInput")("Дата начала:"),
+        input(
+          attr("id")    := "startDateInput",
+          attr("name")  := "startDate",
+          attr("type")  := "date",
+          cls           := "form-input",
+          attr("value") := now
+        )
+      ),
+      div(
+        cls := "form-group",
+        label(`for` := "endDateInput")("Дата окончания:"),
+        input(
+          attr("id")    := "endDateInput",
+          attr("name")  := "endDate",
+          attr("type")  := "date",
+          cls           := "form-input",
+          attr("value") := weeksLater
+        )
+      ),
+      div(
+        cls := "modal-actions",
+        button(
+          `type`  := "submit",
+          cls     := "save-btn",
+          onclick := "closeModal('startModal')"
+        )("Начать работу"),
+        button(
+          `type`  := "button",
+          cls     := "cancel-btn",
+          onclick := "closeModal('startModal')"
+        )("Отмена")
+      )
+    )
+  end render
 ```
 
 **Значения по умолчанию** выбраны оптимально:
@@ -630,70 +645,69 @@ final case class QueueTaskRequest(
 
 ### Модальное окно «В очередь»
 
-```html
-<div id="ordinalModal" class="modal-overlay" style="display: none;">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Планирование задачи</h3>
-      <button class="modal-close-btn" onclick="closeModal('ordinalModal')">
-        ×
-      </button>
-    </div>
-    <div class="modal-body">
-      <p class="modal-hint">
-        Выберите свободный порядок для задачи <strong>Название задачи</strong>
-      </p>
-      <form
-        id="ordinalForm"
-        hx-put="/task/.../queue"
-        hx-target="#app"
-        hx-swap="outerHTML"
-      >
-        <input type="hidden" name="token" value="..." />
+```dotty
+object QueueTaskRequest:
+  def render(
+      id: TaskId,
+      token: JwtToken,
+      taskType: String,
+      availableOrdinals: Vector[OrdinalCard]
+  ): Tag =
+    val ordinal = availableOrdinals.headOption.map(_.ordinal).getOrElse(1)
 
-        <div class="form-group">
-          <label for="ordinalSelect">Порядок:</label>
+    val ordinalListChildren: Seq[Tag] =
+      if availableOrdinals.nonEmpty then availableOrdinals.map(_.render)
+      else Vector(div(cls := "ordinal-info-empty")("Нет доступных порядков"))
 
-          <div class="ordinal-info-block compact">
-            <div class="ordinal-info-title">
-              Доступные порядки задач типа "Разработка":
-            </div>
-            <div class="ordinal-info-list">
-              <div class="ordinal-info-item">
-                <span class="ordinal-number">
-                  Свободный порядок 5
-                </span>
-                <span class="ordinal-after">
-                  после задачи: Предыдущая задача
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <input
-            id="ordinalSelect"
-            name="ordinal"
-            type="number"
-            class="form-input"
-            placeholder="Введите порядок"
-            value="1"
-          />
-        </div>
-
-        <div class="modal-actions">
-          <button type="submit" class="save-btn">Подтвердить</button>
-          <button
-            type="button"
-            class="cancel-btn"
-            onclick="closeModal('ordinalModal')"
-          >
-            Отмена
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+    form(
+      attr("id")     := "ordinalForm",
+      attr("hx-put") := s"/task/${id.value}/queue",
+      Htmx.appTarget,
+      Htmx.appSwap,
+      Htmx.hiddenToken(token.value),
+      div(
+        cls := "form-group",
+        label(`for` := "ordinalSelect")("Порядок:"),
+        div(
+          cls := "ordinal-info-block compact",
+          div(cls := "ordinal-info-title")(
+            s"""Доступные порядки задач типа "$taskType":"""
+          ),
+          div(cls := "ordinal-info-list")(ordinalListChildren*)
+        ),
+        input(
+          attr("id")    := "ordinalSelect",
+          attr("name")  := "ordinal",
+          attr("type")  := "number",
+          cls           := "form-input",
+          placeholder   := "Введите порядок",
+          attr("value") := ordinal
+        ),
+        div(
+          cls := "form-group",
+          label(`for` := "ordinalShift")("Выровнять порядок?"),
+          input(
+            attr("id")   := "ordinalShift",
+            attr("name") := "ordinalShift",
+            attr("type") := "checkbox"
+          )
+        )
+      ),
+      div(
+        cls := "modal-actions",
+        button(
+          `type`  := "submit",
+          cls     := "save-btn",
+          onclick := "closeModal('ordinalModal')"
+        )("Подтвердить"),
+        button(
+          `type`  := "button",
+          cls     := "cancel-btn",
+          onclick := "closeModal('ordinalModal')"
+        )("Отмена")
+      )
+    )
+  end render
 ```
 
 **Ключевые моменты:**
@@ -770,16 +784,16 @@ val deleteHandler: Handler =
 
 На странице задачи:
 
-```html
-<button
-  class="delete-task-btn"
-  hx-delete="/task/..."
-  hx-target="#app"
-  hx-swap="outerHTML"
-  hx-confirm="Вы уверены, что хотите удалить задачу «...»?"
->
-  🗑️ Удалить
-</button>
+```dotty
+def deleteButton(path: String, name: String, subject: String): Tag =
+  button(
+    cls               := "delete-task-btn",
+    attr("hx-delete") := path,
+    Htmx.appTarget,
+    Htmx.appSwap,
+    attr("hx-confirm") :=
+      s"Вы уверены, что хотите удалить $subject «$name»?"
+  )("🗑️ Удалить")
 ```
 
 **Особенности:**

@@ -223,20 +223,31 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 
 ### Ветка «Модальное окно закрыто»
 
-```html
-<div id="task-modal" class="uk-modal uk-open" style="display:block;">
-  <div class="uk-modal-dialog uk-modal-body">
-    <button
-      class="add-btn"
-      hx-get="/home/..."
-      hx-target="#app"
-      hx-swap="outerHTML"
-      onclick="closeCreateTaskModal()"
-    >
-      Обновить список задач
-    </button>
-  </div>
-</div>
+```dotty
+frag(
+  div(
+    `id`  := "task-modal",
+    cls   := "uk-modal uk-open",
+    style := "display:block;"
+  )(
+    div(cls := "uk-modal-dialog uk-modal-body")(
+      if isOpen then
+        frag(
+          h2(cls := "uk-modal-title")("Создание задачи"),
+          CreateTaskRequest.render(req, taskTypes, sections, goals),
+          errorBlock(errorMessage)
+        )
+      else
+        button(
+          cls            := "add-btn",
+          attr("hx-get") := s"/home/${req.tab}",
+          Htmx.appTarget,
+          Htmx.appSwap,
+          attr("onclick") := "closeCreateTaskModal()"
+        )("Обновить список задач")
+    )
+  )
+)
 ```
 
 ![Обновить список задач](images/reload_tasks.png)
@@ -257,18 +268,31 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 
 ### Ветка «Модальное окно открыто»
 
-```html
-<div id="task-modal" class="uk-modal uk-open" style="display:block;">
-  <div class="uk-modal-dialog uk-modal-body">
-    <h2 class="uk-modal-title">Создание задачи</h2>
-
-    <form hx-post="/tasks" hx-target="#modal-container" hx-swap="innerHTML">
-      <input type="hidden" name="token" value="..." />
-      <input type="hidden" name="tab" value="..." />
-      ...
-    </form>
-  </div>
-</div>
+```dotty
+frag(
+  div(
+    `id`  := "task-modal",
+    cls   := "uk-modal uk-open",
+    style := "display:block;"
+  )(
+    div(cls := "uk-modal-dialog uk-modal-body")(
+      if isOpen then
+        frag(
+          h2(cls := "uk-modal-title")("Создание задачи"),
+          CreateTaskRequest.render(req, taskTypes, sections, goals),
+          errorBlock(errorMessage)
+        )
+      else
+        button(
+          cls            := "add-btn",
+          attr("hx-get") := s"/home/${req.tab}",
+          Htmx.appTarget,
+          Htmx.appSwap,
+          attr("onclick") := "closeCreateTaskModal()"
+        )("Обновить список задач")
+    )
+  )
+)
 ```
 
 **Ключевые моменты формы:**
@@ -287,18 +311,15 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 
 **Название задачи:**
 
-```html
-<div class="form-group">
-  <label for="taskName">Название задачи:</label>
-  <input
-    id="taskName"
-    name="name"
-    type="text"
-    required
-    placeholder="Введите название"
-    value="..."
-  />
-</div>
+```dotty
+group("taskName", "Название задачи:")(input(
+  attr("id")   := "taskName",
+  attr("name") := "name",
+  attr("type") := "text",
+  required,
+  placeholder   := "Введите название",
+  attr("value") := request.name
+)),
 ```
 
 Простое текстовое поле. Значение берётся из `req.name`, что позволяет сохранить
@@ -306,15 +327,20 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 
 **Тип задачи, раздел, цель:**
 
-```html
-<div class="form-group">
-  <label for="taskTypeId">Тип задачи:</label>
-  <select id="taskTypeId" name="taskTypeId" required>
-    <option value="">Выберите тип...</option>
-    <option value="1">Тип задачи 1</option>
-    <option value="2" selected>Тип задачи 2</option>
-  </select>
-</div>
+```dotty
+group("taskTypeId", "Тип задачи:")(select(
+  attr("id")   := "taskTypeId",
+  attr("name") := "taskTypeId",
+  required,
+  List[Modifier](option(value := "")("Выберите тип..."))
+    ++ taskTypes.filter(_.displayed).sortBy(_.ordinal.value).map { t =>
+      selectedOption(
+        t.id.value.toString,
+        t.name.toString,
+        t.id.value == request.taskTypeId
+      )
+    }
+)),
 ```
 
 Три аналогичных выпадающих списка. Особенности:
@@ -326,18 +352,15 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 
 **Порядок:**
 
-```html
-<div class="form-group">
-  <label for="ordinal">Порядок:</label>
-  <input
-    id="ordinal"
-    name="ordinal"
-    type="number"
-    min="1"
-    value="1000"
-    required
-  />
-</div>
+```dotty
+group("ordinal", "Порядок:")(input(
+  attr("id")    := "ordinal",
+  attr("name")  := "ordinal",
+  attr("type")  := "number",
+  attr("min")   := "1",
+  attr("value") := request.ordinal,
+  required
+)),
 ```
 
 Порядковый номер задачи. По умолчанию `1000`, чтобы новые задачи попадали в конец
@@ -345,13 +368,21 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 
 **Даты (с условной обязательностью):**
 
-```html
-<div class="form-group">
-    <label for="startDate">Дата начала:</label>
-    <input id="startDate" name="startDate" type="date"
-           value="..."
-           required/>
-</div>
+```dotty
+group(
+  "startDate",
+  "Дата начала:"
+)(dateInput("startDate", request.startDate)),
+      
+def dateInput(label: String, maybeDate: Option[LocalDate]): Modifier =
+  input(
+    attr("id")    := label,
+    attr("name")  := label,
+    attr("type")  := "date",
+    attr("value") := maybeDate.map(_.toString).getOrElse(""),
+    if request.tab == "in-progress" then List[Modifier](required)
+    else List.empty[Modifier]
+  )
 ```
 
 Здесь ключевая деталь: атрибут `required` **условный**. Для вкладки `"in-progress"`
@@ -361,12 +392,12 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 
 **Информация:**
 
-```html
-<div class="form-group">
-  <label for="information">Информация:</label>
-  <textarea id="information" name="information" rows="10" class="form-textarea">
-...</textarea>
-</div>
+```dotty
+group("information", "Информация:")(textarea(
+  attr("id")   := "information",
+  attr("name") := "information",
+  attr("rows") := 10
+)(request.information)),
 ```
 
 Многострочное текстовое поле для описания задачи, ссылок, заметок.
@@ -375,38 +406,46 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 
 **Продолжительность (двухсоставное поле):**
 
-```html
-<div class="form-group">
-  <label for="durationValue">Продолжительность:</label>
-  <div class="duration-group">
-    <input
-      id="durationValue"
-      name="durationValue"
-      type="number"
-      min="1"
-      value="30"
-      required
-      class="duration-input"
-      placeholder="Значение"
-    />
-    <select
-      id="durationUnit"
-      name="durationUnit"
-      class="duration-select"
-      required
-    >
-      <option value="minutes" selected>
-        в минутах
-      </option>
-      <option value="hours">
-        в часах
-      </option>
-      <option value="days">
-        в днях
-      </option>
-    </select>
-  </div>
-</div>
+```dotty
+group("durationValue", "Продолжительность:")(
+  div(
+    cls := "duration-group",
+    input(
+      attr("id")    := "durationValue",
+      attr("name")  := "durationValue",
+      attr("type")  := "number",
+      attr("min")   := "1",
+      attr("value") := request.durationValue,
+      required,
+      cls         := "duration-input",
+      placeholder := "Значение"
+    ),
+    select(
+      attr("id")   := "durationUnit",
+      attr("name") := "durationUnit",
+      cls          := "duration-select",
+      required,
+      durationOption(
+        "minutes",
+        TimeUnit.MINUTES,
+        request.durationUnit,
+        "в минутах"
+      ),
+      durationOption(
+        "hours",
+        TimeUnit.HOURS,
+        request.durationUnit,
+        "в часах"
+      ),
+      durationOption(
+        "days",
+        TimeUnit.DAYS,
+        request.durationUnit,
+        "в днях"
+      )
+    )
+  )
+),
 ```
 
 **Почему две части, а не одно поле?**
@@ -420,13 +459,16 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 
 **Кнопки:**
 
-```html
-<div class="form-actions">
-  <button type="submit" class="save-btn">Создать задачу</button>
-  <button type="button" class="cancel-btn" onclick="closeCreateTaskModal()">
-    Отмена
-  </button>
-</div>
+```dotty
+div(
+  cls := "form-actions",
+  button(`type` := "submit", cls := "save-btn")("Создать задачу"),
+  button(
+    `type`  := "button",
+    cls     := "cancel-btn",
+    onclick := "closeCreateTaskModal()"
+  )("Отмена")
+)
 ```
 
 - **«Создать задачу»** — `type="submit"`, отправляет форму через htmx.
@@ -435,10 +477,12 @@ def empty(token: String, tab: String, ordinal: Int): CreateTaskRequest =
 
 **Сообщение об ошибке:**
 
-```html
-<div class="messageBlock">
-  <div class="error">Ошибка валидации</div>
-</div>
+```dotty
+def errorBlock(error: Option[String]): Tag =
+  div(
+    cls := "messageBlock",
+    error.map(msg => div(cls := "error")(msg)).getOrElse(frag())
+  )
 ```
 
 Если есть сообщение об ошибке — отображается красным блоком. Обычно это ошибки

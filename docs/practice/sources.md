@@ -246,25 +246,59 @@ end DashboardService
 
 ## UI: вкладка «Источник» на главной странице
 
-На главной странице (`Views.welcome`) появляется новая вкладка:
+На главной странице (`View.welcome`) появляется новая вкладка:
 
-```html
-<button
-        class="tab-btn active"
-data-tab="sources"
-onclick="switchTab('sources')"
->
-🌐 Источник
-<span title="Ресурсы для пополнения Базы знаний">ℹ️</span>
-</button>
+```dotty
+tabButton(
+  activeIf("sources"),
+  "sources",
+  "🌐 Источник",
+  "Ресурсы для пополнения Базы знаний"
+),
+...
+tabContent("tab-sources", activeIf("sources"), sources),
 
-<!-- Вкладка: Источник -->
-<div id="tab-sources" class="tab-content active">
-<div class="tasks-grid">
-    <div id="1" class="task-card source-card" onclick="openSource('1')">
-        <div class="task-title">Книги по Scala</div>
-    </div>
-</div>
+def tabButton(
+    activeClass: String,
+    dataTab: String,
+    text: String,
+    title: String
+): Tag =
+  button(
+    cls              := s"tab-btn $activeClass",
+    attr("data-tab") := dataTab,
+    attr("onclick")  := s"switchTab('$dataTab')"
+  )(text, span(attr("title") := title)(" ℹ️"))
+  
+def tabContent(
+    tabId: String,
+    activeClass: String,
+    content: Modifier
+): Tag =
+  div(`id` := tabId, cls := s"tab-content $activeClass")(content)    
+```
+
+, где `sources` - это:
+
+```dotty
+def welcomeSources(taskTypes: Vector[TableTaskTypeCard]): Modifier =
+  frag(
+    div(cls := "tasks-grid")(
+      taskTypes.map(_.render)*
+    )
+  )
+  
+final case class TableTaskTypeCard(
+    id: TaskTypeId,
+    name: TaskTypeName
+):
+  def render: Tag =
+    div(
+      attr("id") := id.value.toString,
+      cls        := "task-card source-card",
+      onclick    := s"openSource('${id.value}')",
+      div(cls := "task-title")(name.value)
+    )  
 ```
 
 **Разбор:**
@@ -374,44 +408,55 @@ val openHandler: Handler =
 
 ## Страница источника
 
-Метод `Views.source` отображает наименование и информацию:
+Метод `View.source` отображает наименование и информацию:
 
-```html
-<div id="app" class="app-container">
-  <div id="sourceDetailBlock" class="task-detail-container">
-    <div class="task-detail-header">
-      <div class="task-detail-nav">
-        <span class="task-detail-status-badge source-badge">🌐 Источник</span>
-      </div>
-      <div class="task-detail-actions">
-        <button
-          class="edit-task-btn"
-          hx-get="/source/1/edit"
-          hx-target="#app"
-          hx-swap="outerHTML"
-        >
-          ✏️ Редактировать
-        </button>
-      </div>
-    </div>
-
-    <div class="messageBlock">
-      <div class="error">Ошибка</div>
-    </div>
-
-    <h1 class="task-detail-title">Книги по Scala</h1>
-
-    <div class="task-detail-section full-width">
-      <h3>📝 Информация</h3>
-      <div
-        class="task-detail-information markdown-content"
-        data-markdown="## Теория категорий"
-      >
-        <p class="empty-message">Информация отсутствует</p>
-      </div>
-    </div>
-  </div>
-</div>
+```dotty
+def source(source: SourceCard, errorMessage: Option[String]): Frag =
+  frag(
+    div(
+      `id` := "app",
+      cls  := "app-container",
+      div(
+        `id` := "sourceDetailBlock",
+        cls  := "task-detail-container",
+        div(cls := "task-detail-header")(
+          div(cls := "task-detail-nav")(
+            span(
+              cls := "task-detail-status-badge source-badge"
+            )("🌐 Источник")
+          ),
+          div(cls := "task-detail-actions")(
+            editButton(s"/source/${source.id.value}/edit")
+          )
+        ),
+        errorBlock(errorMessage),
+        source.render
+      )
+    )
+  )
+  
+final case class SourceCard(
+    id: TaskTypeId,
+    name: String,
+    information: String
+):
+  def render: Frag =
+    frag(
+      titleCard(name),
+      markdownSection(information)
+    )
+    
+def markdownSection(value: String): Tag =
+  div(
+    cls := "task-detail-section full-width",
+    h3("📝 Информация"),
+    div(
+      cls                   := "task-detail-information markdown-content",
+      attr("data-markdown") := value,
+      if value.nonEmpty then frag()
+      else p(cls := "empty-message")("Информация отсутствует")
+    )
+  )      
 ```
 
 **Ключевые моменты:**
@@ -456,34 +501,77 @@ final case class EditSourceRequest(
 
 ### Форма редактирования
 
-Метод `Views.editSource` содержит одно редактируемое поле — `information`:
+Метод `View.editSource` содержит одно редактируемое поле — `information`:
 
-```html
-<!-- Наименование (только для чтения) -->
-<div class="form-group">
-  <label for="sourceName">Наименование:</label>
-  <input
-    id="sourceName"
-    name="name"
-    type="text"
-    value="Книги по Scala"
-    class="form-input"
-    readonly
-  />
-</div>
-
-<!-- Информация (markdown) -->
-<div class="task-detail-section full-width">
-  <h3>📝 Информация</h3>
-  <textarea
-    id="information"
-    name="information"
-    rows="20"
-    class="form-textarea"
-    placeholder="Введите описание источника в markdown-формате..."
-  >
-## Теория категорий</textarea>
-</div>
+```dotty
+def editSource(
+    sourceId: TaskTypeId,
+    source: EditSourceRequest,
+    token: JwtToken,
+    errorMessage: Option[String]
+): Frag =
+  frag(
+    div(
+      `id` := "app",
+      cls  := "app-container",
+      div(
+        `id` := "sourceDetailBlock",
+        cls  := "task-detail-container",
+        div(cls := "task-detail-header")(
+          div(cls := "task-detail-nav")(
+            span(
+              cls := "task-detail-status-badge source-badge"
+            )("🌐 Источник")
+          ),
+          div(cls := "task-detail-actions")(
+            saveButton("editSourceForm"),
+            cancelButton(s"/source/${sourceId.value}")
+          )
+        ),
+        EditSourceRequest.render(sourceId, source, token, errorMessage)
+      )
+    )
+  )
+  
+object EditSourceRequest:
+  def render(
+      id: TaskTypeId,
+      request: EditSourceRequest,
+      token: JwtToken,
+      errorMessage: Option[String]
+  ): Tag =
+    form(
+      attr("id")     := "editSourceForm",
+      attr("hx-put") := s"/source/${id.value}",
+      Htmx.appTarget,
+      Htmx.appSwap,
+      formErrorBlock(errorMessage),
+      Htmx.hiddenToken(token.value),
+      div(
+        cls := "form-group",
+        label(`for` := "sourceName")("Наименование:"),
+        input(
+          attr("id") := "sourceName",
+          name       := "name",
+          `type`     := "text",
+          value      := request.name,
+          cls        := "form-input",
+          readonly
+        )
+      ),
+      div(
+        cls := "task-detail-section full-width",
+        h3("📝 Информация"),
+        textarea(
+          attr("id")  := "information",
+          name        := "information",
+          rows        := 20,
+          cls         := "form-textarea",
+          placeholder := "Введите описание источника в markdown-формате..."
+        )(request.information)
+      )
+    )
+  end render  
 ```
 
 **`readonly` для `name`** — пользователь видит, к какому типу задачи относится источник, но не может изменить это поле. 

@@ -206,17 +206,18 @@ def settings(
 
 ### Общая структура
 
-```html
-<div id="app" class="app-container">
-  <div id="welcomeBlock" class="welcome-container">
-    <div class="welcome-header">
-      <div class="welcome-user">
-          <h2>⚙️ Настройки</h2>
-        ...
-      </div>
-    </div>
-  </div>
-</div>
+```dotty
+frag(
+  div(
+    `id` := "app",
+    cls  := "app-container",
+    div(
+      `id` := "welcomeBlock",
+      cls  := "welcome-container",
+      div(cls := "welcome-header")(
+        div(cls := "welcome-user")(
+          h2("⚙️ Настройки"),
+          ...
 ```
 
 **Ключевые моменты:**
@@ -230,15 +231,23 @@ def settings(
 
 Вот пример структуры `<thead>` столбцов:
 
-```html
-<thead>
-  <tr>
-    <th>Название</th>
-    <th>Порядок</th>
-    <th>Включен?</th>
-    <th></th>
-  </tr>
-</thead>
+```dotty
+def settingsTable(
+    tableClass: String,
+    rows: Vector[Tag],
+    emptyMessage: String
+): Tag =
+  if rows.nonEmpty then
+    div(cls := "settings-list")(
+      table(cls := tableClass)(
+        thead(tr(th("Название"), th("Порядок"), th("Включен?"), th(""))),
+        tbody(
+          attr("hx-target") := "closest tr",
+          attr("hx-swap")   := "outerHTML"
+        )(rows*)
+      )
+    )
+  else p(cls := "empty-message")(emptyMessage)
 ```
 
 Атрибуты `<tbody>` — `hx-target="closest tr"`, `hx-swap="outerHTML"` — позволяют при удалении или редактировании строки заменить только `<tr>` (а не всю таблицу).
@@ -270,37 +279,65 @@ def settings(
 
 **Форма добавления типа задачи:**
 
-```html
-<div id="addTaskTypeForm" class="add-form" style="display: none;">
-  <form
-    id="taskTypeForm"
-    hx-post="/settings/task_types"
-    hx-target="#app"
-    hx-swap="outerHTML"
-  >
-    <input type="hidden" name="token" value="${token.value}" />
-    <div class="form-group">
-      <label for="taskTypeName">Название типа задачи:</label>
-      <input
-        id="taskTypeName"
-        name="name"
-        type="text"
-        required
-        placeholder="Введите название типа задачи"
-      />
-    </div>
-    <div class="form-actions">
-      <button type="submit" class="add-btn">Сохранить</button>
-      <button type="button" class="danger-btn" onclick="hideAddTaskTypeForm()">
-        Отмена
-      </button>
-    </div>
-  </form>
-</div>
+```dotty
+CreateItemRequest.render(
+  "addTaskTypeForm",
+  "taskTypeForm",
+  "task_types",
+  token,
+  "taskTypeName",
+  "типа задачи",
+  "hideAddTaskTypeForm()"
+),
+button(
+  cls             := "add-btn",
+  attr("onclick") := "showAddTaskTypeForm()"
+)(
+  "+ Добавить тип задачи"
+),
 
-<button class="add-btn" onclick="showAddTaskTypeForm()">
-  + Добавить тип задачи
-</button>
+object CreateItemRequest:
+  def render(
+      divId: String,
+      formId: String,
+      link: String,
+      token: JwtToken,
+      nameId: String,
+      entityLabel: String,
+      onClick: String
+  ): Tag =
+    div(
+      attr("id") := divId,
+      cls        := "add-form",
+      style      := "display: none;",
+      form(
+        attr("id")      := formId,
+        attr("hx-post") := s"/settings/$link",
+        Htmx.appTarget,
+        Htmx.appSwap,
+        Htmx.hiddenToken(token.value),
+        div(
+          cls := "form-group",
+          label(`for` := nameId)(s"Название $entityLabel:"),
+          input(
+            attr("id") := nameId,
+            name       := "name",
+            `type`     := "text",
+            required,
+            placeholder := s"Введите название $entityLabel"
+          )
+        ),
+        div(
+          cls := "form-actions",
+          button(`type` := "submit", cls := "add-btn")("Сохранить"),
+          button(
+            `type`  := "button",
+            cls     := "danger-btn",
+            onclick := onClick
+          )("Отмена")
+        )
+      )
+    )
 ```
 
 ![Settings, add a new type](images/settings_add_new_task_type.png)

@@ -317,7 +317,7 @@ case Right(ordinal) =>
 
 Во все формы, где есть поле ввода порядка, добавляется чекбокс:
 
-### `Views.createTask`
+### `View.createTask`
 
 Вызывает `CreateTaskRequest.render`, который рендерит форму создания задачи. Секция порядкового номера:
 
@@ -339,7 +339,7 @@ group("ordinalShift", "Выровнять порядок?")(
 ),
 ```
 
-### `Views.editTask`
+### `View.editTask`
 
 Вызывает `EditTaskRequest.render`, который рендерит форму редактирования задачи. Секция порядкового номера:
 
@@ -364,7 +364,7 @@ group("ordinalShift", "Выровнять порядок?")(
 )
 ```
 
-### `Views.task` (модальное окно выбора порядка)
+### `View.task` (модальное окно выбора порядка)
 
 Вызывает `QueueTaskRequest.render`, который рендерит форму в модальном окне `ordinalModal`. Содержит поля `ordinal` и `ordinalShift`:
 

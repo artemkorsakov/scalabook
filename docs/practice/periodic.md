@@ -566,38 +566,47 @@ def settings(
 
 Раздел «Периодические задачи» в настройках группирует шаги **по типу периода**. Для каждого типа — своя таблица:
 
-```html
-<div class="periodic-type-section">
-  <h4 class="periodic-type-title">Ежедневная задача</h4>
-  <table class="periodic-steps-table">
-    <thead>
-      <tr>
-        <th>Номер</th>
-        <th>Наименование</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody hx-target="closest tr" hx-swap="outerHTML">
-      <tr class="periodic-step-row" data-periodic-step-id="1">
-        <td>1</td>
-        <td class="markdown-content" data-markdown="Зарядка"></td>
-        <td>
-          <button
-            class="edit-btn"
-            hx-get="..."
-            hx-trigger="edit"
-            onclick="handleEditClick(this)"
-          >
-            ✏️ Редактировать
-          </button>
-          <button class="delete-btn" hx-delete="..." hx-confirm="...">
-            🗑️ Удалить
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+```dotty
+div(cls := "periodic-type-section")(
+  h4(cls := "periodic-type-title")(pt.show),
+  table(cls := "periodic-steps-table")(
+    thead(tr(th("Номер"), th("Наименование"), th(""))),
+    tbody(
+      attr("hx-target") := "closest tr",
+      attr("hx-swap")   := "outerHTML"
+    )(
+      stepsForType.map { step =>
+        tr(
+          cls                           := "periodic-step-row",
+          attr("data-periodic-step-id") := step.id.value.toString
+        )(
+          td(step.number.value),
+          td(
+            cls                   := "markdown-content",
+            attr("data-markdown") := step.name.value.toString
+          )(
+            button(
+              cls            := "edit-btn",
+              attr("hx-get") :=
+                s"/settings/periodic_steps/${step.id.value}/edit",
+              attr("hx-trigger") := "edit",
+              attr("onclick")    := "handleEditClick(this)"
+            )("✏️ Редактировать"),
+            button(
+              cls               := "delete-btn",
+              attr("hx-delete") :=
+                s"/settings/periodic_steps/${step.id.value}",
+              Htmx.appTarget,
+              Htmx.appSwap,
+              attr("hx-confirm") :=
+                s"""Вы уверены, что хотите удалить периодическую задачу «${step.name.value}»?"""
+            )("🗑️ Удалить")
+          )
+        )
+      }*
+    )
+  )
+)
 ```
 
 **Разбор данных:**
@@ -614,50 +623,48 @@ def settings(
 2. **Быстрый поиск:** чтобы найти ежедневные, не нужно читать колонку «Период» в каждой строке.
 3. **Стабильный порядок:** типы идут в порядке `enum`, независимо от данных.
 
-### `Views.getPeriodicStepRow` — строка для htmx-ответа
+### `View.getPeriodicStepRow` — строка для htmx-ответа
 
 Метод рендера обычной строки периодического шага (не редактируемой):
 
 ```dotty
-def getPeriodicStepRow(step: PeriodicStep): String
-```
-
-```html
-<tr class="periodic-step-row" data-periodic-step-id="1">
-  <td>
-    <button
-      class="refresh-btn"
-      onclick="htmx.process(this); this.click();"
-      hx-get="/settings"
-      hx-target="#app"
-      hx-swap="outerHTML"
-    >
-      🔄 Обновить
-    </button>
-    Ежедневная задача
-  </td>
-  <td>1</td>
-  <td class="markdown-content" data-markdown="Зарядка"></td>
-  <td>
-    <button
-      class="edit-btn"
-      hx-get="/settings/periodic_steps/1/edit"
-      hx-trigger="edit"
-      onclick="handleEditClick(this)"
-    >
-      ✏️ Редактировать
-    </button>
-    <button
-      class="delete-btn"
-      hx-delete="/settings/periodic_steps/1"
-      hx-target="#app"
-      hx-swap="outerHTML"
-      hx-confirm="..."
-    >
-      🗑️ Удалить
-    </button>
-  </td>
-</tr>
+def getPeriodicStepRow(step: PeriodicStep): String =
+  tr(
+    cls                           := "periodic-step-row",
+    attr("data-periodic-step-id") := step.id.value.toString
+  )(
+    td(
+      button(
+        cls             := "refresh-btn",
+        attr("onclick") := "htmx.process(this); this.click();",
+        attr("hx-get")  := "/settings",
+        Htmx.appTarget,
+        Htmx.appSwap
+      )("🔄 Обновить"),
+      step.periodicType.show
+    ),
+    td(step.number.value),
+    td(
+      cls                   := "markdown-content",
+      attr("data-markdown") := step.name.value.toString
+    ),
+    td(
+      button(
+        cls            := "edit-btn",
+        attr("hx-get") := s"/settings/periodic_steps/${step.id.value}/edit",
+        attr("hx-trigger") := "edit",
+        attr("onclick")    := "handleEditClick(this)"
+      )("✏️ Редактировать"),
+      button(
+        cls               := "delete-btn",
+        attr("hx-delete") := s"/settings/periodic_steps/${step.id.value}",
+        Htmx.appTarget,
+        Htmx.appSwap,
+        attr("hx-confirm") :=
+          s"""Вы уверены, что хотите удалить периодическую задачу «${step.name.value}»?"""
+      )("🗑️ Удалить")
+    )
+  ).render
 ```
 
 **Разбор:**
@@ -675,57 +682,66 @@ def render(
     step: PeriodicStep,
     token: JwtToken,
     maybeError: Option[String]
-): Tag
-```
+): Tag =
+  val path = s"/settings/periodic_steps/${step.id.value}"
 
-```html
-<tr
-  class="periodic-step-row editing"
-  hx-trigger="cancel"
-  hx-get="/settings/periodic_steps/1"
->
-  <td>
-    <select name="periodicType" class="edit-input" required>
-      <option value="daily" selected>Ежедневная задача</option>
-      <option value="weekly">Еженедельная задача</option>
-      <option value="monthly">Ежемесячная задача</option>
-      <option value="quarterly">Ежеквартальная задача</option>
-      <option value="yearly">Ежегодная задача</option>
-    </select>
-  </td>
-  <td>
-    <input
-      class="edit-input"
-      name="number"
-      value="1"
-      pattern="^\d+(?:\.\d+)*$"
-      autofocus
-    />
-  </td>
-  <td>
-    <input class="edit-input" name="name" value="Зарядка" />
-    <div class="periodic-step-ordinal-shift">
-      <label>
-        <input class="edit-checkbox" name="ordinalShift" type="checkbox" />
-        Выровнять порядок
-      </label>
-    </div>
-  </td>
-  <td>
-    <input type="hidden" name="token" value="..." />
-    <button class="cancel-btn" hx-get="/settings/periodic_steps/1">
-      ❌ Отмена
-    </button>
-    <button
-      class="save-btn"
-      hx-put="/settings/periodic_steps/1"
-      hx-include="closest tr"
-    >
-      💾 Сохранить
-    </button>
-    <div class="error">Сообщение об ошибке</div>
-  </td>
-</tr>
+  tr(
+    cls                := "periodic-step-row editing",
+    attr("hx-trigger") := "cancel",
+    attr("hx-get")     := path,
+    td(
+      select(
+        name := "periodicType",
+        cls  := "edit-input",
+        required,
+        PeriodicType.values.map { pt =>
+          option(
+            (value := pt.toString.toLowerCase) ::
+              (if pt == step.periodicType then List[Modifier](selected)
+               else List.empty[Modifier])
+          )(pt.show)
+        }
+      )
+    ),
+    td(
+      input(
+        cls           := "edit-input",
+        name          := "number",
+        value         := step.number.toString,
+        pattern       := "^\\d+(?:\\.\\d+)*$",
+        attr("title") := "Только цифры и точки (например: 1.2.3)",
+        autofocus
+      )
+    ),
+    td(
+      input(
+        cls   := "edit-input",
+        name  := "name",
+        value := step.name.toString
+      ),
+      div(
+        cls := "periodic-step-ordinal-shift",
+        label(
+          input(
+            name   := "ordinalShift",
+            cls    := "edit-checkbox",
+            `type` := "checkbox"
+          ),
+          "Выровнять порядок"
+        )
+      )
+    ),
+    td(
+      Htmx.hiddenToken(token.value),
+      button(cls := "cancel-btn", attr("hx-get") := path)("❌ Отмена"),
+      button(
+        cls                := "save-btn",
+        attr("hx-put")     := path,
+        attr("hx-include") := "closest tr"
+      )("💾 Сохранить"),
+      maybeError.map(msg => div(cls := "error")(msg)).getOrElse(frag())
+    )
+  )
 ```
 
 **Разбор:**

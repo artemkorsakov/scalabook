@@ -1,8 +1,9 @@
 package ru.scalabook.libs.frp
 
+import reactify.*
+
 import TaskType.*
 import Section.*
-import reactify.*
 
 object Reactify:
   val tasks: List[Task] = List(

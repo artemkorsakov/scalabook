@@ -17,6 +17,8 @@ object HeliumThemes:
       addTopNavigation andThen
       addMainNavigation andThen
       addPageNavigation andThen
+      addEpub andThen
+      addPdf andThen
       addFooter
 
   private def addMeta(theme: Helium): Helium =
@@ -100,6 +102,18 @@ object HeliumThemes:
         sourceLinkText = "Редактировать страницу",
         keepOnSmallScreens = false
       )
+
+  private def addEpub(theme: Helium): Helium =
+    theme.epub
+      .navigationDepth(4)
+      .epub
+      .tableOfContent("Содержание", 3)
+
+  private def addPdf(theme: Helium): Helium =
+    theme.pdf
+      .navigationDepth(4)
+      .pdf
+      .tableOfContent("Содержание", 3)
 
   private def addFooter(theme: Helium): Helium =
     theme.site.footer()

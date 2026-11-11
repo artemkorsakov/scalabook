@@ -53,6 +53,7 @@ object Dependencies {
     val core    = "org.typelevel" %% "laika-core"    % version
     val io      = "org.typelevel" %% "laika-io"      % version
     val preview = "org.typelevel" %% "laika-preview" % version
+    val pdf     = "org.typelevel" %% "laika-pdf"     % version
   }
 
   object log4cats {
@@ -112,6 +113,7 @@ object Dependencies {
       http4s.server,
       laika.core,
       laika.io,
+      laika.pdf,
       laika.preview,
       sttp.client,
       sttp.model,

@@ -62,7 +62,8 @@ logoColor := scala.Console.MAGENTA
 usefulTasks := Seq(
   UsefulTask("com", "Compile main and test sources"),
   UsefulTask("dep", "Show available dependency updates"),
-  UsefulTask("site", "Generate static site from project sources"),
+  UsefulTask("site", "Generate static site and EPUB from project sources"),
+  UsefulTask("sitePdf", "Generate PDF e-book from project sources"),
   UsefulTask("checkLinks", "Validate all links in the generated site"),
   UsefulTask(
     "prePush",

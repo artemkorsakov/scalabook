@@ -3,6 +3,7 @@ addCommandAlias("fmtcheck", "scalafmtSbtCheck; scalafmtCheckAll")
 addCommandAlias("fix", "scalafmtSbt; scalafmtAll; scalafixAll")
 addCommandAlias("dep", "dependencyUpdates")
 addCommandAlias("site", "site/runMain ru.scalabook.site.app.GenerateSite")
+addCommandAlias("sitePdf", "site/runMain ru.scalabook.site.app.GeneratePdf")
 addCommandAlias(
   "checkLinks",
   "site/runMain ru.scalabook.site.app.CheckLinksSite"

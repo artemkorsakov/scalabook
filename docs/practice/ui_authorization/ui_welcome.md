@@ -1,6 +1,6 @@
 # Рендер представления «Рабочий стол»
 
-`views/Views.scala` — объект со всеми рендер-методами приложения в [репозитории](https://gitverse.ru/scalabook/pdp) (путь `pdp/src/main/scala/ru/scalabook/pdp/views/Views.scala`).
+`views/Views.scala` — объект со всеми рендер-методами приложения в [репозитории](https://gitverse.ru/scalabook/pdp/content/master/pdp/src/main/scala/ru/scalabook/pdp/views/Views.scala).
 
 Это рабочий стол пользователя, куда он попадает после авторизации.
 Метод `Views.welcome` рендерит восемь вкладок (задачи в разных статусах, цели, статистику,

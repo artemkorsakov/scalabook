@@ -132,7 +132,7 @@ trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
       f: ((UserInfo, JwtToken)) => IO[Option[String]],
       fallbackPage: => String
   ): IO[String] =
-    withUserFromCookie(cookie: Cookie)(
+    withUserFromCookie(cookie)(
       f(_).map(_.getOrElse(fallbackPage)),
       fallbackPage
     )
@@ -468,8 +468,7 @@ def login(errorMessage: Option[String]): Frag
 4. **`Application.notFound`** — запасной вариант: если ничего не подошло, возвращаем 404.
 
 Krop пробует обработчики по очереди через `orElse` и останавливается на первом,
-который «подошёл» к запросу. Поэтому `notFound` всегда должен быть последним,
-а ассеты — до него, чтобы статика отдавалась корректно.
+который «подошёл» к запросу.
 
 ## Итог
 

@@ -37,7 +37,7 @@ final case class TaskHandlers(
             taskId = TaskId(uuid),
             jwtToken = jwtToken,
             errorMessage = none
-          ).map(_.map(html => View.base(Title, raw(html)))),
+          ).map(_.map(html => Views.base(Title, raw(html)))),
         fallbackPage = NotFoundView
       )
 
@@ -64,8 +64,8 @@ end TaskHandlers
 
 3. **Лямбда `f`** — сразу загружает задачу через `getViewTask` с `TaskId(uuid)`
    без веток `Right`/`Left`, потому что `uuid` уже валиден по типу. Обёртывает
-   результат в `View.base(...)` — полную HTML-страницу. Так как `getViewTask`
-   возвращает строку, её оборачивают в `raw(...)`, потому что `View.base` принимает
+   результат в `Views.base(...)` — полную HTML-страницу. Так как `getViewTask`
+   возвращает строку, её оборачивают в `raw(...)`, потому что `Views.base` принимает
    scalatags-фрагмент `Modifier`.
 
 4. **Возврат `Option`**: `f` возвращает `IO[Option[String]]`. Если задача не найдена —
@@ -105,7 +105,7 @@ private[tasks] object TaskViews:
           TablePlannedTaskCard.fromTaskResult(task, typesMap, sectionsMap, goalsMap)
         )
       val availableOrdinals = getAvailableOrdinals(plannedTasks)
-      View.task(
+      Views.task(
         task = card,
         token = jwtToken.value,
         availableOrdinals = availableOrdinals,
@@ -127,7 +127,7 @@ private[tasks] object TaskViews:
    возвращает `Option[TaskCard]`. Если задача не найдена или не принадлежит
    пользователю — будет `None`.
 
-4. **Рендер шаблона** — `View.task(...)` возвращает `Frag`; `.render` превращает его
+4. **Рендер шаблона** — `Views.task(...)` возвращает `Frag`; `.render` превращает его
    в HTML-строку, обёрнутую в `Option` (если задача найдена).
 
 ## Вычисление доступных порядковых номеров

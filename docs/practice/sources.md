@@ -246,7 +246,7 @@ end DashboardService
 
 ## UI: вкладка «Источник» на главной странице
 
-На главной странице (`View.welcome`) появляется новая вкладка:
+На главной странице (`Views.welcome`) появляется новая вкладка:
 
 ```dotty
 tabButton(
@@ -377,7 +377,7 @@ val openHandler: Handler =
         yield (maybeTaskType, maybeSource).mapN {
           case (taskType, source) =>
             val html =
-              View.source(
+              Views.source(
                 source = SourceCard(
                   id = taskTypeId,
                   name = taskType.name.value,
@@ -386,7 +386,7 @@ val openHandler: Handler =
                 token = jwtToken.value,
                 errorMessage = none
               )
-            View.base(Title, html)
+            Views.base(Title, html)
         },
       fallbackPage = NotFoundView
     )
@@ -401,14 +401,14 @@ val openHandler: Handler =
 2. **Типизированный ID** — `taskTypeIdParam` сразу декодирует путь в `TaskTypeId`,
    ветки `Right`/`Left` не нужны.
 3. **Загрузка двух сущностей:** тип задачи и источник. 
-4. **`(maybeTaskType, maybeSource).mapN`** — если обе сущности найдены, собираем `SourceCard` и рендерим `View.source`. 
+4. **`(maybeTaskType, maybeSource).mapN`** — если обе сущности найдены, собираем `SourceCard` и рендерим `Views.source`. 
    Если хотя бы одна не найдена — `None`, и `withUserFromCookieOpt` подставит `fallbackPage` (404).
 
-`NotFoundView` — готовая строка HTML из `WelcomeViews`, объединяющая `View.base(Title, ...)` и `View.notFound()`. Используется повторно во всех хэндлерах дашборда.
+`NotFoundView` — готовая строка HTML из `WelcomeViews`, объединяющая `Views.base(Title, ...)` и `Views.notFound()`. Используется повторно во всех хэндлерах дашборда.
 
 ## Страница источника
 
-Метод `View.source` отображает наименование и информацию:
+Метод `Views.source` отображает наименование и информацию:
 
 ```dotty
 def source(source: SourceCard, errorMessage: Option[String]): Frag =
@@ -501,7 +501,7 @@ final case class EditSourceRequest(
 
 ### Форма редактирования
 
-Метод `View.editSource` содержит одно редактируемое поле — `information`:
+Метод `Views.editSource` содержит одно редактируемое поле — `information`:
 
 ```dotty
 def editSource(
@@ -593,7 +593,7 @@ val editFormHandler: Handler =
             dashboardService.getSource(taskTypeId, user.id)
         yield (maybeTaskType, maybeSource).mapN {
           case (taskType, source) =>
-            View.editSource(
+            Views.editSource(
               source = SourceCard(
                 id = taskTypeId,
                 name = taskType.name.value,
@@ -632,14 +632,14 @@ val editHandler: Handler =
           request.information
         )
           .map: _ =>
-            View.source(
+            Views.source(
               source = source,
               token = jwtToken.value,
               errorMessage = none
             ).render.some
           .recover:
             case ex: IllegalArgumentException =>
-              View.editSource(
+              Views.editSource(
                 source = source,
                 token = jwtToken.value,
                 errorMessage = ex.getMessage.some

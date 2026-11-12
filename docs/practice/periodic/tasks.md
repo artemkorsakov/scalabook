@@ -878,8 +878,8 @@ final case class PeriodicTaskHandlers(
         f = (user, jwtToken) =>
           service.get(PeriodicTaskId(uuid), user.id).map {
             _.map { periodicTask =>
-              val html = View.periodicTask(task = periodicTask, errorMessage = none)
-              View.base(Title, html)
+              val html = Views.periodicTask(task = periodicTask, errorMessage = none)
+              Views.base(Title, html)
             }
           },
         fallbackPage = NotFoundView
@@ -893,7 +893,7 @@ final case class PeriodicTaskHandlers(
           for
             _         <- service.completeStep(periodicTaskId, user.id, number)
             maybeTask <- service.get(periodicTaskId, user.id)
-          yield maybeTask.map(task => View.periodicTask(task, none).render)
+          yield maybeTask.map(task => Views.periodicTask(task, none).render)
         }
 
   val completeHandler: Handler =
@@ -908,7 +908,7 @@ final case class PeriodicTaskHandlers(
         val periodicTaskId = PeriodicTaskId(uuid)
         service.get(periodicTaskId, user.id).map {
           _.map { task =>
-            View.editPeriodicTask(
+            Views.editPeriodicTask(
               periodicTaskId = task.id,
               name = task.name,
               request = EditPeriodicTaskRequest(
@@ -932,11 +932,11 @@ final case class PeriodicTaskHandlers(
                 for
                   _ <- service.updatePlan(periodicTaskId, user.id, Plan(steps.sortBy(_.number)))
                   maybeTask <- service.get(periodicTaskId, user.id)
-                yield maybeTask.map(task => View.periodicTask(task, none).render)
+                yield maybeTask.map(task => Views.periodicTask(task, none).render)
               run
                 .recover:
                   case ex: IllegalArgumentException =>
-                    View.editPeriodicTask(
+                    Views.editPeriodicTask(
                       periodicTaskId = periodicTaskId,
                       name = "Ошибка при редактировании задачи",
                       request = request,
@@ -980,7 +980,7 @@ end PeriodicTaskHandlers
 
 ### Хэндлер формы редактирования `editFormHandler`
 
-Аналогичен `openHandler`, но рендерит **форму редактирования** (`View.editPeriodicTask`),
+Аналогичен `openHandler`, но рендерит **форму редактирования** (`Views.editPeriodicTask`),
 а не страницу просмотра.
 
 ### Хэндлер сохранения правок `editHandler`

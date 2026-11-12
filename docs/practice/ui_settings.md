@@ -143,7 +143,7 @@ def getViewSettings(
     val sortedSteps: Vector[PeriodicStep] =
       periodicSteps.sortBy(step => (step.periodicType.ordinal, step.number))
 
-    View.settings(
+    Views.settings(
       token = jwtToken,
       taskTypes = taskTypes,
       sections = sections,
@@ -160,7 +160,7 @@ def getViewSettings(
 
 1. **Загружаем типы задач, разделы, цели и периодические шаги пользователя.**
    Шаги сортируются по типу периодичности и номеру (`step.periodicType.ordinal`, `step.number`).
-2. **Рендер представления `View.settings(...)`** — передаём в scalatags-метод:
+2. **Рендер представления `Views.settings(...)`** — передаём в scalatags-метод:
    - `token` — JWT-токен для htmx-заголовков.
    - `taskTypes`, `sections`, `goals`, `periodicSteps` — загруженные справочники.
    - Четыре опциональных сообщения об ошибках.

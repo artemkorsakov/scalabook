@@ -453,7 +453,7 @@ val editHandler: Handler =
               settingsService.updateTaskType(updated).void
 
           run.map: _ =>
-            View.getTaskTypeRow(
+            Views.getTaskTypeRow(
               updated
             )
           .recoverWith:
@@ -520,7 +520,7 @@ val editHandler: Handler =
         - Вызываем `reorderTaskTypes` для сохранения нового порядка.
     - **Без переупорядочивания:** просто `updateTaskType(updated)`.
 
-6. **Успех:** возвращаем обновлённую строку через `View.getTaskTypeRow`.
+6. **Успех:** возвращаем обновлённую строку через `Views.getTaskTypeRow`.
 
 7. **Ошибка бизнес-логики:** перехватываем `IllegalArgumentException` и вызываем
    `editError`, который рендерит строку в режиме редактирования с сообщением.
@@ -565,7 +565,7 @@ val getRowHandler: Handler =
         authorization
       ): (user: UserInfo, jwtToken: JwtToken) =>
         getTaskType(taskTypeId, user.id).map: taskType =>
-          View.getTaskTypeRow(
+          Views.getTaskTypeRow(
             taskType
           )
 ```

@@ -27,7 +27,7 @@
 ## Импорты и параметры
 
 ```dotty
-import ru.scalabook.pdp.views.Views as View
+import ru.scalabook.pdp.views.Views
 import dev.profunktor.auth.jwt.JwtToken
 
 def welcome(
@@ -49,8 +49,8 @@ def welcome(
 
 - **`JwtToken`** — тип JWT-токена. Передаётся в `Views.welcome`, чтобы рендер
   сохранил его в куки и заголовки через невидимый iframe.
-- **`Views`** — объект со всеми рендер-методами. В handlers импортируется алиасом:
-  `import ru.scalabook.pdp.views.Views as View`.
+- **`Views`** — объект со всеми рендер-методами. В handlers импортируется напрямую:
+  `import ru.scalabook.pdp.views.Views`.
 
 **Параметры метода:**
 
@@ -550,7 +550,7 @@ final case class TablePlannedTaskCard(
 
 ![knowledge-base-tasks](../images/knowledge-base-tasks.png)
 
-Метод `View.welcomeKnowledgeBase` принимает
+Метод `Views.welcomeKnowledgeBase` принимает
 четыре параметра: `tasks` (карточки `TableKnowledgeBaseTaskCard`), `taskTypes`,
 `sections` и `goals`. Хост-метод подставляет результат в контейнер `#tab-knowledge-base`.
 

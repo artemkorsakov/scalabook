@@ -46,7 +46,7 @@ final case class LoginHandler(
 
   // Нельзя раскрывать пользователю ошибку валидации.
   private val fallbackPage: String =
-    View.login("Некорректный логин или пароль".some).render
+    Views.login("Некорректный логин или пароль".some).render
 
   val handler: Handler =
     route.handleIO: (request: LoginRequest) =>
@@ -137,7 +137,7 @@ end LoginHandler
 
 ```dotty
 private val fallbackPage: String =
-  View.login("Некорректный логин или пароль".some).render
+  Views.login("Некорректный логин или пароль".some).render
 ```
 
 Обратите внимание: сообщение **одинаково** и для несуществующего пользователя, и для
@@ -182,7 +182,7 @@ final case class LogoutHandler(
     route.handleIO: (authorization: Authorization) =>
       withUserFromHeader(authorization): (user: UserInfo, token: JwtToken) =>
         authService.logout(token, user.username)
-          .as(View.login(none).render)
+          .as(Views.login(none).render)
 ```
 
 **Пошаговый разбор:**
@@ -207,8 +207,8 @@ final case class LogoutHandler(
    это означает удаление токена из Redis (хранилища активных сессий).
    После этого токен нельзя будет использовать повторно.
 
-4. **`.as(View.login(none).render)`** — после успешного выхода возвращаем страницу логина.
-   `View.login` возвращает scalatags-фрагмент `Frag`; `.render` превращает его в HTML-строку.
+4. **`.as(Views.login(none).render)`** — после успешного выхода возвращаем страницу логина.
+   `Views.login` возвращает scalatags-фрагмент `Frag`; `.render` превращает его в HTML-строку.
    `none` означает, что сообщения об ошибке нет.
 
 **Возвращаемый тип `IO[String]`:**

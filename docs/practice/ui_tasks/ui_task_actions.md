@@ -123,7 +123,7 @@ val completeHandler: Handler =
 `HomeView` — это константа из `WelcomeViews`, возвращающая HTML главной страницы:
 
 ```dotty
-val HomeView: String = View.home()
+val HomeView: String = Views.home()
 
 object View:
   def home(): String =

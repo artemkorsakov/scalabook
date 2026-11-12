@@ -62,8 +62,8 @@ final case class InitialHandler(
             user = user,
             jwtToken = jwtToken,
             tab = DefaultTab
-          ).map(welcome => View.base(Title, raw(welcome))),
-        fallbackPage = View.base(Title, View.login(none))
+          ).map(welcome => Views.base(Title, raw(welcome))),
+        fallbackPage = Views.base(Title, Views.login(none))
       )
 ```
 
@@ -92,7 +92,7 @@ final case class InitialHandler(
       (заранее сформированную страницу логина).
 
 6. **`f = (user, jwtToken) => ...`** — формирует приветственную страницу через
-   `getViewWelcomeHtml` и оборачивает её в `View.base(Title, ...)`. Если токен валиден — пользователь
+   `getViewWelcomeHtml` и оборачивает её в `Views.base(Title, ...)`. Если токен валиден — пользователь
    видит свой рабочий стол; иначе — `fallbackPage` (форма входа).
 
 Любая проблема с токеном (истёк, повреждён, неверная подпись) **не роняет приложение**:
@@ -124,7 +124,7 @@ trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
         case ex: AuthorizationException =>
           Logger[IO].error(ex)(
             s"Ошибка при парсинге токена: ${ex.getMessage}"
-          ).as(View.error().some)
+          ).as(Views.error().some)
         case ex =>
           Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
 
@@ -314,18 +314,18 @@ object WelcomeViews:
           case t if knowledgeBaseGoalIds(t.id) => t.name.value
         }
 
-      View.welcome(
+      Views.welcome(
         username = user.username.value,
         token = jwtToken,
         tab = tab,
-        inProgress = View.welcomeInProgress(inProgressTasks, periodicTasks),
-        planned = View.welcomePlanned(plannedTasks, plannedTaskTypes, plannedSections, plannedGoalFilters),
-        knowledgeBase = View.welcomeKnowledgeBase(knowledgeBaseTasks, knowledgeBaseTaskTypes, knowledgeBaseSections, knowledgeBaseGoalFilters),
-        goals = View.goalsStats(currentGoals, plannedGoals, achievedGoals),
-        statistics = View.statistics(stats),
-        sources = View.welcomeSources(taskTypes),
-        notes = View.welcomeNotes(notes),
-        history = View.history(historyTasks)
+        inProgress = Views.welcomeInProgress(inProgressTasks, periodicTasks),
+        planned = Views.welcomePlanned(plannedTasks, plannedTaskTypes, plannedSections, plannedGoalFilters),
+        knowledgeBase = Views.welcomeKnowledgeBase(knowledgeBaseTasks, knowledgeBaseTaskTypes, knowledgeBaseSections, knowledgeBaseGoalFilters),
+        goals = Views.goalsStats(currentGoals, plannedGoals, achievedGoals),
+        statistics = Views.statistics(stats),
+        sources = Views.welcomeSources(taskTypes),
+        notes = Views.welcomeNotes(notes),
+        history = Views.history(historyTasks)
       ).render
 ```
 
@@ -364,7 +364,7 @@ object WelcomeViews:
     - `plannedGoalFilters` и `knowledgeBaseGoalFilters` — **новые** списки целей
       для фильтра «Цель» на вкладках «Запланировано» и «База знаний».
 
-7. **`View.welcome(...)`** — собираем страницу из уже отрисованных HTML-фрагментов
+7. **`Views.welcome(...)`** — собираем страницу из уже отрисованных HTML-фрагментов
    вкладок. Каждая вкладка рендерится отдельным шаблоном: `welcomeInProgress`,
    `welcomePlanned`, `welcomeKnowledgeBase`, `goalsStats`, `statistics`, `welcomeSources`,
    `welcomeNotes`, `history`. Списки фильтров (`taskTypes`, `sections`, `goals`) передаются
@@ -381,7 +381,7 @@ object WelcomeViews:
 Если что-то пошло не так — пользователь видит страницу логина:
 
 ```dotty
-View.base(Title, View.login(none))
+Views.base(Title, Views.login(none))
 ```
 
 ![Login page](images/login.png)

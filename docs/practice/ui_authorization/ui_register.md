@@ -40,7 +40,7 @@ final case class RegisterHandler(
     )
 
   val formHandler: Handler =
-    formRoute.handle(() => View.register(none).render)
+    formRoute.handle(() => Views.register(none).render)
 ```
 
 Фрагмент из `Main.scala`, где оба обработчика регистрируются:
@@ -59,7 +59,7 @@ final case class RegisterHandler(
 - **`formRoute.handle`** — используем `handle`, а не `handleIO`, потому что
   логика чистая: никаких эффектов (`IO`) не требуется, только рендер шаблона.
 - **`() => ...`** — лямбда без аргументов, потому что запрос не содержит параметров.
-- **`View.register(none).render`** — вызываем метод `Views.register` с `None` в качестве
+- **`Views.register(none).render`** — вызываем метод `Views.register` с `None` в качестве
   сообщения об ошибке (`Frag`), затем `.render` превращает его в HTML-строку.
   Это значит «ошибки нет, показываем чистую форму».
 - **`formHandler` / `registerHandler`** — два отдельных `Handler`, каждый со своим маршрутом.
@@ -164,7 +164,7 @@ final case class RegisterHandler(
     }
 
   private def asError(error: String): IO[Either[String, String]] =
-    View.register(error.some).render.asLeft.pure[IO]
+    Views.register(error.some).render.asLeft.pure[IO]
 ```
 
 **Пошаговый разбор:**
@@ -206,7 +206,7 @@ final case class RegisterHandler(
 
 ```dotty
 private def asError(error: String): IO[Either[String, String]] =
-  View.register(error.some).render.asLeft.pure[IO]
+  Views.register(error.some).render.asLeft.pure[IO]
 ```
 
 Возвращает форму регистрации с сообщением об ошибке, обёрнутую в `Left`.

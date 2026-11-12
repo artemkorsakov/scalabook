@@ -118,7 +118,7 @@ def getViewCreateTaskModal(
     taskTypes <- settingsService.getTaskTypes(userId)
     sections  <- settingsService.getSections(userId)
     goals     <- settingsService.getGoals(userId)
-  yield View.createTask(
+  yield Views.createTask(
     isOpen = isOpen,
     req = request,
     taskTypes = taskTypes,
@@ -710,7 +710,7 @@ final case class HomeHandler(
             jwtToken = jwtToken,
             tab = tab
           ),
-        fallbackPage = View.login(None).render
+        fallbackPage = Views.login(None).render
       )
 ```
 

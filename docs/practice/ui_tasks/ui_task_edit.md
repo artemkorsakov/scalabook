@@ -69,7 +69,7 @@ private[tasks] object TaskViews:
       goals         <- settingsService.getGoals(userId)
       maybeTaskCard <- taskLifecycleService.get(taskId, userId)
     yield maybeTaskCard.map: card =>
-      View.editTask(
+      Views.editTask(
         task = card,
         token = jwtToken.value,
         taskTypes = taskTypes,
@@ -103,7 +103,7 @@ private[tasks] object TaskViews:
 - **После ошибки сохранения** — когда `TaskHandlers.editHandler` не смог сохранить
   изменения и вернул форму с сохранёнными данными и сообщением об ошибке.
 
-## Рендер формы ```View.editTask```
+## Рендер формы ```Views.editTask```
 
 Шаблон — это большая форма, которая по структуре напоминает страницу задачи,
 но с полями ввода вместо текста. Рассмотрим её по частям.

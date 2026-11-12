@@ -264,13 +264,13 @@ tabButton(
 tabContent("tab-goals", activeIf("goals"), goals)
 ```
 
-HTML-фрагмент вкладки рендерится методом `View.goalsStats` на сервере и вставляется в `<div id="tab-goals">`. 
+HTML-фрагмент вкладки рендерится методом `Views.goalsStats` на сервере и вставляется в `<div id="tab-goals">`. 
 Класс `active` добавляется через хелпер `activeIf(tab)`, если вкладка открыта по умолчанию. 
 Это позволяет отделить логику группировки целей по статусам в Scala-коде, а не в шаблоне.
 
-### Рендер ```View.goalsStats```
+### Рендер ```Views.goalsStats```
 
-`View.goalsStats(currentGoals, plannedGoals, achievedGoals)` — метод рендеринга, принимающий **три готовых вектора** — уже отфильтрованных по статусу цели. Метод возвращает `String` (готовый HTML).
+`Views.goalsStats(currentGoals, plannedGoals, achievedGoals)` — метод рендеринга, принимающий **три готовых вектора** — уже отфильтрованных по статусу цели. Метод возвращает `String` (готовый HTML).
 
 ```dotty
 def goalsStats(

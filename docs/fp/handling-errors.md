@@ -1487,7 +1487,7 @@ given validatedApplicative[E: Semigroup as semi]
         case (i @ Validated.Invalid(_), Validated.Valid(_)) => i
         case (Validated.Valid(_), i @ Validated.Invalid(_)) => i
         case (Validated.Invalid(e1), Validated.Invalid(e2)) =>
-          Validated.Invalid(semi.combine(e1, e2))        
+          Validated.Invalid(semi.combine(e1, e2))
 ```
 
 Согласно [законам монады](../typeclass/monad/monad.md) должно выполняться следующее:

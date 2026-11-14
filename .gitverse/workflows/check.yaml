@@ -40,7 +40,7 @@ jobs:
           cat "$HOME/.config/coursier/mirror.properties"
 
       - name: Build and Test
-        run: sbt -no-server fullCheck
+        run: sbt -Dsbt.server.autostart=true fullCheck
 
       - name: Site generation
-        run: sbt -no-server site
+        run: sbt -Dsbt.server.autostart=true site

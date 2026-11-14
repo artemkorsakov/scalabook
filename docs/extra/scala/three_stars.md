@@ -58,10 +58,13 @@ _(раздел пока пуст)_
 
 | Название                                                                                                          | 📖 Версия | 🌐 Язык | 📅 Год | 💬 Комментарий |
 |-------------------------------------------------------------------------------------------------------------------|:---------:|:-------:|--------|----------------|
-| [**Жизнь, смерть и управление ресурсами в Scala**](https://habr.com/ru/companies/kryptonite/articles/842332)      |  Scala 3  | 🇷🇺 RU | 2024   |                |
-| [**Особенности сред исполнения эффектов в Scala**](https://habr.com/ru/companies/tbank/articles/736056)           |  Scala 3  | 🇷🇺 RU | 2023   |                |
-| [**The Effect Pattern and Effect Systems in Scala**](https://rockthejvm.com/articles/the-effect-pattern)          |  Scala 3  | 🇬🇧 EN | 2025   |                |
-| [**Stackless Function Composition**](https://mpilquist.github.io/blog/2017/03/11/stackless-function-composition/) |  Scala 2  | 🇬🇧 EN | 2017   |                |
+| [**Жизнь, смерть и управление ресурсами в Scala**](https://habr.com/ru/companies/kryptonite/articles/842332)      |  Scala 3  | 🇷🇺 RU   | 2024   |                |
+| [**Обобщённые типы. Часть 1/3. Полиморфные типы высокого рода**](https://habr.com/ru/articles/807467/)            |  Scala 3  | 🇷🇺 RU   | 2024   |                |
+| [**Обобщённые типы. Часть 2/3. Классы типов и контейнеры**](https://habr.com/ru/articles/807485/)                 |  Scala 3  | 🇷🇺 RU   | 2024   |                |
+| [**Обобщённые типы. Часть 3/3. Применение контейнерных типов**](https://habr.com/ru/articles/807495/)             |  Scala 3  | 🇷🇺 RU   | 2024   |                |
+| [**Особенности сред исполнения эффектов в Scala**](https://habr.com/ru/companies/tbank/articles/736056)           |  Scala 3  | 🇷🇺 RU   | 2023   |                |
+| [**The Effect Pattern and Effect Systems in Scala**](https://rockthejvm.com/articles/the-effect-pattern)          |  Scala 3  | 🇬🇧 EN   | 2025   |                |
+| [**Stackless Function Composition**](https://mpilquist.github.io/blog/2017/03/11/stackless-function-composition/) |  Scala 2  | 🇬🇧 EN   | 2017   |                |
 
 ## 🎥 Видео
 

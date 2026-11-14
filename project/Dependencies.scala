@@ -2,7 +2,7 @@ import sbt.*
 
 // @formatter:off
 object Dependencies {
-  val Scala = "3.9.0"
+  val Scala = "3.10.1"
 
   object cats {
     private val version       = "2.13.0"

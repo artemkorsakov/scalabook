@@ -107,11 +107,15 @@ def divide(a: Int, b: Int): Option[Int] =
 
 - **Исходный код проекта**: доступен на [GitVerse][home]
 - [Последние обновления Scalabook доступны на следующей странице](https://gitverse.ru/artemkorsakov/scalabook/wiki/WIKISCLBK-6)
-- [А за будущими изменениями можно следить здесь](https://gitverse.ru/artemkorsakov/scalabook/tasktracker?view=board)
 - **Мои профили**:
     - Основной: [GitVerse](https://gitverse.ru/artemkorsakov)
     - Дополнительный: [GitHub](https://github.com/artemkorsakov)
 - **Для связи**: [написать email](mailto:artemkorsakov@mail.ru)
 - **Для совместной работы**: [вакансии ИТ-компании «Криптонит»](https://career.kryptonite.ru/vacancies/?locations=moscow&amp;search=Scala)
+
+## Доступные форматы
+
+- [Сайт](https://scalabook.ru)
+- [Epub](https://scalabook.ru/scalabook.epub)
 
 [home]: https://gitverse.ru/artemkorsakov/scalabook

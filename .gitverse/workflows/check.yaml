@@ -12,6 +12,8 @@ jobs:
   build-test:
     name: Full check
     runs-on: ubuntu-latest
+    env:
+      MAVEN_CENTRAL_MIRROR: ${{ vars.MAVEN_CENTRAL_MIRROR }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,16 +23,53 @@ jobs:
           apt-get update
           apt-get -y install openjdk-21-jdk-headless
 
-      - name: Install sbt 2.0.12
+      - name: Install sbt
         run: |
-          curl -fLo /tmp/sbt.tgz "https://github.com/sbt/sbt/releases/download/v2.0.12/sbt-2.0.12.tgz"
-          mkdir -p /opt/sbt
-          tar -xzf /tmp/sbt.tgz -C /opt/sbt --strip-components=1
-          ln -sf /opt/sbt/bin/sbt /usr/local/bin/sbt
-          /opt/sbt/bin/sbt --script-version
+          apt-get update
+          apt-get -y install curl gnupg ca-certificates
+          install -d -m 0755 /etc/apt/keyrings
+          curl -fsSL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" \
+            | gpg --dearmor -o /etc/apt/keyrings/sbt-archive-keyring.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/sbt-archive-keyring.gpg] https://repo.scala-sbt.org/scalasbt/debian all main" \
+            | tee /etc/apt/sources.list.d/sbt.list
+          apt-get update
+          apt-get -y install sbt
+          sbt --script-version
+
+      - name: Check Maven repository reachability
+        run: |
+          set -e
+          hosts="repo1.maven.org repo.maven.apache.org repo.scala-sbt.org"
+          ok=1
+          for h in $hosts; do
+            if curl -fsS -I --connect-timeout 10 --max-time 15 "https://$h/" >/dev/null 2>&1; then
+              echo "[OK] $h reachable"
+            else
+              echo "[FAIL] $h NOT reachable"
+              ok=0
+            fi
+          done
+          if [ "$ok" = "0" ] && [ -z "$MAVEN_CENTRAL_MIRROR" ]; then
+            echo ""
+            echo "ERROR: runner cannot reach public Maven repositories and no MAVEN_CENTRAL_MIRROR"
+            echo "is set on the repository. Set it in GitVerse (Settings > Variables) to an"
+            echo "internal mirror, e.g. https://maven.internal/repository/maven-central/."
+            exit 1
+          fi
+
+      - name: Configure Maven mirror (if provided)
+        if: env.MAVEN_CENTRAL_MIRROR != ''
+        run: |
+          mkdir -p "$HOME/.config/coursier"
+          mirror=$(printf '%s' "$MAVEN_CENTRAL_MIRROR" | sed 's#/$##')
+          cat > "$HOME/.config/coursier/mirror.properties" <<EOF
+          https://repo1.maven.org/maven2 => $mirror/
+          https://repo.maven.apache.org/maven2 => $mirror/
+          EOF
+          cat "$HOME/.config/coursier/mirror.properties"
 
       - name: Build and Test
-        run: sbt fullCheck
+        run: sbt -no-server fullCheck
 
       - name: Site generation
-        run: sbt site
+        run: sbt -no-server site

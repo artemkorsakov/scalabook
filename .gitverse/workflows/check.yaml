@@ -1,6 +1,6 @@
 name: Проверка сборки проекта
 
-"on":
+on:
   push:
     branches:
       - master
@@ -8,58 +8,25 @@ name: Проверка сборки проекта
     branches:
       - master
 
-env:
-  SBT_BOOT_URL: ${{ vars.SBT_BOOT_URL }}
-
 jobs:
-  build-test:
+  build:
     name: Full check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install JDK 21
+      - name: Install jdk
         run: |
           apt-get update
-          apt-get -y install openjdk-21-jdk-headless
-
-      - name: Install sbt launcher
-        run: |
+          apt-get -y install default-jdk
+          apt-get install apt-transport-https curl gnupg -yqq
+          echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
+          echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | sudo tee /etc/apt/sources.list.d/sbt_old.list
+          curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | sudo -H gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/scalasbt-release.gpg --import
+          chmod 644 /etc/apt/trusted.gpg.d/scalasbt-release.gpg
           apt-get update
-          apt-get -y install curl
-          curl -fsSL "https://github.com/sbt/sbt/releases/download/v2.0.12/sbt-2.0.12.tgz" -o /tmp/sbt.tgz
-          tar -C /opt -xzf /tmp/sbt.tgz
-          ln -s /opt/sbt/bin/sbt /usr/local/bin/sbt
-
-      - name: Install sbt 2.0.12 distribution (offline boot)
-        run: |
-          if [ -z "$SBT_BOOT_URL" ]; then
-            echo "ERROR: SBT_BOOT_URL is not set."
-            echo "Upload the sbt 2.0.12 boot tarball (scala-3.8.4/{lib, org.scala-sbt}) as a"
-            echo "release/artifact and set SBT_BOOT_URL to its download URL, e.g."
-            echo "https://gitverse.ru/.../releases/download/sbt-boot/scala-3.8.4.tgz"
-            echo "The runner has NO access to Maven Central / org.scala-sbt, so a local"
-            echo "boot distribution is required for sbt to start."
-            exit 1
-          fi
-          mkdir -p "$HOME/.sbt/boot/scala-3.8.4"
-          curl -fsSL "$SBT_BOOT_URL" -o /tmp/sbt-boot.tgz
-          tar -xzf /tmp/sbt-boot.tgz -C "$HOME/.sbt/boot/scala-3.8.4"
-          test -f "$HOME/.sbt/boot/scala-3.8.4/org.scala-sbt/sbt/2.0.12/sbt-2.0.12.jar"
-          echo "sbt 2.0.12 boot distribution installed (offline)"
-
-      - name: Configure Maven mirror
-        run: |
-          mkdir -p "$HOME/.config/coursier"
-          cat > "$HOME/.config/coursier/mirror.properties" <<'EOF'
-          https://repo1.maven.org/maven2 => https://mvn-mirror.gitverse.ru/
-          https://repo.maven.apache.org/maven2 => https://mvn-mirror.gitverse.ru/
-          EOF
-          cat "$HOME/.config/coursier/mirror.properties"
+          apt-get install sbt
 
       - name: Build and Test
-        run: sbt -Dsbt.boot.directory="$HOME/.sbt/boot" -Dsbt.server.autostart=true fullCheck
-
-      - name: Site generation
-        run: sbt -Dsbt.boot.directory="$HOME/.sbt/boot" -Dsbt.server.autostart=true site
+        run: sbt prePush

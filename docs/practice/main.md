@@ -129,8 +129,8 @@ token {
 
 ```dotty
 sealed trait Security[F[_]] private (
-    // Стратегия аутентификации JWT
-    val userJwtAuth: JwtSymmetricAuth,
+    // Верификатор JWT-подписи
+    val userJwtAuth: JwtVerification[F],
     // Сервис для операций входа/выхода
     val auth: AuthService[F],         
     // Сервис для поиска пользователей по токену 
@@ -143,28 +143,30 @@ object Security:
       transactor: Transactor[F],              // Doobie-транзактор для работы с БД
       redis: RedisCommands[F, String, String] // Клиент Redis
   ): F[Security[F]] =
-    (
-      JwtExpire.make[F], // Сервис для проверки срока жизни JWT
-      Crypto.make[F]     // Сервис для хэширования паролей
-    ).mapN { case (jwtExpire, crypto) =>
-      // 1. Настройка JWT-аутентификации
-      val userJwtAuth: JwtSymmetricAuth =
-        JwtAuth.hmac(
-          cfg.token.jwtAccessTokenKey.value.value.toCharArray,
-          JwtAlgorithm.HS256
-        )
+    for
+      crypto <- Crypto.make[F] // Сервис для хэширования паролей
+      secretKeyValue = cfg.token.jwtAccessTokenKey.value.value
+      secretKey      <- SecretKey(secretKeyValue).liftTo[F]
 
-      // 2. Создание сервиса для работы с токенами
-      val tokens = Tokens.make[F](
-        jwtExpire,
-        cfg.token.jwtAccessTokenKey.value,
-        cfg.token.expiration
-      )
+      // Настройка JWT-подписания (для Tokens.create)
+      userJwtSigning <- JwtSigningBuilder
+        .default[F]
+        .hmac(HS256, secretKey)
+        .build
 
-      // 3. Создание сервиса для работы с пользователями в PostgreSQL
+      // Настройка JWT-верификации (для middleware)
+      userJwtVerification <- JwtVerificationBuilder
+        .default[F]
+        .hmac(HS256, secretKey)
+        .build
+    yield
+      // Создание сервиса для работы с токенами
+      val tokens = Tokens.make[F](userJwtSigning, cfg.token.expiration)
+
+      // Создание сервиса для работы с пользователями в PostgreSQL
       val usersService = new PostgreSQLUsersService[F](transactor)
 
-      // 4. Создание сервиса аутентификации, который объединяет всё вышеперечисленное
+      // Создание сервиса аутентификации, который объединяет всё вышеперечисленное
       val auth = AuthService.make[F](
         tokenExpiration = cfg.token.expiration,
         tokens = tokens,
@@ -173,11 +175,10 @@ object Security:
         crypto = crypto
       )
 
-      // 5. Создание сервиса для аутентификации пользователей на основе Redis
+      // Создание сервиса для аутентификации пользователей на основе Redis
       val usersAuth = UsersAuthService.make[F](redis)
 
-      new Security[F](userJwtAuth, auth, usersAuth) {}
-    }
+      new Security[F](userJwtVerification, auth, usersAuth) {}
 end Security
 ```
 

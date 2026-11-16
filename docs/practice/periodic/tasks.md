@@ -912,7 +912,7 @@ final case class PeriodicTaskHandlers(
               periodicTaskId = task.id,
               name = task.name,
               request = EditPeriodicTaskRequest(
-                token = jwtToken.value,
+                token = jwtToken.show,
                 plan = task.plan.map(PlanStepRequest.apply)
               ),
               token = jwtToken,
@@ -923,7 +923,7 @@ final case class PeriodicTaskHandlers(
 
   val editHandler: Handler =
     editPeriodicTask.handleIO: (uuid: UUID, request: EditPeriodicTaskRequest) =>
-      val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+      val run: ((UserInfo, SignedJwt)) => IO[Option[String]] =
         (user, jwtToken) =>
           request.plan.traverse(PlanStep.parse)
             .map { steps =>

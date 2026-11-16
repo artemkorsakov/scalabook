@@ -374,7 +374,7 @@ form(
   attr("hx-put") := s"/task/${id.value}/queue",
   Htmx.appTarget,
   Htmx.appSwap,
-  Htmx.hiddenToken(token.value),
+  Htmx.hiddenToken(token.show),
   div(
     cls := "form-group",
     label(`for` := "ordinalSelect")("Порядок:"),
@@ -450,7 +450,7 @@ val createModalHandler: Handler =
 
       ordinalIO.flatMap: ordinal =>
         val request = CreateTaskRequest.empty(
-          token = token.value,
+          token = token.show,
           tab = tab,
           ordinal = ordinal.value
         )

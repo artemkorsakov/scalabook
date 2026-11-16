@@ -383,7 +383,7 @@ val openHandler: Handler =
                   name = taskType.name.value,
                   information = source.information
                 ),
-                token = jwtToken.value,
+                token = jwtToken.show,
                 errorMessage = none
               )
             Views.base(Title, html)
@@ -507,7 +507,7 @@ final case class EditSourceRequest(
 def editSource(
     sourceId: TaskTypeId,
     source: EditSourceRequest,
-    token: JwtToken,
+    token: SignedJwt,
     errorMessage: Option[String]
 ): Frag =
   frag(
@@ -537,7 +537,7 @@ object EditSourceRequest:
   def render(
       id: TaskTypeId,
       request: EditSourceRequest,
-      token: JwtToken,
+      token: SignedJwt,
       errorMessage: Option[String]
   ): Tag =
     form(
@@ -546,7 +546,7 @@ object EditSourceRequest:
       Htmx.appTarget,
       Htmx.appSwap,
       formErrorBlock(errorMessage),
-      Htmx.hiddenToken(token.value),
+      Htmx.hiddenToken(token.show),
       div(
         cls := "form-group",
         label(`for` := "sourceName")("Наименование:"),
@@ -599,7 +599,7 @@ val editFormHandler: Handler =
                 name = taskType.name.value,
                 information = source.information
               ),
-              token = jwtToken.value,
+              token = jwtToken.show,
               errorMessage = none
             ).render
         }
@@ -618,7 +618,7 @@ val editFormHandler: Handler =
 ```dotty
 val editHandler: Handler =
   editSource.handleIO: (taskTypeId: TaskTypeId, request: EditSourceRequest) =>
-    val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+    val run: ((UserInfo, SignedJwt)) => IO[Option[String]] =
       (user, jwtToken) =>
         val source = SourceCard(
           id = taskTypeId,
@@ -634,14 +634,14 @@ val editHandler: Handler =
           .map: _ =>
             Views.source(
               source = source,
-              token = jwtToken.value,
+              token = jwtToken.show,
               errorMessage = none
             ).render.some
           .recover:
             case ex: IllegalArgumentException =>
               Views.editSource(
                 source = source,
-                token = jwtToken.value,
+                token = jwtToken.show,
                 errorMessage = ex.getMessage.some
               ).render.some
     // ToDo: https://github.com/creativescala/krop/pull/57

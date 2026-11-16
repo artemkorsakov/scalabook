@@ -189,8 +189,12 @@ object http4s {
   val emberClient = "org.http4s" %% "http4s-ember-client" % version
   val emberServer = "org.http4s" %% "http4s-ember-server" % version
   val server      = "org.http4s" %% "http4s-server"       % version
+}
 
-  val jwt = "dev.profunktor" %% "http4s-jwt-auth" % "2.0.13"
+// JWT (Jots) — типизированные подписанные токены для Cats Effect
+object jots {
+  val core   = "se.vlovgr" %% "jots"        % "0.4.0"
+  val crypto = "se.vlovgr" %% "jots-crypto" % "0.4.0"
 }
 
 // Интеграция Iron с Circe
@@ -212,8 +216,9 @@ object krop {
 | Библиотека | Назначение                                                                                                                                                                                                                                                               |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **circe**  | JSON-сериализация и десериализация. `core` — основные типы (`Json`, `Encoder`, `Decoder`); `generic` — автоматический вывод кодеков через `derives`; `literal` — удобный синтаксис `json"""..."""` в тестах; `parser` — парсинг строк в `Json`.                          |
-| **http4s** | HTTP-слой. `core` — базовые типы (`Request`, `Response`, `Status`); `dsl` — DSL для описания запросов (`GET(uri"...")`); `ember-server` — движок сервера; `ember-client` — движок клиента для интеграционных тестов; `http4s-jwt-auth` — middleware для JWT-авторизации. |
-| **krop**   | Web-фреймворк. `core` — `Route`, `Handler`, `Request`, `Response`; `asset` — статические ресурсы (CSS, JS, иконки).                                                                                                                                                      |
+| **http4s** | HTTP-слой. `core` — базовые типы (`Request`, `Response`, `Status`); `dsl` — DSL для описания запросов (`GET(uri"...")`); `ember-server` — движок сервера; `ember-client` — движок клиента для интеграционных тестов. |
+| **jots**   | JWT-токены. `core` — типизированные signed-токены (`SignedJwt`), билдеры подписи и проверки; `crypto` — работа с секретными ключами. |
+| **krop**   | Web-фреймворк. `core` — `Route`, `Handler`, `Request`, `Response`; `asset` — статические ресурсы (CSS, JS, иконки).                      |
 
 Не забудьте добавить зависимости в `pdpLibs`:
 
@@ -228,7 +233,8 @@ val pdpLibs: Seq[ModuleID] =
     http4s.core,
     http4s.emberClient,
     http4s.server,
-    http4s.jwt,
+    jots.core,
+    jots.crypto,
     krop.asset,
     krop.core,
     // ...

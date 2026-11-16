@@ -28,12 +28,12 @@ def make[F[_]: MonadThrow](
 Метод реализует полный цикл создания учётной записи:
 
 ```dotty
-def newUser(username: UserName, password: Password): F[(JwtToken, UserId)] =
+def newUser(username: UserName, password: Password): F[(SignedJwt, UserId)] =
   // Шаг 1: Проверка уникальности имени пользователя
   usersService.find(username).flatMap:
     case Some(_) =>
       // Если пользователь уже существует - сигнализируем об ошибке
-      UserNameInUse(username).raiseError[F, (JwtToken, UserId)]
+      UserNameInUse(username).raiseError[F, (SignedJwt, UserId)]
 
     case None =>
       // Шаг 2: Шифрование пароля с обработкой возможных ошибок
@@ -58,10 +58,10 @@ def newUser(username: UserName, password: Password): F[(JwtToken, UserId)] =
         user = UserInfo(userId, username).asJson.noSpaces
 
         // 3.5 Сохраняем связку токен -> данные пользователя
-        _ <- redis.setEx(token.value, user, tokenExpiration)
+        _ <- redis.setEx(token.show, user, tokenExpiration)
 
         // 3.6 Сохраняем обратную связку username -> текущий токен
-        _ <- redis.setEx(username.show, token.value, tokenExpiration)
+        _ <- redis.setEx(username.show, token.show, tokenExpiration)
       yield (token, userId)
 ```
 
@@ -71,24 +71,27 @@ def newUser(username: UserName, password: Password): F[(JwtToken, UserId)] =
 2. **Безопасная обработка шифрования** - преобразование `Either` в `F` с сохранением контекста ошибки
 3. **Атомарность операций** - использование for-comprehension для последовательного выполнения
 4. **Двойное связывание в Redis**:
-   - Прямая связь: `token.value -> UserInfo` для быстрого доступа по токену
-   - Обратная связь: `username -> token.value` для быстрого поиска текущего токена пользователя
+   - Прямая связь: `token.show -> UserInfo` для быстрого доступа по токену
+   - Обратная связь: `username -> token.show` для быстрого поиска текущего токена пользователя
+
+Стоит отметить: тип `SignedJwt` из библиотеки Jots вместо поля `.value` использует
+интерфейс `Show` (`.show`), поэтому токен попадает в Redis как обычная строка.
 
 ### 2. Вход пользователя в систему (`login`)
 
 Метод аутентификации с проверкой учётных данных:
 
 ```dotty
-def login(username: UserName, password: Password): F[(JwtToken, UserId)] =
+def login(username: UserName, password: Password): F[(SignedJwt, UserId)] =
   // Шаг 1: Поиск пользователя в БД
   usersService.find(username).flatMap:
     case None =>
       // Пользователь не найден - ошибка аутентификации
-      UserNotFound(username).raiseError[F, (JwtToken, UserId)]
+      UserNotFound(username).raiseError[F, (SignedJwt, UserId)]
 
     case Some(user) if !crypto.check(password, user.passwordHash) =>
       // Пароль не совпадает с хешем - ошибка аутентификации
-      InvalidPassword(user.username).raiseError[F, (JwtToken, UserId)]
+      InvalidPassword(user.username).raiseError[F, (SignedJwt, UserId)]
 
     case Some(user) =>
       // Шаг 2: Проверяем наличие активной сессии
@@ -96,18 +99,18 @@ def login(username: UserName, password: Password): F[(JwtToken, UserId)] =
         case Some(t) =>
           // У пользователя уже есть активная сессия - возвращаем существующий токен
           // Это позволяет избежать множественных сессий для одного пользователя
-          (JwtToken(t), user.id).pure[F]
+          SignedJwt.fromString(t).liftTo[F].map((_, user.id))
 
         case None =>
           // Шаг 3: Создаём новую сессию
           // flatTap позволяет выполнить побочные эффекты, сохраняя результат
           tokens.create.flatTap: token =>
             redis.setEx(
-              token.value,
+              token.show,
               user.asJson.noSpaces,
               tokenExpiration
             ) *>
-              redis.setEx(username.show, token.value, tokenExpiration)
+              redis.setEx(username.show, token.show, tokenExpiration)
           .map(token => (token, user.id))
 ```
 
@@ -121,9 +124,9 @@ def login(username: UserName, password: Password): F[(JwtToken, UserId)] =
 ### 3. Выход из системы (`logout`)
 
 ```dotty
-def logout(token: JwtToken, username: UserName): F[Boolean] =
+def logout(token: SignedJwt, username: UserName): F[Boolean] =
   for
-    deltoc  <- redis.del(token.value)   // Удаляем связь токен -> пользователь
+    deltoc  <- redis.del(token.show)   // Удаляем связь токен -> пользователь
     detuser <- redis.del(username.show) // Удаляем связь пользователь -> токен  
   yield deltoc > 0 && detuser > 0  
 ```
@@ -143,13 +146,12 @@ object UsersAuthService:
       redis: RedisCommands[F, String, String]
   ): UsersAuthService[F, UserInfo] =
     new UsersAuthService[F, UserInfo]:
-      def findUser(token: JwtToken)(claim: JwtClaim)
-          : F[Option[UserInfo]] =
+      def findUser(token: SignedJwt): F[Option[UserInfo]] =
         redis
-          .get(token.value)     // Получаем JSON из Redis по токену
+          .get(token.show)      // Получаем JSON из Redis по токену
           .map(_.flatMap: u =>  // Парсим JSON в Option[UserInfo]
             decode[UserInfo](u).toOption
-          )      
+          )
 ```
 
 **Принцип работы:**
@@ -166,7 +168,7 @@ HTTP Request (с токеном)
        ↓
 [Auth Middleware] → UsersAuthService.findUser(token)
        ↓                    ↓
-    Запрос разрешен   Redis lookup token.value
+    Запрос разрешен   Redis lookup token.show
        ↓                    ↓
   Бизнес-логика    ←    UserInfo (если найден)
        ↓
@@ -254,7 +256,11 @@ object SharedResources extends GlobalResource:
 
 ```dotty
 class AuthServiceSuite(global: GlobalRead) extends IOSuite:
-  private val jwtClaim: JwtClaim = JwtClaim("test")
+  // Токен для теста "пользователь не найден": корректный по формату, но его нет в Redis
+  private val notFoundToken: SignedJwt =
+    SignedJwt.fromString(
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3ODk3NzQ2NjEsImlhdCI6MTc4NjE3NDY2MSwidXNlcklkIjoiYWM1ZWM4M2YtNWQwZi00MzZmLThjM2ItOWEwNTI2M2RhZGUzIn0.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    ).toOption.get
 
   type Res = (AuthService[IO], UsersAuthService[IO, UserInfo])
 
@@ -278,7 +284,7 @@ test("UsersAuthService.findUser should return None if the JWT is not found"):
     val (_, usersAuthService) = resource
 
     for
-      notFoundUser <- usersAuthService.findUser(JwtToken("invalid"))(jwtClaim)
+      notFoundUser <- usersAuthService.findUser(notFoundToken)
     yield expect.all(notFoundUser.isEmpty)
 ```
 
@@ -304,18 +310,18 @@ test("UsersAuthService.findUser should return an user if it exists"):
     for
       // Регистрация нового пользователя
       (newUserToken, userId1) <- authService.newUser(username, password)
-      maybeNewUser <- usersAuthService.findUser(newUserToken)(jwtClaim)
+      maybeNewUser <- usersAuthService.findUser(newUserToken)
 
       // Вход существующего пользователя
       (loggedUserToken, userId2) <- authService.login(username, password)
-      maybeLoggedUser <- usersAuthService.findUser(loggedUserToken)(jwtClaim)
+      maybeLoggedUser <- usersAuthService.findUser(loggedUserToken)
 
       // Выход из системы
       status          <- authService.logout(loggedUserToken, username)
 
       // Проверка инвалидации токена после выхода
       maybeLoggedOutNewUser <-
-        usersAuthService.findUser(newUserToken)(jwtClaim)
+        usersAuthService.findUser(newUserToken)
     yield whenSuccess(maybeNewUser) { user =>
       expect.same(username, user.username) &&
         expect.same(userId1, user.id) &&
@@ -351,13 +357,13 @@ test("UsersAuthService.newUser should not create an user with existed username")
     for
       // Первая регистрация - успешна
       (newUserToken, _) <- authService.newUser(username, password)
-      maybeNewUser      <- usersAuthService.findUser(newUserToken)(jwtClaim)
+      maybeNewUser      <- usersAuthService.findUser(newUserToken)
 
       // Попытка повторной регистрации с тем же именем
       existedUser       <- authService.newUser(username, password2).attempt
 
       // Проверка что старый пользователь не изменился
-      maybeNewUser2     <- usersAuthService.findUser(newUserToken)(jwtClaim)
+      maybeNewUser2     <- usersAuthService.findUser(newUserToken)
     yield matches((maybeNewUser, maybeNewUser2)) {
       case (Some(user), Some(user2)) =>
         expect.same(user2.id, user.id) &&          // ID не изменился
@@ -434,7 +440,7 @@ test("UsersAuthService.login should login after logout"):
       _                   <- authService.login(username, password)
       status              <- authService.logout(token, username)
       (newToken, userId2) <- authService.login(username, password)
-      maybeUser           <- usersAuthService.findUser(newToken)(jwtClaim)
+      maybeUser           <- usersAuthService.findUser(newToken)
     yield whenSuccess(maybeUser): user =>
       expect.same(username, user.username) &&
         expect(status) &&

@@ -552,7 +552,7 @@ periodicStepService.updateAll(updated)
 
 ```dotty
 def settings(
-    token: JwtToken,
+    token: SignedJwt,
     taskTypes: Vector[TaskType],
     sections: Vector[Section],
     goals: Vector[Goal],
@@ -680,7 +680,7 @@ def getPeriodicStepRow(step: PeriodicStep): String =
 ```dotty
 def render(
     step: PeriodicStep,
-    token: JwtToken,
+    token: SignedJwt,
     maybeError: Option[String]
 ): Tag =
   val path = s"/settings/periodic_steps/${step.id.value}"
@@ -732,7 +732,7 @@ def render(
       )
     ),
     td(
-      Htmx.hiddenToken(token.value),
+      Htmx.hiddenToken(token.show),
       button(cls := "cancel-btn", attr("hx-get") := path)("❌ Отмена"),
       button(
         cls                := "save-btn",
@@ -747,7 +747,7 @@ def render(
 **Разбор:**
 
 - **`step: PeriodicStep`** — редактируемый шаг.
-- **`token: JwtToken`** — JWT-токен для аутентификации (отправляется в скрытом поле).
+- **`token: SignedJwt`** — JWT-токен для аутентификации (отправляется в скрытом поле).
 - **`maybeError: Option[String]`** — сообщение об ошибке, если валидация не прошла.
 - **`class="periodic-step-row editing"`** — дополнительный класс `editing` для «одновременного редактирования только одной строки».
 - **`hx-trigger="cancel"`** — строка реагирует на событие `cancel` (когда пользователь открывает другую строку).
@@ -894,7 +894,7 @@ final case class PeriodicStepHandlers(
 )(using Logger[IO]) extends AuthorizationHandler(middleware):
   val createHandler: Handler =
     createRoute.handleIO: (request: CreatePeriodicStepRequest) =>
-      val create: ((UserInfo, JwtToken)) => IO[String] =
+      val create: ((UserInfo, SignedJwt)) => IO[String] =
         (user, jwtToken) =>
           CreatePeriodicStep.parse(request, user.id) match
             case Validated.Valid(newItem) =>
@@ -936,7 +936,7 @@ end PeriodicStepHandlers
 **Пошаговый разбор `createHandler`:**
 
 1. **`createRoute.handleIO: (request: CreatePeriodicStepRequest) => ...`** — регистрируем обработчик на маршрут `createRoute`.
-2. **`val create: ((UserInfo, JwtToken)) => IO[String]`** — каррированная лямбда. Сначала получаем запрос, потом — пользователя.
+2. **`val create: ((UserInfo, SignedJwt)) => IO[String]`** — каррированная лямбда. Сначала получаем запрос, потом — пользователя.
 3. **`CreatePeriodicStep.parse(request, user.id)`** — валидация запроса.
 4. **`Valid(newItem)`** — если валидно, создаём шаг через `settingsService.createStep`.
 5. **`.flatMap: _ => getViewSettings(...)`** — после создания загружаем обновлённую страницу настроек.
@@ -965,7 +965,7 @@ private[settings] object SettingsViews:
   def getViewSettings(
       settingsService: SettingsService[IO],
       userId: UserId,
-      jwtToken: JwtToken
+      jwtToken: SignedJwt
   ): IO[String] =
     getViewSettings(
       settingsService = settingsService,
@@ -980,7 +980,7 @@ private[settings] object SettingsViews:
   def getViewSettings(
       settingsService: SettingsService[IO],
       userId: UserId,
-      jwtToken: JwtToken,
+      jwtToken: SignedJwt,
       errorTaskTypeMessage: Option[String],
       errorSectionMessage: Option[String],
       errorGoalMessage: Option[String],
@@ -996,7 +996,7 @@ private[settings] object SettingsViews:
         periodicSteps.sortBy(step => (step.periodicType.ordinal, step.number))
 
       Views.settings(
-        token = jwtToken.value,
+        token = jwtToken.show,
         taskTypes = taskTypes,
         sections = sections,
         goals = goals,
@@ -1025,11 +1025,11 @@ val editRowHandler: Handler =
     (stepId: PeriodicStepId, authorization: Authorization) =>
       withUserFromHeader(
         authorization
-      ): (user: UserInfo, jwtToken: JwtToken) =>
+      ): (user: UserInfo, jwtToken: SignedJwt) =>
         getPeriodicStep(stepId, user.id).map: step =>
           EditPeriodicStepRequest.render(
             step,
-            jwtToken.value,
+            jwtToken.show,
             none
           ).render
 ```
@@ -1059,7 +1059,7 @@ val editRowHandler: Handler =
 val editHandler: Handler =
   editRoute.handleIO:
     (stepId: PeriodicStepId, request: EditPeriodicStepRequest) =>
-      val edit: ((UserInfo, JwtToken)) => IO[String] =
+      val edit: ((UserInfo, SignedJwt)) => IO[String] =
         (user, jwtToken) =>
           val rearrange = request.ordinalShift.contains("on")
 
@@ -1097,7 +1097,7 @@ val editHandler: Handler =
               run.map: _ =>
                 Views.getPeriodicStepRow(
                   updated,
-                  jwtToken.value
+                  jwtToken.show
                 )
               .recoverWith:
                 case ex: IllegalArgumentException =>
@@ -1181,11 +1181,11 @@ val getRowHandler: Handler =
   getRowRoute.handleIO:
     (stepId: PeriodicStepId, authorization: Authorization) =>
       withUserFromHeader(authorization):
-        (user: UserInfo, jwtToken: JwtToken) =>
+        (user: UserInfo, jwtToken: SignedJwt) =>
           getPeriodicStep(stepId, user.id).map: step =>
             Views.getPeriodicStepRow(
               step,
-              jwtToken.value
+              jwtToken.show
             )
 ```
 
@@ -1199,7 +1199,7 @@ val deleteHandler: Handler =
     (stepId: PeriodicStepId, authorization: Authorization) =>
       withUserFromHeader(
         authorization
-      ): (user: UserInfo, jwtToken: JwtToken) =>
+      ): (user: UserInfo, jwtToken: SignedJwt) =>
         for
           _    <- settingsService.deleteStep(stepId, user.id)
           view <- getViewSettings(

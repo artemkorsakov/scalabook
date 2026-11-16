@@ -56,7 +56,7 @@ private val completeFormRoute = Route(
 ```dotty
 val completeHandler: Handler =
   completeFormRoute.handleIO: (uuid: UUID, request: CompileTaskRequest) =>
-    val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+    val run: ((UserInfo, SignedJwt)) => IO[Option[String]] =
       (user, jwtToken) =>
         val taskId = TaskId(uuid)
         (
@@ -160,7 +160,7 @@ final case class CompileTaskRequest(
 
 ```dotty
 object CompileTaskRequest:
-  def render(id: TaskId, token: JwtToken, timeSpent: FiniteDuration): Tag =
+  def render(id: TaskId, token: SignedJwt, timeSpent: FiniteDuration): Tag =
     val now = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
 
     form(
@@ -170,7 +170,7 @@ object CompileTaskRequest:
       Htmx.appSwap,
       attr("hx-on::after-request") :=
         "if(event.detail.xhr.status === 200) closeModal('completeModal')",
-      Htmx.hiddenToken(token.value),
+      Htmx.hiddenToken(token.show),
       div(
         cls := "form-group",
         label(`for` := "ratingInput")("Оценка (от 1 до 5):"),
@@ -412,7 +412,7 @@ private val startFormRoute = Route(
 ```dotty
 val startHandler: Handler =
   startFormRoute.handleIO: (uuid: UUID, request: StartTaskRequest) =>
-    val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+    val run: ((UserInfo, SignedJwt)) => IO[Option[String]] =
       (user, jwtToken) =>
         val taskId = TaskId(uuid)
         (
@@ -484,7 +484,7 @@ final case class StartTaskRequest(
 
 ```dotty
 object StartTaskRequest:
-  def render(id: TaskId, token: JwtToken): Tag =
+  def render(id: TaskId, token: SignedJwt): Tag =
     val now        = LocalDate.now().format(DateTimeFormatter.ISO_DATE)
     val weeksLater =
       LocalDate.now().plusWeeks(1).format(DateTimeFormatter.ISO_DATE)
@@ -494,7 +494,7 @@ object StartTaskRequest:
       attr("hx-put") := s"/task/${id.value}/start",
       Htmx.appTarget,
       Htmx.appSwap,
-      Htmx.hiddenToken(token.value),
+      Htmx.hiddenToken(token.show),
       div(
         cls := "form-group",
         label(`for` := "startDateInput")("Дата начала:"),
@@ -565,7 +565,7 @@ private val queueFormRoute = Route(
 ```dotty
 val queueHandler: Handler =
   queueFormRoute.handleIO: (uuid: UUID, request: QueueTaskRequest) =>
-    val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+    val run: ((UserInfo, SignedJwt)) => IO[Option[String]] =
       (user, jwtToken) =>
         val taskId = TaskId(uuid)
         Ordinal.either(request.ordinal) match
@@ -649,7 +649,7 @@ final case class QueueTaskRequest(
 object QueueTaskRequest:
   def render(
       id: TaskId,
-      token: JwtToken,
+      token: SignedJwt,
       taskType: String,
       availableOrdinals: Vector[OrdinalCard]
   ): Tag =
@@ -664,7 +664,7 @@ object QueueTaskRequest:
       attr("hx-put") := s"/task/${id.value}/queue",
       Htmx.appTarget,
       Htmx.appSwap,
-      Htmx.hiddenToken(token.value),
+      Htmx.hiddenToken(token.show),
       div(
         cls := "form-group",
         label(`for` := "ordinalSelect")("Порядок:"),

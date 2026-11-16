@@ -60,7 +60,7 @@ private[tasks] object TaskViews:
       taskLifecycleService: TaskLifecycleService[IO],
       userId: UserId,
       taskId: TaskId,
-      jwtToken: JwtToken,
+      jwtToken: SignedJwt,
       errorMessage: Option[String]
   ): IO[Option[String]] =
     for
@@ -71,11 +71,12 @@ private[tasks] object TaskViews:
     yield maybeTaskCard.map: card =>
       Views.editTask(
         task = card,
-        token = jwtToken.value,
+        token = jwtToken.show,
         taskTypes = taskTypes,
         sections = sections,
         goals = goals,
-        errorMessage = errorMessage
+        errorMessage = errorMessage,
+        editUrl = none
       ).render
 ```
 
@@ -114,12 +115,18 @@ private[tasks] object TaskViews:
 def editTask(
     taskId: TaskId,
     request: EditTaskRequest,
-    token: JwtToken,
+    token: SignedJwt,
     taskTypes: Vector[TaskType],
     sections: Vector[Section],
     goals: Vector[Goal],
-    errorMessage: Option[String]
+    errorMessage: Option[String],
+    editUrl: Option[String]
 ): Frag =
+  val urlScript: Modifier =
+    editUrl.fold(frag())(url =>
+      raw(s"""<script>history.replaceState(null, '', '$url')</script>""")
+    )
+
   frag(
     div(
       `id` := "app",
@@ -143,9 +150,11 @@ def editTask(
           goals,
           errorMessage
         )
-      )
+      ),
+      urlScript
     )
   )
+end editTask
   
 private def editHeader(
     statusBadge: Modifier,
@@ -186,6 +195,19 @@ private def cancelButton(cancelPath: String): Tag =
 2. **Кнопка «Отмена»** — GET-запрос на `/task/{id}`, что возвращает страницу
    задачи в режиме просмотра. Изменения не сохраняются.
 
+**Параметр `editUrl`:**
+
+`editTask` принимает необязательный `editUrl: Option[String]`. Если он задан, в код
+страницы вставляется `<script>history.replaceState(null, '', '<url>')</script>` —
+он бесшовно обновляет адресную строку браузера без перезагрузки.
+
+Зачем это нужно: при **копировании задачи** (`copyHandler`) создаётся новая задача,
+и пользователя сразу перекидывают в форму её редактирования. Без `editUrl` адресная
+строка продолжала бы указывать на исходную (скопированную) задачу, из-за чего при
+обновлении страницы пользователь попал бы не на ту задачу. `editUrl` задаёт
+актуальный URL вида `/task/{newId}/edit`, чтобы URL соответствовал редактируемой копии.
+В остальных случаях передаётся `none`, и блок с `history.replaceState` не рендерится.
+
 ![](../images/edit_task_buttons.png)
 
 ### Форма редактирования
@@ -194,7 +216,7 @@ private def cancelButton(cancelPath: String): Tag =
 def render(
     id: TaskId,
     request: EditTaskRequest,
-    token: JwtToken,
+    token: SignedJwt,
     taskTypes: Vector[TaskType],
     sections: Vector[Section],
     goals: Vector[Goal],
@@ -325,7 +347,7 @@ def render(
     Htmx.appTarget,
     Htmx.appSwap,
     formErrorBlock(errorMessage),
-    Htmx.hiddenToken(token.value),
+    Htmx.hiddenToken(token.show),
     input(
       `type` := "hidden",
       name   := "status",
@@ -582,11 +604,18 @@ def renderEditPlan(plan: List[PlanStepRequest]): Tag =
         id := "planContainer",
         PlanStepRequest.render(plan)
       ),
-      button(
-        `type`  := "button",
-        cls     := "add-step-btn",
-        onclick := "addStep()"
-      )("+ Добавить шаг")
+      div(cls := "plan-editor-actions")(
+        button(
+          `type`  := "button",
+          cls     := "add-step-btn",
+          onclick := "addStep()"
+        )("+ Добавить шаг"),
+        button(
+          `type`  := "button",
+          cls     := "clear-plan-btn",
+          onclick := "clearPlan()"
+        )("🗑️ Очистить план")
+      )
     )
   )
   
@@ -679,7 +708,11 @@ end PlanStepRequest
 4. **Кнопка «+ Добавить шаг»** — добавляет новый пустой шаг. JavaScript-функция
    `addStep` генерирует HTML и добавляет его в `#planContainer`.
 
-5. **`data-index`** — индекс шага. При добавлении/удалении шагов JavaScript
+5. **Кнопка «🗑️ Очистить план»** — очищает контейнер шагов. JavaScript-функция
+   `clearPlan` удаляет все `.plan-step-editor` и выводит сообщение
+   «План не составлен» (`#emptyPlanMessage`).
+
+6. **`data-index`** — индекс шага. При добавлении/удалении шагов JavaScript
    переиндексирует `name` всех полей, чтобы сохранить правильные индексы.
 
 **Почему `completed` — скрытое поле, а не сам чекбокс?**
@@ -1037,7 +1070,7 @@ private val editRoute = Route(
 ```dotty
 val editHandler: Handler =
   editRoute.handleIO: (taskId: UUID, request: EditTaskRequest) =>
-    val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+    val run: ((UserInfo, SignedJwt)) => IO[Option[String]] =
       (user, jwtToken) =>
         Task.parse(request, user.id, taskId) match
           case Validated.Valid(task) =>

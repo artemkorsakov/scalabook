@@ -175,7 +175,7 @@ final case class RegisterHandler(
 2. **`.map { registration => ... }`** — при успешной валидации вызываем
    `authService.newUser(registration.username, registration.password)`.
 3. **`authService.newUser`** — создаёт пользователя в БД:
-    - Если логин свободен — создаёт пользователя и возвращает `(JwtToken, UserId)`.
+    - Если логин свободен — создаёт пользователя и возвращает `(SignedJwt, UserId)`.
     - Если логин занят — выбрасывает `UserNameInUse(username)`.
     - Другие ошибки (например, проблема с БД) — обычные исключения.
 4. **`.flatMap: (token, id) => ...`** — при успехе формируем приветственную страницу

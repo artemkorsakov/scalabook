@@ -70,7 +70,7 @@ ID записи приходит уже как `TaskTypeId`, а не `Int`, и �
 ```dotty
 val createHandler: Handler =
   createRoute.handleIO: (request: CreateItemRequest) =>
-    val create: ((UserInfo, JwtToken)) => IO[String] =
+    val create: ((UserInfo, SignedJwt)) => IO[String] =
       (user, jwtToken) =>
         TaskTypeName.either(request.name) match
           case Right(name) =>
@@ -118,7 +118,7 @@ val createHandler: Handler =
    ```dotty
    final case class CreateItemRequest(token: String, name: String) derives FormCodec
    ```
-2. **`val create: ((UserInfo, JwtToken)) => IO[String] = ...`** — определяем лямбду,
+2. **`val create: ((UserInfo, SignedJwt)) => IO[String] = ...`** — определяем лямбду,
    которая принимает пару `(user, jwtToken)`.
 3. **`TaskTypeName.either(request.name)`** — валидация названия. Возвращает
    `Either[String, TaskTypeName]`:
@@ -168,7 +168,7 @@ val deleteHandler: Handler =
     (taskTypeId: TaskTypeId, authorization: Authorization) =>
       withUserFromHeader(
         authorization
-      ): (user: UserInfo, jwtToken: JwtToken) =>
+      ): (user: UserInfo, jwtToken: SignedJwt) =>
         for
           _    <- settingsService.deleteTaskType(taskTypeId, user.id)
           view <- getViewSettings(
@@ -219,7 +219,7 @@ val editRowHandler: Handler =
     (taskTypeId: TaskTypeId, authorization: Authorization) =>
       withUserFromHeader(
         authorization
-      ): (user: UserInfo, jwtToken: JwtToken) =>
+      ): (user: UserInfo, jwtToken: SignedJwt) =>
           getTaskType(taskTypeId, user.id).map: taskType =>
             EditItemRequest.render(taskType, jwtToken, none).render
 ```
@@ -265,7 +265,7 @@ private val editRowRoute = Route(
 object EditItemRequest:
   def render(
       item: TaskType,
-      token: JwtToken,
+      token: SignedJwt,
       maybeError: Option[String]
   ): Tag =
     renderItem(
@@ -280,7 +280,7 @@ object EditItemRequest:
 
   def render(
       item: Section,
-      token: JwtToken,
+      token: SignedJwt,
       maybeError: Option[String]
   ): Tag =
     renderItem(
@@ -295,7 +295,7 @@ object EditItemRequest:
 
   def render(
       item: Goal,
-      token: JwtToken,
+      token: SignedJwt,
       maybeError: Option[String]
   ): Tag =
     renderItem(
@@ -313,7 +313,7 @@ object EditItemRequest:
       name: String,
       displayed: Boolean,
       ordinal: Ordinal,
-      token: JwtToken,
+      token: SignedJwt,
       path: String,
       maybeError: Option[String]
   ): Tag =
@@ -353,7 +353,7 @@ object EditItemRequest:
         )
       ),
       td(
-        Htmx.hiddenToken(token.value),
+        Htmx.hiddenToken(token.show),
         button(cls := "cancel-btn", attr("hx-get") := path)("❌ Отмена"),
         button(
           cls                := "save-btn",
@@ -375,8 +375,8 @@ end EditItemRequest
   плюс text "Выровнять порядок?" и `<input.edit-checkbox>` с `name="ordinalShift"`.
 - Третья `<td>`: `<input.edit-checkbox>` с `name="displayed"`, `type="checkbox"` — `checked` если `displayed`.
 - Четвёртая `<td>`:
-  - `<input type="hidden" name="token" value="{token.value}"/>` — токен для PUT-запроса,
-    генерируется через `Htmx.hiddenToken(token.value)`.
+  - `<input type="hidden" name="token" value="{token.show}"/>` — токен для PUT-запроса,
+    генерируется через `Htmx.hiddenToken(token.show)`.
   - Кнопка «❌ Отмена» — `hx-get="{path}"`.
   - Кнопка «💾 Сохранить» — `hx-put="{path}"`, `hx-include="closest tr"`.
   - Ошибка: `maybeError.map(msg => div.err(msg))`.
@@ -398,7 +398,7 @@ end EditItemRequest
     данные из полей. Включаются: `name`, `ordinal`, `ordinalShift`, `displayed`, `token`.
 
 5. **`<input type="hidden" name="token">`** — токен передаётся в теле PUT-запроса.
-    Генерируется через `Htmx.hiddenToken(token.value)`.
+    Генерируется через `Htmx.hiddenToken(token.show)`.
 
 6. **Кнопка «Отмена»** — GET-запрос на `/settings/task_types/{id}`, что возвращает обычную строку.
 
@@ -417,7 +417,7 @@ end EditItemRequest
 ```dotty
 val editHandler: Handler =
   editRoute.handleIO: (taskTypeId: TaskTypeId, request: EditItemRequest) =>
-    val edit: ((UserInfo, JwtToken)) => IO[String] =
+    val edit: ((UserInfo, SignedJwt)) => IO[String] =
       (user, jwtToken) =>
         val rearrange = request.ordinalShift.contains("on")
         (
@@ -563,7 +563,7 @@ val getRowHandler: Handler =
     (taskTypeId: TaskTypeId, authorization: Authorization) =>
       withUserFromHeader(
         authorization
-      ): (user: UserInfo, jwtToken: JwtToken) =>
+      ): (user: UserInfo, jwtToken: SignedJwt) =>
         getTaskType(taskTypeId, user.id).map: taskType =>
           Views.getTaskTypeRow(
             taskType

@@ -106,7 +106,7 @@ final case class SettingsHandler(
 def getViewSettings(
     settingsService: SettingsService[IO],
     userId: UserId,
-    jwtToken: JwtToken
+    jwtToken: SignedJwt
 ): IO[String] =
   getViewSettings(
     settingsService = settingsService,
@@ -128,7 +128,7 @@ def getViewSettings(
 def getViewSettings(
     settingsService: SettingsService[IO],
     userId: UserId,
-    jwtToken: JwtToken,
+    jwtToken: SignedJwt,
     errorTaskTypeMessage: Option[String],
     errorSectionMessage: Option[String],
     errorGoalMessage: Option[String],
@@ -178,7 +178,7 @@ Scalatags-метод в `Views.scala`:
 
 ```dotty
 def settings(
-    token: JwtToken,
+    token: SignedJwt,
     taskTypes: Vector[TaskType],
     sections: Vector[Section],
     goals: Vector[Goal],
@@ -194,7 +194,7 @@ def settings(
 
 | Параметр                 | Тип                | Назначение                                 |
 | ------------------------ | ------------------ | ------------------------------------------ |
-| `token`                  | `JwtToken`         | JWT-токен для htmx-заголовков              |
+| `token`                  | `SignedJwt`         | JWT-токен для htmx-заголовков              |
 | `taskTypes`              | `Vector[TaskType]` | Список типов задач пользователя            |
 | `sections`               | `Vector[Section]`  | Список разделов пользователя               |
 | `goals`                  | `Vector[Goal]`     | Список целей пользователя                  |
@@ -301,7 +301,7 @@ object CreateItemRequest:
       divId: String,
       formId: String,
       link: String,
-      token: JwtToken,
+      token: SignedJwt,
       nameId: String,
       entityLabel: String,
       onClick: String
@@ -315,7 +315,7 @@ object CreateItemRequest:
         attr("hx-post") := s"/settings/$link",
         Htmx.appTarget,
         Htmx.appSwap,
-        Htmx.hiddenToken(token.value),
+        Htmx.hiddenToken(token.show),
         div(
           cls := "form-group",
           label(`for` := nameId)(s"Название $entityLabel:"),
@@ -349,9 +349,9 @@ object CreateItemRequest:
 - **`hx-post="/settings/task_types"`** — POST-запрос на создание нового типа задачи.
 - **`hx-target="#app"`** — после создания сервер возвращает обновлённую страницу,
   htmx заменяет `#app`.
-- **`<input type="hidden" name="token" value="{token.value}" />`** — токен передаётся
+- **`<input type="hidden" name="token" value="{token.show}" />`** — токен передаётся
   в теле формы из-за проблемы [в фреймворке Krop](https://github.com/creativescala/krop/issues/55).
-  Значение берётся из JWT-токена (параметр `token: JwtToken`).
+  Значение берётся из JWT-токена (параметр `token: SignedJwt`).
 - **Кнопка «Отмена»** — вызывает `hideAddTaskTypeForm()`, которая скрывает форму
   и очищает её поля.
 

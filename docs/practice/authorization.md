@@ -189,21 +189,24 @@ private[pdp] class PostgreSQLUsersService[F[_]: MonadCancelThrow](
 ```dotty
 trait AuthService[F[_]]:
   /** Регистрация нового пользователя */
-  def newUser(username: UserName, password: Password): F[(JwtToken, UserId)]
+  def newUser(username: UserName, password: Password): F[(SignedJwt, UserId)]
 
   /** Вход существующего пользователя в систему */
-  def login(username: UserName, password: Password): F[(JwtToken, UserId)]
+  def login(username: UserName, password: Password): F[(SignedJwt, UserId)]
 
   /** Выход пользователя из системы (инвалидация токена) */
-  def logout(token: JwtToken, username: UserName): F[Boolean]
+  def logout(token: SignedJwt, username: UserName): F[Boolean]
 
 /** Сервис для валидации пользователей по JWT токенам Используется в middleware
   * для аутентификации запросов
   */
 trait UsersAuthService[F[_], A]:
   /** Поиск пользователя по JWT токену */
-  def findUser(token: JwtToken)(claim: JwtClaim): F[Option[A]]
+  def findUser(token: SignedJwt): F[Option[A]]
 ```
+
+Тип `SignedJwt` приходит из библиотеки [Jots][jots] — чисто функционального JWT-модуля, 
+построенного на основе Cats Effect.
 
 ### Управление токенами
 
@@ -233,38 +236,48 @@ val pdpLibs: Seq[ModuleID] =
 
 #### Генерация токенов
 
-Компонент `Tokens` отвечает за создание JWT токенов с уникальными идентификаторами:
+Компонент `Tokens` отвечает за создание JWT токенов. Библиотека [Jots][jots] 
+предоставляет типобезопасный API: claims описываются обычным case-классом, 
+а подпись выполняется сервисом `JwtSigning[F]`.
 
 ```dotty
+// Полезная нагрузка (claims) токена
+final case class TokenClaims(
+    userId: UUID,
+    issuedAt: Long,
+    expiresAt: Long
+)
+
+object TokenClaims:
+  given Encoder.AsObject[TokenClaims] =
+    Encoder.forProduct3("userId", "iat", "exp")(claims =>
+      (claims.userId.toString, claims.issuedAt, claims.expiresAt)
+    )
+
+  given JwtEncoder[TokenClaims] =
+    JwtEncoder.encodeClaims
+end TokenClaims
+
 trait Tokens[F[_]]:
   /** Создание нового JWT токена
     *
     * @return
     *   сгенерированный JWT токен
     */
-  def create: F[JwtToken]
+  def create: F[SignedJwt]
 
 object Tokens:
-  def make[F[_]: {GenUUID, Monad}](
-      jwtExpire: JwtExpire[F], // Сервис управления временем жизни
-      jwtAccessTokenKey: JwtAccessTokenKeyConfig, // Секретный ключ для подписи
-      expiration: FiniteDuration                  // Время жизни токена
+  def make[F[_]: {GenUUID, Sync}](
+      jwtSigning: JwtSigning[F], // Сервис подписания токенов
+      expiration: FiniteDuration // Время жизни токена
   ): Tokens[F] =
-    val secretKey =
-      JwtSecretKey(jwtAccessTokenKey.value.toCharArray)
-
     new Tokens[F]:
-      def create: F[JwtToken] =
+      def create: F[SignedJwt] =
         for
-          // Генерация уникального идентификатора для токена
           uuid <- GenUUID[F].make
-          // Создание claim с временем жизни
-          claim <- jwtExpire.expiresIn(
-            JwtClaim(uuid.asJson.noSpaces),
-            expiration
-          )
-          // Подписание токена
-          token <- jwtEncode[F](claim, secretKey, JwtAlgorithm.HS256)
+          now  <- Sync[F].delay(Instant.now().getEpochSecond)
+          claims = TokenClaims(uuid, now, now + expiration.toSeconds)
+          token <- claims.asJwt.signWith(jwtSigning)
         yield token
   end make
 end Tokens
@@ -308,38 +321,40 @@ final case class Config(
 ) derives ConfigReader
 ```
 
-#### Управление временем жизни токенов
+#### Настройка подписания и проверки токенов
 
-Компонент `JwtExpire` обеспечивает корректную установку времени истечения токенов:
-
-```dotty
-trait JwtExpire[F[_]]:
-  def expiresIn(claim: JwtClaim, exp: FiniteDuration): F[JwtClaim]
-
-object JwtExpire:
-  def make[F[_]: Sync]: F[JwtExpire[F]] =
-    JwtClock[F].utc.map:
-      implicit clock: Clock =>
-        new JwtExpire[F]:
-          def expiresIn(claim: JwtClaim, exp: FiniteDuration): F[JwtClaim] =
-            Sync[F].delay(claim.issuedNow.expiresIn(exp.toMillis))
-```
-
-#### Работа со временем в JWT
-
-Для корректной работы с временными метками используется абстракция часов:
+Библиотека [Jots][jots] сама управляет временными метками токена, поэтому всю работу с подписью 
+и проверкой выполняют два билдера: `JwtSigningBuilder` и `JwtVerificationBuilder`.
 
 ```dotty
-trait JwtClock[F[_]]:
-  def utc: F[Clock]
+for
+  crypto <- Crypto.make[F]
+  secretKeyValue = cfg.token.jwtAccessTokenKey.value.value
+  secretKey      <- SecretKey(secretKeyValue).liftTo[F]
 
-object JwtClock:
-  def apply[F[_]: JwtClock]: JwtClock[F] = summon
+  // Сервис подписания токенов (используется в Tokens.create)
+  userJwtSigning <- JwtSigningBuilder
+    .default[F]
+    .hmac(HS256, secretKey)
+    .build
 
-  given forSync[F[_]: Sync]: JwtClock[F] =
-    new JwtClock[F]:
-      def utc: F[Clock] = Sync[F].delay(Clock.systemUTC())
+  // Сервис проверки подписи (используется в JwtAuthMiddleware)
+  userJwtVerification <- JwtVerificationBuilder
+    .default[F]
+    .hmac(HS256, secretKey)
+    .build
+
+  val tokens = Tokens.make[F](userJwtSigning, cfg.token.expiration)
+  ...
+yield new Security[F](userJwtVerification, auth, usersAuth) {}
 ```
+
+- **`SecretKey(secretKeyValue)`** — утилита поднятия строки ключа в безопасный тип `SecretKey`.
+- **`JwtSigningBuilder.default[F].hmac(HS256, secretKey).build`** — собирает `JwtSigning[F]`
+  для подписания токенов алгоритмом HMAC-SHA256.
+- **`JwtVerificationBuilder...build`** — собирает `JwtVerification[F]` для проверки подписи.
+- Оба билдера используют **один и тот же секретный ключ** — важно для согласованности 
+  подписи и проверки.
 
 #### Генерация уникальных идентификаторов
 
@@ -407,7 +422,9 @@ end Crypto
 
 - [Репозиторий с исходниками][repo]
 - [Gabriel Volpe - Practical FP in Scala][pfp]
+- [Jots — JWT для Scala и Cats Effect][jots]
 
 [repo]: https://gitverse.ru/scalabook/pdp
 [pfp]: https://leanpub.com/pfp-scala
 [redis4cats]: https://github.com/profunktor/redis4cats
+[jots]: https://github.com/vlovgr/jots

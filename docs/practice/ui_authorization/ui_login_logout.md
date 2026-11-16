@@ -110,7 +110,7 @@ end LoginHandler
    `UserRegistration` и вызываем `authService.login(registration.username, registration.password)`.
 
 6. **`authService.login`** — проверяет пользователя в БД:
-    - Если пользователь найден и пароль верный — возвращает `(JwtToken, UserId)`.
+    - Если пользователь найден и пароль верный — возвращает `(SignedJwt, UserId)`.
     - Если пользователь не найден — выбрасывает `UserNotFound`.
     - Если пароль неверный — выбрасывает `InvalidPassword`.
 
@@ -180,7 +180,7 @@ final case class LogoutHandler(
 
   val handler: Handler =
     route.handleIO: (authorization: Authorization) =>
-      withUserFromHeader(authorization): (user: UserInfo, token: JwtToken) =>
+withUserFromHeader(authorization): (user: UserInfo, token: SignedJwt) =>
         authService.logout(token, user.username)
           .as(Views.login(none).render)
 ```
@@ -191,7 +191,7 @@ final case class LogoutHandler(
    `AuthorizationHandler`, который инкапсулирует логику проверки токена. Это избавляет
    от необходимости вручную извлекать токен из заголовка и валидировать его в каждом хэндлере.
 
-2. **`withUserFromHeader(authorization): (user: UserInfo, token: JwtToken) => ...`** — специальный
+2. **`withUserFromHeader(authorization): (user: UserInfo, token: SignedJwt) => ...`** — специальный
    метод, который принимает **два** аргумента:
     - Первый — `authorization` из заголовка запроса (то, что извлекла `handleIO`).
     - Второй (каррированная лямбда) — `(user, token)`.

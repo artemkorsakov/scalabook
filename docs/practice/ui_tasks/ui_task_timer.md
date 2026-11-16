@@ -60,7 +60,7 @@ PUT семантически означает «обновить ресурс».
 val addTimeSpentHandler: Handler =
   addTimeSpentRoute.handleIO:
     (uuid: UUID, request: AddTimeSpentRequest) =>
-      val run: ((UserInfo, JwtToken)) => IO[Option[String]] =
+      val run: ((UserInfo, SignedJwt)) => IO[Option[String]] =
         (user, jwtToken) =>
           request.timeSpent.refineEither[Positive].toValidatedNec
             .map { timeSpent =>
@@ -94,7 +94,7 @@ val addTimeSpentHandler: Handler =
    принимает UUID задачи из пути (уже декодированный в `UUID` через `uuidParam`)
    и тело запроса.
 
-2. **`val run: ((UserInfo, JwtToken)) => IO[Option[String]] = ...`** — каррированная
+2. **`val run: ((UserInfo, SignedJwt)) => IO[Option[String]] = ...`** — каррированная
    лямбда, которая получает пользователя и токен после проверки.
 
 3. **Валидация через `ValidatedNec`:**
@@ -160,7 +160,7 @@ div(cls := "task-detail-section full-width")(
         cls             := "timer-btn stop-btn",
         `id`            := "stopTimerBtn",
         attr("onclick") :=
-          s"stopTimer('${task.id.value}', '${token.value}')",
+          s"stopTimer('${task.id.value}', '${token.show}')",
         style := "display: none;"
       )("⏹️ Записать"),
       button(

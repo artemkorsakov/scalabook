@@ -28,11 +28,11 @@
 
 ```dotty
 import ru.scalabook.pdp.views.Views
-import dev.profunktor.auth.jwt.JwtToken
+import jots.SignedJwt
 
 def welcome(
     username: String,
-    token: JwtToken,
+    token: SignedJwt,
     tab: String,
     inProgress: Modifier,
     planned: Modifier,
@@ -47,7 +47,7 @@ def welcome(
 
 **Импорт:**
 
-- **`JwtToken`** — тип JWT-токена. Передаётся в `Views.welcome`, чтобы рендер
+- **`SignedJwt`** — тип JWT-токена из библиотеки Jots. Передаётся в `Views.welcome`, чтобы рендер
   сохранил его в куки и заголовки через невидимый iframe.
 - **`Views`** — объект со всеми рендер-методами. В handlers импортируется напрямую:
   `import ru.scalabook.pdp.views.Views`.
@@ -57,7 +57,7 @@ def welcome(
 | Параметр        | Тип      | Назначение                                                                               |
 | --------------- | -------- | ---------------------------------------------------------------------------------------- |
 | `username`      | `String` | Имя пользователя для приветствия. Отображается в шапке: «Добро пожаловать, $username!»    |
-| `token`         | `JwtToken`| JWT-токен. Используется кнопкой «Выход» и сохранением в куки                              |
+| `token`         | `SignedJwt`| JWT-токен. Используется кнопкой «Выход» и сохранением в куки                              |
 | `tab`           | `String` | Текущая активная вкладка: `"in-progress"`, `"planned"`, `"knowledge-base"`, `"goals"`, `"statistics"`, `"sources"`, `"notes"`, `"history"` |
 | `inProgress`    | `Modifier` | Готовый кусок вкладки «В работе» (метод `Views.welcomeInProgress`)                         |
 | `planned`       | `Modifier` | Готовый кусок вкладки «Запланировано» (метод `Views.welcomePlanned`)                       |
@@ -94,7 +94,7 @@ frag(
     `id` := "app",
     cls  := "app-container",
     iframe(
-      attr("onload") := s"""saveUserCookies('${token.value}')""",
+      attr("onload") := s"""saveUserCookies('${token.show}')""",
       style          := "display:none;"
     ),
 ```
@@ -122,7 +122,7 @@ frag(
 
 ```dotty
 iframe(
-  attr("onload") := s"""saveUserCookies('${token.value}')""",
+  attr("onload") := s"""saveUserCookies('${token.show}')""",
   style          := "display:none;"
 )
 ```
@@ -135,7 +135,7 @@ iframe(
 с htmx и замене HTML) куки могут не обновиться.
 
 Этот iframe решает проблему: при загрузке страницы `welcome` он вызывает
-`saveUserCookies('${token.value}')`, который:
+`saveUserCookies('${token.show}')`, который:
 
 1. Сохраняет токен в `localStorage` (доступен из JavaScript).
 2. Дублирует токен в обычную куку (не `HttpOnly`), доступную из JS.
@@ -194,7 +194,7 @@ button(
   Htmx.appTarget,
   Htmx.appSwap,
   attr("hx-headers") :=
-    s"""{"Authorization": "Bearer ${token.value}"}""",
+    s"""{"Authorization": "Bearer ${token.show}"}""",
   cls := "danger-btn"
 )("Выход")
 ```
@@ -203,7 +203,7 @@ button(
   куки (чтобы даже если запрос не пройдёт, пользователь вышел локально), затем
   обрабатываем и вызываем клик.
 - **`hx-post="/auth/logout"`** — POST-запрос на выход.
-- **`hx-headers='{"Authorization": "Bearer ${token.value}"}'`** — передаём токен в заголовке.
+- **`hx-headers='{"Authorization": "Bearer ${token.show}"}'`** — передаём токен в заголовке.
   Это важно, потому что после `clearUserCookies()` токена в куке уже нет, а на сервере
   нужно проверить его валидность, чтобы удалить из чёрного списка.
 

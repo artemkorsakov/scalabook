@@ -110,12 +110,12 @@ trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
     Logger[IO]
 ):
   def withUserFromHeader(authorization: Authorization)(
-      f: ((UserInfo, JwtToken)) => IO[String]
+      f: ((UserInfo, SignedJwt)) => IO[String]
   ): IO[Option[String]] =
     withUserFromHeaderOpt(authorization)(f(_).map(_.some))
 
   def withUserFromHeaderOpt(authorization: Authorization)(
-      f: ((UserInfo, JwtToken)) => IO[Option[String]]
+      f: ((UserInfo, SignedJwt)) => IO[Option[String]]
   ): IO[Option[String]] =
     middleware
       .run(authorization)
@@ -129,7 +129,7 @@ trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
           Logger[IO].error(ex)(s"Ошибка: ${ex.getMessage}").as(none)
 
   def withUserFromCookieOpt(cookie: Cookie)(
-      f: ((UserInfo, JwtToken)) => IO[Option[String]],
+      f: ((UserInfo, SignedJwt)) => IO[Option[String]],
       fallbackPage: => String
   ): IO[String] =
     withUserFromCookie(cookie)(
@@ -138,7 +138,7 @@ trait AuthorizationHandler(middleware: JwtAuthMiddleware[IO, UserInfo])(using
     )
 
   def withUserFromCookie(cookie: Cookie)(
-      f: ((UserInfo, JwtToken)) => IO[String],
+      f: ((UserInfo, SignedJwt)) => IO[String],
       fallbackPage: => String
   ): IO[String] =
     cookie.values
@@ -199,7 +199,7 @@ end AuthorizationHandler
 возвращающую значение в контексте эффекта `F`.
 
 ```dotty
-type JwtAuthMiddleware[F[_], A] = Kleisli[F, Authorization, (A, JwtToken)]
+type JwtAuthMiddleware[F[_], A] = Kleisli[F, Authorization, (A, SignedJwt)]
 ```
 
 **Расшифровка типа:**
@@ -207,36 +207,39 @@ type JwtAuthMiddleware[F[_], A] = Kleisli[F, Authorization, (A, JwtToken)]
 - **`F[_]`** — эффект (в нашем случае `IO`).
 - **`A`** — тип пользователя (у нас `UserInfo`).
 - **`Authorization`** — заголовок HTTP-запроса, содержащий токен.
-- **`(A, JwtToken)`** — результат: пользователь + сам токен (нужен для дальнейших запросов).
+- **`(A, SignedJwt)`** — результат: пользователь + сам токен (нужен для дальнейших запросов).
 
 Проще говоря, `JwtAuthMiddleware[IO, UserInfo]` — это функция вида
-`Authorization → IO[(UserInfo, JwtToken)]`.
+`Authorization → IO[(UserInfo, SignedJwt)]`.
 
 ```dotty
 object JwtAuthMiddleware:
   def apply[F[_]: MonadThrow as MT, A](
-      jwtAuth: JwtAuth,
-      authenticate: JwtToken => JwtClaim => F[Option[A]]
+      verification: JwtVerification[F],
+      authenticate: SignedJwt => F[Option[A]]
   ): JwtAuthMiddleware[F, A] =
     Kleisli {
       case Authorization(Token(AuthScheme.Bearer, token)) =>
-        val jwtToken = JwtToken(token)
+        val parsedAndVerified: F[SignedJwt] =
+          for
+            signedJwt <- SignedJwt.fromString(token).liftTo[F]
+            _         <- signedJwt.verifyWith(verification)
+          yield signedJwt
 
-        jwtDecode[F](jwtToken, jwtAuth)
-          .flatMap(authenticate(jwtToken))
-          .flatMap(opt =>
-            MT.fromOption(opt, AuthorizationException("Not found"))
-          )
-          .adaptErr { case _: JwtException =>
-            AuthorizationException("Invalid access token")
-          }
-          .map(a => (a, jwtToken))
+        parsedAndVerified.attempt.flatMap:
+          case Right(signedJwt) =>
+            authenticate(signedJwt)
+              .flatMap: opt =>
+                MT.fromOption(opt, AuthorizationException("Not found"))
+              .map(a => (a, signedJwt))
+          case Left(_) =>
+            MT.raiseError(AuthorizationException("Invalid access token"))
       case _ =>
         MT.raiseError(AuthorizationException("Bearer token not found"))
     }
 
   extension [F[_], A](middleware: JwtAuthMiddleware[F, A])
-    def fromToken: Kleisli[F, String, (A, JwtToken)] =
+    def fromToken: Kleisli[F, String, (A, SignedJwt)] =
       middleware
         .local[String]((token: String) =>
           Authorization(Token(AuthScheme.Bearer, token))
@@ -248,16 +251,17 @@ object JwtAuthMiddleware:
 1. **Сопоставление с образцом заголовка `Authorization`:** ожидается схема `Bearer <token>`.
    Если заголовок не соответствует этому формату — `AuthorizationException("Bearer token not found")`.
 
-2. **Декодирование JWT:** `jwtDecode` проверяет подпись, срок действия и целостность токена.
-   Если что-то не так — выбрасывается `JwtException`, которая затем преобразуется в
-   `AuthorizationException("Invalid access token")` через `.adaptErr`.
+2. **Парсинг и верификация токена:** строка `token` конвертируется в `SignedJwt` через
+   `SignedJwt.fromString`, после чего `verifyWith(verification)` проверяет подпись, срок действия
+   и целостность токена. Обе операции помещаются в эффект `F` через `.liftTo[F]`.
 
-3. **Аутентификация пользователя:** функция `authenticate(jwtToken)(jwtClaim)`
-   получает `JwtClaim` (полезную нагрузку токена) и должна вернуть `Option[A]`
-   (например, найти пользователя в БД по `userId` из токена). Если вернётся `None` —
-   выбрасывается `AuthorizationException("Not found")`.
+3. **Обработка результата проверки:** через `.attempt` разделяются два исхода:
+   - **Успех** — вызывается `authenticate(signedJwt)` для поиска пользователя.
+     Если вернётся `None` — выбрасывается `AuthorizationException("Not found")`.
+   - **Ошибка** — любая проблема с токеном (неверная подпись, истёкший срок и т.д.)
+     преобразуется в `AuthorizationException("Invalid access token")`.
 
-4. **Возврат пары `(A, JwtToken)`** — аутентифицированный пользователь и сам токен.
+4. **Возврат пары `(A, SignedJwt)`** — аутентифицированный пользователь и сам токен.
 
 **Расширение `fromToken`** упрощает вызов middleware, когда у нас есть только строка токена
 (например, из куки). Оно «заворачивает» строку в правильный заголовок `Authorization: Bearer <token>`
@@ -279,7 +283,7 @@ object WelcomeViews:
       notesService: NotesService[IO],
       historyService: HistoryService[IO],
       user: UserInfo,
-      jwtToken: JwtToken,
+      jwtToken: SignedJwt,
       tab: String
   ): IO[String] =
     for

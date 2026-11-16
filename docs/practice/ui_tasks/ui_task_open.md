@@ -85,7 +85,7 @@ private[tasks] object TaskViews:
       taskLifecycleService: TaskLifecycleService[IO],
       userId: UserId,
       taskId: TaskId,
-      jwtToken: JwtToken,
+      jwtToken: SignedJwt,
       errorMessage: Option[String]
   ): IO[Option[String]] =
     for
@@ -107,7 +107,7 @@ private[tasks] object TaskViews:
       val availableOrdinals = getAvailableOrdinals(plannedTasks)
       Views.task(
         task = card,
-        token = jwtToken.value,
+        token = jwtToken.show,
         availableOrdinals = availableOrdinals,
         errorMessage = errorMessage
       ).render
@@ -457,7 +457,7 @@ div(cls := "task-detail-section full-width")(
         cls             := "timer-btn stop-btn",
         `id`            := "stopTimerBtn",
         attr("onclick") :=
-          s"stopTimer('${task.id.value}', '${token.value}')",
+          s"stopTimer('${task.id.value}', '${token.show}')",
         style := "display: none;"
       )("⏹️ Записать"),
       button(

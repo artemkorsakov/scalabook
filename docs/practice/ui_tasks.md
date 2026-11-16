@@ -58,7 +58,7 @@ val createModalHandler: Handler =
 
       ordinalIO.flatMap: ordinal =>
         val request = CreateTaskRequest.empty(
-          token = token.value,
+          token = token.show,
           tab = tab,
           ordinal = ordinal.value
         )
@@ -499,7 +499,7 @@ POST-запрос на `/tasks`. Здесь происходит вся логи
 ```dotty
 val createHandler: Handler =
   createRoute.handleIO: (request: CreateTaskRequest) =>
-    val create: ((UserInfo, JwtToken)) => IO[String] =
+    val create: ((UserInfo, SignedJwt)) => IO[String] =
       (user, jwtToken) =>
         CreateTask.parse(request, user.id) match
           case Validated.Valid(task) =>
@@ -580,7 +580,7 @@ val createHandler: Handler =
 def getViewAfterCreateTask(
     settingsService: SettingsService[IO],
     userId: UserId,
-    token: JwtToken,
+    token: SignedJwt,
     tab: String
 ): IO[String] =
   getViewCreateTaskModal(
@@ -589,7 +589,7 @@ def getViewAfterCreateTask(
     userId = userId,
     request =
       CreateTaskRequest.empty(
-        token = token.value,
+        token = token.show,
         tab = tab,
         ordinal = Ordinal.Max.value
       ),

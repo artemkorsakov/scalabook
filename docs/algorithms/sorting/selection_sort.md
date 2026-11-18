@@ -54,6 +54,61 @@ selectionSort(List(3, 1, 4, 2))
 // List(1, 2, 3, 4)
 ```
 
+**Визуализация:**
+
+Разберём, как алгоритм работает на примере списка `3, 1, 4, 2`.
+Ниже показано состояние четырёх значений (`max`, `tail`, `zs`, `sorted`) на каждом шаге рекурсивной функции `loop`:
+
+| Шаг | `max` | `tail`              | Операция                    | `zs`    | `sorted`   |
+| --- | ----- | ------------------- | --------------------------- | ------- | ---------- |
+| 1   | 3     | 1, 4, 2             | 3 > 1: сохраняем 1          | 1       | —          |
+| 2   | 3     | 4, 2                | 3 < 4: новый `max` = 4      | 3, 1    | —          |
+| 3   | 4     | 2                   | 4 > 2: сохраняем 2          | 2, 3, 1 | —          |
+| 4   | 4     | —                   | `tail` пуст: `max` = 4      | 2, 3, 1 | —          |
+| 5   | 4     | — (из `zs` берём 2) | добавляем 4 к `sorted`      | 3, 1    | 4          |
+| 6   | 2     | 3, 1                | 2 < 3: новый `max` = 3      | 2       | 4          |
+| 7   | 3     | 1                   | 3 > 1: сохраняем 1          | 1, 2    | 4          |
+| 8   | 3     | —                   | `tail` пуст: `max` = 3      | 1, 2    | 4          |
+| 9   | 3     | — (из `zs` берём 1) | добавляем 3 к `sorted`      | -       | 3, 4       |
+| 10  | 1     | 2                   | 1 < 2: новый `max` = 2      | 1       | 3, 4       |
+| 11  | 2     | —                   | `tail` пуст: `max` = 2      | 1       | 3, 4       |
+| 12  | 2     | — (из `zs` берём 1) | добавляем 2 к `sorted`      | —       | 2, 3, 4    |
+| 13  | 1     | —                   | `tail` и `zs` пусты: готово | —       | 1, 2, 3, 4 |
+
+```mermaid
+flowchart TD
+    S0["max = 3, tail = 1, 4, 2<br/>zs = —<br/>sorted = —"]
+
+    subgraph p1[Первый выбор — максимум 4]
+        P1["max = 3, tail = 4, 2<br/>zs = 1"]
+        P2["max = 4, tail = 2<br/>zs = 3, 1"]
+        P3["max = 4, tail = —<br/>zs = 2, 3, 1"]
+        P4["max = 2, tail = 3, 1<br/>sorted = 4"]
+    end
+
+    subgraph p2[Второй выбор — максимум 3]
+        Q1["max = 3, tail = 1<br/>zs = 2<br/>sorted = 4"]
+        Q2["max = 3, tail = —<br/>zs = 1, 2<br/>sorted = 4"]
+        Q3["max = 1, tail = 2<br/>sorted = 3, 4"]
+    end
+
+    subgraph p3[Третий выбор — максимум 2]
+        R1["max = 2, tail = —<br/>zs = 1<br/>sorted = 3, 4"]
+        R2["max = 1, tail = —<br/>sorted = 2, 3, 4"]
+        R3["sorted = 1, 2, 3, 4"]
+    end
+
+    S0 --> P1 --> P2 --> P3 --> P4 --> Q1 --> Q2 --> Q3 --> R1 --> R2 --> R3
+
+    style P4 fill:#d9ead3,stroke:#333
+    style Q3 fill:#d9ead3,stroke:#333
+    style R2 fill:#d9ead3,stroke:#333
+    style R3 fill:#c9daf8,stroke:#333
+```
+
+Зелёным цветом выделены шаги, на которых очередной максимум переходит в начало отсортированной части,
+а итоговое состояние отмечено синим.
+
 ---
 
 **Ссылки:**
@@ -61,6 +116,7 @@ selectionSort(List(3, 1, 4, 2))
 - [Исходный код][sample]
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://idp.springer.com/authorize?response_type=cookie&amp;client_id=springerlink&amp;redirect_uri=https%3A%2F%2Flink.springer.com%2Fbook%2F10.1007%2F978-3-030-12561-5)
 - [Scalacaster](https://github.com/vkostyukov/scalacaster/tree/master)
+- [Алгоритмика - Сортировка выбором](https://ru.algorithmica.org/cs/sorting/selection/)
 - [Никлаус Вирт - Алгоритмы + Структуры данных = Программы](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs)
 
 [sample]: https://gitverse.ru/scalabook/algorithms

@@ -51,6 +51,53 @@ insertionSort(List(3, 1, 4, 2))
 // List(1, 2, 3, 4)  
 ```
 
+**Визуализация:**
+
+Разберём, как алгоритм работает на примере списка `3, 1, 4, 2`.
+Ниже показано состояние двух списков (`as`, `bs`) на каждом шаге, где `insert` помещает очередной элемент `h` в правильную позицию отсортированной части `bs`:
+
+| Шаг | `h` | Вставка в `bs`      | `bs` после | `as`    |
+| --- | --- | ------------------- | ---------- | ------- |
+| 1   | 3   | в пустой список     | 3          | 1, 4, 2 |
+| 2   | 1   | 1 < 3, в начало     | 1, 3       | 4, 2    |
+| 3   | 4   | 4 > 1, 3, в конец   | 1, 3, 4    | 2       |
+| 4   | 2   | 2 > 1, 2 < 3, между | 1, 2, 3, 4 | —       |
+| 5   | —   | `as` пуст: готово   | 1, 2, 3, 4 | —       |
+
+```mermaid
+flowchart TD
+    S0["as = 3, 1, 4, 2<br/>bs = —"]
+
+    subgraph p1[Вставка 3]
+        P1["h = 3, bs = —<br/>insert в пустой список"]
+        P2["as = 1, 4, 2<br/>bs = 3"]
+    end
+
+    subgraph p2[Вставка 1]
+        Q1["h = 1, bs = 3<br/>1 < 3, в начало"]
+        Q2["as = 4, 2<br/>bs = 1, 3"]
+    end
+
+    subgraph p3[Вставка 4]
+        R1["h = 4, bs = 1, 3<br/>4 > 1, 3, в конец"]
+        R2["as = 2<br/>bs = 1, 3, 4"]
+    end
+
+    subgraph p4[Вставка 2]
+        T1["h = 2, bs = 1, 3, 4<br/>2 > 1, 2 < 3, между"]
+        T2["as = —<br/>bs = 1, 2, 3, 4"]
+    end
+
+    S0 --> P1 --> P2 --> Q1 --> Q2 --> R1 --> R2 --> T1 --> T2
+
+    style P2 fill:#d9ead3,stroke:#333
+    style Q2 fill:#d9ead3,stroke:#333
+    style R2 fill:#d9ead3,stroke:#333
+    style T2 fill:#c9daf8,stroke:#333
+```
+
+Зелёным цветом выделены состояния, когда отсортированная часть `bs` пополняется новым элементом, а итоговое состояние отмечено синим.
+
 ---
 
 **Ссылки:**
@@ -58,6 +105,7 @@ insertionSort(List(3, 1, 4, 2))
 - [Исходный код][sample]
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://idp.springer.com/authorize?response_type=cookie&amp;client_id=springerlink&amp;redirect_uri=https%3A%2F%2Flink.springer.com%2Fbook%2F10.1007%2F978-3-030-12561-5)
 - [Scalacaster](https://github.com/vkostyukov/scalacaster/tree/master)
+- [Алгоритмика - Сортировка вставками](https://ru.algorithmica.org/cs/sorting/insertion/)
 - [Никлаус Вирт - Алгоритмы + Структуры данных = Программы](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs)
 
 [sample]: https://gitverse.ru/scalabook/algorithms

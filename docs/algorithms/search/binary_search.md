@@ -102,5 +102,7 @@ binarySearch((1 to 100).toList, 45)
 - [Исходный код][sample]
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://idp.springer.com/authorize?response_type=cookie&amp;client_id=springerlink&amp;redirect_uri=https%3A%2F%2Flink.springer.com%2Fbook%2F10.1007%2F978-3-030-12561-5)
 - [Scalacaster - Search algorithms](https://github.com/vkostyukov/scalacaster/tree/master/src/search)
+- [Алгоритмика - Бинарный поиск](https://ru.algorithmica.org/cs/interactive/binary-search/)
+- [Алгоритмика - Бинарный поиск по ответу](https://ru.algorithmica.org/cs/interactive/answer-search/)
 
 [sample]: https://gitverse.ru/scalabook/algorithms

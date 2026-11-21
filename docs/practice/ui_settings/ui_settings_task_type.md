@@ -372,7 +372,7 @@ end EditItemRequest
 
 - Первая `<td>`: `<input.edit-input>` с `name="name"`, `autofocus`, `value="{name}"`.
 - Вторая `<td>`: `<input.edit-input>` с `name="ordinal"`, `type="number"`, `min="0"`,
-  плюс text "Выровнять порядок?" и `<input.edit-checkbox>` с `name="ordinalShift"`.
+  плюс текст "Выровнять порядок?" и `<input.edit-checkbox>` с `name="ordinalShift"`.
 - Третья `<td>`: `<input.edit-checkbox>` с `name="displayed"`, `type="checkbox"` — `checked` если `displayed`.
 - Четвёртая `<td>`:
   - `<input type="hidden" name="token" value="{token.show}"/>` — токен для PUT-запроса,
@@ -690,7 +690,7 @@ private def rowWithRefresh(
 поведение одной из сущностей (например, добавить в цели поле «дедлайн»),
 не затрагивая остальные.
 
-## Поток работы с CRUD-операциями
+## Поток работы с настройками
 
 Рассмотрим типичный сценарий редактирования:
 

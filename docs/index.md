@@ -106,7 +106,6 @@ def divide(a: Int, b: Int): Option[Int] =
 ## Контакты
 
 - **Исходный код проекта**: доступен на [GitVerse][home]
-- [Последние обновления Scalabook доступны на следующей странице](https://gitverse.ru/artemkorsakov/scalabook/wiki/WIKISCLBK-6)
 - **Мои профили**:
     - Основной: [GitVerse](https://gitverse.ru/artemkorsakov)
     - Дополнительный: [GitHub](https://github.com/artemkorsakov)

@@ -1,5 +1,21 @@
 # Scalabook
 
+## English
+
+[ScalaBook](https://scalabook.ru/en) is a continuously updated workbook on functional programming in Scala,
+covering the following topics:
+
+- Fundamentals of functional programming
+- Algorithms and data structures
+- Type classes and type-level programming in Scala
+- Practical exercises to consolidate the material
+
+This repository contains the source code of Scalabook.
+
+---
+
+## Русский
+
 [ScalaBook](https://scalabook.ru) — это постоянно обновляемая рабочая тетрадь по функциональному программированию на Scala,
 охватывающая следующие темы:
 
@@ -9,10 +25,3 @@
 - Практические упражнения для закрепления материала
 
 В данном репозитории расположен исходный код Scalabook.
-
-[Последние обновления Scalabook доступны на следующей странице](https://gitverse.ru/artemkorsakov/scalabook/wiki/WIKISCLBK-6).
-
-## Доступные форматы:
-
-- [Сайт](https://scalabook.ru)
-- [Epub](https://scalabook.ru/scalabook.epub)

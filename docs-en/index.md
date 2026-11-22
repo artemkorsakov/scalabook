@@ -106,7 +106,6 @@ Whether you fix typos, suggest new topics, or simply say "thank you" — every r
 ## Contacts
 
 - **Project source code**: available on [GitVerse][home]
-- [Latest Scalabook updates are available on the following page](https://gitverse.ru/artemkorsakov/scalabook/wiki/WIKISCLBK-6)
 - **My profiles**:
     - Main: [GitVerse](https://gitverse.ru/artemkorsakov)
     - Additional: [GitHub](https://github.com/artemkorsakov)

@@ -98,23 +98,18 @@ Whether you fix typos, suggest new topics, or simply say "thank you" — every r
   leave a comment — every objective comment matters.
 
 - ⭐ **Add to favorites:**
-  if the project is useful, add it to your favorites on [GitVerse][home] — it's the best signal we're heading in the right direction.
+  if the project is useful, add it to your favorites on [Github][github] and [GitVerse][gitverse] — it's the best signal we're heading in the right direction.
 
 - 📬 **Contact directly:**
   see contacts below.
 
 ## Contacts
 
-- **Project source code**: available on [GitVerse][home]
+- **Project source code**: available on [Github][github] and [GitVerse][gitverse]
 - **My profiles**:
-    - Main: [GitVerse](https://gitverse.ru/artemkorsakov)
-    - Additional: [GitHub](https://github.com/artemkorsakov)
+    - [GitVerse](https://gitverse.ru/artemkorsakov)
+    - [GitHub](https://github.com/artemkorsakov)
 - **Contact**: [write an email](mailto:artemkorsakov@mail.ru)
-- **Collaboration**: [IT company "Cryptonite" vacancies](https://career.kryptonite.ru/vacancies/?locations=moscow&amp;search=Scala)
 
-## Available formats
-
-- [Website](https://scalabook.ru)
-- [Epub](https://scalabook.ru/scalabook.epub)
-
-[home]: https://gitverse.ru/artemkorsakov/scalabook
+[gitverse]: https://gitverse.ru/artemkorsakov/scalabook
+[github]: https://github.com/artemkorsakov/scalabook

@@ -98,23 +98,19 @@ def divide(a: Int, b: Int): Option[Int] =
   оставьте комментарий — каждый объективный комментарий важен.
 
 - ⭐ **Добавить в избранное:**  
-  если проект полезен, добавьте его в избранное на [GitVerse][home] — это лучший сигнал движения в верном направлении.
+  если проект полезен, добавьте его в избранное на [Github][github] и/или [GitVerse][gitverse] — это лучший сигнал движения в верном направлении.
 
 - 📬 **Связаться напрямую:** 
   контакты ниже.
 
 ## Контакты
 
-- **Исходный код проекта**: доступен на [GitVerse][home]
+- **Исходный код проекта**: доступен на [Github][github] и [GitVerse][gitverse]
 - **Мои профили**:
-    - Основной: [GitVerse](https://gitverse.ru/artemkorsakov)
-    - Дополнительный: [GitHub](https://github.com/artemkorsakov)
+    - [GitVerse](https://gitverse.ru/artemkorsakov)
+    - [GitHub](https://github.com/artemkorsakov)
 - **Для связи**: [написать email](mailto:artemkorsakov@mail.ru)
 - **Для совместной работы**: [вакансии ИТ-компании «Криптонит»](https://career.kryptonite.ru/vacancies/?locations=moscow&amp;search=Scala)
 
-## Доступные форматы
-
-- [Сайт](https://scalabook.ru)
-- [Epub](https://scalabook.ru/scalabook.epub)
-
-[home]: https://gitverse.ru/artemkorsakov/scalabook
+[gitverse]: https://gitverse.ru/artemkorsakov/scalabook
+[github]: https://github.com/artemkorsakov/scalabook

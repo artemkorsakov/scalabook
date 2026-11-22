@@ -7,8 +7,8 @@ import laika.format.*
 import laika.format.Markdown.GitHubFlavor
 import laika.io.api.{BinaryTreeTransformer, TreeTransformer}
 import laika.io.syntax.*
-import ru.scalabook.site.syntax.{HeliumThemes, MyDirectives, SbtSyntax}
 import ru.scalabook.site.syntax.HeliumThemes.Language
+import ru.scalabook.site.syntax.{HeliumThemes, MyDirectives, SbtSyntax}
 
 object GenerateSite extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =

@@ -17,7 +17,7 @@ Thank you for wanting to help the project! Any help is welcome — from reportin
 2. **Clone** your copy locally:
    GitHub:
    ```bash
-   git clone https://gitverse.ru/artemkorsakov/scalabook.git
+   git clone https://github.com/artemkorsakov/scalabook.git
    ```
    or GitVerse:
    ```bash
@@ -91,7 +91,7 @@ Thanks again for your contribution! 💙
 2. **Склонируйте** свою копию локально:
    GitHub:
    ```bash
-   git clone https://gitverse.ru/artemkorsakov/scalabook.git
+   git clone https://github.com/artemkorsakov/scalabook.git
    ```
    или GitVerse:
    ```bash

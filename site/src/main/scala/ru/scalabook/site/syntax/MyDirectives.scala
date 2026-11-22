@@ -73,22 +73,41 @@ object MyDirectives:
         }
       }
 
+    private def otherLanguageHref(cursorPath: Path): String =
+      val outputPath                    = cursorPath.withSuffix("html").toString
+      val (currentServed, targetServed) = language match
+        case Language.Russian => (outputPath, s"/en$outputPath")
+        case Language.English => (s"/en$outputPath", outputPath)
+      Path
+        .parse(targetServed)
+        .relativeTo(Path.parse(currentServed))
+        .toString
+
     private val otherLanguagePage: TemplateDirectives.Directive =
       TemplateDirectives.create("otherLanguagePage") {
         import TemplateDirectives.dsl.*
 
         cursor.map { cursor =>
-          val outputPath = cursor.path.withSuffix("html").toString
-          val (currentServed, targetServed) = language match
-            case Language.Russian => (outputPath, s"/en$outputPath")
-            case Language.English => (s"/en$outputPath", outputPath)
-          val href = Path
-            .parse(targetServed)
-            .relativeTo(Path.parse(currentServed))
-            .toString
           TemplateElement(
-            SpanLink(Seq(Text(language.switchLabel)), ExternalTarget(href))
+            SpanLink(
+              Seq(Text(language.switchLabel)),
+              ExternalTarget(otherLanguageHref(cursor.path))
+            )
           )
+        }
+      }
+
+    private val languageSwitch: TemplateDirectives.Directive =
+      TemplateDirectives.create("languageSwitchPage") {
+        import TemplateDirectives.dsl.*
+
+        cursor.map { cursor =>
+          val link = SpanLink(
+            Seq(Text(language.switchLabel)),
+            ExternalTarget(otherLanguageHref(cursor.path)),
+            options = Styles("button-link", "language-switch")
+          )
+          TemplateElement(link)
         }
       }
 
@@ -96,7 +115,7 @@ object MyDirectives:
     val blockDirectives: Seq[BlockDirectives.Directive] =
       Seq(noteBlockDirective)
     val templateDirectives: Seq[TemplateDirectives.Directive] =
-      Seq(previousPage, nextPage, otherLanguagePage)
+      Seq(previousPage, nextPage, otherLanguagePage, languageSwitch)
     val linkDirectives: Seq[LinkDirectives.Directive] = Seq()
   end Registry
 end MyDirectives

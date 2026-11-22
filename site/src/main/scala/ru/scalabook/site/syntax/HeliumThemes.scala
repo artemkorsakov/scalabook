@@ -1,7 +1,6 @@
 package ru.scalabook.site.syntax
 
 import laika.ast.Path.*
-import laika.ast.Styles
 import laika.helium.Helium
 import laika.helium.config.*
 import laika.theme.config.*
@@ -11,12 +10,51 @@ object HeliumThemes:
   enum Language(
       val code: String,
       val description: String,
-      val switchLabel: String
+      val switchLabel: String,
+      val fpLabel: String,
+      val typeclassLabel: String,
+      val algorithmsLabel: String,
+      val dataStructuresLabel: String,
+      val catsEffectLabel: String,
+      val libsLabel: String,
+      val practiceLabel: String,
+      val translationsLabel: String,
+      val extraLabel: String,
+      val editPageLabel: String
   ):
     case Russian
-        extends Language("ru", "Функциональная разработка на Scala", "English")
+        extends Language(
+          code = "ru",
+          description = "Функциональная разработка на Scala",
+          switchLabel = "English",
+          fpLabel = "Функ. программирование",
+          typeclassLabel = "Классы типов",
+          algorithmsLabel = "Алгоритмы",
+          dataStructuresLabel = "Структуры данных",
+          catsEffectLabel = "Cats effect",
+          libsLabel = "Инструментарий",
+          practiceLabel = "Практикум",
+          translationsLabel = "Переводы",
+          extraLabel = "Ресурсы",
+          editPageLabel = "Редактировать страницу"
+        )
     case English
-        extends Language("en", "Functional development in Scala", "Русский")
+        extends Language(
+          code = "en",
+          description = "Functional development in Scala",
+          switchLabel = "Русский",
+          fpLabel = "Functional programming",
+          typeclassLabel = "Type classes",
+          algorithmsLabel = "Algorithms",
+          dataStructuresLabel = "Data structures",
+          catsEffectLabel = "Cats effect",
+          libsLabel = "Tooling",
+          practiceLabel = "Practicum",
+          translationsLabel = "Translations",
+          extraLabel = "Resources",
+          editPageLabel = "Edit this page"
+        )
+  end Language
 
   def mainTheme(language: Language): Helium =
     addAll(language)(Helium.defaults)
@@ -28,7 +66,7 @@ object HeliumThemes:
       addCSSJS andThen
       addTopNavigation(language) andThen
       addMainNavigation andThen
-      addPageNavigation andThen
+      addPageNavigation(language) andThen
       addEpub andThen
       addPdf andThen
       addFooter
@@ -70,35 +108,44 @@ object HeliumThemes:
       .site
       .internalCSS(Root / "css" / "prev-next-pages.css")
       .site
+      .internalCSS(Root / "css" / "language-switch.css")
+      .site
       .internalCSS(Root / "css" / "notes.css")
       .site
       .internalJS(Root / "js" / "tex-mml-chtml.js")
-      .site
-      .internalJS(Root / "js" / "lang-switch.js")
 
   private def addTopNavigation(language: Language)(theme: Helium): Helium =
     theme.site
       .topNavigationBar(
         homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
         navLinks = Seq(
-          ButtonLink
-            .external(
-              "#",
-              language.switchLabel,
-              options = Styles("language-switch")
-            ),
-          ButtonLink.internal(Root / "fp/index.md", "Функ. программирование"),
-          ButtonLink.internal(Root / "typeclass/index.md", "Классы типов"),
-          ButtonLink.internal(Root / "algorithms/index.md", "Алгоритмы"),
+          ButtonLink.internal(Root / "fp/index.md", language.fpLabel),
+          ButtonLink.internal(
+            Root / "typeclass/index.md",
+            language.typeclassLabel
+          ),
+          ButtonLink.internal(
+            Root / "algorithms/index.md",
+            language.algorithmsLabel
+          ),
           ButtonLink.internal(
             Root / "data-structures/index.md",
-            "Структуры данных"
+            language.dataStructuresLabel
           ),
-          ButtonLink.internal(Root / "cats-effect/index.md", "Cats effect"),
-          ButtonLink.internal(Root / "libs/index.md", "Инструментарий"),
-          ButtonLink.internal(Root / "practice/index.md", "Практикум"),
-          ButtonLink.internal(Root / "translations/index.md", "Переводы"),
-          ButtonLink.internal(Root / "extra/index.md", "Ресурсы")
+          ButtonLink.internal(
+            Root / "cats-effect/index.md",
+            language.catsEffectLabel
+          ),
+          ButtonLink.internal(Root / "libs/index.md", language.libsLabel),
+          ButtonLink.internal(
+            Root / "practice/index.md",
+            language.practiceLabel
+          ),
+          ButtonLink.internal(
+            Root / "translations/index.md",
+            language.translationsLabel
+          ),
+          ButtonLink.internal(Root / "extra/index.md", language.extraLabel)
         )
       )
 
@@ -111,7 +158,7 @@ object HeliumThemes:
         appendLinks = Seq()
       )
 
-  private def addPageNavigation(theme: Helium): Helium =
+  private def addPageNavigation(language: Language)(theme: Helium): Helium =
     theme.site
       .pageNavigation(
         enabled = true,
@@ -119,7 +166,7 @@ object HeliumThemes:
         sourceBaseURL = Some(
           "https://gitverse.ru/artemkorsakov/scalabook/edit/master/docs/"
         ),
-        sourceLinkText = "Редактировать страницу",
+        sourceLinkText = language.editPageLabel,
         keepOnSmallScreens = false
       )
 

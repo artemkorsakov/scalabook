@@ -2,7 +2,7 @@
 
 ## Concept of Reduction
 
-_Reduction_ (or _rewriting_, from English _reduction_) is the process of sequentially transforming a complex expression
+_Reduction_ (or _rewriting_) is the process of sequentially transforming a complex expression
 into its simplest equivalent form through the application of transformation rules.
 This process is analogous to mathematical computation, where we gradually simplify expressions to their final value.
 

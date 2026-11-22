@@ -34,9 +34,9 @@ object GeneratePdf extends IOApp:
       .using(
         GitHubFlavor,
         SyntaxHighlighting.withSyntax(SbtSyntax),
-        MyDirectives
+        MyDirectives(HeliumThemes.Language.Russian)
       )
       .parallel[F]
-      .withTheme(HeliumThemes.mainTheme.build)
+      .withTheme(HeliumThemes.mainTheme(HeliumThemes.Language.Russian).build)
       .build
 end GeneratePdf

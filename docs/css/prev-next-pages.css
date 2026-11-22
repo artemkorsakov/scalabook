@@ -1,10 +1,25 @@
 .prev-next-nav {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin: 2rem 0;
     padding: 1rem 0;
     border-top: 1px solid #eee;
     border-bottom: 1px solid #eee;
+    gap: 1rem;
+}
+
+.prev-next-nav .nav-item-center {
+    flex: 1;
+    text-align: center;
+}
+
+.prev-next-nav .nav-item-left {
+    white-space: nowrap;
+}
+
+.prev-next-nav .nav-item-right {
+    white-space: nowrap;
 }
 
 .prev-next-nav a {

@@ -8,6 +8,7 @@ import laika.format.Markdown.GitHubFlavor
 import laika.io.api.{BinaryTreeTransformer, TreeTransformer}
 import laika.io.syntax.*
 import ru.scalabook.site.syntax.{HeliumThemes, MyDirectives, SbtSyntax}
+import ru.scalabook.site.syntax.HeliumThemes.Language
 
 object GenerateSite extends IOApp:
   override def run(args: List[String]): IO[ExitCode] =
@@ -20,39 +21,47 @@ object GenerateSite extends IOApp:
           java.nio.file.Path.of("generated")
         )
       )
-      _ <- createHtmlTransformer[IO]()
+      _ <- createHtmlTransformer[IO](Language.English)
+        .use(
+          _.fromDirectory("docs-en")
+            .toDirectory("generated/en")
+            .transform
+        )
+      _ <- createHtmlTransformer[IO](Language.Russian)
         .use(_.fromDirectory("docs").toDirectory("generated").transform)
-      _ <- createEpubTransformer[IO]()
+      _ <- createEpubTransformer[IO](Language.Russian)
         .use(
           _.fromDirectory("docs").toFile("generated/scalabook.epub").transform
         )
     yield ()
 
-  private def createHtmlTransformer[F[_]: Async]()
-      : Resource[F, TreeTransformer[F]] =
+  private def createHtmlTransformer[F[_]: Async](
+      language: Language
+  ): Resource[F, TreeTransformer[F]] =
     Transformer
       .from(Markdown)
       .to(HTML)
       .using(
         GitHubFlavor,
         SyntaxHighlighting.withSyntax(SbtSyntax),
-        MyDirectives
+        MyDirectives(language)
       )
       .parallel[F]
-      .withTheme(HeliumThemes.mainTheme.build)
+      .withTheme(HeliumThemes.mainTheme(language).build)
       .build
 
-  private def createEpubTransformer[F[_]: Async]()
-      : Resource[F, BinaryTreeTransformer[F]] =
+  private def createEpubTransformer[F[_]: Async](
+      language: Language
+  ): Resource[F, BinaryTreeTransformer[F]] =
     Transformer
       .from(Markdown)
       .to(EPUB)
       .using(
         GitHubFlavor,
         SyntaxHighlighting.withSyntax(SbtSyntax),
-        MyDirectives
+        MyDirectives(language)
       )
       .parallel[F]
-      .withTheme(HeliumThemes.mainTheme.build)
+      .withTheme(HeliumThemes.mainTheme(language).build)
       .build
 end GenerateSite

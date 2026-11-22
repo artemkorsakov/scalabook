@@ -34,10 +34,10 @@ object CheckLinksSite extends IOApp:
       .using(
         GitHubFlavor,
         SyntaxHighlighting.withSyntax(SbtSyntax),
-        MyDirectives,
+        MyDirectives(HeliumThemes.Language.Russian),
         LinkValidationExtension
       )
       .parallel[F]
-      .withTheme(HeliumThemes.mainTheme.build)
+      .withTheme(HeliumThemes.mainTheme(HeliumThemes.Language.Russian).build)
       .build
 end CheckLinksSite

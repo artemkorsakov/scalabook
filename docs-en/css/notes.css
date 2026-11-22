@@ -1,0 +1,42 @@
+.tooltip {
+  position: relative; /* Необходимо для позиционирования подсказки */
+  display: inline-block; /* Чтобы элемент занимал только нужную ширину */
+  cursor: help;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  background: #DCDCDC;
+  padding: 12px;
+  border-radius: 4px;
+
+  /* Позиционирование в правом верхнем углу */
+  position: absolute;
+  bottom: 100%; /* Располагаем выше родительского элемента */
+  left: 0;     /* Выравниваем по правому краю */
+
+  /* Стилизация */
+  width: 500px; /* Фиксированная ширина */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+
+  /* Анимация появления */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Треугольник-указатель */
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 15px;
+  border-width: 8px;
+  border-style: solid;
+  border-color: #DCDCDC transparent transparent transparent;
+}

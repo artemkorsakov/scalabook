@@ -1,34 +1,46 @@
 package ru.scalabook.site.syntax
 
 import laika.ast.Path.*
+import laika.ast.Styles
 import laika.helium.Helium
 import laika.helium.config.*
 import laika.theme.config.*
 
 object HeliumThemes:
-  lazy val mainTheme: Helium =
-    addAll(Helium.defaults)
 
-  private lazy val addAll: Helium => Helium =
-    addMeta andThen
+  enum Language(
+      val code: String,
+      val description: String,
+      val switchLabel: String
+  ):
+    case Russian
+        extends Language("ru", "Функциональная разработка на Scala", "English")
+    case English
+        extends Language("en", "Functional development in Scala", "Русский")
+
+  def mainTheme(language: Language): Helium =
+    addAll(language)(Helium.defaults)
+
+  private def addAll(language: Language): Helium => Helium =
+    addMeta(language) andThen
       addThemeColors andThen
       addFavIcons andThen
       addCSSJS andThen
-      addTopNavigation andThen
+      addTopNavigation(language) andThen
       addMainNavigation andThen
       addPageNavigation andThen
       addEpub andThen
       addPdf andThen
       addFooter
 
-  private def addMeta(theme: Helium): Helium =
+  private def addMeta(language: Language)(theme: Helium): Helium =
     theme.all
       .metadata(
         title = Some("Scalabook"),
-        description = Some("Функциональная разработка на Scala"),
+        description = Some(language.description),
         identifier = Some("Scalabook"),
         authors = Seq("Artem Korsakov"),
-        language = Some("ru"),
+        language = Some(language.code),
         version = Some("0.1.0")
       )
 
@@ -61,12 +73,20 @@ object HeliumThemes:
       .internalCSS(Root / "css" / "notes.css")
       .site
       .internalJS(Root / "js" / "tex-mml-chtml.js")
+      .site
+      .internalJS(Root / "js" / "lang-switch.js")
 
-  private def addTopNavigation(theme: Helium): Helium =
+  private def addTopNavigation(language: Language)(theme: Helium): Helium =
     theme.site
       .topNavigationBar(
         homeLink = IconLink.internal(Root / "index.md", HeliumIcon.home),
         navLinks = Seq(
+          ButtonLink
+            .external(
+              "#",
+              language.switchLabel,
+              options = Styles("language-switch")
+            ),
           ButtonLink.internal(Root / "fp/index.md", "Функ. программирование"),
           ButtonLink.internal(Root / "typeclass/index.md", "Классы типов"),
           ButtonLink.internal(Root / "algorithms/index.md", "Алгоритмы"),

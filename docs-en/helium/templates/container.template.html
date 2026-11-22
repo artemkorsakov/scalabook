@@ -1,0 +1,13 @@
+<div id="container">
+    @:include(helium.site.templates.pageNav)
+    <main class="content">
+        ${cursor.currentDocument.content}
+        <div class="prev-next-nav">
+            <span class="nav-item-left">@:previousPage</span>
+            <span class="nav-item-center">@:otherLanguagePage</span>
+            <span class="nav-item-right">@:nextPage</span>
+        </div>
+        @:include(../helium/templates/giscus.template.html)
+        @:include(helium.site.templates.footer)
+    </main>
+</div>

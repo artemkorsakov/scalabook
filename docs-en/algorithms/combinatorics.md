@@ -33,6 +33,6 @@ and continuing to modern research in the field of graph theory, probability theo
 **References:**
 
 - [Source code][sample]
-- [Combinatorics](https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BC%D0%B1%D0%B8%D0%BD%D0%B0%D1%82%D0%BE%D1%80%D0%B8%D0%BA%D0%B0)
+- [Combinatorics](https://en.wikipedia.org/wiki/Combinatorics)
 
 [sample]: https://gitverse.ru/scalabook/algorithms

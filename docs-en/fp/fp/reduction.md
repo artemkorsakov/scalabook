@@ -18,7 +18,7 @@ Key observations:
 - Both paths lead to the same result (`49`)
 - The final expression `49` is in _canonical form_ (normal form) — it cannot be reduced further
 - The order of applying reductions may differ, but the property of
-  _confluence_ ([Church-Rosser property](https://ru.wikipedia.org/wiki/%D0%A2%D0%B5%D0%BE%D1%80%D0%B5%D0%BC%D0%B0_%D0%A7%D1%91%D1%80%D1%87%D0%B0_%E2%80%94_%D0%A0%D0%BE%D1%81%D1%81%D0%B5%D1%80%D0%B0)) is preserved
+  _confluence_ ([Church-Rosser property](https://en.wikipedia.org/wiki/Church–Rosser_theorem)) is preserved
 
 ## Formal Expression System
 

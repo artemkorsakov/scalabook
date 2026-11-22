@@ -2,7 +2,7 @@
 
 **Algorithm:**
 
-Steps of the [selection sort algorithm](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0_%D0%B2%D1%8B%D0%B1%D0%BE%D1%80%D0%BE%D0%BC):
+Steps of the [selection sort algorithm](https://en.wikipedia.org/wiki/Selection_sort):
 
 - find the position (index) of the minimum (maximum) value in the current list
 - swap this value with the value at the first unsorted position (no swap is needed if the minimum (maximum) element is already in the current position)

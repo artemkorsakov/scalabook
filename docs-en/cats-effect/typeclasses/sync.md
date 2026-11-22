@@ -2,7 +2,7 @@
 
 ## Introduction: What Is a Synchronous FFI?
 
-**FFI (Foreign Function Interface)** is a mechanism [for calling code in other languages](https://ru.wikipedia.org/wiki/%D0%98%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81_%D0%B2%D0%BD%D0%B5%D1%88%D0%BD%D0%B8%D1%85_%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B9)
+**FFI (Foreign Function Interface)** is a mechanism [for calling code in other languages](https://en.wikipedia.org/wiki/Foreign_function_interface)
 or, in the context of Cats Effect, **interacting with the "impure" world of side effects** from pure functional code.
 
 `Sync[F[_]]` provides a safe way to suspend (suspend) synchronous side effects in the effect context `F[_]`.

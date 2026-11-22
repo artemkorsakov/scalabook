@@ -2,7 +2,7 @@
 
 ## Definition and Key Characteristics
 
-[A Higher-Order Function (HOF)](https://ru.wikipedia.org/wiki/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B8_%D0%BF%D0%B5%D1%80%D0%B2%D0%BE%D0%B3%D0%BE_%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%B0) is
+[A Higher-Order Function (HOF)](https://en.wikipedia.org/wiki/First-class_function) is
 a fundamental concept in functional programming describing functions that:
 
 1. **Accept other functions as parameters** — can receive one or more functions for further processing
@@ -161,7 +161,7 @@ def validatorFactory[A](predicate: A => Boolean, errorMessage: String): A => Eit
 
 ## Anonymous Functions
 
-[Anonymous functions](https://ru.wikipedia.org/wiki/%D0%90%D0%BD%D0%BE%D0%BD%D0%B8%D0%BC%D0%BD%D0%B0%D1%8F_%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F)
+[Anonymous functions](https://en.wikipedia.org/wiki/Anonymous_function)
 (also known as function literals or lambda expressions) are functions that:
 
 - Have no name (not bound to an identifier)

@@ -24,7 +24,7 @@ designed to support functional programming in Scala applications.
 ### Why "Cats"?
 
 The name is a playful shortening of the English word _category_,
-which refers to the mathematical **[Theory of Categories](https://ru.wikipedia.org/wiki/%D0%A2%D0%B5%D0%BE%D1%80%D0%B8%D1%8F_%D0%BA%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D0%B9)**.
+which refers to the mathematical **[Theory of Categories](https://en.wikipedia.org/wiki/Category_theory)**.
 
 However, to use Cats, you **do not need to know anything** about category theory.
 The name merely reflects the mathematical roots of the library,

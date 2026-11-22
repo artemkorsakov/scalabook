@@ -208,7 +208,7 @@ Both approaches run in \\(O(n \log n)\\).
 **References:**
 
 - [Source code][sample]
-- [Triangle - Wiki](https://ru.wikipedia.org/wiki/%D0%A2%D1%80%D0%B5%D1%83%D0%B3%D0%BE%D0%BB%D1%8C%D0%BD%D0%B8%D0%BA)
+- [Triangle - Wiki](https://en.wikipedia.org/wiki/Triangle)
 - [Niklaus Wirth - Algorithms + Data Structures = Programs](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs)
 - [Algorithmica - Coordinate Compression](https://ru.algorithmica.org/cs/sequences/compression/)
 

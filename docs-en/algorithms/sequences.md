@@ -2,7 +2,7 @@
 
 ## Fibonacci Numbers
 
-[Fibonacci numbers](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D0%BB%D0%B0_%D0%A4%D0%B8%D0%B1%D0%BE%D0%BD%D0%B0%D1%87%D1%87%D0%B8) —
+[Fibonacci numbers](https://en.wikipedia.org/wiki/Fibonacci_number) —
 elements of the numerical sequence `0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, ...`,
 in which the first two numbers are `0` and `1`, and each subsequent number is the sum of the two preceding numbers.
 
@@ -159,7 +159,7 @@ fastFib(100)
 
 **Algorithm:**
 
-An approximate value of a Fibonacci number can be computed [using Binet's formula](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D0%BB%D0%B0_%D0%A4%D0%B8%D0%B1%D0%BE%D0%BD%D0%B0%D1%87%D1%87%D0%B8#%D0%A4%D0%BE%D1%80%D0%BC%D1%83%D0%BB%D0%B0_%D0%91%D0%B8%D0%BD%D0%B5):
+An approximate value of a Fibonacci number can be computed [using Binet's formula](https://en.wikipedia.org/wiki/Fibonacci_number#Binet%27s_formula):
 
 \\(F\_{n} = \frac{(\frac{1+\sqrt{5}}{2})^{n} - (\frac{1-\sqrt{5}}{2})^{n}}{\sqrt{5}} = \frac{(\varphi)^{n} - (-\varphi)^{-n}}{\varphi - (-\varphi)^{-1}} = \frac{(\varphi)^{n} - (-\varphi)^{-n}}{2\varphi - 1}\\)
 
@@ -181,12 +181,12 @@ def approximateFibonacci(n: Int): BigInt =
 
 ## Pythagorean Triple
 
-> [Pythagorean triple](https://ru.wikipedia.org/wiki/%D0%9F%D0%B8%D1%84%D0%B0%D0%B3%D0%BE%D1%80%D0%BE%D0%B2%D0%B0_%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0) —
+> [Pythagorean triple](https://en.wikipedia.org/wiki/Pythagorean_triple) —
 > is a set of three natural numbers \\(a < b < c\\},
 > for which \\(a^{2} + b^{2} = c^{2}\\}.
 > Let us represent \\(a = m^{2} - n^{2}, b = 2\*m\*n, c = m^{2} + n^{2}\\}. Then \\((m,n)\\} is a Pythagorean duad.
 >
-> [The tree of primitive Pythagorean triples](https://ru.wikipedia.org/wiki/%D0%94%D0%B5%D1%80%D0%B5%D0%B2%D0%BE_%D0%BF%D1%80%D0%B8%D0%BC%D0%B8%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D1%85_%D0%BF%D0%B8%D1%84%D0%B0%D0%B3%D0%BE%D1%80%D0%BE%D0%B2%D1%8B%D1%85_%D1%82%D1%80%D0%BE%D0%B5%D0%BA)
+> [The tree of primitive Pythagorean triples](https://en.wikipedia.org/wiki/Tree_of_primitive_Pythagorean_triples)
 > can be constructed using either a Pythagorean duad or a Pythagorean triple.
 
 **Code:**
@@ -356,7 +356,7 @@ octagonalNumber(1_000_000)   // 2999998000000
 > and if it is odd, multiply it by 3 and add 1 (we get 3n + 1).
 > Perform the same actions on the resulting number, and so on.
 >
-> [The Collatz conjecture](https://ru.wikipedia.org/wiki/%D0%93%D0%B8%D0%BF%D0%BE%D1%82%D0%B5%D0%B7%D0%B0_%D0%9A%D0%BE%D0%BB%D0%BB%D0%B0%D1%82%D1%86%D0%B0)
+> [The Collatz conjecture](https://en.wikipedia.org/wiki/Collatz_conjecture)
 > states that no matter what starting number n we choose, we will eventually reach 1.
 
 **Algorithm:**
@@ -483,7 +483,7 @@ isHammingNumber(2125764000, 5)
 
 ## Harshad Numbers
 
-> [_Harshad numbers_](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D0%BB%D0%B0_%D1%85%D0%B0%D1%80%D1%88%D0%B0%D0%B4),
+> [_Harshad numbers_](https://en.wikipedia.org/wiki/Harshad_number),
 > or Niven numbers, are natural numbers that are evenly divisible by the sum of their digits.
 > For example, 1729 is such a number, since 1729 = (1 + 7 + 2 + 9) × 91.
 
@@ -573,7 +573,7 @@ getStrongRightTruncatableHarshadPrimes(3)
 
 ## Bernoulli Numbers
 
-[Bernoulli numbers](https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D0%BB%D0%B0_%D0%91%D0%B5%D1%80%D0%BD%D1%83%D0%BB%D0%BB%D0%B8)
+[Bernoulli numbers](https://en.wikipedia.org/wiki/Bernoulli_number)
 
 For Bernoulli numbers, the following recurrence formula exists:
 

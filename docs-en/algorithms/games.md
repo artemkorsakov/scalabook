@@ -115,7 +115,7 @@ Dice(6).probabilities(1).mkString(", ")
 
 **Algorithm:**
 
-[Nim (game)](https://ru.wikipedia.org/wiki/%D0%9D%D0%B8%D0%BC_(%D0%B8%D0%B3%D1%80%D0%B0)).
+[Nim (game)](https://en.wikipedia.org/wiki/Nim).
 
 **Code:**
 

@@ -67,6 +67,6 @@ classDiagram
 **References:**
 
 - [Repository with exercises and instructions for completion][sample]
-- [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%BB%D1%83%D0%BA%D0%BE%D0%BB%D1%8C%D1%86%D0%BE)
+- [Wikipedia](https://en.wikipedia.org/wiki/Semiring)
 
 [sample]: https://gitverse.ru/scalabook/typeclasses

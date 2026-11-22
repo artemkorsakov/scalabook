@@ -181,6 +181,6 @@ AbGroup[Int].inverse(1) // -1
 
 - [Repository with exercises and instructions for completion][sample]
 - [Spire home page](https://typelevel.org/spire/)
-- [Wikipedia](https://ru.wikipedia.org/wiki/%D0%90%D0%B1%D0%B5%D0%BB%D0%B5%D0%B2%D0%B0_%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B0)
+- [Wikipedia](https://en.wikipedia.org/wiki/Abelian_group)
 
 [sample]: https://gitverse.ru/scalabook/typeclasses

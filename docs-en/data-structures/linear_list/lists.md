@@ -389,7 +389,7 @@ nonEmptyList.dropWhile(_ > 1) // Cons(1,Nil)
 
 - [Source code][source]
 - [Rod Stephens - Algorithms: Theory and Practical Applications. Chapter 3. Linked Lists](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854/)
-- [Linked list - Wikipedia](https://ru.wikipedia.org/wiki/%D0%A1%D0%B2%D1%8F%D0%B7%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA)
+- [Linked list - Wikipedia](https://en.wikipedia.org/wiki/Linked_list)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://idp.springer.com/authorize?response_type=cookie&amp;client_id=springerlink&amp;redirect_uri=https%3A%2F%2Flink.springer.com%2Fbook%2F10.1007%2F978-3-030-12561-5)
 - [Introduction to Functional Programming - Bird, Wadler, Chapter 3](https://archive.org/details/introductiontofu0000bird/mode/2up)
 - [Scalacaster - List](https://github.com/vkostyukov/scalacaster/blob/master/src/collection/List.scala)

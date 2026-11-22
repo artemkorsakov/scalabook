@@ -177,7 +177,7 @@ generalizedEuclideanAlgorithm(1769, 551)
 
 ## Modular Inverse
 
-> A number that is [the modular inverse of integer `m`](https://ru.wikipedia.org/wiki/%D0%9E%D0%B1%D1%80%D0%B0%D1%82%D0%BD%D0%BE%D0%B5_%D0%BF%D0%BE_%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D1%8E_%D1%87%D0%B8%D1%81%D0%BB%D0%BE) —
+> A number that is [the modular inverse of integer `m`](https://en.wikipedia.org/wiki/Modular_multiplicative_inverse) —
 > is an integer `x` such that the product `m*x` is congruent to `1` modulo `n`: \\(mx \equiv 1\\) (mod n).
 
 **Algorithm:**
@@ -545,7 +545,7 @@ sumToGiven(1000000)
 
 **Algorithm:**
 
-The sum of squares of the first natural numbers can be computed [using the formula](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%BB%D0%BD%D1%8B%D0%B9_%D0%BA%D0%B2%D0%B0%D0%B4%D1%80%D0%B0%D1%82):
+The sum of squares of the first natural numbers can be computed [using the formula](https://en.wikipedia.org/wiki/Square_number):
 \\(\frac{n * (n + 1) * (2 * n + 1)}{6}\\)
 
 **Example:**
@@ -579,7 +579,7 @@ sumOfSquaresTo(1000)
 
 **Algorithm:**
 
-The sum of cubes of the first natural numbers can be computed [using the formula](https://ru.wikipedia.org/wiki/%D0%9A%D1%83%D0%B1_(%D0%B0%D0%BB%D0%B3%D0%B5%D0%B1%D1%80%D0%B0)):
+The sum of cubes of the first natural numbers can be computed [using the formula](https://en.wikipedia.org/wiki/Cube_(algebra)):
 \\(\left ( \frac{n * (n + 1)}{2} \right )^{2}\\)
 
 **Example:**
@@ -636,7 +636,7 @@ generator.take(11).toList
 **Links:**
 
 - [Source code][sample]
-- [Euclid's algorithm](https://ru.wikipedia.org/wiki/%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%D0%95%D0%B2%D0%BA%D0%BB%D0%B8%D0%B4%D0%B0)
+- [Euclid's algorithm](https://en.wikipedia.org/wiki/Euclidean_algorithm)
 - [Rod Stephens - Algorithms: Theory and Practice. Chapter 2. Numerical Algorithms](https://eksmo.ru/book/algoritmy-teoriya-i-prakticheskoe-primenenie-2-e-izdanie-ITD1210854/)
 - [Divisor function][divisorfunc]
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://idp.springer.com/authorize?response_type=cookie&amp;client_id=springerlink&amp;redirect_uri=https%3A%2F%2Flink.springer.com%2Fbook%2F10.1007%2F978-3-030-12561-5)
@@ -646,4 +646,4 @@ generator.take(11).toList
 
 [sicp]: https://web.mit.edu/6.001/6.037/sicp.pdf
 [sample]: https://gitverse.ru/scalabook/algorithms
-[divisorfunc]: https://ru.wikipedia.org/wiki/%D0%A4%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F_%D0%B4%D0%B5%D0%BB%D0%B8%D1%82%D0%B5%D0%BB%D0%B5%D0%B9
+[divisorfunc]: https://en.wikipedia.org/wiki/Divisor_function

@@ -75,7 +75,7 @@ countWays(Array(1, 2, 5, 10, 20, 50, 100, 200), 200)
 
 ## Partitions
 
-> [Number of ways](https://ru.wikipedia.org/wiki/%D0%A0%D0%B0%D0%B7%D0%B1%D0%B8%D0%B5%D0%BD%D0%B8%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%B0)
+> [Number of ways](https://en.wikipedia.org/wiki/Partition_(number_theory))
 > to write n as a sum of positive integers.
 
 **Code:**

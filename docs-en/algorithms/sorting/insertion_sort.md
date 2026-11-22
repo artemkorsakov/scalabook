@@ -3,7 +3,7 @@
 **Algorithm:**
 
 Initially, the sorted sequence is empty.
-At each step, the [insertion sort algorithm](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0_%D0%B2%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D0%B0%D0%BC%D0%B8)
+At each step, the [insertion sort algorithm](https://en.wikipedia.org/wiki/Insertion_sort)
 selects one of the input elements and inserts it into the correct position in the already sorted sequence until
 the input set is exhausted.
 At any point in time, the elements in the sorted sequence satisfy the output requirements of the algorithm.

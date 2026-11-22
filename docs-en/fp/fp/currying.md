@@ -1,11 +1,11 @@
 # Currying
 
-[Currying](https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%80%D1%80%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5) is
+[Currying](https://en.wikipedia.org/wiki/Currying) is
 a fundamental technique in functional programming, named after the mathematician Haskell Curry.
 This concept allows transforming functions with multiple arguments into a chain of single-argument functions.
 
-Although the concept is named after [Haskell Curry](https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%80%D1%80%D0%B8,_%D0%A5%D0%B0%D1%81%D0%BA%D0%B5%D0%BB%D0%BB),
-it was initially proposed by [Moses Schönfinkel](https://ru.wikipedia.org/wiki/%D0%A8%D0%B5%D0%B9%D0%BD%D1%84%D0%B8%D0%BD%D0%BA%D0%B5%D0%BB%D1%8C,_%D0%9C%D0%BE%D0%B8%D1%81%D0%B5%D0%B9_%D0%AD%D0%BB%D1%8C%D0%B5%D0%B2%D0%B8%D1%87) in 1924.
+Although the concept is named after [Haskell Curry](https://en.wikipedia.org/wiki/Haskell_Curry),
+it was initially proposed by [Moses Schönfinkel](https://en.wikipedia.org/wiki/Moses_Sch%C3%B6nfinkel) in 1924.
 Currying became an important part of lambda calculus and functional programming languages.
 
 ## Core Idea

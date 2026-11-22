@@ -2,7 +2,7 @@
 
 **Algorithm:**
 
-[Radix sort](https://ru.wikipedia.org/wiki/%D0%A6%D0%B8%D1%84%D1%80%D0%BE%D0%B2%D0%B0%D1%8F_%D1%81%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0) applies the idea of [counting sort][counting] to large keys: instead of maintaining a counter for the entire value space, the key is split into digits, and the list is sorted by each digit in turn.
+[Radix sort](https://en.wikipedia.org/wiki/Radix_sort) applies the idea of [counting sort][counting] to large keys: instead of maintaining a counter for the entire value space, the key is split into digits, and the list is sorted by each digit in turn.
 
 For numbers, sorting is typically done from least significant digit to most significant:
 
@@ -128,4 +128,4 @@ Green highlights the results of stable passes through each digit, and the final 
 - [Counting sort][counting]
 
 [sample]: https://gitverse.ru/scalabook/algorithms
-[counting]: https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0_%D0%BF%D0%BE%D0%B4%D1%81%D1%87%D1%91%D1%82%D0%BE%D0%BC
+[counting]: https://en.wikipedia.org/wiki/Counting_sort

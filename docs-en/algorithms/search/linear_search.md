@@ -1,6 +1,6 @@
 # Linear Search
 
-> [Linear search](https://ru.wikipedia.org/wiki/%D0%9B%D0%B8%D0%BD%D0%B5%D0%B9%D0%BD%D1%8B%D0%B9_%D0%BF%D0%BE%D0%B8%D1%81%D0%BA), also known as sequential search —
+> [Linear search](https://en.wikipedia.org/wiki/Linear_search), also known as sequential search —
 > an algorithm for finding a given value of an arbitrary function on some interval.
 
 **Algorithm:**

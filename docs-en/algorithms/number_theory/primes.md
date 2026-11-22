@@ -1,6 +1,6 @@
 # Prime Numbers and Factorization
 
-[A prime number](https://ru.wikipedia.org/wiki/%D0%9F%D1%80%D0%BE%D1%81%D1%82%D0%BE%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%BE) —
+[A prime number](https://en.wikipedia.org/wiki/Prime_number) —
 a natural number having exactly two distinct natural divisors.
 In other words, a natural number `p` is prime if it is distinct from `1`
 and is divisible without remainder only by `1` and by `p` itself.
@@ -9,7 +9,7 @@ One of the popular applications of prime numbers is cryptography.
 Prime numbers are also used in hash functions to avoid collisions,
 in random number generators for uniform distribution, and in error-correcting codes to eliminate noise.
 
-[A composite number](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D1%81%D1%82%D0%B0%D0%B2%D0%BD%D0%BE%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%BE) —
+[A composite number](https://en.wikipedia.org/wiki/Composite_number) —
 a natural number that has divisors other than one and itself.
 Every composite number is the product of two or more natural numbers greater than one.
 
@@ -284,9 +284,9 @@ isPrime(999_999_000_001L)
 
 **Explanation:**
 
-Fermat's primality test allows determining whether a number is [prime with a certain probability](https://ru.wikipedia.org/wiki/%D0%92%D0%B5%D1%80%D0%BE%D1%8F%D1%82%D0%BD%D0%BE%D1%81%D1%82%D0%BD%D1%8B%D0%B9_%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC).
+Fermat's primality test allows determining whether a number is [prime with a certain probability](https://en.wikipedia.org/wiki/Randomized_algorithm).
 
-[Fermat's little theorem](https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D0%BB%D0%B0%D1%8F_%D1%82%D0%B5%D0%BE%D1%80%D0%B5%D0%BC%D0%B0_%D0%A4%D0%B5%D1%80%D0%BC%D0%B0)
+[Fermat's little theorem](https://en.wikipedia.org/wiki/Fermat's_little_theorem)
 states: if p is a prime number and 1 <= n < p, then \\(n^{p-1}\\) % p = 1.
 
 This formula may also be true when p is a composite number.
@@ -602,13 +602,13 @@ countOfDivisors(100) // 9
 
 **Algorithm:**
 
-[A perfect number](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D0%B2%D0%B5%D1%80%D1%88%D0%B5%D0%BD%D0%BD%D0%BE%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%BE) —
+[A perfect number](https://en.wikipedia.org/wiki/Perfect_number) —
 is a positive integer that is equal to the sum of its positive divisors, excluding the number itself.
 
-[A deficient number](https://ru.wikipedia.org/wiki/%D0%9D%D0%B5%D0%B4%D0%BE%D1%81%D1%82%D0%B0%D1%82%D0%BE%D1%87%D0%BD%D1%8B%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%B0) —
+[A deficient number](https://en.wikipedia.org/wiki/Deficient_number) —
 is a positive integer that is less than the sum of its positive divisors, excluding the number itself.
 
-[A abundant number](https://ru.wikipedia.org/wiki/%D0%98%D0%B7%D0%B1%D1%8B%D1%82%D0%BE%D1%87%D0%BD%D1%8B%D0%B5_%D1%87%D0%B8%D1%81%D0%BB%D0%B0) —
+[A abundant number](https://en.wikipedia.org/wiki/Abundant_number) —
 is a positive integer that is greater than the sum of its positive divisors, excluding the number itself.
 
 **Code:**
@@ -986,7 +986,7 @@ allRads(10)
 
 ## Square-Free Number
 
-> A [square-free number](https://ru.wikipedia.org/wiki/%D0%A1%D0%B2%D0%BE%D0%B1%D0%BE%D0%B4%D0%BD%D0%BE%D0%B5_%D0%BE%D1%82_%D0%BA%D0%B2%D0%B0%D0%B4%D1%80%D0%B0%D1%82%D0%BE%D0%B2_%D1%87%D0%B8%D1%81%D0%BB%D0%BE) —
+> A [square-free number](https://en.wikipedia.org/wiki/Square-free_integer) —
 > is a number that is not divisible by any square other than 1.
 >
 > Given a number `n`. Determine whether it is square-free.

@@ -31,7 +31,7 @@ returning `true` if two values are equal, or `false` otherwise.
 
 ### Laws for `Equal`:
 
-For a correct implementation of `Equal`, the following [laws](https://ru.wikipedia.org/wiki/%D0%A2%D0%BE%D0%B6%D0%B4%D0%B5%D1%81%D1%82%D0%B2%D0%BE_%D0%BD%D0%B5%D1%80%D0%B0%D0%B7%D0%BB%D0%B8%D1%87%D0%B8%D0%BC%D1%8B%D1%85) must hold:
+For a correct implementation of `Equal`, the following [laws](https://en.wikipedia.org/wiki/Law_of_identity) must hold:
 
 - **Reflexivity**: For any value `x` of type `A`, `equal(x, x)` must return `true`.
 - **Indiscernibility of identicals** (_antisymmetry_): for any `x` and `y`, if `x == y`, then `x` and `y` are indistinguishable.

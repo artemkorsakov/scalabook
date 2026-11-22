@@ -915,6 +915,6 @@ These laws ensure that `MonoidK` behaves predictably and can be used in generali
 - [Scalaz API](https://javadoc.io/doc/org.scalaz/scalaz-core_3/7.3.6/scalaz/Monoid.html)
 - [Semigroups and Monoids in Scala](https://www.youtube.com/watch?v=LmBTiFYa-V4&amp;list=PLmtsMNDRU0Bzj7INIrLugi3a_WClwQuiS)
 - [Spire home page](https://typelevel.org/spire/)
-- [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9C%D0%BE%D0%BD%D0%BE%D0%B8%D0%B4)
+- [Wikipedia](https://en.wikipedia.org/wiki/Monoid)
 
 [sample]: https://gitverse.ru/scalabook/typeclasses

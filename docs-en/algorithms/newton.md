@@ -82,7 +82,7 @@ This is because the number of correct digits doubles at each step.
 **References:**
 
 - [Source code][sample]
-- [Newton's method - Wiki](https://ru.wikipedia.org/wiki/%D0%9C%D0%B5%D1%82%D0%BE%D0%B4_%D0%9D%D1%8C%D1%8E%D1%82%D0%BE%D0%BD%D0%B0)
+- [Newton's method - Wiki](https://en.wikipedia.org/wiki/Newton's_method)
 - [SICP: Abelson H., Sussman D. - Structure and Interpretation of Computer Programs][sicp]
 - [Bird, Wadler - Introduction to Functional Programming, 2.1 Numbers](https://archive.org/details/introductiontofu0000bird/mode/2up)
 

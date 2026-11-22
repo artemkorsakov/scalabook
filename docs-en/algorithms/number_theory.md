@@ -79,7 +79,7 @@ The algorithm is used to find a unique solution within the product of the moduli
 **References:**
 
 - [Source code][sample]
-- [Euclidean Algorithm](https://ru.wikipedia.org/wiki/%D0%90%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC_%D0%95%D0%B2%D0%BA%D0%BB%D0%B8%D0%B4%D0%B0)
+- [Euclidean Algorithm](https://en.wikipedia.org/wiki/Euclidean_algorithm)
 - [Miller-Rabin Algorithm][miller]
 - [Chinese Remainder Theorem][china]
 - [Divisor function][divisorfunc]

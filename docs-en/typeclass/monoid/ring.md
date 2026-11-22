@@ -107,6 +107,6 @@ Ring.one[Rational]
 - [Link to the exercises repository][sample]
 - [Spire home page](https://typelevel.org/spire/)
 - [Spire User's Guide](https://typelevel.org/spire/guide.html)
-- [Wikipedia](https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BB%D1%8C%D1%86%D0%BE_(%D0%BC%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B0))
+- [Wikipedia](https://en.wikipedia.org/wiki/Ring_(mathematics))
 
 [sample]: https://gitverse.ru/scalabook/typeclasses

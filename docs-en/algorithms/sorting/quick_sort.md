@@ -2,7 +2,7 @@
 
 **Algorithm:**
 
-The general idea of the [quick sort algorithm](https://ru.wikipedia.org/wiki/%D0%91%D1%8B%D1%81%D1%82%D1%80%D0%B0%D1%8F_%D1%81%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0) is as follows:
+The general idea of the [quick sort algorithm](https://en.wikipedia.org/wiki/Quicksort) is as follows:
 
 - select an element from the array, called the pivot. It can be any element of the array.
   The correctness of the algorithm does not depend on the choice of the pivot element, but its efficiency may vary significantly depending on it.

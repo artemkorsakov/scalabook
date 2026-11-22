@@ -1,6 +1,6 @@
 # Binary Search
 
-> [Binary search](https://ru.wikipedia.org/wiki/%D0%94%D0%B2%D0%BE%D0%B8%D1%87%D0%BD%D1%8B%D0%B9_%D0%BF%D0%BE%D0%B8%D1%81%D0%BA)
+> [Binary search](https://en.wikipedia.org/wiki/Binary_search)
 > (also known as **halving method** or **bisection**) is
 > a classic algorithm for searching for an element in a sorted array (vector), using division of the array into halves.
 

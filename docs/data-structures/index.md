@@ -26,5 +26,6 @@
 - [Исходный код][source]
 - [API Design for Heaps](https://typelevel.org/blog/2016/11/17/heaps.html)
 - [Designing a Purely Functional Data Structure](https://kostyukov.net/posts/designing-a-pfds/)
+- [Алгоритмика - Базовые структуры данных](https://ru.algorithmica.org/cs/basic-structures/)
 
 [source]: https://gitverse.ru/scalabook/algorithms

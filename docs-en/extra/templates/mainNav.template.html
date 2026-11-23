@@ -1,0 +1,9 @@
+<nav id="sidebar">
+
+    @:navigationTree {
+    entries = ${helium.site.mainNavigation.prependLinks} [
+    { target = "/extra", excludeRoot = true, excludeSections = ${helium.site.mainNavigation.excludeSections}, depth = ${helium.site.mainNavigation.depth} }
+    ] ${helium.site.mainNavigation.appendLinks}
+    }
+
+</nav>

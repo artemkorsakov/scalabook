@@ -7,16 +7,58 @@ so such heaps are sometimes called _max-heaps_
 (as an alternative, if the comparison is inverted,
 then the smallest element will always be the root node; such heaps are called _min-heaps_).
 
+## Why heaps are useful
+
+Heaps solve the most in-demand problem of priority queues: maintaining a set of elements with the ability
+to quickly obtain (and/or extract) the **extreme** element — the maximum or the minimum.
+Unlike a plain queue, where order is determined by arrival time,
+a priority queue always returns the element with the highest (or lowest) priority.
+
+Such a structure underpins many algorithms and systems:
+
+- **Sorting** — the sorting tree (see heapsort) sorts an array in O(n log n).
+- **Greedy algorithms** — e.g., Dijkstra's shortest-path algorithm and Prim's minimum spanning tree algorithm rely directly on a min-heap.
+- **Task schedulers** — operating systems and thread pools use priority queues to pick the next task.
+- **Merging streams** — merging k sorted arrays into one is done in O(n log k).
+
+## The heap property
+
+Formally, the heap is a binary tree (or, more generally, a tree) for which every vertex satisfies
+the **ordering invariant**: a vertex's key is not less than the keys of all its descendants (for a max-heap)
+or not greater (for a min-heap).
+By transitivity of the ordering relation this invariant guarantees that the greatest (smallest) key
+is always in the root. Hence reading the extreme element takes O(1).
+
+It is important to understand that the heap property does **not** impose a total order on elements:
+trees containing the same set of keys can have different shapes. This is unlike search trees,
+where the ordering strictly dictates the relative placement of keys and enables searching for an arbitrary element.
+A heap cannot quickly search for an arbitrary element by value — its strength lies in fast access to the extreme.
+
 ## Standard Binary Heap
 
-A [binary heap, or sorting tree][bin heap wiki] is
-a binary tree that satisfies three conditions:
+A [binary heap, or sorting tree][bin heap wiki] is a binary tree that satisfies three conditions:
 
-- The value at any vertex is not less (not greater for min-heaps) than the values of its descendants
-- The depth of all leaves (distance to the root) differs by at most 1 level
-- The last level is filled left to right without gaps
+- **Heap ordering.** The value at any vertex is not less (not greater for min-heaps) than the values of its descendants.
+  This is the basic invariant described above.
+- **Almost-complete filling.** The depth of all leaves (distance to the root) differs by at most 1 level,
+  meaning the tree is always balanced and has height O(log n). It is this balance that gives
+  logarithmic guarantees for insertion and deletion.
+- **Sequential filling.** The last level is filled left to right without gaps.
+  Together, the last two properties mean the tree can be represented as a dense array without holes,
+  where the children of index `i` are at `2i + 1` and `2i + 2`.
 
-**Complexity:**
+### How insertion and deletion work
+
+The **functional** Scala implementation below uses immutable data structures.
+Each operation returns a new heap without modifying the original.
+Thanks to structural sharing, nodes unaffected by an operation are reused between the old and new versions
+of the tree, preserving efficiency even in a purely functional style.
+
+The implementation additionally maintains `size` and `height` fields, which allow the "almost-complete"
+invariant to be enforced with no visible holes and route insertion into whichever subtree
+is not yet fully filled.
+
+### Complexity
 
 - _Minimum element of heap_ (`min`)
     - **Time** - O(1)
@@ -31,7 +73,7 @@ a binary tree that satisfies three conditions:
     - **Time** - O(n)
     - **Space** - O(n)
 
-**Code:**
+### Code
 
 ```dotty
 enum BinaryHeap[+A]:
@@ -155,7 +197,25 @@ object BinaryHeap:
 end BinaryHeap
 ```
 
-**Example:**
+### Understanding the Scala implementation
+
+Let us look at the key points of the code:
+
+- **Recursive structure.** The heap is described by an algebraic data type: `Leaf` is an empty heap,
+  `Branch(min, left, right, size, height)` is a non-empty node where `min` holds the minimum of the whole subtree.
+  The `size` and `height` fields are cached in the node, so they are computed in O(1) without re-traversing.
+- **Insertion.** The method finds a subtree that is not yet fully filled
+  (`left.size < left.height * left.height - 1`) and recursively places the element there,
+  then restores the invariant via `bubbleUp`.
+  The condition using the square of the height checks whether the node has reached its maximum possible size
+  for its height: in a complete tree of height `h` all levels are filled, so its size is close to `(h + 1)² - 1`.
+- **Deletion.** The root is removed; its children are then combined via `mergeChildren`,
+  after which the root is pushed downward through `bubbleDown` so the heap invariant is preserved.
+- **Sifting.** `bubbleUp` and `bubbleDown` are the classic operations that restore the order:
+  the first lifts an offending element toward the root, the second pushes it down, swapping
+  with the larger of the children.
+
+### Example
 
 ```dotty
 val emptyBinaryHeap: BinaryHeap[Int]    = BinaryHeap.empty
@@ -184,283 +244,31 @@ nonEmptyBinaryHeap.remove
 // Some(Branch(2,Leaf,Leaf,1,1))
 ```
 
-## Leftist Heap
+The example clearly demonstrates the basic behavior: an empty heap reports `isEmpty = true`,
+`minOption = None`, and deletion from it returns `None`. After inserting elements the root always
+holds the minimum value, and removing the root again restores the invariant, leaving the next-smallest
+value at the root.
 
-Okaeaki's implementation of a leftist heap, which satisfies two properties:
+## Heap variants
 
-- Heap-ordered property: `value(node) <= value(node.left)`, and also `value(node) <= value(node.right)`
-- Leftist property: `rank(node.left) >= rank(node.right)`
+A plain binary heap handles insertion and extraction of the extreme in O(log n),
+but its merge operation costs a whole O(n). Many algorithms need to efficiently merge two priority queues.
+For this purpose, special heap variants were invented:
 
-, where `rank` is the rightmost path of the heap (the extreme right path from root to a null node).
-Combining these properties together, we can guarantee execution time of at most O(log n)
-for insert/remove operations in a leftist heap.
+- **[Leftist heap]** — restores balance through a strict rank invariant,
+  guaranteeing O(log n) per merge. Described in its own section.
+- **[Skew heap](heap/skew_heap.md)** — a self-adjusting variant of the leftist heap that unconditionally
+  swaps the children at every merge. Gives amortized O(log n).
+- **[Pairing heap](heap/pairing_heap.md)** — a multi-way tree, a simplified Fibonacci heap.
+  In practice shows excellent performance with a very simple implementation.
 
-**Complexity:**
+## Summary
 
-- _Minimum element of heap_ (`min`)
-    - **Time** - O(1)
-    - **Space** - O(1)
-- _Insertion into heap_ (`insert`)
-    - **Time** - O(log n)
-    - **Space** - O(log n)
-- _Removal from heap_ (`remove`)
-    - **Time** - O(log n)
-    - **Space** - O(log n)
-- _Union of two heaps_ (`merge`)
-    - **Time** - O(log n)
-    - **Space** - O(log n)
-
-**Code:**
-
-```dotty
-enum LeftistHeap[+A]:
-  import LeftistHeap.*
-
-  case Leaf
-
-  private case Branch(
-      min: A,
-      left: LeftistHeap[A],
-      right: LeftistHeap[A],
-      override val rank: Int
-  )
-
-  lazy val isEmpty: Boolean = this match
-    case Leaf => true
-    case _    => false
-
-  val rank: Int = this match
-    case neh: Branch[A] => neh.rank
-    case _              => 0
-
-  lazy val minOption: Option[A] = this match
-    case neh: Branch[A] => Some(neh.min)
-    case _              => None
-
-  def insert[B >: A: Ordering](x: B): LeftistHeap[B] = this match
-    case Branch(min, left, right, _) =>
-      if left.rank > right.rank then bubble(min, left, right.insert(x))
-      else bubble(min, left.insert(x), right)
-    case _ => LeftistHeap(x)
-
-  def remove[B >: A: Ordering]: Option[LeftistHeap[B]] = this match
-    case Branch(_, left, right, _) => Some(merge(left, right))
-    case _                         => None
-end LeftistHeap
-
-object LeftistHeap:
-  def empty[A]: LeftistHeap[A] = Leaf
-
-  def apply[A: Ordering](x: A): LeftistHeap[A] =
-    LeftistHeap(x, Leaf, Leaf)
-
-  private def apply[A: Ordering](
-      x: A,
-      l: LeftistHeap[A],
-      r: LeftistHeap[A]
-  ): LeftistHeap[A] =
-    Branch(x, l, r, r.rank + 1)
-
-  private def bubble[A: Ordering](
-      x: A,
-      l: LeftistHeap[A],
-      r: LeftistHeap[A]
-  ): LeftistHeap[A] =
-    (l, r) match
-      case (Branch(y, lt, rt, _), _) if x > y =>
-        LeftistHeap(y, LeftistHeap(x, lt, rt), r)
-      case (_, Branch(z, lt, rt, _)) if x > z =>
-        LeftistHeap(z, l, LeftistHeap(x, lt, rt))
-      case (_, _) => LeftistHeap(x, l, r)
-
-  def merge[A: Ordering](x: LeftistHeap[A], y: LeftistHeap[A]): LeftistHeap[A] =
-    (x, y) match
-      case (_, Leaf) => x
-      case (Leaf, _) => y
-      case (
-            Branch(xx, xl, xr, _),
-            Branch(yy, yl, yr, _)
-          ) =>
-        if xx < yy then swap(xx, xl, merge(xr, y))
-        else swap(yy, yl, merge(yr, x))
-
-  private def swap[A: Ordering](
-      x: A,
-      l: LeftistHeap[A],
-      r: LeftistHeap[A]
-  ): LeftistHeap[A] =
-    if l.rank < r.rank then LeftistHeap(x, r, l)
-    else LeftistHeap(x, l, r)
-
-end LeftistHeap
-```
-
-**Example:**
-
-```dotty
-val emptyLeftistHeap: LeftistHeap[Int] = LeftistHeap.empty
-val nonEmptyLeftistHeap: LeftistHeap[Int] = LeftistHeap.empty.insert(1).insert(2)
- 
-emptyLeftistHeap.isEmpty       // true
-nonEmptyLeftistHeap.isEmpty    // false
-  
-emptyLeftistHeap.rank          // 0
-nonEmptyLeftistHeap.rank       // 1
-  
-emptyLeftistHeap.minOption     // None
-nonEmptyLeftistHeap.minOption  // Some(1)
-  
-emptyLeftistHeap.insert(5)
-// Branch(5,Leaf,Leaf,1)
-nonEmptyLeftistHeap.insert(5)
-// Branch(1,Branch(2,Leaf,Leaf,1),Branch(5,Leaf,Leaf,1),2)
-
-emptyLeftistHeap.remove
-// None
-nonEmptyLeftistHeap.remove
-// Some(Branch(2,Leaf,Leaf,1))
-
-LeftistHeap.merge(emptyLeftistHeap, emptyLeftistHeap)
-// Leaf
-LeftistHeap.merge(emptyLeftistHeap, nonEmptyLeftistHeap)
-// Branch(1,Branch(2,Leaf,Leaf,1),Leaf,1)
-LeftistHeap.merge(nonEmptyLeftistHeap, nonEmptyLeftistHeap)
-// Branch(1,Branch(2,Leaf,Leaf,1),Branch(1,Branch(2,Leaf,Leaf,1),Leaf,1),2)
-```
-
-## Pairing Heap
-
-[Pairing heaps][pairing heap wiki] are multi-way tree structures, heap-ordered,
-and can be considered as simplified Fibonacci heaps.
-
-**Complexity:**
-
-- _Minimum element of heap_ (`min`)
-    - **Time** - O(1)
-    - **Space** - O(1)
-- _Insertion into heap_ (`insert`)
-    - **Time** - O(log n)
-    - **Space** - O(log n)
-- _Removal from heap_ (`remove`)
-    - **Time** - O(log n)
-    - **Space** - O(log n)
-- _Union of two heaps_ (`merge`)
-    - **Time** - O(log n)
-    - **Space** - O(log n)
-
-**Code:**
-
-```dotty
-enum PairingHeap[+A]:
-
-  import PairingHeap.*
-
-  case Leaf
-  private case Branch(min: A, subtrees: List[PairingHeap[A]])
-
-  lazy val isEmpty: Boolean = this match
-    case Leaf => true
-    case _    => false
-
-  def insert[B >: A: Ordering](x: B): PairingHeap[B] =
-    merge(PairingHeap(x), this)
-
-  def remove[B >: A: Ordering]: Option[PairingHeap[B]] = this match
-    case Branch(_, subtrees) => Some(pairing(subtrees))
-    case _                   => None
-
-end PairingHeap
-
-object PairingHeap:
-  def empty[A]: PairingHeap[A] = Leaf
-
-  def apply[A: Ordering](x: A): PairingHeap[A] =
-    Branch(x, List.empty)
-
-  private def merge[A: Ordering](
-      x: PairingHeap[A],
-      y: PairingHeap[A]
-  ): PairingHeap[A] =
-    (x, y) match
-      case (_, Leaf) => x
-      case (Leaf, _) => y
-      case (Branch(x1, subs1), Branch(x2, subs2)) =>
-        if x1 < x2 then
-          Branch(x1, Branch(x2, subs2) :: subs1)
-        else
-          Branch(x2, Branch(x1, subs1) :: subs2)
-
-  @tailrec
-  private def pairing[A: Ordering](subtrees: List[PairingHeap[A]])
-      : PairingHeap[A] =
-    subtrees match
-      case Nil              => Leaf
-      case hd :: Nil        => hd
-      case h1 :: h2 :: tail => pairing(merge(h1, h2) :: tail)
-
-end PairingHeap
-```
-
-## Skew Heap
-
-A [skew heap] is a self-adjusting form of a left-leaning heap,
-which attempts to maintain balance by unconditionally swapping all nodes on the merge path when merging two heaps.
-(The merge operation is also used when adding and removing values.)
-
-**Complexity:**
-
-- _Minimum element of heap_ (`min`)
-    - **Time** - O(1)
-    - **Space** - O(1)
-- _Insertion into heap_ (`insert`)
-    - **Time** - O(log n)
-    - **Space** - O(log n)
-- _Removal from heap_ (`remove`)
-    - **Time** - O(log n)
-    - **Space** - O(log n)
-- _Union of two heaps_ (`merge`)
-    - **Time** - O(log n)
-    - **Space** - O(log n)
-
-**Code:**
-
-```dotty
-enum SkewHeap[+A]:
-  import SkewHeap.*
-
-  case Leaf
-  private case Branch(min: A, left: SkewHeap[A], right: SkewHeap[A])
-
-  lazy val isEmpty: Boolean = this match
-    case Leaf => true
-    case _    => false
-
-  def insert[B >: A: Ordering](x: B): SkewHeap[B] =
-    merge(apply(x), this)
-
-  def remove[B >: A: Ordering]: Option[SkewHeap[B]] = this match
-    case Branch(_, left, right) => Some(merge(left, right))
-    case _                      => None
-
-end SkewHeap
-
-object SkewHeap:
-  def empty[A]: SkewHeap[A] = Leaf
-
-  def apply[A: Ordering](x: A): SkewHeap[A] =
-    Branch(x, Leaf, Leaf)
-
-  def merge[A: Ordering](x: SkewHeap[A], y: SkewHeap[A]): SkewHeap[A] =
-    (x, y) match
-      case (_, Leaf) => x
-      case (Leaf, _) => y
-      case (Branch(x1, l1, r1), Branch(x2, l2, r2)) =>
-        if x1 < x2 then
-          Branch(x1, merge(Branch(x2, l2, r2), r1), l1)
-        else Branch(x2, merge(Branch(x1, l1, r1), r2), l2)
-
-end SkewHeap
-```
+The heap is one of the fundamental data structures for working with priority queues.
+It provides O(1) for reading the extreme and O(log n) for insertion and deletion,
+while being implementable in just a few dozen lines. Choosing a specific heap variant comes down to
+which operations are critical for the task: if you need to merge heaps often —
+choose a leftist, skew, or pairing heap.
 
 ---
 
@@ -469,13 +277,16 @@ end SkewHeap
 - [Source code][source]
 - [Heap - Wiki][heap wiki]
 - [Binary heap - Wiki][bin heap wiki]
+- [Leftist heap][leftist heap]
 - [Pairing heap - Wiki][pairing heap wiki]
 - [Skew heap - Wiki][skew heap wiki]
+- [Алгоритмика - Куча](https://ru.algorithmica.org/cs/basic-structures/heap/)
 - [Heap - Scalacaster](https://github.com/vkostyukov/scalacaster/blob/master/src/heap)
 - [A Functional Approach to Standard Binary Heaps - Vladimir Kostyukov](http://arxiv.org/pdf/1312.4666v1)
 
 [heap wiki]: https://en.wikipedia.org/wiki/Heap_(data_structure)
 [bin heap wiki]: https://en.wikipedia.org/wiki/Binary_heap
+[leftist heap]: heap/leftist_heap.md
 [pairing heap wiki]: https://en.wikipedia.org/wiki/Pairing_heap
 [skew heap wiki]: https://en.wikipedia.org/wiki/Skew_heap
 [source]: https://gitverse.ru/scalabook/algorithms

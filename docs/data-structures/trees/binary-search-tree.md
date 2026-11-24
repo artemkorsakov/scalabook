@@ -122,8 +122,6 @@ object BinarySearchTree:
     def size: Int = dict.size
 
     def height: Int = dict.height
-
-end BinarySearchTree
 ```
 
 ## Параметры дерева поиска
@@ -171,5 +169,6 @@ end BinarySearchTree
 - [Исходный код][source]
 - [Donald E. Knuth - The Art of Computer Programming, section 2.3.1](https://www-cs-faculty.stanford.edu/~knuth/taocp.html)
 - [Bhim P. Upadhyaya - Data Structures and Algorithms with Scala](https://idp.springer.com/authorize?response_type=cookie&amp;client_id=springerlink&amp;redirect_uri=https%3A%2F%2Flink.springer.com%2Fbook%2F10.1007%2F978-3-030-12561-5)
+- [Алгоритмика - Деревья поиска](https://ru.algorithmica.org/cs/tree-structures/)
 
 [source]: https://gitverse.ru/scalabook/algorithms
